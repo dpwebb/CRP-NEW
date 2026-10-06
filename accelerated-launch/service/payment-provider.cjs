@@ -571,8 +571,13 @@ function describeProvider(env) {
       missing_configuration: missing.concat(couponMissing ? [STRIPE_UPGRADE_CREDIT_COUPON] : []),
       reason: configured ? 'STRIPE_CONFIGURED_NOT_YET_VERIFIED_AGAINST_TEST_MODE' : 'STRIPE_CONFIGURATION_INCOMPLETE',
       plain: configured
-        ? 'Stripe is connected with the owner-approved CAD prices. Configured keys alone do not prove working billing; a test-mode checkout must still be exercised before a launch may claim it.'
-        : 'Stripe is requested but its configuration is incomplete, so nothing can be purchased.'
+        ? 'Stripe is connected with the recorded CAD prices. Nothing is charged until you choose a plan and complete checkout.'
+        : 'Stripe is requested but its configuration is incomplete, so nothing can be purchased.',
+      /* INTERNAL RELEASE RECORD — never rendered on a consumer screen. The launch gate reads this field; the
+         consumer-facing sentence above says only what a consumer needs before buying. */
+      internal_readiness: configured
+        ? 'Configured keys alone do not prove working billing; a test-mode checkout must still be exercised before a launch may claim it.'
+        : null
     });
   }
   return Object.assign(base, {

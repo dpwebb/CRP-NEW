@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T12:43:06.658Z",
+  "generated_at": "2026-10-06T12:54:07.132Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 51,
-      "digest": "7C5D7967EF198E401439931EE16867C2D27AFF3274C084AA040EA2602D37FD3E",
+      "digest": "5E98869CB50344FB3229D000458EDCD8F2FB97A33DE843698C27F0511AE1F893",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -163,7 +163,7 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "4516A8AC623CF52F1DCEFC139B876259275CC4EA008901F389FB17F6506A7548"
+          "sha256": "82EC52B8C42319FD70E45591E5B252867BD353F210B6E1C6C747CC10D560B7A8"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
@@ -343,11 +343,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "6426D8D04A91FAB4E6A209F4EA597CEC50AA3736CD3E6C4A7690F607084CCB2C",
+      "digest": "0CF2D4D13DC86F2E84AC846AD85F7095B3903824960703D4E531336CF907B0E4",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "FB9FE3875457AA9D8674D7D01F7EF283A932D3841653BB9B2635BD39C7FCF3E5"
+          "sha256": "944F4EC2F509F27EA94065B8A44F828077DABD0C49913D8CD4DF92194FBBAE7D"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -364,6 +364,6 @@
       ]
     }
   ],
-  "manifest_digest": "FFAB6CA919D25A3014B04FE7F0EE1EF89FF9EEA9B8A6AB83345BD4064431B733",
+  "manifest_digest": "179A060F9A3292FED359DA40DE9EC7585583283A47EDBAED34D5A20D60236990",
   "total_file_count": 81
 }

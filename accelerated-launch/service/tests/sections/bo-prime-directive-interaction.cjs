@@ -178,6 +178,64 @@ async function run(service, check) {
   dom.elementById('packet-wording').oninput();
   check.equal(dom.elementById('packet-download').disabled, true, 'editing wording after approval disables the download until re-approval');
 
+  /* ---- The post-upload screen follows the case's ACTUAL state (purchased, then the recorded period ends). ---- */
+  const postStore = () => service.service.store;
+  const postOwner = await service.unpaidAccount('bo-post-upload@example.test');
+  const postCase = (await service.request('POST', '/api/cases', { token: postOwner.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  await payReportOnce(service, postOwner, postCase.case_id);
+  const postPdf = buildPdf({ pages: [{ lines: [...LINES] }] });
+  check.equal((await service.request('POST', `/api/cases/${postCase.case_id}/files`, { token: postOwner.token, body: uploadBody(postPdf, 'post-upload.pdf') })).status, 201, 'the purchased case accepts the upload');
+
+  const post = makeContext(`http://127.0.0.1:${service.port}`, postOwner.token);
+  const postCtx = post.context;
+  postCtx.__VIEW = (await service.request('GET', `/api/cases/${postCase.case_id}`, { token: postOwner.token })).json.view;
+  vm.runInContext(source, postCtx, { filename: 'ui/app.js' });
+  await tick(); await tick(); await tick();
+  await waitFor(() => vm.runInContext('state.step', postCtx) === 1);
+  vm.runInContext(`state.caseId = "${postCase.case_id}"; state.view = __VIEW; state.step = 2; render();`, postCtx);
+  const postPanel = () => post.elementById('panel').innerHTML;
+  check.ok(/Your report is uploaded/.test(postPanel()) && /Your report is ready to review\./.test(postPanel()), 'the real post-upload screen states the upload and its readiness');
+  check.ok(/Reviewing your report for Nova Scotia/.test(postPanel()), 'with the short region label from the case selection');
+  check.ok(/id="check-report"/.test(postPanel()), 'and the check action, from the purchase the service recorded');
+  check.ok(!/No file has been uploaded/.test(postPanel()), 'never asking for the upload the case already has');
+
+  post.elementById('check-report').onclick();
+  await waitFor(() => vm.runInContext('state.step', postCtx) === 3);
+  await waitFor(() => vm.runInContext('Boolean(state.view && state.view.result)', postCtx));
+  check.equal(vm.runInContext('state.error', postCtx), null, 'the check completes with no UI error');
+  check.ok(/Results/.test(post.elementById('panel').innerHTML), 'and the completed screen is the results step');
+  vm.runInContext('state.step = 2; render();', postCtx);
+  check.ok(/id="view-results"/.test(postPanel()) && !/id="check-report"/.test(postPanel()), 'the post-upload screen then offers exactly one action: the results');
+
+  /* A second case, uploaded while access is still held, to measure the uploaded-but-no-access screen. */
+  const postCaseB = (await service.request('POST', '/api/cases', { token: postOwner.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  check.equal((await service.request('POST', `/api/cases/${postCaseB.case_id}/files`, { token: postOwner.token, body: uploadBody(postPdf, 'post-upload-b.pdf') })).status, 201, 'the second case accepts the upload while access is held');
+  const postViewB = (await service.request('GET', `/api/cases/${postCaseB.case_id}`, { token: postOwner.token })).json.view;
+
+  /* The recorded period ends after the upload: the same screen must offer the plan action, and the service refuses. */
+  postStore().update((state) => {
+    for (const row of state.entitlements || []) {
+      if (row.account_id === postOwner.account_id) row.expires_at = new Date(Date.now() - 1000).toISOString();
+    }
+    return true;
+  });
+  await vm.runInContext('refreshAccess().then(() => render())', postCtx);
+  await waitFor(() => vm.runInContext('Boolean(state.entitlement && state.entitlement.entitled === false)', postCtx));
+  postCtx.__VIEW_B = postViewB;
+  vm.runInContext(`state.caseId = "${postCaseB.case_id}"; state.view = __VIEW_B; state.step = 2; render();`, postCtx);
+  check.ok(/id="choose-plan"/.test(postPanel()) && !/id="check-report"/.test(postPanel()), 'an upload whose access has ended offers the plan action instead of a check');
+  check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(postPanel()), 'with the short access sentence, not the lengthy paragraph');
+  check.ok(/Your report is uploaded/.test(postPanel()), 'and the upload is still described as uploaded, never refused');
+  check.equal((await service.request('POST', `/api/cases/${postCaseB.case_id}/evaluate`, { token: postOwner.token })).status, 402, 'the service still refuses the check without access (402 preserved)');
+
+  /* Billing states prices and purchase terms before purchase, with no internal readiness text. */
+  vm.runInContext('state.step = 8; render();', postCtx);
+  await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
+  const billingBox = post.elementById('billingView').innerHTML;
+  check.ok(/CAD 5\.95/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
+  check.ok(/Prices are in CAD and shown before you buy/.test(billingBox), 'and states the purchase terms before purchase');
+  check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
+
   return { interaction: 'select -> save -> (unsaved edit) -> approve -> download against the real service' };
 }
 

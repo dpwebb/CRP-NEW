@@ -283,6 +283,65 @@ async function run(t, check) {
   check.ok(/Sign out/.test(panel.innerHTML), 'the sign-out control is present');
   check.ok(!/\.machine\b/.test(source), 'the UI source never touches the audit-only machine payload');
 
+  /* The post-upload screen reports the case's ACTUAL state and offers exactly one next action. */
+  const uploadedView = {
+    case: { country: 'CA', region: 'CA-NS' },
+    files: [{
+      file_id: 'f1', original_filename: 'report.pdf', stored_bytes: 120, container: 'pdf',
+      upload_gate: { state: 'ACCEPTED_BY_UPLOAD_GATE' }, supported_format: true,
+      recognised_as: 'TransUnion Canada consumer report', format_predicates: [], extraction: { admitted: true }
+    }],
+    result: null, result_id: null, reviewed: false, clarifications: [], clarification_questions: [],
+    download: {}, demonstration_scenarios: []
+  };
+  const assessedView = Object.assign({}, uploadedView, {
+    result_id: 'r1',
+    result: {
+      support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2, observations: [], report_consistency_checks: [],
+      qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.',
+      assessment: { plain: 'We ran 2 rules for where you live.' }
+    }
+  });
+  ctx.UPLOADED_VIEW = uploadedView;
+  ctx.ASSESSED_VIEW = assessedView;
+  vm.runInContext('state.view = UPLOADED_VIEW; state.step = 2; state.entitlement = { entitled: false, state: "NONE", plain: "No active purchase is recorded against this account." }; state.assessing = false; state.assessment_error = null; state.purchase_needed = null; render();', ctx);
+  check.ok(/Your report is uploaded/.test(panel.innerHTML) && /Your report is ready to review\./.test(panel.innerHTML), 'an uploaded report says it is uploaded and ready to review');
+  check.ok(/Reviewing your report for Nova Scotia/.test(panel.innerHTML), 'the repeated jurisdiction paragraph is replaced by the short region label');
+  check.ok(/id="choose-plan"/.test(panel.innerHTML) && /Choose a plan to check my report</.test(panel.innerHTML), 'without access it offers the plan action');
+  check.ok(!/id="check-report"|id="view-results"/.test(panel.innerHTML), 'and no other next action');
+  check.ok(!/No file has been uploaded|Choose a PDF report or report images in page order/.test(panel.innerHTML), 'and never asks for an upload the case already has');
+  check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(panel.innerHTML), 'with the short access sentence in place of the lengthy paragraph');
+
+  vm.runInContext('state.entitlement = { entitled: true, state: "ACTIVE", plan_code: "report_once" }; render();', ctx);
+  check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'with access it offers the check action');
+
+  vm.runInContext('state.assessing = true; render();', ctx);
+  check.ok(/We are checking your report\./.test(panel.innerHTML), 'while processing it says the check is running');
+  check.ok(!/id="check-report"|id="choose-plan"|id="view-results"/.test(panel.innerHTML), 'and offers no action while the check runs');
+
+  vm.runInContext('state.assessing = false; state.purchase_needed = "Checking a report needs a recorded purchase."; render();', ctx);
+  check.ok(/id="choose-plan"/.test(panel.innerHTML), 'a missing purchase offers the plan action');
+  check.ok(!/We could not check your report/.test(panel.innerHTML), 'and is never described as a failed check');
+
+  vm.runInContext('state.purchase_needed = null; state.assessment_error = "The file on this case could not be read."; render();', ctx);
+  check.ok(/We could not check your report:/.test(panel.innerHTML) && /The file on this case could not be read\./.test(panel.innerHTML), 'a failed check explains the specific problem');
+  check.ok(/id="check-report"/.test(panel.innerHTML) && /Try again to check my report</.test(panel.innerHTML), 'and offers the retry action');
+
+  vm.runInContext('state.assessment_error = null; state.view = ASSESSED_VIEW; render();', ctx);
+  check.ok(/Your report is ready to review\./.test(panel.innerHTML) && /id="view-results"/.test(panel.innerHTML), 'after the assessment it offers the results action');
+  check.ok(!/We are checking your report|Choose a plan to check my report/.test(panel.innerHTML), 'with no contradictory status and no second action');
+  check.ok(!/We could not check your report/.test(panel.innerHTML), 'and no stale failure');
+
+  /* An accepted upload is never described as refused. */
+  ctx.GENERAL_VIEW = Object.assign({}, uploadedView, { files: [Object.assign({}, uploadedView.files[0], { supported_format: false, recognised_as: null })] });
+  vm.runInContext('state.view = GENERAL_VIEW; render();', ctx);
+  check.ok(/Accepted and stored for this case/.test(panel.innerHTML), 'a generally-read upload says it was accepted and stored');
+  check.ok(!/does not seem to be a credit report|could not read it/.test(panel.innerHTML), 'and is never described as refused');
+  ctx.UNREADABLE_VIEW = Object.assign({}, uploadedView, { files: [Object.assign({}, uploadedView.files[0], { supported_format: false, recognised_as: null, extraction: { admitted: false, refusal_reason: 'UNREADABLE_DOCUMENT' } })] });
+  vm.runInContext('state.view = UNREADABLE_VIEW; render();', ctx);
+  check.ok(/We could not read your report clearly enough/.test(panel.innerHTML), 'an unreadable upload is described as a reading outcome with a next step');
+  check.ok(!/The file was not read:/.test(panel.innerHTML), 'and never leaks an internal reason token');
+
   return { ui_calls: dom.calls.length };
 }
 

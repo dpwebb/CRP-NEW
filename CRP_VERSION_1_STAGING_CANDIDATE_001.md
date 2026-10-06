@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batch 24/25, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §11 at the end of this file — manifest `FFAB6CA919D25A3014B04FE7F0EE1EF89FF9EEA9B8A6AB83345BD4064431B733`, build `crp-v1-ffab6ca919d25a30`, 81 files in five groups, full local regression **PASS 5450, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`) describe earlier trees and are superseded.
+**Identity supersession (Batches 24–26, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §12 at the end of this file — manifest `179A060F9A3292FED359DA40DE9EC7585583283A47EDBAED34D5A20D60236990`, build `crp-v1-179a060f9a3292fe`, 81 files in five groups, full local regression **PASS 5486, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`) describe earlier trees and are superseded.
 
 ## 1. Exact candidate identity
 
@@ -218,4 +218,41 @@ Date: October 5 2026 (America/Halifax). Authority: the owner's bounded follow-up
 | Determinism | three consecutive regenerations; identical digest each run |
 | Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5450 assertions, 0 failed, 0 skipped** |
 | Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399`; Batch 25 pushed and deployed nothing |
+
+
+## 12. Batch 26 — the post-upload screen, its single next action, and the billing text
+
+Date: October 5 2026 (America/Halifax). Authority: the owner's bounded instruction to fix the confusing post-upload screen from the case's actual file, assessment and access state; to replace the lengthy access paragraph; to keep prices and purchase terms in the plan/billing view; and to remove internal billing-readiness text from consumer screens.
+
+**What changed (served text and one UI state machine — no rule, permission, parse, price, entitlement or ownership behaviour).**
+
+| Surface | Now |
+| --- | --- |
+| Uploaded, awaiting the check | **Your report is uploaded** / "Your report is ready to review." |
+| With valid access | one action: **Check my report** |
+| Without valid access | one action: **Choose a plan to check my report** |
+| While the check runs | "We are checking your report." and no action offered |
+| After the assessment | one action: **View my results** |
+| Check refused | the service's own specific problem ("We could not check your report: …") with **Try again to check my report**; a missing purchase is reported as a plan decision, never as a failed check |
+| Region paragraph after upload | the short label **Reviewing your report for <region>** (Nova Scotia) instead of the repeated jurisdiction/upload paragraph |
+| Upload prompt | shown only when the case has no file; with a file: "Choose another file for this case, or a replacement for one already here" |
+| File card | an accepted file reads "Recognised as …" or "Accepted and stored for this case"; a reading outcome ("We could not read …") never describes the stored upload as refused, and no internal reason token is shown |
+| Access paragraph | replaced by "Choose a plan to check this report and create your dispute packet. You can still view or delete your uploaded file."; with access, a one-line active statement |
+| Upgrade credit | the "not currently eligible" line is gone from the report screen; a credit message appears only where a credit is held and bears on a purchase (the billing view) |
+| Internal billing readiness | "Configured keys alone do not prove working billing …" is removed from every consumer surface and kept as `internal_readiness` in `payment-provider.cjs`; the release check keeps its own internal copy |
+| Billing view | prices, what each purchase grants, how each purchase renews, cancellation and the credit terms are stated before purchase |
+
+**State source.** The screen is driven by the case's own state — `journey.caseView` (`files`, `result`), the account's entitlement view, the in-flight request and the service's own refusal (402 versus an error). No client flag invents a state, and every paid action still passes `entitlement.requirePaid`, whose 402 refusal is asserted unchanged.
+
+**Coverage.** `k-ui-smoke` (52 assertions) renders all five states from the served client; `bo-prime-directive-interaction` (39) drives the real service: purchased → upload → **Check my report** → results → **View my results**, then a second case uploaded while access is held, the recorded period ended, **Choose a plan to check my report**, with the service still returning 402; `bw-browser-wizzard` (44) is the real-browser journey; `ba-consumer-billing` (40) covers the billing view. Full regression **PASS 5486, 0 failed, 0 skipped**.
+
+**Refreshed candidate identity (this is now the current one).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `179A060F9A3292FED359DA40DE9EC7585583283A47EDBAED34D5A20D60236990` |
+| Internal build identity | `crp-v1-179a060f9a3292fe` |
+| Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| Determinism | three consecutive regenerations; identical digest each run |
+| Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399` |
 

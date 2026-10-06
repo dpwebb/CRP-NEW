@@ -26,7 +26,12 @@ const state = {
   upgrade_credit: null,
   result_list: [],
   support: null,
-  billing: null
+  billing: null,
+  /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
+     missing purchase (which is a plan decision, not a failure). */
+  assessing: false,
+  assessment_error: null,
+  purchase_needed: null
 };
 let surface = null;
 let uploadLimits = null;
@@ -53,7 +58,11 @@ async function api(method, path, body) {
   try { data = await res.json(); } catch { data = {}; }
   if (!res.ok || data.ok === false) {
     const message = data.error && data.error.message ? data.error.message : `Request refused (${res.status})`;
-    throw new Error(message);
+    const error = new Error(message);
+    /* The caller needs the actual refusal class — a missing purchase is not a failure of the check. */
+    error.status = res.status;
+    error.code = data.error && data.error.code ? data.error.code : null;
+    throw error;
   }
   return data;
 }
@@ -123,22 +132,21 @@ function access() {
   const ent = state.entitlement || null;
   const pay = state.payment || null;
   const credit = state.upgrade_credit || null;
-  const entLine = ent
-    ? `${esc(ent.plain)} ${ent.entitled ? '' : 'Uploading a report, running an assessment, reviewing and downloading are refused until then. Reading what you have, recording your own status and deleting your data stay available.'}`
-    : 'Access state is not reported by this build.';
-  const payLine = pay ? esc(pay.plain) : 'Payment capability is not reported by this build.';
-  const priceLine = '<br><strong>CAD prices:</strong> One report CAD 5.95 (one-time) · Monthly CAD 7.95/month · Annual CAD 79.50/year. ' +
-    'A verified one-time purchase earns a once-only CAD 5.95 credit toward the first monthly or annual invoice, within 90 days; renewals stay full price.';
-  const creditLine = credit && credit.eligible
-    ? `<br><strong>Upgrade credit:</strong> eligible for CAD ${(credit.credit_cents / 100).toFixed(2)} off your first subscription invoice — expires in ${Math.max(1, Math.ceil(credit.remaining_ms / 86400000))} day(s).`
-    : '<br><strong>Upgrade credit:</strong> not currently eligible.';
-  const basis = ent && ent.exact_external_dependency
-    ? `<br><span class="evidence">The provider this build declares is recorded with its exact external dependency: ${esc(pay && pay.exact_external_dependency ? pay.exact_external_dependency : ent.exact_external_dependency)}</span>`
-    : '';
-  return `<div class="note">
-    <strong>Your access:</strong> ${entLine}<br>
-    <strong>Payment:</strong> ${payLine}${priceLine}${creditLine}${basis}
-  </div>`;
+  const parts = [];
+  if (ent) {
+    parts.push(ent.entitled
+      ? `<strong>Your access:</strong> active${ent.plan_code ? ` (${esc(ent.plan_code)})` : ''}${ent.expires_at ? `, until ${esc(ent.expires_at)}` : ''}.`
+      : 'Choose a plan to check this report and create your dispute packet. You can still view or delete your uploaded file.');
+  } else {
+    parts.push('Access state is not reported by this build.');
+  }
+  parts.push(pay ? `<strong>Payment:</strong> ${esc(pay.plain)}` : 'Payment capability is not reported by this build.');
+  /* A credit message appears only where it bears on a purchase decision (the billing view), never as a
+     standing "not eligible" line on the report screen. */
+  if (credit && credit.eligible) {
+    parts.push(`<strong>Upgrade credit:</strong> CAD ${(credit.credit_cents / 100).toFixed(2)} off your first monthly or annual invoice${credit.expires_at ? `, expiring ${esc(credit.expires_at)}` : ''}.`);
+  }
+  return `<div class="note">${parts.join('<br>')}</div>`;
 }
 
 /** Refresh the account's access state after anything that could change it. */
@@ -313,20 +321,79 @@ function renderJurisdiction(panel) {
 
 /* ------------------------------------------------------------------ step 2: your report */
 
+/**
+ * The post-upload status of the case, taken from the case's own state: the file is stored, and the assessment
+ * either has a result, is running, was refused, or is waiting on a purchase. Exactly one next action is offered,
+ * and the screen never asks for an upload the case already has.
+ */
+function reportStatus(view) {
+  const entitled = Boolean(state.entitlement && state.entitlement.entitled);
+  const head = '<strong>Your report is uploaded</strong>';
+  if (view.result) {
+    return `<div class="note">${head}<br>Your report is ready to review.<br>The checks for this case have run.</div>
+      <button class="primary" id="view-results">View my results</button>`;
+  }
+  if (state.assessing) {
+    return `<div class="note">${head}<br>We are checking your report.</div>`;
+  }
+  if (state.purchase_needed) {
+    return `<div class="note">${head}<br>Your report is ready to review.<br>${esc(state.purchase_needed)}</div>
+      <button class="primary" id="choose-plan">Choose a plan to check my report</button>`;
+  }
+  if (state.assessment_error) {
+    return `<div class="note stop">${head}<br>Your report is ready to review.<br><span class="err">We could not check your report:</span> ${esc(state.assessment_error)}</div>
+      <button class="primary" id="check-report">Try again to check my report</button>`;
+  }
+  return `<div class="note">${head}<br>Your report is ready to review.</div>
+    ${entitled
+      ? '<button class="primary" id="check-report">Check my report</button>'
+      : '<button class="primary" id="choose-plan">Choose a plan to check my report</button>'}`;
+}
+
+/** Run the assessment for this case. A missing purchase is a plan decision, not a failed check. */
+async function checkReport() {
+  if (state.assessing) return;
+  state.error = null;
+  state.notice = null;
+  state.assessment_error = null;
+  state.purchase_needed = null;
+  state.assessing = true;
+  render();
+  try {
+    await api('POST', `/api/cases/${state.caseId}/evaluate`, {});
+    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+    state.step = STEP.RESULTS;
+    state.notice = 'Checks run. Nothing was sent anywhere.';
+  } catch (err) {
+    if (err && err.status === 402) {
+      state.purchase_needed = 'Checking a report needs a recorded purchase. Choose a plan, then check your report.';
+    } else {
+      state.assessment_error = err && err.message ? err.message : 'The check could not be completed. Try again.';
+    }
+  } finally {
+    state.assessing = false;
+    render();
+  }
+}
+
 function renderReport(panel) {
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1><p class="lede">Choose your jurisdiction on the previous step.</p>`; return; }
   const view = state.view;
   const files = view.files || [];
   const regionRow = surface ? surface.regions.find((r) => r.value === view.case.region) : null;
   const batch = uploadBatches.get(state.caseId) || [];
+  const uploaded = files.length > 0;
+  const where = esc(regionLabel(view.case.country, view.case.region));
   panel.innerHTML = `
     <h1>Your report</h1>
-    <p class="lede">Case for ${esc(regionLabel(view.case.country, view.case.region))}. The file is stored privately
-    securely for your case.</p>
     ${notices()}
-    ${coverage(regionRow)}
+    ${uploaded
+      ? reportStatus(view)
+      : `<p class="lede">Case for ${where}. The file you upload is stored privately and securely for this case.</p>
+         ${coverage(regionRow)}`}
     ${access()}
-    <label for="file">Choose a PDF report or report images in page order</label>
+    ${uploaded ? `<h2>Reviewing your report for ${where}</h2>` : ''}
+    <label for="file">${uploaded ? 'Choose another file for this case, or a replacement for one already here' : 'Choose a PDF report or report images in page order'}</label>
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
     <button class="primary" id="upload">Upload selected files</button>
     <button class="secondary" id="retry-upload" ${batch.some(x => x.status === 'pending') ? '' : 'disabled'}>Retry pending files</button>
@@ -390,18 +457,37 @@ function renderReport(panel) {
     state.step = 3;
     state.notice = `${data.label}. Nothing here counts as report support.`;
   });
+
+  /* The one next action the status offers, wired to the case's own state. */
+  const viewResults = el('view-results');
+  if (viewResults) viewResults.onclick = () => run(async () => {
+    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+    state.step = STEP.RESULTS;
+  });
+  const check = el('check-report');
+  if (check) check.onclick = () => checkReport();
+  const choosePlan = el('choose-plan');
+  if (choosePlan) choosePlan.onclick = () => run(async () => { state.step = STEP.BILLING; });
 }
 
 function refusalMessage(reason) {
   if (reason === 'UNRELATED_DOCUMENT') return 'This document or image set does not seem to be a credit report. Please upload an actual credit report issued by your credit bureau.';
   if (reason === 'UNREADABLE_DOCUMENT') return 'We could not read your report clearly enough to work with it. Please upload a clearer or complete copy of the same report.';
-  return `The file was not read: ${reason}. No facts were produced from it.`;
+  /* A reading outcome, never a refusal of the upload: the file is stored on the case either way, and an internal
+     reason token is never shown to the consumer. */
+  return 'This file is stored, but we could not read it, so no facts were taken from it. Upload a clearer or complete copy of the same report.';
 }
 
 function fileCard(file) {
-  const detection = file.supported_format
-    ? `<p class="evidence">Recognised as <b>${esc(file.recognised_as || 'a bureau credit report')}</b>.</p>`
-    : `<p class="evidence">${esc(refusalMessage(file.refusal_reason || 'no supported presentation'))}</p>`;
+  const extraction = file.extraction || {};
+  const readable = extraction.admitted === true;
+  const detection = file.demonstration
+    ? ''
+    : (readable
+      ? (file.supported_format
+        ? `<p class="evidence">Recognised as <b>${esc(file.recognised_as || 'a bureau credit report')}</b> and stored for this case.</p>`
+        : '<p class="evidence">Accepted and stored for this case. We read it in the general way and use the facts we could read from it.</p>')
+      : `<p class="evidence">${esc(refusalMessage(extraction.refusal_reason || file.refusal_reason))}</p>`);
   const failed = (file.format_predicates || []).filter((p) => !p.passed).map((p) => `<li>${esc(p.detail)}</li>`);
   return `<div class="obs">
     <span class="pill ${file.demonstration ? 'demo' : ''}">${file.demonstration ? 'DEMONSTRATION INPUT — NOT A REPORT' : 'STORED PRIVATELY'}</span>
@@ -454,12 +540,7 @@ function renderResults(panel) {
     ${result ? resultBlock(result, demo) : '<div class="note">No result set exists for this case yet.</div>'}
     ${result && !demo ? clarificationBlock(view) : ''}`;
 
-  el('evaluate').onclick = () => run(async () => {
-    await api('POST', `/api/cases/${state.caseId}/evaluate`, {});
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
-    state.step = 3;
-    state.notice = 'Checks run. Nothing was sent anywhere.';
-  });
+  el('evaluate').onclick = () => checkReport();
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -1177,6 +1258,7 @@ function renderBillingView(data) {
     <p class="evidence">${renewalLine}</p>
     ${cancelBlock}
     <h3>Plans and prices</h3>
+    <p class="evidence">Prices are in CAD and shown before you buy. A one-time purchase does not renew. A subscription renews automatically until you cancel it, and cancelling stops the next charge while your recorded access continues to its expiry.</p>
     ${planCards}
     <p class="evidence">${esc(pay.plain || data.plain || '')}</p>
     <h3>Upgrade credit</h3>
