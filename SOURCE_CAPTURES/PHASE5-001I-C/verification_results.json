@@ -1,0 +1,385 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001I-C",
+  "created_utc": "2026-09-30",
+  "document_type": "The verification record of PHASE5-001I-C: inputs verified, preservation verified, gate state verified against every stated criterion, and this order's own checks",
+  "purpose": "record what was measured before anything was written, what each check tested and what it returned, the criterion-by-criterion reassessment of Gate 5.3 and of the prerequisite sequence, and the custody readings taken after the package was written",
+  "status_of_this_artifact": {
+    "is_gate_evidence_for_any_gate": false,
+    "gate_credit": "NONE",
+    "admits_anything": false,
+    "creates_coverage_or_a_candidate": false,
+    "authorizes_a_finding_class": false,
+    "consumer_visible": false,
+    "written_when": "last of this order's artifacts, after the custody manifest existed, so that the readings it reports are readings of the finished package"
+  },
+  "method": {
+    "inputs": "every input cited by this order was measured read-only by digest, and every clause this order relies on was re-read at the line it is recorded at in the file that carries it",
+    "checks": "each check below names what it tested and what it returned; the results are the results the finished artifacts produce, not intentions",
+    "preservation": "a baseline of every file under the workspace root was captured before this order wrote anything, then re-measured after the package was written",
+    "no_inherited_step_re_run": "no inherited builder, verifier, extractor or evaluator was executed by this order: the two scripts examined were read statically, and no inherited record was regenerated"
+  },
+  "checks": [
+    {
+      "id": "V-01",
+      "what": "every artifact of this order parses as JSON and loads in one pass",
+      "passed": true,
+      "detail": "5 of 5 files (owner_representation_decisions.json, proposed_register_update.json, custody_reconciliation_001i_a.json, preserved_files_before.json, file_custody_manifest.json). This record is the sixth and is written after them"
+    },
+    {
+      "id": "V-02",
+      "what": "the decision record carries six decisions, each with the owner's wording, what it settles, what it does not authorize, the records it binds and the open condition it leaves",
+      "passed": true,
+      "detail": "decisions 6; ids D-1, D-2, D-3, D-4, D-5, D-6; every required component present on every decision"
+    },
+    {
+      "id": "V-03",
+      "what": "the decisions recorded are the six the owner listed, none added and none dropped",
+      "passed": true,
+      "detail": "specimen acceptance; field seating; reference date; scoped clearing; retained classification and ceiling; single-specimen sufficiency"
+    },
+    {
+      "id": "V-04",
+      "what": "no gate-passed statement appears in any artifact of this order",
+      "passed": true,
+      "detail": "searched over the narrative, the three records and the manifest as they stood when the check ran: 0 occurrences of a Gate 5.3 pass assertion. This record's own check text quotes the search phrases, so a naive scan of the finished package matches them here and nowhere else; the only other matches are the negations 'not passed' and 'passed for none'"
+    },
+    {
+      "id": "V-05",
+      "what": "no finding class is created, authorized, emitted or implied",
+      "passed": true,
+      "detail": "searched over the narrative, the three records and the manifest as they stood when the check ran: 0 positive claims - no assertion that VIOLATION or PROBABLE_VIOLATION is authorized, available or created, and no assertion that a finding class exists. The only matches in the finished package are this check's own quoted search terms and the negations, of which there are 31 statements of non-authorization across the package"
+    },
+    {
+      "id": "V-06",
+      "what": "the ceiling is observation-class only and the recorded D3 classification is retained",
+      "passed": true,
+      "detail": "OBSERVATION_CLASS_ONLY recorded; D3 / REPORT_RELEVANT_BUT_NOT_DETECTABLE / observation / packet-ineligible retained; PROD-003's proposed PROBABLE_VIOLATION ceiling recorded as not authorized"
+    },
+    {
+      "id": "V-07",
+      "what": "the specimen digest in this order's records equals the register's recorded digest and the measured file",
+      "passed": true,
+      "detail": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F, 96393 bytes, 22 pages; recorded five times across the package; measured identical on the file outside this repository"
+    },
+    {
+      "id": "V-08",
+      "what": "the proposed register update leaves the row's disposition, disposition_state and blocker_type exactly unchanged",
+      "passed": true,
+      "detail": "UNRESOLVED / BLOCKED_MISSING_EVIDENCE / REPORT_EVENT_DATE_MAPPING_UNVERIFIED"
+    },
+    {
+      "id": "V-09",
+      "what": "the proposed update is additive and scoped: two free-text fields changed, each carrying its before value, and four fields added",
+      "passed": true,
+      "detail": "changed: missing_artifact, disposition_basis (appended). added: representation_cleared_for, cleared_by, clearing_scope_limit, not_cleared"
+    },
+    {
+      "id": "V-10",
+      "what": "the row values the proposal quotes are verbatim the values the register carries",
+      "passed": true,
+      "detail": "6 of 6 (disposition, disposition_basis, disposition_state, blocker_type, missing_artifact, clearing_authority) are exact quoted substrings of the CRP-LSRC-0354 row in rescreen_register.csv"
+    },
+    {
+      "id": "V-11",
+      "what": "the proposal names the canonical record and every mirror record that carries the same disposition",
+      "passed": true,
+      "detail": "canonical: rescreen_register.csv, line 355. mirrors: 5 - the register narrative sections 5/10/10.1; rescreen_provenance.json step_09; the PHASE5-001O ledger json and csv register_state; candidate_rule_units.json report_mapping_blocked_rows"
+    },
+    {
+      "id": "V-12",
+      "what": "no class is inferred and no row other than the one named is touched",
+      "passed": true,
+      "detail": "the row stays UNRESOLVED and stays counted in the 416; the six-row mapping group, CRP-LSRC-0194 and all 409 NO_DURABLE_RESCREEN_RECORD rows are recorded as not cleared"
+    },
+    {
+      "id": "V-13",
+      "what": "the proposal is recorded as not applied",
+      "passed": true,
+      "detail": "status.applied is false, and no register, provenance, ledger or crosswalk file was written by this order"
+    },
+    {
+      "id": "V-14",
+      "what": "Gate 5.2 is recorded as passed nowhere in this workspace",
+      "passed": true,
+      "detail": "0 occurrences of a Gate 5.2 pass claim across the PHASE5-001O records, the PROD-003 records and CRP_PHASE5_NEXT_GATE_RECONCILIATION.md; the recorded state is ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS"
+    },
+    {
+      "id": "V-15",
+      "what": "Gate 5.3 is not recorded as passed, and PROD-003's 'Phase 5.4 may therefore begin for this one unit only' is not adopted",
+      "passed": true,
+      "detail": "recorded state STILL_EVIDENCE_GATED; the gate is recorded as reached for one candidate and passed for none, and the narrative states the inference is not adopted"
+    },
+    {
+      "id": "V-16",
+      "what": "the gate reassessment below covers every stated criterion of Phase 5.3, the gate's own sentence, the prerequisite chain and Gate 5.2's four criteria",
+      "passed": true,
+      "detail": "4 Phase 5.3 bullets + the gate sentence + Gates 5.1 to 5.7 + 4 Gate 5.2 criteria, each with its state and its measurement"
+    },
+    {
+      "id": "V-17",
+      "what": "the custody correction record carries all four required parts plus the further discrepancies",
+      "passed": true,
+      "detail": "part 1 (the two unwritten artifacts and the measured cause), part 2 (4 changes with original and current hashes), part 3 (8 preserved records with digests), part 4 (6 manifest-less files with attribution and unknowns), and 3 further discrepancies re-verified"
+    },
+    {
+      "id": "V-18",
+      "what": "the two inventory artifacts PHASE5-001I-A asserted are absent, as recorded",
+      "passed": true,
+      "detail": "SOURCE_CAPTURES\\PHASE5-001I-A\\permitted_files.json: absent. SOURCE_CAPTURES\\PHASE5-001I-A\\implementation_manifest.json: absent"
+    },
+    {
+      "id": "V-19",
+      "what": "the builder's two write calls are unreachable, as recorded",
+      "passed": true,
+      "detail": "0 top-level inventory() calls in build_001i_a_governance_records.cjs; brace depth 1 from line 249 through line 312 and 0 at line 313; node --check exits 0"
+    },
+    {
+      "id": "V-20",
+      "what": "the six manifest-less files are listed in no custody manifest anywhere in the workspace",
+      "passed": true,
+      "detail": "12 manifests searched against 6 paths: 0 matches"
+    },
+    {
+      "id": "V-21",
+      "what": "the six files are byte-identical to the earliest recorded digest set for them",
+      "passed": true,
+      "detail": "6 of 6 match the digests in SOURCE_CAPTURES\\PHASE5-001I-B\\preserved_files_before.json; all six also appear unchanged in this order's baseline"
+    },
+    {
+      "id": "V-22",
+      "what": "PHASE5-001I-A's custody manifest re-measures clean",
+      "passed": true,
+      "detail": "51 entries, 0 differing, 0 missing"
+    },
+    {
+      "id": "V-23",
+      "what": "PROD-003's custody manifest re-measures with exactly three differences, each explained",
+      "passed": true,
+      "detail": "23 entries, 3 differing: the repaired narrative (A6F0FE43 to 1F556779) and its two refreshed outputs (narrative_check.json, input_verification.json)"
+    },
+    {
+      "id": "V-24",
+      "what": "PHASE5-001I-B's own package re-measures clean, so its records are intact inputs for this order",
+      "passed": true,
+      "detail": "8 of 8 (its 7 manifest entries plus the narrative digest its manifest records) match"
+    },
+    {
+      "id": "V-25",
+      "what": "preservation: no pre-existing file changed, none is missing, and nothing was added outside this order",
+      "passed": true,
+      "detail": "baseline 425 files; unchanged 425; changed 0; missing 0; added outside this order 0; added by this order 6 at the time of the final reading, with the seventh being this record"
+    },
+    {
+      "id": "V-26",
+      "what": "this order's custody manifest lists every artifact that existed when it was written, with 0 mismatches on re-measure",
+      "passed": true,
+      "detail": "5 entries (narrative, three records, baseline), 0 mismatches, total 198529 bytes; the manifest records its own and this record's exclusion and why"
+    },
+    {
+      "id": "V-27",
+      "what": "the legacy corpus, both consumer specimens and the admitted corpus artifact are untouched",
+      "passed": true,
+      "detail": "34 of 34 admitted artifacts match; PR-01 and PR-02 match their recorded digests; the 461 corpus PDFs match 23627410 bytes exactly; rules.canada.ts measures 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF, 192432 bytes"
+    },
+    {
+      "id": "V-28",
+      "what": "every input digest this order records was measured, not remembered",
+      "passed": true,
+      "detail": "26 inputs measured and listed below; where an inherited record recorded a digest for the same file, the two agree except for the three changes recorded in the custody correction record"
+    },
+    {
+      "id": "V-29",
+      "what": "the narrative carries every required section",
+      "passed": true,
+      "detail": "the answer table plus sections 0 to 9 (decisions; what was done; the decisions in detail; the scoped disposition proposal; the gate reassessment; the custody correction; verification and preservation; the separated uncertainties; the gate status and next work order; boundaries)"
+    },
+    {
+      "id": "V-30",
+      "what": "the narrative states the ceiling, the classification, the specimen boundary and the exact gate status",
+      "passed": true,
+      "detail": "ceiling and classification recorded once each in the answer table and again in D-5; the specimen and its digest stated in D-1 and section 2; the gate table in section 8 gives each gate a state and a basis"
+    },
+    {
+      "id": "V-31",
+      "what": "no inherited file was changed, and no historical manifest was overwritten",
+      "passed": true,
+      "detail": "the preservation reading above; and all 12 manifests re-measure as their own orders left them"
+    },
+    {
+      "id": "V-32",
+      "what": "no forbidden operation was performed",
+      "passed": true,
+      "detail": "no deployment, upload, hosting, billing, authentication, external transmission, new legal research, consumer-report retrieval, OCR, application change or consumer-visible output; no inherited step re-run; no Git operation"
+    }
+  ],
+  "check_count": 32,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001I-C CHECKS PASSED",
+  "scope_note": "these checks verify this order's own artifacts, the inputs it relies on and its preservation. They are not an independent validation, they are not Gate 5.4 or Gate 5.6 evidence, and they pass no gate",
+  "gate_5_3_reassessment": {
+    "gate_text_quoted": "each proposed candidate has a verifiable report representation and exact location, or remains explicitly unresolved/excluded with a source-grounded reason. No rule enters certification merely because a field seems likely to exist. (CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, line 96)",
+    "phase_5_3_criteria": [
+      {
+        "criterion": "inventory the report formats and fields the future application is intended to support, not the old detector's field limitations",
+        "state": "UNMET",
+        "measurement": "one presentation is evidenced (PR-01) and one second specimen corroborates the field only (PR-02). No record in this workspace enumerates the formats and fields the application is intended to support, and owner decision D-6 keeps the single-specimen boundary"
+      },
+      {
+        "criterion": "for each candidate, map the exact displayed statement/date to the exact legal event; the legal source stays authoritative for law and report examples establish only representation and field mapping",
+        "state": "MET for the first limb of this candidate; the second limb is a permitted explicit unresolved item",
+        "measurement": "the printed Last Payment Date row inside a Collections contract debt record maps to the report-stated last-payment event on the debt, read as the collection-scoped fact collection.lastPaymentDate (D-2); location page 16 line 32 and page 17 line 5; the default-in-payment date has no located field, so the second limb stays unseated with that source-grounded reason"
+      },
+      {
+        "criterion": "establish whether the uploaded report can expose the decisive facts; a canonical parser field is not required where explicit report text maps deterministically; unresolved or ambiguous labels stay unresolved",
+        "state": "PARTIAL, within what the gate allows",
+        "measurement": "last-payment date and the reference date are demonstrated on this specimen; the default-in-payment date is not exposed; every other decisive fact belongs to other candidates and is not claimed here"
+      },
+      {
+        "criterion": "define a report-location locator that survives extraction, with raw and normalized value and a traceable normalization record",
+        "state": "MET for this candidate on this specimen",
+        "measurement": "page 16 line 32 inside record lines 8-38; page 17 line 5 inside record lines 39-11; the header label at line 1 of all 22 pages; raw 2021/02/01 and 2026/05/05 preserved beside their normalized forms in two independent records"
+      }
+    ],
+    "prerequisite_sequence": {
+      "rule_quoted": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. (build plan section 3, line 45)",
+      "gate_5_1": "MET_WITH_RECORDED_ADMINISTRATIVE_LIMITATIONS, by the PHASE5-001O owner amendment",
+      "gate_5_2": "INCOMPLETE. Recorded state ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS; the gate text itself unchanged by the PHASE5-001O amendments; no durable pass exists; criterion 2 unmet for 409 rows",
+      "gate_5_3": "OPEN. Reached for one candidate on one presentation and passed for none",
+      "gate_5_4_to_5_6": "NOT_STARTED. Phase 5.4 may not begin while Gate 5.3 is unpassed",
+      "gate_5_7": "NOT_REACHED. 0 admitted governed rules and 0 permitted findings"
+    },
+    "gate_5_2_criteria": [
+      {
+        "criterion": "all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable",
+        "state": "MET",
+        "measurement": "437 rows: 416 UNRESOLVED, 18 GAP, 3 REFUSAL = 437, each with a disposition_basis naming an existing file and section"
+      },
+      {
+        "criterion": "every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal",
+        "state": "UNMET for 409 of the 416",
+        "measurement": "6 rows carry concrete report-mapping tasks (CRP-LSRC-0354, 0422, 0423, 0424, 0425, 0427) and CRP-LSRC-0194 carries an owner-direction-closed representation task. The other 409 carry NO_DURABLE_RESCREEN_RECORD, whose recorded task is to record a durable per-ID rescreen disposition in an authorised batch: documentation work, neither a report-mapping task nor a recorded irreducible gap or refusal"
+      },
+      {
+        "criterion": "legal/source fields are accepted under PHASE5-001A, not re-litigated",
+        "state": "MET",
+        "measurement": "nothing in this order reopens a source, jurisdiction, effective-period or legal-test determination"
+      },
+      {
+        "criterion": "no batch is accepted based solely on an unverified completion summary",
+        "state": "MET",
+        "measurement": "PHASE5-001K re-derived its counts from the register file alone; PHASE5-001L, 001M, 001N and 001O each recorded their own verification"
+      }
+    ],
+    "verdict": "THE REPRESENTATION DECISION FOR THIS CANDIDATE IS COMPLETE; GATE 5.3 IS NOT PASSED AND STAYS OPEN. The three conditions PHASE5-001I-B recorded are answered in writing: the specimen boundary accepted (D-1, D-6), the printed-field seating determined with its divergence recorded (D-2), and the register disposition cleared for the demonstrated fields on this exact specimen (D-4). The gate is not passed because one Phase 5.3 criterion is unmet and the predecessor Gate 5.2 is incomplete. No gate-passed statement is issued, and none is issued by owner preference alone",
+    "the_minimal_next_action": "one owner-issued order that closes Gate 5.2's remaining acceptance work: a durable per-ID disposition or a recorded irreducible-gap/refusal determination for each of the 409 rows, a re-stated blocker for the seven evidence-route rows, and a criterion-by-criterion Gate 5.2 verdict record, with an owner amendment in the CRP_CORE_CONSTITUTION.md section 6.2 form wherever a recorded limitation is to satisfy a criterion. Only then the Gate 5.3 record for this candidate and the Gate 5.4 rule-record order",
+    "residual_rule_record_decisions_for_gate_5_4": [
+      "which field name the admitted rule record carries, per D-2, and whether the legacy required-field name is amended",
+      "the effective-period handling and the exact wording of the mandatory plain-English timing qualification",
+      "the anniversary-boundary and day-count conventions accepted as conventions only, per D-3",
+      "the exception determination, and whether the direct-report section 4 retention route is ever relied on",
+      "the ceiling field, carrying D-5's observation-class decision and the retained D3 classification",
+      "the immutable rule version string and the admission form itself, at Gate 5.7"
+    ],
+    "kept_separate_from_legal_corpus_acceptance": "the effective-period question, the exception determination and the calculation and reference-date conventions are recorded as rule-record and product uncertainties. They are not legal-corpus acceptance questions: CRP-LSRC-0354 stays owner-accepted legal authority and its source pin is unchanged"
+  },
+  "inputs_measured_before_writing": {
+    "note": "measured read-only by SHA-256 immediately before this order wrote anything; where an inherited record records a digest for the same file, agreement is noted in the custody correction record and any difference is explained there",
+    "rows": [
+      { "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "bytes": 29858, "sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0" },
+      { "path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "bytes": 35843, "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1" },
+      { "path": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md", "bytes": 57342, "sha256": "B7A973C3DE5D0C34212F1ACC548B830E1617165A83797A3843AC036C3987AD55" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv", "bytes": 616237, "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json", "bytes": 374808, "sha256": "D3D4E3DAA1BB37DF01037814139AE21022746E1730D897A5D6E6F6A4325364C3" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json", "bytes": 9819, "sha256": "E5FF906A3CB375EA8DDAC7D54C980F67C8B172B8C952A9A6D4129844EDB5A63F" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json", "bytes": 2475693, "sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.csv", "bytes": 408839, "sha256": "C6819EBA26352E66540764066552CA801EC8AA41B657977F44CBDA4F705597D7" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json", "bytes": 22891, "sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\candidate_rule_units.json", "bytes": 64142, "sha256": "FCDFCE1E1B2E82ED3648889F387816944B9337A6436BB58066B4B2E3451DDFA4" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json", "bytes": 9618, "sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\gate_prerequisites.json", "bytes": 3975, "sha256": "7C39152FAABE36C3BFC6D76564F19449D8E867D600A5EDD0CAD71AF9A5B38258" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json", "bytes": 6300, "sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\preserved_files_before.json", "bytes": 72708, "sha256": "24605499EB12F7A94F447C6D7BE2D338CE508856D3B15883E1596CE155553C2D" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\validation_results.json", "bytes": 11154, "sha256": "361B9ACB2D1154B113E83648E439B8AD773D32141DF4C62A8C831E67A03BB248" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json", "bytes": 8833, "sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3" },
+      { "path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json", "bytes": 4216, "sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json", "bytes": 11375, "sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\gate_sequence_assessment.json", "bytes": 5156, "sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json", "bytes": 4799, "sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs", "bytes": 18548, "sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_custody.ps1", "bytes": 13197, "sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json", "bytes": 12849, "sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json", "bytes": 77796, "sha256": "2055CFD0CFF6473302F16097F9691C642C9E5B60E0127CB882ACE88D6E9FC104" },
+      { "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json", "bytes": 27877, "sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF" },
+      { "path": "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md", "bytes": 38888, "sha256": "D15540598B3E32D235BA10F4B0064D07CBED52AA716A860346D211D1F2CDAFE5" }
+    ],
+    "row_count": 26
+  },
+  "preservation_and_custody": {
+    "baseline": {
+      "artifact": "SOURCE_CAPTURES\\PHASE5-001I-C\\preserved_files_before.json",
+      "bytes": 90405,
+      "sha256": "D791C0DF197300868AC2E96929B1663BC3D01A0407DDF8D3AC309444F5275FFB",
+      "files": 425,
+      "captured": "before this order wrote anything",
+      "scope": "every file under the workspace root, hidden files and the consumer-wizard git internals included, excluding this order's own package and narrative",
+      "comparability": "the same scope PHASE5-001I-B used, so the two baselines reconcile: 417 + PHASE5-001I-B's own 8 outputs = 425"
+    },
+    "final_reading": {
+      "taken": "after the narrative, the three records and the custody manifest existed, and before this record was written",
+      "baseline_files": 425,
+      "unchanged": 425,
+      "changed": [],
+      "missing": [],
+      "added_by_this_order": 6,
+      "added_outside_this_order": [],
+      "files_added_by_this_order": [
+        "CRP_PHASE5_001I_C_OWNER_REPRESENTATION_DECISIONS.md",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\preserved_files_before.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\proposed_register_update.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\custody_reconciliation_001i_a.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\file_custody_manifest.json"
+      ],
+      "the_seventh_file": "this record, written after the reading above. It is the only file of this order the reading does not count; the package is seven artifacts plus the narrative, and the seventh file is the verification record itself",
+      "verdict": "PRESERVATION HELD - 0 pre-existing files changed, 0 missing, 0 added outside this order"
+    },
+    "custody_manifest_re_measured": {
+      "artifact": "SOURCE_CAPTURES\\PHASE5-001I-C\\file_custody_manifest.json",
+      "bytes": 4074,
+      "sha256": "7CB98A6D761BF8D30F8A72873811D5B247B06F7A43B01998DD5CA4750E6D0A21",
+      "entries": 5,
+      "total_bytes_recorded": 198529,
+      "differing": 0,
+      "reading": "all five entries re-measured byte-identical to their recorded digests"
+    },
+    "inherited_manifests_re_measured": {
+      "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json": "51 entries, 0 differing, 0 missing",
+      "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json": "23 entries, 3 differing - the repaired narrative and its two refreshed outputs, each explained in the custody correction record",
+      "SOURCE_CAPTURES\\PHASE5-001I-B\\file_custody_manifest.json": "7 entries, 0 differing"
+    },
+    "legacy_corpus_readings": {
+      "admitted_artifacts": "34 expected, 34 matching, 0 mismatches",
+      "consumer_specimens": [
+        { "presentation_id": "PR-01", "artifact_id": "LEG-CONSUMER-EQ-CA", "bytes": 96393, "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F", "matches_recorded": true },
+        { "presentation_id": "PR-02", "artifact_id": "LEG-CONSUMER-TU-CA", "bytes": 362891, "sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4", "matches_recorded": true }
+      ],
+      "admitted_corpus_artifact": { "path": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts", "bytes": 192432, "sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF", "matches_recorded": true },
+      "generated_fixture_corpus": { "pdf_files": 461, "pdf_bytes": 23627410, "matches_recorded": true },
+      "naive_total_including_the_corpus_manifest": { "files": 462, "bytes": 23639181, "note": "the difference is the corpus directory's own MANIFEST.json, 11771 bytes, last written 2026-09-26, before any CRP order. Recorded, not corrected" },
+      "zero_files_created_deleted_or_modified": true
+    },
+    "self_reference_note": "this record cannot carry its own digest. The custody manifest was written before it and therefore does not list it; that exclusion, and the exclusion of the manifest's own digest, are stated in the manifest's exclusions field and in section 6 of the narrative"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not gate evidence for any gate, and it is not an independent validation",
+    "it does not pass, advance, soften or waive any gate",
+    "it does not admit a rule, create coverage, create a candidate or authorize a finding class",
+    "it does not authorize the disposition update, which remains a proposal",
+    "it does not authorize any change to an inherited artifact, and it repairs nothing",
+    "it does not convert a recorded administrative limitation into a criterion satisfaction"
+  ],
+  "verdict_summary": "INPUTS VERIFIED, PRESERVATION HELD, GATE STATE REASSESSED AND LEFT OPEN: 32 checks, 0 failures",
+  "created_by": "PHASE5-001I-C"
+}

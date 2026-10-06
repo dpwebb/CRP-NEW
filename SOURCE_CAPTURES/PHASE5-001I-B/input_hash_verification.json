@@ -1,0 +1,1135 @@
+{
+  "artifact": "input_hash_verification.json",
+  "work_order": "PHASE5-001I-B",
+  "created_utc": "2026-09-30",
+  "purpose": "verify, from the files themselves, every governing document, register, record and legacy artifact this order's rule-record draft relies on, by comparing each measured SHA-256 against the digest an inherited record recorded, and by re-reading each quoted clause at its recorded line",
+  "method": "SHA-256 of every file as it stands now, compared against the recorded digest in the named record, plus one line-exact re-read per quoted clause; no file is written, moved or copied, and the legacy corpus is read read-only in place",
+  "input_hash_rows": 97,
+  "input_hashes_matching": 82,
+  "input_hash_mismatches": [
+    {
+      "id": "V-11",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "recorded_sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "expected_difference": true,
+      "expected_difference_basis": "the owner-authorized carve-out amendment recorded by PHASE5-001I-A (amendment_application_result.json digest_before → digest_after)"
+    },
+    {
+      "id": "V-24",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "recorded_sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "expected_difference": true,
+      "expected_difference_basis": "the owner-authorized carve-out amendment recorded by PHASE5-001I-A (amendment_application_result.json digest_before → digest_after)"
+    }
+  ],
+  "quoted_clause_rechecks": 12,
+  "quoted_clause_failures": [],
+  "expected_differences_explained": [
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md differs from the digest PROD-002 recorded (C80183314C…) because PHASE5-001I-A applied the owner-authorized carve-out amendment, whose own application record states the same pair (digest_before C80183314C…, digest_after 54FCECE0…). The difference is the recorded amendment, not drift.",
+    "SOURCE_CAPTURES\\PROD-003\\input_verification.json differs from the digest PHASE5-001I-A's baseline recorded (A34943997A…) because PHASE5-001I-A re-ran PROD-003's own input verification as a regression check. The file is PROD-003's artifact; its current content, including its non-passing check, is recorded here rather than hidden.",
+    "SOURCE_CAPTURES\\PROD-003\\narrative_check.json differs from the digest PHASE5-001I-A's baseline recorded (BC1B3FE811…) for the same reason. Its verdict is still NARRATIVE CHECKS PASSED."
+  ],
+  "verdict": "ALL PHASE5-001I-B INPUT HASHES AND QUOTED CLAUSES VERIFIED - every measured digest matches the digest an inherited record recorded, except the two rows that differ on the one change an inherited record already carries as its own recorded amendment",
+  "rows": [
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-01",
+      "relative_path": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-02",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-03",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001N\\relation_determinations.json",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-04",
+      "relative_path": "CRP_JURISDICTION_ENUMERATION.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-05",
+      "relative_path": "JURISDICTION_CONTRACT.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-06",
+      "relative_path": "CRP_CORE_CONSTITUTION.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-07",
+      "relative_path": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-08",
+      "relative_path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-09",
+      "relative_path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-10",
+      "relative_path": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-11",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "matches": false,
+      "expected_difference": true,
+      "expected_difference_basis": "the owner-authorized carve-out amendment recorded by PHASE5-001I-A (amendment_application_result.json digest_before → digest_after)"
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-12",
+      "relative_path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "matches": true
+    },
+    {
+      "group": "inherited_governing_inputs",
+      "id": "V-13",
+      "relative_path": "consumer-wizard\\dist\\app.js",
+      "role": "governing input PROD-002 recorded",
+      "recorded_sha256": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json prod002_recorded_inputs",
+      "measured_sha256": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-14",
+      "relative_path": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-15",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-16",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001N\\relation_determinations.json",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-17",
+      "relative_path": "CRP_JURISDICTION_ENUMERATION.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-18",
+      "relative_path": "JURISDICTION_CONTRACT.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-19",
+      "relative_path": "CRP_CORE_CONSTITUTION.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-20",
+      "relative_path": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-21",
+      "relative_path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-22",
+      "relative_path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-23",
+      "relative_path": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-24",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "matches": false,
+      "expected_difference": true,
+      "expected_difference_basis": "the owner-authorized carve-out amendment recorded by PHASE5-001I-A (amendment_application_result.json digest_before → digest_after)"
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-25",
+      "relative_path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "matches": true
+    },
+    {
+      "group": "prod003_recorded_inputs",
+      "id": "V-26",
+      "relative_path": "consumer-wizard\\dist\\app.js",
+      "role": "input PROD-003 recorded at its own date",
+      "recorded_sha256": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json input_digests",
+      "measured_sha256": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "matches": true
+    },
+    {
+      "group": "changed_by_001i_a",
+      "id": "V-27",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "role": "pre-existing file PHASE5-001I-A changed — state as it recorded it",
+      "recorded_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json files_changed[].after",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "matches": true
+    },
+    {
+      "group": "changed_by_001i_a",
+      "id": "V-28",
+      "relative_path": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+      "role": "pre-existing file PHASE5-001I-A changed — state as it recorded it",
+      "recorded_sha256": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json files_changed[].after",
+      "measured_sha256": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "matches": true
+    },
+    {
+      "group": "changed_by_001i_a",
+      "id": "V-29",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "role": "pre-existing file PHASE5-001I-A changed — state as it recorded it",
+      "recorded_sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json files_changed[].after",
+      "measured_sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "matches": true
+    },
+    {
+      "group": "changed_by_001i_a",
+      "id": "V-30",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "role": "pre-existing file PHASE5-001I-A changed — state as it recorded it",
+      "recorded_sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json files_changed[].after",
+      "measured_sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-31",
+      "relative_path": "CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "52F6E5207AB67040F03AECC8B436157242574486B8A93FBC84EFA6A3D4FA8442",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "52F6E5207AB67040F03AECC8B436157242574486B8A93FBC84EFA6A3D4FA8442",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-32",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-33",
+      "relative_path": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-34",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\constants.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-35",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\document-model.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "9B58638B08B1A0EA92DF6DAB4BA8BF7AD83D801AE2D31CC94A72168E83E3EC86",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "9B58638B08B1A0EA92DF6DAB4BA8BF7AD83D801AE2D31CC94A72168E83E3EC86",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-36",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\extraction.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-37",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\locators.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-38",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\presentation-contract.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-39",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\README.md",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "09DEACD29355DD9A9F3D39B34F94738889249C701D5002F9168476274D0939D5",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "09DEACD29355DD9A9F3D39B34F94738889249C701D5002F9168476274D0939D5",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-40",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\run-internal-validation.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-41",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\six-year-evaluator.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-42",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\synthetic\\make-synthetic-pdf.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "29C7CF8F90AC55F7C21FE452E72F709595716C2FC475F9F4EF8BE72E8EC2BEA2",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "29C7CF8F90AC55F7C21FE452E72F709595716C2FC475F9F4EF8BE72E8EC2BEA2",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-43",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\fixtures.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "8DC71C793AF15D08BAD082E0757FEF3731EB184DB41EE3A19BAEF03DCDA56551",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "8DC71C793AF15D08BAD082E0757FEF3731EB184DB41EE3A19BAEF03DCDA56551",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-44",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\harness.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-45",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\run-tests.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1B057448BAE8FBD2E1A47A1F2E9CB4E26AD31FB84C5E1C6D5EF80C0790E7E2F2",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1B057448BAE8FBD2E1A47A1F2E9CB4E26AD31FB84C5E1C6D5EF80C0790E7E2F2",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-46",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\a-pinned.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "77B5B3EFE981DDC52AD69E55A9587DCE85A5681783E2107A517A39C441537CEA",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "77B5B3EFE981DDC52AD69E55A9587DCE85A5681783E2107A517A39C441537CEA",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-47",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\b-arithmetic.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "D4202FBA2C21175A0AE283C2A206161B0740DC8CFE64757AFA88AA4D42DCCCEB",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "D4202FBA2C21175A0AE283C2A206161B0740DC8CFE64757AFA88AA4D42DCCCEB",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-48",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\c-paths.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "4FE2BF3E9C70CA39F32313F96785B11BA306F4ED6D0C50302E4FDE9E286CE858",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "4FE2BF3E9C70CA39F32313F96785B11BA306F4ED6D0C50302E4FDE9E286CE858",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-49",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\d-records.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "9E93B47C2FB676DCE819F893350209E18B8161468C95A6FB3135E8A2466D0D3F",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "9E93B47C2FB676DCE819F893350209E18B8161468C95A6FB3135E8A2466D0D3F",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-50",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\e-refusals.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "17C58C42BCC5D1181208A32F053846677C7F38738B732D715C4EC5AA47CE59AE",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "17C58C42BCC5D1181208A32F053846677C7F38738B732D715C4EC5AA47CE59AE",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-51",
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\f-state.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "0C514E09AFF7350E44596FA273CB7A3330D6CDFD85F90A20B0E225905AA219B1",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "0C514E09AFF7350E44596FA273CB7A3330D6CDFD85F90A20B0E225905AA219B1",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-52",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\amendment_application_result.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "CD459D24F10D5CA9B39F0CE3CF5C7B2C3BDAC3AA6902CD27DCAE0AC8F1030C5D",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "CD459D24F10D5CA9B39F0CE3CF5C7B2C3BDAC3AA6902CD27DCAE0AC8F1030C5D",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-53",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\amendment_text.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1916F6A2D8AEF9499A480BF7739B6EC92518028F91BB5A34190CB5A28C395FB5",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1916F6A2D8AEF9499A480BF7739B6EC92518028F91BB5A34190CB5A28C395FB5",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-54",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\apply_001i_a_amendments.js",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "271AB16EB86558E474479C0C4BCF5BE6060E3BCEC2800E3B5BE8C0741E0EFF7E",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "271AB16EB86558E474479C0C4BCF5BE6060E3BCEC2800E3B5BE8C0741E0EFF7E",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-55",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_evaluation_record.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "853E4AED7719E97DF868DF08EF229A07597BB2BA51889583414FD8F47BE985FD",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "853E4AED7719E97DF868DF08EF229A07597BB2BA51889583414FD8F47BE985FD",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-56",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_extraction_record.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1B398520D0CFF58C6F3C06E4BDD8CCA9C371E7C48A954934FC7ACB4DF68DD33B",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1B398520D0CFF58C6F3C06E4BDD8CCA9C371E7C48A954934FC7ACB4DF68DD33B",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-57",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-58",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\capture_001i_a_baseline.ps1",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "1EF0A0667B22A8E24CB503AD934ABFF1DDF72D8EDF04340FC803DE5DD05B63A3",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "1EF0A0667B22A8E24CB503AD934ABFF1DDF72D8EDF04340FC803DE5DD05B63A3",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-59",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\check_001i_a_narrative.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "44782C3541B9DB0739A0C471FFD61D95F857210F27EB68CACDE1A039DDA7C921",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "44782C3541B9DB0739A0C471FFD61D95F857210F27EB68CACDE1A039DDA7C921",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-60",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-61",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\evaluation_results.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "8A82C16EE52ACEFFF33F2A41717984051A869ED0B2B86DA796819B22D31E6E9A",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "8A82C16EE52ACEFFF33F2A41717984051A869ED0B2B86DA796819B22D31E6E9A",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-62",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-63",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\gate_sequence_assessment.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-64",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\identifier_scan.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "19C7C3F51C81346975008B6AAD2016385BCF93774208A4471C2247D722EABBD2",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "19C7C3F51C81346975008B6AAD2016385BCF93774208A4471C2247D722EABBD2",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-65",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "E98459E9E70147C7DE7876874EAC55ABAF54DC7290BA967F53C7907EA5ACDB8D",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "E98459E9E70147C7DE7876874EAC55ABAF54DC7290BA967F53C7907EA5ACDB8D",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-66",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\input_verification.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "F6BF0C3DB61ADA103F7296D2213A48A2859E0D220C5F2151E0B030FAF63F7741",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "F6BF0C3DB61ADA103F7296D2213A48A2859E0D220C5F2151E0B030FAF63F7741",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-67",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\narrative_check.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "F415096192A18251FB97F6CD887CC556C62F1945895BB9A3440EC55686972800",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "F415096192A18251FB97F6CD887CC556C62F1945895BB9A3440EC55686972800",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-68",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\presentation_boundary.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "8392E4CEDA0B337E096D26EA823C46DB1826FEAB6D2CD1E46F6A030653F06849",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "8392E4CEDA0B337E096D26EA823C46DB1826FEAB6D2CD1E46F6A030653F06849",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-69",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "DCC6720E4EC70372522DA81AD48BCD5B870C6EABFB0CAFA1A6AA1AAA149471F9",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "DCC6720E4EC70372522DA81AD48BCD5B870C6EABFB0CAFA1A6AA1AAA149471F9",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-70",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_001i_a_section_map.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "9FC8E8CC5AC42898E6683ACD91BE881BAD183E66C9B3BEA9E386A08F200A21F5",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "9FC8E8CC5AC42898E6683ACD91BE881BAD183E66C9B3BEA9E386A08F200A21F5",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-71",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_001i_a_specimen_lines.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "EEB858737D6DB58BC215BDCE72B14A0408578BC22B4EB07EBC4A2F28CDE5CA1E",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "EEB858737D6DB58BC215BDCE72B14A0408578BC22B4EB07EBC4A2F28CDE5CA1E",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-72",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_specimen_lines.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "E71154E0FD007A63E5CDAF0EA83035A4C424241B39A89B0DB3483D90BA04CCA8",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "E71154E0FD007A63E5CDAF0EA83035A4C424241B39A89B0DB3483D90BA04CCA8",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-73",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_specimen_section_map.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "0A8AF5A54E72C8951D669A93ACC57B3AA869027B5C4DA311F282978938B919ED",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "0A8AF5A54E72C8951D669A93ACC57B3AA869027B5C4DA311F282978938B919ED",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-74",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\run_001i_a_all.ps1",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "14902C4B94BF18C4373BBE71B4D74847080A3764D2A0D7A315410793C0A12C8F",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "14902C4B94BF18C4373BBE71B4D74847080A3764D2A0D7A315410793C0A12C8F",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-75",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\scan_001i_a_identifiers.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "F1F281D15A36133AB9389BFD4DC52A02D44B74C0BC462860CEAFC794AFCE41B1",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "F1F281D15A36133AB9389BFD4DC52A02D44B74C0BC462860CEAFC794AFCE41B1",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-76",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-77",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_custody.ps1",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-78",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_inherited_chain.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "B6406BE43094F3EEA202CB0D6225A8FD3EA853F57442B5F2FCD87A8BC2C548FC",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "B6406BE43094F3EEA202CB0D6225A8FD3EA853F57442B5F2FCD87A8BC2C548FC",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-79",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_inputs.cjs",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "46655949366ED020AE98892E19CE15B6AD47C520A6EA5EF52349DBA9EEF81AEF",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "46655949366ED020AE98892E19CE15B6AD47C520A6EA5EF52349DBA9EEF81AEF",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-80",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "matches": true
+    },
+    {
+      "group": "phase5_001i_a_artifacts",
+      "id": "V-81",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "role": "PHASE5-001I-A artifact or inherited document in its custody manifest",
+      "recorded_sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "measured_sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "matches": true
+    },
+    {
+      "group": "legacy_accepted_corpus",
+      "id": "V-82",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "role": "admitted legacy legal corpus artifact carrying s. 10(3)(c)",
+      "recorded_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json legacy_evidence_read_here",
+      "measured_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "matches": true
+    },
+    {
+      "group": "legacy_accepted_corpus",
+      "id": "V-83",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\fixtures\\reports\\equifax-david-webb.pdf",
+      "role": "PR-01, the evidenced presentation",
+      "recorded_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json consumer_specimens",
+      "measured_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+      "matches": true
+    },
+    {
+      "group": "legacy_accepted_corpus",
+      "id": "V-84",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\fixtures\\reports\\transunion-david-webb.pdf",
+      "role": "PR-02, the secondary specimen",
+      "recorded_sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\input_verification.json consumer_specimens",
+      "measured_sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+      "matches": true
+    },
+    {
+      "group": "legacy_accepted_corpus",
+      "id": "V-85",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\CRP_CANADA_GOVERNING_BUILD_CONTRACT.md",
+      "role": "legacy governance contract defining D3 and the level-to-conclusion binding",
+      "recorded_sha256": null,
+      "recorded_in": "no recorded digest in the inherited records — measured and recorded here",
+      "measured_sha256": "50256199767A020333A48C0A816A8E7301FA705107048702CD18B07144BEE6E6",
+      "matches": null
+    },
+    {
+      "group": "phase5_001o_records",
+      "id": "V-86",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001O\\admitted_artifacts.json",
+      "role": "the legacy-corpus admission inventory",
+      "recorded_sha256": null,
+      "recorded_in": "no recorded digest in the inherited records — measured and recorded here",
+      "measured_sha256": "36A0D5D8C3FB5A3AA0F2140F3829C693908EBA1330FEBF9408F5E51091DBC5D9",
+      "matches": null
+    },
+    {
+      "group": "phase5_001o_records",
+      "id": "V-87",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json",
+      "role": "the coverage ledger row CRP-LSRC-0354",
+      "recorded_sha256": null,
+      "recorded_in": "no recorded digest in the inherited records — measured and recorded here",
+      "measured_sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+      "matches": null
+    },
+    {
+      "group": "phase5_001o_records",
+      "id": "V-88",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json",
+      "role": "the recorded gate state",
+      "recorded_sha256": null,
+      "recorded_in": "no recorded digest in the inherited records — measured and recorded here",
+      "measured_sha256": "E5FF906A3CB375EA8DDAC7D54C980F67C8B172B8C952A9A6D4129844EDB5A63F",
+      "matches": null
+    },
+    {
+      "group": "prod003_records_not_in_its_input_digests",
+      "id": "V-89",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+      "role": "the selected unit and its ceiling",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+      "matches": null
+    },
+    {
+      "group": "prod003_records_not_in_its_input_digests",
+      "id": "V-90",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+      "role": "the presentation register, its field records and its date meanings",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+      "matches": null
+    },
+    {
+      "group": "prod003_records_not_in_its_input_digests",
+      "id": "V-91",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\extraction_evidence.json",
+      "role": "the named extraction method and its measured values",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "C8362735BEAA868CF9728DD3D2B82FF6353644D0A75F9A7B30D9CEE91B3C296F",
+      "matches": null
+    },
+    {
+      "group": "prod003_records_not_in_its_input_digests",
+      "id": "V-92",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json",
+      "role": "PROD-003's own custody manifest, unmodified by any later order",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1",
+      "matches": null
+    },
+    {
+      "group": "prod003_records_not_in_its_input_digests",
+      "id": "V-93",
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\preservation_and_change_record.json",
+      "role": "PROD-003's own preservation record, unmodified by any later order",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "D4CAF19CF0F269C9695F1811320FBB98B1EF1F7E38F322CD1A7C0F410EFF9914",
+      "matches": null
+    },
+    {
+      "group": "phase5_001i_a_records",
+      "id": "V-94",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "role": "PHASE5-001I-A's custody manifest of its own artifacts",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+      "matches": null
+    },
+    {
+      "group": "phase5_001i_a_records",
+      "id": "V-95",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "role": "PHASE5-001I-A's preservation and change record",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "DCC6720E4EC70372522DA81AD48BCD5B870C6EABFB0CAFA1A6AA1AAA149471F9",
+      "matches": null
+    },
+    {
+      "group": "phase5_001i_a_records",
+      "id": "V-96",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+      "role": "PHASE5-001I-A's 15-step chain result",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF",
+      "matches": null
+    },
+    {
+      "group": "phase5_001i_a_records",
+      "id": "V-97",
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\identifier_scan.json",
+      "role": "PHASE5-001I-A's identifier scan",
+      "recorded_sha256": null,
+      "recorded_in": "measured and recorded here",
+      "measured_sha256": "19C7C3F51C81346975008B6AAD2016385BCF93774208A4471C2247D722EABBD2",
+      "matches": null
+    }
+  ],
+  "clause_rows": [
+    {
+      "id": "Q-1",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": 45,
+      "recorded_in": "gate_sequence_assessment.json P-1",
+      "quoted_recorded": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "quoted_measured_now": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "matches": true
+    },
+    {
+      "id": "Q-2",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": 143,
+      "recorded_in": "gate_sequence_assessment.json P-2",
+      "quoted_recorded": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+      "quoted_measured_now": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+      "matches": true
+    },
+    {
+      "id": "Q-3",
+      "relative_path": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+      "line": 552,
+      "recorded_in": "gate_sequence_assessment.json P-3",
+      "quoted_recorded": "**Milestone M-1 — Gate 5.3 passes for the single selected unit** (owner decision PROD-003: the unit is no longer required to be `US-NY`). It is reached when the report-representation",
+      "quoted_measured_now": "**Milestone M-1 — Gate 5.3 passes for the single selected unit** (owner decision PROD-003: the unit is no longer required to be `US-NY`). It is reached when the report-representation",
+      "matches": true
+    },
+    {
+      "id": "Q-4",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "line": 2443,
+      "recorded_in": "classification_record.json quoted_fragments.classification",
+      "quoted_recorded": "classification: \"REPORT_RELEVANT_BUT_NOT_DETECTABLE\",",
+      "quoted_measured_now": "classification: \"REPORT_RELEVANT_BUT_NOT_DETECTABLE\",",
+      "matches": true
+    },
+    {
+      "id": "Q-5",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "line": 2448,
+      "recorded_in": "classification_record.json quoted_fragments.determinability",
+      "quoted_recorded": "`be established from an authorized report. The row stands at D3, ` +",
+      "quoted_measured_now": "`be established from an authorized report. The row stands at D3, ` +",
+      "matches": true
+    },
+    {
+      "id": "Q-6",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "line": 2449,
+      "recorded_in": "classification_record.json quoted_fragments.permitted_conclusion",
+      "quoted_recorded": "`permittedConclusion \"observation\", packet-ineligible, and its ledger entry STILL records ` +",
+      "quoted_measured_now": "`permittedConclusion \"observation\", packet-ineligible, and its ledger entry STILL records ` +",
+      "matches": true
+    },
+    {
+      "id": "Q-7",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\CRP_CANADA_GOVERNING_BUILD_CONTRACT.md",
+      "line": 130,
+      "recorded_in": "classification_record.json legacy_binding_rule.level_definition",
+      "quoted_recorded": "| **D3** | the text states a report-detectable obligation, but establishing it needs an essential fact from outside the report, so the report alone is not sufficient |",
+      "quoted_measured_now": "| **D3** | the text states a report-detectable obligation, but establishing it needs an essential fact from outside the report, so the report alone is not sufficient |",
+      "matches": true
+    },
+    {
+      "id": "Q-8",
+      "relative_path": "C:\\Users\\webbd\\crp-credit-app\\CRP_CANADA_GOVERNING_BUILD_CONTRACT.md",
+      "line": 144,
+      "recorded_in": "classification_record.json legacy_binding_rule.binding",
+      "quoted_recorded": "**3.4** **The only binding between level and conclusion** is: D0–D3 → `observation`, D4 →",
+      "quoted_measured_now": "**3.4** **The only binding between level and conclusion** is: D0–D3 → `observation`, D4 →",
+      "matches": true
+    },
+    {
+      "id": "Q-9",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": null,
+      "recorded_in": "amendment_text.json A-1",
+      "quoted_recorded": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as c",
+      "quoted_measured_now": "the carve-out opening line and its closing limit both present",
+      "matches": true
+    },
+    {
+      "id": "Q-10",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": null,
+      "recorded_in": "amendment_text.json A-2",
+      "quoted_recorded": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or imple",
+      "quoted_measured_now": "the qualified item 5 replacement is present verbatim",
+      "matches": true
+    },
+    {
+      "id": "Q-11",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": null,
+      "recorded_in": "amendment_text.json history_row_appended",
+      "quoted_recorded": "the PHASE5-001I-A amendment history row",
+      "quoted_measured_now": "the amendment history row is present",
+      "matches": true
+    },
+    {
+      "id": "Q-12",
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "line": null,
+      "recorded_in": "build plan section 3 Phase 5.3 (Gate 5.3)",
+      "quoted_recorded": "**Gate 5.3:** each proposed candidate has a verifiable report representation and exact location, or remains explicitly unresolved/excluded with a source-grounded reason.",
+      "quoted_measured_now": "the gate text this assessment is drafted against is present verbatim",
+      "matches": true
+    }
+  ],
+  "created_by": "PHASE5-001I-B",
+  "expected_difference_count": 2,
+  "unexplained_mismatches": [],
+  "missing_rows": [],
+  "counts": {
+    "input_hash_rows": 97,
+    "input_hashes_matching": 82,
+    "recorded_differences_expected_and_explained": 2,
+    "unexplained_mismatches": 0,
+    "quoted_clause_rechecks": 12,
+    "quoted_clause_failures": 0
+  }
+}

@@ -1,0 +1,33 @@
+# OWNER-ACCEPT-008 — Production blockers and substantive assessment continuation
+
+Issued October 2, 2026, America/Halifax. Delegated-owner continuation authorized by the human instruction to review and continue. Workspace C:\CRP-NEW. Current independently observed staging: crp-wizard-8f43270bdcad6d24. Preserve prior work; no restart. Production unchanged; Stripe test mode.
+
+## Priority 1 — Correct remaining measured semantic defects
+
+1. content-assessments.cjs NOT_DETECTED currently says "This report does not print [label]" before warning that keyword absence proves nothing. Replace that assertion with "We did not detect [label] in the information we could read." UNRESOLVED must likewise distinguish failure to read from absence. Distinguish a found word in boilerplate from an actual account/record marker; retain locations, not unsupported semantic certainty.
+2. Medical dependencies still conflate section 1681c(a)(6)'s furnisher-identity/recipient restrictions with section 1681b(g)'s separate medical-information furnishing requirements. Do not paraphrase them as a universal consent-only rule. Separate exact applicable provisions and their conditions, exceptions and channel. Use accepted corpus propositions; do not infer that every medical entry is prohibited or exempt. Consumer-facing explanation must not assert more than the particular provision supports. Dispute initiation is not automatically proof of the notification required by section 1681c(f); a security freeze is a disclosure restriction, not automatically a mandatory printed notation. Preserve detected information without attaching inaccurate obligations.
+3. New York section 380-j(f)(1) expressly references paragraph (2); paragraph (2) contains credit, life-insurance and employment-use exceptions. Source checked: https://www.nysenate.gov/legislation/laws/GBS/380-J. The prior "no cross-referenced exemption" determination is incorrect for these retention rules. Model relevant accepted qualifiers and cross-references for every activated rule, not only its isolated limb. Do not infer use from account balances. Unresolved applicability must not produce a confirmed violation. Maintain useful arithmetic observations. Do not suppress the entire report or automatically manufacture probable findings. Record the specific corrections without reopening accepted-corpus provenance.
+
+## Priority 2 — Implement both mandatory production blockers
+
+Read CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md section 8.1, CRP_OWNER_PRODUCTION_BLOCKERS_001_AMENDMENT.md and CRP_OWNER_FAILURE_TO_DETECT_MITIGATION_DIRECTION.md. BLOCKER-FDT-001 and BLOCKER-CLARIFY-001 are OPEN mandatory launch requirements. Earlier secondary-priority wording is not an exemption.
+
+Implement bounded equivalent-label/code recognition, contextual structure, page/section completeness checks, targeted local recovery, same-record corroboration, privacy-safe diagnostics and representative missed-fact/incorrect-reading benchmarks. Prioritize facts needed by actual checks; reuse local tools. Record pass criteria before held-out evaluation. Preserve raw evidence and contradictions. Keyword failure cannot establish absence.
+
+Implement conditional "A quick clarification": no more than two simple consequential questions after automatic recovery; source excerpt where appropriate; brief benefit; I don't know and Skip; other checks continue. Reliable inputs bypass questions. Store original extraction, assisted reading and supplemental consumer assertions separately with provenance and account isolation. No legal/code interpretation burden on the consumer. Off-report assertions do not silently become bureau facts or escalate findings. Preserve existing higher-ranked report-fact and classification requirements; implement workflow without an unquoted legal-evidence amendment.
+
+Add both named blockers to the production release checker. Missing/failed/stale or mismatched-release evidence must block production readiness. Bind acceptance to content/release identity without circular package/evidence hashes. Prove missing evidence, altered identity and failed tests remain blocking. Documentation or aggregate assertions cannot clear them.
+
+## Priority 3 — Implement content predicates, not keyword counts
+
+Do not infer that the entire accepted corpus has only report-observable retention rules from these three corrected examples. Review actual propositions in the mapped report-observable rows, selecting broad implementable patterns. For example, recorded New York prohibited content is a candidate for scoped assessment when its actual definition, jurisdiction and legal qualifications are met; do not infer medical debt from a provider name alone or bypass recorded preemption issues. Other content propositions need their own required facts and conditions. No new legal invention or broad source campaign.
+
+Implement extraction, evaluation and source-linked plain-language outcomes in the same batch for independently workable content groups. Duplicate source rows are not independent checks. If a proposition depends on off-report events, name those events and retain qualified information rather than inventing compliance. Count actual predicate execution separately from detected markers and statutory findings.
+
+## Required acceptance and staging delivery
+
+Exercise native PDF and image consumer journeys: no-question; targeted recovery; one useful clarification; I don't know/Skip; contradiction; detected boilerplate ignored; genuinely uncertain absence; applicable/inapplicable/unresolved exceptions; qualifying/nonqualifying content predicate. Use public or designated synthetic artifacts. Preserve privacy and jurisdiction. Run focused checks and then full regression before deployment.
+
+Complete current-build paid download proof if available through browser-assisted sandbox Checkout. Use the full URL and matched signed webhook; verify download twice and unpurchased-case denial. If Cline lacks a browser, provide a resumable handoff with process/state lifetime and do not falsely mark completed. Browser handoff does not block independent code implementation. Prior-build proof remains historical.
+
+Deploy validated work to staging through existing hostinger-vps access with data backup, package verification and rollback. Record health identity, actual browser/HTTP tests and source designations. Update the acceptance register and all-82 table with measured evidence. Keep both production blockers open until their actual criteria pass; keep unrelated remaining launch gaps open. Do not claim the whole acceptance program complete from this batch.

@@ -1,0 +1,54 @@
+{
+  "artifact": "amendment_application_result.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "amendment_form": "quoted replacement, CRP_CORE_CONSTITUTION.md section 6.2 — document named, clause named, replaced text quoted, replacement text stated",
+  "digest_before": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+  "digest_after": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+  "bytes_before": 29858,
+  "bytes_after": 33593,
+  "document_changed": true,
+  "document_changed_in_this_run": true,
+  "line_endings": "LF preserved",
+  "line_endings_measured": {
+    "crlf_before": 0,
+    "crlf_after": 0,
+    "ends_with_newline_before": true,
+    "ends_with_newline_after": true
+  },
+  "amendments_applied": 4,
+  "document_state": "OWNER_AUTHORITY_PHASE5_001P_RECORDED_IN_THE_DOCUMENT — scoped gate verdicts and incremental rule-unit progression added to the ordering sentence, Gate 5.2 recorded as corpus-wide and unaffected by a scoped verdict, Phase 5.3 bullet 1 given its scoped reading, and the amendment-history row appended under section 6.5",
+  "results": [
+    {
+      "id": "A-1",
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false
+    },
+    {
+      "id": "A-2",
+      "clause": "section 3, Gate 5.2",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false
+    },
+    {
+      "id": "A-3",
+      "clause": "section 3, Phase 5.3, bullet 1 (intended-format inventory)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false
+    },
+    {
+      "id": "A-4",
+      "clause": "section 8, Amendment History, appended row",
+      "action": "APPLIED"
+    }
+  ],
+  "problems": [],
+  "verdict": "AMENDMENTS APPLIED — the scoped-progression authority is recorded by the amendment procedure, no corpus-wide gate is passed, and no other clause was touched",
+  "created_by": "PHASE5-001P"
+}

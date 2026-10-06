@@ -1,0 +1,46 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 278,
+  "files_unchanged": 273,
+  "files_changed": [
+    {
+      "relative_path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "before": "B21952A5C11998B06ADB4E19B80E97B959A6B36C346FAA2E2B18931A75766043",
+      "after": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "bytes": 35843
+    },
+    {
+      "relative_path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "before": "FC510647207386E6CB5D5A41EAC4B7CBE88622366829253F39A2841F903315C5",
+      "after": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "bytes": 21587
+    },
+    {
+      "relative_path": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "before": "716825AF9C4566717B49C6F07EBC813B3F8C8DB2398281025500186793284D7A",
+      "after": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "bytes": 22445
+    },
+    {
+      "relative_path": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "before": "10B890F929D23ED8EAE5375AD689476829FE61754483AEB1B3D065998D97F811",
+      "after": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "bytes": 14123
+    },
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "4EFFB76C6B89DBA7BC3C342104384F325E30B5DC59A9B88FEF0133CB83A99BB0",
+      "after": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "bytes": 27096
+    }
+  ],
+  "files_missing": [],
+  "files_added": [],
+  "expected_changes": "only the five governing documents amended by this order",
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "verdict": "PRESERVATION HELD — the only pre-existing files changed are the five amended governing documents"
+}

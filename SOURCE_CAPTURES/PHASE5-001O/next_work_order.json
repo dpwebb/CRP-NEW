@@ -1,0 +1,646 @@
+{
+  "artifact": "next_work_order.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "purpose": "recommend, without performing it, the smallest concrete implementation work order that advances the consumer application using the accepted corpus",
+  "what_this_order_does_not_authorise": "PHASE5-001O does not authorise this work order. Application changes, deployment, consumer-data transmission and findings about an actual consumer remain unauthorised until the owner issues it. Report facts and jurisdiction applicability still need a supported operational basis, and no legal finding may be produced.",
+  "recommended_order": {
+    "working_title": "PROD-002 — Consumer Application Jurisdiction Surface From the Accepted Corpus",
+    "objective": "make the consumer application's selectable jurisdiction list come from CRP-JURISDICTION-ENUM-1, and state for each selectable jurisdiction the coverage the accepted legacy corpus records, generated from this order's coverage ledger rather than hard-coded",
+    "why_this_is_the_smallest_concrete_step": [
+      "It uses only the accepted corpus and the approved enumeration: no new legal research and no count certification.",
+      "It is independent of the evidence-gated Gate 5.3 dependency (report representation), so it can proceed now.",
+      "The gap it closes is measured below: the application's selector omits canonical regions and carries no canonical codes.",
+      "It produces a reviewable artifact (a generated jurisdiction/coverage data file plus the selector change) with no consumer data involved."
+    ],
+    "measured_inputs": {
+      "canonical_regions": 82,
+      "canonical_regions_appearing_in_the_ledger": 81,
+      "canonical_regions_with_at_least_one_accepted_entry": 81,
+      "canonical_regions_with_no_ledger_row": [
+        "US-UM"
+      ],
+      "application_selector_regions": 64,
+      "canonical_regions_absent_from_the_application": [
+        "American Samoa",
+        "Australian Capital Territory",
+        "England",
+        "Guam",
+        "New South Wales",
+        "Northern Ireland",
+        "Northern Mariana Islands",
+        "Northern Territory",
+        "Puerto Rico",
+        "Queensland",
+        "Scotland",
+        "South Australia",
+        "Tasmania",
+        "United States Minor Outlying Islands",
+        "Victoria",
+        "Virgin Islands, U.S.",
+        "Wales",
+        "Western Australia"
+      ],
+      "regions_with_accepted_content": 80,
+      "accepted_entries_available": 410,
+      "entries_to_resolve_to_a_selected_region": 100
+    },
+    "scope_in": [
+      "generate, from SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json, one derived data file listing every canonical region from CRP-JURISDICTION-ENUM-1 with the counts of accepted provisions the corpus records for it, and an explicit empty state where none is recorded",
+      "change the consumer application's jurisdiction selector to that enumeration (canonical country and region codes, source display names), removing the hard-coded display-name list",
+      "state on the consumer surface, in plain language, that the coverage shown is owner-accepted legacy statutory coverage, that no legal finding has been produced for the consumer, and that a selected jurisdiction is not a finding",
+      "add a check that fails the build if the generated file and the ledger disagree"
+    ],
+    "scope_out": [
+      "any change to a governing document, the catalogue, the register, the legacy corpus, or the coverage ledger",
+      "any legal-provenance research, source retrieval, or duplicate-count investigation",
+      "report parsing, report facts, evaluators, findings, probable findings, or consumer-facing conclusions",
+      "deployment, hosting changes, payments, and any transmission of real consumer data",
+      "certifying any count as a legal-provision count"
+    ],
+    "provisional_region_surface": [
+      {
+        "region_code": "AU-ACT",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-NSW",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-NT",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-QLD",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-SA",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-TAS",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-VIC",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "AU-WA",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "CA-AB",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-BC",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-MB",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-NB",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-NL",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-NS",
+        "accepted": 15,
+        "content_rules": 10,
+        "limitation_records": 0,
+        "mapped": 14
+      },
+      {
+        "region_code": "CA-NT",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "CA-NU",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "CA-ON",
+        "accepted": 15,
+        "content_rules": 11,
+        "limitation_records": 0,
+        "mapped": 14
+      },
+      {
+        "region_code": "CA-PE",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-SK",
+        "accepted": 4,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 2
+      },
+      {
+        "region_code": "CA-YT",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "GB-ENG",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "GB-NIR",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "GB-SCT",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "GB-WLS",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-AK",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-AL",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 3,
+        "mapped": 3
+      },
+      {
+        "region_code": "US-AR",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 3,
+        "mapped": 3
+      },
+      {
+        "region_code": "US-AS",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-AZ",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-CA",
+        "accepted": 59,
+        "content_rules": 52,
+        "limitation_records": 3,
+        "mapped": 59
+      },
+      {
+        "region_code": "US-CO",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-CT",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-DC",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-DE",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-FL",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-GA",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-GU",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-HI",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-IA",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-ID",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-IL",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-IN",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-KS",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-KY",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-LA",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 3,
+        "mapped": 3
+      },
+      {
+        "region_code": "US-MA",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-MD",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-ME",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-MI",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-MN",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-MO",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-MP",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-MS",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-MT",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-NC",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-ND",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-NE",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-NH",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-NJ",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-NM",
+        "accepted": 3,
+        "content_rules": 0,
+        "limitation_records": 3,
+        "mapped": 3
+      },
+      {
+        "region_code": "US-NV",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-NY",
+        "accepted": 66,
+        "content_rules": 60,
+        "limitation_records": 2,
+        "mapped": 67
+      },
+      {
+        "region_code": "US-OH",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-OK",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 0
+      },
+      {
+        "region_code": "US-OR",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 0
+      },
+      {
+        "region_code": "US-PA",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-PR",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-RI",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-SC",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-SD",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-TN",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-TX",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-UT",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-VA",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-VI",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-VT",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-WA",
+        "accepted": 25,
+        "content_rules": 23,
+        "limitation_records": 1,
+        "mapped": 26
+      },
+      {
+        "region_code": "US-WI",
+        "accepted": 1,
+        "content_rules": 0,
+        "limitation_records": 1,
+        "mapped": 1
+      },
+      {
+        "region_code": "US-WV",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      },
+      {
+        "region_code": "US-WY",
+        "accepted": 2,
+        "content_rules": 0,
+        "limitation_records": 2,
+        "mapped": 2
+      }
+    ],
+    "acceptance_criteria": [
+      "every selectable jurisdiction on the consumer surface is a canonical CRP-JURISDICTION-ENUM-1 code, and no non-enumerated value is selectable",
+      "the displayed coverage per jurisdiction is generated from the accepted-corpus ledger and states its own limits (uncertified provision count; country-wide sources not yet related to a region)",
+      "no legal finding, probable finding, deadline or conclusion appears anywhere in the application output",
+      "the preservation check shows that no governing document, catalogue, register or legacy file changed"
+    ],
+    "stop_conditions": [
+      "the owner has not issued the order or has not authorised application changes",
+      "an implementation need would require a non-enumerated jurisdiction, a country-wide relation the corpus does not record, or a legal proposition the corpus does not record: record it as an implementation dependency instead of supplying a value",
+      "the change would touch consumer data, deployment, or a finding path"
+    ],
+    "dependencies_recorded_and_not_blocking": [
+      "the unique-legal-provision count is uncertified (administrative limitation)",
+      "CRP-LSRC-0409/0411 duplicate identity is unresolved (administrative limitation)",
+      "61 entries have no exact recorded legacy operational mapping (mapping task)"
+    ]
+  },
+  "alternatives_considered_and_rejected_as_the_next_step": [
+    "another legal-provenance or official-source retrieval order: excluded by the owner directive and unnecessary for layer 1",
+    "another duplicate-count or unique-provision count order: excluded by the owner directive as bookkeeping",
+    "a report-format search order: still blocked on unavailable evidence and not the smallest advanceable step"
+  ],
+  "created_by": "PHASE5-001O"
+}

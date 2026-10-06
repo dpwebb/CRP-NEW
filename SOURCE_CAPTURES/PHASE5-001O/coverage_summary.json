@@ -1,0 +1,808 @@
+{
+  "artifact": "coverage_summary.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "authority": "owner directive recorded by PHASE5-001O: relevant legacy statutes are OWNER_ACCEPTED_LEGAL_AUTHORITY",
+  "ledger_rows": 437,
+  "enumeration_coverage": {
+    "canonical_regions_in_the_enumeration": 82,
+    "canonical_regions_appearing_in_the_ledger": 81,
+    "canonical_regions_with_at_least_one_accepted_entry": 81,
+    "canonical_regions_with_no_ledger_row": [
+      "US-UM"
+    ],
+    "canonical_regions_with_a_ledger_row_but_no_accepted_entry": [],
+    "statement": "Every canonical region except those listed here appears in the ledger. A region with no ledger row has no recorded source entry; no entry may be invented for it."
+  },
+  "owner_acceptance": {
+    "OWNER_ACCEPTED_LEGAL_AUTHORITY": 410,
+    "NOT_ACCEPTED_NO_STATUTE_RECORDED": 21,
+    "ACCEPTED_AS_RECORDED_MATERIAL_NOT_AS_A_STATUTE": 6
+  },
+  "instrument_class_screen": {
+    "STATUTE_OR_REGULATION": 261,
+    "SUBORDINATE_CODE_OR_RULE": 95,
+    "SCREEN_INCONCLUSIVE": 66,
+    "GUIDANCE_OR_POLICY_SUMMARY": 15
+  },
+  "record_type": {
+    "CONTENT_RULE": 255,
+    "LIMITATION_RECORD": 111,
+    "AUTHORITY_RECORD": 27,
+    "CITATION_RECORD": 23,
+    "GAP": 18,
+    "REFUSAL": 3
+  },
+  "legal_family": {
+    "LIMITATION_OR_RETENTION": 225,
+    "UNCLASSIFIED_SOURCE_FAMILY": 36,
+    "IDENTITY_THEFT_OR_MIXED_FILE": 33,
+    "CONSUMER_CREDIT_REGISTRY": 29,
+    "REPORT_ACCURACY_OR_COMPLETENESS": 28,
+    "DISCLOSURE_OR_FILE_ACCESS": 20,
+    "PUBLIC_RECORD_OR_JUDGMENT": 18,
+    "PRIVACY_OR_DATA_HANDLING": 17,
+    "DISPUTE_OR_CORRECTION": 17,
+    "PERMISSIBLE_PURPOSE_OR_CONSENT": 14
+  },
+  "existing_operational_mapping_state": {
+    "ESTABLISHED": 328,
+    "NOT_ESTABLISHED": 61,
+    "ESTABLISHED_MULTIPLE_RECORDED_ROWS": 48
+  },
+  "existing_operational_mapping_basis": {
+    "LEGACY_RULE_PROVISION_AND_CITATION_EXACT": 187,
+    "LEGACY_SECTION_TOKEN_NAMED_BY_CATALOGUE_NOTE": 72,
+    "NOT_ESTABLISHED": 61,
+    "LEGACY_SECTION_NUMERIC_CORE_WITH_JURISDICTION_AGREEMENT": 38,
+    "LEGACY_CITATION_REGISTRY_CITATION_EXACT": 23,
+    "LEGACY_RULE_PROVISION_EXACT": 19,
+    "LEGACY_AUTHORITY_SOURCE_URL_EXACT": 17,
+    "LEGACY_RULE_TABLE_SECTION_CONTAINS_RECORDED_PROVISION": 15,
+    "LEGACY_SOL_SECTION_EXACT": 3,
+    "LEGACY_AUTHORITY_LOCATOR_PREFIX_QUOTED_IN_RECORD": 2
+  },
+  "legacy_coverage_review_linked": 142,
+  "legacy_rule_reference_count": 840,
+  "canonical_jurisdiction_status": {
+    "EXACT": 311,
+    "COUNTRY_WIDE_SOURCE": 100,
+    "UK_TO_GB_RECONCILIATION_REQUIRED": 14,
+    "GAP": 9,
+    "RECORDED_REFUSAL": 3
+  },
+  "canonical_country_code": {
+    "US": 234,
+    "null": 116,
+    "CA": 73,
+    "AU": 8,
+    "GB": 6
+  },
+  "dependency_frequency": {
+    "REGISTER_DISPOSITION_UNRESOLVED": 416,
+    "INSTRUMENT_CLASS_CONFIRMATION": 161,
+    "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED": 100,
+    "LEGACY_OPERATIONAL_MAPPING_NOT_ESTABLISHED": 61,
+    "SECTION_NOT_VERIFIED_IN_THE_LEGACY_REGISTRY": 22,
+    "GAP_REMAINS_OPEN": 18,
+    "DUPLICATE_IDENTITY_BOOKKEEPING": 15,
+    "LEGACY_OPERATIONAL_MAPPING_AMBIGUOUS:MULTIPLE_LEGACY_ROWS_CARRY_THE_RECORDED_PROVISION": 11,
+    "LEGACY_OPERATIONAL_MAPPING_AMBIGUOUS:MULTIPLE_RECORDED_MATCHES": 7,
+    "REFUSAL_RETAINED": 3,
+    "LEGACY_OPERATIONAL_MAPPING_AMBIGUOUS:MULTIPLE_TOKEN_MATCHES": 1
+  },
+  "administrative_limitation_frequency": {
+    "PRIOR_REVIEW_RECORD_NOT_HELD_IN_THIS_WORKSPACE": 437,
+    "FORMAL_EDITION_OR_HISTORICAL_VERSION_NOT_RECORDED": 437,
+    "LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED": 118,
+    "NO_LEGAL_INSTRUMENT_RECORDED_FOR_THIS_SCOPE": 21,
+    "SOURCE_DISCOVERY_PROVENANCE_INCOMPLETE": 12
+  },
+  "register_disposition": {
+    "UNRESOLVED": 416,
+    "GAP": 18,
+    "REFUSAL": 3
+  },
+  "coverage_available_for_implementation": {
+    "accepted_entries": 410,
+    "accepted_content_rules": 249,
+    "accepted_limitation_records": 111,
+    "accepted_authority_records": 27,
+    "accepted_citation_records": 23
+  },
+  "per_jurisdiction": {
+    "NO_JURISDICTION_RECORDED": {
+      "total": 116,
+      "accepted": 96,
+      "content_rule": 99,
+      "limitation_record": 0,
+      "mapped": 95,
+      "country_wide_source": 100
+    },
+    "US-CA": {
+      "total": 60,
+      "accepted": 59,
+      "content_rule": 52,
+      "limitation_record": 3,
+      "mapped": 59,
+      "country_wide_source": 0
+    },
+    "US-MA": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-FL": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-WA": {
+      "total": 26,
+      "accepted": 25,
+      "content_rule": 23,
+      "limitation_record": 1,
+      "mapped": 26,
+      "country_wide_source": 0
+    },
+    "US-MN": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-OR": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "US-MI": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-CO": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-CT": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-DC": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-DE": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-GA": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-HI": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-IA": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-ID": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-IL": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-IN": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-KY": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-KS": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-LA": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 3,
+      "mapped": 3,
+      "country_wide_source": 0
+    },
+    "US-MD": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-ME": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-MO": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-MS": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-MT": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-NC": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-ND": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-NE": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-NH": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-NJ": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-NM": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 3,
+      "mapped": 3,
+      "country_wide_source": 0
+    },
+    "US-NV": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-NY": {
+      "total": 67,
+      "accepted": 66,
+      "content_rule": 60,
+      "limitation_record": 2,
+      "mapped": 67,
+      "country_wide_source": 0
+    },
+    "US-OK": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "US-PA": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-RI": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-SC": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-SD": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-TN": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-UT": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-VT": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-WI": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-PR": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-GU": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-VI": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-MP": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-AS": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-WV": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-WY": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-VA": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "US-AK": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-AL": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 3,
+      "mapped": 3,
+      "country_wide_source": 0
+    },
+    "US-AR": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 3,
+      "mapped": 3,
+      "country_wide_source": 0
+    },
+    "US-AZ": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-OH": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "US-TX": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "CA-AB": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-MB": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-PE": {
+      "total": 5,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-BC": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-NB": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-SK": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-NL": {
+      "total": 4,
+      "accepted": 4,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "CA-NT": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "CA-NU": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "CA-YT": {
+      "total": 3,
+      "accepted": 3,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "CA-NS": {
+      "total": 16,
+      "accepted": 15,
+      "content_rule": 10,
+      "limitation_record": 0,
+      "mapped": 14,
+      "country_wide_source": 0
+    },
+    "CA-ON": {
+      "total": 16,
+      "accepted": 15,
+      "content_rule": 11,
+      "limitation_record": 0,
+      "mapped": 14,
+      "country_wide_source": 0
+    },
+    "CA-QC": {
+      "total": 3,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 0,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "GB-ENG": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "GB-WLS": {
+      "total": 2,
+      "accepted": 2,
+      "content_rule": 0,
+      "limitation_record": 2,
+      "mapped": 2,
+      "country_wide_source": 0
+    },
+    "GB-SCT": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 1,
+      "country_wide_source": 0
+    },
+    "GB-NIR": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-ACT": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-NT": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-QLD": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-TAS": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-VIC": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-NSW": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-SA": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    },
+    "AU-WA": {
+      "total": 1,
+      "accepted": 1,
+      "content_rule": 0,
+      "limitation_record": 1,
+      "mapped": 0,
+      "country_wide_source": 0
+    }
+  },
+  "application_alignment": {
+    "source": "consumer-wizard/dist/app.js (the consumer application's hard-coded selector list) against CRP_JURISDICTION_ENUMERATION.md",
+    "wizard_country_keys": [
+      "Canada",
+      "United States"
+    ],
+    "wizard_region_count": 64,
+    "canonical_region_count": 82,
+    "wizard_values_not_in_the_enumeration": [],
+    "canonical_regions_absent_from_the_wizard": [
+      "American Samoa",
+      "Australian Capital Territory",
+      "England",
+      "Guam",
+      "New South Wales",
+      "Northern Ireland",
+      "Northern Mariana Islands",
+      "Northern Territory",
+      "Puerto Rico",
+      "Queensland",
+      "Scotland",
+      "South Australia",
+      "Tasmania",
+      "United States Minor Outlying Islands",
+      "Victoria",
+      "Virgin Islands, U.S.",
+      "Wales",
+      "Western Australia"
+    ],
+    "finding": "The consumer application's selectable jurisdictions are hard-coded and are not derived from the approved enumeration: canonical regions are missing and the selector carries display-name values only. Driving the selector from the accepted enumeration and coverage ledger is an application dependency, not a legal one."
+  },
+  "what_this_summary_does_not_do": [
+    "It does not certify a unique legal-provision count; the duplicate bookkeeping and count limits stay recorded as administrative limitations.",
+    "It does not admit a governed rule, create legal coverage, or authorise a finding.",
+    "It does not assert a legal classification: the instrument-class screen is a mechanical title screen only."
+  ],
+  "created_by": "PHASE5-001O"
+}

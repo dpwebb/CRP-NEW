@@ -1,0 +1,97 @@
+{
+  "artifact": "crp-lsrc-0407-provision-retrieval.json",
+  "work_order": "CRP_VERSION_1_FINISH_ORDER_001",
+  "created_utc": "2026-10-04",
+  "purpose": "Retrieve and record the provision text for CRP-LSRC-0407 (UK GDPR Articles 5(1)(d) and 16) and the instrument's own territorial extent, so the four canonical GB regions can be served by a recorded STATUTORY instrument — the route the existing GB relation itself names as the alternative to its guidance-material blocker — instead of by resolving a bare UK token off-report.",
+  "authority_basis": [
+    "CRP_VERSION_1_FINISH_ORDER_001.md: complete the remaining approved consumer coverage on existing ingestion, Issue and packet mechanisms; reuse common mechanisms where legal applicability is supported; a genuine blocked candidate is recorded once with its exact missing prerequisite.",
+    "The recorded GB relation GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION in applicability-records.json states its own clearing route: 'an owner decision admitting guidance material as a retention basis, or a recorded statutory instrument, would be required before a bound adapter could exist.'",
+    "WORKSPACE AGENTS.md and CRP_OWNER_SIMPLE_CONSUMER_FLOW_001.md: reuse accepted relevant sources; verify only what is necessary for the claim made; keep research detail internal."
+  ],
+  "source_entry_id": "CRP-LSRC-0407",
+  "legacy_rule_id": "uk.accuracy_duty.gdpr5",
+  "instrument": {
+    "title": "Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 on the protection of natural persons with regard to the processing of personal data and on the free movement of such data (United Kingdom General Data Protection Regulation)",
+    "short_title": "UK GDPR",
+    "provision": "Articles 5(1)(d) and 16",
+    "publisher": "legislation.gov.uk — The National Archives (© Crown and database right)",
+    "publisher_url": "https://www.legislation.gov.uk/eur/2016/679/article/5",
+    "recorded_legacy_instrument_name": "UK GDPR / Data Protection Act 2018",
+    "recorded_provision_in_the_ledger": "UK GDPR Articles 5(1)(d) and 16 (accuracy; right to rectification)"
+  },
+  "applicable_edition": {
+    "version_shown": "Latest available (Revised)",
+    "version_meaning": "the latest available updated version of the legislation, incorporating changes made by subsequent legislation and applied by the publisher's editorial team",
+    "uk_posture_shown_by_the_publisher": "When the UK left the EU, legislation.gov.uk published EU legislation that had been published by the EU up to IP completion day (31 December 2020 11.00 p.m.). On legislation.gov.uk, these items of legislation are kept up-to-date with any amendments made by the UK since then.",
+    "amendments_recorded_on_the_retrieved_pages": [
+      "Article 5(1)(b): words inserted and substituted (19.6.2025 for specified purposes, 5.2.2026 in so far as not already in force) by Data (Use and Access) Act 2025 (c. 18), ss. 71(2)(a)-(c), 142(1)(2)(h); S.I. 2026/82, reg. 2(d)",
+      "Article 5(1)(e): words substituted (5.2.2026) by Data (Use and Access) Act 2025 (c. 18), ss. 87(1)(a), 142(1); S.I. 2026/82, reg. 2(o)",
+      "Article 5(3): inserted (19.6.2025 for specified purposes, 5.2.2026 in so far as not already in force) by Data (Use and Access) Act 2025 (c. 18), ss. 71(3), 142(1)(2)(h); S.I. 2026/82, reg. 2(d)"
+    ],
+    "why_this_edition": "The assessment is attributed to the provision as it stands in the edition in force. The retrieved pages record no textual amendment to Article 5(1)(d) or to Article 16: the 2025 Act amendments shown fall on Article 5(1)(b), Article 5(1)(e) and the newly inserted Article 5(3)."
+  },
+  "located_provision_text": {
+    "chapter_and_heading": "CHAPTER II — Principles; Article 5 — Principles relating to processing of personal data",
+    "quoted_article_5_1_d": "(d) accurate and, where necessary, kept up to date; every reasonable step must be taken to ensure that personal data that are inaccurate, having regard to the purposes for which they are processed, are erased or rectified without delay (‘accuracy’);",
+    "chapter_and_heading_16": "CHAPTER III — Rights of the data subject; Section 3 — Rectification and erasure; Article 16 — Right to rectification",
+    "quoted_article_16": "The data subject shall have the right to obtain from the controller without undue delay the rectification of inaccurate personal data concerning him or her. Taking into account the purposes of the processing, the data subject shall have the right to have incomplete personal data completed, including by means of providing a supplementary statement.",
+    "why_these_are_quoted": "The implemented rule is a CONTENT rule. Its attribution may only be recorded against the provision's own words, so the words are recorded here and carried into the rule's recorded limb and its consumer wording."
+  },
+  "territorial_extent": {
+    "question": "Does this instrument apply in each of the four canonical GB regions, so that a GB selection may be served without resolving a bare UK token from off-report state?",
+    "answer": "YES — on the instrument's own recorded extent, not on a token rename.",
+    "basis": [
+      "The publisher prints the geographical-extent marker on the provisions themselves: each retrieved provision is headed 'Article 5 U.K.' and 'Article 16 U.K.', and the chapters are headed 'CHAPTER II U.K.' and 'CHAPTER III U.K.'. The marker 'U.K.' is the publisher's geographical-extent indication for the whole of the United Kingdom.",
+      "The instrument is published under the title '(United Kingdom General Data Protection Regulation)' and is kept up to date with amendments made by UK legislation (for example the Data (Use and Access) Act 2025 and S.I. 2026/82), consistent with its forming part of the law of the United Kingdom.",
+      "The instrument is therefore UK-wide in its own right and needs no nation-specific identification — unlike the limitation instruments the ledger records for these regions, which differ between England and Wales, Scotland and Northern Ireland."
+    ],
+    "what_this_does_not_rely_on": "It does not use the off-report route the ledger records as NOT adopted (resolving a bare UK token from a locked session nation or an account profile). The relation recorded from this artifact rests on the instrument's own recorded extent.",
+    "regions_reached": [
+      "GB-ENG",
+      "GB-NIR",
+      "GB-SCT",
+      "GB-WLS"
+    ]
+  },
+  "attribution_check": {
+    "implemented_concern": "an ordinary credit account whose printed opened date is later than its printed closed date: the report's own two printed values for that single account cannot both be right",
+    "provision_concern": "Article 5(1)(d) requires personal data to be accurate and, where necessary, kept up to date, and requires every reasonable step to be taken so that inaccurate personal data are erased or rectified without delay; Article 16 gives the data subject the right to obtain rectification of inaccurate personal data without undue delay",
+    "result": "SUPPORTS_THE_ASSESSMENT",
+    "basis": "If the account's personal data were accurate, its own printed opened and closed values would agree. Values that cannot both be right are therefore affirmative evidence, still rebuttable, that the data recorded for that account are not accurate, and the provision's own remedy limb (rectification without undue delay) is exactly what a verification request asks for. The report establishes the conflict; it establishes neither which value is inaccurate nor whether a benign explanation applies.",
+    "confidence_ceiling_justified": "PROBABLE_VIOLATION. A VIOLATION ceiling is refused rather than downgraded.",
+    "scope_limits_recorded": [
+      "the rule runs only on an ordinary credit account record (record kind CONSUMER_CREDIT_LIABILITY) whose own two printed values contradict each other; it claims nothing about any other field and does not assess a controller's organisational measures",
+      "no exception recorded in the located text is evaluated, and off-report knowledge is never inferred",
+      "the consumer request is a verification naming the rectification limb, never a demand that either value is proved false"
+    ]
+  },
+  "wording_verification_status": {
+    "article_5_1_d_wording": "VERIFIED_FROM_THE_OFFICIAL_PUBLISHER",
+    "article_16_wording": "VERIFIED_FROM_THE_OFFICIAL_PUBLISHER",
+    "instrument_identity_and_extent": "VERIFIED_FROM_THE_OFFICIAL_PUBLISHER",
+    "retrieval_route": [
+      { "url": "https://www.legislation.gov.uk/eur/2016/679/article/5", "retrieved_utc": "2026-10-04", "role": "OFFICIAL_PUBLISHER_INSTRUMENT_IDENTITY_AND_VERSION" },
+      { "url": "https://www.legislation.gov.uk/eur/2016/679/article/5/data.xht?view=snippet&wrap=true", "retrieved_utc": "2026-10-04", "role": "PROVISION_TEXT" },
+      { "url": "https://www.legislation.gov.uk/eur/2016/679/article/16/data.xht?view=snippet&wrap=true", "retrieved_utc": "2026-10-04", "role": "PROVISION_TEXT" }
+    ],
+    "sha256": null,
+    "hash_basis": "Not computed and not asserted: the retrieval route returns extracted page text rather than the byte stream, so no digest is claimed for the retrieved pages.",
+    "what_is_not_claimed": [
+      "no legal opinion on the instrument's application to any particular controller and no claim about enforcement",
+      "no claim about the data-protection law of any jurisdiction outside the United Kingdom",
+      "no claim that the ledger's unrecorded administrative limitations on CRP-LSRC-0407 are resolved"
+    ]
+  },
+  "temporal_applicability": {
+    "status": "APPLICABLE_EDITION_RECORDED",
+    "what_is_recorded": "the edition in force (latest available revised version), the publisher's UK-amendment posture, and the amendments recorded on the retrieved pages — none of which touches Article 5(1)(d) or Article 16",
+    "what_is_not_recorded": "the instrument's original commencement date, which is not recorded in this workspace and is not claimed here",
+    "distinction_kept": "Temporal applicability conditions ATTRIBUTION and is recorded here; retention arithmetic (counting a period, applying a day offset, aging an entry) is a different question, and this rule performs none of it."
+  },
+  "consumer_outcome": {
+    "delivered": "a GB selection whose report prints one ordinary account with an opened date later than its closed date is offered ONE coherent probable reporting issue carrying the factual conflict and the recorded UK GDPR accuracy/rectification limb, with ONE verification request, through select -> correspondence -> approve -> entitled download",
+    "request_type": "VERIFICATION, never a correction demand: the report shows a probable accuracy issue to verify, not an established violation",
+    "unchanged_and_separate": "the current-format GB consumer-disclosure family artifact gap (CURRENT_GB_SUPPORT_IS_ESTABLISHED) is NOT addressed or implied by this rule: this rule runs on the general bureau-report intake, and the GB family reader's currency remains its own open intake gap"
+  },
+  "note": "This record unlocks one related GB outcome on an accepted, already-mapped statutory row. It reopens no settled ledger item, resolves no other source ID, admits no guidance material as a statute, and claims no served verification."
+}

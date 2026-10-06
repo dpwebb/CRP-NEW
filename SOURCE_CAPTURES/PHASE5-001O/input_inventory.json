@@ -1,0 +1,93 @@
+{
+  "artifact": "input_inventory.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "purpose": "the workspace inputs this order read, with their measured digests at the close of the order",
+  "inputs": [
+    {
+      "relative_path": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "exists": true,
+      "bytes": 447509,
+      "sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "exists": true,
+      "bytes": 616237,
+      "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001N\\relation_determinations.json",
+      "exists": true,
+      "bytes": 11613,
+      "sha256": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583"
+    },
+    {
+      "relative_path": "CRP_JURISDICTION_ENUMERATION.md",
+      "exists": true,
+      "bytes": 6912,
+      "sha256": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93"
+    },
+    {
+      "relative_path": "JURISDICTION_CONTRACT.md",
+      "exists": true,
+      "bytes": 19220,
+      "sha256": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB"
+    },
+    {
+      "relative_path": "CRP_CORE_CONSTITUTION.md",
+      "exists": true,
+      "bytes": 14820,
+      "sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D"
+    },
+    {
+      "relative_path": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "exists": true,
+      "bytes": 14123,
+      "sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454"
+    },
+    {
+      "relative_path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "exists": true,
+      "bytes": 21587,
+      "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+    },
+    {
+      "relative_path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "exists": true,
+      "bytes": 35843,
+      "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1"
+    },
+    {
+      "relative_path": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "exists": true,
+      "bytes": 22445,
+      "sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C"
+    },
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "exists": true,
+      "bytes": 27096,
+      "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+    },
+    {
+      "relative_path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "exists": true,
+      "bytes": 70041,
+      "sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817"
+    },
+    {
+      "relative_path": "consumer-wizard\\dist\\app.js",
+      "exists": true,
+      "bytes": 9617,
+      "sha256": "E1524A0C4D95C1CE823371FB9B58B669E389E74683D2DFCC55362079289B9492"
+    }
+  ],
+  "legacy_corpus_inputs": {
+    "legacy_source_root": "C:\\Users\\webbd\\crp-credit-app",
+    "admitted_artifacts": 34,
+    "digests_re_verified": 34,
+    "inventory_artifact": "legacy_corpus_inventory.json"
+  },
+  "created_by": "PHASE5-001O"
+}

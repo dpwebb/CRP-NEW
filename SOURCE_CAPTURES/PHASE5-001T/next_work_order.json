@@ -1,0 +1,133 @@
+{
+  "artifact": "next_work_order.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "type": "NO ORDER ISSUED — the exact blocker is recorded, and the Gate 5.7 order that would issue once it is cleared is kept here, clearly marked as not issued and not begun",
+  "order_issued": false,
+  "why_no_order_issues": {
+    "the_gate": "Gate 5.6",
+    "its_scoped_state": "PASSED_FOR_THIS_SCOPE ON THE THREE CRITERIA THIS SCOPE CAN MEET — WITH THE VERSION-SHARING CRITERION RESERVED AND NAMED AS NOT SATISFIED: GATE 5.6 IS NOT MET IN FULL FOR THIS SCOPE, AND PROGRESSION TO GATE 5.7 IS NOT PERMITTED BY THE PLAN UNTIL THE NAMED RESERVATION IS RESOLVED",
+    "the_rule_that_blocks_progression": "- **A later phase may begin for a named scope only when every preceding gate carries a passing verdict",
+    "what_it_means": "a later phase may begin for this scope only when every preceding gate carries a passing verdict for that scope. Gate 5.6 carries three clauses met and one reserved, so it does not carry a passing verdict for this scope, and Gate 5.7 may not begin."
+  },
+  "the_blocker": {
+    "criterion": "the version-sharing clause of Gate 5.6: rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions",
+    "what_is_missing": "a production admission identity and a production version string for the governed rule record",
+    "why_it_cannot_be_supplied_here": [
+      "Gate 5.7 is the only step that assigns a production identity and version, and it is the step that follows a successful Gate 5.6",
+      "this order may not assign the production version, and it may not ask the owner to assign it in order to satisfy this criterion",
+      "the amended clause nevertheless prescribes exactly how the sharing condition is measured for a pre-admission scope, and that measurement holds in full here"
+    ],
+    "the_two_recorded_readings": [
+      {
+        "reading": "STRICT — the reading this verdict adopts",
+        "statement": "the criterion is not satisfied until a production identity and version exist, so Gate 5.6 is not met in full for this scope and progression to Gate 5.7 is not permitted by the plan's progression rule",
+        "adopted_because": "the order that authorised this work directs that the version-sharing criterion be named as reserved and not satisfied rather than passed, and this order weakens no assertion to obtain a passing result"
+      },
+      {
+        "reading": "AMENDED-CLAUSE — recorded, not adopted",
+        "statement": "the amended clause defines the sharing condition for a pre-admission scope as the pre-admission identity together with the immutable digests, all of which are measured and hold; on that reading the criterion would be met as amended, with the production reservation simply named",
+        "why_it_is_not_adopted_here": "it is not this order's instruction, and adopting it would be passing a criterion the order requires to be named instead"
+      }
+    ],
+    "the_exact_blocker": "Gate 5.6 criterion 4 (version sharing) cannot be satisfied before Gate 5.7 assigns the production identity and version, and Gate 5.7 follows a successful Gate 5.6. The impasse is a sequencing reservation created by the amended gate text read with this order's own instruction, not a defect in the evaluator, in the rule record or in this scope's evidence.",
+    "the_smallest_permitted_action": "an owner instrument that settles the reading — whether the amended pre-admission measurement satisfies the sharing condition at Gate 5.6 for a scope whose rule record Gate 5.7 has not admitted (which would close this scope's Gate 5.6), or whether the sequencing reservation is resolved elsewhere. This order does not ask the owner to assign a production version, because it may not."
+  },
+  "what_this_record_does_not_ask_for": [
+    "it does not ask the owner to assign a production version or identity in order to satisfy the version-sharing criterion, because this order may not",
+    "it does not ask for an amendment to any governing document, because this order carries no amendment authority",
+    "it does not ask for a decision on the effective period, the exception or the anniversary-boundary question"
+  ],
+  "the_smallest_permitted_action": {
+    "what": "an owner instrument that settles the reading of the version-sharing clause for a scope whose rule record Gate 5.7 has not admitted",
+    "what_it_would_settle": "whether the amended pre-admission measurement — the pinned pre-admission version identity CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3 together with the immutable digests of the rule record, the crosswalk, the tests and the explanation templates — satisfies the sharing condition at Gate 5.6 for such a scope",
+    "if_yes": "this scope's Gate 5.6 closes on the measurement already recorded in scoped_gate_5_6_verdict.json, and the draft order below issues unchanged",
+    "if_no": "the sequencing reservation needs its own instrument, and the draft below is re-scoped to begin at the identity assignment rather than at validation",
+    "nothing_is_needed_from_the_evaluator": "the blocker is in the reading of a gate clause, not in the evidence: the fixture suite, the negative tests, the independent replay and the language validation all pass and hold as recorded"
+  },
+  "the_draft_order_kept_here": {
+    "order_issued": false,
+    "begun": false,
+    "order_id_that_would_issue": "PHASE5-001U",
+    "order_id_note": "the identifier is reserved only. If the owner uses PHASE5-001U for another order first, this draft's identifier is superseded and that supersession is recorded, exactly as PHASE5-001S superseded the draft that reserved it.",
+    "issued_for": "Gate 5.7 — formal owner admission and finding authorization, for one scope only",
+    "title": "Gate 5.7 admission of CA-NS-CRA-S10-3-C-LIMB-1 for PR-01 — owner instrument, immutable identities and the finding-class decision",
+    "authority_it_would_rest_on": [
+      "a passing scoped Gate 5.6 verdict for this scope, which does not exist yet",
+      "the amended build plan: the Phase 5.7 bullets, read with the PHASE5-001S paragraph under which admission is the step that follows a successful Gate 5.6",
+      "the owner's instrument clearing the reading recorded in this record"
+    ],
+    "governing_text_quoted": [
+      {
+        "line": 174,
+        "text": "- Prepare a rule-corpus amendment containing only rules that passed Gates 5.1–5.6, with immutable IDs/versions and full provenance."
+      },
+      {
+        "line": 175,
+        "text": "- Record excluded, unresolved, gap, and refusal counts separately; do not represent unresolved jurisdictions or provisions as certified."
+      },
+      {
+        "line": 176,
+        "text": "- Update coverage and finding counts only from admitted rule records and validated evaluator capability. The current contracts' zero governed rules/coverage/findings remain until formal admission."
+      },
+      {
+        "line": 177,
+        "text": "- Owner approves the corpus amendment and the exact finding classes authorized. This approval admits governed rules; it does not change statutory text or turn a probable result into a violation."
+      },
+      {
+        "line": 178,
+        "text": "- Only after approval may implementation emit the specifically authorized finding classes. Release remains a separate product/deployment decision."
+      }
+    ],
+    "scope": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT only",
+    "the_identity_it_would_assign": "the production admission identity and the production version string for the governed rule record — the reservation Gate 5.6 names and this order may not supply",
+    "deliverables_it_would_carry": [
+      "a rule-corpus amendment containing only rules that passed Gates 5.1 to 5.6, with immutable IDs, versions and full provenance",
+      "excluded, unresolved, gap and refusal counts recorded separately, with no unresolved jurisdiction or provision represented as certified",
+      "coverage and finding counts updated only from admitted rule records and validated evaluator capability",
+      "the owner's exact finding classes authorised for this unit, with the observation-class ceiling stated where no finding class is authorised",
+      "an admission record naming the pre-admission identity it supersedes and the digests it admits"
+    ],
+    "exclusions_it_would_carry": [
+      "no statutory text is changed and no probable result is turned into a violation",
+      "no emission of any finding class before the owner's approval is recorded",
+      "no consumer-visible surface, no deployment and no consumer-data transmission: release remains a separate product decision",
+      "no re-run of any harness that writes into a prior evidence package",
+      "no change to an earlier verdict, manifest, baseline or register row"
+    ],
+    "stop_conditions_it_would_carry": [
+      "if the owner withholds the finding-class decision, the rule record is admitted at the observation ceiling and the limitation is recorded rather than filled",
+      "if the rule record cannot be admitted at its pinned digest, stop and re-issue rather than admitting a changed record",
+      "if a concrete source conflict, amendment, repeal or supersession indicator appears, hold for owner and legal direction",
+      "if any criterion would be satisfied by emitting before approval, stop: emission is the thing approval authorises"
+    ],
+    "acceptance_criteria_it_would_carry": [
+      "the amendment carries immutable IDs and versions, and the pre-admission identity it supersedes is named",
+      "the four counts are recorded separately and nothing unresolved is represented as certified",
+      "the authorised finding classes are exactly the owner's, and the observation-class ceiling is recorded where none is authorised",
+      "no artifact of any earlier order is changed, and no earlier baseline or manifest is overwritten",
+      "the scoped Gate 5.7 verdict states whether this unit is admitted, and names anything it cannot meet"
+    ],
+    "what_it_may_not_do": [
+      "it may not admit any rule for any other scope, jurisdiction, limb or presentation",
+      "it may not change statutory text or convert a probable result into a violation",
+      "it may not create a consumer surface, deploy or transmit anything",
+      "it may not treat this order's or any predecessor's scoped verdict as evidence for a later gate, or advance the corpus-wide queue by itself"
+    ],
+    "this_record_does_not_authorise_it": "nothing in this record authorises that order to begin. It is a draft preserved for continuity, marked not issued and not begun."
+  },
+  "the_corpus_wide_position_unchanged": {
+    "5.6": "not met in full for this scope and unpassed corpus-wide",
+    "5.7": "not reached; 0 admitted governed rules and 0 permitted findings remain the recorded counts",
+    "no_admission": "this order admitted no rule and authorized no finding class",
+    "no_consumer_visible_output": "report checking remains \"not yet available\""
+  },
+  "what_this_record_does_not_do": [
+    "it issues no order",
+    "it admits no rule, creates no coverage or candidate and authorises no finding class",
+    "it does not ask the owner to assign a production version to satisfy a gate criterion",
+    "it does not repair the evaluator, the specification or the comparator",
+    "it does not repair or deny the historical preservation failure of PHASE5-001R"
+  ],
+  "created_by": "PHASE5-001T"
+}

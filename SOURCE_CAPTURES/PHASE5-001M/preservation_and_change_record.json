@@ -1,0 +1,85 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001M",
+  "created_utc": "2026-09-30T15:55:15Z",
+  "requirement": "Preserve every existing evidence package byte for byte, and record the before and after digest and the exact diff of every authorized change to an existing file",
+  "baseline": {
+    "files": 245,
+    "bytes": 56723359,
+    "digest": "FCB53E63450C0B09174CE7BEEE8A2ACB094FEBA8E7BE9CC75D58746C0BABF1A9"
+  },
+  "post_write_recheck_excluding_this_orders_output_directory": {
+    "files_compared": 245,
+    "unchanged": 243,
+    "changed": 2,
+    "missing": 0,
+    "unchanged_or_changed_equals_baseline": true
+  },
+  "changed_files": [
+    {
+      "path": "\\CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "bytes_before": 30768,
+      "sha256_before": "F89C8C425A03760E0F73728AF44B2E22D34D2159D29E917F02451B5BBAB3B9AD",
+      "bytes_after": 32294,
+      "sha256_after": "B21952A5C11998B06ADB4E19B80E97B959A6B36C346FAA2E2B18931A75766043",
+      "amendment": "M1-A, M1-B, M1-C - see amendment_text.json"
+    },
+    {
+      "path": "\\CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "bytes_before": 18938,
+      "sha256_before": "4A31AC4C1011EE67D3B1678DB834401B252AFBCE6A18C49B99BEDF49119ED813",
+      "bytes_after": 21997,
+      "sha256_after": "4EFFB76C6B89DBA7BC3C342104384F325E30B5DC59A9B88FEF0133CB83A99BB0",
+      "amendment": "M2-A, M2-B - see amendment_text.json"
+    }
+  ],
+  "inversion_proof": {
+    "method": "Each amended file was reconstructed in memory by restoring the quoted replaced text in place of the stated replacement text and removing the appended block, then hashed",
+    "build_plan": {
+      "recorded_pre_write_sha256": "4A31AC4C1011EE67D3B1678DB834401B252AFBCE6A18C49B99BEDF49119ED813",
+      "reconstructed_sha256": "4A31AC4C1011EE67D3B1678DB834401B252AFBCE6A18C49B99BEDF49119ED813",
+      "exact_match": true,
+      "characters_removed": 527,
+      "characters_added": 3586
+    },
+    "expansion_contract": {
+      "recorded_pre_write_sha256": "F89C8C425A03760E0F73728AF44B2E22D34D2159D29E917F02451B5BBAB3B9AD",
+      "reconstructed_sha256": "F89C8C425A03760E0F73728AF44B2E22D34D2159D29E917F02451B5BBAB3B9AD",
+      "exact_match": true,
+      "characters_removed": 117,
+      "characters_added": 1643
+    }
+  },
+  "unit_level_preservation": {
+    "catalogue_entries_before": 437,
+    "catalogue_entries_after": 437,
+    "catalogue_bytes": 447509,
+    "catalogue_sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+    "catalogue_changed_by_this_order": false,
+    "source_records_removed": 0,
+    "rows_rewritten": 0,
+    "rows_reclassed": 0,
+    "dispositions_changed": 0,
+    "clusters_collapsed_or_merged": 0,
+    "identity_determinations_changed": 0,
+    "rules_admitted": 0,
+    "coverage_or_findings_created": 0,
+    "unresolved_identity_rows_recorded": 15,
+    "unresolved_identity_rows_still_present": 15,
+    "rows_in_register": 437,
+    "b20_mapping_ids_still_visible": true,
+    "b20_class_assigned_to_any_catalogue_id": 0
+  },
+  "not_done": [
+    "no source was retrieved",
+    "no identity was adjudicated",
+    "no cluster was collapsed, merged or re-classed",
+    "no count was certified",
+    "no rule was admitted",
+    "no coverage or finding was created",
+    "no gate was declared passed",
+    "no consumer report, transmission or network call",
+    "no Gate 5.2 work and no PHASE5-001I issue"
+  ],
+  "result": "PRESERVATION HELD - every pre-existing file is byte-identical except the two governing documents this order was authorised to amend"
+}

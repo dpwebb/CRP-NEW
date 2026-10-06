@@ -1,0 +1,56 @@
+{
+  "artifact": "amendment_application_result.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "amendment_form": "quoted replacement, CRP_CORE_CONSTITUTION.md section 6.2 — document named, clause named, replaced text quoted, replacement text stated; the replacement is an extension, so no requirement is removed (section 6.4)",
+  "amendment_authority": "the owner instrument this order carries (owner_decision_record.json), applied through the governing procedure",
+  "digest_before": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+  "digest_after": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+  "document_digest_after_re_read": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+  "digest_after_matches_re_read": true,
+  "bytes_before": 38651,
+  "bytes_after": 41267,
+  "document_changed": true,
+  "document_changed_in_this_run": true,
+  "line_endings": "LF preserved, exactly the convention the document already used",
+  "line_endings_measured": {
+    "before": {
+      "crlf": 0,
+      "lf": 263,
+      "ends_with_newline": true,
+      "lines": 263
+    },
+    "after": {
+      "crlf": 0,
+      "lf": 264,
+      "ends_with_newline": true,
+      "lines": 264
+    }
+  },
+  "amendments_applied": 2,
+  "replacements_applied": 1,
+  "rows_appended": 1,
+  "the_only_pre_existing_file_this_order_changed": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "results": [
+    {
+      "id": "A-U-1",
+      "clause": "section 3, Gate 5.6 (the pre-admission immutable-version sharing sentence, as extended by PHASE5-001S A-4)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false,
+      "extension_only_no_requirement_removed": true,
+      "replaced_text_bytes": 183,
+      "replacement_text_bytes": 1192
+    },
+    {
+      "id": "A-U-2",
+      "clause": "section 8, Amendment History, appended row",
+      "action": "APPLIED"
+    }
+  ],
+  "problems": [],
+  "verdict": "AMENDMENT APPLIED — the Gate 5.6 sharing sentence now records which measurement satisfies the sharing condition and which assignment remains reserved to Gate 5.7; no requirement is removed, no gate is passed by the amendment, and no other pre-existing file was touched",
+  "created_by": "PHASE5-001U"
+}

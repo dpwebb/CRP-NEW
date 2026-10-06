@@ -1,0 +1,166 @@
+{
+  "artifact": "evaluation_results.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "the deterministic internal comparison on the pinned presentation: its arithmetic, its boundary convention, its unresolved qualifications and the classification that governs what may be concluded",
+  "unit": {
+    "unit_id": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "limb": "FIRST_LIMB_ONLY — six years after the last payment was made on the debt",
+    "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)"
+  },
+  "inputs": {
+    "evidenced_artifact_id": "LEG-CONSUMER-EQ-CA",
+    "evidence_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+    "reference_date_field": "Request Date (printed page header, identical on all pages)",
+    "payment_date_field": "Last Payment Date (printed inside a Collections collection record)"
+  },
+  "arithmetic": {
+    "period_years": 6,
+    "comparison": "intervening_days > six_year_span_in_days",
+    "no_day_count_is_hard_coded": true,
+    "day_span_is_derived_from_the_two_dates": true,
+    "leap_year_handling": "a 29 February start maps to 28 February in a non-leap target year (month-end clamp); a six-year span with two leap days is one day wider than one with a single leap day (2,191 against 2,192 measured)",
+    "anniversary_boundary_convention": "the sixth anniversary day is inside the period: the period is exceeded only after it. Whether \"more than six years after\" is inclusive or exclusive of that day is a legal question reserved to the rule record (Gate 5.4) and is not decided here.",
+    "clock_independence": "the evaluation reads no clock, locale, time zone, host or session state; a reference date beyond the run clock changes nothing about how the comparison is computed"
+  },
+  "comparisons": [
+    {
+      "record_index": 1,
+      "last_payment_fact_status": "RESOLVED",
+      "last_payment_fact_reason": null,
+      "last_payment_printed_value": "2021/02/01",
+      "last_payment_normalized_value": "2021-02-01",
+      "last_payment_locator": {
+        "page": 16,
+        "line": 32,
+        "label": "Last Payment Date",
+        "section": "Collections",
+        "record_index": 1,
+        "record_starts_at": {
+          "page": 16,
+          "line": 8
+        },
+        "record_ends_at": {
+          "page": 16,
+          "line": 38
+        }
+      },
+      "reference_date_printed_value": "2026/05/05",
+      "reference_date_normalized_value": "2026-05-05",
+      "evaluation": {
+        "outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "last_payment_date": "2021-02-01",
+        "reference_date": "2026-05-05",
+        "anniversary": "2027-02-01",
+        "intervening_days": 1919,
+        "six_year_span_in_days": 2191,
+        "boundary_case": null,
+        "comparison": "intervening_days > six_year_span_in_days",
+        "period_years": 6,
+        "period_basis": "CALENDAR_YEARS_FROM_THE_LAST_PAYMENT — the anniversary is computed and the day span is derived from the two dates; no day count is hard-coded",
+        "anniversary_boundary_convention": "the sixth anniversary day is inside the period, so the period is exceeded only after it; whether \"more than six years after\" is inclusive or exclusive of that day is a legal question reserved to the rule record",
+        "leap_year_handling": "a 29 February start maps to 28 February in a non-leap target year (month-end clamp); a six-year span containing two leap days is one day wider than one containing a single leap day",
+        "clock_independence": "the evaluation reads no clock, locale, time zone, host or session state"
+      }
+    },
+    {
+      "record_index": 2,
+      "last_payment_fact_status": "RESOLVED",
+      "last_payment_fact_reason": null,
+      "last_payment_printed_value": "2021/02/01",
+      "last_payment_normalized_value": "2021-02-01",
+      "last_payment_locator": {
+        "page": 17,
+        "line": 5,
+        "label": "Last Payment Date",
+        "section": "Collections",
+        "record_index": 2,
+        "record_starts_at": {
+          "page": 16,
+          "line": 39
+        },
+        "record_ends_at": {
+          "page": 17,
+          "line": 11
+        }
+      },
+      "reference_date_printed_value": "2026/05/05",
+      "reference_date_normalized_value": "2026-05-05",
+      "evaluation": {
+        "outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "last_payment_date": "2021-02-01",
+        "reference_date": "2026-05-05",
+        "anniversary": "2027-02-01",
+        "intervening_days": 1919,
+        "six_year_span_in_days": 2191,
+        "boundary_case": null,
+        "comparison": "intervening_days > six_year_span_in_days",
+        "period_years": 6,
+        "period_basis": "CALENDAR_YEARS_FROM_THE_LAST_PAYMENT — the anniversary is computed and the day span is derived from the two dates; no day count is hard-coded",
+        "anniversary_boundary_convention": "the sixth anniversary day is inside the period, so the period is exceeded only after it; whether \"more than six years after\" is inclusive or exclusive of that day is a legal question reserved to the rule record",
+        "leap_year_handling": "a 29 February start maps to 28 February in a non-leap target year (month-end clamp); a six-year span containing two leap days is one day wider than one containing a single leap day",
+        "clock_independence": "the evaluation reads no clock, locale, time zone, host or session state"
+      }
+    }
+  ],
+  "comparison_summary": {
+    "resolved_comparisons": 2,
+    "unresolved_comparisons": 0,
+    "outcomes": {
+      "PERIOD_NOT_EXCEEDED": 2
+    },
+    "note": "these are internal arithmetic outcomes, not legal findings"
+  },
+  "reproduced_from_prod003": {
+    "source": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json deterministic_evaluation_demonstration",
+    "recorded": {
+      "intervening_days": 1919,
+      "six_year_span_in_days": 2191,
+      "boundary": "2027-02-01",
+      "result": "PERIOD_NOT_EXCEEDED"
+    },
+    "reproduced_here": {
+      "intervening_days": 1919,
+      "six_year_span_in_days": 2191,
+      "anniversary": "2027-02-01",
+      "outcome": "PERIOD_NOT_EXCEEDED"
+    },
+    "verdict": "REPRODUCED"
+  },
+  "classification_governing_the_result": {
+    "state": "PRESERVED_LEGACY_CLASSIFICATION_NOT_OVERRIDDEN",
+    "legacy_rule_id": "ca-ns.cra.s10_3_c.debt_retention_6y",
+    "legacy_determinability_level": "D3",
+    "legacy_classification": "REPORT_RELEVANT_BUT_NOT_DETECTABLE",
+    "legacy_permitted_conclusion": "observation",
+    "legacy_packet_eligible": false,
+    "legacy_binding_rule": "D0–D3 → `observation` (recorded legacy governance contract, determinability-level binding)",
+    "authority_note": "Legacy material is rank 10 and carries no authority in this repository (CRP_CORE_CONSTITUTION.md section 2.3). The classification is preserved as a recorded legacy determination because the owner directed that it be preserved and not overridden. It is not relied on as a finding, an admission, a coverage claim or a legal conclusion.",
+    "owner_decision": "OWNER DECISION PHASE5-001I-A: preserve the legacy D3/observation classification and do not override it with PROBABLE_VIOLATION during this order; the stated ceiling is not authorization to emit that finding.",
+    "effective_ceiling_for_this_unit": "OBSERVATION_CLASS_ONLY_UNTIL_THE_OWNER_DECIDES_AT_GATE_5_4",
+    "recorded_field_name_divergence": {
+      "printed_field_the_unit_reads": "Last Payment Date, inside a Collections collection record",
+      "legacy_required_report_field": "tradeline.lastPaymentDate",
+      "state": "RECORDED_NOT_RESOLVED",
+      "note": "The admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record. The divergence is recorded, is not resolved here, and is a recorded basis of the preserved classification. It is an owner/admission question."
+    }
+  },
+  "what_this_result_is_not": [
+    "PERIOD_EXCEEDED, were it reached, would not be a legal finding: it is an arithmetic result on two printed dates",
+    "the unit may not emit VIOLATION at all, and may not emit PROBABLE_VIOLATION under the owner decision recorded for this order",
+    "the ceiling recorded in PROD-003 section 7.4 is a proposal conditioned on the owners rule-corpus amendment; it is not authorization and is not relied on here",
+    "the results carry the unresolved timing and classification qualifications; neither is resolved by this order"
+  ],
+  "legal_finding": null,
+  "finding_authorized": false,
+  "consumer_visible": false,
+  "boundaries": [
+    "Internal validation only: no consumer-visible output, no upload, no deployment, no billing, no authentication.",
+    "No rule is admitted, no coverage is created, no finding class exists and no gate is passed by this unit.",
+    "The comparison outcomes are arithmetic results on two resolved dates; PERIOD_EXCEEDED alone is not a legal finding.",
+    "A second rule unit, jurisdiction, bureau, presentation or limb requires a later work order.",
+    "The report is processed locally; no report content, identifier or specimen is copied into this repository."
+  ]
+}

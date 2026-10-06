@@ -1,0 +1,1400 @@
+{
+  "catalog_owner": "OWNER-ALL82-001",
+  "batch": "B3",
+  "note": "Concrete rule adapters. Every value below is traceable to a recorded source; nothing is inferred. An adapter binds a recorded rule's jurisdiction, period, anchor selection and output ceiling, and can never emit a finding.",
+  "applicability_modes": {
+    "EXACT": "the recorded rule row carries this canonical region in its own right",
+    "EXPLICIT_REGION_RELATION": "the recorded rule row is country-wide; the named region is reached only through the relation of that id in applicability-records.json, which carries one row for every canonical region of the country"
+  },
+  "presentations": {
+    "PR-01": "the evidenced Equifax Canada consumer specimen, admitted by digest",
+    "FAM-AU-EQX-CONSUMER": "the admitted AU Equifax consumer credit file family, admitted by structural contract",
+    "US-CONSUMER-DISCLOSURE": "the admitted Experian United States consumer-disclosure family, admitted by structural contract evidenced from the captured official consumer-channel artifact PUB-001 (B3 continuation)",
+    "FAM-GB-EXP-CONSUMER": "the admitted Experian United Kingdom consumer credit report family, admitted by structural contract evidenced from the captured official consumer report example PUB-009 (B3 continuation). It evidences the structure of one bureau's GB consumer presentation as at June 2007; its currency for present-day GB files is NOT established and is recorded as a named remaining blocker. It binds no adapter: the recorded GB relation is guidance, not a statute, and executes nothing.",
+    "FAM-TU-CA-CONSUMER": {
+      "label": "TransUnion Canada consumer disclosure — the ordinary-account material reader",
+      "admitted_by": "the reader is already live for this market; this entry records it in the presentation registry so a rule bound to it is documented rather than implicit",
+      "evidence": "the digest-pinned TransUnion Canada disclosure specimen and the reader's own measured structural contract"
+    }
+  },
+  "adapters": [
+    {
+      "adapter_id": "CA-NS-CRA-S10-3-C-LIMB-1",
+      "legacy_rule_id": "ns.adverse_info.6y",
+      "legacy_crosswalk_rule_id": "ca-ns.cra.s10_3_c.debt_retention_6y",
+      "source_entry_id": "CRP-LSRC-0354",
+      "ledger_row_ids": [
+        "CRP-LSRC-0352",
+        "CRP-LSRC-0354"
+      ],
+      "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+      "limb": "FIRST_LIMB_ONLY — six years after the last payment was made on the debt",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": "tradeline.lastPaymentDate",
+      "period_years": 6,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NS"
+      },
+      "presentation_required": "PR-01",
+      "output_permission": {
+        "max_conclusion": "observation",
+        "finding_allowed": false,
+        "packet_eligible": false
+      },
+      "recorded_input_divergence": "the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record — recorded, not resolved",
+      "excluded": [
+        "the default-date limb — FACT-05 is unseated on PR-01",
+        "every other rule unit, jurisdiction, bureau, presentation and channel",
+        "any consumer-visible output of any class"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c) — six years after the last payment on the debt; the admitted text records no exception",
+        "items": []
+      },
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y",
+      "legacy_rule_id": "ns.bankruptcy.6y",
+      "source_entry_id": "CRP-LSRC-0353",
+      "ledger_row_ids": [
+        "CRP-LSRC-0353"
+      ],
+      "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(e)",
+      "limb": "six years after the discharge of the consumer (a second bankruptcy is excepted by the section)",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": [
+        "bankruptcy.dischargeDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "period_years": 6,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NS"
+      },
+      "presentation_required": "PR-01",
+      "presentation_required_added_by": "OWNER-ALL82-001 / B4 continuation (2026-10-01) and OWNER-EVIDENCE-001 (2026-10-02). B4 kept the CA-NS statutory admission exact-specimen and observation-only, so this limb stays bound to PR-01. OWNER-EVIDENCE-001 (reported-fact policy v1.0) reconciled the reason it was withheld: a clearly labelled bankruptcy discharge date printed on an admitted report is the bureau's reported fact, and external corroboration is not required merely because the fact describes a legal event. The anchor is now SINGLE_FIELD on 'bankruptcy.dischargeDate' (an explicit discharge label on the bankruptcy record itself, never a filing, update or trustee date). The exact-specimen presentation restriction is preserved: a general report does not broaden the CA-NS statutory surface.",
+      "start_record": "s. 10(3)(e) runs from 'the date of the discharge of the consumer'. OWNER-EVIDENCE-001 v1.0 accepts a clearly labelled bankruptcy discharge date as the reported fact, so the adapter no longer withholds it as a legal event. The date must be an explicit discharge label on the bankruptcy record itself, unambiguous and free of material contradiction; filing dates, update dates, ambiguous bankruptcy dates and a trustee's discharge are never substituted.",
+      "output_permission": {
+        "max_conclusion": "observation",
+        "finding_allowed": false,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(e) — six years after the discharge; the admitted text records 'a second bankruptcy is excepted by the section'. GAP-FINDING-002 revisit: a 'second bankruptcy' requires establishing a DISTINCT bankruptcy event identity (a separate case/court); the report extraction produces only discharge dates, and distinct dates alone cannot distinguish a second bankruptcy from a duplicate listing or a cross-bureau copy of the same event. The exception is therefore not determinable from the report.",
+        "items": [
+          {
+            "id": "second-bankruptcy",
+            "text": "a second bankruptcy is excepted by the section",
+            "report_observable": false
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "CA-NS-CRA-S10-3-D-JUDGMENT-CONTENT",
+      "legacy_rule_id": "ns.judgment_content.required",
+      "source_entry_id": "CRP-LSRC-0354",
+      "ledger_row_ids": [
+        "CRP-LSRC-0354"
+      ],
+      "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(d)",
+      "limb": "a judgment may be reported only when mention is made of the name and, where available, the address of the judgment creditor as given at the date of entry and the amount",
+      "anchor_mode": "CONTENT_OMISSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "JUDGMENT_PUBLIC_RECORD_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NS"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CANDIDATE-002 (2026-10-04): the judgment-content structure is carried by the authorized GENERAL-BUREAU-REPORT intake (bureau-agnostic, reads judgment public records), not by the PR-01 debt/collection specimen which prints no judgment. No PR-01 widening; no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "observation",
+        "finding_allowed": false,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "the 'where available' address and the assignee alternative are off-report and are handled as the unsupported branch — never a finding",
+        "items": []
+      },
+      "finding_gate": "DISABLED_PENDING_LEGAL_GATES: the assignment alternative ('known to have been assigned' + 'where available') is off-report and its absence on the report does not establish the creditor branch, so no omission finding is sound from report evidence alone; and the edition currency (R.S.N.S. 1989 c.93 in force vs the 2023 Revision c. C-53) has no affirmative proclamation/commencement evidence, only 'no proclamation retrieved'. finding_allowed stays false and the ceiling stays observation until those legal gates are resolved by architect decision. The extraction and evaluation path is complete and tested.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE",
+      "legacy_rule_id": "ns.dismissed_charge.prohibited",
+      "source_entry_id": "CRP-LSRC-0358",
+      "ledger_row_ids": [
+        "CRP-LSRC-0358"
+      ],
+      "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(f)",
+      "limb": "a consumer reporting agency shall not include in a consumer report information regarding any criminal or summary conviction charges against the consumer where the charges have been dismissed, set aside, withdrawn or in respect of which a stay of proceedings has been entered",
+      "anchor_mode": "CONTENT_INCLUSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "CRIMINAL_CHARGE_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NS"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CANDIDATE-003 (2026-10-04): the criminal-charge content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, like the judgment-content rule. No PR-01 widening; no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "s.10(3)(f) has no off-report exception — the dismissed/set-aside/withdrawn/stayed disposition is a report-printed fact",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-04): legal applicability and the corrected semantic/evidence gates pass. The official Proclamations page (https://nslegislature.ca/legislation/proclamations-nova-scotia-statutes, captured 2026-09-30, og:updated_time 2026-09-25, sha256 01980C5D0F9D38434554B3789AA92C3BC501AAE661E9DDFB51CD6A6B4700D631) records R.S. 1989 in force February 22, 1990 and no 2023-Revision proclamation; the 2023 c. C-53 re-number is s.12(3)(h) (not (f)). Charge identity + bound disposition + semantic classification + source value/record-identity agreement are tested through the classifier. packet_eligible stays false. NS judgment assignment remains independently unresolved.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS",
+      "legacy_rule_id": "ca-on.cra.s9_3_a.best_evidence_basis",
+      "source_entry_id": "CRP-LSRC-0362",
+      "ledger_row_ids": [
+        "CRP-LSRC-0362"
+      ],
+      "citation": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a)",
+      "limb": "RECORDED PROVISION (located 2026-10-04): Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a) — 'any credit information based on evidence that is not the best evidence reasonably available' (within '9(3) A consumer reporting agency shall not include in a consumer report,'; s. 9 is 'Procedures of agencies', s. 9(2) 'Information included in consumer report', s. 9(3) 'Idem'). Applicable edition: the consolidation in force (consolidation period from July 1, 2026 to the e-Laws currency date; last amendment 2025, c. 24, Sched. 6, which amends s. 12(3) and not s. 9). Source identity: Government of Ontario, e-Laws. Paragraph (a)'s wording is located from a published rendering corroborated by the authoritative consolidated index and by this row's admitted legacy atomic rule `ca-on.cra.s9_3_a.best_evidence_basis`; the authoritative full-page render was unavailable in this environment and that limitation is retained. Full record: SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic, and it claims no commencement date.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-ON"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-04): legal applicability and the evidence gate pass. CRP-LSRC-0362 is an EXACT CA-ON row, owner-accepted, instrument class STATUTE_OR_REGULATION with no confirmation required, and its legacy atomic rule ca-on.cra.s9_3_a.best_evidence_basis is an EXACT recorded mapping with the operational mapping ESTABLISHED. Its recorded basis is the provision's own located wording (not the legacy rule id and not an earlier gloss), with the applicable edition, source identity and retrieval limitation recorded in SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json. The maximum conclusion is probable_violation, never violation: the report establishes that its own two printed values cannot both be right, and nothing in the report establishes which of them is unreliable or whether a benign explanation applies. The same printed conflict reaches the consumer as ONE issue carrying both supported bases (the factual conflict and this recorded rule) with one verification request; the internal classifications stay separate inside that issue. packet_eligible stays false; a PROBABLE content finding is packet-eligible by confidence, not by a widened per-rule permission.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY",
+      "legacy_rule_id": "uk.accuracy_duty.gdpr5",
+      "source_entry_id": "CRP-LSRC-0407",
+      "ledger_row_ids": [
+        "CRP-LSRC-0407"
+      ],
+      "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+      "limb": "RECORDED PROVISION (retrieved 2026-10-04, official publisher legislation.gov.uk): Article 5(1)(d) — '(d) accurate and, where necessary, kept up to date; every reasonable step must be taken to ensure that personal data that are inaccurate, having regard to the purposes for which they are processed, are erased or rectified without delay (accuracy)'; Article 16 — 'The data subject shall have the right to obtain from the controller without undue delay the rectification of inaccurate personal data concerning him or her. Taking into account the purposes of the processing, the data subject shall have the right to have incomplete personal data completed, including by means of providing a supplementary statement.' Applicable edition: the edition in force (latest available revised version); the publisher records no textual amendment to Article 5(1)(d) or Article 16 (the recorded 2025 amendments fall on Article 5(1)(b), 5(1)(e) and the inserted Article 5(3)). Territorial extent: the instrument's own recorded 'U.K.' extent, recorded as relation GB-UK-GDPR-ACCURACY-COUNTRY-WIDE. Full record: SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic and claims no commencement date.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+        "country": "GB"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "CRP_VERSION_1_FINISH_ORDER_001 (2026-10-04): the ordinary-account opened/closed structure is carried by the admitted general bureau-report intake, which every canonical region already drives. This rule is NOT bound to the GB consumer-disclosure family reader, whose current-format currency remains a separate open intake gap (CURRENT_GB_SUPPORT_IS_ESTABLISHED).",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values are accurate is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the controller's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-04): legal applicability and the evidence gate pass. CRP-LSRC-0407 is an owner-accepted row whose instrument class is STATUTE_OR_REGULATION with no confirmation required and whose legacy atomic rule uk.accuracy_duty.gdpr5 is an ESTABLISHED recorded mapping. Its recorded basis is the provision's own words retrieved from the official publisher, with the applicable edition, territorial extent and retrieval limitation recorded in SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json. The maximum conclusion is probable_violation, never violation: the report establishes that its own two printed values cannot both be right, and nothing in the report establishes which of them is inaccurate or whether a benign explanation applies. The same printed conflict reaches the consumer as ONE issue carrying both supported bases with one verification request. packet_eligible stays false; a PROBABLE content finding is packet-eligible by confidence, not by a widened per-rule permission.",
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts"
+    },
+    {
+      "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+      "legacy_rule_id": "us.bankruptcy.10y",
+      "source_entry_id": "CRP-LSRC-0004",
+      "ledger_row_ids": [
+        "CRP-LSRC-0004"
+      ],
+      "citation": "FCRA § 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
+      "limb": "cases under title 11 or a similar provision, from the date of entry of the order for relief or the date of adjudication",
+      "anchor_mode": "PRIORITY_CHAIN",
+      "period_years": 10,
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "country": "US"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of entry of the order for relief (or adjudication)'. OWNER-EVIDENCE-001 accepts a clearly labelled 'Order for Relief' or 'Adjudicated/Adjudication' date on a bankruptcy public record as the reported fact. A filing date is never substituted for the order for relief.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_fields": [
+        "publicRecord.bankruptcyOrderForReliefDate",
+        "publicRecord.bankruptcyAdjudicationDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "source": {
+          "provision": "15 U.S.C. § 1681c(b)",
+          "artifact": "packages\\backend\\src\\services\\legalRules.ts",
+          "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-150k",
+            "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 15000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-150k",
+            "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 15000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-75k",
+            "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 7500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "FCRA-605A-2-US-NATIONAL-7Y",
+      "legacy_rule_id": "us.judgment.7y",
+      "source_entry_id": "CRP-LSRC-0005",
+      "ledger_row_ids": [
+        "CRP-LSRC-0005"
+      ],
+      "citation": "FCRA § 605(a)(2) — 15 U.S.C. § 1681c(a)(2)",
+      "limb": "civil suits and civil judgments, from the date of entry or the end of the governing statute of limitations if that is longer",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "country": "US"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of entry, or the end of the governing statute of limitations if longer'. The date of entry is computed; the governing statute-of-limitations alternative is NOT computed because no owner-accepted limitation record establishes the governing limitation period for this judgment, and the governing limitation jurisdiction is not inferred from the consumer-selected region. The comparison is therefore an EXPLICITLY INCOMPLETE OBSERVATION: the seven-year minimum from entry, never the full legal threshold.",
+      "output_permission": {
+        "max_conclusion": "observation",
+        "finding_allowed": false,
+        "packet_eligible": false
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_field": [
+        "publicRecord.judgmentEntryDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "observation_incomplete": "the statute-of-limitations alternative (whichever is longer) is not computed; the seven-year comparison is a minimum, not the full legal threshold",
+      "exceptions": {
+        "recorded": true,
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "source": {
+          "provision": "15 U.S.C. § 1681c(b)",
+          "artifact": "packages\\backend\\src\\services\\legalRules.ts",
+          "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-150k",
+            "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 15000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-150k",
+            "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 15000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-75k",
+            "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 7500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "FCRA-605A-3-US-NATIONAL-7Y",
+      "legacy_rule_id": "us.tax_lien_paid.7y",
+      "source_entry_id": "CRP-LSRC-0006",
+      "ledger_row_ids": [
+        "CRP-LSRC-0006"
+      ],
+      "citation": "FCRA § 605(a)(3) — 15 U.S.C. § 1681c(a)(3)",
+      "limb": "paid tax liens, from the date the lien was paid",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "country": "US"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date the lien was paid'. OWNER-EVIDENCE-001 accepts a clearly labelled 'Date Paid'/'Date Released'/'Date Satisfied' on a tax-lien public record.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_field": [
+        "publicRecord.taxLienPaidDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "source": {
+          "provision": "15 U.S.C. § 1681c(b)",
+          "artifact": "packages\\backend\\src\\services\\legalRules.ts",
+          "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-150k",
+            "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 15000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-150k",
+            "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 15000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-75k",
+            "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 7500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "FCRA-605A-4-US-NATIONAL-7Y",
+      "legacy_rule_id": "us.collection.7y",
+      "source_entry_id": "CRP-LSRC-0007",
+      "ledger_row_ids": [
+        "CRP-LSRC-0007"
+      ],
+      "citation": "FCRA § 605(a)(4) — 15 U.S.C. § 1681c(a)(4)",
+      "limb": "accounts placed for collection or charged to profit and loss, from the delinquency that preceded the collection or charge-off",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "country": "US"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the delinquency that preceded the collection or charge-off'. An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection record is the commencement of that delinquency, and § 605(c)(1) moves the reporting period 180 days after it. A generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, sale, update or payment date is never substituted.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "applicability_rule": "COLLECTION_RECORD_PRESENT",
+      "applicability_note": "the recorded start of this limb is the delinquency that preceded the collection or charge-off. The admitted United States family evidences no presentation of an account placed for collection or charged to profit or loss, so no anchor is read from one. What this adapter resolves is whether such an account is presented at all. Its anchor_mode is unchanged.",
+      "anchor_field": [
+        "collection.delinquencyDate"
+      ],
+      "anchor_day_offset": 180,
+      "anchor_day_offset_basis": "FCRA § 605(c)(1): the seven-year period begins 180 days after the commencement of the delinquency that immediately preceded the collection or charge-off.",
+      "record_kinds": [
+        "GENERAL_COLLECTION"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "source": {
+          "provision": "15 U.S.C. § 1681c(b)",
+          "artifact": "packages\\backend\\src\\services\\legalRules.ts",
+          "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-150k",
+            "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 15000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-150k",
+            "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 15000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-75k",
+            "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 7500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "FCRA-605A-5-US-NATIONAL-7Y",
+      "legacy_rule_id": "us.negative_info.7y",
+      "source_entry_id": "CRP-LSRC-0003",
+      "ledger_row_ids": [
+        "CRP-LSRC-0003"
+      ],
+      "citation": "FCRA § 605(a)(5) — 15 U.S.C. § 1681c(a)(5)",
+      "limb": "other adverse item of information, seven years from the date of the adverse item",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "country": "US"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "presentation_required_added_by": "B6-INGEST-004: the general intake now evidences the adverse-rating date (\"NN days past due as of Mon YYYY\"), so this check runs on a general report when that field is established. The exact-specimen CA-NS ceiling is unaffected.",
+      "start_record": "the recorded start is 'the date of the adverse item'. The paragraph names no report field, and no presentation this build admits prints that date as such",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "not_implemented_limbs": [
+        "FCRA § 605(c)'s 180-day clock-start adjustment (legacy fcra605cYearsElapsed) is recorded but is NOT applied by this adapter; applying it changes which clock runs and is a separate change"
+      ],
+      "anchor_field": "reportedAccount.adverseRatingDate",
+      "record_kinds": [
+        "REPORTED_ACCOUNT"
+      ],
+      "applicability_rule": "ADVERSE_PAYMENT_RATING_ITEM_PRESENT",
+      "anchor_evidence": {
+        "evidenced_artifact_id": "PUB-001",
+        "sha256": "601c2387b62a1a8f1425ffffcdc80a1e64ce1de0c8b1d662922350cd1f0dec01",
+        "printed_field": "Payment history guide -> \"NN days past due as of <Mon YYYY>\"",
+        "evidence_record": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-001.pdf, recovered by the local OCR reader; account 1, 'Potentially negative items', reading '30 days past due as of Jun 2015' at y=2025.6 of a 954x5669 pt page, confidence 95.8",
+        "why_this_is_the_recorded_start": "the recorded start is 'the date of the adverse item'. The admitted family prints, on the account itself, its own annotation of that account's most recent adverse payment rating and the month it applies to. That annotation is the adverse item's date as THIS report states it.",
+        "does_not_establish": "the date of first delinquency; this presentation prints no such field, and no cell of its graphical payment-history grid is read"
+      },
+      "applicability_note": "resolved PER RECORD. A record that prints its own adverse payment rating and date is APPLICABLE and is measured. A record that prints none is APPLICABILITY_UNRESOLVED, because an unread grid is not evidence of a clean record.",
+      "excluded": [
+        "every other US limb recorded in the relation that this build cannot anchor",
+        "any consumer-visible output of any class",
+        "any finding of any class"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "source": {
+          "provision": "15 U.S.C. § 1681c(b)",
+          "artifact": "packages\\backend\\src\\services\\legalRules.ts",
+          "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-150k",
+            "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 15000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-150k",
+            "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 15000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-75k",
+            "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 7500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "US-NY-GBL-380J-F1-II-JUDGMENT-5Y",
+      "legacy_rule_id": "us.ny.judgment.satisfied.5y",
+      "legacy_rule_ids_also_on_these_rows": [
+        "us.ny.judgment.7y"
+      ],
+      "source_entry_id": "CRP-LSRC-0165",
+      "ledger_row_ids": [
+        "CRP-LSRC-0165",
+        "CRP-LSRC-0166"
+      ],
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(ii)",
+      "limb": "a judgment, where the judgment was satisfied within five years of entry",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 5,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-NY"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date the judgment was entered', conditioned on 'the judgment was satisfied within five years of entry'. The entry date is the anchor; the satisfaction date on the same judgment must be present and within five years of entry for the limb to apply.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "why_not_bound_to_a_region_presentation": "no United States consumer-disclosure presentation is admitted by this build; the recorded research disposition is that no byte-pinned United States consumer disclosure was obtained",
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "ACCEPT-003 D3: a multi-fact limb. The anchor is the judgment entry date; the condition is a satisfaction date on the same judgment within five years of entry. A satisfaction label without its date does not establish when satisfaction occurred, and the satisfaction date is never substituted as the start of the entry-based period.",
+      "anchor_field": [
+        "publicRecord.judgmentEntryDate"
+      ],
+      "condition_field": "publicRecord.judgmentSatisfactionDate",
+      "condition_within_years": 5,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "source": {
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
+          "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
+          "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
+          "verified_at": "2026-09-26"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-50k",
+            "text": "the report is used in connection with a credit transaction involving a principal amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 5000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-50k",
+            "text": "the report is used for the underwriting of life insurance involving a face amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 5000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-25k",
+            "text": "the report is used for the employment of an individual at an annual salary of $25,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 2500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+      "legacy_rule_id": "us.ny.tax_lien.paid.7y",
+      "source_entry_id": "CRP-LSRC-0167",
+      "ledger_row_ids": [
+        "CRP-LSRC-0167"
+      ],
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(iii)",
+      "limb": "a paid tax lien, from the date the lien was paid",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-NY"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date the paid tax lien was paid'. OWNER-EVIDENCE-001 accepts a clearly labelled 'Date Paid'/'Date Released'/'Date Satisfied' on a tax-lien public record.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_field": [
+        "publicRecord.taxLienPaidDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "source": {
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
+          "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
+          "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
+          "verified_at": "2026-09-26"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-50k",
+            "text": "the report is used in connection with a credit transaction involving a principal amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 5000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-50k",
+            "text": "the report is used for the underwriting of life insurance involving a face amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 5000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-25k",
+            "text": "the report is used for the employment of an individual at an annual salary of $25,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 2500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+      "legacy_rule_id": "us.ny.bankruptcy.14y",
+      "source_entry_id": "CRP-LSRC-0168",
+      "ledger_row_ids": [
+        "CRP-LSRC-0168"
+      ],
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(i)",
+      "limb": "a bankruptcy, from the date of adjudication of the most recent bankruptcy",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 14,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-NY"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of adjudication of the most recent bankruptcy'. OWNER-EVIDENCE-001 accepts a clearly labelled 'Adjudicated'/'Adjudication' date on a bankruptcy public record. A filing date is never substituted.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_field": [
+        "publicRecord.bankruptcyAdjudicationDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": true,
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "source": {
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
+          "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
+          "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
+          "verified_at": "2026-09-26"
+        },
+        "items": [
+          {
+            "id": "credit-transaction-50k",
+            "text": "the report is used in connection with a credit transaction involving a principal amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "credit_transaction",
+              "threshold_cents": 5000000,
+              "amount_basis": "principal amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "life-insurance-50k",
+            "text": "the report is used for the underwriting of life insurance involving a face amount of $50,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "life_insurance_underwriting",
+              "threshold_cents": 5000000,
+              "amount_basis": "face amount",
+              "currency": "USD"
+            }
+          },
+          {
+            "id": "employment-25k",
+            "text": "the report is used for the employment of an individual at an annual salary of $25,000 or more",
+            "report_observable": false,
+            "consumer_resolution": {
+              "purpose": "employment",
+              "threshold_cents": 2500000,
+              "amount_basis": "annual salary",
+              "currency": "USD"
+            }
+          }
+        ]
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+      "legacy_rule_id": "us.ca.bankruptcy.10y",
+      "source_entry_id": "CRP-LSRC-0171",
+      "ledger_row_ids": [
+        "CRP-LSRC-0171"
+      ],
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(1)",
+      "limb": "a bankruptcy, from the date of the order for relief",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 10,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-CA"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of the order for relief'. OWNER-EVIDENCE-001 accepts a clearly labelled 'Order for Relief' date on a bankruptcy public record. A filing date is never substituted.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "applicability_note": "OWNER-EVIDENCE-001 / ACCEPT-002: the recorded start is a legal event whose date the general intake now accepts when clearly labelled on a public record. It runs on GENERAL-BUREAU-REPORT (and its original presentation) when that field is established; a filing or update date is never substituted, and the record is never aged from a neighbouring date.",
+      "anchor_field": [
+        "publicRecord.bankruptcyOrderForReliefDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Civ. Code § 1785.13(a)(1) — ten years from the date of the order for relief; the admitted text records no exception",
+        "items": []
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y",
+      "legacy_rule_id": "us.ca.tax_lien_paid.7y",
+      "source_entry_id": "CRP-LSRC-0264",
+      "ledger_row_ids": [
+        "CRP-LSRC-0264"
+      ],
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(4)",
+      "limb": "paid tax liens that, from the date of payment, antedate the report by more than seven years",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-CA"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of payment'. The general intake accepts a clearly labelled tax-lien 'Date Paid' on a public record; a filing date is never substituted.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "applicability_rule": "PUBLIC_RECORD_RECORD_PRESENT",
+      "anchor_field": [
+        "publicRecord.taxLienPaidDate"
+      ],
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Civ. Code § 1785.13(a)(4) — seven years from the date of payment; the official text records no exception and no statute-of-limitations alternative",
+        "items": []
+      },
+      "source_retrieval_note": "OWNER-CANDIDATE-005 (2026-10-04): the period is recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(4) — 'Paid tax liens that, from the date of payment, antedate the report by more than seven years.'), which the accepted corpus maps to CRP-LSRC-0264 with effectiveFrom=null. The corpus's recorded-gap publication basis did not record the period; the official text supplies it. Source identity corrected to CRP-LSRC-0264's recorded artifact (legalCorpus/rules.ca.ts, 7DDBF5C4), not legalRules.ts.",
+      "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
+    },
+    {
+      "adapter_id": "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+      "legacy_rule_id": "us.ca.collection.7y",
+      "source_entry_id": "CRP-LSRC-0265",
+      "ledger_row_ids": [
+        "CRP-LSRC-0265"
+      ],
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(5), (b)",
+      "limb": "accounts placed for collection (internally or by referral to a third party, whichever is earlier) or charged to profit and loss, from 180 days after the delinquency that immediately preceded the collection or charge-off",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-CA"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action', moved 180 days later by § 1785.13(b). An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection/charge-off record is that commencement; a generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, charge-off, sale, transfer, update or payment date is never substituted.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "applicability_rule": "COLLECTION_RECORD_PRESENT",
+      "anchor_field": [
+        "collection.delinquencyDate"
+      ],
+      "anchor_day_offset": 180,
+      "anchor_day_offset_basis": "Civ. Code § 1785.13(b): the seven-year period commences upon the expiration of the 180-day period beginning on the date of the commencement of the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action; where more than one such action is taken, the period commences concurrently for all on the date of the first action.",
+      "record_kinds": [
+        "GENERAL_COLLECTION"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Civ. Code § 1785.13(a)(5) — seven years from the 180-day-shifted delinquency; the official text records no exception and no report-use exemption (the federal § 1681c(b) exemptions do not attach to this state rule)",
+        "items": []
+      },
+      "source_retrieval_note": "OWNER-CANDIDATE-006 (2026-10-04): the trigger, 180-day start and concurrent timing are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(5)+(b)), which the accepted corpus maps to CRP-LSRC-0265 with effectiveFrom=null. The 180-day start matches the federal § 605(c)(1) rule verbatim, so the existing anchor_day_offset=180 machinery is reused; the mapping is demonstrated from the two official texts, not assumed. Charge-off-only records share the same delinquency anchor (COLLECTION/CHARGE-OFF context) and are included.",
+      "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
+    },
+    {
+      "adapter_id": "US-CA-CCRAA-1785-13-A-8-ADVERSE-7Y",
+      "legacy_rule_id": "us.ca.negative_info.7y",
+      "source_entry_id": "CRP-LSRC-0268",
+      "ledger_row_ids": [
+        "CRP-LSRC-0268"
+      ],
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(8)",
+      "limb": "any other adverse information that antedates the report by more than seven years",
+      "anchor_mode": "SINGLE_FIELD",
+      "period_years": 7,
+      "applicability": {
+        "mode": "EXACT",
+        "country": "US",
+        "region": "US-CA"
+      },
+      "presentation_required": [
+        "US-CONSUMER-DISCLOSURE",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "start_record": "the recorded start is 'the date of the adverse item' under § 1785.13(a)(8) (any other adverse information), with § 1785.13(b) moving the seven-year period (for paragraphs (5) and (8)) 180 days after the delinquency commencement 'with respect to any account that is placed for collection (internally or by referral to a third party, whichever is earlier), charged to profit and loss, or subjected to any similar action'. The supported event-date timing (rating's own date, NO 180-day offset) is NOT yet established: absence of COLLECTION/CHARGE-OFF wording does not establish that (b) is inapplicable because (b) also covers 'any similar action'. Collection/charge-off accounts are governed by the (a)(5) collection branch (US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y, anchor_day_offset: 180).",
+      "output_permission": {
+        "max_conclusion": "observation",
+        "finding_allowed": false,
+        "packet_eligible": false
+      },
+      "finding_disabled": {
+        "disabled": true,
+        "reason": "OWNER-CANDIDATE-007 correction (2026-10-04): the supported event-date timing branch is NOT established. Absence of COLLECTION/CHARGE-OFF wording does not establish that § 1785.13(b) is inapplicable, because (b) also applies to 'any similar action'. This adapter is fail closed (finding_allowed: false) until an admitted evidence basis establishes event-date applicability or supplies the (b) delinquency-based timing.",
+        "enabling_evidence_required": "an admitted report-evidenced account/action context with source provenance that positively establishes the account was NOT placed for collection, charged off, or subjected to a similar action — or the delinquency commencement required by (b) for a collection/charge-off/similar account."
+      },
+      "applicability_rule": "ADVERSE_RATING_ACTION_CONTEXT",
+      "applicability_note": "tri-state account/action context, resolved PER RECORD with source provenance. (1) ESTABLISHED (b) CONTEXT — the record prints COLLECTION / CHARGE-OFF / PLACED FOR COLLECTION (reportedAccount.accountActionContext = COLLECTION_OR_CHARGE_OFF) — is NOT_APPLICABLE here: the (a)(5) collection branch governs with delinquency-based timing and the 180-day offset. (2) ESTABLISHED SUPPORTED EVENT-DATE CONTEXT is APPLICABLE (event-date timing, no 180-day offset), but NO admitted evidence basis produces this state yet, so it is unreachable until such evidence is admitted. (3) UNKNOWN / CONFLICTING / UNSUPPORTED context — including an unlabelled 'similar action' (repossession, foreclosure, write-off) whose legal meaning this build does NOT assign — is APPLICABILITY_UNRESOLVED and emits NO finding.",
+      "anchor_field": [
+        "reportedAccount.adverseRatingDate"
+      ],
+      "record_kinds": [
+        "REPORTED_ACCOUNT"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Civ. Code § 1785.13(a)(8) — seven years from the date of the adverse information; the official text records no exception (the § 1785.13(d) ten-year outer limit is a separate rule, CRP-LSRC-0269, not an exception to (a)(8))",
+        "items": []
+      },
+      "source_retrieval_note": "OWNER-CANDIDATE-007 (B, 2026-10-04): the period and the (b) applicability are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(8)+(b), Stats. 2024 Ch. 520 SB 1061): '(8) Any other adverse information that antedates the report by more than seven years.' and '(b) The seven-year period specified in paragraphs (5) and (8) ... with respect to any account that is placed for collection ..., charged to profit and loss, or subjected to any similar action, upon the expiration of the 180-day period ...'. Because (b) applies to (8) only for collection/charge-off/similar accounts, this residual branch applies the rating's own date with NO 180-day offset and defers collection/charge-off accounts to the (a)(5) branch; the offset is never invented here. The corpus maps (a)(8) to CRP-LSRC-0268 (legalCorpus/rules.ca.ts, 7DDBF5C4).",
+      "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
+    },
+    {
+      "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+      "legacy_rule_id": "au.credit_enquiry.5y",
+      "source_entry_id": "CRP-LSRC-0422",
+      "ledger_row_ids": [
+        "CRP-LSRC-0422"
+      ],
+      "citation": "Privacy Act 1988 (Cth), s. 20W table, item 3 (information of a kind referred to in s. 6N(d) or (e))",
+      "limb": "consumer credit enquiry information may be retained for five years from the day the information request was made",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": "enquiry.date",
+      "period_years": 5,
+      "record_kinds": [
+        "CREDIT_ENQUIRY"
+      ],
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "country": "AU"
+      },
+      "presentation_required": [
+        "FAM-AU-EQX-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "presentation_required_added_by": "B6-INGEST-004: the general intake now evidences a credit-enquiry date, so this check runs on a general AU report when that field is established.",
+      "anchor_evidence": {
+        "evidenced_artifact_id": "PUB-012",
+        "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a",
+        "printed_field": "Enquiry Date",
+        "evidence_record": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf page 9, section 'Consumer Credit Enquiries'",
+        "why_this_is_the_recorded_start": "the recorded start is 'the day the information request was made'; the admitted family prints that date on the enquiry record itself as 'Enquiry Date'"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "excluded": [
+        "every other AU limb recorded in the relation — they are listed there as not report-evidenced on this family",
+        "any consumer-visible output of any class"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 3 (information of a kind referred to in s. 6N(d) or (e)) — five years from the day the request was made; the admitted text records no exception",
+        "items": []
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+      "legacy_rule_id": "au.default.5y",
+      "source_entry_id": "CRP-LSRC-0423",
+      "ledger_row_ids": [
+        "CRP-LSRC-0423"
+      ],
+      "citation": "Privacy Act 1988 (Cth), s. 20W table, item 4 (default information)",
+      "limb": "default information may be retained for five years from the day the credit reporting body collected the default information",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": "overdue.originalListingDate",
+      "period_years": 5,
+      "record_kinds": [
+        "OVERDUE_ACCOUNT"
+      ],
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "country": "AU"
+      },
+      "presentation_required": [
+        "FAM-AU-EQX-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "presentation_required_added_by": "B6-INGEST-004: the general intake now evidences an original-listing date on an overdue record, so this check runs on a general AU report when that field is established.",
+      "anchor_evidence": {
+        "evidenced_artifact_id": "PUB-012",
+        "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a",
+        "printed_field": "Original Listing > Date",
+        "evidence_record": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf page 10, section 'Overdue Accounts'",
+        "why_this_is_the_recorded_start": "the recorded start is 'the day the credit reporting body collected the default information'. The admitted family prints the bureau's own original listing date on the record, and it also prints its own 'Date will be Deleted' — which the extractor reads separately and the result reports as the report's own statement, never as the rule's answer",
+        "ambiguity_rule": "the anchor is the ORIGINAL LISTING date. If a record prints no 'Original Listing' block, the anchor is UNRESOLVED. It is NEVER taken from the current-listing date"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 4 (default information) — five years from the day the body collected it; the admitted text records no exception",
+        "items": []
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+      "legacy_rule_id": "au.liability.2y",
+      "source_entry_id": "CRP-LSRC-0428",
+      "ledger_row_ids": [
+        "CRP-LSRC-0428"
+      ],
+      "citation": "Privacy Act 1988 (Cth), s. 20W table, item 1 (consumer credit liability information)",
+      "limb": "consumer credit liability information may be retained for two years from the day the credit account was terminated or ceased to be in force",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": "liability.closedDate",
+      "period_years": 2,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability": {
+        "mode": "EXPLICIT_REGION_RELATION",
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "country": "AU"
+      },
+      "presentation_required": [
+        "FAM-AU-EQX-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "presentation_required_added_by": "B6-INGEST-004: the general intake now evidences a closure date on a credit-account record, so this check runs on a general report when that field is established. The exact-specimen CA-NS ceiling is unaffected.",
+      "applicability_rule": "LIABILITY_CLOSED_DATE_OR_EXPLICITLY_STATED_STATUS",
+      "anchor_evidence": {
+        "evidenced_artifact_id": "PUB-012",
+        "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a",
+        "printed_field": "Closed Date",
+        "evidence_record": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf pages 6 and 7, section 'Consumer Credit Liability Information', records bounded by 'Credit Provider'",
+        "why_this_is_the_recorded_start": "the recorded start is 'the day the credit account was terminated or ceased to be in force'. The admitted family prints that event on the liability record itself as the record's own 'Closed Date'.",
+        "ambiguity_rule": "the anchor is the record's OWN Closed Date. If the record prints that label with no value, the limb is NOT aged from Opened Date, Re-Opened Date or a neighbouring record: applicability is resolved from the record's own printed status if it has one, and is UNRESOLVED if it does not"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "applicability_note": "resolved PER RECORD. A record printing its own Closed Date is APPLICABLE. A record printing a blank Closed Date and an explicit repayment status that does not state termination is NOT_APPLICABLE. A record printing neither is APPLICABILITY_UNRESOLVED: a blank Closed Date alone proves neither state. No real closed liability record appears in the captured sample, so the APPLICABLE branch is exercised only on synthetic input, which establishes no real closed-account presentation evidence.",
+      "excluded": [
+        "every other AU limb recorded in the relation — they are listed there as not report-evidenced on this family",
+        "any consumer-visible output of any class",
+        "any finding of any class"
+      ],
+      "exceptions": {
+        "recorded": false,
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 1 (consumer credit liability information) — two years from the day the account was terminated; the admitted text records no exception",
+        "items": []
+      },
+      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts"
+    },
+    {
+      "adapter_id": "CA-NL-CPBPA-S39-1-G-DISMISSED-CHARGE",
+      "legacy_rule_id": "nl.dismissed_charge.not_proceeded",
+      "source_entry_id": "CRP-LSRC-0344",
+      "ledger_row_ids": [
+        "CRP-LSRC-0344"
+      ],
+      "citation": "Consumer Protection and Business Practices Act (Newfoundland and Labrador), S.N.L. 2009, c. C-31.1, s. 39(1)(g)",
+      "limb": "a credit reporting agency shall not include in a credit report information as to criminal charges where those charges have been dismissed or not proceeded with",
+      "anchor_mode": "CONTENT_INCLUSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "CRIMINAL_CHARGE_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NL"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "BATCH-6 (2026-10-05): the criminal-charge content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, exactly as the accepted CA-NS dismissed-charge rule reads it. No PR-01 widening and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "s.39(1)(g) records no off-report exception: the dismissed / not-proceeded disposition is a report-printed fact",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official consolidator (https://www.assembly.nl.ca/Legislation/sr/statutes/c31-1.htm, retrieved 2026-10-05, Part VI, Credit Reports), not assumed, and the retrieval is recorded on ledger row CRP-LSRC-0344. Part VI governs consumer reports; s.37 excludes only an agency whose reports deal solely with industrial or commercial enterprises and are distributed only to them, which is not this intake. The limb is a period-less CONTENT_INCLUSION prohibition, so the dismissal / not-proceeded disposition is read as a report-printed fact through the same classifier the accepted CA-NS rule uses. Charge identity, bound disposition, semantic classification and source-value/record-identity agreement are tested end-to-end.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-AB-CPA-CPRR-S4-B-DEBT-LAST-PAYMENT-6Y",
+      "legacy_rule_id": "ab.adverse_info.debt.6y",
+      "source_entry_id": "CRP-LSRC-0339",
+      "ledger_row_ids": [
+        "CRP-LSRC-0339"
+      ],
+      "citation": "Credit and Personal Reports Regulation (Alberta), Alta. Reg. 193/99, s. 4(b), under the Consumer Protection Act, R.S.A. 2000, c. C-26.3",
+      "limb": "unfavourable information about a debt if more than 6 years has elapsed since the date of the last payment on that debt or the date the debt was incurred, whichever is later",
+      "anchor_mode": "SINGLE_FIELD",
+      "anchor_field": "tradeline.lastPaymentDate",
+      "period_years": 6,
+      "record_kinds": [
+        "TU_CA_TRADELINE"
+      ],
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-AB"
+      },
+      "presentation_required": [
+        "FAM-TU-CA-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
+      ],
+      "presentation_required_added_by": "BATCH-8 (2026-10-05): the anchor is the printed Last Payment Date on a TransUnion Canada tradeline, which that reader maps to tradeline.lastPaymentDate.",
+      "anchor_evidence": {
+        "evidenced_artifact_id": "CE-TU-CA-ACCOUNT-MATERIAL",
+        "printed_field": "Last Payment Date",
+        "evidence_record": "the TransUnion Canada account block prints Last Payment Date under its own caption, and the reader maps it to the shared fact with its printed page/line location",
+        "why_this_is_the_recorded_start": "s.4(b) runs from the later of the last payment and the date the debt was incurred. The incurred date is not printed, and an account-opening or first-delinquency date is NOT substituted for it. For a debt incurred once, the last payment date is the later of the two; for a REVOLVING account the outstanding balance may include amounts charged after the last payment, so the incurred date can be later and is then UNKNOWN - which is stated in the consumer wording rather than assumed away.",
+        "ambiguity_rule": "the anchor is the record own printed Last Payment Date; a label with no value, or a value that cannot be read to a precise date, produces no anchor and is never measured from a neighbouring record"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "the provision runs from the later of the last payment and the date the debt was incurred; the second date is not printed on this entry",
+        "items": [
+          {
+            "id": "debt-incurred-date-not-printed",
+            "text": "the date the debt was incurred, which the provision treats as the alternative start of the period, is not printed on this entry",
+            "evaluation_basis": "the report prints a last payment date but no date for when the debt was incurred, and no other printed date is treated as one",
+            "resolvable_from_report": false
+          }
+        ]
+      },
+      "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official King’s Printer publication and is recorded on ledger row CRP-LSRC-0339. The record kind is the reader’s own TU_CA_TRADELINE, and the anchor is a printed date carrying its own source location. The ceiling is PROBABLE because the date the debt was incurred is not printed. packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts",
+      "applicability_rule": "ADVERSE_DEBT_EVIDENCE_ON_THIS_RECORD",
+      "applicability_evidence": {
+        "rule": "ADVERSE_DEBT_EVIDENCE_ON_THIS_RECORD",
+        "decided_from": "the record OWN printed values: the 30/60/90 delinquency counts the reader takes from the block captions beside Terms:, and the printed past-due amount",
+        "why_this_is_the_smallest_sound_mapping": "the report authors both values about this account; neither the United States adverse-rating-date shape nor any invented date is used, and no prose meaning is inferred",
+        "not_adverse": "an unreadable or absent count is never a zero, and an absent past-due amount is never a satisfactory account: both leave the limb UNRESOLVED"
+      }
+    },
+    {
+      "adapter_id": "CA-MB-PIA-S4-E-JUDGMENT-CONTENT-OMISSION",
+      "legacy_rule_id": "mb.judgment_content.required",
+      "source_entry_id": "CRP-LSRC-0377",
+      "ledger_row_ids": [
+        "CRP-LSRC-0377"
+      ],
+      "citation": "The Personal Investigations Act (Manitoba), C.C.S.M. c. P34, s. 4(e)",
+      "limb": "a personal report shall not contain information as to any judgment against the subject unless mention is made of the name and, except in the case of information provided by the director under The Family Support Enforcement Act, the address of the judgment creditor as given at the date of entry of the judgment and the amount of the judgment",
+      "anchor_mode": "CONTENT_OMISSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "JUDGMENT_PUBLIC_RECORD_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-MB"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "BATCH-12 (2026-10-05): the judgment-content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, which reads judgment public records. No PR-01 widening and no new bureau-family admission.",
+      "content_omission": {
+        "decisive_contents": [
+          "amount"
+        ],
+        "omitted_from": [
+          "amount"
+        ],
+        "assignment_alternative_applies": false,
+        "read_but_not_treated_as_an_omission": [
+          "creditor_name",
+          "creditor_address"
+        ],
+        "why": "the reader can establish the AMOUNT absence from a complete entry that prints no amount caption and no dollar figure; an absent creditor NAME or ADDRESS caption cannot be distinguished from an uncaptioned value, so those readings are recorded and never claimed as omissions"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "s. 4(e) excepts the ADDRESS where the information was provided by the director under The Family Support Enforcement Act. The report never states that provenance, so an absent address alone is recorded as an omission candidate and is NOT decisive; the name and the amount carry no exception in the provision.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official Manitoba publication (bilingual consolidation, most current version as of 5 Oct. 2026) and is recorded on ledger row CRP-LSRC-0377. Manitoba own wording is applied: creditor name, creditor address and judgment amount. The assignment alternative the Nova Scotia provision carries does NOT apply here and is not required, so the finding does not inherit it. The ceiling is a VIOLATION only where the entry is complete and a decisive content is VERIFIED_ABSENT; an unreadable or unresolved field is never treated as an omission. The finding is packet-eligible: the consumer chooses it, and the correction request travels the real packet path (BATCH-12).",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    }
+  ]
+}

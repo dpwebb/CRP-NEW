@@ -1,0 +1,2926 @@
+{
+  "artifact": "fixture_suite_001t.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "document_type": "FIXTURE SUITE RESULT — synthetic fixtures only, one scope only. NOT ADMITTED, no emission, no consumer-visible output",
+  "purpose": "run the fixture suite for this unit over every category the Phase 5.6 fixture bullet names, and record the state each fixture reached against the state it must reach",
+  "the_governing_text_read": {
+    "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "clause": "section 3, Phase 5.6 bullet 1 (the fixture suite)",
+    "line": 165,
+    "text": "- Create synthetic and legally reviewed fixtures for each rule unit: clear breach, compliant/within-limit, exact boundary, wrong event date, date unavailable, report contradiction, exception shown, exception unknown, effective-period uncertainty, preemption uncertainty, duplicate catalogue source, wrong jurisdiction, parser failure, OCR ambiguity, and report-section not inspected."
+  },
+  "subject_under_test": {
+    "what": "the deterministic evaluator the Gate 5.5 scoped verdict specified, at its pinned digest",
+    "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+    "sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+    "not_the_older_comparator": "this suite exercises the evaluator the specification defines. It does not read, import, run or conform the PHASE5-001I-A internal comparator, whose boundary treatment the rule record does not adopt; that suite is not re-run and its passing tests are not evidence for this gate."
+  },
+  "rule_record_read": {
+    "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+    "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+    "pre_admission_identity": "CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3",
+    "state": "NOT_ADMITTED — read as data, never as an admission",
+    "the_synthetic_admitted_copy": "fixtures that must reach the arithmetic layer use a synthetic in-memory copy of this record with its admission state marked ADMITTED. That copy admits no governed rule, creates no coverage and is not evidence for any gate."
+  },
+  "pin_verification": {
+    "pins": [
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "pinned_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "measured_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "bytes": 37993,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+        "pinned_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "measured_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "bytes": 9618,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+        "pinned_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "measured_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "bytes": 22891,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+        "pinned_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "measured_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "bytes": 17062,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+        "pinned_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "measured_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "bytes": 10911,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+        "pinned_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "measured_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "bytes": 25602,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+        "pinned_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "measured_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "bytes": 23328,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+        "pinned_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "measured_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "bytes": 41919,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+        "pinned_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "measured_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "bytes": 13183,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "pinned_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "measured_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "bytes": 38651,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+        "pinned_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "measured_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "bytes": 35071,
+        "state": "MATCHES_THE_PIN"
+      }
+    ],
+    "all_match": true,
+    "mismatches": []
+  },
+  "fixture_count": 33,
+  "category_count": 15,
+  "categories_covered": 15,
+  "categories": [
+    {
+      "category": "CLEAR_BREACH",
+      "phase_bullet_text": "clear breach",
+      "fixtures": [
+        "FX-01"
+      ],
+      "covered": true
+    },
+    {
+      "category": "COMPLIANT_WITHIN_LIMIT",
+      "phase_bullet_text": "compliant/within-limit",
+      "fixtures": [
+        "FX-02"
+      ],
+      "covered": true
+    },
+    {
+      "category": "EXACT_BOUNDARY",
+      "phase_bullet_text": "exact boundary",
+      "fixtures": [
+        "FX-03",
+        "FX-04",
+        "FX-05",
+        "FX-06"
+      ],
+      "covered": true
+    },
+    {
+      "category": "WRONG_EVENT_DATE",
+      "phase_bullet_text": "wrong event date",
+      "fixtures": [
+        "FX-07",
+        "FX-08"
+      ],
+      "covered": true
+    },
+    {
+      "category": "DATE_UNAVAILABLE",
+      "phase_bullet_text": "date unavailable",
+      "fixtures": [
+        "FX-09",
+        "FX-10",
+        "FX-11",
+        "FX-31"
+      ],
+      "covered": true
+    },
+    {
+      "category": "REPORT_CONTRADICTION",
+      "phase_bullet_text": "report contradiction",
+      "fixtures": [
+        "FX-12",
+        "FX-27",
+        "FX-28"
+      ],
+      "covered": true
+    },
+    {
+      "category": "EXCEPTION_SHOWN",
+      "phase_bullet_text": "exception shown",
+      "fixtures": [
+        "FX-13"
+      ],
+      "covered": true
+    },
+    {
+      "category": "EXCEPTION_UNKNOWN",
+      "phase_bullet_text": "exception unknown",
+      "fixtures": [
+        "FX-14",
+        "FX-29"
+      ],
+      "covered": true
+    },
+    {
+      "category": "EFFECTIVE_PERIOD_UNCERTAINTY",
+      "phase_bullet_text": "effective-period uncertainty",
+      "fixtures": [
+        "FX-15"
+      ],
+      "covered": true
+    },
+    {
+      "category": "PREEMPTION_UNCERTAINTY",
+      "phase_bullet_text": "preemption uncertainty",
+      "fixtures": [
+        "FX-16",
+        "FX-32"
+      ],
+      "covered": true
+    },
+    {
+      "category": "DUPLICATE_CATALOGUE_SOURCE",
+      "phase_bullet_text": "duplicate catalogue source",
+      "fixtures": [
+        "FX-17"
+      ],
+      "covered": true
+    },
+    {
+      "category": "WRONG_JURISDICTION",
+      "phase_bullet_text": "wrong jurisdiction",
+      "fixtures": [
+        "FX-18",
+        "FX-19",
+        "FX-33"
+      ],
+      "covered": true
+    },
+    {
+      "category": "PARSER_FAILURE",
+      "phase_bullet_text": "parser failure",
+      "fixtures": [
+        "FX-20",
+        "FX-21",
+        "FX-30"
+      ],
+      "covered": true
+    },
+    {
+      "category": "OCR_AMBIGUITY",
+      "phase_bullet_text": "OCR ambiguity",
+      "fixtures": [
+        "FX-22",
+        "FX-23"
+      ],
+      "covered": true
+    },
+    {
+      "category": "REPORT_SECTION_NOT_INSPECTED",
+      "phase_bullet_text": "report-section not inspected",
+      "fixtures": [
+        "FX-24",
+        "FX-25",
+        "FX-26"
+      ],
+      "covered": true
+    }
+  ],
+  "failure_count": 0,
+  "failed_fixtures": [],
+  "fixture_tally": {
+    "cases_whose_result_is_not_emitted": 23,
+    "cases_that_produced_an_arithmetic_record": 23,
+    "cases_that_emitted_a_finding_class": 0,
+    "cases_carrying_a_forbidden_label": 0,
+    "counted_as_consumer_report_presentation_evidence": 0,
+    "synthetic_fixtures_all_labelled_synthetic": true
+  },
+  "leap_day_convention_property": {
+    "what": "every 29 February start in 1900..2100 is checked against convention c2: the sixth-year anniversary must clamp to 28 February, because six years after a leap year is never itself a leap year",
+    "starts_checked": 49,
+    "counterexamples": [],
+    "clamped_to_28_february_in_every_case": true
+  },
+  "cases": [
+    {
+      "id": "FX-01",
+      "categories": [
+        "CLEAR_BREACH"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory report whose one contract debt record prints a last payment date six calendar years and more before the report request date",
+      "the_state_it_must_reach": [
+        "the comparison runs and returns PERIOD_EXCEEDED, an arithmetic result only",
+        "no finding label is rendered and no finding class is available: the ceiling stays OBSERVATION_CLASS_ONLY",
+        "the result is NOT emitted: NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "the boundary case is not reached, so the boundary qualification is not mandatory here"
+      ],
+      "input_provenance": "synthetic in-memory descriptor of the pinned presentation + synthetic admitted copy of the governed rule record + in-memory observations",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2025-01-01",
+            "span_in_days": 2192,
+            "elapsed_days": 2681,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2025-01-01",
+            "span_in_days": 2192,
+            "elapsed_days": 2681,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-02",
+      "categories": [
+        "COMPLIANT_WITHIN_LIMIT"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory report carrying the specimen's own two printed values, so the record's measured arithmetic is reproduced on synthetic input",
+      "the_state_it_must_reach": [
+        "the comparison runs and returns PERIOD_NOT_EXCEEDED — an arithmetic result, never a clearance",
+        "the anniversary is 2027-02-01, the derived span is 2191 days and the elapsed time is 1919 days, the record's own measured numbers",
+        "the result is NOT emitted and carries no finding label"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + the specimen's two recorded printed values as in-memory observations",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "boundary_qualification_mandatory": false,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-03",
+      "categories": [
+        "EXACT_BOUNDARY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory report whose request date is exactly the sixth anniversary of the printed last payment date",
+      "the_state_it_must_reach": [
+        "the outcome is WITHHELD: the comparison is UNRESOLVED and reports BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+        "neither PERIOD_EXCEEDED nor PERIOD_NOT_EXCEEDED is produced on this day",
+        "the boundary qualification becomes mandatory exactly here",
+        "the result is still NOT emitted and carries no finding label"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + in-memory dates on the withheld day",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 2191,
+            "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 2191,
+            "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": true,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-04",
+      "categories": [
+        "EXACT_BOUNDARY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory report whose last payment date is 29 February, so convention c2 clamps the anniversary to 28 February, and whose request date is that clamped day",
+      "the_state_it_must_reach": [
+        "the anniversary is the clamped 28 February, not a 29 February that does not exist (convention c2 with c1)",
+        "the clamped day is itself the withheld boundary: UNRESOLVED with the boundary case and no outcome",
+        "the boundary qualification becomes mandatory"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a 29 February start",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2191,
+            "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2191,
+            "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": true,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-05",
+      "categories": [
+        "EXACT_BOUNDARY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the day before the clamped anniversary, from the same 29 February start",
+      "the_state_it_must_reach": [
+        "the arithmetic returns PERIOD_NOT_EXCEEDED on the day before the clamped anniversary",
+        "no boundary case is reached"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy, one day before the clamped anniversary",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2190,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2190,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-06",
+      "categories": [
+        "EXACT_BOUNDARY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the day after the clamped anniversary, from the same 29 February start",
+      "the_state_it_must_reach": [
+        "the arithmetic returns PERIOD_EXCEEDED on the day after the clamped anniversary",
+        "no boundary case is reached"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy, one day after the clamped anniversary",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2192,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2022-02-28",
+            "span_in_days": 2191,
+            "elapsed_days": 2192,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-07",
+      "categories": [
+        "WRONG_EVENT_DATE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the caller declares the last-payment role against a different printed field of the same record (Date Paid/Settled)",
+      "the_state_it_must_reach": [
+        "gate G4 fails and the refusal is REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "no fact is read and no comparison runs: the mapping gate sits before the fact layer",
+        "nothing is emitted"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + the pinned unadmitted rule record + a synthetically mis-declared event-date mapping",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "reference_status": null,
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-08",
+      "categories": [
+        "WRONG_EVENT_DATE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the caller declares the two event roles the other way round",
+      "the_state_it_must_reach": [
+        "both roles are required to match the recorded mapping, so the swap is refused with REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "no fact is read, no comparison runs and nothing is emitted"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + pinned rule record + a synthetically swapped mapping",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-09",
+      "categories": [
+        "DATE_UNAVAILABLE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the contract debt record prints the Last Payment Date label with no value against it",
+      "the_state_it_must_reach": [
+        "the fact is EXTRACTION_UNRESOLVED with reason LABEL_PRINTED_WITHOUT_VALUE",
+        "the fact is never recorded as ABSENT_FROM_REPORT: a blank printed value is not an absence reading",
+        "the comparison does not run and no outcome is produced for that record"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an in-memory record whose label carries no value",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "EXTRACTION_UNRESOLVED",
+            "reason": "LABEL_PRINTED_WITHOUT_VALUE",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "EXTRACTION_UNRESOLVED",
+            "reason": "LABEL_PRINTED_WITHOUT_VALUE",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-10",
+      "categories": [
+        "DATE_UNAVAILABLE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the page header carries no Request Date label at all, so the reference date the comparison needs is unavailable",
+      "the_state_it_must_reach": [
+        "the reference date is EXTRACTION_UNRESOLVED with reason HEADER_LABEL_NOT_FOUND: the convention input has no absence path",
+        "the comparison does not run and no outcome is produced for the record"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an in-memory header observation with no label",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "reference_reason": "HEADER_LABEL_NOT_FOUND",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "reference_reason": "HEADER_LABEL_NOT_FOUND",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-11",
+      "categories": [
+        "DATE_UNAVAILABLE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the header label is on every page with one identical value, but the value is not in the presentation's printed form",
+      "the_state_it_must_reach": [
+        "the reference date is EXTRACTION_UNRESOLVED with reason REQUEST_DATE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "the comparison does not run: a malformed printed date is never normalised by guesswork"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an in-memory header value in a different print form",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "reference_reason": "REQUEST_DATE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "reference_reason": "REQUEST_DATE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-12",
+      "categories": [
+        "REPORT_CONTRADICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the Request Date label appears on every page but the printed values differ between pages",
+      "the_state_it_must_reach": [
+        "the reference date is CONTRADICTED with reason REQUEST_DATE_DIFFERS_BETWEEN_PAGES — a status of its own, never folded into EXTRACTION_UNRESOLVED",
+        "the comparison does not run and no outcome is produced"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + two different in-memory header values",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "reference_status": "CONTRADICTED",
+        "reference_reason": "REQUEST_DATE_DIFFERS_BETWEEN_PAGES",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "CONTRADICTED",
+        "reference_reason": "REQUEST_DATE_DIFFERS_BETWEEN_PAGES",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-13",
+      "categories": [
+        "EXCEPTION_SHOWN"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory input that asserts an exception is shown, in a field the evaluator has no input for",
+      "the_state_it_must_reach": [
+        "this unit evaluates no exception: the rule record records the direct-report contract section 4 retention exception as RECORDED_NOT_RELIED_ON, and its route is satisfied by nothing because no governed rule is admitted",
+        "the supplied exception marker is not read, so the evaluation reaches exactly the state it reaches without it",
+        "the record produces the arithmetic and still emits nothing — no exception is relied on and none is treated as absent"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an exception marker field the specification does not define",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-14",
+      "categories": [
+        "EXCEPTION_UNKNOWN"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory input that asserts the exception state is unknown, in the same undefined field",
+      "the_state_it_must_reach": [
+        "the unknown exception is not read, so it suppresses nothing: the record is the same record the same input produces without the marker",
+        "this unit has no probable path and no finding class, so \"an unknown exception never suppresses a report-supported probable path\" is recorded here as a refusal-or-observation fact and implies no capability this scope does not have",
+        "nothing is emitted and no finding label is rendered"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an undefined exception-state field",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-15",
+      "categories": [
+        "EFFECTIVE_PERIOD_UNCERTAINTY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory input whose governing record carries the unresolved effective period",
+      "the_state_it_must_reach": [
+        "the applicability state is carried as the record leaves it: UNRESOLVED_MISSING_EVIDENCE, never filled with an invented effective date",
+        "the timing qualification is mandatory on the record and is carried",
+        "the arithmetic resolves and the record still emits nothing: the uncertainty restricts output instead of being resolved"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy (which carries the record's own unresolved temporal half) + in-memory observations",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED"
+          }
+        ],
+        "outcome_present": true,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-16",
+      "categories": [
+        "PREEMPTION_UNCERTAINTY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory input whose governing record carries the recorded citation seam between s. 10(3)(c) and s. 10(ha) and no preemption determination",
+      "the_state_it_must_reach": [
+        "no preemption determination exists in this scope and none is invented: the record's unresolved items are carried, including the recorded citation-seam dependency",
+        "the evaluator reads no preemption input and reaches no preemption conclusion",
+        "the arithmetic resolves, the unresolved items stay carried, and nothing is emitted"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy carrying the record's own unresolved dependencies + in-memory observations",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED"
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-17",
+      "categories": [
+        "DUPLICATE_CATALOGUE_SOURCE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the same provision reached through a second catalogue rendering: the rule-corpus entry and the timing determination in the accepted source pin, plus the legacy production identifier the record carries",
+      "the_state_it_must_reach": [
+        "two catalogue renderings of one provision resolve to one immutable rule ID with one limb: no second unit, no second limb and no second outcome are created",
+        "the two renderings produce byte-identical records for the same input, so a duplicated source cannot fork the evaluation",
+        "no coverage, candidate or finding class is created by the duplication"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + two synthetic in-memory copies of the one governed record, one built through the rule-corpus rendering and one through the timing rendering, each carrying the same immutable rule ID",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED (two renderings of one record)",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": {
+        "second_input_checked": true,
+        "the_two_renderings_produce_byte_identical_records": true,
+        "record_sha256_first": "6DB63D529A31EE5162F0B3C033D90BD4DCB5B48A5A74A3D98BD2193493215EC1",
+        "record_sha256_second": "6DB63D529A31EE5162F0B3C033D90BD4DCB5B48A5A74A3D98BD2193493215EC1"
+      },
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-18",
+      "categories": [
+        "WRONG_JURISDICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the caller selects a real but different jurisdiction, CA / CA-ON, for a unit authorised only for CA / CA-NS",
+      "the_state_it_must_reach": [
+        "gate G2 fails and the refusal is REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "jurisdiction is never inferred from the report, and no evaluation runs: the fact and comparison layers do not run",
+        "nothing is emitted"
+      ],
+      "input_provenance": "a synthetically mis-selected jurisdiction + the pinned unadmitted rule record + in-memory observations that are never read",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "reference_status": null,
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-19",
+      "categories": [
+        "WRONG_JURISDICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "no country/region selection is supplied at all",
+      "the_state_it_must_reach": [
+        "gate G1 fails before anything else is read and the refusal is REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "the selection is the consumer's pre-upload choice and is never inferred, so an absent selection is a refusal and not a default"
+      ],
+      "input_provenance": "a synthetically absent selection + the pinned unadmitted rule record + in-memory observations that are never read",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-20",
+      "categories": [
+        "PARSER_FAILURE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory document descriptor carrying the named document-level refusal cause DOCUMENT_NOT_READABLE",
+      "the_state_it_must_reach": [
+        "gate G3 fails and the refusal is REFUSED_UNSUPPORTED_PRESENTATION",
+        "a document the parser cannot read is never reported as an empty report: the fact and comparison layers do not run at all"
+      ],
+      "input_provenance": "a synthetic in-memory descriptor carrying the parser-failure refusal cause + the pinned unadmitted rule record",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "reference_status": null,
+        "unit_level_status": null,
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-21",
+      "categories": [
+        "PARSER_FAILURE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the document is eligible but the Collections section cannot be parsed, so the section is not resolved",
+      "the_state_it_must_reach": [
+        "the rule-read fact is EXTRACTION_UNRESOLVED, never ABSENT_FROM_REPORT: the not-resolved reading is taken before any absence reading",
+        "the comparison does not run and no outcome is produced"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a section observation that reports a parser failure",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "PARSER_FAILURE_IN_THE_COLLECTIONS_SECTION",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "PARSER_FAILURE_IN_THE_COLLECTIONS_SECTION",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-22",
+      "categories": [
+        "OCR_AMBIGUITY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory document descriptor carrying the named document-level refusal cause IMAGE_ONLY_OR_NO_TEXT_LAYER",
+      "the_state_it_must_reach": [
+        "gate G3 fails and the refusal is REFUSED_UNSUPPORTED_PRESENTATION",
+        "an image-only or text-less document is never read for a value and is never reported as an empty report"
+      ],
+      "input_provenance": "a synthetic in-memory descriptor carrying the OCR-ambiguity refusal cause + the pinned unadmitted rule record",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-23",
+      "categories": [
+        "OCR_AMBIGUITY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the record prints the label once with a value the reading cannot resolve into the presentation's printed date form",
+      "the_state_it_must_reach": [
+        "the fact is EXTRACTION_UNRESOLVED with reason VALUE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "an ambiguous value is never resolved by guessing and is never recorded as an absence",
+        "the comparison does not run and no outcome is produced for that record"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an in-memory record value the printed form does not admit",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "EXTRACTION_UNRESOLVED",
+            "reason": "VALUE_NOT_A_WELL_FORMED_PRINTED_DATE",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "EXTRACTION_UNRESOLVED",
+            "reason": "VALUE_NOT_A_WELL_FORMED_PRINTED_DATE",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-24",
+      "categories": [
+        "REPORT_SECTION_NOT_INSPECTED"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the Collections section was never inspected, so no reading of it exists",
+      "the_state_it_must_reach": [
+        "the rule-read fact is EXTRACTION_UNRESOLVED with the section reason: a section that was not inspected can never produce an absence reading",
+        "the comparison does not run and no outcome is produced"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a section observation recorded as not inspected",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "SECTION_NOT_INSPECTED",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "SECTION_NOT_INSPECTED",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-25",
+      "categories": [
+        "REPORT_SECTION_NOT_INSPECTED"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the control for FX-24: the section WAS located and resolved, and it prints no contract debt record",
+      "the_state_it_must_reach": [
+        "the fact is ABSENT_FROM_REPORT — the single reachable absence path, and a resolved reading rather than a parser silence",
+        "no comparison runs and no outcome is produced: an absence reading is not a result either"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a section observation resolved with no contract debt record",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": "ABSENT_FROM_REPORT",
+        "unit_level_reason": "SECTION_LOCATED_AND_RESOLVED_WITH_NO_CONTRACT_DEBT_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": "ABSENT_FROM_REPORT",
+        "unit_level_reason": "SECTION_LOCATED_AND_RESOLVED_WITH_NO_CONTRACT_DEBT_RECORD",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-26",
+      "categories": [
+        "REPORT_SECTION_NOT_INSPECTED"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the section is resolved and prints no contract debt record, but it prints the label outside any contract debt record",
+      "the_state_it_must_reach": [
+        "the fact is EXTRACTION_UNRESOLVED with reason FIELD_LABEL_OUTSIDE_ANY_RECORD: a value is never read outside a record, so the clean absence reading is not available",
+        "the absence status is not produced"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a stray label outside any record",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "FIELD_LABEL_OUTSIDE_ANY_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "FIELD_LABEL_OUTSIDE_ANY_RECORD",
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+        "per_record": [],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-27",
+      "categories": [
+        "REPORT_CONTRADICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "two contract debt records in the one Collections section, each printing a different last payment date",
+      "the_state_it_must_reach": [
+        "one fact per contract debt record, each bound to its own record: two comparisons, never one merged value",
+        "record 2 exceeds the period and record 3 does not, on the same reference date",
+        "no value is borrowed across records, sections or pages"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + two in-memory contract debt records with different dates",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "anniversary": "2016-01-01",
+            "span_in_days": 2191,
+            "elapsed_days": 5968,
+            "boundary_case": null
+          },
+          {
+            "record_index": 3,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2016-01-01",
+            "span_in_days": 2191,
+            "elapsed_days": 5968,
+            "boundary_case": null
+          },
+          {
+            "record_index": 3,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-28",
+      "categories": [
+        "REPORT_CONTRADICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the section prints one contract debt record and one region that is not the contract's debt record",
+      "the_state_it_must_reach": [
+        "a region that is not the debt record is a record-level disposition, not a fact status: no fact and no status are produced for it",
+        "no value is read from it, and the compliant record is unaffected"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + two regions, one of them not a debt record",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "disposition": "NOT_A_DEBT_RECORD",
+            "status": null,
+            "reason": "NOT_A_DEBT_RECORD",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null
+          },
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "anniversary": "2027-02-01"
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 1,
+            "disposition": "NOT_A_DEBT_RECORD",
+            "status": null,
+            "reason": "NOT_A_DEBT_RECORD",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "THE_COMPARISON_DOES_NOT_RUN_UNLESS_BOTH_THE_CLOCK_START_AND_THE_REFERENCE_DATE_ARE_PRESENT",
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          },
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "comparison_reason": null,
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-29",
+      "categories": [
+        "EXCEPTION_UNKNOWN"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the operative state of this scope: a fully eligible synthetic document against the governed rule record as it actually stands, NOT_ADMITTED",
+      "the_state_it_must_reach": [
+        "gate G6 fails and the refusal is REFUSED_RULE_RECORD_NOT_ADMITTED: an unadmitted rule cannot emit, and this is a named refusal with no result",
+        "the facts are still resolved and reported as statuses, but the comparison layer does not run and no outcome is produced",
+        "nothing is emitted, no finding class exists and the packet stays ineligible"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + the pinned rule record read as data and never as an admission + in-memory observations",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN",
+        "reference_status": "PRESENT",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT"
+          }
+        ],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "boundary_qualification_mandatory": false,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": null,
+            "comparison_reason": null,
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-30",
+      "categories": [
+        "PARSER_FAILURE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "a synthetic in-memory descriptor that declares itself a fixture, through the named refusal cause SYNTHETIC_OR_FIXTURE_MARKER",
+      "the_state_it_must_reach": [
+        "gate G3 fails and the refusal is REFUSED_UNSUPPORTED_PRESENTATION",
+        "a synthetic or fixture document can never be admitted as the presentation, however it is supplied"
+      ],
+      "input_provenance": "a synthetic in-memory descriptor carrying the fixture-marker refusal cause + the pinned unadmitted rule record",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-31",
+      "categories": [
+        "DATE_UNAVAILABLE"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "the reference date precedes the printed last payment date",
+      "the_state_it_must_reach": [
+        "the comparison does not run and reports UNRESOLVED with reason REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+        "no outcome is produced and the negative elapsed span is recorded rather than clamped"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + a reference date before the printed date",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": null,
+        "facts_state": "RUN",
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT",
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+            "anniversary": "2026-06-15",
+            "span_in_days": 2191,
+            "elapsed_days": -45,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "boundary_qualification_mandatory": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": "UNRESOLVED",
+            "comparison_reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+            "anniversary": "2026-06-15",
+            "span_in_days": 2191,
+            "elapsed_days": -45,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-32",
+      "categories": [
+        "PREEMPTION_UNCERTAINTY"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "an input that resolves to the excluded second limb of the provision",
+      "the_state_it_must_reach": [
+        "gate G5 fails and the refusal is REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT: the second limb is refused, never defaulted and never evaluated",
+        "the facts are resolved and no comparison runs; nothing is emitted"
+      ],
+      "input_provenance": "synthetic in-memory descriptor + synthetic admitted copy + an input declaring the excluded second limb",
+      "rule_record_used": "SYNTHETIC_IN_MEMORY_COPY_MARKED_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "facts_state": "RUN",
+        "comparison_state": "NOT_RUN",
+        "reference_status": "PRESENT",
+        "per_record": [
+          {
+            "record_index": 2,
+            "status": "PRESENT"
+          }
+        ],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "facts_state": "RUN",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": "PRESENT",
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [
+          {
+            "record_index": 2,
+            "disposition": "CONTRACT_DEBT_RECORD",
+            "status": "PRESENT",
+            "reason": null,
+            "comparison_outcome": null,
+            "comparison_reason": null,
+            "anniversary": null,
+            "span_in_days": null,
+            "elapsed_days": null,
+            "boundary_case": null
+          }
+        ],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    },
+    {
+      "id": "FX-33",
+      "categories": [
+        "WRONG_JURISDICTION"
+      ],
+      "synthetic": true,
+      "synthetic_label": "SYNTHETIC — IN-MEMORY FIXTURE. NOT A PRESENTATION, NOT A REPORT, NOT CONSUMER EVIDENCE.",
+      "what_it_is": "an input that fails four gates at once: no selection, a mis-declared mapping, an unadmitted rule record and an eligible document",
+      "the_state_it_must_reach": [
+        "every gate is evaluated and the refusal is the FIRST failing gate in the fixed order, which is G1 here",
+        "the refusal therefore never depends on which failure happened to be noticed first"
+      ],
+      "input_provenance": "a synthetically absent selection + a mis-declared mapping + the pinned unadmitted rule record",
+      "rule_record_used": "PINNED_NOT_ADMITTED",
+      "counted_as_consumer_report_presentation_evidence": false,
+      "is_a_presentation": false,
+      "expected": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": []
+      },
+      "observed": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "facts_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "unit_level_status": null,
+        "unit_level_reason": null,
+        "reference_status": null,
+        "reference_reason": null,
+        "comparison_state": "NOT_RUN",
+        "per_record": [],
+        "outcome_present": false,
+        "emission": "NOT_EMITTED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "packet_eligible": false,
+        "consumer_visible": false,
+        "finding_classes_available": [],
+        "boundary_qualification_mandatory": false,
+        "timing_qualification_mandatory": true,
+        "classification_qualification_mandatory": true,
+        "specimen_qualification_mandatory": true,
+        "unresolved_items_carried": 13,
+        "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+        "forbidden_label_hits": [],
+        "qualified_verbatim": {
+          "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+          "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+          "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+          "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        }
+      },
+      "record_identity_across_duplicate_catalogue_renderings": null,
+      "mismatches": [],
+      "passed": true
+    }
+  ],
+  "verdict": "EVERY FIXTURE REACHED THE STATE IT MUST REACH — 33 fixtures, 15 categories, 0 mismatches",
+  "what_this_record_does_not_do": [
+    "it admits no rule, creates no coverage or candidate and authorises no finding class",
+    "it produces no consumer-visible output of any class and changes no application behaviour",
+    "it does not claim that any synthetic fixture is consumer-report presentation evidence: the specimen was not opened, parsed or re-exported",
+    "it does not decide the effective period, the exception, the anniversary-boundary reading or the convention set",
+    "it does not conform, modify or adopt the internal comparator of PHASE5-001I-A, and it does not run any harness that writes into an earlier package"
+  ],
+  "created_by": "PHASE5-001T"
+}

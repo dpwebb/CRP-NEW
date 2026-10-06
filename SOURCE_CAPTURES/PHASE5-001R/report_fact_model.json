@@ -1,0 +1,208 @@
+{
+  "artifact": "report_fact_model.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "document_type": "GOVERNED REPORT FACT MODEL — one scope only. A specification for this unit. NOT ADMITTED, no emission, no consumer-visible output",
+  "purpose": "define, for one scope only, the report fact model from the certified rule unit, so that every fact the unit reads records its raw value, its normalized value, its source location, its extraction status, its event semantics and its transformation provenance, and so that the fact the rule reads is never merged with the input the recorded convention supplies",
+  "governing_text_read": {
+    "phase_5_5_bullet_fact_model": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 132,
+      "text": "- Define the report fact model from the certified rule units. Each fact records raw value/text, normalized value, source location, extraction status, event semantics, and transformation provenance."
+    },
+    "phase_5_5_bullet_statuses": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 133,
+      "text": "- Define exact statuses for `PRESENT`, `ABSENT_FROM_REPORT` (only after the relevant report section is reliably inspected), `CONTRADICTED`, and `EXTRACTION_UNRESOLVED`. Never conflate `ABSENT_FROM_REPORT` with missing parser fields or failed extraction."
+    }
+  },
+  "scope": {
+    "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+    "jurisdiction": {
+      "country_code": "CA",
+      "region_code": "CA-NS",
+      "enumeration": "CRP-JURISDICTION-ENUM-1 (82 first-level region records)",
+      "authority_rule_quoted": "Jurisdiction is never inferred. The analysis jurisdiction is the consumer's pre-upload COUNTRY + REGION selection. (CRP_CORE_CONSTITUTION.md 4.1)",
+      "note": "this scope names the jurisdiction; it infers none from the report's content, and the specimen is not used as a jurisdiction signal"
+    },
+    "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "limb_in_scope": "the last-payment limb only — six years from the last payment made on the debt",
+    "limb_out_of_scope": "the second limb (no payment made on the debt: six years from the date the default in payment occurred). It is excluded from this scope because the presentation prints no field the admitted text reads as that date (PROD-003 field_records FACT-05, status EXTRACTION_UNRESOLVED for PR-01).",
+    "presentation": {
+      "presentation_id": "PR-01",
+      "artifact_id": "LEG-CONSUMER-EQ-CA",
+      "publisher": "Equifax (Canada, consumer channel)",
+      "audience": "CONSUMER",
+      "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+      "bytes": 96393,
+      "pages": 22,
+      "admission_boundary": "This one artifact, at this digest, from this consumer channel, is the supported presentation. (SOURCE_CAPTURES\\PROD-003\\report_representation_register.json, presentations[PR-01].admission_boundary)",
+      "secondary_presentation_role": "PR-02 (TransUnion Canada, SHA-256 244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4) corroborates the existence and the label of the Last Payment Date field across two Canadian consumer disclosures. It is NOT admitted as the format for any rule unit and is NOT a substitute for PR-01; no rule may be evaluated against it with PR-01's locator."
+    },
+    "exclusions": [
+      "every jurisdiction other than CA / CA-NS",
+      "every rule unit other than CA-NS-CRA-S10-3-C-LIMB-1, and every other statutory limb of s. 10(3)(c)",
+      "every report presentation other than PR-01 at the recorded digest; a different print date, product, bureau, scan, photograph, mobile view, subscriber or screening document, generated fixture and encrypted or text-less document all remain UNSUPPORTED",
+      "consumer-upload availability and any report-family admission",
+      "the remaining corpus-wide Gate 5.2 queue: the 409 NO_DURABLE_RESCREEN_RECORD rows, the other five report-mapping IDs (CRP-LSRC-0422, 0423, 0424, 0425, 0427) and CRP-LSRC-0194",
+      "the effective-period and applicability-in-time question and its mandatory plain-English timing qualification",
+      "the direct-report contract section 4 retention exception (recorded, not relied on) and the s. 10(3)(c)/s. 10(ha) citation seam",
+      "the anniversary-boundary, month-end-clamp and day-count conventions (conventions the internal comparator implements, reserved to Gate 5.4)",
+      "every finding class: neither VIOLATION nor PROBABLE_VIOLATION is authorized, and the ceiling is observation only"
+    ]
+  },
+  "what_each_fact_record_carries": [
+    "raw value/text",
+    "normalized value",
+    "source location",
+    "extraction status",
+    "event semantics",
+    "transformation provenance"
+  ],
+  "the_two_entries_are_different_kinds": {
+    "rule_read_fact": {
+      "fact_id": "collection.lastPaymentDate",
+      "kind": "THE_FACT_THE_ADMITTED_TEXT_READS",
+      "why_it_is_this_kind": "the admitted text reads \"the last payment was made on the debt\". It is the only fact the text itself reads, and the comparison has no clock without it."
+    },
+    "convention_input": {
+      "fact_id": "report.referenceDate",
+      "kind": "EVALUATION_CONVENTION_INPUT — supplied by the recorded convention, not by the text of the rule (see the decisions record, decision 3)",
+      "why_it_is_this_kind": "the admitted text states no comparison or measuring date. This value is supplied by the recorded convention, not by the text of the rule (rule-record decisions Q-D3), and it may never be presented as a statutory date or as the date of any event.",
+      "reading_rule": "read from the page header only, and only when the same value appears on every page; otherwise the reference date is unresolved, the comparison does not run, the fact is never ABSENT_FROM_REPORT and no other date is substituted"
+    },
+    "refinement_recorded_by_the_rule_record": "PHASE5-001I-B grouped the printed Request Date with the report-required facts in its governed-fields cross-reference. This record keeps the rule-read fact (collection.lastPaymentDate) and the convention input (report.referenceDate) as two separate entries, because the admitted text requires only the first of them; the grouping is refined here and the draft itself is preserved unchanged.",
+    "rule_for_this_specification": "the model keeps the two entries separate in every status, every comparison and every explanation. Merging them, or letting one stand in for the other, is the conflation this model exists to prevent.",
+    "earlier_draft_preserved_unchanged": true
+  },
+  "facts": [
+    {
+      "fact_id": "collection.lastPaymentDate",
+      "kind": "RULE_READ_FACT",
+      "printed_label": "Last Payment Date",
+      "prints_in": "a contract debt record inside the Collections section",
+      "source_location": {
+        "locators": [
+          "row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17)",
+          "record 2: page 17 line 5, inside the record that begins at page 16 line 39 and continues to page 17 line 11"
+        ],
+        "register_field": "FACT-02",
+        "register_location": "row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17)",
+        "register_section_path": "Collections",
+        "extraction_method": "pdftotext -f 16 -l 16 -layout <file> - and -f 17",
+        "evidence": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json FACT-02; SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json collection_records"
+      },
+      "raw_value_form": "DDDD/DD/DD (year/month/day)",
+      "raw_value": "2021/02/01",
+      "raw_value_on_the_register": "2021-02-01",
+      "normalized_value": "2021-02-01",
+      "extraction_status_on_the_evidenced_specimen": "PRESENT",
+      "event_semantics": {
+        "meaning": "the date the printed record states the last payment was made. It is a report-stated historical event: the report asserts it, and this register does not treat the assertion as proof that the payment occurred.",
+        "what_it_is_not": "not a verified event, not a statutory date, not the default-in-payment date, and not a date the register treats as proof that any payment occurred",
+        "proof_boundary": "the extraction does not prove that the payment occurred and no statement may say it did"
+      },
+      "scope_of_the_value": "COLLECTION_RECORD_SPECIFIC — one value per contract debt record, bound to the record that prints it",
+      "binding_rules": [
+        "a value is never borrowed from another record, another section or another page; a label printed twice in one record leaves the fact unresolved",
+        null
+      ],
+      "transformation_provenance": {
+        "read_from": "the printed row label inside its own contract debt record, at the recorded locators",
+        "method": "pdftotext -f 16 -l 16 -layout <file> - and -f 17",
+        "normalization": "the printed token (four-digit year, then month, then day) is transformed to ISO 8601 by one pure token rule; no other date is read, borrowed or defaulted",
+        "clock": "no clock, locale, time zone, host or session state is read in producing the raw or the normalized value",
+        "ocr": "none: the presentation carries native text, and an image-only or text-less document is refused rather than read",
+        "re_derivation": "the normalized value is never re-derived from another date, and the raw value is retained beside it"
+      },
+      "register_note": "A missing, unreadable or differently-labelled value is UNRESOLVED. It is never recorded as ABSENT_FROM_REPORT and never defaulted from another date.",
+      "second_limb_note": "The rule's second limb (no payment made: six years from the date the default in payment occurred) has no located field on this presentation: the collection record prints First Delinquency, Date Assigned, Date Paid/Settled and Date Verified, none of which the admitted rule text reads as the default-in-payment date. The second limb stays UNSEATED."
+    },
+    {
+      "fact_id": "report.referenceDate",
+      "kind": "EVALUATION_CONVENTION_INPUT",
+      "printed_label": "Request Date",
+      "prints_in": "page header, line 1 of all 22 pages, one identical value",
+      "source_location": {
+        "locators": "page header, line 1 of all 22 pages, one identical value",
+        "register_field": "FACT-03",
+        "register_location": "label \"Request Date\" in the page header, with the same value on all 22 pages",
+        "register_section_path": "page header, every page",
+        "extraction_method": "pdftotext -f <page> -l <page> -layout <file> -",
+        "evidence": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json FACT-03"
+      },
+      "raw_value_form": "DDDD/DD/DD",
+      "raw_value": "2026/05/05",
+      "raw_value_on_the_register": "2026-05-05",
+      "normalized_value": "2026-05-05",
+      "extraction_status_on_the_evidenced_specimen": "PRESENT",
+      "event_semantics": {
+        "meaning": "the date the consumer requested this report as printed by the bureau. It is the reference date the evaluation compares against; it is not a statutory effective date and not the date of any underlying event.",
+        "what_it_is_not": "not a statutory effective date, not the date of any underlying event, and not the date of the last payment"
+      },
+      "scope_of_the_value": "PRESENTATION_WIDE — one value, read from the page header only, and only when the same value appears on every page",
+      "binding_rules": [
+        "read from the page header only, and only when the same value appears on every page; otherwise the reference date is unresolved, the comparison does not run, the fact is never ABSENT_FROM_REPORT and no other date is substituted",
+        "The reference date is read from the page header only, and only when the same value appears on every page. A report whose header carries no such label, or a header the method cannot read, leaves the comparison date unresolved, so the evaluation does not run."
+      ],
+      "transformation_provenance": {
+        "read_from": "the printed header label on every page of the presentation",
+        "method": "pdftotext -f <page> -l <page> -layout <file> -",
+        "normalization": "the same single pure token rule as the rule-read fact; the printer's form is four-digit year, then month, then day",
+        "clock": "no clock, locale, time zone, host or session state is read",
+        "substitution": "no other printed date may be substituted for it, and it is never ABSENT_FROM_REPORT"
+      }
+    }
+  ],
+  "unit_shape": {
+    "per_record_isolation": "COLLECTION_RECORD_SPECIFIC: the fact is bound to its own contract debt record",
+    "no_aggregation": "the model produces one rule-read fact per contract debt record and never a single merged value; two records may carry two different dates and neither may be borrowed for the other",
+    "unit_level_fact_states_reachable": [
+      "PRESENT",
+      "EXTRACTION_UNRESOLVED",
+      "ABSENT_FROM_REPORT",
+      "CONTRADICTED"
+    ],
+    "the_only_absence_path": "ABSENT_FROM_REPORT has exactly one reachable path: the Collections section is located and resolved and prints no contract debt record. It is a resolved reading, never a parser silence.",
+    "the_refinement_this_order_recorded": "the rule record's absence path is carried verbatim and is not widened. One shape is recorded alongside it: where the section is resolved, prints no contract debt record, and prints the label outside any contract debt record, the fact is EXTRACTION_UNRESOLVED (FIELD_LABEL_OUTSIDE_ANY_RECORD), because a value is never read outside a record and the section's clean absence reading is then not available. This keeps that one path exactly one path.",
+    "the_reference_date_is_never_absent": "the convention input has no absence path: when its label is not found, or is not on every page, or is not well formed, it is EXTRACTION_UNRESOLVED and the comparison does not run. It is never ABSENT_FROM_REPORT and no other date is substituted.",
+    "not_a_debt_record_is_not_a_status": "a region that is not the contract's debt record is a record-level disposition (NOT_A_DEBT_RECORD): no fact is read from it and it produces no factor status of its own"
+  },
+  "what_the_model_must_not_do": [
+    "EXTRACTION_UNRESOLVED is never ABSENT_FROM_REPORT",
+    "a parser failure is never absence and never evidence",
+    "a refused document is never an empty report",
+    "a non-debt region is never read for a value",
+    "a comparison outcome is never an extraction status and an extraction status is never a comparison outcome",
+    "it must never report a refused document as an empty report, and never as ABSENT_FROM_REPORT",
+    "it must never let an extraction status stand as a comparison outcome, or a comparison outcome stand as an extraction status",
+    "it must never carry a value across record, section or page boundaries",
+    "it must never present the convention input as a requirement of the admitted text"
+  ],
+  "statuses_are_defined_separately": {
+    "extraction_status_vocabulary": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json (deliverable 2)",
+    "comparison_outcome_vocabulary": [
+      "PERIOD_EXCEEDED",
+      "PERIOD_NOT_EXCEEDED",
+      "UNRESOLVED"
+    ],
+    "why_they_are_separate": "a status describes what the report prints; an outcome describes what the arithmetic returns. The gate forbids emitting on incomplete extraction, and this model keeps the two vocabularies from ever being read as one."
+  },
+  "verification": {
+    "the_model_is_derived_not_retyped": "every fact id, label, locator, raw value, normalized value, binding rule and forbiddance above is read out of SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json and SOURCE_CAPTURES\\PROD-003\\report_representation_register.json at build time; the builder refuses to run if the plan lines it cites are not the lines it reads",
+    "the_specimen_values_match_the_register": {
+      "rule_read_fact": "MATCHES",
+      "convention_input": "MATCHES"
+    },
+    "executable_form": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs, function resolveFactStatus (rank 8, internal, not admitted, not wired to any application surface)"
+  },
+  "what_this_record_does_not_do": [
+    "it does not read a report: it defines the model, and the executable form reads only observations the caller supplies",
+    "it admits no rule, creates no coverage and no candidate, and authorizes no finding class",
+    "it produces no consumer-visible output of any class and changes no application behaviour; report checking remains \"not yet available\"",
+    "it decides no legal question: the effective period, the exception and the anniversary-boundary reading all stay as the rule record left them"
+  ],
+  "created_by": "PHASE5-001R"
+}

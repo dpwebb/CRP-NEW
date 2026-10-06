@@ -1,0 +1,630 @@
+{
+  "artifact": "negative_tests_001t.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "document_type": "NEGATIVE TEST RESULT — synthetic inputs only, one scope only. NOT ADMITTED, no emission, no consumer-visible output",
+  "purpose": "record the negative tests the Phase 5.6 bullet requires, each naming the prohibited behaviour it forbids and each recording what it demonstrates in this scope rather than claiming a capability this scope does not have",
+  "the_governing_text_read": {
+    "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "clause": "section 3, Phase 5.6 bullet 2 (the negative tests)",
+    "line": 166,
+    "text": "- Add negative tests proving prohibited off-report facts are never requested, inferred, or used as decisive facts; parser failure never becomes absence; unknown exceptions never suppress a report-supported probable path; and probable-only uncertainty never emits `VIOLATION`."
+  },
+  "subject_under_test": {
+    "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+    "sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+    "what": "the deterministic evaluator the Gate 5.5 scoped verdict specified"
+  },
+  "rule_record_read": {
+    "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+    "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+    "pre_admission_identity": "CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3",
+    "state": "NOT_ADMITTED"
+  },
+  "pin_verification": {
+    "pins": [
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "pinned_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "measured_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "bytes": 37993,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+        "pinned_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "measured_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "bytes": 9618,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+        "pinned_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "measured_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "bytes": 22891,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+        "pinned_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "measured_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "bytes": 17062,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+        "pinned_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "measured_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "bytes": 10911,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+        "pinned_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "measured_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "bytes": 25602,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+        "pinned_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "measured_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "bytes": 23328,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+        "pinned_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "measured_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "bytes": 41919,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+        "pinned_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "measured_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "bytes": 13183,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "pinned_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "measured_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "bytes": 38651,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+        "pinned_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "measured_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "bytes": 35071,
+        "state": "MATCHES_THE_PIN"
+      }
+    ],
+    "all_match": true,
+    "mismatches": []
+  },
+  "test_count": 8,
+  "failure_count": 0,
+  "failed_tests": [],
+  "tests": [
+    {
+      "id": "N-01",
+      "forbids": "that any off-report fact is ever requested, inferred or used as a decisive fact",
+      "method": "a source scan of the pinned evaluator for every read that could fetch or infer a fact outside the four declared inputs, plus a measured injection of ten off-report facts into an otherwise complete input",
+      "evidence": {
+        "forbidden_reads_found": [],
+        "input_properties_the_evaluator_touches": [
+          "declared_event_date_mapping",
+          "other_unresolved_affirmative_element",
+          "presentation",
+          "report",
+          "rule_record",
+          "second_limb_input_present",
+          "selection"
+        ],
+        "input_properties_the_specification_does_not_declare": [],
+        "injected_off_report_facts": [
+          "notice_date",
+          "notice_recipient",
+          "notice_use",
+          "notice_fee_charged",
+          "notice_procedure_followed",
+          "agency_actor_action",
+          "whether_any_payment_was_made",
+          "date_of_default_in_payment",
+          "consumer_evidence_available",
+          "retention_exception_section_4"
+        ],
+        "record_with_off_report_facts_is_byte_identical": true,
+        "returned_record_keys_drawn_from_an_off_report_fact": [],
+        "the_four_declared_inputs": [
+          "the caller selection",
+          "the recorded report observations",
+          "the declared event-date mapping",
+          "the governed rule record (read as data)"
+        ]
+      },
+      "demonstrated_in_this_scope": "the evaluator requests nothing and infers nothing: it has no module, file, network or clock access at all, it touches only the properties the specification declares, and ten injected off-report facts change no byte of the returned record",
+      "passed": true
+    },
+    {
+      "id": "N-02",
+      "forbids": "that a parser failure ever becomes an absence reading, and that a refused document is ever reported as an empty report",
+      "method": "three controlled cases (document-level parser failure, section-level parser failure, section not inspected) plus a sweep of every fixture whose input carries a failure or not-inspected signal",
+      "evidence": {
+        "document_level_parser_failure": {
+          "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+          "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+          "facts_layer_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+          "any_fact_status_produced": false,
+          "outcome": null
+        },
+        "section_level_parser_failure": {
+          "fact_status": "EXTRACTION_UNRESOLVED",
+          "reason": "PARSER_FAILURE_IN_THE_COLLECTIONS_SECTION",
+          "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+          "outcome": "an observation record with no comparison"
+        },
+        "section_not_inspected": {
+          "fact_status": "EXTRACTION_UNRESOLVED",
+          "reason": "SECTION_NOT_INSPECTED",
+          "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD"
+        },
+        "the_positive_control": {
+          "what": "the one reachable absence path, in which the section WAS resolved and prints no contract debt record",
+          "fact_status": "ABSENT_FROM_REPORT",
+          "reason": "SECTION_LOCATED_AND_RESOLVED_WITH_NO_CONTRACT_DEBT_RECORD",
+          "comparison_state": "NOT_RUN_NO_CONTRACT_DEBT_RECORD",
+          "and_even_then": "no comparison runs and no outcome is produced: an absence reading is not a result either"
+        },
+        "sweep_over_fixtures_carrying_a_failure_signal": [
+          {
+            "fixture": "FX-20",
+            "facts_layer_ran": false,
+            "fact_statuses": [
+              null
+            ],
+            "reached_absent_from_report": false,
+            "produced_an_outcome": false,
+            "refusal": "REFUSED_UNSUPPORTED_PRESENTATION"
+          },
+          {
+            "fixture": "FX-21",
+            "facts_layer_ran": true,
+            "fact_statuses": [
+              "EXTRACTION_UNRESOLVED"
+            ],
+            "reached_absent_from_report": false,
+            "produced_an_outcome": true,
+            "refusal": null
+          },
+          {
+            "fixture": "FX-22",
+            "facts_layer_ran": false,
+            "fact_statuses": [
+              null
+            ],
+            "reached_absent_from_report": false,
+            "produced_an_outcome": false,
+            "refusal": "REFUSED_UNSUPPORTED_PRESENTATION"
+          },
+          {
+            "fixture": "FX-24",
+            "facts_layer_ran": true,
+            "fact_statuses": [
+              "EXTRACTION_UNRESOLVED"
+            ],
+            "reached_absent_from_report": false,
+            "produced_an_outcome": true,
+            "refusal": null
+          }
+        ],
+        "every_swept_case_avoided_an_absence_reading": true
+      },
+      "demonstrated_in_this_scope": "a parse failure produces a named refusal at the document layer (and no fact status at all), or EXTRACTION_UNRESOLVED at the section layer. Neither becomes ABSENT_FROM_REPORT, and the one absence reading this unit has is reachable only from a resolved section that prints no contract debt record.",
+      "passed": true
+    },
+    {
+      "id": "N-03",
+      "forbids": "that an unknown exception ever suppresses a report-supported probable path",
+      "method": "inject four exception states into an otherwise complete input and compare the returned records byte for byte; then measure whether this unit has any probable path for an exception to suppress",
+      "evidence": {
+        "the_evaluator_reads_no_exception_input": [
+          {
+            "supplied_exception_state": "UNKNOWN",
+            "record_is_byte_identical": true
+          },
+          {
+            "supplied_exception_state": "SHOWN",
+            "record_is_byte_identical": true
+          },
+          {
+            "supplied_exception_state": "ABSENT",
+            "record_is_byte_identical": true
+          },
+          {
+            "supplied_exception_state": "RELIED_ON",
+            "record_is_byte_identical": true
+          }
+        ],
+        "all_variants_are_byte_identical_to_the_record_without_the_marker": true,
+        "does_this_unit_have_a_probable_path": "no. The permitted result ceiling is OBSERVATION_CLASS_ONLY, finding_classes_available is empty in every returned record, and the token PROBABLE_VIOLATION is reachable nowhere in any returned record.",
+        "finding_classes_available_in_every_case": [
+          "[]"
+        ],
+        "a_probable_path_is_reachable_from_any_input": false,
+        "the_exception_the_record_carries": {
+          "instrument": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md (rank 4), section 4, Permanent Exclusions, first exclusion",
+          "state": "RECORDED_NOT_RELIED_ON",
+          "why_not_relied_on": "the route requires an admitted governed rule with complete required fields and official source evidence. No governed rule is admitted, so the exception is available to nothing and is exercised by nothing.",
+          "exception_determination": "NO_EXCEPTION_DETERMINATION_IS_MADE BY THIS ORDER. No exception is relied on, and no exception is treated as absent: the second limb is recorded as unseated on this presentation and is not inferable.",
+          "relied_on_by_this_order": false
+        }
+      },
+      "demonstrated_in_this_scope": "an exception state, known or unknown, reaches nothing: the evaluator has no exception input, all four injected states return the same record byte for byte, and this unit has no probable path and no finding class for an unknown exception to suppress. That is recorded as what it is — an absent capability — and not as a passing test of a capability this scope does not have.",
+      "passed": true
+    },
+    {
+      "id": "N-04",
+      "forbids": "that probable-only uncertainty ever emits VIOLATION, and that any finding label is rendered at all",
+      "method": "scan every returned record in the fixture suite for the forbidden labels (excluding the field that declares them forbidden), scan the pinned output vocabulary for a finding label on any output axis, and count emissions",
+      "evidence": {
+        "cases_scanned": 33,
+        "cases_carrying_a_forbidden_label": [],
+        "output_axes_carrying_a_finding_label": [],
+        "permitted_output_axes": {
+          "presentation_eligibility": [
+            "ELIGIBLE",
+            "REFUSED"
+          ],
+          "refusal": [
+            "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+            "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+            "REFUSED_UNSUPPORTED_PRESENTATION",
+            "REFUSED_WRONG_EVENT_DATE_MAPPING",
+            "REFUSED_RULE_RECORD_NOT_ADMITTED",
+            "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT"
+          ],
+          "extraction_status": [
+            "RESOLVED",
+            "EXTRACTION_UNRESOLVED",
+            "UNSUPPORTED_PRESENTATION",
+            "NOT_A_DEBT_RECORD",
+            "ABSENT_FROM_REPORT"
+          ],
+          "comparison_outcome": [
+            "PERIOD_EXCEEDED",
+            "PERIOD_NOT_EXCEEDED",
+            "UNRESOLVED"
+          ],
+          "boundary_case": [
+            "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+          ],
+          "emission": [
+            "NOT_EMITTED",
+            "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED"
+          ],
+          "observation_eligibility": [
+            "OBSERVATION_CLASS_ONLY",
+            "INTERNAL_OBSERVATION_RECORD_ONLY"
+          ]
+        },
+        "forbidden_labels_declared_by_the_pinned_surface": [
+          "VIOLATION",
+          "PROBABLE_VIOLATION",
+          "any other finding label or finding class, however phrased",
+          "BREACH_ESTABLISHED and any synonym of an established breach",
+          "COMPLIANT, WITHIN_THE_LIMIT and any statement that the report or the debt satisfies the provision",
+          "any statement that the provision applied to this debt at the relevant time",
+          "any statement that the report is inaccurate, unlawful or actionable",
+          "any request for additional consumer evidence"
+        ],
+        "cases_that_emitted_a_finding_class": 0,
+        "ceiling_in_every_case": [
+          "OBSERVATION_CLASS_ONLY"
+        ],
+        "packet_eligible_in_every_case": [
+          false
+        ]
+      },
+      "demonstrated_in_this_scope": "no returned record carries a finding label, VIOLATION is not a permitted value of any output axis, every case stays observation class and packet-ineligible, and nothing is emitted. This unit has no probable path, so the test records the prohibition it enforces rather than a probable result it produces.",
+      "passed": true
+    },
+    {
+      "id": "N-05",
+      "forbids": "that an unadmitted governed rule record can emit a consumer result, and that admission is obtained in order to make anything emit",
+      "method": "run every fixture that uses the pinned record as it stands, and separately run a fully eligible document against that same record",
+      "evidence": {
+        "fixtures_using_the_pinned_record": [
+          {
+            "fixture": "FX-07",
+            "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+            "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-08",
+            "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+            "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-18",
+            "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+            "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-19",
+            "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+            "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-20",
+            "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+            "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-22",
+            "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+            "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-29",
+            "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+            "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-30",
+            "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+            "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          },
+          {
+            "fixture": "FX-33",
+            "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+            "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+            "outcome": null,
+            "emission": "NOT_EMITTED"
+          }
+        ],
+        "a_fully_eligible_document_against_the_pinned_record": {
+          "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+          "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+          "outcome": null,
+          "emission": "NOT_EMITTED",
+          "fact_statuses_still_reported": [
+            "PRESENT"
+          ],
+          "comparison_state": "NOT_RUN"
+        },
+        "cases_that_produced_an_outcome": 0,
+        "cases_whose_refusal_was_not_the_admission_gate": [
+          "FX-07:REFUSED_WRONG_EVENT_DATE_MAPPING",
+          "FX-08:REFUSED_WRONG_EVENT_DATE_MAPPING",
+          "FX-18:REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+          "FX-19:REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+          "FX-20:REFUSED_UNSUPPORTED_PRESENTATION",
+          "FX-22:REFUSED_UNSUPPORTED_PRESENTATION",
+          "FX-30:REFUSED_UNSUPPORTED_PRESENTATION",
+          "FX-33:REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED"
+        ],
+        "admission_obtained_by_this_order": false,
+        "admitted_governed_rules_after_this_order": 0,
+        "permitted_findings_after_this_order": 0
+      },
+      "demonstrated_in_this_scope": "on the record as it stands every input either refuses at an earlier gate or refuses with REFUSED_RULE_RECORD_NOT_ADMITTED and produces no outcome. The only way the arithmetic layer ran at all in this order was a synthetic in-memory copy marked admitted, which admits nothing and is evidence for nothing.",
+      "passed": true
+    },
+    {
+      "id": "N-06",
+      "forbids": "that a synthetic fixture is ever counted as consumer-report presentation evidence, or admitted as the presentation",
+      "method": "measure the document-level refusal cause that a declared fixture triggers, and re-read the fixture suite for its synthetic labelling and its presentation-evidence count",
+      "evidence": {
+        "a_document_declaring_itself_a_fixture": {
+          "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+          "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+          "facts_layer_state": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+          "outcome": null
+        },
+        "refusal_causes_the_pinned_vocabulary_names": [
+          "NOT_THE_EVIDENCED_SPECIMEN",
+          "NOT_A_PDF_CONTAINER",
+          "IMAGE_ONLY_OR_NO_TEXT_LAYER",
+          "PAGE_GEOMETRY_MISMATCH",
+          "SYNTHETIC_OR_FIXTURE_MARKER",
+          "DOCUMENT_NOT_READABLE",
+          "DOCUMENT_ENCRYPTED"
+        ],
+        "fixtures_labelled_synthetic_in_the_suite": 33,
+        "suite_fixture_count": 33,
+        "fixtures_counted_as_consumer_report_presentation_evidence": 0,
+        "specimens_opened_by_this_order": 0
+      },
+      "demonstrated_in_this_scope": "a document that declares itself a fixture is refused at the presentation gate with REFUSED_UNSUPPORTED_PRESENTATION, and all 33 fixtures are labelled synthetic and counted as presentation evidence zero times.",
+      "passed": true
+    },
+    {
+      "id": "N-07",
+      "forbids": "that the refusal depends on which failure happened to be noticed first, rather than on the fixed gate order",
+      "method": "for every fixture, compare the gate the evaluator named as first-failing with the first failing gate in the fixed order the specification pins",
+      "evidence": {
+        "fixed_gate_order": [
+          "G1_JURISDICTION_SELECTION_SUPPLIED",
+          "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+          "G3_PRESENTATION_ELIGIBILITY",
+          "G4_EVENT_DATE_MAPPING",
+          "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+          "G6_RULE_RECORD_ADMITTED"
+        ],
+        "every_gate_is_evaluated_and_recorded": true,
+        "cases_whose_refusal_is_the_first_failing_gate_in_the_order": 33,
+        "cases_that_failed_more_than_one_gate": [
+          {
+            "fixture": "FX-07",
+            "gates_failed": [
+              "G4_EVENT_DATE_MAPPING",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G4_EVENT_DATE_MAPPING"
+          },
+          {
+            "fixture": "FX-08",
+            "gates_failed": [
+              "G4_EVENT_DATE_MAPPING",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G4_EVENT_DATE_MAPPING"
+          },
+          {
+            "fixture": "FX-18",
+            "gates_failed": [
+              "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT"
+          },
+          {
+            "fixture": "FX-19",
+            "gates_failed": [
+              "G1_JURISDICTION_SELECTION_SUPPLIED",
+              "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G1_JURISDICTION_SELECTION_SUPPLIED"
+          },
+          {
+            "fixture": "FX-20",
+            "gates_failed": [
+              "G3_PRESENTATION_ELIGIBILITY",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G3_PRESENTATION_ELIGIBILITY"
+          },
+          {
+            "fixture": "FX-22",
+            "gates_failed": [
+              "G3_PRESENTATION_ELIGIBILITY",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G3_PRESENTATION_ELIGIBILITY"
+          },
+          {
+            "fixture": "FX-30",
+            "gates_failed": [
+              "G3_PRESENTATION_ELIGIBILITY",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G3_PRESENTATION_ELIGIBILITY"
+          },
+          {
+            "fixture": "FX-33",
+            "gates_failed": [
+              "G1_JURISDICTION_SELECTION_SUPPLIED",
+              "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+              "G4_EVENT_DATE_MAPPING",
+              "G6_RULE_RECORD_ADMITTED"
+            ],
+            "refusal": "G1_JURISDICTION_SELECTION_SUPPLIED"
+          }
+        ],
+        "disagreements": [],
+        "the_multi_gate_fixture": {
+          "what": "one fixture fails four gates at once (no selection, a mis-declared mapping, an unadmitted record and a beyond-period date)",
+          "named_refusal": "G1_JURISDICTION_SELECTION_SUPPLIED"
+        }
+      },
+      "demonstrated_in_this_scope": "in every case the named refusal is the first failing gate in the fixed order, including the case that fails four gates at once.",
+      "passed": true
+    },
+    {
+      "id": "N-08",
+      "forbids": "that an arithmetic outcome is reported as an applicability finding, an observation eligibility or a finding authorisation",
+      "method": "for every fixture, read the four axes separately out of the returned record and check that none of them is derived from another",
+      "evidence": {
+        "axes_read_separately": {
+          "arithmetic": "comparison_outcome per contract debt record, and the comparison layer state",
+          "applicability": "applicability_and_qualifications.applicability, read from the governed record and never from the outcome",
+          "observation_eligibility": "observation_eligibility.permitted_result_ceiling and packet_eligible",
+          "finding_authorisation": "observation_eligibility.finding_classes_available"
+        },
+        "applicability_state_is_the_same_in_every_case": true,
+        "applicability_state_recorded": "UNRESOLVED_MISSING_EVIDENCE (the record's own unresolved temporal half), unchanged by any outcome",
+        "findings_authorised_in_any_case": 0,
+        "packet_eligible_in_any_case": 0,
+        "cases_with_an_arithmetic_outcome": 33,
+        "sample": [
+          {
+            "fixture": "FX-01",
+            "comparison_axis": "RUN",
+            "outcome_axis_is_separate_from_applicability": true,
+            "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+            "applicability_is_not_derived_from_the_outcome": true,
+            "observation_eligibility": "OBSERVATION_CLASS_ONLY",
+            "finding_authorisation_declared_none": true,
+            "packet_eligible": false
+          },
+          {
+            "fixture": "FX-02",
+            "comparison_axis": "RUN",
+            "outcome_axis_is_separate_from_applicability": true,
+            "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+            "applicability_is_not_derived_from_the_outcome": true,
+            "observation_eligibility": "OBSERVATION_CLASS_ONLY",
+            "finding_authorisation_declared_none": true,
+            "packet_eligible": false
+          },
+          {
+            "fixture": "FX-03",
+            "comparison_axis": "RUN",
+            "outcome_axis_is_separate_from_applicability": true,
+            "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+            "applicability_is_not_derived_from_the_outcome": true,
+            "observation_eligibility": "OBSERVATION_CLASS_ONLY",
+            "finding_authorisation_declared_none": true,
+            "packet_eligible": false
+          },
+          {
+            "fixture": "FX-04",
+            "comparison_axis": "RUN",
+            "outcome_axis_is_separate_from_applicability": true,
+            "applicability_temporal": "UNRESOLVED_MISSING_EVIDENCE (see effective dates/status)",
+            "applicability_is_not_derived_from_the_outcome": true,
+            "observation_eligibility": "OBSERVATION_CLASS_ONLY",
+            "finding_authorisation_declared_none": true,
+            "packet_eligible": false
+          }
+        ]
+      },
+      "demonstrated_in_this_scope": "the four axes are separate fields of the returned record. An arithmetic outcome never moves the applicability state, never changes the observation ceiling and never authorises a finding class: no case authorises a finding and no case is packet-eligible.",
+      "passed": true
+    }
+  ],
+  "what_each_test_demonstrates_here_instead_of_a_capability_this_scope_lacks": [
+    "this unit has no probable path and no finding class, so the two tests that name a probable path and a finding label record the prohibition they enforce and the absent capability they measure, not a passing result they produce",
+    "the exception tests record that no exception is read, relied on or suppressed here, rather than a suppression behaviour that would need a probable path to exist",
+    "the off-report-fact test records that the evaluator has no access route to any fact outside the four declared inputs, rather than a filtering behaviour over facts it could have fetched"
+  ],
+  "verdict": "EVERY NEGATIVE TEST PASSED — 8 tests, 0 failures",
+  "what_this_record_does_not_do": [
+    "it admits no rule, creates no coverage or candidate and authorises no finding class",
+    "it produces no consumer-visible output of any class and changes no application behaviour",
+    "it does not run, re-run or invoke the PHASE5-001I-A internal suite, and it treats no passing test of that suite as evidence",
+    "it does not conform, modify or adopt the internal comparator of PHASE5-001I-A",
+    "it does not weaken any assertion to obtain a passing result: every expected state is read out of the pinned text and every measured state is reported as measured"
+  ],
+  "created_by": "PHASE5-001T"
+}

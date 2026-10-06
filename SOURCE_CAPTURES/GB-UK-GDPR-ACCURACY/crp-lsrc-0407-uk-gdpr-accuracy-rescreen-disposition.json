@@ -1,0 +1,67 @@
+{
+  "artifact": "crp-lsrc-0407-uk-gdpr-accuracy-rescreen-disposition.json",
+  "work_order": "CRP_VERSION_1_FINISH_ORDER_001",
+  "created_utc": "2026-10-04",
+  "purpose": "Record, for source ID CRP-LSRC-0407, the durable corrected-logic rescreen disposition that the ledger names as this row's only outstanding implementation dependency (register_state.blocker_type NO_DURABLE_RESCREEN_RECORD), so the row can serve the four canonical GB regions through a bound adapter without reopening anything the ledger has settled and without assuming the dependency away.",
+  "authority_basis": [
+    "SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json row CRP-LSRC-0407, whose register_state.clearing_authority reads: 'WORK - record a durable per-ID rescreen disposition in an authorised batch; where the disposition turns on report-field or event-date mapping it additionally requires an AUTHORISED_EVIDENCE_ROUTE'",
+    "CRP_VERSION_1_FINISH_ORDER_001.md: complete remaining approved consumer coverage on existing ingestion/Issue/packet mechanisms; reuse common mechanisms only where legal applicability is supported; record a genuine blocked candidate once."
+  ],
+  "source_entry_id": "CRP-LSRC-0407",
+  "recorded_row": {
+    "record_type": "CONTENT_RULE",
+    "legal_family": "F4",
+    "source_family_label": "REPORT_ACCURACY_OR_COMPLETENESS",
+    "legacy_jurisdiction_reference": "UK",
+    "canonical_jurisdiction_status": "UK_TO_GB_RECONCILIATION_REQUIRED",
+    "instrument_title": "UK GDPR / Data Protection Act 2018",
+    "provision_or_citation": "UK GDPR Articles 5(1)(d) and 16 (accuracy; right to rectification)",
+    "legacy_atomic_rule_id": "uk.accuracy_duty.gdpr5",
+    "owner_acceptance_state": "OWNER_ACCEPTED_LEGAL_AUTHORITY",
+    "instrument_class_screen": "STATUTE_OR_REGULATION",
+    "instrument_class_confirmation_required": false,
+    "existing_operational_mapping": { "state": "ESTABLISHED", "basis": "LEGACY_RULE_TABLE_SECTION_CONTAINS_RECORDED_PROVISION" }
+  },
+  "rescreen_disposition": {
+    "disposition": "RESCREENED_AND_IMPLEMENTED_AS_A_REPORT_ACCURACY_CONTENT_RULE",
+    "adapter_id": "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY",
+    "turns_on_report_field_mapping": true,
+    "report_field_mapping_used": {
+      "fields": ["liability.openedDate", "liability.closedDate"],
+      "status": "ALREADY_ESTABLISHED_AND_EVIDENCED",
+      "basis": "The ordinary-account opened and closed readings are already extracted, normalized and source-located by the admitted general bureau-report intake, which the regional journey tests already drive for every canonical region including the four GB regions. This disposition introduces no new field, no event-date mapping and no new extraction path, so the ledger's own additional AUTHORISED_EVIDENCE_ROUTE condition is not triggered.",
+      "additional_authorised_evidence_route_required": false
+    },
+    "trigger": "the report's own two printed values for ONE ordinary account cannot both be right (the printed opened date is later than the printed closed date), both readings resolved on that same record",
+    "maximum_conclusion": "probable_violation",
+    "never": [
+      "violation",
+      "a categorical allegation that either printed value is false",
+      "an inference from a reading that could not be made",
+      "an inference from an absent or unprinted value"
+    ],
+    "packet_eligible": false,
+    "packet_eligibility_basis": "A PROBABLE content finding is eligible by its confidence under the unified issue gate, so no per-rule packet permission is widened to make it reachable."
+  },
+  "region_relation_resolved": {
+    "ledger_state_addressed": "UK_TO_GB_RECONCILIATION_REQUIRED",
+    "resolution": "The instrument's own recorded territorial extent ('U.K.' printed on Articles 5 and 16 and on their chapters, and the publisher's '(United Kingdom General Data Protection Regulation)' title kept up to date with UK amendments) establishes that this provision applies throughout the United Kingdom. The relation GB-UK-GDPR-ACCURACY-COUNTRY-WIDE records one row per canonical GB region on that basis.",
+    "not_used": "the off-report route the ledger records as NOT adopted (resolving a bare UK token from a locked session nation or an account profile)",
+    "record": "SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json"
+  },
+  "retained_limitations": {
+    "administrative_limitations_retained": [
+      "LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED",
+      "PRIOR_REVIEW_RECORD_NOT_HELD_IN_THIS_WORKSPACE",
+      "FORMAL_EDITION_OR_HISTORICAL_VERSION_NOT_RECORDED"
+    ],
+    "administrative_limitations_note": "The row's own recorded administrative limitations stay retained. The source locator the ledger carries is a real publisher URL and the provision text is now recorded from the official publisher; the original commencement date is still NOT RECORDED and is not claimed.",
+    "provision_wording": "RECORDED from the official publisher (see the provision-retrieval record): Article 5(1)(d) and Article 16 are quoted verbatim, and the retrieved pages record no textual amendment to either.",
+    "commencement": "NOT RECORDED, AND NOT TREATED AS IRRELEVANT. Temporal applicability conditions attribution for this content rule just as it does for a retention rule; it is distinct from retention arithmetic, which this rule does not perform (it counts no period, applies no day offset and ages nothing). What is recorded is the edition in force and the publisher's UK-amendment posture.",
+    "other_outstanding_items_on_this_id": [],
+    "note": "This disposition closes only the durable-rescreen item the ledger names for CRP-LSRC-0407. It does not reopen legal validity, does not claim served verification, admits no guidance material as a statute, and leaves the current-format GB consumer-disclosure family artifact gap (CURRENT_GB_SUPPORT_IS_ESTABLISHED) exactly where it was."
+  },
+  "evidence_routes_used": [
+    "accelerated-launch/service/tests/sections/cd-gb-uk-gdpr-accuracy.cjs - the upload -> Issue -> Wizzard -> selected correspondence -> approval -> entitled download journey for a GB selection, with positive and benign controls, measured on the actual downloaded document"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "artifact": "scoped_relation_reproduction.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 1 - reproduce the scoped fifteen rows and twenty-five unresolved relations from the existing evidence before any retrieval",
+  "created_utc": "2026-09-30",
+  "inputs_and_verified_hashes": [
+    {"file": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md", "bytes": 447509, "sha256": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D", "role": "437 entries; the fifteen scoped rows read from its JSON block"},
+    {"file": "SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv", "bytes": 616237, "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB", "role": "437-row register; per-ID disposition, legal_provision_key, duplicate group and duplicate_evidence"},
+    {"file": "SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json", "bytes": 1199309, "sha256": "E14596B04F97F3525069722681EF414DCBD2DB8F6B7E63DED5ABE9D8B9C04896", "role": "2358 relation records; the twenty-five unresolved records read from here"},
+    {"file": "SOURCE_CAPTURES/PHASE5-001L/duplicate_identity_analysis.json", "bytes": 29816, "sha256": "30E3C215B8639143C3AB933574CEFE20C460DE0A101858D2192E620A5E575BF7", "role": "unresolved_clusters, count_sensitivity, measured_count_indicators"},
+    {"file": "SOURCE_CAPTURES/PHASE5-001M/next_bounded_action.json", "bytes": 4625, "sha256": "7D7964549BADB918DE6974E28D9F27A40596331B2A9B05CA7DCC23336661E5A4", "role": "the authorising scope: six clusters, fifteen rows, twenty-five relations"}
+  ],
+  "reproduced": {
+    "scoped_rows": 15,
+    "scoped_row_ids": ["CRP-LSRC-0315", "CRP-LSRC-0316", "CRP-LSRC-0317", "CRP-LSRC-0318", "CRP-LSRC-0320", "CRP-LSRC-0149", "CRP-LSRC-0150", "CRP-LSRC-0165", "CRP-LSRC-0166", "CRP-LSRC-0409", "CRP-LSRC-0411", "CRP-LSRC-0336", "CRP-LSRC-0349", "CRP-LSRC-0337", "CRP-LSRC-0351"],
+    "unresolved_relation_records": 25,
+    "distinct_unordered_pairs_among_them": 15,
+    "reproduction_of_001l_tallies": {
+      "relation_records_total": 2358,
+      "identical": 16,
+      "unresolved": 25,
+      "distinct": 2317,
+      "sum_check": "16 + 25 + 2317 = 2358 - MATCH",
+      "row_tallies": "identical 22 + unresolved 15 + distinct 54 + no-duplicate-relationship 346 = 437 - MATCH",
+      "rows_with_a_duplicate_relationship": 91,
+      "citation_group_recurrence": "the ten PIPEDA pairs also appear in DUP-CITE-009, whose members share a citation string across distinct artifacts; 0336~0349 and 0337~0351 appear only there"
+    },
+    "relation_records_by_group": [
+      {"group": "DUP-PAIR-004", "basis": "IDENTICAL_ARTIFACT_AND_CITATION", "relation_records": 1, "pair": "CRP-LSRC-0149~CRP-LSRC-0150", "detail": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_YEARS"},
+      {"group": "DUP-PAIR-005", "basis": "IDENTICAL_ARTIFACT_AND_CITATION", "relation_records": 1, "pair": "CRP-LSRC-0165~CRP-LSRC-0166", "detail": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_START"},
+      {"group": "DUP-PAIR-010", "basis": "IDENTICAL_ARTIFACT_AND_CITATION", "relation_records": 10, "pairs": "the ten unordered pairs among CRP-LSRC-0315, 0316, 0317, 0318 and 0320", "detail": "SAME_RECORDED_INSTRUMENT_PROVISION_ABSENT_IN_BOTH"},
+      {"group": "DUP-PAIR-014", "basis": "IDENTICAL_ARTIFACT_AND_CITATION", "relation_records": 1, "pair": "CRP-LSRC-0409~CRP-LSRC-0411", "detail": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_START"},
+      {"group": "DUP-CITE-009", "basis": "REPEATED_CITATION_ONLY", "relation_records": 12, "pairs": "the same ten PIPEDA pairs plus CRP-LSRC-0336~CRP-LSRC-0349 and CRP-LSRC-0337~CRP-LSRC-0351", "detail": "SAME_RECORDED_INSTRUMENT_PROVISION_ABSENT_IN_BOTH"}
+    ]
+  },
+  "discrepancies_explained_before_proceeding": [
+    {
+      "discrepancy": "the order names twenty-five unresolved relations, but the six clusters contain only fifteen unordered pairs",
+      "resolution": "both figures are correct at different units. The twenty-five are relation RECORDS in SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json. The ten unordered pairs among 0315/0316/0317/0318/0320 are each recorded twice - once under DUP-PAIR-010, which links them by the shared (source_artifact, provision_or_citation) string, and once under DUP-CITE-009, which links them because the same rows also share a citation string across distinct artifacts. 20 records + 1 + 1 + 1 + 1 + 1 = 25 records over 15 pairs. Nothing is missing and no comparison is double-counted: each of the fifteen pairs is one identity question, and this order records one determination for each."
+    },
+    {
+      "discrepancy": "CRP-LSRC-0336 and CRP-LSRC-0337 carry canonical_entry_id CRP-LSRC-0315 in the 001K register although they are not PIPEDA rows",
+      "resolution": "recorded indicator artefact, not a finding. The 001K duplicate ledger groups by the repeated (source_artifact, provision_or_citation) string, and (legalRules.ts, 'NOT RECORDED') repeats across the PIPEDA rows and these two authority records, so the ledger placed them in DUP-PAIR-010 under that group's anchor. Their relations were already determined DISTINCT by PHASE5-001L because the recorded instruments differ. No register field is corrected, re-classed or rewritten by this order."
+    },
+    {
+      "discrepancy": "CRP-LSRC-0349 is an anchor of DUP-PAIR-011 with CRP-LSRC-0350 and CRP-LSRC-0351, but the scoped pairs are 0336~0349 and 0337~0351",
+      "resolution": "not a discrepancy. CRP-LSRC-0350 records a different instrument (Limitation of Actions Act (Nova Scotia), S.N.S. 2014, c. 35) and its relations were already determined DISTINCT, so it carries no unresolved relation. The only unresolved relations touching the scope are 0336~0349 and 0337~0351, exactly as listed."
+    },
+    {
+      "discrepancy": "CRP-LSRC-0314 records the same instrument, locator and record type as the five PIPEDA rows yet is not in the unresolved cluster",
+      "resolution": "recorded-string difference, consistent with the 001L grouping rule. CRP-LSRC-0314 records provision_or_citation as 'NOT RECORDED (`section: null`)' while the five record 'NOT RECORDED', so the string-keyed ledger did not group it with them and its relations were determined DISTINCT. Recorded as context only; nothing is altered."
+    }
+  ],
+  "scope_confirmation": {
+    "unresolved_relation_records_outside_the_scope": 0,
+    "method": "every relation record whose determination is IDENTITY_UNRESOLVED was listed and both members tested for membership in the fifteen scoped IDs; all twenty-five have both members inside the scope",
+    "unresolved_rows_outside_the_scope": 0,
+    "rows_with_a_preserved_disposition": "15 of 15; the 001K disposition UNRESOLVED with disposition_state BLOCKED_MISSING_EVIDENCE and blocker_type NO_DURABLE_RESCREEN_RECORD is unchanged on every one of them"
+  },
+  "created_by": "PHASE5-001N"
+}

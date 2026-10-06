@@ -1,0 +1,108 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001Q",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 460,
+  "files_unchanged": 460,
+  "files_changed": [],
+  "files_missing": [],
+  "files_added_by_this_order": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\build_001q_decisions.js",
+      "bytes": 28151,
+      "sha256": "4C007BB0901A6B132E21759D272871ADE7C574B0DD80759F2461EDA9087D7C74"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\build_001q_gate54.js",
+      "bytes": 30832,
+      "sha256": "E16110C8BE55FD4B6F5B9A50CFD7912709186A4DA6DEF5589F04DCCCB43B4D35"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\build_001q_next_order.js",
+      "bytes": 14312,
+      "sha256": "71D0E6B1D1B4884FB43062834C731C6723CEE253948577766154D23FB77E66E8"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\build_001q_rule_record.js",
+      "bytes": 32383,
+      "sha256": "FBE68033BE19F927D9D5976C530A631807CA1C3D1FEAC1CBAE255A345ED4B9AF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\build_001q_validation.js",
+      "bytes": 37912,
+      "sha256": "9B55B1EB2C1225D43DADDFEF8C5984304D174F31E28673D697B93D7836263103"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\capture_001q_baseline.ps1",
+      "bytes": 8568,
+      "sha256": "FBB11CE121F25FF8514E748F4A1DA0535AB6FF18F2E286B90627DC065A09D522"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\file_custody_manifest.json",
+      "bytes": 113786,
+      "sha256": "D90B48205C3818F63EA4B62D319FE66B69D0D71FB0F139F5309A9AF7F05D1868"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+      "bytes": 24536,
+      "sha256": "E0CFE2042706B5EAFCA12B85BF72D22E502C535811640D552B921DB1DB23ACB0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\next_work_order.json",
+      "bytes": 13997,
+      "sha256": "BDC74C42319E03E3C8F01DA5034D5E58E17F5DB781DF9AD6C1A624D5D224AE45"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\preservation_and_change_record.json",
+      "bytes": 4571,
+      "sha256": "47CC58C0D7664ED459A4756F6E4DA96D18A61F7A9AB7D335FF2EE0E2DB95A393"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\preserved_files_before.json",
+      "bytes": 97515,
+      "sha256": "A5099E173A3BC70AA1E3FECE96F630F01C90DB2E0140B901AB1D3B6896CFEA11"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record_decisions.json",
+      "bytes": 25453,
+      "sha256": "35B8FCE62B443D90E9E7034C3AE35ADAD7FA961916C5004B3E127DE76B977E94"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+      "bytes": 37993,
+      "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json",
+      "bytes": 32566,
+      "sha256": "729D5EA0465061AD3DE262F3C8B9447CEACA1CD61F80890D38F88179E61D818D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\transcription_mapping_validation.json",
+      "bytes": 15859,
+      "sha256": "B201026451E9BA2DC0E65D203DC49BFE7C5CB3117380B7318926B72876C8961E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\verification_results.json",
+      "bytes": 11296,
+      "sha256": "94B36F9403D20FACE91D86F652BE51C7408E40F898050C5D924D3C01810813DE"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001Q\\verify_and_manifest_001q.ps1",
+      "bytes": 19010,
+      "sha256": "D3B0C2FD9510B2D63109A3CE250EADA4CCCBED0902F60002091B7477FEDE6D2B"
+    },
+    {
+      "relative_path": "CRP_PHASE5_001Q_RULE_RECORD_FINALIZATION_AND_GATE_5_4_VERDICT.md",
+      "bytes": 27283,
+      "sha256": "28C4C487C44228E4F0AE12E17DFD9E4C38998B336DCDF3E0C6AFDD3614A6FBA6"
+    }
+  ],
+  "expected_changes": "none. This order was authorised to change no pre-existing file; every file it wrote is new and lives in its own package or is its own narrative.",
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "governed_documents_amended": [],
+  "output_character": "observation-only, packet-ineligible: no consumer-visible output, no application change, no deployment",
+  "verdict": "PRESERVATION HELD — no pre-existing file was changed or deleted by this order; every artifact it wrote is new"
+}

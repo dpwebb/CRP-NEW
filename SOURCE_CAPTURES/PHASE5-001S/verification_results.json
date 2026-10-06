@@ -1,0 +1,564 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "purpose": "the checks this order ran over the amended governing document, the amendment procedure, its own artifacts, the historical records it must not touch, its preservation, its custody, the prospective baseline it established and the read-only pointers outside the workspace",
+  "checks": [
+    {
+      "id": "V-S01",
+      "what": "exactly one pre-existing file changed, and it is the amended rank-5 governing document",
+      "passed": true,
+      "detail": "changed: 1; the file: CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md"
+    },
+    {
+      "id": "V-S02",
+      "what": "no pre-existing file was deleted or is missing",
+      "passed": true,
+      "detail": "missing: 0"
+    },
+    {
+      "id": "V-S03",
+      "what": "no change was made that the amendment record does not authorise",
+      "passed": true,
+      "detail": "undeclared: 0; authorised but not measured as changed: 0"
+    },
+    {
+      "id": "V-S04",
+      "what": "the amended document is byte-identical to what the amendment procedure recorded",
+      "passed": true,
+      "detail": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50"
+    },
+    {
+      "id": "V-S05",
+      "what": "the baseline was taken before any amendment: its plan digest is the digest_before the amendment recorded",
+      "passed": true,
+      "detail": "baseline 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C; digest_before 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+    },
+    {
+      "id": "V-S06",
+      "what": "every JSON artifact of this order parses",
+      "passed": true,
+      "detail": "files: 10; unparsable: "
+    },
+    {
+      "id": "V-S07",
+      "what": "no artifact of this order carries a byte-order mark",
+      "passed": true,
+      "detail": "with BOM: "
+    },
+    {
+      "id": "V-S08",
+      "what": "the narrative record exists and is substantive",
+      "passed": true,
+      "detail": "bytes: 41037"
+    },
+    {
+      "id": "V-S09",
+      "what": "the amendment applied each amendment exactly once, with no problem recorded",
+      "passed": true,
+      "detail": "applied: 5; problems: 0"
+    },
+    {
+      "id": "V-S10",
+      "what": "the amended document kept its LF line endings and its trailing newline",
+      "passed": true,
+      "detail": "LF preserved"
+    },
+    {
+      "id": "V-S11",
+      "what": "every replacement is an extension of the replaced text, so no requirement was removed (Constitution section 6.4)",
+      "passed": true,
+      "detail": "amendments: 5; replacements: 4; appended rows: 1; any with a removal: 0"
+    },
+    {
+      "id": "V-S12",
+      "what": "every replacement is present exactly once and every replaced text is still present inside it",
+      "passed": true,
+      "detail": "replacements: 4; each present exactly once: 4"
+    },
+    {
+      "id": "V-S13",
+      "what": "the inversion check reconstructs the pre-amendment bytes exactly",
+      "passed": true,
+      "detail": "reconstructed 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C vs digest_before 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+    },
+    {
+      "id": "V-S14",
+      "what": "the appended amendment-history row is in the amended document, and every earlier row is preserved",
+      "passed": true,
+      "detail": "row at line 262"
+    },
+    {
+      "id": "V-S15",
+      "what": "the amendment names its document and clause, quotes the replaced text and states the replacement text (Constitution section 6.2)",
+      "passed": true,
+      "detail": "replacements with all four parts: 4 of 4; the appended row is checked separately"
+    },
+    {
+      "id": "V-S16",
+      "what": "the pre-admission sequence paragraph is in the amended document",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "id": "V-S17",
+      "what": "the paragraph keeps admission at Gate 5.7 and forbids an early admission to satisfy a gate",
+      "passed": true,
+      "detail": "both sentences present"
+    },
+    {
+      "id": "V-S18",
+      "what": "the paragraph keeps the emission refusal for an unadmitted rule",
+      "passed": true,
+      "detail": "refusal requirement present"
+    },
+    {
+      "id": "V-S19",
+      "what": "Phase 5.5 bullet 3 carries the scoped reading of `admitted rule records`",
+      "passed": true,
+      "detail": "reading present"
+    },
+    {
+      "id": "V-S20",
+      "what": "section 4 item 5 carries the scoped reading of `admitted`",
+      "passed": true,
+      "detail": "reading present"
+    },
+    {
+      "id": "V-S21",
+      "what": "Gate 5.6 carries the pre-admission measurement of the version-sharing condition and the Gate 5.7 reservation",
+      "passed": true,
+      "detail": "both present"
+    },
+    {
+      "id": "V-S22",
+      "what": "Gate 5.5s own sentence is unchanged by this order",
+      "passed": true,
+      "detail": "verbatim"
+    },
+    {
+      "id": "V-S23",
+      "what": "every other clause the order promised to preserve is still present verbatim",
+      "passed": true,
+      "detail": "ordering sentence, PHASE5-001P paragraph, the 001I-A carve-out, Gate 5.2, Phase 5.3, Phase 5.1, the finding model, the stop conditions and the scope boundary all present"
+    },
+    {
+      "id": "V-S24",
+      "what": "the amendment-history row records what the amendment did, and that it passes no gate",
+      "passed": true,
+      "detail": "row present with its limits"
+    },
+    {
+      "id": "V-S25",
+      "what": "the authority analysis quotes each circular clause and locates it, in the pre-amendment state",
+      "passed": true,
+      "detail": "clauses: 3; digest at analysis 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+    },
+    {
+      "id": "V-S26",
+      "what": "the analysis records the sequencing and admission clauses that close the loop",
+      "passed": true,
+      "detail": "sequencing 4; admission clauses 2"
+    },
+    {
+      "id": "V-S27",
+      "what": "the analysis records the authorities inspected and not amended, with a reason for each, and Gate 5.5 among them",
+      "passed": true,
+      "detail": "authorities: 17"
+    },
+    {
+      "id": "V-S28",
+      "what": "the analysis quotes the amendment procedure it applied",
+      "passed": true,
+      "detail": "sections 6.1 to 6.5 quoted"
+    },
+    {
+      "id": "V-S29",
+      "what": "both owner decisions are recorded verbatim, with what each does and does not do",
+      "passed": true,
+      "detail": "decisions: 2"
+    },
+    {
+      "id": "V-S30",
+      "what": "Owner Decision 1 does not retroactively authorise the write, does not claim recovery, does not erase the failure and does not make the tests gate evidence",
+      "passed": true,
+      "detail": "all four limits recorded"
+    },
+    {
+      "id": "V-S31",
+      "what": "the custody supplement links the original hash, the current hash, the cause, the affected order and the prospective baseline",
+      "passed": true,
+      "detail": "E492041115C3 -> 6D8E84E06C2C; affected order PHASE5-001R — the order that ran the suite and caused the change"
+    },
+    {
+      "id": "V-S32",
+      "what": "the retained artifact measures now as the supplement records, and its suite was not run",
+      "passed": true,
+      "detail": "6D8E84E06C2C; 41 tests; 0 failures"
+    },
+    {
+      "id": "V-S33",
+      "what": "the PHASE5-001R verdict still records criterion 7 as named and not met, and still withholds",
+      "passed": true,
+      "detail": "criterion 7: NAMED — NOT MET IN THIS SCOPE; verdict: WITHHELD — ONE OR MORE CRITERIA CANNOT BE MET WITHIN THIS SCOPE"
+    },
+    {
+      "id": "V-S34",
+      "what": "the PHASE5-001R preservation record still records the change as unauthorised and the verdict as not fully held",
+      "passed": true,
+      "detail": "unauthorised: True; verdict: PRESERVATION NOT FULLY HELD — no pre-existing file was deleted, and no pre-existing file was changed outside the one change this order discloses and does not authorise"
+    },
+    {
+      "id": "V-S35",
+      "what": "the PHASE5-001I-A manifest still holds the original digest and was not edited by this order",
+      "passed": true,
+      "detail": "manifest holds E492041115C3; PHASE5-001I-A files changed by this order: 0"
+    },
+    {
+      "id": "V-S36",
+      "what": "no harness that writes into a prior evidence package was run, and the writing suite is still recorded as not re-run",
+      "passed": true,
+      "detail": "PHASE5-001I-A files changed: 0; suite re-run by that order: False"
+    },
+    {
+      "id": "V-S37",
+      "what": "the progression assessment keeps the historical failure and the exception state apart",
+      "passed": true,
+      "detail": "historical failure and exception state both recorded, with the limits"
+    },
+    {
+      "id": "V-S38",
+      "what": "no earlier baseline or manifest was overwritten, and the records say so",
+      "passed": true,
+      "detail": "earlier baselines edited: 0; earlier manifests edited: 0"
+    },
+    {
+      "id": "V-S39",
+      "what": "the successor verdict quotes the gate sentence and states all 15 criteria with a state and evidence",
+      "passed": true,
+      "detail": "criteria: 15"
+    },
+    {
+      "id": "V-S40",
+      "what": "the successor verdict is a scoped pass, and it records the corpus-wide state as not passed",
+      "passed": true,
+      "detail": "PASSED_FOR_THIS_SCOPE / NOT PASSED AND UNCHA"
+    },
+    {
+      "id": "V-S41",
+      "what": "criterion 7 is recorded as covered by the recorded owner exception, with the historical failure preserved",
+      "passed": true,
+      "detail": "NAMED — NOT MET IN THIS SCOPE (preserved verbatim in the PHASE5-001R verdict and in its preservation record, neither of which this order edits)"
+    },
+    {
+      "id": "V-S42",
+      "what": "the phase-bullet criterion is recorded as resolved as a presupposition, with the emission path still unexercised",
+      "passed": true,
+      "detail": "RESOLVED AS A PRESUPPOSITION BY THE AMEN"
+    },
+    {
+      "id": "V-S43",
+      "what": "the gate clauses on unapproved rules are met as refusals, and no criterion is claimed as satisfied by admission",
+      "passed": true,
+      "detail": "gate met-or-resolved 8 of 8; covered 1; withheld 0"
+    },
+    {
+      "id": "V-S44",
+      "what": "the verdict preserves the observation ceiling, packet ineligibility, the exact specimen, the timing qualifications, the exception limitations and the withheld anniversary equality",
+      "passed": true,
+      "detail": "six preserved requirements recorded"
+    },
+    {
+      "id": "V-S45",
+      "what": "the verdict claims no rule, no coverage, no finding class and no emission",
+      "passed": true,
+      "detail": "limits recorded"
+    },
+    {
+      "id": "V-S46",
+      "what": "the predecessor verdict is preserved at its recorded digest and the successor records that",
+      "passed": true,
+      "detail": "B3A019E65EA0"
+    },
+    {
+      "id": "V-S47",
+      "what": "the rule record is still NOT_ADMITTED with zeroed counts, and the ceiling is still observation-class only",
+      "passed": true,
+      "detail": "CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3"
+    },
+    {
+      "id": "V-S48",
+      "what": "the governed rule record is still NOT ADMITTED, the counts are still zero, and the ceiling is still observation-class only",
+      "passed": true,
+      "detail": "state: NOT_ADMITTED; rules: 0; findings: 0; ceiling: OBSERVATION_CLASS_ONLY"
+    },
+    {
+      "id": "V-S49",
+      "what": "the Gate 5.6 order is issued for this scope, with its non-execution stated",
+      "passed": true,
+      "detail": "PHASE5-001T: Gate 5.6 — Validate before authorizing findings, for one scope only"
+    },
+    {
+      "id": "V-S50",
+      "what": "the order is complete: six deliverables, the exclusions, the stop conditions and eight acceptance criteria",
+      "passed": true,
+      "detail": "deliverables 6; exclusions 10; stop conditions 5; acceptance 8"
+    },
+    {
+      "id": "V-S51",
+      "what": "the fixture deliverable names every category the phase bullet requires",
+      "passed": true,
+      "detail": "all fifteen categories named"
+    },
+    {
+      "id": "V-S52",
+      "what": "the order forbids re-running any harness that writes into a prior evidence package, and names the PHASE5-001I-A suite",
+      "passed": true,
+      "detail": "recorded as an exclusion, a stop condition subject and an acceptance criterion"
+    },
+    {
+      "id": "V-S53",
+      "what": "the order forbids admission, early admission, coverage, findings, consumer-visible output and deployment",
+      "passed": true,
+      "detail": "all recorded"
+    },
+    {
+      "id": "V-S54",
+      "what": "the version-sharing tension is reconciled: a pinned pre-admission version, the Gate 5.7 reservation, and the criterion to be named rather than passed",
+      "passed": true,
+      "detail": "CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3"
+    },
+    {
+      "id": "V-S55",
+      "what": "every version pin is recorded with its digest, and the rule record pin is the record at its pre-admission identity",
+      "passed": true,
+      "detail": "pins: 11"
+    },
+    {
+      "id": "V-S56",
+      "what": "every preceding scoped gate is recorded as passing for this scope",
+      "passed": true,
+      "detail": "Gates 5.2, 5.3, 5.4 and 5.5 all recorded as passing for this scope"
+    },
+    {
+      "id": "V-S57",
+      "what": "the order records the superseded draft and why the id changed",
+      "passed": true,
+      "detail": "the Gate 5.6 order was reserved as PHASE5-001S by the unissu"
+    },
+    {
+      "id": "V-S58",
+      "what": "the three read-only pins outside the workspace still match, and nothing there was written",
+      "passed": true,
+      "detail": "pointers: 3; mismatching: 0"
+    },
+    {
+      "id": "V-S59",
+      "what": "the prospective baseline re-measures with no mismatch over the files it lists",
+      "passed": true,
+      "detail": "rows: 523; mismatching: 0 "
+    },
+    {
+      "id": "V-S60",
+      "what": "the prospective baseline carries its pins, and the retained artifact pin is the hash measured now",
+      "passed": true,
+      "detail": "pins: 4"
+    },
+    {
+      "id": "V-S61",
+      "what": "the prospective baseline names the four records it excludes, and no other file",
+      "passed": true,
+      "detail": "four harness-written records excluded, with the reason"
+    },
+    {
+      "id": "V-S62",
+      "what": "every input was re-measured before anything was written, with no unexplained difference and nothing missing",
+      "passed": true,
+      "detail": "inputs 143; match 135; differ 3; missing 0; unexplained 0"
+    },
+    {
+      "id": "V-S63",
+      "what": "the input record names the retained artifact difference and attributes it, with its original digest",
+      "passed": true,
+      "detail": "attributed to PHASE5-001R and to the build plan, with the original digest named"
+    },
+    {
+      "id": "V-S64",
+      "what": "the custody manifest re-measures with no mismatch over the files it lists",
+      "passed": true,
+      "detail": "entries: 524; mismatching: 0. The three harness summary records are listed separately and excluded from the files list, because a record cannot carry its own final digest"
+    }
+  ],
+  "check_count": 64,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001S CHECKS PASSED",
+  "checks_are_not_gate_evidence": "these checks verify this order's own artifacts, its amendment and its custody. They are not the scope's gate verdict, which is a separate record: scoped_gate_5_5_verdict_successor.json.",
+  "the_amendment": {
+    "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "digest_before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+    "digest_after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+    "amendments": 5,
+    "invertible": true,
+    "requirements_removed": 0
+  },
+  "preservation_reading": "one pre-existing file changed, and it is the rank-5 governing document amended under the two recorded owner decisions; 0 files missing; 0 undeclared changes; 0 earlier baselines or manifests overwritten. The historical preservation failure of PHASE5-001R is preserved unedited and covered prospectively by Owner Decision 1.",
+  "artifacts_this_order_wrote": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_application_result.json",
+      "bytes": 3636,
+      "sha256": "DC700A7AAC22AC8EBAE80E33EBF7218E657C4C44674BB31EE2099F173DD88556"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_authority_analysis.json",
+      "bytes": 29376,
+      "sha256": "E3638AEF5964DF527A6DCC48D9C5E7236677E5AA144D8BE2236A8186F8482279"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_text.json",
+      "bytes": 15919,
+      "sha256": "87DF82EE10D4BBBDCD51461A98716B15258AD3EA63176BB554CE6326EEE75BEA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendments_001s.js",
+      "bytes": 9425,
+      "sha256": "79F064F0B23CB6765A4D90D17AB097154004B9FD431854281819E46D357B7CAF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\apply_001s_amendments.js",
+      "bytes": 6638,
+      "sha256": "0FC41FBF9B7BCD3F6AB3158921C2F075FC959F432D4D11BC38EC7EEEB0B0D94F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_amendment_records.js",
+      "bytes": 8510,
+      "sha256": "DA83BE7D8C7986A3FC246CFCDB043DC620D81B819A26556899AF0C65AE17AD9E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_authority_analysis.js",
+      "bytes": 28326,
+      "sha256": "DFAF4989EAC0F666FC3634F05F21E833D45BDEFB587A1B03E2FAECC8CA316001"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_decisions_and_custody.js",
+      "bytes": 17356,
+      "sha256": "BD3AD1C5543C22A8B754ED7341AB291028B47FE739CB1BF4E63AAE9940C458AF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_next_order.js",
+      "bytes": 21086,
+      "sha256": "47E051E951C3D87AF029D32683043FB5260E68CDDA4335D1F04D3933326F19ED"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_successor_verdict.js",
+      "bytes": 31966,
+      "sha256": "E1BF7AF4D02F55A79F21AD816E818D6DA67D9F808CC7CC33F0E4BF0888CCB907"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\capture_001s_baseline.ps1",
+      "bytes": 19785,
+      "sha256": "D868CF20316DB108D8E6593013FBD3548E3CC62C4D2BD0BA62F0710730664600"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\capture_001s_prospective_baseline.ps1",
+      "bytes": 10110,
+      "sha256": "0FC8F98F9E3C589E70D86A23AEAB1C87105A3C070DD40C2F007178FB0B3E9179"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\custody_supplement.json",
+      "bytes": 9266,
+      "sha256": "EDC80B298670067784979A11064CF95A09757A92DBA77C4E18559E03FA8CAA78"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json",
+      "bytes": 126644,
+      "sha256": "D9F7B4B2C88BB44BCDE058F61A328ECE6CC4E2FAEFB5F07629C0FE5E2AF14BFF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+      "bytes": 64641,
+      "sha256": "BE431A8C55F2C13B84A69FE40A53A92E254FACE33177233741C143B9BECAA130"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\next_work_order.json",
+      "bytes": 23692,
+      "sha256": "68D699006869DF81314AFBD687437B6BF4911458CBF18ED15286F345975559F5"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\owner_decisions.json",
+      "bytes": 4979,
+      "sha256": "813D9F32AE64F7D1EB61D3A3DECA76F29F2EE83A952279C41D0F85C0655A208F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\preservation_and_change_record.json",
+      "bytes": 8735,
+      "sha256": "EA8A19B3DBF24BA41A6E4FA377E4E91BC9568699675583DE4D9CCC6A3E269B86"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\preserved_files_before.json",
+      "bytes": 106818,
+      "sha256": "B1C88D556698E11EFB0C427C67D7304C8674F9B151A063A6615B12613577178D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\prospective_baseline.json",
+      "bytes": 116715,
+      "sha256": "D3E1E10E72C032D61622DC418B82DFC06C57513D3363AA7936CF378F833885A4"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+      "bytes": 35071,
+      "sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\verification_results.json",
+      "bytes": 24670,
+      "sha256": "BF399B64092BF68EE4B0B675DDAB2D2F79BF2F5E537F8D3DDF92C2F807D171EE"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\verify_and_manifest_001s.ps1",
+      "bytes": 48537,
+      "sha256": "EFDA428C9F055AFC359CEC7BFBF139D122150CD84A7E6A28C5EF0FCB897AAF2B"
+    },
+    {
+      "relative_path": "CRP_PHASE5_001S_GATE_5_5_BLOCKER_RESOLUTION.md",
+      "bytes": 41037,
+      "sha256": "DD2D32A290D0E9D6BBFFBA897AD678CC65D1325C621F8BEEBF5E2D5DF9DFBF95"
+    }
+  ],
+  "harness_summary_records": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\preservation_and_change_record.json",
+      "bytes": 8735,
+      "sha256": "261F211CA78454433C72E9783CFDEA289BB9A10704E8F7235F73BD5FF410CCC3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json",
+      "bytes": 126644,
+      "sha256": "8696D065A9772054F11B79010D49578AF5BE399DF927FD7E9362D2D1924AF407"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\verification_results.json",
+      "note": "written last by this same harness; its own digest is measured from the file rather than self-recorded"
+    }
+  ],
+  "corpus_wide_status_kept_separate": {
+    "5.1": "MET with recorded administrative limitations; unchanged",
+    "5.2": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only, in SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_2_verdict.json",
+    "5.3": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only, in SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_3_verdict.json",
+    "5.4": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only, in SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json",
+    "5.5": "NOT PASSED corpus-wide; the scoped verdict for this scope is PASSED_FOR_THIS_SCOPE in SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json, and the earlier withheld verdict is preserved at SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+    "5.6": "NOT STARTED; the order PHASE5-001T is issued in SOURCE_CAPTURES\\PHASE5-001S\\next_work_order.json and is not begun",
+    "5.7": "NOT REACHED; 0 admitted governed rules, 0 permitted findings"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not independent legal review, and it is not Gate 5.6 or Gate 5.7 evidence",
+    "it does not pass Gate 5.5 corpus-wide, and it records no gate as passed for any scope other than the one named in scoped_gate_5_5_verdict_successor.json",
+    "it does not admit a rule, create coverage or a candidate, or authorize a finding class",
+    "it does not repair or deny the preservation failure of PHASE5-001R, and it does not restate that unauthorised write as authorised: the failure is preserved and is covered prospectively only",
+    "it does not convert any recorded limitation into a criterion satisfaction, and it does not treat missing work as a gap or a refusal",
+    "it does not claim the emission path on an admitted rule record is exercised: that path is still refused and unexercised",
+    "it does not treat the retained artifact's passing tests as evidence for any gate",
+    "it does not retroactively authorize any earlier custody discrepancy"
+  ],
+  "created_by": "PHASE5-001S"
+}

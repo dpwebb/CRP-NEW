@@ -1,0 +1,17 @@
+{
+  "fictional_only": true,
+  "clean_candidate_first": [
+    {
+      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+      "outcome": "NO_LONGER_OBSERVED",
+      "match": "CONFIDENT"
+    }
+  ],
+  "issue_candidate_first": [
+    {
+      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+      "outcome": "STILL_OBSERVED",
+      "match": "CONFIDENT"
+    }
+  ]
+}

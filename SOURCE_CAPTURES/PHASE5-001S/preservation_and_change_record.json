@@ -1,0 +1,177 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 503,
+  "files_unchanged": 502,
+  "files_changed": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+      "after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "bytes": 38651
+    }
+  ],
+  "files_missing": [],
+  "files_added_by_this_order": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_application_result.json",
+      "bytes": 3636,
+      "sha256": "DC700A7AAC22AC8EBAE80E33EBF7218E657C4C44674BB31EE2099F173DD88556"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_authority_analysis.json",
+      "bytes": 29376,
+      "sha256": "E3638AEF5964DF527A6DCC48D9C5E7236677E5AA144D8BE2236A8186F8482279"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_text.json",
+      "bytes": 15919,
+      "sha256": "87DF82EE10D4BBBDCD51461A98716B15258AD3EA63176BB554CE6326EEE75BEA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\amendments_001s.js",
+      "bytes": 9425,
+      "sha256": "79F064F0B23CB6765A4D90D17AB097154004B9FD431854281819E46D357B7CAF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\apply_001s_amendments.js",
+      "bytes": 6638,
+      "sha256": "0FC41FBF9B7BCD3F6AB3158921C2F075FC959F432D4D11BC38EC7EEEB0B0D94F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_amendment_records.js",
+      "bytes": 8510,
+      "sha256": "DA83BE7D8C7986A3FC246CFCDB043DC620D81B819A26556899AF0C65AE17AD9E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_authority_analysis.js",
+      "bytes": 28326,
+      "sha256": "DFAF4989EAC0F666FC3634F05F21E833D45BDEFB587A1B03E2FAECC8CA316001"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_decisions_and_custody.js",
+      "bytes": 17356,
+      "sha256": "BD3AD1C5543C22A8B754ED7341AB291028B47FE739CB1BF4E63AAE9940C458AF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_next_order.js",
+      "bytes": 21086,
+      "sha256": "47E051E951C3D87AF029D32683043FB5260E68CDDA4335D1F04D3933326F19ED"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\build_001s_successor_verdict.js",
+      "bytes": 31966,
+      "sha256": "E1BF7AF4D02F55A79F21AD816E818D6DA67D9F808CC7CC33F0E4BF0888CCB907"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\capture_001s_baseline.ps1",
+      "bytes": 19785,
+      "sha256": "D868CF20316DB108D8E6593013FBD3548E3CC62C4D2BD0BA62F0710730664600"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\capture_001s_prospective_baseline.ps1",
+      "bytes": 10110,
+      "sha256": "0FC8F98F9E3C589E70D86A23AEAB1C87105A3C070DD40C2F007178FB0B3E9179"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\custody_supplement.json",
+      "bytes": 9266,
+      "sha256": "EDC80B298670067784979A11064CF95A09757A92DBA77C4E18559E03FA8CAA78"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json",
+      "bytes": 126644,
+      "sha256": "D9F7B4B2C88BB44BCDE058F61A328ECE6CC4E2FAEFB5F07629C0FE5E2AF14BFF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+      "bytes": 64641,
+      "sha256": "BE431A8C55F2C13B84A69FE40A53A92E254FACE33177233741C143B9BECAA130"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\next_work_order.json",
+      "bytes": 23692,
+      "sha256": "68D699006869DF81314AFBD687437B6BF4911458CBF18ED15286F345975559F5"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\owner_decisions.json",
+      "bytes": 4979,
+      "sha256": "813D9F32AE64F7D1EB61D3A3DECA76F29F2EE83A952279C41D0F85C0655A208F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\preservation_and_change_record.json",
+      "bytes": 8735,
+      "sha256": "EA8A19B3DBF24BA41A6E4FA377E4E91BC9568699675583DE4D9CCC6A3E269B86"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\preserved_files_before.json",
+      "bytes": 106818,
+      "sha256": "B1C88D556698E11EFB0C427C67D7304C8674F9B151A063A6615B12613577178D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\prospective_baseline.json",
+      "bytes": 116715,
+      "sha256": "D3E1E10E72C032D61622DC418B82DFC06C57513D3363AA7936CF378F833885A4"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+      "bytes": 35071,
+      "sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\verification_results.json",
+      "bytes": 24670,
+      "sha256": "BF399B64092BF68EE4B0B675DDAB2D2F79BF2F5E537F8D3DDF92C2F807D171EE"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001S\\verify_and_manifest_001s.ps1",
+      "bytes": 48537,
+      "sha256": "EFDA428C9F055AFC359CEC7BFBF139D122150CD84A7E6A28C5EF0FCB897AAF2B"
+    },
+    {
+      "relative_path": "CRP_PHASE5_001S_GATE_5_5_BLOCKER_RESOLUTION.md",
+      "bytes": 41037,
+      "sha256": "DD2D32A290D0E9D6BBFFBA897AD678CC65D1325C621F8BEEBF5E2D5DF9DFBF95"
+    }
+  ],
+  "expected_changes": "exactly one: the rank-5 Approved Build Plan, amended by this order under the two owner decisions through the Core Constitution section 6 quoted-replacement procedure. No other pre-existing file was authorised to change, and none did.",
+  "authorised_changes_by_this_order": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+      "after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "authorised_by": "PHASE5-001S amendments A-1 to A-5, applied through the governing procedure under the two owner decisions; recorded in amendment_application_result.json and amendment_text.json",
+      "cause": "this order is authorised to amend exactly one pre-existing file: the rank-5 Approved Build Plan, to record the pre-admission sequence and the two scoped readings",
+      "requires": "the inversion check in amendment_text.json to reconstruct the pre-amendment bytes"
+    }
+  ],
+  "authorised_change_count": 1,
+  "unauthorised_changes_by_this_order": [],
+  "undeclared_changes": [],
+  "governed_documents_amended": [
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": "5 — Approved Build Plan",
+      "before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+      "after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "amendments": "A-1 to A-5, quoted replacements and one appended amendment-history row",
+      "authority": "the two owner decisions this order carries, recorded in owner_decisions.json",
+      "invertible": true,
+      "requirement_removed": false
+    }
+  ],
+  "historical_failure_preserved_unchanged": {
+    "the_failure": "PHASE5-001R changed SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json without authorisation, disclosed it, and could not repair it",
+    "still_recorded_as": "NOT MET — PHASE5-001R acceptance criterion 7 remains NAMED — NOT MET IN THIS SCOPE in that order's unedited verdict, and the change remains unauthorised in its unedited preservation record",
+    "edited_by_this_order": false,
+    "covered_prospectively_by": "OWNER DECISION 1, recorded in custody_supplement.json"
+  },
+  "earlier_baselines_overwritten": 0,
+  "earlier_manifests_edited": 0,
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "output_character": "observation-only, packet-ineligible: no consumer-visible output, no application change, no deployment, no external transmission",
+  "verdict": "PRESERVATION HELD FOR THIS ORDER — no pre-existing file was deleted, and the only pre-existing file changed is the rank-5 governing document, amended under the two recorded owner decisions by the quoted-replacement amendment procedure, with the pre-amendment bytes reconstructible from the inversion check. The historical preservation failure of PHASE5-001R stands separately, is preserved unedited and is covered prospectively by Owner Decision 1."
+}

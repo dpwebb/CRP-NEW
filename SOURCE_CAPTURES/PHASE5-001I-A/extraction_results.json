@@ -1,0 +1,400 @@
+{
+  "artifact": "extraction_results.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "the bounded extraction on the evidenced presentation: the two facts, their printed and normalized values, their precise locators, and the status model that keeps every failure distinct from absence",
+  "unit": {
+    "unit_id": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "limb": "FIRST_LIMB_ONLY — six years after the last payment was made on the debt",
+    "jurisdiction": {
+      "country_code": "CA",
+      "region_code": "CA-NS",
+      "display_name": "Nova Scotia",
+      "selection_is_mandatory": true
+    },
+    "bureau_and_channel": "Equifax, Canada, consumer channel",
+    "presentation_required": "PR-01",
+    "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+    "source_entry_id": "CRP-LSRC-0354",
+    "legacy_rule_id": "ca-ns.cra.s10_3_c.debt_retention_6y"
+  },
+  "inputs": {
+    "selection_check": {
+      "country_code": "CA",
+      "region_code": "CA-NS",
+      "explicit_selection_supplied": true,
+      "authorized_for_this_unit": true,
+      "enumerated_in": "CRP_JURISDICTION_ENUMERATION.md (CRP-JURISDICTION-ENUM-1)",
+      "enumerated_region_found": true,
+      "jurisdiction_is_never_inferred_from_the_report": true,
+      "verdict": "AUTHORIZED"
+    },
+    "evidenced_presentation": {
+      "presentation_id": "PR-01",
+      "artifact_id": "LEG-CONSUMER-EQ-CA",
+      "publisher": "Equifax (Canada, consumer channel)",
+      "audience": "CONSUMER",
+      "market": "CA",
+      "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+      "bytes": 96393,
+      "pages": 22,
+      "pointer_source": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json (presentation record; no path and no identifier is copied into this package)"
+    },
+    "extraction_method": "pdftotext -f <page> -l <page> -layout <file> - (poppler)",
+    "structure_method": "pdfinfo (poppler)"
+  },
+  "admission": {
+    "state": "ADMITTED_PINNED_SPECIMEN",
+    "refusal_reason": null,
+    "predicates": [
+      {
+        "id": "INPUT_PRESENT_AND_READABLE",
+        "passed": true,
+        "detail": "22 pages read",
+        "refusal_reason": null
+      },
+      {
+        "id": "CONTAINER_IS_A_PDF",
+        "passed": true,
+        "detail": "PDF",
+        "refusal_reason": null
+      },
+      {
+        "id": "NOT_ENCRYPTED",
+        "passed": true,
+        "detail": "encrypted=false",
+        "refusal_reason": null
+      },
+      {
+        "id": "NATIVE_TEXT_ON_EVERY_PAGE",
+        "passed": true,
+        "detail": "all pages carry native text",
+        "refusal_reason": null
+      },
+      {
+        "id": "PAGE_GEOMETRY_MATCHES_CONTRACT",
+        "passed": true,
+        "detail": "22 pages at 594.96x841.92 pts (A4)",
+        "refusal_reason": null
+      },
+      {
+        "id": "NO_SYNTHETIC_OR_FIXTURE_MARKER",
+        "passed": true,
+        "detail": "no synthetic or fixture marker",
+        "refusal_reason": null
+      },
+      {
+        "id": "EVIDENCED_SPECIMEN_DIGEST_MATCH",
+        "passed": true,
+        "detail": "digest matches the evidenced specimen (LEG-CONSUMER-EQ-CA)",
+        "refusal_reason": null
+      }
+    ]
+  },
+  "document_shape": {
+    "page_count": 22,
+    "page_size": "A4",
+    "width_pt": 594.96,
+    "height_pt": 841.92,
+    "encrypted": false,
+    "native_text_pages": 22
+  },
+  "fact_records": [
+    {
+      "fact": "REPORT_REFERENCE_DATE",
+      "source_field": "Request Date",
+      "section_path": "page header, every page",
+      "occurrences": [
+        {
+          "page": 1,
+          "line": 1
+        },
+        {
+          "page": 2,
+          "line": 1
+        },
+        {
+          "page": 3,
+          "line": 1
+        },
+        {
+          "page": 4,
+          "line": 1
+        },
+        {
+          "page": 5,
+          "line": 1
+        },
+        {
+          "page": 6,
+          "line": 1
+        },
+        {
+          "page": 7,
+          "line": 1
+        },
+        {
+          "page": 8,
+          "line": 1
+        },
+        {
+          "page": 9,
+          "line": 1
+        },
+        {
+          "page": 10,
+          "line": 1
+        },
+        {
+          "page": 11,
+          "line": 1
+        },
+        {
+          "page": 12,
+          "line": 1
+        },
+        {
+          "page": 13,
+          "line": 1
+        },
+        {
+          "page": 14,
+          "line": 1
+        },
+        {
+          "page": 15,
+          "line": 1
+        },
+        {
+          "page": 16,
+          "line": 1
+        },
+        {
+          "page": 17,
+          "line": 1
+        },
+        {
+          "page": 18,
+          "line": 1
+        },
+        {
+          "page": 19,
+          "line": 1
+        },
+        {
+          "page": 20,
+          "line": 1
+        },
+        {
+          "page": 21,
+          "line": 1
+        },
+        {
+          "page": 22,
+          "line": 1
+        }
+      ],
+      "pages_with_label": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "page_count": 22,
+      "status": "RESOLVED",
+      "reason": null,
+      "raw_value": "2026/05/05",
+      "normalized_value": "2026-05-05",
+      "location": "label \"Request Date\" in the page header, identical on all 22 pages"
+    },
+    {
+      "fact": "DEBT_LAST_PAYMENT_DATE",
+      "source_field": "Last Payment Date",
+      "section_path": "Collections",
+      "record_index": 1,
+      "status": "RESOLVED",
+      "reason": null,
+      "raw_value": "2021/02/01",
+      "normalized_value": "2021-02-01",
+      "location": {
+        "page": 16,
+        "line": 32,
+        "label": "Last Payment Date",
+        "section": "Collections",
+        "record_index": 1,
+        "record_starts_at": {
+          "page": 16,
+          "line": 8
+        },
+        "record_ends_at": {
+          "page": 16,
+          "line": 38
+        }
+      }
+    },
+    {
+      "fact": "DEBT_LAST_PAYMENT_DATE",
+      "source_field": "Last Payment Date",
+      "section_path": "Collections",
+      "record_index": 2,
+      "status": "RESOLVED",
+      "reason": null,
+      "raw_value": "2021/02/01",
+      "normalized_value": "2021-02-01",
+      "location": {
+        "page": 17,
+        "line": 5,
+        "label": "Last Payment Date",
+        "section": "Collections",
+        "record_index": 2,
+        "record_starts_at": {
+          "page": 16,
+          "line": 39
+        },
+        "record_ends_at": {
+          "page": 17,
+          "line": 11
+        }
+      }
+    }
+  ],
+  "collections_section": {
+    "status": "RESOLVED",
+    "first_page": 16,
+    "last_page": 17,
+    "heading": {
+      "page": 16,
+      "line": 4
+    },
+    "preamble_labels_outside_any_record": [],
+    "record_count": 2
+  },
+  "collection_records": [
+    {
+      "record_index": 1,
+      "boundary": {
+        "page": 16,
+        "line": 8
+      },
+      "end": {
+        "page": 16,
+        "line": 38
+      },
+      "debt_record": true,
+      "labels_present": [
+        "Date Assigned",
+        "Member Name",
+        "Phone Number",
+        "Member Number",
+        "First Delinquency",
+        "Account Number",
+        "Amount",
+        "Status",
+        "Balance",
+        "Narrative",
+        "Date Paid/Settled",
+        "Last Payment Date"
+      ],
+      "not_a_debt_record_reason": null
+    },
+    {
+      "record_index": 2,
+      "boundary": {
+        "page": 16,
+        "line": 39
+      },
+      "end": {
+        "page": 17,
+        "line": 11
+      },
+      "debt_record": true,
+      "labels_present": [
+        "Date Assigned",
+        "Member Name",
+        "Phone Number",
+        "Member Number",
+        "First Delinquency",
+        "Account Number",
+        "Amount",
+        "Status",
+        "Balance",
+        "Narrative",
+        "Date Paid/Settled",
+        "Last Payment Date"
+      ],
+      "not_a_debt_record_reason": null
+    }
+  ],
+  "last_payment_fact_summary": {
+    "status": "RESOLVED",
+    "reason": null,
+    "resolved_fact_count": 2,
+    "contract_debt_record_count": 2
+  },
+  "status_model": {
+    "states": [
+      "RESOLVED",
+      "EXTRACTION_UNRESOLVED",
+      "UNSUPPORTED_PRESENTATION",
+      "NOT_A_DEBT_RECORD",
+      "ABSENT_FROM_REPORT"
+    ],
+    "substitutions_forbidden": [
+      "EXTRACTION_UNRESOLVED is never ABSENT_FROM_REPORT",
+      "a parser failure is never absence and never evidence",
+      "a non-debt region is never read for a value",
+      "a refused document is never an empty report"
+    ],
+    "refusal_reasons_and_the_status_each_produces": {
+      "DOCUMENT_NOT_READABLE": "EXTRACTION_UNRESOLVED",
+      "DOCUMENT_ENCRYPTED": "EXTRACTION_UNRESOLVED",
+      "NOT_A_PDF_CONTAINER": "UNSUPPORTED_PRESENTATION",
+      "IMAGE_ONLY_OR_NO_TEXT_LAYER": "UNSUPPORTED_PRESENTATION",
+      "PAGE_GEOMETRY_MISMATCH": "UNSUPPORTED_PRESENTATION",
+      "SYNTHETIC_OR_FIXTURE_MARKER": "UNSUPPORTED_PRESENTATION",
+      "NOT_THE_EVIDENCED_SPECIMEN": "UNSUPPORTED_PRESENTATION"
+    },
+    "demonstrable_absence_path_used_here": "the Collections section is located and resolved and prints no contract debt record — a resolved reading, not a parser silence",
+    "reachable_absence_rule": "a per-record missing, blank or differently-labelled value is EXTRACTION_UNRESOLVED; ABSENT_FROM_REPORT attaches only to the resolved-section-with-no-record case"
+  },
+  "cross_record_isolation": {
+    "rule": "each contract debt record is a separate fact target delimited by its own boundary label; a date printed in another record or another section is never read for it",
+    "records_measured": 2,
+    "distinct_locators_measured": 2
+  },
+  "result_qualifications": [
+    "timing: the effective period of s. 10(3)(c) is unresolved in the admitted record, so any output carries a plain-language timing qualification (PROD-003 dependency D-4)",
+    "classification: the recorded legacy D3 / observation classification is preserved and is not overridden by this order; the unit may not emit a PROBABLE_VIOLATION",
+    "single specimen: the locator is demonstrated on one presentation only (PROD-003 dependency D-2)",
+    "field-name divergence: the admitted legacy rule record names tradeline.lastPaymentDate while the evidenced presentation prints the field on a collection record",
+    "boundary: the sixth-anniversary boundary convention is recorded in each comparison, and the inclusive/exclusive reading is a legal question for the rule record",
+    "gate: no gate is passed by this unit, and no consumer-visible output of any class is produced"
+  ],
+  "consumer_visible": false,
+  "finding_authorized": false,
+  "boundaries": [
+    "Internal validation only: no consumer-visible output, no upload, no deployment, no billing, no authentication.",
+    "No rule is admitted, no coverage is created, no finding class exists and no gate is passed by this unit.",
+    "The comparison outcomes are arithmetic results on two resolved dates; PERIOD_EXCEEDED alone is not a legal finding.",
+    "A second rule unit, jurisdiction, bureau, presentation or limb requires a later work order.",
+    "The report is processed locally; no report content, identifier or specimen is copied into this repository."
+  ]
+}

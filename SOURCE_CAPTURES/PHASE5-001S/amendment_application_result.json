@@ -1,0 +1,77 @@
+{
+  "artifact": "amendment_application_result.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "amendment_form": "quoted replacement, CRP_CORE_CONSTITUTION.md section 6.2 — document named, clause named, replaced text quoted, replacement text stated; every replacement is an extension, so no requirement is removed (section 6.4)",
+  "amendment_authority": "the two owner decisions this order carries, applied through the governing procedure",
+  "digest_before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+  "digest_after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+  "bytes_before": 33593,
+  "bytes_after": 38651,
+  "document_changed": true,
+  "document_changed_in_this_run": true,
+  "line_endings": "LF preserved",
+  "line_endings_measured": {
+    "crlf_before": 0,
+    "crlf_after": 0,
+    "ends_with_newline_before": true,
+    "ends_with_newline_after": true
+  },
+  "amendments_applied": 5,
+  "replacements_applied": 4,
+  "rows_appended": 1,
+  "document_state": "OWNER_AUTHORITY_PHASE5_001S_RECORDED_IN_THE_DOCUMENT — the pre-admission specification and validation sequence is added to the scoped-progression paragraph, Phase 5.5 bullet 3 and section 4 item 5 record how their admission presupposition is read for a named scope, Gate 5.6 records how its version-sharing condition is measured against a pinned pre-admission rule-record version, and the amendment-history row is appended under section 6.5",
+  "the_only_pre_existing_file_this_order_changed": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "results": [
+    {
+      "id": "A-1",
+      "clause": "section 3, the final bullet of the PHASE5-001P scoped-progression paragraph (the clause that closes the ordering authority)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false,
+      "extension_only_no_requirement_removed": true,
+      "replaced_text_bytes": 211,
+      "replacement_text_bytes": 2117
+    },
+    {
+      "id": "A-2",
+      "clause": "section 3, Phase 5.5, bullet 3 (the evaluator's inputs)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false,
+      "extension_only_no_requirement_removed": true,
+      "replaced_text_bytes": 231,
+      "replacement_text_bytes": 697
+    },
+    {
+      "id": "A-3",
+      "clause": "section 4, Durable artifacts to create, item 5 (the deterministic fact/evaluator specification)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false,
+      "extension_only_no_requirement_removed": true,
+      "replaced_text_bytes": 252,
+      "replacement_text_bytes": 681
+    },
+    {
+      "id": "A-4",
+      "clause": "section 3, Gate 5.6 (the immutable-version sharing condition)",
+      "action": "APPLIED",
+      "occurrences_found": 1,
+      "already_present_guard": false,
+      "extension_only_no_requirement_removed": true,
+      "replaced_text_bytes": 245,
+      "replacement_text_bytes": 754
+    },
+    {
+      "id": "A-5",
+      "clause": "section 8, Amendment History, appended row",
+      "action": "APPLIED"
+    }
+  ],
+  "problems": [],
+  "verdict": "AMENDMENTS APPLIED — the pre-admission sequence is recorded by the amendment procedure, Gate 5.7 keeps admission, no requirement is removed, no gate is passed by the amendment, and no other document was touched",
+  "created_by": "PHASE5-001S"
+}

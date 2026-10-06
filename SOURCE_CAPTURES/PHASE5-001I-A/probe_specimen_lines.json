@@ -1,0 +1,67 @@
+{
+  "specimen_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+  "pages_probed": [
+    1,
+    16,
+    17,
+    22
+  ],
+  "pages": {
+    "1": {
+      "lineCount": 31,
+      "chars": 728,
+      "hits": [
+        "page 1 line 1: label=\"Request Date\" raw_slice=\"Request Date 2026/05/05\""
+      ]
+    },
+    "16": {
+      "lineCount": 60,
+      "chars": 990,
+      "hits": [
+        "page 16 line 1: label=\"Request Date\" raw_slice=\"Request Date 2026/05/05\"",
+        "page 16 line 8: label=\"Date Assigned\" value_present=true class=DATE_DDDD/DD/DD printed_token=2024/01/01",
+        "page 16 line 10: label=\"Member Name\" value_present=true class=ALPHA",
+        "page 16 line 12: label=\"Phone Number\" value_present=false class=EMPTY",
+        "page 16 line 14: label=\"Member Number\" value_present=true class=ALPHANUMERIC_OR_OTHER",
+        "page 16 line 16: label=\"First Delinquency\" value_present=true class=DATE_DDDD/DD/DD printed_token=2021/02/01",
+        "page 16 line 18: label=\"Account Number\" value_present=true class=ALPHANUMERIC_OR_OTHER",
+        "page 16 line 20: label=\"Amount\" value_present=true class=NUMERIC",
+        "page 16 line 22: label=\"Status\" value_present=false class=EMPTY",
+        "page 16 line 24: label=\"Balance\" value_present=true class=NUMERIC",
+        "page 16 line 26: label=\"Narrative\" value_present=false class=EMPTY",
+        "page 16 line 28: label=\"Date Paid/Settled\" value_present=false class=EMPTY",
+        "page 16 line 32: label=\"Last Payment Date\" value_present=true class=DATE_DDDD/DD/DD printed_token=2021/02/01",
+        "page 16 line 39: label=\"Date Assigned\" value_present=true class=DATE_DDDD/DD/DD printed_token=2023/12/01",
+        "page 16 line 41: label=\"Member Name\" value_present=true class=ALPHA",
+        "page 16 line 43: label=\"Phone Number\" value_present=false class=EMPTY",
+        "page 16 line 45: label=\"Member Number\" value_present=true class=ALPHANUMERIC_OR_OTHER",
+        "page 16 line 47: label=\"First Delinquency\" value_present=true class=DATE_DDDD/DD/DD printed_token=2021/02/01",
+        "page 16 line 49: label=\"Account Number\" value_present=true class=ALPHANUMERIC_OR_OTHER",
+        "page 16 line 51: label=\"Amount\" value_present=true class=NUMERIC",
+        "page 16 line 53: label=\"Status\" value_present=false class=EMPTY",
+        "page 16 line 55: label=\"Balance\" value_present=true class=NUMERIC",
+        "page 16 line 57: label=\"Narrative\" value_present=true class=ALPHANUMERIC_OR_OTHER",
+        "page 16 line 59: label=\"Date Paid/Settled\" value_present=false class=EMPTY"
+      ]
+    },
+    "17": {
+      "lineCount": 11,
+      "chars": 166,
+      "hits": [
+        "page 17 line 1: label=\"Request Date\" raw_slice=\"Request Date 2026/05/05\"",
+        "page 17 line 5: label=\"Last Payment Date\" value_present=true class=DATE_DDDD/DD/DD printed_token=2021/02/01"
+      ]
+    },
+    "22": {
+      "lineCount": 34,
+      "chars": 793,
+      "hits": [
+        "page 22 line 1: label=\"Request Date\" raw_slice=\"Request Date 2026/05/05\""
+      ]
+    }
+  },
+  "page_count_nominal": 22,
+  "specimen_sha256_measured": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+  "specimen_digest_matches_pin": true,
+  "probe_tool": ""
+}

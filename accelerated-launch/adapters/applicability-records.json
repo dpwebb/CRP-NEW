@@ -1,0 +1,3530 @@
+{
+  "artifact": "applicability-records.json",
+  "catalog_owner": "OWNER-ALL82-001",
+  "batch": "B3",
+  "authority": "CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md section 2 \u2014 a national check may serve a region only through an explicit supported applicability relation",
+  "purpose": "replace every pattern-based or mechanically-derived national relation with one named, evidenced applicability record per canonical region",
+  "rules": [
+    "One row per canonical region. No wildcard, no pattern, no defaulting.",
+    "Applicability and execution are separate fields. A confirmed relation does not imply a runnable check.",
+    "A region with no recorded source row says so; nothing is invented for it and nothing is propagated to it.",
+    "A recorded instrument that is guidance, not a statute, does not become a statute by being named in a relation."
+  ],
+  "inputs": {
+    "coverage_ledger": "e9bab51436e064e089d1cad171d75e6293d97ab9af1330f5e9cb6245a9066e15",
+    "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
+    "adapter_configs": "0eb99abbb76c0d70f59e2fff9d9f72378f2be7a69bb4bce583c1bc4b394bf022"
+  },
+  "counts": {
+    "canonical_regions": 82,
+    "relations": 5,
+    "region_rows": 82,
+    "regions_with_a_confirmed_relation": 69,
+    "regions_with_an_executable_relation": 69
+  },
+  "regions_with_a_confirmed_relation": [
+    "AU-ACT",
+    "AU-NSW",
+    "AU-NT",
+    "AU-QLD",
+    "AU-SA",
+    "AU-TAS",
+    "AU-VIC",
+    "AU-WA",
+    "GB-ENG",
+    "GB-NIR",
+    "GB-SCT",
+    "GB-WLS",
+    "US-AK",
+    "US-AL",
+    "US-AR",
+    "US-AS",
+    "US-AZ",
+    "US-CA",
+    "US-CO",
+    "US-CT",
+    "US-DC",
+    "US-DE",
+    "US-FL",
+    "US-GA",
+    "US-GU",
+    "US-HI",
+    "US-IA",
+    "US-ID",
+    "US-IL",
+    "US-IN",
+    "US-KS",
+    "US-KY",
+    "US-LA",
+    "US-MA",
+    "US-MD",
+    "US-ME",
+    "US-MI",
+    "US-MN",
+    "US-MO",
+    "US-MP",
+    "US-MS",
+    "US-MT",
+    "US-NC",
+    "US-ND",
+    "US-NE",
+    "US-NH",
+    "US-NJ",
+    "US-NM",
+    "US-NV",
+    "US-NY",
+    "US-OH",
+    "US-OK",
+    "US-OR",
+    "US-PA",
+    "US-PR",
+    "US-RI",
+    "US-SC",
+    "US-SD",
+    "US-TN",
+    "US-TX",
+    "US-UM",
+    "US-UT",
+    "US-VA",
+    "US-VI",
+    "US-VT",
+    "US-WA",
+    "US-WI",
+    "US-WV",
+    "US-WY"
+  ],
+  "regions_with_an_executable_relation": [
+    "AU-ACT",
+    "AU-NSW",
+    "AU-NT",
+    "AU-QLD",
+    "AU-SA",
+    "AU-TAS",
+    "AU-VIC",
+    "AU-WA",
+    "GB-ENG",
+    "GB-NIR",
+    "GB-SCT",
+    "GB-WLS",
+    "US-AK",
+    "US-AL",
+    "US-AR",
+    "US-AS",
+    "US-AZ",
+    "US-CA",
+    "US-CO",
+    "US-CT",
+    "US-DC",
+    "US-DE",
+    "US-FL",
+    "US-GA",
+    "US-GU",
+    "US-HI",
+    "US-IA",
+    "US-ID",
+    "US-IL",
+    "US-IN",
+    "US-KS",
+    "US-KY",
+    "US-LA",
+    "US-MA",
+    "US-MD",
+    "US-ME",
+    "US-MI",
+    "US-MN",
+    "US-MO",
+    "US-MP",
+    "US-MS",
+    "US-MT",
+    "US-NC",
+    "US-ND",
+    "US-NE",
+    "US-NH",
+    "US-NJ",
+    "US-NM",
+    "US-NV",
+    "US-NY",
+    "US-OH",
+    "US-OK",
+    "US-OR",
+    "US-PA",
+    "US-PR",
+    "US-RI",
+    "US-SC",
+    "US-SD",
+    "US-TN",
+    "US-TX",
+    "US-UM",
+    "US-UT",
+    "US-VA",
+    "US-VI",
+    "US-VT",
+    "US-WA",
+    "US-WI",
+    "US-WV",
+    "US-WY"
+  ],
+  "relations": [
+    {
+      "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+      "adapter_ids": [
+        "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+        "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+        "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+      ],
+      "mode": "EXPLICIT_REGION_LIST",
+      "country": "AU",
+      "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+      "instrument_class": "COMMONWEALTH_STATUTE",
+      "instrument_class_source": "ledger owner_acceptance.instrument_class_screen = STATUTE_OR_REGULATION for every recorded row in this relation",
+      "source_entry_ids": [
+        "CRP-LSRC-0422",
+        "CRP-LSRC-0423",
+        "CRP-LSRC-0424",
+        "CRP-LSRC-0425",
+        "CRP-LSRC-0426",
+        "CRP-LSRC-0427",
+        "CRP-LSRC-0428",
+        "CRP-LSRC-0429",
+        "CRP-LSRC-0430",
+        "CRP-LSRC-0431",
+        "CRP-LSRC-0432"
+      ],
+      "territorial_reach_basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+      "not_a_code_conversion": "the relation is not the substitution of one region token for another. It is the recorded fact that the instrument the rows cite is a Commonwealth statute, read with that Act's own territorial provisions.",
+      "evidence": [
+        {
+          "evidence_id": "AU-OFFICIAL-REGISTER",
+          "kind": "OFFICIAL_SOURCE_HEADING",
+          "locator": "https://www.legislation.gov.au/C2004A03712/latest/text",
+          "retrieved": "2026-10-01",
+          "what_it_establishes": "the official Federal Register of Legislation prints the Act Part I as: 3 Saving of certain State and Territory laws; 4 Act to bind the Crown; 5A Extension to external Territories; 5B Extra-territorial operation of Act",
+          "recorded_in_ledger_as": "the source_locator every recorded row in this relation carries"
+        },
+        {
+          "evidence_id": "AU-PUB-012",
+          "kind": "CAPTURED_PUBLIC_REPORT_SAMPLE",
+          "locator": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf",
+          "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a",
+          "what_it_establishes": "the exact report representation the ledger records as missing for these rows: a Consumer Credit Enquiries record printing \"Enquiry Date\", and an Overdue Accounts record printing the bureau's listing date and its own \"Date will be Deleted\"",
+          "limits": "a bureau-published sample linked from the official consumer route; it evidences ITS OWN structure, and the baseline records that its cover date and its URL date are not a proven current version date"
+        }
+      ],
+      "region_state": "CONFIRMED",
+      "region_basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+      "regions": [
+        "AU-ACT",
+        "AU-NSW",
+        "AU-NT",
+        "AU-QLD",
+        "AU-SA",
+        "AU-TAS",
+        "AU-VIC",
+        "AU-WA"
+      ],
+      "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+      "execution_note": "the three bound adapters run only on the admitted AU consumer format family and only on records of their own kind. Every other limb recorded in this relation is listed below as one the family does not print at all. The one limb that was HELD in the earlier B3 pass (s. 20W item 1, consumer credit liability) is now BOUND: the family prints the section and the record's own `Closed Date`, and the shared evaluation contract now carries a per-record APPLICABLE / NOT_APPLICABLE / APPLICABILITY_UNRESOLVED expression, so a blank Closed Date no longer has to be read as either open or closed.",
+      "limbs_bound_to_a_printed_anchor": [
+        [
+          "CRP-LSRC-0428",
+          "s. 20W item 1 (consumer credit liability information)",
+          "the record's own printed `Closed Date` (PUB-012 pages 6-7), with the record's own `Current Repayment Status` used where the closure label carries no value"
+        ]
+      ],
+      "limbs_not_executable_because_not_report_evidenced": [
+        [
+          "CRP-LSRC-0424",
+          "s. 20W item 5 (payment information)",
+          "the family prints repayment history as a graphical grid; an unread cell is not evidence"
+        ],
+        [
+          "CRP-LSRC-0425",
+          "s. 20W new arrangement information",
+          "not printed by the admitted family"
+        ],
+        [
+          "CRP-LSRC-0426",
+          "s. 20X court proceedings",
+          "the admitted family prints no court-proceedings section"
+        ],
+        [
+          "CRP-LSRC-0427",
+          "s. 20W item 7 (serious credit infringement)",
+          "not printed by the admitted family"
+        ],
+        [
+          "CRP-LSRC-0429",
+          "s. 20W repayment history",
+          "the monthly-cell grid is graphical and is not read"
+        ],
+        [
+          "CRP-LSRC-0430",
+          "s. 20X item 1 (personal insolvency \u2014 bankruptcy)",
+          "the admitted family prints no insolvency section"
+        ],
+        [
+          "CRP-LSRC-0431",
+          "s. 20X items 2 and 3 (personal insolvency agreement)",
+          "not printed by the admitted family"
+        ],
+        [
+          "CRP-LSRC-0432",
+          "debt agreement",
+          "not printed by the admitted family"
+        ]
+      ],
+      "limbs_held_because_the_anchored_value_is_not_printed": [],
+      "region_rows": [
+        {
+          "region": "AU-ACT",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1985 (ACT)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0414"
+          ]
+        },
+        {
+          "region": "AU-NSW",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1969 No 31 (NSW)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0419"
+          ]
+        },
+        {
+          "region": "AU-NT",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1981 (NT)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0415"
+          ]
+        },
+        {
+          "region": "AU-QLD",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation of Actions Act 1974 (Qld)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0416"
+          ]
+        },
+        {
+          "region": "AU-SA",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation of Actions Act 1936 (SA)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0420"
+          ]
+        },
+        {
+          "region": "AU-TAS",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1974 (Tas)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0417"
+          ]
+        },
+        {
+          "region": "AU-VIC",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation of Actions Act 1958 (Vic)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0418"
+          ]
+        },
+        {
+          "region": "AU-WA",
+          "class": "REGION",
+          "state": "CONFIRMED",
+          "basis": "the recorded instrument is a COMMONWEALTH Act (Privacy Act 1988 (Cth)); the official register prints its Part I as \"Saving of certain State and Territory laws\", \"Act to bind the Crown\", \"Extension to external Territories\" and \"Extra-territorial operation of Act\", and the recorded retention limbs sit in that Act's Part IIIA credit-reporting tables",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 2005 (WA)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0421"
+          ]
+        }
+      ],
+      "region_row_count": 8
+    },
+    {
+      "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+      "adapter_ids": [
+        "FCRA-605A-5-US-NATIONAL-7Y",
+        "FCRA-605A-1-US-NATIONAL-10Y",
+        "FCRA-605A-2-US-NATIONAL-7Y",
+        "FCRA-605A-3-US-NATIONAL-7Y",
+        "FCRA-605A-4-US-NATIONAL-7Y"
+      ],
+      "mode": "EXPLICIT_REGION_LIST",
+      "country": "US",
+      "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+      "instrument_class": "FEDERAL_STATUTE",
+      "instrument_class_source": "ledger owner_acceptance.state = OWNER_ACCEPTED_LEGAL_AUTHORITY for every recorded row in this relation",
+      "source_entry_ids": [
+        "CRP-LSRC-0003",
+        "CRP-LSRC-0004",
+        "CRP-LSRC-0005",
+        "CRP-LSRC-0006",
+        "CRP-LSRC-0007"
+      ],
+      "territorial_reach_basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+      "recorded_finding_on_a_state_definition": "15 U.S.C. 1681a was retrieved and searched on 2026-10-01: NO definition of the term \"State\" was located in it, so no territorial listing may be borrowed from a definition this order did not see. The relation below rests on the recorded operative prohibition and its recorded enforcement provision, not on a definition.",
+      "not_a_code_conversion": "a pattern such as US-* is replaced by ONE NAMED ROW PER REGION. Each row records what is recorded for THAT region; the class it falls in decides what may be said about it, and where a region has no recorded source the row says so instead of inheriting one.",
+      "evidence": [
+        {
+          "evidence_id": "US-OFFICIAL-605",
+          "kind": "OFFICIAL_SOURCE_TEXT",
+          "locator": "https://www.law.cornell.edu/uscode/text/15/1681c",
+          "retrieved": "2026-10-01",
+          "what_it_establishes": "section 605(a) is addressed to \"no consumer reporting agency\" and contains no geographic limitation"
+        },
+        {
+          "evidence_id": "US-OFFICIAL-621",
+          "kind": "OFFICIAL_SOURCE_TEXT",
+          "locator": "https://www.law.cornell.edu/uscode/text/15/1681s",
+          "retrieved": "2026-10-01",
+          "what_it_establishes": "section 621(a) empowers enforcement against \"consumer reporting agencies and all other persons subject thereto\" and states a violation is enforceable \"irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\""
+        },
+        {
+          "evidence_id": "US-OFFICIAL-603",
+          "kind": "OFFICIAL_SOURCE_SEARCH_RESULT",
+          "locator": "https://www.law.cornell.edu/uscode/text/15/1681a",
+          "retrieved": "2026-10-01",
+          "what_it_establishes": "15 U.S.C. 1681a was retrieved and searched on 2026-10-01: NO definition of the term \"State\" was located in it, so no territorial listing may be borrowed from a definition this order did not see. The relation below rests on the recorded operative prohibition and its recorded enforcement provision, not on a definition."
+        }
+      ],
+      "regions": [],
+      "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+      "execution_note": "applicability is resolved AND one limb now executes. The recorded research disposition that no United States consumer disclosure had been admitted was superseded in this batch: the captured official consumer-channel artifact PUB-001 is admitted as an evidenced STRUCTURAL contract, its raster text is recovered by the authorized LOCAL OCR reader, and the shared evaluation contract resolves each limb per record. The five federal limbs therefore report: three public-record limbs NOT_APPLICABLE from the report's own printed statement; the collection limb APPLICABILITY_UNRESOLVED, because this build evidences no presentation of an account placed for collection; and the adverse-item limb APPLICABLE and MEASURED on the one record that prints its own adverse payment rating.",
+      "limbs_bound_to_a_printed_anchor": [
+        [
+          "CRP-LSRC-0003",
+          "s. 605(a)(5) (any other adverse item of information)",
+          "the record's own printed adverse payment rating and its month (PUB-001, `Payment history guide` -> \"30 days past due as of Jun 2015\"), measured over seven years"
+        ]
+      ],
+      "limbs_resolved_for_applicability_without_an_anchor": [
+        [
+          "CRP-LSRC-0004",
+          "s. 605(a)(1) (bankruptcy)",
+          "NOT_APPLICABLE from the report's own printed public-record absence statement"
+        ],
+        [
+          "CRP-LSRC-0005",
+          "s. 605(a)(2) (civil suits, judgments and arrest records)",
+          "NOT_APPLICABLE from the same statement"
+        ],
+        [
+          "CRP-LSRC-0006",
+          "s. 605(a)(3) (paid tax liens)",
+          "NOT_APPLICABLE from the same statement"
+        ],
+        [
+          "CRP-LSRC-0007",
+          "s. 605(a)(4) (accounts placed for collection or charged off)",
+          "APPLICABILITY_UNRESOLVED: this build evidences no presentation of such an account"
+        ]
+      ],
+      "limbs_not_executable_because_not_report_evidenced": [
+        [
+          "the four limbs above",
+          "every started limb without a successor row",
+          "the report prints no value to age them from"
+        ]
+      ],
+      "region_rows": [
+        {
+          "region": "US-AK",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Alaska Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0155"
+          ]
+        },
+        {
+          "region": "US-AL",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ala. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0156",
+            "CRP-LSRC-0157",
+            "CRP-LSRC-0158"
+          ]
+        },
+        {
+          "region": "US-AR",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ark. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0159",
+            "CRP-LSRC-0160",
+            "CRP-LSRC-0161"
+          ]
+        },
+        {
+          "region": "US-AZ",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ariz. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0162"
+          ]
+        },
+        {
+          "region": "US-CA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "California Code of Civil Procedure",
+            "California Code of Civil Procedure (California)",
+            "Code of Civil Procedure (California)",
+            "Consumer Credit Reporting Agencies Act (California), Civ. Code tit. 1.6, \u00a7\u00a7 1785.1\u20131785.36",
+            "Consumer Credit Reporting Agencies Act (California), Civ. Code \u00a7 1785 et seq.",
+            "Investigative Consumer Reporting Agencies Act (California), Civ. Code tit. 1.6A, \u00a7\u00a7 1786\u20131786.60",
+            "Rosenthal Fair Debt Collection Practices Act (California), Civ. Code \u00a7 1788 et seq."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0079",
+            "CRP-LSRC-0080",
+            "CRP-LSRC-0171",
+            "CRP-LSRC-0249",
+            "CRP-LSRC-0250",
+            "CRP-LSRC-0251",
+            "CRP-LSRC-0252",
+            "CRP-LSRC-0253",
+            "CRP-LSRC-0254",
+            "CRP-LSRC-0255",
+            "CRP-LSRC-0256",
+            "CRP-LSRC-0257",
+            "CRP-LSRC-0258",
+            "CRP-LSRC-0259",
+            "CRP-LSRC-0260",
+            "CRP-LSRC-0261",
+            "CRP-LSRC-0262",
+            "CRP-LSRC-0263",
+            "CRP-LSRC-0264",
+            "CRP-LSRC-0265",
+            "CRP-LSRC-0266",
+            "CRP-LSRC-0267",
+            "CRP-LSRC-0268",
+            "CRP-LSRC-0269",
+            "CRP-LSRC-0270",
+            "CRP-LSRC-0271",
+            "CRP-LSRC-0272",
+            "CRP-LSRC-0273",
+            "CRP-LSRC-0274",
+            "CRP-LSRC-0275",
+            "CRP-LSRC-0276",
+            "CRP-LSRC-0277",
+            "CRP-LSRC-0278",
+            "CRP-LSRC-0279",
+            "CRP-LSRC-0280",
+            "CRP-LSRC-0281",
+            "CRP-LSRC-0282",
+            "CRP-LSRC-0283",
+            "CRP-LSRC-0284",
+            "CRP-LSRC-0285",
+            "CRP-LSRC-0286",
+            "CRP-LSRC-0287",
+            "CRP-LSRC-0288",
+            "CRP-LSRC-0289",
+            "CRP-LSRC-0290",
+            "CRP-LSRC-0291",
+            "CRP-LSRC-0292",
+            "CRP-LSRC-0293",
+            "CRP-LSRC-0294",
+            "CRP-LSRC-0295",
+            "CRP-LSRC-0296",
+            "CRP-LSRC-0297",
+            "CRP-LSRC-0298",
+            "CRP-LSRC-0299",
+            "CRP-LSRC-0300",
+            "CRP-LSRC-0301",
+            "CRP-LSRC-0302",
+            "CRP-LSRC-0303",
+            "CRP-LSRC-0309"
+          ]
+        },
+        {
+          "region": "US-CO",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Colo. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0088"
+          ]
+        },
+        {
+          "region": "US-CT",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Conn. Gen. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0089"
+          ]
+        },
+        {
+          "region": "US-DC",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "D.C. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0090"
+          ]
+        },
+        {
+          "region": "US-DE",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "10 Del. C."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0091",
+            "CRP-LSRC-0092"
+          ]
+        },
+        {
+          "region": "US-FL",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Florida Statutes"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0082",
+            "CRP-LSRC-0083"
+          ]
+        },
+        {
+          "region": "US-GA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "O.C.G.A."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0093",
+            "CRP-LSRC-0094"
+          ]
+        },
+        {
+          "region": "US-HI",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Haw. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0095"
+          ]
+        },
+        {
+          "region": "US-IA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Iowa Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0096",
+            "CRP-LSRC-0097"
+          ]
+        },
+        {
+          "region": "US-ID",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Idaho Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0098",
+            "CRP-LSRC-0099"
+          ]
+        },
+        {
+          "region": "US-IL",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "735 ILCS"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0100",
+            "CRP-LSRC-0101"
+          ]
+        },
+        {
+          "region": "US-IN",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ind. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0102"
+          ]
+        },
+        {
+          "region": "US-KS",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Kan. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0105",
+            "CRP-LSRC-0106"
+          ]
+        },
+        {
+          "region": "US-KY",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ky. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0103",
+            "CRP-LSRC-0104"
+          ]
+        },
+        {
+          "region": "US-LA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "La. Civ. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0107",
+            "CRP-LSRC-0108",
+            "CRP-LSRC-0109"
+          ]
+        },
+        {
+          "region": "US-MA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Massachusetts General Laws"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0081"
+          ]
+        },
+        {
+          "region": "US-MD",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Md. Cts. & Jud. Proc. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0110"
+          ]
+        },
+        {
+          "region": "US-ME",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "14 M.R.S."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0111"
+          ]
+        },
+        {
+          "region": "US-MI",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "MCL",
+            "Michigan Compiled Laws"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0087",
+            "CRP-LSRC-0112"
+          ]
+        },
+        {
+          "region": "US-MN",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Minnesota Statutes"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0085"
+          ]
+        },
+        {
+          "region": "US-MO",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Mo. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0113",
+            "CRP-LSRC-0114"
+          ]
+        },
+        {
+          "region": "US-MS",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Miss. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0115"
+          ]
+        },
+        {
+          "region": "US-MT",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Mont. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0116",
+            "CRP-LSRC-0117"
+          ]
+        },
+        {
+          "region": "US-NC",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "N.C. Gen. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0118"
+          ]
+        },
+        {
+          "region": "US-ND",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "N.D. Cent. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0119"
+          ]
+        },
+        {
+          "region": "US-NE",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Neb. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0120",
+            "CRP-LSRC-0121"
+          ]
+        },
+        {
+          "region": "US-NH",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "N.H. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0122"
+          ]
+        },
+        {
+          "region": "US-NJ",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "N.J.S.A."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0123"
+          ]
+        },
+        {
+          "region": "US-NM",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "N.M.S.A."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0124",
+            "CRP-LSRC-0125",
+            "CRP-LSRC-0126"
+          ]
+        },
+        {
+          "region": "US-NV",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Nev. Rev. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0127",
+            "CRP-LSRC-0128"
+          ]
+        },
+        {
+          "region": "US-NY",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Civil Practice Law and Rules (New York), \u00a7\u00a7 211 and 213",
+            "Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25",
+            "Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25, \u00a7\u00a7 380\u2013380-v",
+            "N.Y. C.P.L.R.",
+            "Public Health Law (New York) \u00a7\u00a7 2807-k, 2826 (medical-debt provisions only)",
+            "Tax Law (New York) \u00a7 1141"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0129",
+            "CRP-LSRC-0130",
+            "CRP-LSRC-0165",
+            "CRP-LSRC-0166",
+            "CRP-LSRC-0167",
+            "CRP-LSRC-0168",
+            "CRP-LSRC-0169",
+            "CRP-LSRC-0170",
+            "CRP-LSRC-0172",
+            "CRP-LSRC-0173",
+            "CRP-LSRC-0174",
+            "CRP-LSRC-0175",
+            "CRP-LSRC-0176",
+            "CRP-LSRC-0177",
+            "CRP-LSRC-0178",
+            "CRP-LSRC-0179",
+            "CRP-LSRC-0180",
+            "CRP-LSRC-0181",
+            "CRP-LSRC-0182",
+            "CRP-LSRC-0183",
+            "CRP-LSRC-0184",
+            "CRP-LSRC-0185",
+            "CRP-LSRC-0186",
+            "CRP-LSRC-0187",
+            "CRP-LSRC-0188",
+            "CRP-LSRC-0189",
+            "CRP-LSRC-0190",
+            "CRP-LSRC-0191",
+            "CRP-LSRC-0192",
+            "CRP-LSRC-0193",
+            "CRP-LSRC-0194",
+            "CRP-LSRC-0195",
+            "CRP-LSRC-0196",
+            "CRP-LSRC-0197",
+            "CRP-LSRC-0198",
+            "CRP-LSRC-0199",
+            "CRP-LSRC-0200",
+            "CRP-LSRC-0201",
+            "CRP-LSRC-0202",
+            "CRP-LSRC-0203",
+            "CRP-LSRC-0204",
+            "CRP-LSRC-0205",
+            "CRP-LSRC-0206",
+            "CRP-LSRC-0207",
+            "CRP-LSRC-0208",
+            "CRP-LSRC-0209",
+            "CRP-LSRC-0210",
+            "CRP-LSRC-0211",
+            "CRP-LSRC-0212",
+            "CRP-LSRC-0213",
+            "CRP-LSRC-0214",
+            "CRP-LSRC-0215",
+            "CRP-LSRC-0216",
+            "CRP-LSRC-0217",
+            "CRP-LSRC-0218",
+            "CRP-LSRC-0219",
+            "CRP-LSRC-0220",
+            "CRP-LSRC-0221",
+            "CRP-LSRC-0222",
+            "CRP-LSRC-0223",
+            "CRP-LSRC-0224",
+            "CRP-LSRC-0225",
+            "CRP-LSRC-0304",
+            "CRP-LSRC-0305",
+            "CRP-LSRC-0306",
+            "CRP-LSRC-0307"
+          ]
+        },
+        {
+          "region": "US-OH",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Ohio Revised Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0163"
+          ]
+        },
+        {
+          "region": "US-OK",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Okla. Stat. tit. 12"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0131",
+            "CRP-LSRC-0132"
+          ]
+        },
+        {
+          "region": "US-OR",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Oregon Revised Statutes"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0086"
+          ]
+        },
+        {
+          "region": "US-PA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "42 Pa.C.S."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0133"
+          ]
+        },
+        {
+          "region": "US-RI",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "R.I. Gen. Laws"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0134"
+          ]
+        },
+        {
+          "region": "US-SC",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "S.C. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0135"
+          ]
+        },
+        {
+          "region": "US-SD",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "S.D. Codified Laws"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0136"
+          ]
+        },
+        {
+          "region": "US-TN",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Tenn. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0137"
+          ]
+        },
+        {
+          "region": "US-TX",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Texas Civil Practice and Remedies Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0164"
+          ]
+        },
+        {
+          "region": "US-UT",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Utah Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0138",
+            "CRP-LSRC-0139"
+          ]
+        },
+        {
+          "region": "US-VA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Va. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0153",
+            "CRP-LSRC-0154"
+          ]
+        },
+        {
+          "region": "US-VT",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "12 V.S.A.",
+            "9A V.S.A."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0140",
+            "CRP-LSRC-0141"
+          ]
+        },
+        {
+          "region": "US-WA",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Fair Credit Reporting Act, chapter 19.182 RCW",
+            "Fair Credit Reporting Act, chapter 19.182 RCW (Consumer reports \u2014 Washington's own credit-reporting chapter)",
+            "Revised Code of Washington"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0084",
+            "CRP-LSRC-0226",
+            "CRP-LSRC-0227",
+            "CRP-LSRC-0228",
+            "CRP-LSRC-0229",
+            "CRP-LSRC-0230",
+            "CRP-LSRC-0231",
+            "CRP-LSRC-0232",
+            "CRP-LSRC-0233",
+            "CRP-LSRC-0234",
+            "CRP-LSRC-0235",
+            "CRP-LSRC-0236",
+            "CRP-LSRC-0237",
+            "CRP-LSRC-0238",
+            "CRP-LSRC-0239",
+            "CRP-LSRC-0240",
+            "CRP-LSRC-0241",
+            "CRP-LSRC-0242",
+            "CRP-LSRC-0243",
+            "CRP-LSRC-0244",
+            "CRP-LSRC-0245",
+            "CRP-LSRC-0246",
+            "CRP-LSRC-0247",
+            "CRP-LSRC-0248",
+            "CRP-LSRC-0308"
+          ]
+        },
+        {
+          "region": "US-WI",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Wis. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0142"
+          ]
+        },
+        {
+          "region": "US-WV",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "W. Va. Code"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0149",
+            "CRP-LSRC-0150"
+          ]
+        },
+        {
+          "region": "US-WY",
+          "class": "STATE_OR_FEDERAL_DISTRICT",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE \u2014 this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Wyo. Stat."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0151",
+            "CRP-LSRC-0152"
+          ]
+        },
+        {
+          "region": "US-AS",
+          "class": "TERRITORY_OR_POSSESSION_WITH_A_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 the ledger records an instrument for this region, and it is a limitation record, so no region-specific REPORT RETENTION rule is recorded",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "A.S.C.A."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0147",
+            "CRP-LSRC-0148"
+          ]
+        },
+        {
+          "region": "US-GU",
+          "class": "TERRITORY_OR_POSSESSION_WITH_A_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 the ledger records an instrument for this region, and it is a limitation record, so no region-specific REPORT RETENTION rule is recorded",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "7 GCA"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0144"
+          ]
+        },
+        {
+          "region": "US-MP",
+          "class": "TERRITORY_OR_POSSESSION_WITH_A_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 the ledger records an instrument for this region, and it is a limitation record, so no region-specific REPORT RETENTION rule is recorded",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "7 CMC"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0146"
+          ]
+        },
+        {
+          "region": "US-PR",
+          "class": "TERRITORY_OR_POSSESSION_WITH_A_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 the ledger records an instrument for this region, and it is a limitation record, so no region-specific REPORT RETENTION rule is recorded",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Puerto Rico \u2014 Civil Code of Puerto Rico (2020)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0143"
+          ]
+        },
+        {
+          "region": "US-VI",
+          "class": "TERRITORY_OR_POSSESSION_WITH_A_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 the ledger records an instrument for this region, and it is a limitation record, so no region-specific REPORT RETENTION rule is recorded",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "5 V.I.C."
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0145"
+          ]
+        },
+        {
+          "region": "US-UM",
+          "class": "TERRITORY_WITH_NO_RECORDED_SOURCE",
+          "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES_NO_REGIONAL_SOURCE_RECORDED",
+          "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+          "region_specific_report_retention_rule_recorded": "NONE \u2014 an exhaustive scan of the 437-row coverage ledger finds no row whose canonical_region_code is US-UM",
+          "no_region_specific_report_retention_rule_recorded": true,
+          "no_recorded_source_row": true,
+          "explicit_resolution": "the region is reached by the same recorded federal prohibition as every other United States region, and its absence of a recorded source row is RECORDED HERE RATHER THAN HIDDEN. No regional instrument is invented for it, and no regional instrument is propagated to it from another region.",
+          "regional_instruments_recorded": [],
+          "recorded_source_entry_ids_for_this_region": []
+        }
+      ],
+      "region_row_count": 57
+    },
+    {
+      "relation_id": "GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION",
+      "adapter_ids": [],
+      "mode": "EXPLICIT_REGION_LIST",
+      "country": "GB",
+      "instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+      "instrument_class": "GUIDANCE_OR_POLICY_SUMMARY",
+      "instrument_class_source": "ledger owner_acceptance.instrument_class_screen = GUIDANCE_OR_POLICY_SUMMARY for the recorded UK-wide rows",
+      "source_entry_ids": [
+        "CRP-LSRC-0405",
+        "CRP-LSRC-0406",
+        "CRP-LSRC-0410"
+      ],
+      "territorial_reach_basis": "the recorded material is the Credit Reference Agency Information Notice retention table, which the ledger itself records as ACCEPTED_AS_RECORDED_MATERIAL_NOT_AS_A_STATUTE with the instrument-class screen GUIDANCE_OR_POLICY_SUMMARY. It is an industry notice, not a statute.",
+      "not_a_code_conversion": "the United Kingdom is not a canonical region. The four canonical regions are resolved from instruments the ledger records against them in their own right, and the residual UK-wide token is resolved by that recorded mapping rather than by renaming a token.",
+      "residual_token_resolution": {
+        "token": "UK",
+        "resolved_to_canonical_country": "GB",
+        "resolved_by": "the ledger records canonical_region_code GB-ENG / GB-WLS / GB-SCT / GB-NIR against its own regional United Kingdom rows, so the country those regions belong to is GB",
+        "does_not_establish": "statutory applicability of any UK-wide content rule to any region"
+      },
+      "evidence": [
+        {
+          "evidence_id": "GB-RECORDED-REGIONAL-INSTRUMENTS",
+          "kind": "LEDGER_RECORDED_REGION_CODES",
+          "locator": "SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json rows carrying canonical_region_code GB-*",
+          "what_it_establishes": "each canonical GB region carries its own recorded instrument and its own recorded canonical_region_code"
+        },
+        {
+          "evidence_id": "GB-CRAIN",
+          "kind": "LEDGER_ACCEPTANCE_POSTURE",
+          "locator": "https://www.experian.co.uk/legal/crain/data-retention-periods (the source_locator the recorded rows carry)",
+          "what_it_establishes": "the recorded material is the Credit Reference Agency Information Notice retention table, which the ledger itself records as ACCEPTED_AS_RECORDED_MATERIAL_NOT_AS_A_STATUTE with the instrument-class screen GUIDANCE_OR_POLICY_SUMMARY. It is an industry notice, not a statute."
+        }
+      ],
+      "region_state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+      "region_basis": "the region is a canonical region of the recorded country and its own recorded instrument is listed. The UK-wide candidate rows are recorded as material, not as a statute, so no bound adapter is created for them and no statutory applicability is asserted.",
+      "regions": [
+        "GB-ENG",
+        "GB-NIR",
+        "GB-SCT",
+        "GB-WLS"
+      ],
+      "execution": "NOT_EXECUTED_INSTRUMENT_RECORDED_AS_GUIDANCE_NOT_A_STATUTE",
+      "execution_note": "a code conversion from \"UK\" to \"GB\" is not proof of statutory applicability, and the recorded instrument is an industry notice. The blocker is named rather than papered over: an owner decision admitting guidance material as a retention basis, or a recorded statutory instrument, would be required before a bound adapter could exist.",
+      "limbs_not_executable_because_not_a_statute": [
+        [
+          "CRP-LSRC-0405",
+          "uk.judgment.6y"
+        ],
+        [
+          "CRP-LSRC-0406",
+          "uk.insolvency.6y"
+        ],
+        [
+          "CRP-LSRC-0410",
+          "uk.search.12m"
+        ]
+      ],
+      "region_rows": [
+        {
+          "region": "GB-ENG",
+          "class": "REGION",
+          "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+          "basis": "the region is a canonical region of the recorded country and its own recorded instrument is listed. The UK-wide candidate rows are recorded as material, not as a statute, so no bound adapter is created for them and no statutory applicability is asserted.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1980 (c. 58)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0399",
+            "CRP-LSRC-0401"
+          ]
+        },
+        {
+          "region": "GB-NIR",
+          "class": "REGION",
+          "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+          "basis": "the region is a canonical region of the recorded country and its own recorded instrument is listed. The UK-wide candidate rows are recorded as material, not as a statute, so no bound adapter is created for them and no statutory applicability is asserted.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation (Northern Ireland) Order 1989 (No. 1339 (NI. 11))"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0404"
+          ]
+        },
+        {
+          "region": "GB-SCT",
+          "class": "REGION",
+          "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+          "basis": "the region is a canonical region of the recorded country and its own recorded instrument is listed. The UK-wide candidate rows are recorded as material, not as a statute, so no bound adapter is created for them and no statutory applicability is asserted.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Prescription and Limitation (Scotland) Act 1973 (c. 52)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0403"
+          ]
+        },
+        {
+          "region": "GB-WLS",
+          "class": "REGION",
+          "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+          "basis": "the region is a canonical region of the recorded country and its own recorded instrument is listed. The UK-wide candidate rows are recorded as material, not as a statute, so no bound adapter is created for them and no statutory applicability is asserted.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Limitation Act 1980 (c. 58)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0400",
+            "CRP-LSRC-0402"
+          ]
+        }
+      ],
+      "region_row_count": 4
+    },
+    {
+      "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+      "adapter_ids": [],
+      "mode": "EXPLICIT_REGION_LIST",
+      "country": "CA",
+      "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+      "instrument_class": "UNRESOLVED",
+      "instrument_class_source": "ledger owner_acceptance.instrument_class_screen = SCREEN_INCONCLUSIVE, instrument_class_confirmation_required = true",
+      "source_entry_ids": [
+        "CRP-LSRC-0314"
+      ],
+      "territorial_reach_basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+      "not_a_code_conversion": "the recorded row is a country-wide source, but the relation from it to a named region is not established. Every region is listed and its state says so; nothing is propagated and no provincial instrument is invented.",
+      "evidence": [
+        {
+          "evidence_id": "CA-RECORDED-ROW-POSTURE",
+          "kind": "LEDGER_ACCEPTANCE_POSTURE",
+          "locator": "SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json row CRP-LSRC-0314",
+          "what_it_establishes": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here."
+        }
+      ],
+      "region_state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+      "region_basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+      "regions": [
+        "CA-AB",
+        "CA-BC",
+        "CA-MB",
+        "CA-NB",
+        "CA-NL",
+        "CA-NS",
+        "CA-NT",
+        "CA-NU",
+        "CA-ON",
+        "CA-PE",
+        "CA-QC",
+        "CA-SK",
+        "CA-YT"
+      ],
+      "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+      "execution_note": "the two CA-NS adapters are EXACT-region and are not reached through this relation. They keep their own record, their own presentation and their own restrictions, unchanged.",
+      "region_exceptions": [
+        {
+          "region": "CA-NS",
+          "state": "EXACT_REGION_ASSOCIATION_RECORDED_SEPARATELY",
+          "note": "CA-NS carries its own exact-region accepted records and its own two bound adapters; this country-wide relation neither reaches it nor alters it."
+        }
+      ],
+      "region_rows": [
+        {
+          "region": "CA-AB",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Canada \u2014 Alberta, Limitations Act, R.S.A. 2000, c. L-12",
+            "Consumer Protection Act (Alberta)",
+            "Consumer Protection Act (Alberta), R.S.A. 2000, c. C-26.3",
+            "Limitations Act (Alberta)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0326",
+            "CRP-LSRC-0339",
+            "CRP-LSRC-0373",
+            "CRP-LSRC-0374"
+          ]
+        },
+        {
+          "region": "CA-BC",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Business Practices and Consumer Protection Act (BC)",
+            "Business Practices and Consumer Protection Act (British Columbia), S.B.C. 2004, c. 2 \u2014 Part 6, Credit Reporting (the Credit Reporting Act, R.S.B.C. 1996, c. 81, was repealed 4 July 2004 and is kept here as the record)",
+            "Canada \u2014 British Columbia, Limitation Act, S.B.C. 2012, c. 13",
+            "Limitation Act (British Columbia)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0329",
+            "CRP-LSRC-0338",
+            "CRP-LSRC-0375",
+            "CRP-LSRC-0376"
+          ]
+        },
+        {
+          "region": "CA-MB",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Canada \u2014 Manitoba, The Limitations Act, S.M. 2021, c. 44 (C.C.S.M. c. L150)",
+            "Consumer Protection Act (Manitoba), C.C.S.M. c. C200 (no consumer-reporting provisions)",
+            "Limitations Act (Manitoba)",
+            "The Personal Investigations Act (Manitoba)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0327",
+            "CRP-LSRC-0341",
+            "CRP-LSRC-0377",
+            "CRP-LSRC-0378"
+          ]
+        },
+        {
+          "region": "CA-NB",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Canada \u2014 New Brunswick, Limitation of Actions Act, S.N.B. 2009, c. L-8.5",
+            "Credit Reporting Services Act (New Brunswick)",
+            "Credit Reporting Services Act (New Brunswick), S.N.B. 2017, c. 27",
+            "Limitation of Actions Act (New Brunswick)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0330",
+            "CRP-LSRC-0343",
+            "CRP-LSRC-0379",
+            "CRP-LSRC-0380"
+          ]
+        },
+        {
+          "region": "CA-NL",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Protection and Business Practices Act (Newfoundland and Labrador), S.N.L. 2009, c. C-31.1 \u2014 Part VI, Credit Reports (the Consumer Reporting Agencies Act, R.S.N.L. 1990, c. C-32, was repealed by 2009, c. C-31.1, s. 112)",
+            "Consumer Reporting Act (Newfoundland and Labrador)",
+            "Limitations Act (Newfoundland and Labrador)",
+            "Limitations Act, S.N.L. 1995, c. L-16.1"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0332",
+            "CRP-LSRC-0344",
+            "CRP-LSRC-0381",
+            "CRP-LSRC-0382"
+          ]
+        },
+        {
+          "region": "CA-NS",
+          "class": "REGION",
+          "state": "EXACT_REGION_ASSOCIATION_RECORDED_SEPARATELY",
+          "basis": "CA-NS carries its own exact-region accepted records and its own two bound adapters; this country-wide relation neither reaches it nor alters it.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Reporting Act (Nova Scotia)",
+            "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93",
+            "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93 (`ca-ns.cra`)",
+            "Limitation of Actions Act (Nova Scotia)",
+            "Limitation of Actions Act (Nova Scotia), S.N.S. 2014, c. 35",
+            "Limitation of Actions Act (Nova Scotia), S.N.S. 2014, c. 35 (`ca-ns.laa`)",
+            "same"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0336",
+            "CRP-LSRC-0349",
+            "CRP-LSRC-0350",
+            "CRP-LSRC-0352",
+            "CRP-LSRC-0353",
+            "CRP-LSRC-0354",
+            "CRP-LSRC-0355",
+            "CRP-LSRC-0356",
+            "CRP-LSRC-0357",
+            "CRP-LSRC-0358",
+            "CRP-LSRC-0359",
+            "CRP-LSRC-0360",
+            "CRP-LSRC-0361",
+            "CRP-LSRC-0383",
+            "CRP-LSRC-0384"
+          ]
+        },
+        {
+          "region": "CA-NT",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Reporting Act (Northwest Territories), R.S.N.W.T. 1988, c. C-18 (unevidenced)",
+            "Limitation of Actions Act (NT)",
+            "Limitation of Actions Act, R.S.N.W.T. 1988, c. L-8"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0333",
+            "CRP-LSRC-0347",
+            "CRP-LSRC-0385"
+          ]
+        },
+        {
+          "region": "CA-NU",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Reporting Act (Nunavut), R.S.N.W.T. (Nu) 1988, c. C-18 (unevidenced)",
+            "Limitation of Actions Act (NU)",
+            "Limitation of Actions Act, C.S.Nu., c. L-110"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0334",
+            "CRP-LSRC-0348",
+            "CRP-LSRC-0386"
+          ]
+        },
+        {
+          "region": "CA-ON",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Reporting Act (Ontario)",
+            "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33",
+            "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 (`ca-on.cra`)",
+            "Limitations Act, 2002 (Ontario)",
+            "same"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0337",
+            "CRP-LSRC-0351",
+            "CRP-LSRC-0362",
+            "CRP-LSRC-0363",
+            "CRP-LSRC-0364",
+            "CRP-LSRC-0365",
+            "CRP-LSRC-0366",
+            "CRP-LSRC-0367",
+            "CRP-LSRC-0368",
+            "CRP-LSRC-0369",
+            "CRP-LSRC-0370",
+            "CRP-LSRC-0371",
+            "CRP-LSRC-0372",
+            "CRP-LSRC-0387",
+            "CRP-LSRC-0388"
+          ]
+        },
+        {
+          "region": "CA-PE",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Canada \u2014 Prince Edward Island, Statute of Limitations, R.S.P.E.I. 1988, c. S-7",
+            "Consumer Reporting Act (Prince Edward Island)",
+            "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1988, c. C-20",
+            "Statute of Limitations (PEI)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0328",
+            "CRP-LSRC-0345",
+            "CRP-LSRC-0389",
+            "CRP-LSRC-0390"
+          ]
+        },
+        {
+          "region": "CA-QC",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Civil Code of Qu\u00e9bec",
+            "Consumer Protection Act (Quebec), CQLR c. P-40.1"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0342",
+            "CRP-LSRC-0391"
+          ]
+        },
+        {
+          "region": "CA-SK",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Canada \u2014 Saskatchewan, The Limitations Act, S.S. 2004, c. L-16.1",
+            "Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2",
+            "Limitations Act (Saskatchewan)",
+            "The Credit Reporting Act (Saskatchewan)"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0331",
+            "CRP-LSRC-0340",
+            "CRP-LSRC-0392",
+            "CRP-LSRC-0393"
+          ]
+        },
+        {
+          "region": "CA-YT",
+          "class": "REGION",
+          "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+          "basis": "the recorded row's own instrument-class screen is SCREEN_INCONCLUSIVE with instrument_class_confirmation_required true, its provision_or_citation is NOT RECORDED and its recorded legacy mapping carries verified=false. The relation to any specific region is therefore not established by the recorded corpus and is NOT inferred here.",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "regional_instruments_recorded": [
+            "Consumer Reporting Act (Yukon), R.S.Y. 2002, c. 41 (unevidenced)",
+            "Limitation of Actions Act (Yukon)",
+            "Limitation of Actions Act, R.S.Y. 2002, c. 139"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0335",
+            "CRP-LSRC-0346",
+            "CRP-LSRC-0394"
+          ]
+        }
+      ],
+      "region_row_count": 13
+    },
+    {
+      "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+      "adapter_ids": [
+        "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY"
+      ],
+      "mode": "EXPLICIT_REGION_LIST",
+      "country": "GB",
+      "instrument": "Regulation (EU) 2016/679 (United Kingdom General Data Protection Regulation) \u2014 Articles 5(1)(d) and 16",
+      "instrument_class": "UK_WIDE_STATUTE_OR_REGULATION",
+      "instrument_class_source": "ledger owner_acceptance.instrument_class_screen = STATUTE_OR_REGULATION for CRP-LSRC-0407, with instrument_class_confirmation_required = false",
+      "source_entry_ids": [
+        "CRP-LSRC-0407"
+      ],
+      "territorial_reach_basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+      "not_a_code_conversion": "This relation is not a rename of the recorded UK token: it rests on the instrument's own recorded geographical extent, which the publisher prints on the provisions themselves. The off-report token route the ledger records as NOT adopted (resolving a bare UK token from a locked session nation or an account profile) is not used.",
+      "evidence": [
+        {
+          "evidence_id": "GB-UK-GDPR-OFFICIAL-EXTENT",
+          "kind": "OFFICIAL_PUBLISHER_RETRIEVAL",
+          "locator": "https://www.legislation.gov.uk/eur/2016/679/article/5 and https://www.legislation.gov.uk/eur/2016/679/article/16 (provision text via the publisher's data.xht?view=snippet pages)",
+          "what_it_establishes": "the instrument is published under the title \"(United Kingdom General Data Protection Regulation)\", is kept up to date with amendments made by UK legislation, and its retrieved provisions carry the publisher's \"U.K.\" geographical-extent marker"
+        },
+        {
+          "evidence_id": "GB-RECORDED-REGIONAL-INSTRUMENTS",
+          "kind": "LEDGER_RECORDED_REGION_CODES",
+          "locator": "SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json rows carrying canonical_region_code GB-*",
+          "what_it_establishes": "each canonical GB region carries its own recorded instrument and its own recorded canonical_region_code"
+        },
+        {
+          "evidence_id": "GB-PROVISION-RETRIEVAL-RECORD",
+          "kind": "SOURCE_CAPTURE",
+          "locator": "SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json",
+          "what_it_establishes": "the retrieved provision text, the applicable edition, the extent basis, the retrieval limitation and the attribution check"
+        }
+      ],
+      "region_state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+      "region_basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+      "regions": [
+        "GB-ENG",
+        "GB-NIR",
+        "GB-SCT",
+        "GB-WLS"
+      ],
+      "execution": "BOUND_TO_A_RECORDED_STATUTE_ADAPTER",
+      "execution_note": "the adapter reads the report's own two printed values on one ordinary account. It performs no retention arithmetic, states no period and claims no commencement date.",
+      "region_rows": [
+        {
+          "region": "GB-ENG",
+          "class": "REGION",
+          "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+          "basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "uk_wide_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ]
+        },
+        {
+          "region": "GB-NIR",
+          "class": "REGION",
+          "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+          "basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "uk_wide_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ]
+        },
+        {
+          "region": "GB-SCT",
+          "class": "REGION",
+          "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+          "basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "uk_wide_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ]
+        },
+        {
+          "region": "GB-WLS",
+          "class": "REGION",
+          "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+          "basis": "the official publisher prints the geographical-extent marker on the provisions themselves (Article 5 U.K. and Article 16 U.K., with CHAPTER II U.K. and CHAPTER III U.K.), publishes the instrument under the title \"(United Kingdom General Data Protection Regulation)\" and keeps it up to date with amendments made by UK legislation, so the provision applies throughout the United Kingdom and needs no nation-specific identification; the recorded limitation instruments for these regions differ between nations and are NOT used for this relation",
+          "region_specific_report_retention_rule_recorded": null,
+          "no_region_specific_report_retention_rule_recorded": false,
+          "no_recorded_source_row": false,
+          "explicit_resolution": null,
+          "uk_wide_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ],
+          "recorded_source_entry_ids_for_this_region": [
+            "CRP-LSRC-0407"
+          ]
+        }
+      ],
+      "region_row_count": 4
+    }
+  ],
+  "region_applicability_index": {
+    "AU-ACT": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-NSW": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-NT": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-QLD": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-SA": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-TAS": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-VIC": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "AU-WA": [
+      {
+        "relation_id": "AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING",
+        "instrument": "Privacy Act 1988 (Cth) \u2014 Part IIIA credit reporting (the recorded s. 20W and s. 20X tables)",
+        "instrument_class": "COMMONWEALTH_STATUTE",
+        "state": "CONFIRMED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_AU_CONSUMER_FAMILY",
+        "bound_adapter_ids": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "CA-AB": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-BC": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-MB": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-NB": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-NL": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-NS": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "EXACT_REGION_ASSOCIATION_RECORDED_SEPARATELY",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-NT": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-NU": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-ON": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-PE": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-QC": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-SK": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "CA-YT": [
+      {
+        "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
+        "instrument": "PIPEDA (S.C. 2000, c. 5) \u2014 as the recorded row names it",
+        "instrument_class": "UNRESOLVED",
+        "state": "UNRESOLVED_RELATION_NOT_ESTABLISHED",
+        "execution": "NOT_EXECUTED_RELATION_UNRESOLVED",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      }
+    ],
+    "GB-ENG": [
+      {
+        "relation_id": "GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION",
+        "instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+        "instrument_class": "GUIDANCE_OR_POLICY_SUMMARY",
+        "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+        "execution": "NOT_EXECUTED_INSTRUMENT_RECORDED_AS_GUIDANCE_NOT_A_STATUTE",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      },
+      {
+        "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+        "instrument": "Regulation (EU) 2016/679 (United Kingdom General Data Protection Regulation) \u2014 Articles 5(1)(d) and 16",
+        "instrument_class": "UK_WIDE_STATUTE_OR_REGULATION",
+        "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+        "execution": "BOUND_TO_A_RECORDED_STATUTE_ADAPTER",
+        "bound_adapter_ids": [
+          "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY"
+        ],
+        "confirmed": true
+      }
+    ],
+    "GB-NIR": [
+      {
+        "relation_id": "GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION",
+        "instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+        "instrument_class": "GUIDANCE_OR_POLICY_SUMMARY",
+        "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+        "execution": "NOT_EXECUTED_INSTRUMENT_RECORDED_AS_GUIDANCE_NOT_A_STATUTE",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      },
+      {
+        "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+        "instrument": "Regulation (EU) 2016/679 (United Kingdom General Data Protection Regulation) \u2014 Articles 5(1)(d) and 16",
+        "instrument_class": "UK_WIDE_STATUTE_OR_REGULATION",
+        "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+        "execution": "BOUND_TO_A_RECORDED_STATUTE_ADAPTER",
+        "bound_adapter_ids": [
+          "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY"
+        ],
+        "confirmed": true
+      }
+    ],
+    "GB-SCT": [
+      {
+        "relation_id": "GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION",
+        "instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+        "instrument_class": "GUIDANCE_OR_POLICY_SUMMARY",
+        "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+        "execution": "NOT_EXECUTED_INSTRUMENT_RECORDED_AS_GUIDANCE_NOT_A_STATUTE",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      },
+      {
+        "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+        "instrument": "Regulation (EU) 2016/679 (United Kingdom General Data Protection Regulation) \u2014 Articles 5(1)(d) and 16",
+        "instrument_class": "UK_WIDE_STATUTE_OR_REGULATION",
+        "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+        "execution": "BOUND_TO_A_RECORDED_STATUTE_ADAPTER",
+        "bound_adapter_ids": [
+          "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY"
+        ],
+        "confirmed": true
+      }
+    ],
+    "GB-WLS": [
+      {
+        "relation_id": "GB-UNITED-KINGDOM-NAMING-AND-REGION-RELATION",
+        "instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+        "instrument_class": "GUIDANCE_OR_POLICY_SUMMARY",
+        "state": "RELATION_RECORDED_EXECUTION_BLOCKED",
+        "execution": "NOT_EXECUTED_INSTRUMENT_RECORDED_AS_GUIDANCE_NOT_A_STATUTE",
+        "bound_adapter_ids": [],
+        "confirmed": false
+      },
+      {
+        "relation_id": "GB-UK-GDPR-ACCURACY-COUNTRY-WIDE",
+        "instrument": "Regulation (EU) 2016/679 (United Kingdom General Data Protection Regulation) \u2014 Articles 5(1)(d) and 16",
+        "instrument_class": "UK_WIDE_STATUTE_OR_REGULATION",
+        "state": "CONFIRMED_UK_WIDE_STATUTE_EXTENT",
+        "execution": "BOUND_TO_A_RECORDED_STATUTE_ADAPTER",
+        "bound_adapter_ids": [
+          "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-AK": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-AL": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-AR": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-AS": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-AZ": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-CA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-CO": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-CT": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-DC": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-DE": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-FL": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-GA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-GU": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-HI": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-IA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-ID": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-IL": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-IN": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-KS": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-KY": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-LA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MD": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-ME": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MI": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MN": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MO": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MP": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MS": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-MT": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NC": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-ND": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NE": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NH": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NJ": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NM": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NV": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-NY": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-OH": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-OK": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-OR": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-PA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-PR": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-RI": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-SC": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-SD": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-TN": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-TX": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-UM": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES_NO_REGIONAL_SOURCE_RECORDED",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-UT": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-VA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-VI": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-VT": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-WA": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-WI": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-WV": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ],
+    "US-WY": [
+      {
+        "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+        "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+        "instrument_class": "FEDERAL_STATUTE",
+        "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+        "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+        "bound_adapter_ids": [
+          "FCRA-605A-5-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-4-US-NATIONAL-7Y"
+        ],
+        "confirmed": true
+      }
+    ]
+  },
+  "assertions": {
+    "no_pattern_token_in_any_region_row": true,
+    "every_canonical_region_carries_a_row": true,
+    "every_relation_region_set_equals_its_canonical_country_set": true,
+    "every_bound_adapter_exists_in_adapter_configs": true,
+    "every_held_limb_is_a_recorded_owner_accepted_two_year_row": true,
+    "every_bound_anchor_limb_is_a_recorded_owner_accepted_row_bound_by_a_configured_adapter": true
+  },
+  "limits": [
+    "Applicability is not execution. A region may carry a confirmed relation and still execute no check.",
+    "A relation states what the RECORDED corpus establishes about reach. It admits no rule and creates no finding.",
+    "No wildcard, pattern or defaulted region exists in this file; every row names one canonical region.",
+    "A region with no recorded source row is recorded as such. No instrument is invented for it and none is propagated to it.",
+    "This file never opens, reads or writes a consumer report and makes no network call."
+  ]
+}

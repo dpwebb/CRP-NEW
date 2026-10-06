@@ -1,0 +1,1350 @@
+{
+  "artifact": "input_inventory.json",
+  "work_order": "PHASE5-001L",
+  "created_utc": "2026-09-30T15:30:34Z",
+  "purpose": "pre-write inventory and hash of every workspace input, plus verification of the 001K custody manifest, recorded before any file of this order was written",
+  "inventory_scope": "all files under the workspace root (recursive, including hidden), excluding this order's own output directory",
+  "pre_existing_file_count": 236,
+  "pre_existing_total_bytes": 55191978.0,
+  "pre_existing_inventory_sha256": "482B93C8673C724CE30CE6FC6CEE024BA360C77C6F940878D62035DBD3E3C4BD",
+  "pre_existing_inventory_sha256_definition": "SHA-256 over the newline-joined lines \"UPPERCASE_SHA256<space>bytes<space>relative_path\" for every pre-existing file, sorted by absolute path",
+  "files": [
+    {
+      "path": "\\consumer-wizard.tar.gz",
+      "bytes": 7724,
+      "sha256": "30667df0d4f4869f5cece94e0edbee920ef93cc76cd8971d596711950441f7fa"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\COMMIT_EDITMSG",
+      "bytes": 19,
+      "sha256": "76b543b84ad80155a1152046cbb3f3ff9bcb6edbf9fffebcfed1a9aab5f3388d"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\config",
+      "bytes": 130,
+      "sha256": "05becdb83bb897f6103c8d91439e2e9092144edf5b3955a746fce4975c12bfdc"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\description",
+      "bytes": 73,
+      "sha256": "85ab6c163d43a17ea9cf7788308bca1466f1b0a8d1cc92e26e9bf63da4062aee"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\FETCH_HEAD",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\HEAD",
+      "bytes": 21,
+      "sha256": "28d25bf82af4c0e2b72f50959b2beb859e3e60b9630a5e8c603dad4ddb2b6e80"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\applypatch-msg.sample",
+      "bytes": 478,
+      "sha256": "0223497a0b8b033aa58a3a521b8629869386cf7ab0e2f101963d328aa62193f7"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\commit-msg.sample",
+      "bytes": 1972,
+      "sha256": "efc1401b0e99d1ff51494d154d98b46c1e99059bcd8bf9f73cecde19fd3eb23b"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\fsmonitor-watchman.sample",
+      "bytes": 4611,
+      "sha256": "9159720099ad5595b8e66645cbfd47763c1e920f46e0b50ae75e642bbec57ef0"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\post-update.sample",
+      "bytes": 189,
+      "sha256": "81765af2daef323061dcbc5e61fc16481cb74b3bac9ad8a174b186523586f6c5"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-applypatch.sample",
+      "bytes": 424,
+      "sha256": "e15c5b469ea3e0a695bea6f2c82bcf8e62821074939ddd85b77e0007ff165475"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-commit.sample",
+      "bytes": 1649,
+      "sha256": "57185b7b9f05239d7ab52db045f5b89eb31348d7b2177eab214f5eb872e1971b"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-merge-commit.sample",
+      "bytes": 416,
+      "sha256": "d3825a70337940ebbd0a5c072984e13245920cdf8898bd225c8d27a6dfc9cb53"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-push.sample",
+      "bytes": 1374,
+      "sha256": "ecce9c7e04d3f5dd9d8ada81753dd1d549a9634b26770042b58dda00217d086a"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-rebase.sample",
+      "bytes": 4898,
+      "sha256": "4febce867790052338076f4e66cc47efb14879d18097d1d61c8261859eaaa7b3"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\pre-receive.sample",
+      "bytes": 544,
+      "sha256": "a4c3d2b9c7bb3fd8d1441c31bd4ee71a595d66b44fcf49ddb310252320169989"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\prepare-commit-msg.sample",
+      "bytes": 1492,
+      "sha256": "e9ddcaa4189fddd25ed97fc8c789eca7b6ca16390b2392ae3276f0c8e1aa4619"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\push-to-checkout.sample",
+      "bytes": 2783,
+      "sha256": "a53d0741798b287c6dd7afa64aee473f305e65d3f49463bb9d7408ec3b12bf5f"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\sendemail-validate.sample",
+      "bytes": 2308,
+      "sha256": "44ebfc923dc5466bc009602f0ecf067b9c65459abfe8868ddc49b78e6ced7a92"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\hooks\\update.sample",
+      "bytes": 3650,
+      "sha256": "8d5f2fa83e103cf08b57eaa67521df9194f45cbdbcb37da52ad586097a14d106"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\index",
+      "bytes": 454,
+      "sha256": "560a452a888ace2d189c2df9896f78249f4f515f8750bba8967b7afcd81f00f0"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\info\\exclude",
+      "bytes": 240,
+      "sha256": "6671fe83b7a07c8932ee89164d1f2793b2318058eb8b98dc5c06ee0a5a3b0ec1"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\logs\\HEAD",
+      "bytes": 169,
+      "sha256": "0e6e842a6766df6b0942974c5795547eca94e244d0ffad395e4fc309821c6394"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\logs\\refs\\heads\\main",
+      "bytes": 169,
+      "sha256": "0e6e842a6766df6b0942974c5795547eca94e244d0ffad395e4fc309821c6394"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\17\\5771b5e4a62727fee02fd1e7a2c0df99fbe6d3",
+      "bytes": 103,
+      "sha256": "400e8d01cba9e851178c16b4108278d155127fd8747ae122b808a5b550e9b5fe"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\37\\47248b02235b07fe01610f5dd7d4a4d900327b",
+      "bytes": 4255,
+      "sha256": "8fd3c18e1807d990791a5e8e02034512209836bcfa83ab9fd8619cd5bcbcf186"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\46\\e1826e93516fd2f8f0bb614cb2c2f4e2fbfc41",
+      "bytes": 2633,
+      "sha256": "e3052f02371d8a47728b4ffdecb17ad305b66b0cb9a74a6dca615be336ad25f7"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\51\\10da560ee49bd646f0b12a8b3315ef05b2ba77",
+      "bytes": 134,
+      "sha256": "8aebdfc0028de419a25a77db3a64517e3e568c6be49d870df0401f9fb346f2c3"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\63\\d8838535e7ba7325a054ec9cb07012f43ed7e8",
+      "bytes": 57,
+      "sha256": "a583f9da17cb8052a69935b69c75d0635b3cbcd3ec73992b29456a5031097226"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\86\\338906d5fbdad68d7da957c82ca1d9385a8426",
+      "bytes": 119,
+      "sha256": "f004152d3c10aa68f24ed24ef93b9873e8ec37ae70948c2d4da2209577e15a6c"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\b8\\cc49a946edd4d63489dc04ce1d127d84cccfe0",
+      "bytes": 77,
+      "sha256": "95561223cb0e6073c9f940db3038d65b98fe13c1359b817a4ecd0a87865c8bde"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\objects\\e0\\d57ca53cd0a6125aa287c648caf8af37e4c315",
+      "bytes": 1477,
+      "sha256": "2486d452bc226a30bec6767b60f1ddc34f521b5c6797ae178785f650a5fc217f"
+    },
+    {
+      "path": "\\consumer-wizard\\.git\\refs\\heads\\main",
+      "bytes": 41,
+      "sha256": "45ecdf72c2bba5dfb52e33329f00c20b3cc17c920815a5a339e89bb1a46778bc"
+    },
+    {
+      "path": "\\consumer-wizard\\.openai\\hosting.json",
+      "bytes": 106,
+      "sha256": "1625e4cf8073745d298734c907eaf44efc301204ff7276891d031b2ae5fcc486"
+    },
+    {
+      "path": "\\consumer-wizard\\dist\\app.js",
+      "bytes": 9617,
+      "sha256": "e1524a0c4d95c1ce823371fb9b58b669e389e74683d2dfcc55362079289b9492"
+    },
+    {
+      "path": "\\consumer-wizard\\dist\\index.html",
+      "bytes": 3050,
+      "sha256": "9f4831ae4ac993a4041dd6f43801de9b25d280905773ce25ac179dbdbc64b125"
+    },
+    {
+      "path": "\\consumer-wizard\\dist\\style.css",
+      "bytes": 7069,
+      "sha256": "c30b420ac6167e5080159475216fb11f30d804075dbbbec528f166a04e460446"
+    },
+    {
+      "path": "\\CRP_ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION.md",
+      "bytes": 12362,
+      "sha256": "f51e296b31f720f286092ef71d507db02c7753f99ed234fc00a4ecc3cb4e0ba0"
+    },
+    {
+      "path": "\\CRP_CORE_CONSTITUTION.md",
+      "bytes": 14820,
+      "sha256": "64027e2a0cc14ef302c73b3830cadca3d6b867a8dec843235a48e5c6b6387c3d"
+    },
+    {
+      "path": "\\CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+      "bytes": 57342,
+      "sha256": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55"
+    },
+    {
+      "path": "\\CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "bytes": 30768,
+      "sha256": "f89c8c425a03760e0f73728af44b2e22d34d2159d29e917f02451b5bbab3b9ad"
+    },
+    {
+      "path": "\\CRP_EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION.md",
+      "bytes": 30422,
+      "sha256": "f109e6d3ceca33acd0fa2bcb8699a96c3b1028684e0190059fa8107264dfb550"
+    },
+    {
+      "path": "\\CRP_GAP_REFUSAL_RESOLUTION_REGISTER.md",
+      "bytes": 391651,
+      "sha256": "84de842de9699b9b937464b8b753454a3e10846ca280d79b91d38dd359bd34c0"
+    },
+    {
+      "path": "\\CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "bytes": 447509,
+      "sha256": "3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d"
+    },
+    {
+      "path": "\\CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "bytes": 18608,
+      "sha256": "fc510647207386e6cb5d5a41eac4b7cbe88622366829253f39a2841f903315c5"
+    },
+    {
+      "path": "\\CRP_JURISDICTION_ENUMERATION.md",
+      "bytes": 6912,
+      "sha256": "d5ec34a52c1b14466ca601dd2be49f74206856a9c7722b623468d84b9169ee93"
+    },
+    {
+      "path": "\\CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "bytes": 21241,
+      "sha256": "716825af9c4566717b49c6f07ebc813b3f8c8db2398281025500186793284d7a"
+    },
+    {
+      "path": "\\CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "bytes": 11092,
+      "sha256": "10b890f929d23ed8eae5375ad689476829fe61754483aeb1b3d065998d97f811"
+    },
+    {
+      "path": "\\CRP_LEGAL_INVARIANT.md",
+      "bytes": 17647,
+      "sha256": "90324bface6e256ca8f55677d1bf18c2cc9df9825b95f2f4751e5d63daf3e431"
+    },
+    {
+      "path": "\\CRP_OWNER_001J_ALTERNATE_US_CONSUMER_FORMAT_WORK_ORDER.md",
+      "bytes": 4501,
+      "sha256": "baeed31cc9c5ab6460762424e1223b906e1919a746afd15c82287f0bd3e20f1a"
+    },
+    {
+      "path": "\\CRP_PHASE5_001G_OFFICIAL_SOURCE_TEXT_COMPLETION_WORK_ORDER.md",
+      "bytes": 10199,
+      "sha256": "661a93410e9a9ff2fc40bf1b71d6e5756a3ee55bc00b02b2bcba83b8c629d771"
+    },
+    {
+      "path": "\\CRP_PHASE5_001H_EVIDENCE_RECONCILIATION_WORK_ORDER.md",
+      "bytes": 14552,
+      "sha256": "45052098eadac088e1c2c12842ef08df939469e7f3130b6283ab218232cc5078"
+    },
+    {
+      "path": "\\CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "bytes": 70041,
+      "sha256": "18312ee8853bbf36bd2f5b9ce46201dc60457382f0c646c74cf5fac34ad6e817"
+    },
+    {
+      "path": "\\CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "bytes": 18938,
+      "sha256": "4a31ac4c1011ee67d3b1678db834401b252afbce6a18c49b99bedf49119ed813"
+    },
+    {
+      "path": "\\CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+      "bytes": 50624,
+      "sha256": "b4cbf5010b86750eb087fdb2ce2f8dacfe576c6f85cea7bb44a38a1fed580312"
+    },
+    {
+      "path": "\\CRP_PUBLIC_REPORT_FORMAT_BASELINE_2026-09-30.md",
+      "bytes": 22090,
+      "sha256": "0318dcdf15868fe180283f3c2a87f5cbbc03cbfbde2510f8730644032da1c4fb"
+    },
+    {
+      "path": "\\CRP-DISC-002C-NY-0194.md",
+      "bytes": 6824,
+      "sha256": "8487b60ea6020f10abce04e76d9cece6add580900f7149111845376f4a2e5ba0"
+    },
+    {
+      "path": "\\JURISDICTION_CONTRACT.md",
+      "bytes": 19220,
+      "sha256": "5b286edafea35058cb09839565b156c996f94f362a19a72438cb1a2dbc855dfb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-003.html",
+      "bytes": 21479,
+      "sha256": "51683f63f9f4dae5d61aa94ef889431ce922fedf53868125a521487319f3303a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-003.txt",
+      "bytes": 4994,
+      "sha256": "cfc1dcf7fea324d1a299f565903c2ec63d47163b6df624482918d5958790c813"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-005.html",
+      "bytes": 24552,
+      "sha256": "09b3f2b27a903f7dc9a6af2e7f9f964af71673826b997c7b55468921dc5046cf"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-005.txt",
+      "bytes": 5259,
+      "sha256": "2e2be44bc645fae30702826e60959455924d95d5623322c3d01d7241c28aa4a7"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-006-page-14.png",
+      "bytes": 341420,
+      "sha256": "4c5557c11094b2fb87c2d7c3ad83c8e82b12d0fe0129a886b5033bc81ad84dd4"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-006.pdf",
+      "bytes": 804179,
+      "sha256": "6345dd3f058679cf1e32825b1e5945d3957c34a6a8fbfe4ad99c6a835759fea5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-006.txt",
+      "bytes": 49381,
+      "sha256": "ed24bb9f1e618124ff7a793450c33ca49a7da077eb00542113ce153e507f4810"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-007-page-20.png",
+      "bytes": 284801,
+      "sha256": "ecc80c587d9ec12c8db7ed0a4c8779e73f8e0b8e897541a83fd23b4513a61518"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-007.pdf",
+      "bytes": 2490481,
+      "sha256": "5def948b751c637d062476f2986a68e4517362dfe1c093bd41456e0c79652d1e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-007.txt",
+      "bytes": 21861,
+      "sha256": "6d3d9e7a29d5e016765db373cc09c2dfe650490812cfd59406a2640d84ac9774"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-008-classification-visual-locator.json",
+      "bytes": 945,
+      "sha256": "9a7c0d88e84b5f4f4681e54be2ef2902b59b4fb8ec23b598dedd2860b1fe204f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-008-page-12.png",
+      "bytes": 154474,
+      "sha256": "595aecd651b847f9805906bf922d6cb68d75bb6548db1eeaad35f786101dd9c9"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-008.pdf",
+      "bytes": 2021780,
+      "sha256": "cfd8efa888edf9a147a1bde90bac66778c065318f1214e07576f4391cef8ba44"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-008.txt",
+      "bytes": 21405,
+      "sha256": "881a31e68ee55a44e34208d9883b0a1b2419b0c1349a40ce6c1adf59988ed7a0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\build_index.py",
+      "bytes": 2220,
+      "sha256": "c69a49996486459ef6e4997142ff0b9cb545cb498c396e2681b1cdd82fa94882"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\capture_manifest.json",
+      "bytes": 4431,
+      "sha256": "95519f511ffefe40862b21a724d5ef59ff8bb721e243c0b8f0ef4bc8bbbef79c"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\file_custody_manifest.json",
+      "bytes": 3554,
+      "sha256": "8e804eb028f7c9646c4cd050e0770e394f2b4216c42c841b5c168975a8f68b5a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\INVENTORY.md",
+      "bytes": 2304,
+      "sha256": "366aa7d6d8a0ccaa5bba213542f2fa777c1fc778e230b2e6c765aa8385c9f72f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\investigate.py",
+      "bytes": 3582,
+      "sha256": "837cd8561aabff254bf5fb450ffaa48bb93e6d20e73cd79e7c95f33da7bc6ef5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\preservation_result.json",
+      "bytes": 148,
+      "sha256": "2c4ec057f63f055c1e5bf8e2346d5d9601c559b54811d4118ddf526778bc9252"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\preserved_files_before.json",
+      "bytes": 32652,
+      "sha256": "c2031dae88ac6a3b9de5d0e5f1843fb193f8f45fb7792cd846df6b26cfa7dfee"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\source_inventory.json",
+      "bytes": 1434,
+      "sha256": "40c3524d7293d5261c93c1544bca4359fa9006b9051e973f84633efa9feaf68f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\supplement_inventory.json",
+      "bytes": 657,
+      "sha256": "1dfb87fa83109f76f5fc9f339f48c47a78b9995f29f9bf6fe4d395ef707730eb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\supplement_manifest.json",
+      "bytes": 1974,
+      "sha256": "8f6aa0b622bf0f40b44de81b11a56be3f12cd4b8409f0769e90abfa02a0580db"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\web_observations.json",
+      "bytes": 2277,
+      "sha256": "cc85ac49b09323a37a0dc6096e405f191e2758d981265e1dc6ea2659d83112fb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\baseline_original_recheck.json",
+      "bytes": 2845,
+      "sha256": "660b47b32c9379c8d8e9d3a2180cad2984acf76954893f298c03be8b2b65de5b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\build_investigation_index.py",
+      "bytes": 5002,
+      "sha256": "478a444f2b91e307809e8cb879e9cdf4c440e2f920e32222571c6ac146185a20"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\capture_experian_sources.py",
+      "bytes": 4882,
+      "sha256": "578193c28d572124c6b50716c8e94bf808bda9d7a282df84fe5403e3e12ba3e0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\capture_manifest.json",
+      "bytes": 9646,
+      "sha256": "6610a3aefbea185c23f839f4a811c6f8b2251e6661377ffaf69be5b9f8a28b3c"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\capture_search_index_observations.py",
+      "bytes": 2454,
+      "sha256": "3d2c830133eb85f816afcabedc40a31634ad8c8da342d72204b4fb876a17c63a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\consumer_presentation_observations.json",
+      "bytes": 5760,
+      "sha256": "abe33452b00148dad9bb5448bef1c648566e499490d12bd77bb4d920c7cb67f6"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-001.html",
+      "bytes": 225046,
+      "sha256": "921073a5276ebcbade0c73fcead2f4038f8d965e152c007dcfd14da951adfa13"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-001.txt",
+      "bytes": 18213,
+      "sha256": "8c763bb816d7623957ecc3def1b687de294e1c1fe070bc13d013afa2b12b40bb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-003.html",
+      "bytes": 267890,
+      "sha256": "cb91c282070ba92ff92fb657c9568c213ab2aec5b7befd2095795a016942270c"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-003.txt",
+      "bytes": 24240,
+      "sha256": "3b51530ee5645f229c2c760c318d6048d2fea46614ed7586fa7f4edbd1445a4f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-004.html",
+      "bytes": 223277,
+      "sha256": "61f287809c5d2b2548e0b955cb7b5e4472286f4e4ed541aede7867dc86efb402"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-004.txt",
+      "bytes": 20974,
+      "sha256": "0e4daa09a364f1a2c6ced6bfbe7fcaeb090f8df8a81a89811cb23469d05c5aa3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-005.html",
+      "bytes": 219470,
+      "sha256": "3966a74e57131c495268ad115c2f523a0b993476a965d0ffc0399d1dafcee3fb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-005.txt",
+      "bytes": 18103,
+      "sha256": "c2a0f6935bbe57ac0ad249302111429a086c765cf2ca0426ee0e22c6bb753fbe"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-006-screening-sample-full.png",
+      "bytes": 524940,
+      "sha256": "40f79aa36998fb9ed44f89c4281ec1e086887173b850a73f4ab5852b8f6c524e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-006.pdf",
+      "bytes": 87888,
+      "sha256": "8c5a0fbf08726be7564a9f6692cf2d15e9cb327f4defeea9dc0b72bc5a31da56"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-006.txt",
+      "bytes": 32,
+      "sha256": "adacc3d4d92f8fa2bec6d32cb8895a2e1fb3c15f7d5ad70b4ea9b014d47449d1"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-007.html",
+      "bytes": 6183,
+      "sha256": "9cb43c6600ad54d08edef00de87dc6e3bcde9761a996df6e09ca801ce37df7a5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\EXP-007.txt",
+      "bytes": 750,
+      "sha256": "13d2c1cfdccda000cbef514f70c79b4231291fc681b6a1aa9abc3bc99f634d3b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\file_custody_manifest.json",
+      "bytes": 6215,
+      "sha256": "b7a6a31716161699774ea1f67e41a55ee92f9f4c1919d50cf8ea8981335c9893"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\INVENTORY.md",
+      "bytes": 5729,
+      "sha256": "11d2efbdff8da6a6fd858d0839014b7338d117548f7b1ee906852ca2ff219bf8"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-important-messages.png",
+      "bytes": 98709,
+      "sha256": "a8a94d42c3e98e7a5db1607b2b5682974ea74ac5d6d776ca6c9f4366ab96db8f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-01.png",
+      "bytes": 259157,
+      "sha256": "cb387767d220eea9894725495d89d081f05cf49286d56abe625bac83dcfc5646"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-02.png",
+      "bytes": 116192,
+      "sha256": "082f0ceee64a0e45a0276ef1cda13657c99244e37d6f7bc83bee05207727c3b5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-03.png",
+      "bytes": 120234,
+      "sha256": "20b7c236af1324ec157d230ee8352f407d45dc81ab7849f55f21715461241f8b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-04.png",
+      "bytes": 122780,
+      "sha256": "86926e731d2e6a449c9c0f8b44f4805f1639fe01190a9a04bd57308a2bd7b1a1"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-05.png",
+      "bytes": 130123,
+      "sha256": "88eb15f51f758a9e585f8cba90d1aef49dada80dc02bf798e58e1b72a2a9b334"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-06.png",
+      "bytes": 1163721,
+      "sha256": "f5f4129924d87f0da3adb76e0611ec6d6d136f288041c0350b44cbf0d0ad4ff5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-07.png",
+      "bytes": 1025688,
+      "sha256": "75d10f8980321cd4074cdd541110b5a4014521d9e8b8e3032bf8de2331842c41"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-08.png",
+      "bytes": 639402,
+      "sha256": "bf10a7ddcfe3e8de4f43e82c478692bb6872266612761e0612d5af9c6f145c8f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-001-slice-09.png",
+      "bytes": 395293,
+      "sha256": "a08a4dfaa4e7af3a009d3d1aef0824b947f5cda413d05f9ac440ad1e23bfaf61"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-021-marker-context-observation.json",
+      "bytes": 3742,
+      "sha256": "567e0005739c37ec776e63a7d28aae0d5e3f74626368fc29c42b5c523f70409e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\PUB-021-page2-marker-crop.png",
+      "bytes": 189203,
+      "sha256": "0b0b97e942a5bb52c80d4693bab9c280fe9f549ba4c453d195671ef7b889e44e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\recheck_baseline_original.py",
+      "bytes": 4285,
+      "sha256": "78d508a4193a65563e1a0119c205dc11ec072aee84d21a2cecb45627fbe7a381"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\render_inspection.json",
+      "bytes": 8186,
+      "sha256": "81716ba3ab712daa7cadaed3023c52b3ebade3c07a0a5822ea284ab65de57a01"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\render_inspection.py",
+      "bytes": 3492,
+      "sha256": "abf436c64e5128e6abde112b19919a35945654332c21027611a20142d18e12f8"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\reviewed_manifest.json",
+      "bytes": 10688,
+      "sha256": "2082e080d676608cd7dda73d56d058ac0c770e9e1d3a526579d150158cd792aa"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\search_index_manifest.json",
+      "bytes": 1309,
+      "sha256": "827545cdde863b995e106841cd1b57fed95532a3f492b3668802c62d5f178043"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\search_index_observations.json",
+      "bytes": 4078,
+      "sha256": "f707e7b8b0d8362fbeabb14cdc25780d6e50bc290a97b7612dc39ae149f6d218"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\SI-001-brave.html",
+      "bytes": 74023,
+      "sha256": "ca71ef9f0eb529ddf3769caadb2984a2206437282308ff327c4c54d26d2e3839"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\SI-002-brave.html",
+      "bytes": 74023,
+      "sha256": "186326b028f40ea220535359bbd2814198f970c7408d1f87da0161da7c8cf167"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION\\source_inventory.json",
+      "bytes": 3760,
+      "sha256": "1f670766eceb83a447ec4ef61eb027fbc383bbe4948aa5d39aa20ce96e4de4c0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\ACT-limitation-act-1985-r-current.pdf",
+      "bytes": 900536,
+      "sha256": "f5ba3b89150f40b003edcbfea416499d26af51970ac29bbc45a9809b8e793504"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\ACT-limitation-act-1985-r-current.txt",
+      "bytes": 168044,
+      "sha256": "3b3fdf0b63150219b101abeddaae3c71abb54cdcd4f51e03e2556004e7ffd46e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\ACT-p6.txt",
+      "bytes": 879,
+      "sha256": "b1975da605172ec6c32c27e12a903ab068b0dfb5a494e2548335d375b2b66017"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\C2026C00227-downloads.html",
+      "bytes": 62729,
+      "sha256": "b53ab9e7dc2a9acbb42710f2b4c7850a22183ec62c2dc14180ad0d0eecab5b0a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\CA-1995-96-billlist.html",
+      "bytes": 1013777,
+      "sha256": "40abf37d95b453170beda7d5e5d5ba25415d247495621f225bea9226609fdffc"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\CA-1995-96-search-credit-reporting.html",
+      "bytes": 131337,
+      "sha256": "5dff23a7f8d74fe1a4119b1145f61c1b33bc9d90f85b1a5932bbffe522afb01f"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\CA-CIV-1785.10.html",
+      "bytes": 167473,
+      "sha256": "878d5fdbbd3aa0a75f0d14483b6b5a2dea2990c8a23b5b7e5c18ad6ea739124d"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\CA-CIV-1785.13.html",
+      "bytes": 167769,
+      "sha256": "01d05562bab3d4197c41a450d1457c71191467ccd8ab35de4cce123a0116ca93"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\CA-CIV-1785.16.html",
+      "bytes": 175250,
+      "sha256": "d15e99a4a8f2b170c87f7d5b38a5467343a60ffc7484ba5a7d5bc4c46df840b5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\FRL-api-documents-C2026C00227.json",
+      "bytes": 652,
+      "sha256": "a48a55dd126cdd8003b2e942e31dde4b87abb8544017d0da0a08febe677dd0a9"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\FRL-api-documents-full-C2026C00227.json",
+      "bytes": 1856,
+      "sha256": "ff12ebb844d1d96d31583a6bb43f7f8f9626dc35cd478180dd124c348d79cbaf"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\FRL-api-metadata.xml",
+      "bytes": 30308,
+      "sha256": "561759c4b740adf12326a56134631c3bf910a16b3d50c288daf551a291eb8724"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\FRL-api-titles-C2026C00227.json",
+      "bytes": 585662,
+      "sha256": "0a11a5f581cd06f160f1d63da41c8133a33d9df65caf5cb7c92189d161ba4e27"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\FRL-C2026C00227-Download.html",
+      "bytes": 37010,
+      "sha256": "4057fbf640c020cfadf557cd7e9879335195a2e9094c2f9ed497226d3664e04e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MA-1995-acts-0125-pdf.txt",
+      "bytes": 34689,
+      "sha256": "0d6adc11b4b9899d76b93233f49db987670365c7992de159a28078c5a59593cf"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MA-1995-acts-0125.pdf",
+      "bytes": 348019,
+      "sha256": "ec152115eb8d582480c1daf1399bb7468a1ef3a1707cbca0bd236e6e36e54fce"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MA-1995-acts-0125.txt",
+      "bytes": 30828,
+      "sha256": "fd0f5f52669b1eddd6537c21bb0d246f5b93d5c90b027f1e28a54c179557a3a1"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MA-DSpace-search-1996.json",
+      "bytes": 82007,
+      "sha256": "ac5748c15dda320bdb45c11d685210d1de886106b9f951a5a99599b2ae503656"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MB-limitations-act-ccsm-l150.pdf",
+      "bytes": 408047,
+      "sha256": "0b9fe7c0096e3c7370d3307eaf8baeb0f2274327bcd2ec9a6285d565fd304805"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\MB-limitations-act-ccsm-l150.txt",
+      "bytes": 108401,
+      "sha256": "6c2b1b0e2acd50ecda6f00511578cd2101ab397e1c1e376a9807020e6f953423"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NS-consumer-reporting.pdf",
+      "bytes": 351156,
+      "sha256": "5ad228066b3281e1702c2c63da012c28128d444b8d528069075dc65939445500"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NS-consumer-reporting.txt",
+      "bytes": 46081,
+      "sha256": "c7eb74b9d9be0104709200e283010225f52951f88efbd6c0d5f8dbcb6641ddea"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NS-limitation-of-actions.pdf",
+      "bytes": 215628,
+      "sha256": "1c2253d9eaff51f81a2b678774d983b1756709a37aeaaa3d95fc463ca6b847fd"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NS-limitation-of-actions.txt",
+      "bytes": 29320,
+      "sha256": "e0a354f425240928480117e129d51fb07063a0508b94a8e34bf8fbd1d2309df3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NWT-limitation-of-actions.pdf",
+      "bytes": 89694,
+      "sha256": "ff670bbe4fc226845647142540baaa48d728c28b8b6571e280b14ad0b72ea1f4"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\NWT-limitation-of-actions.txt",
+      "bytes": 145114,
+      "sha256": "98eb33eb753747556d844d4526d9e831c8d8ea38d0fc1724b381027a30407083"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\OAIC-CR-code-2024-page.html",
+      "bytes": 107870,
+      "sha256": "5d522f8d204adfb3e1daace2cd35f383989234c89182f8797efe5659d99fa53b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\OAIC-Privacy-Credit-Reporting-Code-2024.pdf",
+      "bytes": 643427,
+      "sha256": "f8cf6c99c548da34fef15a9f4cd8249eee24eb4d85402e22763d34d7b911cc21"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\OAIC-Privacy-Credit-Reporting-Code-2024.txt",
+      "bytes": 179025,
+      "sha256": "60e305ff2f3dc6aa4af646723200eaf41ff18b27aa925e673b91d83de039ba03"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\PEI-c-17.pdf",
+      "bytes": 15836,
+      "sha256": "0858e796a88873c713fc6667c32367d9e3b334e9c69c4bccd05208bd36f135ac"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\PEI-c-17.txt",
+      "bytes": 145,
+      "sha256": "cb2513261ccaf02c16aaad1aed7f7a507e0e8e46124c6866dc6afaa89a889763"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\PEI-l-08.pdf",
+      "bytes": 15888,
+      "sha256": "264f617410ea366ec341525afea8e2c8998ba03d7d38f716ad72b061f277ffcc"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\PEI-l-08.txt",
+      "bytes": 148,
+      "sha256": "5150a507049512e96fd3ffdc362951c4d6bd0ee742a1eb812fef8a4d9be387f5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\QC-CCQ-1991-en.html",
+      "bytes": 6001882,
+      "sha256": "e2d7503d387880f0847307216b68c7e976bc97857ee504a3b3566c1c914c22a8"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\QLD-limitation-of-actions-act-1974.pdf",
+      "bytes": 475692,
+      "sha256": "9a77114c16ece94f73680a109a40549fe0d063149e56accaa6b620b231bfd158"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\QLD-limitation-of-actions-act-1974.txt",
+      "bytes": 107576,
+      "sha256": "016913b3ac877b5ab3b57f0f31589564e6ba72c15df4ca5fd540c5e9f9af8117"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001G\\USCODE-2014-sec1681s-2.htm",
+      "bytes": 30945,
+      "sha256": "cddd5665e5bf6c36022d777c00a4f6dd88741ac7b9e51cafe6bb73c47e8af785"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-legislature-proclamations-of-nova-scotia-statutes.html",
+      "bytes": 343353,
+      "sha256": "01980c5d0f9d38434554b3789aa92c3bc501aae661e9ddfb51cd6a6b4700d631"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-registrar-regulations-rg2-home.html",
+      "bytes": 9589,
+      "sha256": "19661048ae318cca9af9102b4cf2f46379c9430bb8e86ca3691e6ebad382319e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-part-I-issues-index.html",
+      "bytes": 128827,
+      "sha256": "c05de83113a4fdd50c9a237ba0872f11c3c11c684c3da4da667994757a4cce7b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-part-II-issues-index.html",
+      "bytes": 117298,
+      "sha256": "e32261186f059a8901a508f3413807776c072de47db791ce51acfa5022e79f6e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partI-2015-index.pdf",
+      "bytes": 935127,
+      "sha256": "98521e9961baec87d97e65eb2fbf1a0749c2ef709ac79cb6b518bebbd72125c5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partI-2015-index.txt",
+      "bytes": 313226,
+      "sha256": "546d84650633c35636ab868d509389f991900e9877b87cc846cc9c25ee0cf9dc"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partII-2015-08-07.pdf",
+      "bytes": 493224,
+      "sha256": "3554b66a52fd7ca2534e6937da76c59a847c46184d7fa5ffa7080d32ca48722b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partII-2015-08-07.txt",
+      "bytes": 51630,
+      "sha256": "57bd03c1c28526eeb0a0801301e28942b8d607ea375d9a45a6e3b15e14105480"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partII-2015-09-04.pdf",
+      "bytes": 3534856,
+      "sha256": "d675c7cda6204cc96f8b8ba9f40c033917f8cb9d910ee2e652903d65904aeace"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partII-2015-09-04.txt",
+      "bytes": 46042,
+      "sha256": "7ebf6db86f54e4294230e7b9777db92fe579c256bb1a3d2cba860a99e32f8946"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ONT-02l24-act-versions.json",
+      "bytes": 13553,
+      "sha256": "81a392706d8d16553c79dd8b37fa7f8d23dc64df08c1cec4c02142ae34fed3f0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ONT-02l24-consolidated-text-derivative.txt",
+      "bytes": 38433,
+      "sha256": "1ae13009495b506c394b03943abd8ea57bee0d188acb6f496dcc3e118aced9ea"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ONT-02l24-doc-search.json",
+      "bytes": 78439,
+      "sha256": "395196a1ecf28e9ea58f926a6666d798ba5950701e2b5452d45d50dfb3f5c472"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ONT-elaws-main-js-route-probe.js",
+      "bytes": 1680682,
+      "sha256": "dd6b253ca444521ce449e417d83e22f2435a8a28d586fc3008065ee6acae6ed0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ONT-limitations-act-2002.html",
+      "bytes": 54243,
+      "sha256": "3f7b30261acb525bfebd99fae6c97cd17c46c6ad2f7ef4be55a4c35e9c18242a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-RG1-2015-Index-20260930.pdf",
+      "bytes": 935127,
+      "sha256": "98521e9961baec87d97e65eb2fbf1a0749c2ef709ac79cb6b518bebbd72125c5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg1issues-20260930.html",
+      "bytes": 128827,
+      "sha256": "c05de83113a4fdd50c9a237ba0872f11c3c11c684c3da4da667994757a4cce7b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg2-au0715-20260930.pdf",
+      "bytes": 493224,
+      "sha256": "3554b66a52fd7ca2534e6937da76c59a847c46184d7fa5ffa7080d32ca48722b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg2-index-20260930.html",
+      "bytes": 9585,
+      "sha256": "72bcc03b89897b61462aad8f8e3c2a46291caf96c8cd9173b11f05e2c0f5927e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg2-se0415-20260930.pdf",
+      "bytes": 3534856,
+      "sha256": "d675c7cda6204cc96f8b8ba9f40c033917f8cb9d910ee2e652903d65904aeace"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg2htm-20260930.html",
+      "bytes": 10480,
+      "sha256": "fa0ddce96c5d4739e9d4d06491a0bc984e13947d6abe62177e1d3bc75e08e872"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-rg2issues-20260930.html",
+      "bytes": 116566,
+      "sha256": "cd1623723afd091a81c4d88e06118438f627005b917172f8f42d77340278a8d2"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-ONT-act-versions-20260930.json",
+      "bytes": 13553,
+      "sha256": "7e93bc5b684fdb5c433f69c7d962c2681c095e50b6bb9d334af9c3ca90a9e381"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-ONT-doc-search-20260930.json",
+      "bytes": 78439,
+      "sha256": "395196a1ecf28e9ea58f926a6666d798ba5950701e2b5452d45d50dfb3f5c472"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-ONT-statute-page-20260930.html",
+      "bytes": 54243,
+      "sha256": "1780a008871eb7a9972977d127a62b1b7825986c7dfa62b64694b17154d7a94c"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\VER-MB-L150-pages7-9-extract.txt",
+      "bytes": 13176,
+      "sha256": "bd11ce621011e000c4e2d582856f284de09cf447c9d675399356d89ff3908ae3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\VER-NS-LAA-p6-extract.txt",
+      "bytes": 3129,
+      "sha256": "eb57d76909e6886d2b22545430279a383d29c8f55abd0b7750ddf7f09bebee3a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\VER-NS-LAA-pages11-13-extract.txt",
+      "bytes": 2562,
+      "sha256": "9d140eec2dbedc001e41a78e1917a7b61933976b49e0d83067bc0e563a40729e"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001H\\VER-NWT-p4-extract.txt",
+      "bytes": 7262,
+      "sha256": "31f1ebaf986a713c438e8c0479b6c61545deb7d257eb8b0e343fe13d347f81d0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001K\\file_custody_manifest.json",
+      "bytes": 541,
+      "sha256": "8ac36ed6212d2f3722f6a24b5dae0f78e0efb2b5110c60f37f131fe4c24400b6"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json",
+      "bytes": 374808,
+      "sha256": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "bytes": 616237,
+      "sha256": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\build_evidence_index.py",
+      "bytes": 2957,
+      "sha256": "e8877f33120c252d16d05afc53a76678aabeb5f7c32772e859a395675c69ceaa"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\capture_manifest.json",
+      "bytes": 19925,
+      "sha256": "02ee6b58eb3a733bcec8e77abdf159d875b0a76dc5ccc7a72a81a7205ab90a70"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\capture_public_sources.py",
+      "bytes": 2368,
+      "sha256": "33c611c66091c5d5f5ef4729a32db6ec746a1b339b637e49175c7159551dcff3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\file_custody_manifest.json",
+      "bytes": 5830,
+      "sha256": "f59f4c24b823b983315c3fc71197e518b20938502620595557a253e345143569"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\INVENTORY.md",
+      "bytes": 7763,
+      "sha256": "1f6a51460e85e0c8faa90b542fc6862b202556091894ab741c9832d58bb6d3f9"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-001-page-1.png",
+      "bytes": 271636,
+      "sha256": "1bde311b61a76db0bf810b8d2c52923fd3cab0c5a06320e96b8bb6d641cc6348"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-001.pdf",
+      "bytes": 5845994,
+      "sha256": "601c2387b62a1a8f1425ffffcdc80a1e64ce1de0c8b1d662922350cd1f0dec01"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-001.txt",
+      "bytes": 32,
+      "sha256": "adacc3d4d92f8fa2bec6d32cb8895a2e1fb3c15f7d5ad70b4ea9b014d47449d1"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-003.pdf",
+      "bytes": 1613728,
+      "sha256": "66e4b1965bc0f4e0cb2791c2d50c586ffae904b7cda4dc66715cb8e8a509a160"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-003.txt",
+      "bytes": 46476,
+      "sha256": "2fafa4d518455f33a8cc0dbeca6f59b6887ea8ea351c44380f08436da2c542f7"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-004.pdf",
+      "bytes": 1925934,
+      "sha256": "196101c463167a688b11574b364807a60401a0aeb488e58a5183ee070eca47cd"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-004.txt",
+      "bytes": 10996,
+      "sha256": "fe2fb116dd54c1d77e71eccdb40bb3b56551e43021ed720dd3afc9ac705d032a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-005-page-2.png",
+      "bytes": 471473,
+      "sha256": "d54a35fe2e1c049432c332b0d0c1cf925f6115f122147091befdfa652042a8f0"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-005.pdf",
+      "bytes": 818866,
+      "sha256": "928201c983d54ba2100f9515f62273a00d02f3b3f36f3b32aa0fe71e16ba98a5"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-005.txt",
+      "bytes": 73887,
+      "sha256": "551dcbf2eb8deba1953fe2b20a282aa3b6b54c814787b7925a6a8b571136e9d3"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-006.pdf",
+      "bytes": 445731,
+      "sha256": "3040a25ed5592ff6518bfdcc0fcffd6d9ef853c5796b919ffd7246a0809e9113"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-006.txt",
+      "bytes": 15479,
+      "sha256": "0ee486926b1b669351a654708bf8a5c324a95ff421c4908c0d2501411d47ba30"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-007.pdf",
+      "bytes": 78925,
+      "sha256": "98ed310dbaf4ba28217ee887bc5dc7e50d309ddba96cdf0ffece8c125a0db639"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-007.txt",
+      "bytes": 17977,
+      "sha256": "a59af8944f3db85a14b9ce5fb8ae174b1e143f36bef89ddb983bbee4d492d67d"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-008.html",
+      "bytes": 19284,
+      "sha256": "504b38941a4528c4c654e6071954bffa153d75b76ad369dd17dbee6227d2ee6a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-009.pdf",
+      "bytes": 98553,
+      "sha256": "5e95f3d27c4102c7772b33d0e11f3f4e0f37d253b2147e635db54e9bd328aec4"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-009.txt",
+      "bytes": 18953,
+      "sha256": "dba158118dd5a7a9552cf4d09e605db4bd4267b34d61e3c2d7b95db0e30961b2"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-012-page-4.png",
+      "bytes": 64082,
+      "sha256": "cec432b50a558b8237bc024ad03b40bf369ca9da181f357aa50b7fda7359c097"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-012.pdf",
+      "bytes": 399490,
+      "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-012.txt",
+      "bytes": 7710,
+      "sha256": "c15694e7a8d9b40c8f4d35c245194183bbd8b37694fd3c1698eb17c94f77eeaa"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-016.html",
+      "bytes": 24552,
+      "sha256": "b32cb864e53f488bcbcfdaf1cd5a18aeaa543f5aee7dba96e52e2254bb12923d"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-017.html",
+      "bytes": 46839,
+      "sha256": "61bab19f3ceb21145f31e5ad56a8eb2a1d679a842272d1cb82e6fbb040b82f4a"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-020.pdf",
+      "bytes": 854447,
+      "sha256": "13f4462380f110d1dc09f8a2f22c7b49b39dd9c03388a176f390168ede416d61"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-020.txt",
+      "bytes": 108875,
+      "sha256": "e4cc473db014dc730473c05896c7b1f94ee007e7f82b338b58bb2edae87d4e18"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-021-medical-marker-locator.json",
+      "bytes": 2429,
+      "sha256": "ddc1882ff9f5fe97d45358d2f79758e549e838e606dfaeceb1d0093e3adcbd78"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-021-page-2.png",
+      "bytes": 424016,
+      "sha256": "4c750a0fe7f60b58c71b29bbcd9b26018c626650e15889b2d8981e34542f2927"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-021.pdf",
+      "bytes": 33595,
+      "sha256": "71495c1121850b60a84e51b303e52f24caab9b1e0351661ef9ba4f855389ccb7"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-021.txt",
+      "bytes": 10679,
+      "sha256": "d5e78277e106412ed05f416c6fdd2cee75d4f2f670b762526b40cda095918f9b"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-022.html",
+      "bytes": 62571,
+      "sha256": "3c29de5a3115dc8b2988c4f306b1962b3805e9b556fd6dafb033697ece35d5f7"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-023.html",
+      "bytes": 66786,
+      "sha256": "ac5bfc5516290460e84cccce3989dcd42e66963e6dfa8edf036e3d5970b59a02"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-024.html",
+      "bytes": 314223,
+      "sha256": "587b685c81470adc43733346ad7328fa0121421b8c844cde75f5b0a5ba10c501"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-026.html",
+      "bytes": 6183,
+      "sha256": "47a116fbea7e1929760aa7a8258fefa81ae7f7c8f35b608aa4d330dd24374a22"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\reviewed_manifest.json",
+      "bytes": 26481,
+      "sha256": "bba15d6e7241b9d16bb23addd8900426713de85dd6ae007a8aff686b2df64015"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\source_inventory.json",
+      "bytes": 4870,
+      "sha256": "c9865c756c13dede82baa97e25ee5aed0e70b5ed65fc3e04349d0f22eda70411"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\supplement_inventory.json",
+      "bytes": 1671,
+      "sha256": "00a06e6c96fd1f6293fc5da9139200f3976d1a14cd211958d18c29b1000520eb"
+    },
+    {
+      "path": "\\SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\supplement_manifest.json",
+      "bytes": 5015,
+      "sha256": "27f6c3bf0635339ebb916251c4a9aaf3ace089f5deafdd54e58e65a40d229555"
+    },
+    {
+      "path": "\\wizard-check.cjs",
+      "bytes": 1101,
+      "sha256": "21b7a19da3c1e8d6a56624842abec90731ba0979ee51c2f1edd5e8f45be0f61c"
+    }
+  ],
+  "frozen_inputs": [
+    {
+      "path": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "role": "437-entry source catalogue (authoritative baseline; read-only)",
+      "bytes_recorded": 447509,
+      "sha256_recorded": "3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d",
+      "bytes_now": 447509,
+      "sha256_now": "3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_GAP_REFUSAL_RESOLUTION_REGISTER.md",
+      "role": "governing gap/refusal dispositions and owner rulings",
+      "bytes_recorded": 391651,
+      "sha256_recorded": "84de842de9699b9b937464b8b753454a3e10846ca280d79b91d38dd359bd34c0",
+      "bytes_now": 391651,
+      "sha256_now": "84de842de9699b9b937464b8b753454a3e10846ca280d79b91d38dd359bd34c0",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "role": "approved Phase 5 plan; Gate 5.1 text and B20 reconciliation instruction",
+      "bytes_recorded": 18938,
+      "sha256_recorded": "4a31ac4c1011ee67d3b1678db834401b252afbce6a18c49b99bedf49119ed813",
+      "bytes_now": 18938,
+      "sha256_now": "4a31ac4c1011ee67d3b1678db834401b252afbce6a18c49b99bedf49119ed813",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+      "role": "readiness plan; 5.1 row and unknown U-6",
+      "bytes_recorded": 50624,
+      "sha256_recorded": "b4cbf5010b86750eb087fdb2ce2f8dacfe576c6f85cea7bb44a38a1fed580312",
+      "bytes_now": 50624,
+      "sha256_now": "b4cbf5010b86750eb087fdb2ce2f8dacfe576c6f85cea7bb44a38a1fed580312",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "role": "expansion contract; PHASE4-002I-B20 owner-decision block (39/380/18)",
+      "bytes_recorded": 30768,
+      "sha256_recorded": "f89c8c425a03760e0f73728af44b2e22d34d2159d29e917f02451b5bbab3b9ad",
+      "bytes_now": 30768,
+      "sha256_now": "f89c8c425a03760e0f73728af44b2e22d34d2159d29e917f02451b5bbab3b9ad",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "role": "next-gate reconciliation; 001K authorising document",
+      "bytes_recorded": 70041,
+      "sha256_recorded": "18312ee8853bbf36bd2f5b9ce46201dc60457382f0c646c74cf5fac34ad6e817",
+      "bytes_now": 70041,
+      "sha256_now": "18312ee8853bbf36bd2f5b9ce46201dc60457382f0c646c74cf5fac34ad6e817",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+      "role": "001K register (read-only)",
+      "bytes_recorded": 57342,
+      "sha256_recorded": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55",
+      "bytes_now": 57342,
+      "sha256_now": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_OWNER_001J_ALTERNATE_US_CONSUMER_FORMAT_WORK_ORDER.md",
+      "role": "owner work order; probable-only ceiling",
+      "bytes_recorded": 4501,
+      "sha256_recorded": "baeed31cc9c5ab6460762424e1223b906e1919a746afd15c82287f0bd3e20f1a",
+      "bytes_now": 4501,
+      "sha256_now": "baeed31cc9c5ab6460762424e1223b906e1919a746afd15c82287f0bd3e20f1a",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION.md",
+      "role": "format investigation; candidate representation gap",
+      "bytes_recorded": 30422,
+      "sha256_recorded": "f109e6d3ceca33acd0fa2bcb8699a96c3b1028684e0190059fa8107264dfb550",
+      "bytes_now": 30422,
+      "sha256_now": "f109e6d3ceca33acd0fa2bcb8699a96c3b1028684e0190059fa8107264dfb550",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION.md",
+      "role": "alternate format investigation",
+      "bytes_recorded": 12362,
+      "sha256_recorded": "f51e296b31f720f286092ef71d507db02c7753f99ed234fc00a4ecc3cb4e0ba0",
+      "bytes_now": 12362,
+      "sha256_now": "f51e296b31f720f286092ef71d507db02c7753f99ed234fc00a4ecc3cb4e0ba0",
+      "verified": "MATCH"
+    },
+    {
+      "path": "CRP_PUBLIC_REPORT_FORMAT_BASELINE_2026-09-30.md",
+      "role": "report format baseline",
+      "bytes_recorded": 22090,
+      "sha256_recorded": "0318dcdf15868fe180283f3c2a87f5cbbc03cbfbde2510f8730644032da1c4fb",
+      "bytes_now": 22090,
+      "sha256_now": "0318dcdf15868fe180283f3c2a87f5cbbc03cbfbde2510f8730644032da1c4fb",
+      "verified": "MATCH"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "role": "001K row file (437 rows x 23 columns)",
+      "bytes_recorded": 616237,
+      "sha256_recorded": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb",
+      "bytes_now": 616237,
+      "sha256_now": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb",
+      "verified": "MATCH"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json",
+      "role": "001K provenance and duplicate crosswalk",
+      "bytes_recorded": 374808,
+      "sha256_recorded": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3",
+      "bytes_now": 374808,
+      "sha256_now": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3",
+      "verified": "MATCH"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\file_custody_manifest.json",
+      "role": "001K custody manifest",
+      "bytes_recorded": 541,
+      "sha256_recorded": "8ac36ed6212d2f3722f6a24b5dae0f78e0efb2b5110c60f37f131fe4c24400b6",
+      "bytes_now": 541,
+      "sha256_now": "8ac36ed6212d2f3722f6a24b5dae0f78e0efb2b5110c60f37f131fe4c24400b6",
+      "verified": "MATCH"
+    }
+  ],
+  "frozen_inputs_match_count": 14,
+  "frozen_inputs_mismatch_count": 0,
+  "custody_manifest_001K_verification": [
+    {
+      "file": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+      "bytes_in_manifest": 57342,
+      "bytes_now": 57342,
+      "sha256_in_manifest": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55",
+      "sha256_now": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55",
+      "verified": "MATCH"
+    },
+    {
+      "file": "SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv",
+      "bytes_in_manifest": 616237,
+      "bytes_now": 616237,
+      "sha256_in_manifest": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb",
+      "sha256_now": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb",
+      "verified": "MATCH"
+    },
+    {
+      "file": "SOURCE_CAPTURES/PHASE5-001K/rescreen_provenance.json",
+      "bytes_in_manifest": 374808,
+      "bytes_now": 374808,
+      "sha256_in_manifest": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3",
+      "sha256_now": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3",
+      "verified": "MATCH"
+    }
+  ],
+  "custody_manifest_001K_verified_count": 3
+}

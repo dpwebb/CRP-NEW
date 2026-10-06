@@ -1,0 +1,99 @@
+{
+  "artifact": "presentation_boundary.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "state exactly which presentation this unit is supported on, on what structural contract, and what it refuses, so that no reader infers support for any other report",
+  "supported_presentation": {
+    "presentation_id": "PR-01",
+    "definition": "the Equifax Canada consumer-channel credit report evidenced by PROD-003's register",
+    "publisher": "Equifax (Canada, consumer channel)",
+    "market": "CA",
+    "audience": "CONSUMER",
+    "evidenced_artifact_id": "LEG-CONSUMER-EQ-CA",
+    "evidenced_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+    "evidence_source": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json presentations[PR-01]; re-verified by digest in this order",
+    "boundary": "Read support is evidenced for this specimen only. A second independently authorized Equifax Canada consumer specimen is required before this locator may be called reusable (PROD-003 dependency D-2)."
+  },
+  "structural_contract": {
+    "container": "PDF",
+    "page_count": 22,
+    "page_size": "A4",
+    "page_size_tolerance_pt": 0.5,
+    "native_text_on_every_page": true,
+    "section_heading": "Collections",
+    "header_label": "Request Date",
+    "record_boundary_label": "Date Assigned",
+    "printed_date_form": "DDDD/DD/DD — four-digit year, month, day (as this presentation prints it)",
+    "row_labels": [
+      "Date Assigned",
+      "Member Name",
+      "Phone Number",
+      "Member Number",
+      "First Delinquency",
+      "Account Number",
+      "Amount",
+      "Status",
+      "Balance",
+      "Narrative",
+      "Date Paid/Settled",
+      "Date Verified",
+      "Last Payment Date"
+    ],
+    "debt_record_required_labels": [
+      "Member Number",
+      "First Delinquency",
+      "Account Number",
+      "Amount",
+      "Balance"
+    ],
+    "debt_record_min_other_labels": 4,
+    "request_date_must_appear_on_every_page_with_one_value": true
+  },
+  "admission_predicates_in_order": [
+    {
+      "id": "INPUT_PRESENT_AND_READABLE",
+      "refuses_as": "DOCUMENT_NOT_READABLE or NOT_A_PDF_CONTAINER"
+    },
+    {
+      "id": "CONTAINER_IS_A_PDF",
+      "refuses_as": "NOT_A_PDF_CONTAINER"
+    },
+    {
+      "id": "NOT_ENCRYPTED",
+      "refuses_as": "DOCUMENT_ENCRYPTED"
+    },
+    {
+      "id": "NATIVE_TEXT_ON_EVERY_PAGE",
+      "refuses_as": "IMAGE_ONLY_OR_NO_TEXT_LAYER"
+    },
+    {
+      "id": "PAGE_GEOMETRY_MATCHES_CONTRACT",
+      "refuses_as": "PAGE_GEOMETRY_MISMATCH"
+    },
+    {
+      "id": "NO_SYNTHETIC_OR_FIXTURE_MARKER",
+      "refuses_as": "SYNTHETIC_OR_FIXTURE_MARKER"
+    },
+    {
+      "id": "EVIDENCED_SPECIMEN_DIGEST_MATCH",
+      "refuses_as": "NOT_THE_EVIDENCED_SPECIMEN"
+    }
+  ],
+  "refusal_reasons_and_the_fact_status_each_produces": {
+    "DOCUMENT_NOT_READABLE": "EXTRACTION_UNRESOLVED",
+    "DOCUMENT_ENCRYPTED": "EXTRACTION_UNRESOLVED",
+    "NOT_A_PDF_CONTAINER": "UNSUPPORTED_PRESENTATION",
+    "IMAGE_ONLY_OR_NO_TEXT_LAYER": "UNSUPPORTED_PRESENTATION",
+    "PAGE_GEOMETRY_MISMATCH": "UNSUPPORTED_PRESENTATION",
+    "SYNTHETIC_OR_FIXTURE_MARKER": "UNSUPPORTED_PRESENTATION",
+    "NOT_THE_EVIDENCED_SPECIMEN": "UNSUPPORTED_PRESENTATION"
+  },
+  "refused_input_classes": [
+    "another Equifax Canada product, another bureau, or a subscriber, business, screening or tenant-screening document",
+    "a scan, photograph, mobile view or any page with no native text (no OCR is specified)",
+    "a generated or synthetic fixture, including this order's own test fixtures",
+    "a PR-01-shaped document that is not the evidenced specimen",
+    "an encrypted or unreadable document, recorded as a document-level extraction failure and never as absence"
+  ],
+  "created_by": "PHASE5-001I-A"
+}

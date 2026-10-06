@@ -1,0 +1,1934 @@
+{
+  "id" : null,
+  "scope" : null,
+  "query" : "acts and resolves 1996",
+  "appliedFilters" : null,
+  "sort" : null,
+  "configuration" : null,
+  "type" : "discover",
+  "uniqueType" : "discover.discover",
+  "_links" : {
+    "self" : {
+      "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996"
+    }
+  },
+  "_embedded" : {
+    "searchResult" : {
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "last" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&page=825&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&size=5"
+        }
+      },
+      "_embedded" : {
+        "objects" : [ {
+          "hitHighlights" : {
+            "dc.title" : [ "<em>1996</em> Chapter 0058. An <em>Act</em> To Eliminate Unnecessary Boards, Commissions And Positions From Massachusetts State Government." ],
+            "fulltext" : [ " repealed. SECTION 104. Chapter four of the <em>resolves</em> of nineteen hundred and eighty-nine is hereby repealed. SECTION 105. Sections 1 through 26, and sections 28 through 104, of this <em>Act</em> shall be effective July 1, <em>1996</em>. Section 27 of this <em>Act</em> shall", "-one of the <em>acts</em> of nineteen hundred and ninety-three is hereby repealed. SECTION 79. Section four of chapter two hundred and seventy-four of the <em>acts</em> of nineteen hundred and ninety-four is hereby repealed. SECTION 80. Chapter thirteen of the <em>resolves</em> of nineteen" ]
+          },
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "indexableObject" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f"
+            }
+          },
+          "_embedded" : {
+            "indexableObject" : {
+              "id" : "ff7c0f29-516b-4d06-afea-305302e8f65f",
+              "uuid" : "ff7c0f29-516b-4d06-afea-305302e8f65f",
+              "name" : "1996 Chapter 0058. An Act To Eliminate Unnecessary Boards, Commissions And Positions From Massachusetts State Government.",
+              "handle" : "2452/30174",
+              "metadata" : {
+                "cris.virtual.parentAggregation" : [ {
+                  "value" : "Acts and Resolves",
+                  "language" : null,
+                  "authority" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "confidence" : 600,
+                  "place" : 0
+                }, {
+                  "value" : "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "cris.virtualsource.parentAggregation" : [ {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "dc.contributor.corporatebody" : [ {
+                  "value" : "Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.accessioned" : [ {
+                  "value" : "2007-01-03T21:10:32Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.available" : [ {
+                  "value" : "2007-01-03T21:10:32Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.issued" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.description" : [ {
+                  "value" : "Imprint varies.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Vols. for 1915-19 published in 2 v.: General acts; Special acts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Vols. for some years issued in parts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "Separate vols. issued for extra session, 1916, and for extra session, 1933.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                }, {
+                  "value" : "Vol. 12 (May 1831-Mar. 1833) in Jan. session, 1833; Jan. 1834-Apr. 1836 in vol. for extra session 1835/Jan. session 1836; May 1824-Mar. 1828; June 1828-June 1831, Jan. 1832-Apr. 1834, Jan. 1835-Apr. 1838, each bound with corresponding vol.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 4
+                }, {
+                  "value" : "Resolves issued separately, 1780-1838.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 5
+                } ],
+                "dc.format.extent" : [ {
+                  "value" : "14629 bytes",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.format.mimetype" : [ {
+                  "value" : "text/plain",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.oclc" : [ {
+                  "value" : "ocm01696853",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.uri" : [ {
+                  "value" : "http://hdl.handle.net/2452/30174",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.language.iso" : [ {
+                  "value" : "en_US",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.publisher" : [ {
+                  "value" : "Boston, Secretary of the Commonwealth [etc.]",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.relation.aggregation" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "confidence" : 600,
+                  "place" : 0
+                } ],
+                "dc.relation.replaces" : [ {
+                  "value" : "Resolves of the General Court of the Commonwealth of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcc" : [ {
+                  "value" : "KFM2425 .A213",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcsh" : [ {
+                  "value" : "Session laws Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1996 Chapter 0058. An Act To Eliminate Unnecessary Boards, Commissions And Positions From Massachusetts State Government.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title.alternative" : [ {
+                  "value" : "Acts and resolves passed by the General Court.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Laws, etc. (Session laws : 1661- )",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Special acts and resolves passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "General acts passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                } ],
+                "dspace.entity.type" : [ {
+                  "value" : "ArchivalMaterial",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "inArchive" : true,
+              "discoverable" : true,
+              "withdrawn" : false,
+              "lastModified" : "2025-06-22T15:31:13.395+00:00",
+              "entityType" : "ArchivalMaterial",
+              "type" : "item",
+              "uniqueType" : "core.item",
+              "_links" : {
+                "accessStatus" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/accessStatus"
+                },
+                "bundles" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/bundles"
+                },
+                "identifiers" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/identifiers"
+                },
+                "mappedCollections" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/mappedCollections"
+                },
+                "owningCollection" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/owningCollection"
+                },
+                "relationships" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/relationships"
+                },
+                "version" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/version"
+                },
+                "templateItemOf" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/templateItemOf"
+                },
+                "thumbnail" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/thumbnail"
+                },
+                "metrics" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/metrics"
+                },
+                "submitter" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f/submitter"
+                },
+                "self" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/ff7c0f29-516b-4d06-afea-305302e8f65f"
+                }
+              }
+            }
+          }
+        }, {
+          "hitHighlights" : {
+            "dc.title" : [ "<em>1996</em>" ]
+          },
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "indexableObject" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb"
+            }
+          },
+          "_embedded" : {
+            "indexableObject" : {
+              "id" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+              "uuid" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+              "name" : "1996",
+              "handle" : "2452/30116",
+              "metadata" : {
+                "cris.legacyId" : [ {
+                  "value" : "20ab0795-4164-446d-970f-3c0a00655dfd",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : 600,
+                  "place" : 0
+                } ],
+                "cris.sourceId" : [ {
+                  "value" : "COLLECTION_MIGRATION::20ab0795-4164-446d-970f-3c0a00655dfd",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "cris.virtual.parentAggregation" : [ {
+                  "value" : "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "cris.virtualsource.parentAggregation" : [ {
+                  "value" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.accessioned" : [ {
+                  "value" : "2025-06-05T15:52:58Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.available" : [ {
+                  "value" : "2025-06-05T15:52:58Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.uri" : [ {
+                  "value" : "https://archives.lib.state.ma.us/handle/2452/30116",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dspace.entity.type" : [ {
+                  "value" : "Aggregation",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "glam.leaf" : [ {
+                  "value" : "true",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "glamaggregation.parent" : [ {
+                  "value" : "Acts and Resolves",
+                  "language" : null,
+                  "authority" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "confidence" : 600,
+                  "place" : 0
+                } ]
+              },
+              "inArchive" : true,
+              "discoverable" : true,
+              "withdrawn" : false,
+              "lastModified" : "2025-10-15T18:11:25.806+00:00",
+              "entityType" : "Aggregation",
+              "type" : "item",
+              "uniqueType" : "core.item",
+              "_links" : {
+                "accessStatus" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/accessStatus"
+                },
+                "bundles" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/bundles"
+                },
+                "identifiers" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/identifiers"
+                },
+                "mappedCollections" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/mappedCollections"
+                },
+                "owningCollection" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/owningCollection"
+                },
+                "relationships" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/relationships"
+                },
+                "version" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/version"
+                },
+                "templateItemOf" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/templateItemOf"
+                },
+                "thumbnail" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/thumbnail"
+                },
+                "metrics" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/metrics"
+                },
+                "submitter" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb/submitter"
+                },
+                "self" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/1c89f920-a7bf-4d01-a628-1ec4b52d5deb"
+                }
+              }
+            }
+          }
+        }, {
+          "hitHighlights" : {
+            "dc.title" : [ "<em>1996</em> Chapter 0291. An <em>Act</em> Relative To Sex Education." ],
+            "fulltext" : [ ". The department of education shall promulgate regulations for adjudicatory proceedings to <em>resolve</em> any and all disputes arising under this section. Approved August 9, <em>1996</em>.\n\n", "\n\nChapter 291. AN <em>ACT</em> RELATIVE TO SEX EDUCATION. Be it enacted, etc., as follows: Chapter 71 of the General Laws is hereby amended by inserting after section 32 the Chap. 291 following section:- Section 32A. Every city, town, regional school" ]
+          },
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "indexableObject" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384"
+            }
+          },
+          "_embedded" : {
+            "indexableObject" : {
+              "id" : "d7a30431-5da4-4902-940b-145d4d0c9384",
+              "uuid" : "d7a30431-5da4-4902-940b-145d4d0c9384",
+              "name" : "1996 Chapter 0291. An Act Relative To Sex Education.",
+              "handle" : "2452/30407",
+              "metadata" : {
+                "cris.virtual.parentAggregation" : [ {
+                  "value" : "Acts and Resolves",
+                  "language" : null,
+                  "authority" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "confidence" : 600,
+                  "place" : 0
+                }, {
+                  "value" : "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "cris.virtualsource.parentAggregation" : [ {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "dc.contributor.corporatebody" : [ {
+                  "value" : "Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.accessioned" : [ {
+                  "value" : "2007-01-03T21:15:00Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.available" : [ {
+                  "value" : "2007-01-03T21:15:00Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.issued" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.description" : [ {
+                  "value" : "Imprint varies.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Vols. for 1915-19 published in 2 v.: General acts; Special acts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Vols. for some years issued in parts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "Separate vols. issued for extra session, 1916, and for extra session, 1933.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                }, {
+                  "value" : "Vol. 12 (May 1831-Mar. 1833) in Jan. session, 1833; Jan. 1834-Apr. 1836 in vol. for extra session 1835/Jan. session 1836; May 1824-Mar. 1828; June 1828-June 1831, Jan. 1832-Apr. 1834, Jan. 1835-Apr. 1838, each bound with corresponding vol.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 4
+                }, {
+                  "value" : "Resolves issued separately, 1780-1838.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 5
+                } ],
+                "dc.format.extent" : [ {
+                  "value" : "1411 bytes",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.format.mimetype" : [ {
+                  "value" : "text/plain",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.oclc" : [ {
+                  "value" : "ocm01696853",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.uri" : [ {
+                  "value" : "http://hdl.handle.net/2452/30407",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.language.iso" : [ {
+                  "value" : "en_US",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.publisher" : [ {
+                  "value" : "Boston, Secretary of the Commonwealth [etc.]",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.relation.aggregation" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "confidence" : 600,
+                  "place" : 0
+                } ],
+                "dc.relation.replaces" : [ {
+                  "value" : "Resolves of the General Court of the Commonwealth of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcc" : [ {
+                  "value" : "KFM2425 .A213",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcsh" : [ {
+                  "value" : "Session laws Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1996 Chapter 0291. An Act Relative To Sex Education.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title.alternative" : [ {
+                  "value" : "Acts and resolves passed by the General Court.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Laws, etc. (Session laws : 1661- )",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Special acts and resolves passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "General acts passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                } ],
+                "dspace.entity.type" : [ {
+                  "value" : "ArchivalMaterial",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "inArchive" : true,
+              "discoverable" : true,
+              "withdrawn" : false,
+              "lastModified" : "2025-06-22T15:29:51.151+00:00",
+              "entityType" : "ArchivalMaterial",
+              "type" : "item",
+              "uniqueType" : "core.item",
+              "_links" : {
+                "accessStatus" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/accessStatus"
+                },
+                "bundles" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/bundles"
+                },
+                "identifiers" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/identifiers"
+                },
+                "mappedCollections" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/mappedCollections"
+                },
+                "owningCollection" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/owningCollection"
+                },
+                "relationships" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/relationships"
+                },
+                "version" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/version"
+                },
+                "templateItemOf" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/templateItemOf"
+                },
+                "thumbnail" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/thumbnail"
+                },
+                "metrics" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/metrics"
+                },
+                "submitter" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384/submitter"
+                },
+                "self" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/d7a30431-5da4-4902-940b-145d4d0c9384"
+                }
+              }
+            }
+          }
+        }, {
+          "hitHighlights" : {
+            "dc.title" : [ "<em>1996</em> Chapter 0029. An <em>Act</em> Providing For The Extension Of The Term Of An <em>Acting</em> Town Administrator In The Town Of Easthampton." ],
+            "fulltext" : [ "-month extensions by a unanimous vote of the board of selectmen. SECTION 2. This <em>act</em> shall take effect upon its passage. Approved February 26, <em>1996</em>.\n\n", "\n\nChapter 29. AN <em>ACT</em> PROVIDING FOR THE EXTENSION OF THE TERM OF AN <em>ACTING</em> TOWN ADMINISTRATOR IN THE TOWN OF EASTHAMPTON. Be it enacted, etc., as follows: SECTION 1. Section 4-3 (b) of the charter of the town of Easthampton, which is on file" ]
+          },
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "indexableObject" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d"
+            }
+          },
+          "_embedded" : {
+            "indexableObject" : {
+              "id" : "16bec6b7-4ace-4665-8683-ca82d9d72e6d",
+              "uuid" : "16bec6b7-4ace-4665-8683-ca82d9d72e6d",
+              "name" : "1996 Chapter 0029. An Act Providing For The Extension Of The Term Of An Acting Town Administrator In The Town Of Easthampton.",
+              "handle" : "2452/30145",
+              "metadata" : {
+                "cris.virtual.parentAggregation" : [ {
+                  "value" : "Acts and Resolves",
+                  "language" : null,
+                  "authority" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "confidence" : 600,
+                  "place" : 0
+                }, {
+                  "value" : "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "cris.virtualsource.parentAggregation" : [ {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "dc.contributor.corporatebody" : [ {
+                  "value" : "Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.accessioned" : [ {
+                  "value" : "2007-01-03T21:09:58Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.available" : [ {
+                  "value" : "2007-01-03T21:09:58Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.issued" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.description" : [ {
+                  "value" : "Imprint varies.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Vols. for 1915-19 published in 2 v.: General acts; Special acts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Vols. for some years issued in parts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "Separate vols. issued for extra session, 1916, and for extra session, 1933.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                }, {
+                  "value" : "Vol. 12 (May 1831-Mar. 1833) in Jan. session, 1833; Jan. 1834-Apr. 1836 in vol. for extra session 1835/Jan. session 1836; May 1824-Mar. 1828; June 1828-June 1831, Jan. 1832-Apr. 1834, Jan. 1835-Apr. 1838, each bound with corresponding vol.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 4
+                }, {
+                  "value" : "Resolves issued separately, 1780-1838.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 5
+                } ],
+                "dc.format.extent" : [ {
+                  "value" : "647 bytes",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.format.mimetype" : [ {
+                  "value" : "text/plain",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.oclc" : [ {
+                  "value" : "ocm01696853",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.uri" : [ {
+                  "value" : "http://hdl.handle.net/2452/30145",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.language.iso" : [ {
+                  "value" : "en_US",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.publisher" : [ {
+                  "value" : "Boston, Secretary of the Commonwealth [etc.]",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.relation.aggregation" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "confidence" : 600,
+                  "place" : 0
+                } ],
+                "dc.relation.replaces" : [ {
+                  "value" : "Resolves of the General Court of the Commonwealth of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcc" : [ {
+                  "value" : "KFM2425 .A213",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcsh" : [ {
+                  "value" : "Session laws Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1996 Chapter 0029. An Act Providing For The Extension Of The Term Of An Acting Town Administrator In The Town Of Easthampton.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title.alternative" : [ {
+                  "value" : "Acts and resolves passed by the General Court.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Laws, etc. (Session laws : 1661- )",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Special acts and resolves passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "General acts passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                } ],
+                "dspace.entity.type" : [ {
+                  "value" : "ArchivalMaterial",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "inArchive" : true,
+              "discoverable" : true,
+              "withdrawn" : false,
+              "lastModified" : "2025-06-22T15:31:02.090+00:00",
+              "entityType" : "ArchivalMaterial",
+              "type" : "item",
+              "uniqueType" : "core.item",
+              "_links" : {
+                "accessStatus" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/accessStatus"
+                },
+                "bundles" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/bundles"
+                },
+                "identifiers" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/identifiers"
+                },
+                "mappedCollections" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/mappedCollections"
+                },
+                "owningCollection" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/owningCollection"
+                },
+                "relationships" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/relationships"
+                },
+                "version" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/version"
+                },
+                "templateItemOf" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/templateItemOf"
+                },
+                "thumbnail" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/thumbnail"
+                },
+                "metrics" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/metrics"
+                },
+                "submitter" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d/submitter"
+                },
+                "self" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/16bec6b7-4ace-4665-8683-ca82d9d72e6d"
+                }
+              }
+            }
+          }
+        }, {
+          "hitHighlights" : {
+            "dc.title" : [ "<em>1996</em> Chapter 0423. An <em>Act</em> Validating The <em>Acts</em> And Proceedings Taken At Special Town Meeting Of The Town Of Williamsburg." ],
+            "fulltext" : [ " been properly posted and published. SECTION 2. This <em>act</em> shall take effect upon its passage. Approved November 27, <em>1996</em>.\n\n", "\n\nChapter 423. AN <em>ACT</em> VALIDATING THE <em>ACTS</em> AND PROCEEDINGS TAKEN AT A SPECIAL TOWN MEETING OF THE TOWN OF WILLIAMSBURG Be it enacted, etc., as follows: SECTION 1. Notwithstanding the provisions of any general or special law to the contrary, all <em>acts</em>" ]
+          },
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "indexableObject" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7"
+            }
+          },
+          "_embedded" : {
+            "indexableObject" : {
+              "id" : "69a6412e-0470-4473-b019-012c9ec6d7b7",
+              "uuid" : "69a6412e-0470-4473-b019-012c9ec6d7b7",
+              "name" : "1996 Chapter 0423. An Act Validating The Acts And Proceedings Taken At Special Town Meeting Of The Town Of Williamsburg.",
+              "handle" : "2452/30539",
+              "metadata" : {
+                "cris.virtual.parentAggregation" : [ {
+                  "value" : "Acts and Resolves",
+                  "language" : null,
+                  "authority" : "1756c239-b4ce-4696-9888-f4a43bf087a1",
+                  "confidence" : 600,
+                  "place" : 0
+                }, {
+                  "value" : "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "cris.virtualsource.parentAggregation" : [ {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                } ],
+                "dc.contributor.corporatebody" : [ {
+                  "value" : "Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.accessioned" : [ {
+                  "value" : "2007-01-03T21:17:32Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.available" : [ {
+                  "value" : "2007-01-03T21:17:32Z",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.date.issued" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.description" : [ {
+                  "value" : "Imprint varies.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Vols. for 1915-19 published in 2 v.: General acts; Special acts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Vols. for some years issued in parts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "Separate vols. issued for extra session, 1916, and for extra session, 1933.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                }, {
+                  "value" : "Vol. 12 (May 1831-Mar. 1833) in Jan. session, 1833; Jan. 1834-Apr. 1836 in vol. for extra session 1835/Jan. session 1836; May 1824-Mar. 1828; June 1828-June 1831, Jan. 1832-Apr. 1834, Jan. 1835-Apr. 1838, each bound with corresponding vol.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 4
+                }, {
+                  "value" : "Resolves issued separately, 1780-1838.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 5
+                } ],
+                "dc.format.extent" : [ {
+                  "value" : "632 bytes",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.format.mimetype" : [ {
+                  "value" : "text/plain",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.oclc" : [ {
+                  "value" : "ocm01696853",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.identifier.uri" : [ {
+                  "value" : "http://hdl.handle.net/2452/30539",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.language.iso" : [ {
+                  "value" : "en_US",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.publisher" : [ {
+                  "value" : "Boston, Secretary of the Commonwealth [etc.]",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.relation.aggregation" : [ {
+                  "value" : "1996",
+                  "language" : null,
+                  "authority" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+                  "confidence" : 600,
+                  "place" : 0
+                } ],
+                "dc.relation.replaces" : [ {
+                  "value" : "Resolves of the General Court of the Commonwealth of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcc" : [ {
+                  "value" : "KFM2425 .A213",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.subject.lcsh" : [ {
+                  "value" : "Session laws Massachusetts.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title" : [ {
+                  "value" : "1996 Chapter 0423. An Act Validating The Acts And Proceedings Taken At Special Town Meeting Of The Town Of Williamsburg.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ],
+                "dc.title.alternative" : [ {
+                  "value" : "Acts and resolves passed by the General Court.",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                }, {
+                  "value" : "Laws, etc. (Session laws : 1661- )",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 1
+                }, {
+                  "value" : "Special acts and resolves passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 2
+                }, {
+                  "value" : "General acts passed by the General Court of Massachusetts",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 3
+                } ],
+                "dspace.entity.type" : [ {
+                  "value" : "ArchivalMaterial",
+                  "language" : null,
+                  "authority" : null,
+                  "confidence" : -1,
+                  "place" : 0
+                } ]
+              },
+              "inArchive" : true,
+              "discoverable" : true,
+              "withdrawn" : false,
+              "lastModified" : "2025-06-22T15:30:43.793+00:00",
+              "entityType" : "ArchivalMaterial",
+              "type" : "item",
+              "uniqueType" : "core.item",
+              "_links" : {
+                "accessStatus" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/accessStatus"
+                },
+                "bundles" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/bundles"
+                },
+                "identifiers" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/identifiers"
+                },
+                "mappedCollections" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/mappedCollections"
+                },
+                "owningCollection" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/owningCollection"
+                },
+                "relationships" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/relationships"
+                },
+                "version" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/version"
+                },
+                "templateItemOf" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/templateItemOf"
+                },
+                "thumbnail" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/thumbnail"
+                },
+                "metrics" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/metrics"
+                },
+                "submitter" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7/submitter"
+                },
+                "self" : {
+                  "href" : "https://archives.lib.state.ma.us/server/api/core/items/69a6412e-0470-4473-b019-012c9ec6d7b7"
+                }
+              }
+            }
+          }
+        } ]
+      },
+      "page" : {
+        "number" : 0,
+        "size" : 5,
+        "totalPages" : 826,
+        "totalElements" : 4126
+      }
+    },
+    "facets" : [ {
+      "name" : "author",
+      "facetType" : "text",
+      "facetLimit" : 5,
+      "missing" : "1546",
+      "minValue" : "A. E. D.",
+      "maxValue" : "华埠总体规划委员会",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/author?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/author?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/author?query=acts%20and%20resolves%201996&f.author=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "Massachusetts. General Court. House of Representatives.",
+          "count" : 288,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.author=Massachusetts.%20General%20Court.%20House%20of%20Representatives.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Office of the Secretary of State.",
+          "count" : 247,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.author=Massachusetts.%20Office%20of%20the%20Secretary%20of%20State.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Department of Telecommunications and Cable.",
+          "count" : 168,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.author=Massachusetts.%20Department%20of%20Telecommunications%20and%20Cable.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. General Court. Senate.",
+          "count" : 152,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.author=Massachusetts.%20General%20Court.%20Senate.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Public Employee Retirement Administration Commission.",
+          "count" : 118,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.author=Massachusetts.%20Public%20Employee%20Retirement%20Administration%20Commission.,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "editor",
+      "facetType" : "text",
+      "facetLimit" : 5,
+      "missing" : "3",
+      "minValue" : "[Accelerated Energy Program]",
+      "maxValue" : "Youth Service Board",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/editor?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/editor?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/editor?query=acts%20and%20resolves%201996&f.editor=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "Boston, Secretary of the Commonwealth [etc.]",
+          "count" : 511,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.editor=Boston,%20Secretary%20of%20the%20Commonwealth%20%5Betc.%5D,equals"
+            }
+          }
+        }, {
+          "label" : "Commonwealth of Massachusetts, Office of the Secretary of State",
+          "count" : 452,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.editor=Commonwealth%20of%20Massachusetts,%20Office%20of%20the%20Secretary%20of%20State,equals"
+            }
+          }
+        }, {
+          "label" : "Boston: Secretary of the Commonwealth",
+          "count" : 329,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.editor=Boston:%20Secretary%20of%20the%20Commonwealth,equals"
+            }
+          }
+        }, {
+          "label" : "Commonwealth of Massachusetts, House of Representatives",
+          "count" : 277,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.editor=Commonwealth%20of%20Massachusetts,%20House%20of%20Representatives,equals"
+            }
+          }
+        }, {
+          "label" : "[Massachusetts Department of Telecommunications and Cable]",
+          "count" : 142,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.editor=%5BMassachusetts%20Department%20of%20Telecommunications%20and%20Cable%5D,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "corporate",
+      "facetType" : "text",
+      "facetLimit" : 5,
+      "missing" : "2476",
+      "minValue" : "1994 Governor's Conference on Alzheimer's Disease (May 20 and June 1 : Boston, Mass.)",
+      "maxValue" : "华埠总体规划委员会",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/corporate?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/corporate?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/corporate?query=acts%20and%20resolves%201996&f.corporate=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "Massachusetts.",
+          "count" : 834,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.corporate=Massachusetts.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Office of the Secretary of State.",
+          "count" : 313,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.corporate=Massachusetts.%20Office%20of%20the%20Secretary%20of%20State.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Supreme Judicial Court.",
+          "count" : 41,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.corporate=Massachusetts.%20Supreme%20Judicial%20Court.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Office of the Attorney General.",
+          "count" : 32,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.corporate=Massachusetts.%20Office%20of%20the%20Attorney%20General.,equals"
+            }
+          }
+        }, {
+          "label" : "Massachusetts. Division of Insurance.",
+          "count" : 23,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.corporate=Massachusetts.%20Division%20of%20Insurance.,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "aggregation",
+      "facetType" : "text",
+      "facetLimit" : 5,
+      "missing" : "1",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/aggregation?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/aggregation?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/aggregation?query=acts%20and%20resolves%201996&f.aggregation=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "1996",
+          "count" : 496,
+          "authorityKey" : "1c89f920-a7bf-4d01-a628-1ec4b52d5deb",
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.aggregation=1c89f920-a7bf-4d01-a628-1ec4b52d5deb,authority"
+            }
+          }
+        }, {
+          "label" : "Documents",
+          "count" : 158,
+          "authorityKey" : "2444b35a-28ad-420c-b7f7-d13075cb4b30",
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.aggregation=2444b35a-28ad-420c-b7f7-d13075cb4b30,authority"
+            }
+          }
+        }, {
+          "label" : "Registers 1201 through 1400",
+          "count" : 148,
+          "authorityKey" : "2931bec5-801e-4f75-be96-a398f4cee8fa",
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.aggregation=2931bec5-801e-4f75-be96-a398f4cee8fa,authority"
+            }
+          }
+        }, {
+          "label" : "Registers 1001 through 1200",
+          "count" : 132,
+          "authorityKey" : "5c7d5d3e-6d15-46c1-8666-9ad2a7cd649c",
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.aggregation=5c7d5d3e-6d15-46c1-8666-9ad2a7cd649c,authority"
+            }
+          }
+        }, {
+          "label" : "1998",
+          "count" : 125,
+          "authorityKey" : "dcab1641-075b-4bc5-b727-2a8a6835ee1d",
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.aggregation=dcab1641-075b-4bc5-b727-2a8a6835ee1d,authority"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "subject",
+      "facetType" : "hierarchical",
+      "facetLimit" : 5,
+      "missing" : "112",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "next" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/subject?query=acts%20and%20resolves%201996&page=1&size=5"
+        },
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/subject?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/subject?query=acts%20and%20resolves%201996&f.subject=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "KFM2425 .A213",
+          "count" : 834,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.subject=KFM2425%20.A213,equals"
+            }
+          }
+        }, {
+          "label" : "Session laws Massachusetts.",
+          "count" : 511,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.subject=Session%20laws%20Massachusetts.,equals"
+            }
+          }
+        }, {
+          "label" : "Delegated legislation -- Massachusetts -- Periodicals.",
+          "count" : 476,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.subject=Delegated%20legislation%20--%20Massachusetts%20--%20Periodicals.,equals"
+            }
+          }
+        }, {
+          "label" : "Bills, Legislative - Massachusetts - Periodicals.",
+          "count" : 419,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.subject=Bills,%20Legislative%20-%20Massachusetts%20-%20Periodicals.,equals"
+            }
+          }
+        }, {
+          "label" : "Legislation - Massachusetts - Periodicals.",
+          "count" : 419,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.subject=Legislation%20-%20Massachusetts%20-%20Periodicals.,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "dateIssued",
+      "facetType" : "date",
+      "facetLimit" : 5,
+      "minValue" : "0186",
+      "maxValue" : "2026",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/dateIssued?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/dateIssued?query=acts%20and%20resolves%201996&f.dateIssued=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "1480 - 1849",
+          "count" : 5,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.dateIssued=%5B1480%20TO%201849%5D,equals"
+            }
+          }
+        }, {
+          "label" : "1850 - 2026",
+          "count" : 4054,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.dateIssued=%5B1850%20TO%202026%5D,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "itemtype",
+      "facetType" : "hierarchical",
+      "facetLimit" : 10,
+      "missing" : "1275",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 10
+      },
+      "_links" : {
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/itemtype?query=acts%20and%20resolves%201996&size=10"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/itemtype?query=acts%20and%20resolves%201996&f.itemtype=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "Periodical",
+          "count" : 1860,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Periodical,equals"
+            }
+          }
+        }, {
+          "label" : "Book",
+          "count" : 877,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Book,equals"
+            }
+          }
+        }, {
+          "label" : "Monograph",
+          "count" : 57,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Monograph,equals"
+            }
+          }
+        }, {
+          "label" : "Book chapter",
+          "count" : 36,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Book%20chapter,equals"
+            }
+          }
+        }, {
+          "label" : "Other",
+          "count" : 13,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Other,equals"
+            }
+          }
+        }, {
+          "label" : "Document",
+          "count" : 6,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=Document,equals"
+            }
+          }
+        }, {
+          "label" : "periodical",
+          "count" : 2,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.itemtype=periodical,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "entityType",
+      "facetType" : "text",
+      "facetLimit" : 5,
+      "missing" : "0",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 5
+      },
+      "_links" : {
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/entityType?query=acts%20and%20resolves%201996&size=5"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/entityType?query=acts%20and%20resolves%201996&f.entityType=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "JournalFile",
+          "count" : 1865,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.entityType=JournalFile,equals"
+            }
+          }
+        }, {
+          "label" : "ArchivalMaterial",
+          "count" : 1290,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.entityType=ArchivalMaterial,equals"
+            }
+          }
+        }, {
+          "label" : "Publication",
+          "count" : 970,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.entityType=Publication,equals"
+            }
+          }
+        }, {
+          "label" : "Aggregation",
+          "count" : 1,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.entityType=Aggregation,equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "language",
+      "facetType" : "text",
+      "facetLimit" : 10,
+      "missing" : "2576",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 10
+      },
+      "_links" : {
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/language?query=acts%20and%20resolves%201996&size=10"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/language?query=acts%20and%20resolves%201996&f.language=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "English (United States)",
+          "count" : 1550,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.language=English%20(United%20States),equals"
+            }
+          }
+        } ]
+      }
+    }, {
+      "name" : "has_content_in_original_bundle",
+      "facetType" : "standard",
+      "facetLimit" : 2,
+      "missing" : "0",
+      "uniqueType" : "discover.discover",
+      "page" : {
+        "number" : 0,
+        "size" : 2
+      },
+      "_links" : {
+        "self" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/has_content_in_original_bundle?query=acts%20and%20resolves%201996&size=2"
+        },
+        "missing" : {
+          "href" : "https://archives.lib.state.ma.us/server/api/discover/facets/has_content_in_original_bundle?query=acts%20and%20resolves%201996&f.has_content_in_original_bundle=%5B*%20TO%20*%5D,notequals"
+        }
+      },
+      "_embedded" : {
+        "values" : [ {
+          "label" : "true",
+          "count" : 4125,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.has_content_in_original_bundle=true,equals"
+            }
+          }
+        }, {
+          "label" : "false",
+          "count" : 1,
+          "authorityKey" : null,
+          "type" : "discover",
+          "uniqueType" : "discover.discover",
+          "_links" : {
+            "search" : {
+              "href" : "https://archives.lib.state.ma.us/server/api/discover/search/objects?query=acts%20and%20resolves%201996&f.has_content_in_original_bundle=false,equals"
+            }
+          }
+        } ]
+      }
+    } ]
+  }
+}

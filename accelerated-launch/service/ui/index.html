@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credit Regulator Pro — Consumer Wizard Preview</title>
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Credit Regulator Pro home"><span class="mark">C</span><span>Credit Regulator<span class="pro">PRO</span></span></a>
+  <div class="workspace-label">CONSUMER WORKSPACE</div>
+  <nav class="steps" id="steps" aria-label="Journey steps"></nav>
+  <div class="sidebar-bottom"><span class="shield" aria-hidden="true">◇</span><strong>Your report. Your decision.</strong><p>Review the evidence and choose your next step. Nothing is sent to a bureau automatically.</p><span class="preview-pill">STAGING PREVIEW</span></div>
+</aside>
+<div class="shell">
+<header class="top"><div>Compliance wizard <span class="slash">/</span> <span id="breadcrumb">Your account</span></div><div class="who" id="who">Not signed in</div></header>
+<main>
+  <div class="intro"><div><div class="eyebrow">CREDIT BUREAU ACCOUNTABILITY</div><h1>Put the facts on your side.</h1><p>A clear path from your credit report to an informed next step.</p></div><div class="case-tag"><span class="dot"></span>Your guided workspace</div></div>
+  <div class="banner" id="support-banner"><strong>Staging preview · test payments only.</strong> Use test cards and public samples, never real cards or private reports.</div>
+  <details class="support-details"><summary>Supported reports and limits · general intake + 5 validated presentations · GB historical only</summary><p>You can upload any plausible credit report that names a bureau and prints report-like content: it will be read where possible and its readable facts checked. Five presentations are validated more precisely: Equifax Canada (one pinned specimen), TransUnion Canada consumer disclosure, Equifax Australia, Experian United States, and Experian United Kingdom (a 2007 example, so present-day GB is not claimed). A document that is clearly not a credit report, or a report this build cannot read, is refused with a plain explanation — never silently accepted. Statutory comparisons run only on the specific presentation each is written for; a general upload still gets factual observations from the facts this build can read. Available checks depend on your selected region and are shown before purchase and upload.</p><p>Assessments are observations, not legal findings or bureau-response packets. No report is sent to an external AI or bureau. A purchase does not guarantee an issue will be found.</p></details>
+  <div class="progress"><div class="progress-label"><span id="stepcount">Step 1 of 6</span><span id="step-label">Your account</span></div><div class="track" role="progressbar" aria-label="Current wizard step" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" id="journey-progress"><i id="bar"></i></div></div>
+  <div class="columns"><section class="card" id="panel" aria-live="polite"></section><aside class="support"><section class="side-card"><div class="eyebrow">THE CRP STANDARD</div><h2>Evidence before conclusions.</h2><p>Understand what your report says, what we checked and what remains uncertain.</p><div class="divider"></div><div class="principle"><span>01</span><div><strong>Show the source</strong><p>Keep observations connected to the report facts.</p></div></div><div class="principle"><span>02</span><div><strong>Explain the basis</strong><p>Keep rule comparisons and factual observations distinct.</p></div></div><div class="principle"><span>03</span><div><strong>Keep you in control</strong><p>Review, download or delete your case. No automatic bureau contact.</p></div></div></section><section class="help"><span aria-hidden="true">↗</span><div><strong>A useful assessment has clear limits.</strong><p>“No issue found” describes only the checks that ran, not every possible issue.</p></div></section></aside></div>
+  <details class="log">
+    <summary>Activity in this page</summary>
+    <pre id="activity"></pre>
+  </details>
+</main>
+<footer><span>Credit Regulator Pro</span><span>Clear facts. Informed decisions. Consumer control.</span><span class="footer-disclaimer" id="footer-disclaimer" hidden>Credit Regulator Pro provides credit-report information, not legal advice.</span></footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

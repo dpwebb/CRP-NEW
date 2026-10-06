@@ -1,0 +1,2971 @@
+                              Australian Capital Territory
+
+
+
+
+Limitation Act 1985
+A1985-66
+
+
+Republication No 28
+Effective: 26 November 2025
+
+Republication date: 26 November 2025
+
+Last amendment made by A2025-29
+
+
+
+
+        Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+About this republication
+The republished law
+This is a republication of the Limitation Act 1985 (including any amendment made under the
+Legislation Act 2001, part 11.3 (Editorial changes)) as in force on 26 November 2025. It also
+includes any commencement, amendment, repeal or expiry affecting this republished law to
+26 November 2025.
+The legislation history and amendment history of the republished law are set out in endnotes 3
+and 4.
+Kinds of republications
+The Parliamentary Counsel’s Office prepares 2 kinds of republications of ACT laws (see the ACT
+legislation register at www.legislation.act.gov.au):
+•   authorised republications to which the Legislation Act 2001 applies
+•   unauthorised republications.
+The status of this republication appears on the bottom of each page.
+Editorial changes
+The Legislation Act 2001, part 11.3 authorises the Parliamentary Counsel to make editorial
+amendments and other changes of a formal nature when preparing a law for republication.
+Editorial changes do not change the effect of the law, but have effect as if they had been made by
+an Act commencing on the republication date (see Legislation Act 2001, s 115 and s 117). The
+changes are made if the Parliamentary Counsel considers they are desirable to bring the law into
+line, or more closely into line, with current legislative drafting practice.
+This republication does not include amendments made under part 11.3 (see endnote 1).
+Uncommenced provisions and amendments
+If a provision of the republished law has not commenced, the symbol U appears immediately
+before the provision heading. Any uncommenced amendments that affect this republished law
+are accessible on the ACT legislation register (www.legislation.act.gov.au). For more
+information, see the home page for this law on the register.
+Modifications
+If a provision of the republished law is affected by a current modification, the symbol M appears
+immediately before the provision heading. The text of the modifying provision appears in the
+endnotes. For the legal status of modifications, see the Legislation Act 2001, section 95.
+Penalties
+At the republication date, the value of a penalty unit for an offence against this law is $160 for an
+individual and $810 for a corporation (see Legislation Act 2001, s 133).
+
+
+
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                 Australian Capital Territory
+
+
+
+
+Limitation Act 1985
+
+
+
+Contents
+                                                                                                             Page
+
+Part 1                    Preliminary
+  1        Name of Act                                                                                          2
+  2        Dictionary                                                                                           2
+  3        Notes                                                                                                2
+  4        Other limitations                                                                                    2
+  5        Stolen property or interest in land                                                                  3
+  6        Acquiescence etc                                                                                     3
+  7        Application of Act to governments                                                                    3
+  8        Derived rights and agency                                                                            4
+ 8A        Application of provisions relating to accrual date                                                   4
+
+
+
+R28                                           Limitation Act 1985                                      contents 1
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+ Contents
+
+                                                                                                              Page
+
+Part 2                       Periods of limitation and related matters
+Division 2.1          Preliminary
+   9       Relationship to pt 3                                                                                  5
+  10       More than 1 bar                                                                                       5
+Division 2.2           General
+  11       General                                                                                               5
+  12       Accounts                                                                                              5
+  13       Deed                                                                                                  6
+  14       Judgment                                                                                              6
+  15       Penalty and forfeiture                                                                                6
+  16       Compensation to relatives                                                                             6
+16A        Claims for common law compensation for workers compensation                                           7
+16AA       Motor accident claims                                                                                 7
+16B        Other claims for damages for personal injury                                                          8
+  17       Arbitral award                                                                                        8
+  18       Successive wrongs to goods                                                                            9
+  19       Shipping                                                                                              9
+  20       Arrears of interest                                                                                  10
+  21       Contribution between tortfeasors                                                                     11
+21A        Tax, licence fee or duty or penalty tax                                                              12
+21B        Defamation proceedings generally to be commenced within 1 year                                       12
+21BA       Defamation—single publication rule                                                                   13
+21BB       Extension of limitation period                                                                       14
+21BC       Defamation—effect of limitation law concerning electronic defamatory
+           publications on other laws                                                                           15
+Division 2.2A         No limitation period
+21C        Personal injury resulting from child abuse                                                           16
+Division 2.3            Mortgages
+  22       Mortgage under Land Titles Act 1925                                                                  17
+  23       Redemption                                                                                           17
+  24       Action for principal, possession or foreclosure                                                      18
+  25       Action for interest                                                                                  19
+  26       Adjustment of interest                                                                               20
+
+
+ contents 2                                Limitation Act 1985                                                R28
+                                           Effective: 26/11/25                                            26/11/25
+
+              Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                         Contents
+
+                                                                                                              Page
+
+Division 2.4           Trusts
+  27       Fraud and conversion—trust property                                                                  21
+  28       Accrual—future interest                                                                              22
+  29       Beneficiaries other than plaintiff                                                                   22
+
+Part 3                     Postponement of bar
+Division 3.1           General
+  30       Disability                                                                                           23
+30A        Special provision for injuries to children                                                           24
+30B        Special provision in relation to children—claims relating to health
+           services                                                                                             26
+  31       Notice to proceed                                                                                    27
+  32       Confirmation                                                                                         29
+  33       Fraud and concealment                                                                                31
+  34       Mistake                                                                                              32
+Division 3.2            Personal injuries, latent damage to property and
+                        economic loss
+  35        Application of div 3.2                                                                              33
+  36        Personal injuries                                                                                   33
+  37        Action against estate of deceased person                                                            35
+  38        Action by estate of deceased person                                                                 35
+  39        Action for compensation to relatives                                                                37
+  40        Latent damage to property and economic loss                                                         39
+  41        Prior bar ineffective                                                                               40
+  42        Evidence                                                                                            40
+
+Part 4                     Miscellaneous
+Division 4.1           Extinction of right and title
+  43       Extinction of title                                                                                  41
+  44       Possessory lien                                                                                      41
+  45       Extinction of right or title must be alleged in proceedings                                          42
+Division 4.2           Arbitration
+  46       Interpretation for div 4.2                                                                           42
+  47       Application of Act to arbitration                                                                    43
+
+
+ R28                                           Limitation Act 1985                                      contents 3
+ 26/11/25                                     Effective: 26/11/25
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+ Contents
+
+                                                                                                              Page
+
+  48          Accrual                                                                                           43
+  49          Commencement of arbitration                                                                       43
+Division 4.3             General
+  51       Set-off etc                                                                                          44
+  52       Joint right                                                                                          45
+  53       Joint liability                                                                                      45
+  54       Recovery of State or Territory revenue amounts                                                       45
+Division 4.4           Choice of law
+  55       Definitions for div 4.4                                                                              46
+  56       Characterisation of limitation laws                                                                  46
+  57       Exercise of discretion under limitation law                                                          46
+Division 4.5          Other provisions
+  58       Approved forms                                                                                       47
+  59       Regulation-making power                                                                              47
+
+
+Dictionary                                                                                                      48
+
+
+Endnotes
+  1      About the endnotes                                                                                     51
+  2      Abbreviation key                                                                                       51
+  3      Legislation history                                                                                    52
+  4      Amendment history                                                                                      57
+  5      Earlier republications                                                                                 64
+  6      Expired transitional or validating provisions                                                          65
+
+
+
+
+ contents 4                                Limitation Act 1985                                                R28
+                                           Effective: 26/11/25                                            26/11/25
+
+              Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                  Australian Capital Territory
+
+
+
+
+Limitation Act 1985
+
+
+An Act to provide for the limitation of actions, and for related purposes
+
+
+
+
+ R28                                           Limitation Act 1985                                      page 1
+ 26/11/25                                     Effective: 26/11/25
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 1                  Preliminary
+
+Section 1
+
+
+
+
+Part 1                              Preliminary
+
+1            Name of Act
+             This Act is the Limitation Act 1985.
+
+2            Dictionary
+             The dictionary at the end of this Act is part of this Act.
+             Note 1       The dictionary at the end of this Act defines certain terms used in this
+                          Act, and includes references (signpost definitions) to other terms defined
+                          elsewhere in this Act.
+                          For example, the signpost definition ‘government—see the Legislation
+                          Act 2001, section 121 (Binding effect of Acts).’ means that the term
+                          ‘government’ is defined in that section and the definition applies to this
+                          Act.
+             Note 2       A definition in the dictionary (including a signpost definition) applies to
+                          the entire Act unless the definition, or another provision of the Act,
+                          provides otherwise or the contrary intention otherwise appears (see
+                          Legislation Act, s 155 and s 156 (1)).
+
+3            Notes
+             A note included in this Act is explanatory and is not part of this Act.
+             Note         See the Legislation Act s 127 (1), (4) and (5) for the legal status of notes.
+
+4            Other limitations
+             Nothing in this Act—
+              (a) applies to an action or arbitration for which a limitation period
+                  is fixed by or under a law in force in the ACT other than this
+                  Act; or
+              (b) applies to an action or arbitration to which a government is a
+                  party and for which, if it were between subjects, a period of
+                  limitation would be fixed by or under a law in force in the ACT
+                  other than this Act.
+
+
+page 2                                   Limitation Act 1985                                                R28
+                                         Effective: 26/11/25                                            26/11/25
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                         Preliminary                      Part 1
+
+                                                                                                       Section 5
+
+
+
+
+5           Stolen property or interest in land
+            Nothing in this Act applies—
+             (a) to a cause of action to recover land or an estate or interest in land
+                 or to enforce an equitable estate or interest in land; or
+             (b) to an action in relation to goods that are stolen property unless
+                 the person against whom the action is instituted is an honest
+                 purchaser of the goods or a person claiming the goods through
+                 such a purchaser.
+
+6           Acquiescence etc
+            Nothing in this Act affects any equitable jurisdiction to refuse relief
+            on the ground of acquiescence or otherwise.
+
+7           Application of Act to governments
+     (1) For this Act, an action by a government entity is an action by the
+         government.
+     (2) This Act does not apply to an action by the Territory—
+             (a) for the recovery of a penalty, tax or duty or of interest on a
+                 penalty, tax or duty; or
+             (b) in relation to the forfeiture of a ship.
+     (3) This Act does not affect the prerogative right of the Territory to
+         mineral rights.
+     (4) This section has effect despite the Legislation Act 2001, section 121
+         (Binding effect of Acts).
+     (5) In this section:
+            government entity—see the Legislation Act 2001, section 121 (6).
+            mineral includes petroleum.
+
+
+
+
+R28                                           Limitation Act 1985                                        page 3
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 1                  Preliminary
+
+Section 8
+
+
+
+
+8            Derived rights and agency
+             For this Act—
+              (a) a person claims through someone else in relation to any property
+                  or right if the person is entitled to the property or a right by,
+                  through, under or by the act of the other person, but a person
+                  entitled to property or a right because of an appointment under
+                  a special power of appointment does not, because of the
+                  appointment, claim the property or right through the appointor;
+                  and
+              (b) a thing done to or by or suffered by an agent is done to or by or
+                  suffered by the agent’s principal.
+
+8A           Application of provisions relating to accrual date
+             The provisions of this Act that relate to the date of accrual of a cause
+             of action have effect for this Act but not for any other purpose.
+
+
+
+
+page 4                                   Limitation Act 1985                                                R28
+                                         Effective: 26/11/25                                            26/11/25
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                    Preliminary                  Division 2.1
+                                                                                                       Section 9
+
+
+
+
+Part 2                             Periods of limitation and related
+                                   matters
+Division 2.1                       Preliminary
+9           Relationship to pt 3
+            The provisions of this part have effect subject to the provisions of part
+            3.
+
+10          More than 1 bar
+            If, under each of 2 or more provisions of this part, an action is not
+            maintainable if brought after a specified time, the action is not
+            maintainable if brought after the earlier or earliest of those times.
+
+Division 2.2                       General
+11          General
+     (1) Subject to subsection (2), an action on any cause of action is not
+         maintainable if brought after the end of a limitation period of 6 years
+         running from the date when the cause of action first accrues to the
+         plaintiff or to a person through whom he or she claims.
+     (2) Subsection (1) does not apply to a cause of action in relation to which
+         another limitation period is provided by this Act.
+
+12          Accounts
+            An action on a cause of action for an account is not maintainable after
+            the end of any time limit under this Act applies to the claim that is the
+            basis of the duty to account.
+
+
+
+
+R28                                           Limitation Act 1985                                        page 5
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                   Periods of limitation and related matters
+Division 2.2             General
+Section 13
+
+
+
+
+13            Deed
+              An action on a cause of action founded on a deed is not maintainable
+              if brought after the end of a limitation period of 12 years running from
+              the date when the cause of action first accrues to the plaintiff or to a
+              person through whom he or she claims.
+
+14            Judgment
+      (1) An action on a cause of action on a judgment is not maintainable if
+          brought after the end of a limitation period of 12 years running from
+          the date when the judgment first becomes enforceable by the plaintiff
+          or by a person through whom he or she claims.
+      (2) A judgment of a court of a place outside the ACT becomes
+          enforceable for this section on the date when the judgment becomes
+          enforceable in the place where the judgment is given.
+
+15            Penalty and forfeiture
+      (1) An action on a cause of action to recover a penalty or forfeiture,
+          recoverable because of a law in force in the ACT, is not maintainable
+          if brought after the end of a limitation period of 2 years running from
+          the date when the cause of action first accrues to the plaintiff or to a
+          person through whom he or she claims.
+      (2) In this section:
+              penalty does not include a fine to which a person is liable on
+              conviction for a criminal offence.
+
+16            Compensation to relatives
+              An action on a cause of action arising under the Civil Law (Wrongs)
+              Act 2002, part 3.1 (Wrongful act or omission causing death) in
+              relation to an act, neglect or default resulting in death is not
+              maintainable after the end of—
+               (a) the period of 6 years immediately following the relevant
+                   wrongful act, neglect or default; or
+
+page 6                                    Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                       General                   Division 2.2
+                                                                                                 Section 16A
+
+
+
+
+             (b) the period of 3 years immediately following the day of death of
+                 the person injured by that act, neglect or default;
+            whichever ends later.
+
+16A         Claims for common law compensation for workers
+            compensation
+       (1) This section applies to a cause of action, other than a cause of action
+           that is a claim for compensation under the Workers Compensation
+           Act 1951, if—
+             (a) the cause of action relates to a personal injury that is a
+                 compensable injury under the Workers Compensation Act 1951;
+                 and
+             (b) a claim could be, or could have been, made in relation to the
+                 cause of action under the Workers Compensation Act 1951 if
+                 notice of the injury had been given as required under that Act.
+       (2) The action is not maintainable if brought 3 or more years after the day
+           the injury happened.
+
+16AA        Motor accident claims
+       (1) This section applies to a cause of action that is a motor accident claim
+           under the Motor Accident Injuries Act 2019, chapter 5 (Motor
+           accident injuries—common law damages).
+       (2) The cause of action is not maintainable if brought 5 years or more
+           after the day the injury happened.
+            Note 1       Under the Motor Accident Injuries Act 2019, s 166, a person who has had
+                         a WPI assessment has 3 months from the latest of the following dates to
+                         make a motor accident claim:
+                         (a) if the person receives a notice under that Act, s 141 (5)—the date
+                              that is 26 weeks after the date of the notice;
+                         (b) if the person receives a notice under that Act, s 157 (3) or
+                              s 164 (2)—the due date for the notice.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 7
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                 Periods of limitation and related matters
+Division 2.2           General
+Section 16B
+
+
+
+
+              Note 2     Under the Motor Accident Injuries Act 2019, s 220, a person who receives
+                         a notice under that Act, s 213 (4) has 3 months from the date of the notice
+                         to make a motor accident claim.
+
+16B           Other claims for damages for personal injury
+      (1) This section applies to a cause of action for damages for personal
+          injury other than a cause of action to which section 16, section 16A
+          or section 16AA applies.
+      (2) The cause of action is not maintainable if brought—
+               (a) if the injury is or includes a disease or disorder—3 years or more
+                   after the day the person injured first knows—
+                       (i) that the person has suffered an injury that is or includes a
+                           disease or disorder; and
+                    (ii) that the injury is related to someone else’s act or omission;
+                         or
+               (b) in any other case—3 years or more after the day the injury
+                   happened.
+
+17            Arbitral award
+      (1) An action on a cause of action to enforce an award of an arbitrator is
+          not maintainable if brought after the end of the limitation period fixed
+          by subsection (2) running from the date when the cause of action first
+          accrues to the plaintiff or to a person through whom he or she claims.
+      (2) The limitation period for subsection (1) is—
+               (a) if the award is made under an arbitration agreement and the
+                   arbitration agreement is made by deed—12 years; and
+               (b) in any other case—6 years.
+      (3) For this section, a cause of action to enforce an award of an arbitrator
+          accrues on the date when default first happens in observance of the
+          award, being the default in relation to which the action is brought.
+
+
+page 8                                 Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                       General                   Division 2.2
+                                                                                                   Section 18
+
+
+
+
+     (4) In this section:
+            arbitration agreement means an agreement to submit present or
+            future differences to arbitration, whether an arbitrator is named in the
+            agreement or not.
+     (5) This section applies to an award of an arbitrator under any law, order
+         or scheme in force in the ACT, but applies to such an award subject
+         to the provisions of the relevant law, order or scheme.
+
+18          Successive wrongs to goods
+            If—
+             (a) a cause of action for the conversion or detention of goods
+                 accrues to a person; and
+             (b) afterwards, possession of the goods not having been recovered
+                 by him or her or by a person claiming through him or her, a
+                 further cause of action for the conversion or detention of the
+                 goods or a cause of action to recover the proceeds of sale of the
+                 goods accrues to him or her or to a person claiming through him
+                 or her;
+            an action on the further cause of action for conversion or detention or
+            on the cause of action to recover the proceeds of sale is not
+            maintainable if brought after the end of the limitation period
+            applicable to the firstmentioned cause of action.
+
+19          Shipping
+     (1) An action on a cause of action to enforce a claim or lien against a
+         vessel (the former vessel) or its owners in relation to any damage or
+         loss to another vessel, its cargo or freight, or any property on board
+         the other vessel, or damage for loss of life or personal injuries
+         suffered by anyone on board the other vessel, caused by the fault of
+         the former vessel, whether the former vessel, is completely or partly
+         at fault, is not maintainable if brought after the end of a limitation
+
+
+
+R28                                           Limitation Act 1985                                      page 9
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                   Periods of limitation and related matters
+Division 2.2             General
+Section 20
+
+
+
+
+              period of 2 years running from the date when the damage, loss or
+              injury is caused.
+      (2) An action on a cause of action to enforce a claim or lien in relation to
+          any salvage services is not maintainable if brought after the end of a
+          limitation period of 2 years running from the date when the salvage
+          services are rendered.
+      (3) For an action in a court, the court—
+               (a) may extend the limitation period mentioned in subsection (1) or
+                   (2) to such an extent and on the terms that it considers
+                   appropriate; and
+               (b) shall, if satisfied that there has not during the limitation period
+                   been a reasonable opportunity of arresting the defendant vessel
+                   within the jurisdiction of the court, or within the territorial
+                   waters of the country to which the plaintiff’s vessel belongs or
+                   in which the plaintiff resides or has his or her principal place of
+                   business, extend the limitation period to an extent sufficient to
+                   give a reasonable opportunity of so arresting the defendant
+                   vessel.
+      (4) In this section:
+              freight includes passage money and hire.
+              vessel means a vessel used in navigation, other than air navigation,
+              and includes a barge, lighter or similar vessel.
+      (5) In this section, a reference to damage or loss caused by the fault of a
+          vessel includes salvage or other expenses, consequent on that fault,
+          recoverable at law by way of damages.
+
+20            Arrears of interest
+      (1) An action on a cause of action to recover arrears of interest on
+          principal money is not maintainable if brought after the end of the
+          limitation period fixed by or under this Act for an action between the
+          same parties to recover the principal money.
+
+page 10                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                       General                   Division 2.2
+                                                                                                   Section 21
+
+
+
+
+     (2) Subsection (1) does not apply to a cause of action to which section 25
+         applies.
+
+21          Contribution between tortfeasors
+     (1) An action on a cause of action for a contribution under the Civil Law
+         (Wrongs) Act 2002, section 21 (Right of contribution) is not
+         maintainable if brought after the first to end of—
+             (a) a limitation period of 2 years running from the date when the
+                 cause of action for contribution first accrues to the plaintiff or to
+                 a person through whom he or she claims; and
+             (b) a limitation period of 4 years running from the date of the end
+                 of the limitation period for the principal cause of action.
+     (2) For subsection (1) (a), the date when a cause of action for contribution
+         first accrues is—
+             (a) if the plaintiff in the action for contribution or a person through
+                 whom he or she claims is liable in relation to the damage for
+                 which contribution is claimed by judgment in a civil action or
+                 by arbitral award—the date when the judgment is given or the
+                 award is made, whether or not, for a judgment, the judgment is
+                 afterwards varied as to quantum of damages; or
+             (b) if, in a case to which paragraph (a) does not apply, the plaintiff
+                 in the action for contribution or a person through whom he or
+                 she claims makes an agreement with a person having a cause of
+                 action for the damage for which the cause of action for
+                 contribution arises, which agreement fixes, as between the
+                 parties to the agreement, the amount of the liability in relation
+                 to that damage of the plaintiff in the action for contribution or a
+                 person through whom he or she claims—the date when the
+                 agreement is made.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 11
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                Periods of limitation and related matters
+Division 2.2          General
+Section 21A
+
+
+
+
+      (3) In subsection (1) (b):
+              the limitation period for the principal cause of action means the
+              limitation period fixed by or under this Act or by or under any other
+              law in force in the ACT for the cause of action for the liability in
+              relation to which contribution is sought.
+
+21A           Tax, licence fee or duty or penalty tax
+      (1) An action for recovery of a revenue amount is not maintainable unless
+          proceedings in relation to the amount are instituted before the end of
+          the period of 6 months after the date the amount was paid.
+      (2) Subsection (1) does not apply to an action for recovery of an amount
+          that would have been recoverable as an overpayment if the purported
+          tax, licence fee or duty had been valid.
+      (3) Subsection (1) is part of the substantive law of the Territory.
+      (4) In subsection (1):
+              revenue amount means an amount of money paid voluntarily or
+              under compulsion as—
+               (a) a tax, licence fee or duty imposed, or purportedly imposed,
+                   under an Act; or
+               (b) penalty tax in relation to such a tax, licence fee or duty;
+              if the amount would have been legally owing if the provision under
+              which it was paid had been valid.
+
+21B           Defamation proceedings generally to be commenced
+              within 1 year
+      (1) An action on a cause of action for defamation is not maintainable if
+          brought after the end of a limitation period of 1 year running from the
+          date of the publication of the matter complained of.
+
+
+
+
+page 12                                Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                       General                   Division 2.2
+                                                                                                Section 21BA
+
+
+
+
+       (2) The 1-year limitation period mentioned in subsection (1) is taken to
+           have been extended as provided by subsection (3) if a concerns notice
+           is given to the proposed defendant on a day (the notice day) within
+           the period of 56 days before the limitation period expires.
+       (3) The limitation period is extended for an additional period of 56 days
+           minus any days remaining after the notice day until the 1-year
+           limitation period expires.
+            Example—calculating limitation period
+            A concerns notice is given 7 days before the limitation period expires. This means
+            there are 6 days left after the notice day before the period expires. Consequently,
+            this subsection operates to extend the limitation period by 56 minus 6 days, which
+            is 50 days.
+
+       (4) In this section:
+            concerns notice—see the Civil Law (Wrongs) Act 2002,
+            section 124A (1).
+            date of publication, in relation to the publication of matter in
+            electronic form, means the day on which the matter was first uploaded
+            for access or sent electronically to a recipient.
+
+21BA        Defamation—single publication rule
+       (1) This section applies if—
+             (a) a person (the first publisher) publishes matter to the public that
+                 is alleged to be defamatory (the first publication); and
+             (b) the first publisher or an associate of the first publisher
+                 subsequently publishes (whether or not to the public) matter that
+                 is substantially the same.
+       (2) Any cause of action for defamation against the first publisher or an
+           associate of the first publisher in relation to the subsequent
+           publication is to be treated as having accrued on the date of the first
+           publication for the purposes of determining when—
+             (a) the limitation period applicable under section 21B begins; or
+
+
+R28                                           Limitation Act 1985                                      page 13
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                Periods of limitation and related matters
+Division 2.2          General
+Section 21BB
+
+
+
+
+               (b) the 3-year period mentioned in section 21BB (2) begins.
+       (3) Subsection (2) does not apply in relation to the subsequent
+           publication if the manner of that publication is materially different
+           from the manner of the first publication.
+       (4) In determining whether the manner of a subsequent publication is
+           materially different from the manner of the first publication, the
+           considerations to which the court may have regard include (but are
+           not limited to)—
+               (a) the level of prominence that a matter is given; and
+               (b) the extent of the subsequent publication.
+       (5) This section does not limit the power of a court under section 21BB
+           to extend the limitation period applicable under section 21B.
+       (6) In this section:
+            associate, of a first publisher, means—
+               (a) an employee of the publisher; or
+               (b) a person publishing matter as a contractor of the publisher; or
+               (c) an associated entity (within the meaning of the Corporations
+                   Act, section 50AAA) of the publisher (or an employee or
+                   contractor of the associated entity).
+            date of first publication, in relation to the publication of matter in
+            electronic form, means the day on which the matter was first uploaded
+            for access or sent electronically to a recipient.
+            public includes a section of the public.
+
+21BB        Extension of limitation period
+       (1) A person claiming to have a cause of action for defamation may apply
+           to the court for an order extending the limitation period applicable
+           under section 21B (Defamation proceedings generally to be
+           commenced within 1 year) for the cause of action.
+
+page 14                                Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                       General                   Division 2.2
+                                                                                               Section 21BC
+
+
+
+
+       (2) The court may extend the limitation period to a period of up to 3 years
+           running from the date of the alleged publication of the matter if the
+           plaintiff satisfies the court that it is just and reasonable to allow an
+           action to proceed.
+       (3) In determining whether to extend the limitation period, the court is to
+           have regard to all of the circumstances of the case and in particular
+           to—
+             (a) the length of, and the reasons for, the plaintiff’s delay; and
+             (b) if a reason for the delay was that some or all of the facts relevant
+                 to the cause of action became known to the plaintiff after the
+                 limitation period expired—
+                     (i) the day on which the facts became known to the plaintiff;
+                         and
+                    (ii) the extent to which the plaintiff acted promptly and
+                         reasonably once the plaintiff knew whether or not the facts
+                         might be capable of giving rise to an action; and
+             (c) the extent, having regard to the delay, to which relevant
+                 evidence is likely to be unavailable or less cogent than if the
+                 action had been brought within the limitation period.
+
+21BC        Defamation—effect of limitation law concerning
+            electronic defamatory publications on other laws
+       (1) This section applies in relation to any requirement under section 21B
+           (Defamation proceedings generally to be commenced within 1 year)
+           or section 21BA (Defamation—single publication rule) for the date
+           of publication of a matter in electronic form to be determined by
+           reference to the day on which the matter was first uploaded for access
+           or sent electronically to a recipient.
+       (2) A requirement to which this section applies is relevant only for the
+           purpose of determining when a limitation period begins and for no
+           other purpose.
+
+
+R28                                           Limitation Act 1985                                      page 15
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                Periods of limitation and related matters
+Division 2.2A         No limitation period
+Section 21C
+
+
+
+
+      (3) Without limiting subsection (2), a requirement to which this section
+          applies is not relevant for—
+              (a) establishing whether there is a cause of action for defamation;
+                  or
+              (b) the choice of law to be applied for a cause of action for
+                  defamation.
+
+Division 2.2A                     No limitation period
+21C           Personal injury resulting from child abuse
+      (1) This section applies to an action on a cause of action for the death or
+          personal injury of a person—
+              (a) if the cause of action substantially arises from child abuse to
+                  which the person was subjected when the person was a child;
+                  and
+              (b) whether liability for the death or personal injury arises in tort or
+                  contract or on another form of action (including breach of
+                  statutory duty); and
+              (c) whether the cause of action accrues before, on or after the
+                  commencement of the Justice and Community Safety
+                  Legislation Amendment Act 2016 (No 2), section 3.
+      (2) An action on the cause of action is maintainable at any time and is not
+          subject to any limitation period under this Act, despite anything
+          elsewhere in this Act or another territory law.
+      (3) This section does not limit—
+              (a) the inherent jurisdiction, implied jurisdiction or statutory
+                  jurisdiction of a court; or
+
+
+
+
+page 16                                Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                     Mortgages                   Division 2.3
+                                                                                                   Section 22
+
+
+
+
+             (b) any other powers of a court under a law in force in the Territory,
+                 a rule of court, or any other practice of the court.
+            Example—par (b)
+            a court’s power to summarily dismiss or permanently stay proceedings where the
+            passage of time has a prejudicial effect on the defendant that is so serious that a fair
+            trial is not possible
+
+     (4) In this section:
+            child abuse—see                   the      Civil       Law        (Wrongs)          Act      2002,
+            section 114AA (1).
+            subjected, in relation to child abuse, includes witness.
+
+Division 2.3                       Mortgages
+22          Mortgage under Land Titles Act 1925
+            This Act applies to an action on a cause of action founded on a
+            mortgage registered under the Land Titles Act 1925 to recover from
+            any person any debt damages or other money payable under the
+            mortgage, but otherwise this Act does not affect the right title or
+            remedies under a mortgage so registered of a registered proprietor
+            under that Act of the mortgage or of the mortgaged land.
+
+23          Redemption
+            An action on a cause of action to redeem mortgaged property in the
+            possession of a mortgagee is not maintainable against that mortgagee
+            if brought after the end of a limitation period of 12 years running from
+            the only or later of such of the following dates as is or are applicable:
+             (a) the date when that mortgagee or a person through whom he or
+                 she claims last goes into possession of the property in relation to
+                 which the action is brought;
+
+
+
+
+R28                                           Limitation Act 1985                                      page 17
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                   Periods of limitation and related matters
+Division 2.3             Mortgages
+Section 24
+
+
+
+
+               (b) the date when that mortgagee or a person through whom he or
+                   she claims last receives a payment of principal money or interest
+                   secured by the mortgage from the plaintiff or from a person
+                   through whom he or she claims.
+
+24            Action for principal, possession or foreclosure
+      (1) An action on a cause of action—
+               (a) to recover principal money secured by mortgage; or
+               (b) to recover possession of mortgaged property from a mortgagor;
+                   or
+               (c) to foreclose the equity of redemption of mortgaged property;
+              is not maintainable by a mortgagee under the mortgage if brought
+              after the end of a limitation period of 12 years running from the date
+              when the cause of action first accrues to the plaintiff or to a person
+              through whom he or she claims.
+      (2) Subsection (1) (a) applies to proceedings in a court on a cause of
+          action—
+               (a) to recover principal money from any person, whether as
+                   principal, surety or otherwise; or
+               (b) to recover principal money by way of—
+                       (i) the appointment of a receiver of mortgaged property or of
+                           the income or profits of mortgaged property; or
+                      (ii) the sale, lease or other disposition of realisation of
+                           mortgaged property; or
+                     (iii) other remedy affecting mortgaged property.
+
+
+
+
+page 18                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                     Mortgages                   Division 2.3
+                                                                                                   Section 25
+
+
+
+
+25          Action for interest
+     (1) An action on a cause of action to recover interest secured by a
+         mortgage is not maintainable by a mortgagee under the mortgage if
+         brought after the end of—
+             (a) a limitation period of 6 years running from the only or later of
+                 such of the following dates as is or are applicable:
+                     (i) the date when the cause of action first accrues to the
+                         plaintiff or to a person through whom he or she claims;
+                    (ii) if a mortgagee under a prior mortgage is, on the date
+                         mentioned in subparagraph (i), in possession of all or any
+                         of the property comprised in the mortgage securing the
+                         interest, and after that date discontinues his or her
+                         possession—the date of discontinuance; or
+             (b) the limitation period fixed by or under this Act for an action
+                 between the same parties on a cause of action to recover the
+                 principal money bearing the interest;
+            whichever limitation period first ends.
+     (2) For subsection (1), a cause of action to recover interest secured by a
+         mortgage includes—
+             (a) a cause of action to recover the interest from any person,
+                 whether as principal, surety or otherwise; and
+             (b) a cause of action to recover the interest by way of—
+                     (i) the appointment of a receiver of mortgaged property or of
+                         income or profits of mortgaged property; or
+                    (ii) sale, lease or other disposition or realisation of the
+                         mortgaged property; or
+                   (iii) other remedy affecting mortgaged property.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 19
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                   Periods of limitation and related matters
+Division 2.3             Mortgages
+Section 26
+
+
+
+
+26            Adjustment of interest
+      (1) In an action for redemption or otherwise in relation to a mortgage of
+          property including an action in relation to the proceeds of sale or other
+          realisation of property subject to a mortgage—
+               (a) a mortgagor is not, as against a mortgagee, to be required to pay
+                   or bear interest that could not, because of a period of limitation
+                   fixed by or under this Act, be recovered in an action by that
+                   mortgagee against that mortgagor brought on the date when the
+                   firstmentioned action is brought; and
+               (b) in adjusting the rights of a mortgagor and a mortgagee the
+                   mortgagee is not to be entitled to the interest mentioned in
+                   paragraph (a).
+      (2) If—
+               (a) interest becomes due under a mortgage; and
+               (b) a mortgagee—
+                       (i) holds money on the date when the interest becomes due; or
+                      (ii) after that date but before the end of the limitation period
+                           fixed by or under this Act for an action on a cause of action
+                           to recover that interest by that mortgagee against a
+                           mortgagor, receives money; and
+               (c) before or after the bringing of an action to which subsection (1)
+                   applies, that mortgagee or a person claiming through him or her
+                   properly applies that money in or towards satisfaction of that
+                   interest;
+              subsection (1) does not, as against the person so applying that money
+              or a person claiming through him or her, apply to that interest to the
+              extent to which it is so satisfied.
+
+
+
+
+page 20                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                      Periods of limitation and related matters                        Part 2
+                                                                         Trusts                  Division 2.4
+                                                                                                   Section 27
+
+
+
+
+Division 2.4                       Trusts
+27          Fraud and conversion—trust property
+     (1) An action on a cause of action—
+             (a) in relation to fraud or a fraudulent breach of trust, against a
+                 person who is, while a trustee, a party or privy to the fraud or
+                 the breach of trust or against his or her successor; or
+             (b) for a remedy for the conversion to a person’s own use of trust
+                 property received by him or her while a trustee, against that
+                 person or against his or her successor; or
+             (c) to recover trust property, or property into which trust property
+                 can be traced, against a trustee or against any other person; or
+             (d) to recover money on account of a wrongful distribution of trust
+                 property, against the person to whom the property is distributed
+                 or against his or her successor;
+            is not maintainable by a trustee of the trust or by a beneficiary under
+            the trust or by a person claiming through a beneficiary under the trust
+            if brought after the end of the only or later to end of such of the
+            following limitation periods as is or are applicable:
+             (e) a limitation period of 12 years running from the date when the
+                 plaintiff, or a person through whom he or she claims, first
+                 discovers or may with reasonable diligence discover the facts
+                 giving rise to the cause of action and that the cause of action has
+                 accrued;
+             (f) the limitation period for the cause of action fixed by or under
+                 any provision of this Act other than this section.
+     (2) Except for fraud or a fraudulent breach of trust, and except so far as
+         concerns income converted by a trustee to his or her own use or
+         income retained and still held by the trustee or his or her successor at
+         the time the action is brought, this section does not apply to an action
+         on a cause of action to recover arrears of income.
+
+R28                                           Limitation Act 1985                                      page 21
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 2                   Periods of limitation and related matters
+Division 2.4             Trusts
+Section 28
+
+
+
+
+28            Accrual—future interest
+              For this part, a cause of action of a beneficiary in relation to a future
+              estate or interest accrues on the date when the estate or interest
+              becomes a present estate or interest or on the date when the cause of
+              action would, apart from this section, accrue, whichever date is the
+              later.
+
+29            Beneficiaries other than plaintiff
+              If a beneficiary under a trust brings an action in relation to the trust,
+              another beneficiary under the trust is not entitled to derive from the
+              action any benefit for which, because of this Act, an action by him or
+              her is not maintainable if brought on the date when the firstmentioned
+              action is brought.
+
+
+
+
+page 22                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                             Postponement of bar                       Part 3
+                                                                       General                   Division 3.1
+                                                                                                   Section 30
+
+
+
+
+Part 3                             Postponement of bar
+Division 3.1                       General
+30          Disability
+     (1) Subject to subsections (2) and (3) and subject to section 32, if—
+             (a) a person has a cause of action; and
+             (b) the limitation period fixed by this Act for the cause of action has
+                 begun to run; and
+             (c) the person is under a disability;
+            then—
+             (d) the running of the limitation period is suspended for the duration
+                 of the disability; and
+             (e) if the cause of action is a cause of action to which section 15
+                 or 19 applies and, apart from this paragraph, the limitation
+                 period would end before the lapse of 2 years after—
+                     (i) the date when he or she last (before the end of the limitation
+                         period) ceases to be under a disability; or
+                    (ii) the date of his or her death;
+                    (whichever is the earlier)—the limitation period is extended so
+                    as to end 2 years after the earlier of those dates; and
+             (f) in any other case, if, apart from this paragraph, the limitation
+                 period would end before the lapse of 3 years after—
+                     (i) the date when he or she last (before the end of the limitation
+                         period) ceases to be under a disability; or
+                    (ii) the date of his or her death;
+                    (whichever date is the earlier)—the limitation period is extended
+                    so as to end 3 years after the earlier of those dates.
+
+
+R28                                           Limitation Act 1985                                      page 23
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                Postponement of bar
+Division 3.1          General
+Section 30A
+
+
+
+
+      (2) This section applies whenever a person is under a disability, whether
+          or not he or she is under the same or another disability at any time
+          during the limitation period.
+      (3) This section does not apply to—
+               (a) a cause of action to recover a penalty or forfeiture or sum by
+                   way of penalty or forfeiture unless the person having the cause
+                   of action is an aggrieved party; or
+               (b) a cause of action to which section 30B (Special provision in
+                   relation to children—claims relating to health services) applies.
+
+30A           Special provision for injuries to children
+      (1) This section applies if—
+               (a) a child (the plaintiff) suffers personal injury that gives rise to a
+                   claim for damages; and
+               (b) a notice of claim has not been given under the Civil Law
+                   (Wrongs) Act 2002, chapter 5 (Personal injuries claims—
+                   pre-court procedures), or a proceeding has not been begun in a
+                   court, in relation to the claim; and
+               (c) a limitation period applies to the claim under this Act; and
+               (d) the limitation period does not end within the relevant period.
+      (2) The plaintiff (or the plaintiff’s parent or guardian) must, within the
+          relevant period, give notice of an intended claim to anyone
+          (the defendant) claimed to be liable for damages in relation to the
+          claim.
+      (3) If the injury is claimed to have arisen out of a motor accident, the
+          notice must be given to the insurer for the motor accident claim.
+      (4) The notice must contain the information required under the
+          regulations.
+
+
+
+
+page 24                                Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                             Postponement of bar                       Part 3
+                                                                       General                   Division 3.1
+                                                                                                 Section 30A
+
+
+
+
+     (5) The plaintiff (or the plaintiff’s parent or guardian) must comply with
+         a reasonable request by the defendant—
+             (a) to provide copies of medical and other records and reports in the
+                 possession of the plaintiff (or the plaintiff’s parent or guardian)
+                 that are relevant to the nature and extent of the plaintiff’s injury
+                 and any consequent disability; or
+             (b) to undergo examination, at the defendant’s expense, by a
+                 medical expert for the purpose of finding out the nature and
+                 extent of the plaintiff’s injury and any consequent disability.
+     (6) The defendant may, by written notice given to the plaintiff, require
+         the plaintiff, within 6 months after the day the notice is given, to bring
+         a proceeding in a court so that the claim may be decided by the court.
+     (7) Noncompliance with a requirement of this section by the plaintiff
+         does not prevent the plaintiff from bringing a proceeding in a court
+         for damages but, unless the court is satisfied there is compelling
+         reason to excuse the noncompliance, damages must not be awarded
+         in the proceeding to allow or compensate for medical, legal or
+         gratuitous services provided to the plaintiff before the day the
+         proceeding began.
+     (8) In this section:
+            accident means an incident out of which personal injury arises, and
+            includes a motor accident.
+            claim means a claim (however described) for damages based on a
+            liability for personal injury, whether the liability is based in tort or
+            contract or on another form of action (including breach of statutory
+            duty) but does not include a claim under the Workers Compensation
+            Act 1951.
+            motor accident means an accident caused by, or arising out of the use
+            of, a motor vehicle.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 25
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                Postponement of bar
+Division 3.1          General
+Section 30B
+
+
+
+
+              motor vehicle means—
+               (a) a motor vehicle under the Road Transport (General) Act 1999;
+                   or
+                    Note       A light rail vehicle is a motor vehicle under the Road Transport
+                               (General) Act 1999.
+
+               (b) any other vehicle operated on a railway or other fixed track.
+              relevant period, in relation to a claim, means—
+               (a) if the injury is or includes a disease or disorder—6 years after
+                   the day the plaintiff (or the plaintiff’s parent or guardian) first
+                   knows—
+                    (i) that the plaintiff has suffered an injury that is or includes a
+                        disease or disorder; and
+                    (ii) that the injury is related to someone else’s act or omission;
+                         or
+               (b) in any other case—6 years after the day the accident giving rise
+                   to the injury happened.
+
+30B           Special provision in relation to children—claims relating
+              to health services
+      (1) This section applies if—
+               (a) a child (the plaintiff) suffers personal injury that gives rise to a
+                   claim for damages; and
+               (b) the claim—
+                    (i) relates to the provision of a health service; but
+                    (ii) is not a claim to which section 21C (Personal injury
+                         resulting from child abuse) applies.
+      (2) A cause of action for damages in relation to the claim is not
+          maintainable if brought 6 years or more after the day the accident
+          giving rise to the injury happened.
+
+page 26                                Limitation Act 1985                                                R28
+                                       Effective: 26/11/25                                            26/11/25
+
+          Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                             Postponement of bar                       Part 3
+                                                                       General                   Division 3.1
+                                                                                                   Section 31
+
+
+
+
+     (3) However, if the injury is or includes a disease or disorder, the cause
+         of action is not maintainable if brought after whichever of the
+         following periods ends first:
+             (a) 6 years after the day the plaintiff (or the plaintiff’s parent or
+                 guardian) first knows or ought reasonably to have first known—
+                     (i) that the plaintiff has suffered an injury that is or includes a
+                         disease or disorder; or
+                    (ii) that the injury is related to someone else’s act or omission;
+             (b) 12 years after the day the accident giving rise to the injury
+                 happened.
+            Note         The period mentioned in s (3) can be extended under s 36 but the period
+                         mentioned in s (2) cannot be extended under that section (see s 36 (6)).
+
+     (4) In considering whether or not the period mentioned in subsection (3)
+         should be extended under section 36, the court must have regard to
+         the opinion of a medical expert (or experts) on the question of when
+         the plaintiff (or the plaintiff’s parent or guardian) first knew, or ought
+         reasonably to have first known—
+             (a) that the plaintiff had suffered the injury; or
+             (b) that the injury is related to someone else’s act or omission.
+     (5) In this section:
+            health service—see the Human Rights Commission Act 2005,
+            section 7 (1) and (3) (a).
+
+31          Notice to proceed
+     (1) If—
+             (a) a person has a cause of action in relation to which he or she is
+                 under a disability other than a disability arising from his or her
+                 minority; and
+
+
+
+
+R28                                           Limitation Act 1985                                      page 27
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.1             General
+Section 31
+
+
+
+
+               (b) a guardian has been appointed in relation to that person or the
+                   property of that person;
+              a person against whom the cause of action lies may give to the
+              guardian a notice to proceed in accordance with this section.
+      (2) A notice to proceed under subsection (1) shall—
+               (a) be in writing; and
+               (b) be addressed to the guardian concerned; and
+               (c) show the name of the person under a disability; and
+               (d) state the circumstances out of which the cause of action may
+                   arise or may be claimed to arise with the particularity that is
+                   necessary to enable the guardian to investigate the question
+                   whether the person under a disability has the cause of action;
+                   and
+               (e) give warning that a cause of action arising out of the
+                   circumstances stated in the notice is liable to be barred by this
+                   Act; and
+               (f) be signed by the person giving the notice.
+      (3) Minor deviations from the requirements of subsection (2), not
+          affecting the substance nor likely to mislead, do not invalidate a
+          notice to proceed.
+      (4) If a notice to proceed is served under subsection (1), the person under
+          the disability referred to in that subsection shall be taken, for this Act,
+          to cease to be under a disability on the day when the notice is so
+          served.
+      (5) A notice to proceed under this section is not a confirmation for
+          section 32 and is not an admission for any purpose by the person
+          giving the notice.
+      (6) A notice to proceed to be given to a guardian may be given by—
+               (a) delivering the notice to proceed to the guardian personally; or
+
+page 28                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                             Postponement of bar                       Part 3
+                                                                       General                   Division 3.1
+                                                                                                   Section 32
+
+
+
+
+             (b) leaving the notice to proceed at the usual or last-known place of
+                 business or residence of the guardian; or
+             (c) posting the notice to proceed by certified mail to the guardian at
+                 the usual or last-known place of business or residence of the
+                 guardian.
+     (7) In this section:
+            guardian means a guardian or manager under the Guardianship and
+            Management of Property Act 1991.
+
+32          Confirmation
+     (1) If, after a limitation period fixed by or under this Act for a cause of
+         action begins to run but before the end of the limitation period, a
+         person against whom (either solely or with other persons) the cause
+         of action lies confirms the cause of action, the time during which the
+         limitation period runs before the date of the confirmation does not
+         count in the reckoning of the limitation period for an action on the
+         cause of action by a person having the benefit of the confirmation
+         against a person bound by the confirmation.
+     (2) For this section—
+             (a) a person confirms a cause of action if, but only if, he or she—
+                     (i) acknowledges, to a person having (either solely or with
+                         other persons) the cause of action, the right or title of the
+                         person to whom the acknowledgment is made; or
+                    (ii) makes, to a person having (either solely or with other
+                         persons) the cause of action, a payment in relation to the
+                         right or title of the person to whom the payment is made;
+                         and
+             (b) a confirmation of a cause of action to recover interest on
+                 principal money operates also as a confirmation of a cause of
+                 action to recover the principal money; and
+
+
+
+R28                                           Limitation Act 1985                                      page 29
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.1             General
+Section 32
+
+
+
+
+               (c) a confirmation of a cause of action to recover income falling due
+                   at any time operates also as a confirmation of a cause of action
+                   to recover income falling due at a later time on the same account.
+      (3) If a person has (either solely or with other persons) a cause of action
+          to foreclose the equity of redemption of mortgaged property or to
+          recover possession of mortgaged property, a payment to him or her
+          of principal or interest secured by the mortgage or a payment to him
+          or her otherwise in relation to his or her right or title to the mortgage
+          is a confirmation by the payer of the cause of action.
+      (4) An acknowledgment for this section shall be in writing and signed by
+          the maker.
+      (5) For this section, a person has the benefit of a confirmation if, but only
+          if, the confirmation is made to him or her or to a person through whom
+          he or she claims.
+      (6) For this section, a person is bound by a confirmation if, but only if—
+               (a) he or she is a maker of the confirmation; or
+               (b) he or she is, in relation to the cause of action, a successor of a
+                   maker under a devolution from the maker occurring after the
+                   making of the confirmation; or
+               (c) if the maker is, at the time when he or she makes the
+                   confirmation, (either solely or with other persons) a trustee of
+                   the will or of the estate of a deceased person—the firstmentioned
+                   person is at the date of the confirmation or afterwards becomes
+                   a trustee of the will or of the estate; or
+               (d) if the maker is, at the time when he or she makes the
+                   confirmation, (either solely or with other persons) a trustee
+                   (other than a trustee of the will or of the estate of a deceased
+                   person)—the firstmentioned person is at the date of the
+                   confirmation or afterwards becomes a trustee of the trust of
+                   which the maker is a trustee; or
+               (e) he or she is bound under subsection (7).
+
+page 30                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                             Postponement of bar                       Part 3
+                                                                       General                   Division 3.1
+                                                                                                   Section 33
+
+
+
+
+     (7) If a maker of a confirmation of a cause of action in relation to property
+         is, on the date of the confirmation, in possession of the property, the
+         confirmation binds a person subsequently in possession of the
+         property who claims through the maker of the confirmation.
+
+33          Fraud and concealment
+     (1) Subject to this section, if—
+             (a) there is a cause of action based on fraud or deceit; or
+             (b) a fact relevant to a cause of action or the identity of a person
+                 against whom a cause of action lies is deliberately concealed;
+            the time that elapses after a limitation period fixed by or under this
+            Act for the cause of action begins to run and before the date when a
+            person having (either solely or with other persons) the cause of action
+            first discovers, or may with reasonable diligence discover, the fraud,
+            deceit or concealment, as the case may be, does not count in the
+            reckoning of the limitation period for an action on the cause of action
+            by him or her or by a person claiming through him or her against a
+            person answerable for the fraud, deceit or concealment.
+     (2) Subsection (1) has effect whether the limitation period for the cause
+         of action would, apart from this section, end before or after the date
+         mentioned in that subsection.
+     (3) Without limiting subsection (1), deliberate commission of a breach of
+         duty in circumstances in which it is unlikely to be discovered for some
+         time amounts to deliberate concealment of the facts involved in that
+         breach of duty.
+     (4) For subsection (1), a person is answerable for fraud, deceit or
+         concealment if, but only if—
+             (a) he or she is a party to the fraud, deceit or concealment; or
+
+
+
+
+R28                                           Limitation Act 1985                                      page 31
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.1             General
+Section 34
+
+
+
+
+               (b) he or she is, in relation to the cause of action, a successor of a
+                   party to the fraud, deceit or concealment under a devolution
+                   from the party occurring after the date when the fraud, deceit or
+                   concealment first occurs.
+      (5) If property is, after the first occurrence of fraud, deceit or
+          concealment, purchased for valuable consideration by a person who
+          is not a party to the fraud, deceit or concealment and does not, at the
+          time of the purchase, know or have reason to believe that the fraud,
+          deceit or concealment has occurred, subsection (1) does not, in
+          relation to that fraud, deceit or concealment, apply to a limitation
+          period for a cause of action against the purchaser or a person claiming
+          through him or her.
+
+34            Mistake
+      (1) Subject to subsection (3), if there is a cause of action for relief from
+          the consequences of a mistake, the time that elapses after a limitation
+          period fixed by or under this Act for the cause of action begins to run
+          and before the date when a person having (either solely or with other
+          persons) the cause of action first discovers, or may with reasonable
+          diligence discover, the mistake does not count in the reckoning of the
+          limitation period for an action on the cause of action by him or her or
+          by a person claiming through him or her.
+      (2) Subsection (1) has effect whether the limitation period for the cause
+          of action would, apart from this section, end before or after the date
+          mentioned in that subsection.
+      (3) If property is, after a transaction in which a mistake is made,
+          purchased for valuable consideration by a person who does not, at the
+          time of the purchase, know or have reason to believe that the mistake
+          has been made, subsection (1) does not apply to a limitation period
+          for a cause of action for relief from the consequences of the mistake
+          against the purchaser or a person claiming through him or her.
+
+
+
+
+page 32                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                     Postponement of bar                               Part 3
+           Personal injuries, latent damage to property and economic loss                        Division 3.2
+                                                                                                   Section 35
+
+
+
+
+Division 3.2                       Personal injuries, latent damage to
+                                   property and economic loss
+35           Application of div 3.2
+             This division applies in relation to a cause of action referred to in
+             section 16, 16A, 36 (1) or 38—
+             (a) that accrued before or after the commencement of this Act; and
+             (b) for a cause of action that accrued before the commencement of
+                 this Act—whether or not proceedings have been instituted
+                 before the commencement of this Act.
+
+36           Personal injuries
+     (1) This section applies to any action for damages if the damages claimed
+         consist of or include damages in relation to personal injuries to any
+         person.
+     (2) If an application is made to a court by a person claiming to have a
+         cause of action to which this section applies, the court, subject to
+         subsection (3) and after hearing such of the persons likely to be
+         affected by that application as it considers appropriate, may, if it
+         decides that it is just and reasonable so to do, order that the period
+         within which an action on the cause of action may be brought be
+         extended for the period that it determines.
+     (3) In exercising the powers given to it by subsection (2), a court shall
+         have regard to all the circumstances of the case, including, for
+         example, the following:
+             (a) the length of and reasons for the delay on the part of the plaintiff;
+             (b) the extent to which, having regard to the delay, there is or is
+                 likely to be prejudice to the defendant;
+
+
+
+
+R28                                           Limitation Act 1985                                      page 33
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.2             Personal injuries, latent damage to property and economic loss
+Section 36
+
+
+
+
+               (c) the conduct of the defendant after the cause of action accrued to
+                   the plaintiff, including the extent (if any) to which the defendant
+                   took steps to make available to the plaintiff means of
+                   ascertaining facts that were or might be relevant to the cause of
+                   action of the plaintiff against the defendant;
+               (d) the duration of any disability of the plaintiff arising on or after
+                   the date of the accrual of the cause of action;
+               (e) the extent to which the plaintiff acted promptly and reasonably
+                   once he or she knew that the act or omission of the defendant, to
+                   which the injury of the plaintiff was attributable, might be
+                   capable at that time of giving rise to an action for damages;
+               (f) the steps (if any) taken by the plaintiff to obtain medical, legal
+                   or other expert advice and the nature of the advice the plaintiff
+                   may have received.
+      (4) The powers given to a court by subsection (2) may be exercised at
+          any time notwithstanding—
+               (a) that the limitation period in relation to the relevant cause of
+                   action has ended since the cause of action accrued; or
+               (b) that an action in relation to such personal injuries has been
+                   begun.
+      (5) This section does not apply in relation to a cause of action to which
+          any of the following applies:
+               (a) section 16AA (Motor accident claims);
+               (b) section 16B (Other claims for damages for personal injury);
+               (c) the Civil Law (Wrongs) Act 2002, part 3.1 (Wrongful act or
+                   omission causing death).
+      (6) Also, this section does not apply in relation to the period mentioned
+          in section 30B (2) (Special provision in relation to children—claims
+          relating to health services).
+
+
+page 34                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                     Postponement of bar                               Part 3
+           Personal injuries, latent damage to property and economic loss                        Division 3.2
+                                                                                                   Section 37
+
+
+
+
+37           Action against estate of deceased person
+     (1) This section applies to a cause of action against the estate of a
+         deceased person.
+     (2) Notwithstanding this part, if an executor or administrator—
+             (a) has given notice in accordance with the Administration and
+                 Probate Act 1929, section 64; and
+             (b) has, under that section, distributed the assets of the relevant
+                 estate without notice of a claim on which a cause of action to
+                 which this section applies is based;
+             the court shall not extend under this division the limitation period
+             applicable to the cause of action unless the estate is entitled to be
+             indemnified, in relation to the cause of action, by another person or
+             estate.
+
+38           Action by estate of deceased person
+     (1) If the executor or administrator of the estate of a deceased person
+         institutes proceedings in relation to a cause of action for damages for
+         personal injury that accrued before that person’s death, the court may,
+         subject to subsection (2)—
+             (a) if the court considers it just and reasonable to do so; and
+             (b) whether or not the limitation period applicable to that cause of
+                 action has ended; and
+             (c) whether or not an action in relation to the personal injury has
+                 been begun;
+             extend the limitation period for the further period, not exceeding 6
+             years, beginning on the day of the person’s death as the court
+             considers appropriate.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 35
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.2             Personal injuries, latent damage to property and economic loss
+Section 38
+
+
+
+
+      (2) In exercising the powers given to it by subsection (1), the court shall
+          have regard to all the circumstances of the case, including, for
+          example, the following:
+               (a) the reasons for the failure of the deceased to institute
+                   proceedings before his or her death or for the failure of the
+                   executor or administrator to do so before the end of the
+                   limitation period;
+               (b) whether, after the cause of action accrued, a significant period
+                   of time elapsed before the injured person knew or ought
+                   reasonably to have known that he or she had suffered the injury
+                   giving rise to the cause of action;
+               (c) if the deceased person knew before his or her death that the
+                   relevant injury might give rise to an action for damages—
+                   whether he or she acted on that knowledge promptly and
+                   reasonably;
+               (d) whether the executor or administrator of the estate, when he or
+                   she became aware that the relevant injury might give rise to a
+                   cause of action for damages, acted promptly and reasonably;
+               (e) the extent to which an extension of the limitation period would,
+                   or would be likely to, result in prejudice to the defendant;
+               (f) the conduct of the defendant after the cause of action accrued to
+                   the injured person or to the executor or administrator of the
+                   estate of the person, including the extent to which the defendant
+                   took steps to make available to the injured person, executor or
+                   administrator means of ascertaining facts in relation to the cause
+                   of action;
+               (g) the steps (if any) taken by the injured person or the executor or
+                   administrator to obtain medical, legal or other expert advice and
+                   the nature of any such advice.
+
+
+
+
+page 36                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                     Postponement of bar                               Part 3
+           Personal injuries, latent damage to property and economic loss                        Division 3.2
+                                                                                                   Section 39
+
+
+
+
+39           Action for compensation to relatives
+     (1) Subject to subsection (3), if, apart from the end, as against a deceased
+         person, of a limitation period in relation to a cause of action, the
+         personal representative of the deceased person would be entitled to
+         institute proceedings in relation to a cause of action referred to in
+         section 16, the court may, if it decides it is just and reasonable so to
+         do, on application made by the personal representative, order that, for
+         the purposes of such proceedings, the limitation period is extended
+         for the further period that the court determines.
+     (2) The court shall, in a declaration made under subsection (1), specify a
+         period, being a period not exceeding 6 years beginning on the day of
+         death of the person injured, within which proceedings in relation to
+         the cause of action may be instituted.
+     (3) In exercising the powers given to it by subsection (1), the court shall
+         have regard to all the circumstances of the case, including, for
+         example, the following:
+             (a) the reasons for the failure of the person to begin an action before
+                 the end of the relevant limitation period;
+             (b) whether a significant period of time elapsed after the cause of
+                 action accrued during which the person did not know, and could
+                 not reasonably have known, that he or she had suffered an injury
+                 giving rise to a cause of action;
+             (c) whether the person knew, or ought reasonably to have known,
+                 before his or her death that he or she had suffered such an injury;
+             (d) if the person knew before his or her death that he or she had
+                 suffered such an injury, the extent to which he or she acted
+                 promptly and reasonably;
+             (e) the extent to which a declaration specifying a limitation period
+                 would, or would be likely to, result in prejudice to the defendant;
+
+
+
+
+R28                                           Limitation Act 1985                                      page 37
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.2             Personal injuries, latent damage to property and economic loss
+Section 39
+
+
+
+
+               (f) the conduct of the defendant after the relevant cause of action
+                   accrued, including the extent to which the defendant took steps
+                   to make available to the person means of ascertaining facts in
+                   relation to the cause of action;
+               (g) the steps (if any) taken by the person to obtain, for the cause of
+                   action, medical, legal or other expert advice, and the nature of
+                   the advice.
+      (4) Subject to subsection (5), if, at the time of his or her death, a person
+          had a cause of action, the court, on application by his or her personal
+          representative, may—
+               (a) if the court considers it just and reasonable to do so; and
+               (b) whether or not the limitation period applicable under section 16
+                   has ended since the death of the person; and
+               (c) whether or not an action on such a cause of action has been
+                   begun;
+              extend that limitation period for the further period, not exceeding
+              6 years from the date of death of the deceased person, that the court
+              considers appropriate.
+      (5) In exercising the powers given to it by subsection (4), the court shall
+          have regard to all the circumstances of the case, including, for
+          example, the following:
+               (a) the reasons for, and length of, the delay on the part of the
+                   personal representative in instituting proceedings;
+               (b) whether, after the death of the deceased person, a significant
+                   period of time elapsed before a relative of the deceased person
+                   or the personal representative knew or ought reasonably to have
+                   known that the act, neglect or default that resulted in the death
+                   was capable of giving rise to a cause of action;
+
+
+
+
+page 38                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                     Postponement of bar                               Part 3
+           Personal injuries, latent damage to property and economic loss                        Division 3.2
+                                                                                                   Section 40
+
+
+
+
+             (c) the extent to which, when the personal representative became
+                 aware that the act, neglect or default that caused the death was
+                 capable of giving rise to a cause of action, the personal
+                 representative acted promptly and reasonably;
+             (d) the extent to which an extension of the limitation period would,
+                 or would be likely to, result in prejudice to the defendant;
+             (e) the conduct of the defendant after the relevant cause of action
+                 accrued to the personal representative, including the extent to
+                 which the defendant took steps to make available to the personal
+                 representative means of ascertaining facts in relation to the
+                 cause of action;
+             (f) the steps (if any) taken by the personal representative to obtain,
+                 for the purposes of the cause of action, medical, legal or other
+                 expert advice and the nature of any such advice.
+
+40           Latent damage to property and economic loss
+     (1) Subject to subsection (2), if a person has a cause of action for latent
+         damage to property or for economic loss in relation to such damage
+         to property the court may—
+             (a) if the court considers it just and reasonable to do so; and
+             (b) whether or not the limitation period applicable to that cause of
+                 action has ended; and
+             (c) whether or not an action for such damage or loss has been begun;
+             extend the limitation period in relation to which an action on that
+             cause of action may be brought for the further period not exceeding
+             15 years beginning on the day when the act or omission that gave rise
+             to the cause of action occurred that the court considers appropriate.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 39
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 3                   Postponement of bar
+Division 3.2             Personal injuries, latent damage to property and economic loss
+Section 41
+
+
+
+
+      (2) In exercising the powers given to it by subsection (1), the court shall
+          have regard to all the circumstances of the case including, for
+          example, the following:
+               (a) the length of time between the occurrence of the damage or loss
+                   and the time when the damage or loss might reasonably have
+                   been discovered by the plaintiff;
+               (b) the extent to which the plaintiff, after he or she became aware of
+                   the damage or loss, acted promptly and reasonably;
+               (c) the extent to which an extension of the limitation period would,
+                   or would be likely to, result in prejudice to the defendant;
+               (d) the conduct of the defendant after the relevant cause of action
+                   accrued to the plaintiff, including the extent to which the
+                   defendant took steps to make available to the plaintiff means of
+                   ascertaining facts in relation to the cause of action;
+               (e) the steps (if any) taken by the plaintiff to obtain, for the purposes
+                   of the cause of action, legal or other expert advice and the nature
+                   of any such advice.
+
+41            Prior bar ineffective
+              If, after the end of a limitation period to which this division applies,
+              the limitation period is extended by order under this division, the prior
+              ending of the limitation period has no effect for this Act.
+
+42            Evidence
+              If, under this division, a question arises about the knowledge, or acts
+              of, a deceased person, or the deceased person’s reasons for any action,
+              the court may have regard to the conduct and statements, oral or in
+              writing, of the deceased person.
+
+
+
+
+page 40                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                   Miscellaneous                       Part 4
+                                                       Extinction of right and title             Division 4.1
+                                                                                                   Section 43
+
+
+
+
+Part 4                             Miscellaneous
+Division 4.1                       Extinction of right and title
+43          Extinction of title
+     (1) Subject to this division, if a limitation period under this Act ends,
+         being a limitation period in relation to a cause of action to recover or
+         obtain goods, the right or title to the goods of any person having that
+         cause of action is extinguished.
+     (2) If, before the end of a limitation period referred to in subsection (1),
+         an action is brought on a cause of action to which that limitation
+         period relates, the ending of the limitation period does not affect the
+         right or title of the plaintiff to the goods in relation to which the action
+         is brought—
+             (a) for the purposes of the action; or
+             (b) so far as the right or title is established in the action.
+
+44          Possessory lien
+            Notwithstanding section 43, if—
+             (a) a person is in possession of goods; and
+             (b) he or she has a lien on the goods for a debt or other money claim
+                 payable by a second person;
+            the right and title of the first person to the debt or other money claim
+            is, as against the second person and his or her successors, saved from
+            extinction under this division for so long as a cause of action of the
+            second person or of a person claiming through the second person for
+            the conversion or detention of the goods or to recover the proceeds of
+            sale of the goods has not accrued or is not barred by this Act, but only
+            so far as is necessary to support and give effect to the lien.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 41
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 4                   Miscellaneous
+Division 4.2             Arbitration
+Section 45
+
+
+
+
+45            Extinction of right or title must be alleged in proceedings
+      (1) If in proceedings before a judicial tribunal a question arises about
+          extinction under this division of a right or title, a party to the
+          proceedings shall not have the benefit in those proceedings of any
+          such extinction of that right or title unless, as part of the proceedings,
+          he or she has pleaded or otherwise appropriately claimed in
+          accordance with the procedures of the tribunal that the right or title
+          has been so extinguished.
+      (2) In subsection (1), a reference to proceedings before a judicial
+          tribunal is a reference to proceedings before a court or person
+          authorised by law or by agreement to bind the parties to the
+          proceedings by a decision on a question arising in the proceedings
+          about whether or not a right or title has been extinguished under this
+          division.
+
+Division 4.2                         Arbitration
+46            Interpretation for div 4.2
+      (1) In this division:
+              provisions for arbitration means—
+               (a) the provisions of an agreement to submit present or future
+                   differences to arbitration, whether an arbitrator is named in the
+                   agreement or not; and
+               (b) the provisions of any law, order or scheme in force in the ACT
+                   requiring or permitting the determination of any matter by
+                   arbitration or relating to such an arbitration.
+      (2) If the provisions for arbitration are or include the provisions of any
+          law, order or scheme in force in the ACT this division has effect
+          subject to the latter provisions.
+
+
+
+
+page 42                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                      Miscellaneous                    Part 4
+                                                                         Arbitration             Division 4.2
+                                                                                                   Section 47
+
+
+
+
+47          Application of Act to arbitration
+     (1) This Act applies to an arbitration in like way as it applies to an action.
+     (2) An arbitration for any difference or matter under any provisions for
+         arbitration is not maintainable if begun after the date of end of the
+         period of limitation fixed by or under this Act for a cause of action in
+         relation to the same difference or matter.
+
+48          Accrual
+            If, by a term of any provisions for arbitration, a cause of action in
+            relation to any difference or matter referable to arbitration under the
+            provisions does not accrue until the making of an award or the
+            happening of some other event in or relating to the arbitration or does
+            not accrue at all, the cause of action nevertheless accrues, for the
+            purposes of the application of this division to an arbitration under the
+            provisions, on the date when it would accrue apart from that term.
+
+49          Commencement of arbitration
+     (1) For this division—
+             (a) if the provisions for arbitration require or permit a party to the
+                 arbitration to give written notice to another party—
+                     (i) requiring the other party to appoint or concur in appointing
+                         an arbitrator; or
+                    (ii) requiring the other party to submit or concur in submitting
+                         a difference or matter to a person named or designated in
+                         the provisions for arbitration as arbitrator; or
+
+
+
+
+R28                                           Limitation Act 1985                                      page 43
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 4                   Miscellaneous
+Division 4.3             General
+Section 51
+
+
+
+
+               (b) if, in a case to which paragraph (a) does not apply, a party to the
+                   arbitration takes a step required or permitted by the provisions
+                   for arbitration for the purposes of bringing a difference or matter
+                   before an arbitrator and gives to another party written notice of
+                   the taking of the step;
+              the arbitration is begun, as between the party giving the notice and
+              the party to whom the notice is given, on the date when the notice is
+              given.
+      (2) For subsection (1), the date when a notice is given is the date, or the
+          earlier or earliest of the dates, when the party giving the notice—
+               (a) gives it to the party to whom it is to be given; or
+               (b) leaves it at the usual or last known business or home address of
+                   the party to whom it is to be given; or
+               (c) posts it to the person to whom it is to be given at the person’s
+                   usual or last-known business or home address; or
+               (d) gives the notice in a way required or permitted by the provisions
+                   for arbitration.
+
+Division 4.3                         General
+51            Set-off etc
+              If, in an action (the principal action), a claim is made by way of
+              set-off, counterclaim or cross-action, the claim, for this Act—
+               (a) is a separate action; and
+               (b) is, as against a person against whom the claim is made, brought
+                   on the only or earlier of such of the following dates as are
+                   applicable:
+                       (i) the date when he or she becomes a party to the principal
+                           action;
+                      (ii) the date when he or she becomes a party to the claim.
+
+page 44                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                      Miscellaneous                    Part 4
+                                                                            General              Division 4.3
+                                                                                                   Section 52
+
+
+
+
+52          Joint right
+            If, were it not for this Act, 2 or more persons would have a cause of
+            action jointly and, by this Act, an action on the cause of action is not
+            maintainable by 1 or more of them, an action on the cause of action
+            is nonetheless maintainable by the other or others of them and
+            judgment may be given accordingly.
+
+53          Joint liability
+            If, were it not for this Act, 2 or more persons would be liable on a
+            cause of action jointly and, by this Act, an action on the cause of
+            action is not maintainable against 1 or more of them, an action on the
+            cause of action is nonetheless maintainable against the other or others
+            of them and judgment may be given accordingly.
+
+54          Recovery of State or Territory revenue amounts
+     (1) An action against a State or another Territory for recovery of a
+         revenue amount imposed, or purportedly imposed, under a law of the
+         State or Territory is not maintainable if the relevant limitation period
+         of the State or Territory has ended.
+     (2) In subsection (1):
+            relevant limitation period, in relation to a State or another Territory,
+            means the limitation period that would apply to an action for recovery
+            of a revenue amount if the action were brought in the State or
+            Territory.
+            revenue amount means an amount of money paid voluntarily or
+            under compulsion as—
+             (a) a tax, licence fee or duty imposed, or purportedly imposed,
+                 under a law; or
+             (b) penalty tax in relation to such a tax, licence fee or duty;
+            if the amount would have been legally owing if the provision under
+            which it was paid had been valid.
+
+
+R28                                           Limitation Act 1985                                      page 45
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Part 4                   Miscellaneous
+Division 4.4             Choice of law
+Section 55
+
+
+
+
+      (3) In subsection (1), a reference to an action against a State or another
+          Territory includes a reference to an action against an officer, a
+          Minister or an authority of the State or Territory.
+
+Division 4.4                         Choice of law
+55            Definitions for div 4.4
+              In this division:
+              court includes arbitrator.
+              limitation law means a law that provides for the limitation or
+              exclusion of any liability or the barring of a right of action in relation
+              to a claim by reference to the time when a proceeding on, or the
+              arbitration of, the claim is begun.
+
+56            Characterisation of limitation laws
+              If the substantive law of another place being a State, another Territory
+              or New Zealand, is to govern a claim before a court of the Territory,
+              a limitation law of that place is to be regarded as part of that
+              substantive law and applied accordingly by the court.
+
+57            Exercise of discretion under limitation law
+              If a court of the Territory exercises a discretion given under a
+              limitation law of a place being a State, another Territory or New
+              Zealand that discretion, as far as practicable, is to be exercised in the
+              way in which it is exercised in comparable cases by the courts of that
+              place.
+
+
+
+
+page 46                                   Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                     Miscellaneous                     Part 4
+                                                                   Other provisions              Division 4.5
+                                                                                                   Section 58
+
+
+
+
+Division 4.5                       Other provisions
+58          Approved forms
+     (1) The Minister may approve forms for this Act
+     (2) If the Minister approves a form for a particular purpose, the approved
+         form must be used for that purpose.
+     (3) An approved form is a notifiable instrument.
+
+59          Regulation-making power
+            The Executive may make regulations for this Act.
+
+
+
+
+R28                                           Limitation Act 1985                                      page 47
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Dictionary
+
+
+Dictionary
+(see s 2)
+
+              Note 1       The Legislation Act contains definitions and other provisions relevant to
+                           this Act.
+              Note 2       For example, the Legislation Act, dict, pt 1, defines the following terms:
+                           •     ACT
+                           •     Commonwealth
+                           •     Corporations Act
+                           •     home address
+                           •     instrument (see s 14)
+                           •     interest
+                           •     under.
+
+              action includes any proceeding in a court.
+              administrator—see the Administration and Probate Act 1929,
+              dictionary.
+              cause of action means the fact or combination of facts that gives rise
+              to a right to bring a civil proceeding.
+              deed includes—
+               (a) an instrument having the effect of a deed under a law in force in
+                   the ACT; or
+               (b) for an instrument executed under the law of any of the following
+                   jurisdictions—an instrument having the effect of a deed under
+                   the law under which it is executed:
+                       (i) the Commonwealth;
+                      (ii) a State;
+                     (iii) another Territory;
+                     (iv) the United Kingdom;
+                      (v) New Zealand.
+
+
+ page 48                                    Limitation Act 1985                                              R28
+                                            Effective: 26/11/25                                          26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Dictionary
+
+
+            defendant means a person against whom a cause of action lies,
+            whether or not a proceeding has been started for the cause of action.
+            government—see the Legislation Act 2001, section 121 (Binding
+            effect of Acts).
+            income includes interest on a judgment and other interest, rent,
+            annuities and dividends, but does not include arrears of interest
+            secured by a mortgage and lawfully treated as principal.
+            judgment includes a judgment of a court of the ACT and of any other
+            place.
+            land—see the Land Titles Act 1925, section 6 (1).
+            mortgage includes—
+             (a) a charge or lien on any property for securing money or money’s
+                 worth, other than a possessory lien on goods or any binding
+                 effect on property arising under an enforcement order of a court;
+                 and
+             (b) for land registered under the Land Titles Act 1925—a charge
+                 within the meaning of that Act.
+            mortgagee includes a person claiming a mortgage through an original
+            mortgagee.
+            mortgagor includes a person claiming property subject to a mortgage
+            through an original mortgagor.
+            personal injury includes any disease and any impairment of the
+            physical or mental condition of a person.
+            personal representative—see the Civil Law (Wrongs) Act 2002,
+            dictionary.
+            plaintiff means a person who has a cause of action, whether or not a
+            proceeding has been started for the cause of action.
+            principal money, for a mortgage, means all money secured by the
+            mortgage, including arrears of interest lawfully treated as principal,
+            but does not include other interest.
+
+R28                                           Limitation Act 1985                                      page 49
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Dictionary
+
+
+              successor, for a person liable on a cause of action, means someone
+              on whom the person’s liability devolves, whether or not—
+               (a) as personal representative or otherwise on death; or
+               (b) bankruptcy, disposition of property, or ending of a limited
+                   interest in property.
+              trust—
+               (a) includes—
+                       (i) an express, implied and constructive trust, whether or not
+                           the trustee has a beneficial interest in the trust property, and
+                           whether or not the trust arises only because of a transaction
+                           impeached; and
+                      (ii) the duties incident to the office of personal representative;
+                           but
+               (b) does not include the duties incident to the estate or interests of a
+                   mortgagee in mortgaged property.
+              under a disability—a person is under a disability—
+               (a) while the person is under 18 years old; or
+               (b) while the person is, for a continuous period of 28 days or longer,
+                   incapable of, or substantially impeded in, the management of his
+                   or her affairs in relation to the cause of action in relation to the
+                   limitation period for which the question of disability arises
+                   because of—
+                       (i) intellectual retardation or disability, mental illness or
+                           disorder, brain damage, senility or physical disability; or
+                      (ii) war or warlike operations; or
+                     (iii) circumstances arising out of war or warlike operations.
+
+
+
+
+ page 50                                  Limitation Act 1985                                                R28
+                                          Effective: 26/11/25                                            26/11/25
+
+             Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                              About the endnotes                 1
+
+
+Endnotes
+
+1           About the endnotes
+            Amending and modifying laws are annotated in the legislation history and the
+            amendment history. Current modifications are not included in the republished law
+            but are set out in the endnotes.
+            Not all editorial amendments made under the Legislation Act 2001, part 11.3 are
+            annotated in the amendment history. Full details of any amendments can be
+            obtained from the Parliamentary Counsel’s Office.
+            Uncommenced amending laws are not included in the republished law. The details
+            of these laws are underlined in the legislation history. Uncommenced expiries are
+            underlined in the legislation history and amendment history.
+            If all the provisions of the law have been renumbered, a table of renumbered
+            provisions gives details of previous and current numbering.
+            The endnotes also include a table of earlier republications.
+
+
+2           Abbreviation key
+              A = Act                                                  NI = Notifiable instrument
+              AF = Approved form                                       o = order
+              am = amended                                             om = omitted/repealed
+              amdt = amendment                                         ord = ordinance
+              AR = Assembly resolution                                 orig = original
+              ch = chapter                                             par = paragraph/subparagraph
+              CN = Commencement notice                                 pres = present
+              def = definition                                         prev = previous
+              DI = Disallowable instrument                             (prev...) = previously
+              dict = dictionary                                        pt = part
+              disallowed = disallowed by the Legislative               r = rule/subrule
+                             Assembly                                  reloc = relocated
+              div = division                                           renum = renumbered
+              exp = expires/expired                                    R[X] = Republication No
+              Gaz = gazette                                            RI = reissue
+              hdg = heading                                            s = section/subsection
+              IA = Interpretation Act 1967                             sch = schedule
+              ins = inserted/added                                     sdiv = subdivision
+              LA = Legislation Act 2001                                SL = Subordinate law
+              LR = legislation register                                sub = substituted
+              LRA = Legislation (Republication) Act 1996               underlining = whole or part not commenced
+              mod = modified/modification                                               or to be expired
+
+
+
+
+R28                                           Limitation Act 1985                                      page 51
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+3             Legislation history
+
+
+3                 Legislation history
+                  This Act was originally a Commonwealth ordinance—the Limitation
+                  Ordinance 1985 Ord1985-66 (Cwlth).
+                  The ACT Self-Government (Consequential Provisions) Act 1988 A1988-109
+                  (Cwlth), s 12) converted some former Commonwealth ordinances in force in the
+                  ACT into ACT enactments. This allowed the ACT Legislative Assembly to amend
+                  and repeal the laws. This Act was converted into an ACT enactment on 1 July 1990.
+                  As with most ordinances in force in the ACT, the name was changed from
+                  Ordinance to Act by the Self-Government (Citation of Laws) Act 1989 A1989-21,
+                  s 5 on its conversion to an ACT enactment on 1 July 1990.
+                  Before 11 May 1989, ordinances commenced on their notification day unless
+                  otherwise stated (see Seat of Government (Administration) Act 1910 (Cwlth), s 12).
+                  After 11 May 1989 and before 10 November 1999, Acts commenced on notification
+                  day unless otherwise stated (see Seat of Government (Administration) Act 1910
+                  (Cwlth), s 25).
+
+                  Commonwealth legislation
+                  Limitation Act 1985 A1985-66
+                     notified 19 December 1985
+                     commenced 19 December 1985
+
+                  as amended by
+
+                  Legislation after becoming Territory enactment
+                  Self-Government (Consequential Amendments) Ordinance 1990
+                  Ord1990-5 sch 1
+                     notified 27 June 1990 (Gaz 1990 No 25)
+                     s 1, s 2 commenced 27 June 1990 (s 2 (1))
+                     sch 1 commenced 1 July 1990 (s 2 (2))
+
+                  Commercial Arbitration (Amendment) Act 1990 A1990-32 s 6
+                    notified 2 October 1990 (Gaz 1990 No S69)
+                    s 1, s 2, s 6 commenced 2 October 1990 (s 2 (1))
+
+                  Statute Law Revision (Miscellaneous Provisions) Act 1992 A1992-23
+                  sch 1
+                     notified 4 June 1992 (Gaz 1992 No S71)
+                     commenced 4 June 1992
+
+
+    page 52                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                                Legislation history              3
+
+
+            Statute Law Revision (Miscellaneous Provisions) Act 1993 A1993-1
+            sch 1
+               notified 1 March 1993 (Gaz 1993 No S23)
+               commenced 1 March 1993
+
+            Acts Revision (Position of Crown) Act 1993 A1993-44 sch 1
+               notified 27 August 1993 (Gaz 1993 No S165)
+               commenced 27 August 1993 (s 2)
+
+            Limitation (Amendment) Act 1993 A1993-82 (as am by A1994-91)
+               notified 30 November 1993 (Gaz 1993 No S242)
+               commenced 30 November 1993 (s 2)
+
+            Mental Health (Consequential Provisions) Act 1994 A1994-45 sch
+              notified 7 September 1994 (Gaz 1994 No S177)
+              s 1, s 2 commenced 7 September 1994 (s 2 (1))
+              sch commenced 6 February 1995 (s 2 (2) and Gaz 1995 No S33)
+
+            Limitation (Amendment) Act 1994 A1994-91
+               notified 15 December 1994 (Gaz 1994 No S280)
+               commenced 15 December 1994 (s 2)
+                 Note                This Act only amends the Limitation (Amendment) Act 1993
+                                     No 82.
+
+            Land Titles (Consequential Amendments) Act 1995 A1995-54 sch
+               notified 20 December 1995 (Gaz 1995 No S313)
+               s 1, s 2 commenced 20 December 1995 (s 2 (1))
+               sch commenced 20 June 1996 (s 2 (3))
+
+            Limitation (Amendment) Act 1998 A1998-58
+               notified 27 November 1998 (Gaz 1998 No S207)
+               commenced 27 November 1998 (s 2)
+
+            Legislation (Consequential Amendments) Act 2001 A2001-44 pt 223
+               notified 26 July 2001 (Gaz 2001 No 30)
+               s 1, s 2 commenced 26 July 2001 (IA s 10B)
+               pt 223 commenced 12 September 2001 (s 2 and see Gaz 2001
+               No S65)
+
+
+
+
+R28                                           Limitation Act 1985                                      page 53
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+3             Legislation history
+
+
+                  Workers Compensation Amendment Act 2001 A2001-81 s 35
+                    notified LR 28 September 2001
+                    s 1, s 2 commenced 28 September 2001 (LA s 75)
+                    s 35 commenced 1 July 2002 (s 2 (1))
+
+                  Legislation Amendment Act 2002 A2002-11 pt 2.33
+                     notified LR 27 May 2002
+                     s 1, s 2 commenced 27 May 2002 (LA s 75)
+                     pt 2.33 commenced 28 May 2002 (s 2 (1))
+
+                  Civil Law (Wrongs) Act 2002 A2002-40 sch 3 div 3.2.9
+                     notified LR 10 October 2002
+                     s 1, s 2 commenced 10 October 2002 (LA s 75 (1))
+                     sch 3 div 3.2.9 commenced 1 November 2002 (s 2 (2) and CN2002-13)
+
+                  Civil Law (Wrongs) Amendment Act 2003 (No 2) A2003-35 pt 4
+                     notified LR 8 September 2003
+                     s 1, s 2 commenced 8 September 2003 (LA s 75 (1))
+                     pt 4 commenced 9 September 2003 (s 2 (1))
+
+                  Workers Compensation Amendment Act 2003 (No 2) A2003-49 s 33
+                    notified LR 3 December 2003
+                    s 1, s 2 commenced 3 December 2003 (LA s 75 (1))
+                    s 33 commenced 5 April 2004 (s 2 and CN2004-7)
+
+                  Statute Law Amendment Act 2004 A2004-42 sch 3 pt 3.14
+                     notified LR 11 August 2004
+                     s 1, s 2 commenced 11 August 2004 (LA s 75 (1))
+                     sch 3 pt 3.14 commenced 25 August 2004 (s 2 (1))
+
+                  Human Rights Commission Legislation Amendment Act 2005
+                  A2005-41 sch 1 pt 1.9 (as am by A2006-3 amdt 1.3)
+                    notified LR 1 September 2005
+                    s 1, s 2 commenced 1 September 2005 (LA s 75 (1))
+                    sch 1 pt 1.9 commenced 1 November 2006 (s 2 (3) (as am by A2006-3
+                    amdt 1.3) and see Human Rights Commission Act 2005 A2005-40, s 2
+                    (as am by A2006-3 s 4) and CN2006-21)
+
+                  Limitation Amendment Act 2005 A2005-64
+                     notified LR 22 December 2005
+                     s 1, s 2 commenced 22 December 2005 (LA s 75 (1))
+                     remainder commenced 23 December 2005 (s 2)
+
+
+    page 54                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                                Legislation history              3
+
+
+            Civil Law (Wrongs) Amendment Act 2006 A2006-1 sch 1 pt 1.2
+               notified LR 22 February 2006
+               s 1, s 2 commenced 22 February 2006 (LA s 75 (1))
+               sch 1 pt 1.2 commenced 23 February 2006 (s 2)
+
+            Human Rights Commission Legislation Amendment Act 2006
+            A2006-3 amdt 1.3
+              notified LR 22 February 2006
+              s 1, s 2 commenced 22 February 2006 (LA s 75 (1))
+              amdt 1.3 commenced 23 February 2006 (s 2)
+                 Note                This Act only amends the Human Rights Commission
+                                     Legislation Amendment Act 2005 A2005-41
+
+            Statute Law Amendment Act 2006 A2006-42 sch 3 pt 3.15
+               notified LR 26 October 2006
+               s 1, s 2 taken to have commenced 12 November 2005 (LA s 75 (2))
+               sch 3 pt 3.15 commenced 16 November 2006 (s 2 (1))
+
+            Statute Law Amendment Act 2007 A2007-3 sch 3 pt 3.60
+               notified LR 22 March 2007
+               s 1, s 2 taken to have commenced 1 July 2006 (LA s 75 (2))
+               sch 3 pt 3.60 commenced 12 April 2007 (s 2 (1))
+
+            Statute Law Amendment Act 2009 (No 2) A2009-49 sch 3 pt 3.45
+               notified LR 26 November 2009
+               s 1, s 2 commenced 26 November 2009 (LA s 75 (1))
+               sch 3 pt 3.45 commenced 17 December 2009 (s 2)
+
+            Justice and Community Safety Legislation Amendment Act 2016
+            (No 2) A2016-53 pt 3
+               notified LR 25 August 2016
+               s 1, s 2 taken to have commenced 23 June 2016 (LA s 75 (2))
+               pt 3 commenced 26 August 2016 (s 2 (1))
+
+            Justice and Community Safety Legislation Amendment Act 2017
+            (No 2) A2017-14 pt 13
+               notified LR 17 May 2017
+               s 1, s 2 commenced 17 May 2017 (LA s 75 (1))
+               pt 13 commenced 24 May 2017 (s 2 (1))
+
+
+
+
+R28                                           Limitation Act 1985                                      page 55
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+3             Legislation history
+
+
+                  Road Transport Reform (Light Rail) Legislation Amendment Act 2017
+                  A2017-21 sch 1 pt 1.10
+                    notified LR 8 August 2017
+                    s 1, s 2 commenced 8 August 2017 (LA s 75 (1))
+                    sch 1 pt 1.10 commenced 15 August 2017 (s 2)
+
+                  Motor Accident Injuries Act 2019 A2019-12 sch 3 pt 3.6
+                    notified LR 31 May 2019
+                    s 1, s 2 commenced 31 May 2019 (LA s 75 (1))
+                    sch 3 pt 3.6 commenced 1 February 2020 (s 2 (1) and CN2019-13)
+
+                  Civil Law (Wrongs) Amendment Act 2021 A2021-15 sch 1
+                     notified LR 30 June 2021
+                     s 1, s 2 commenced 30 June 2021 (LA s 75 (1))
+                     sch 1 commenced 1 July 2021 (s 2)
+
+                  Justice and Community Safety Legislation Amendment Act 2022
+                  A2022-21 pt 7
+                     notified LR 9 December 2022
+                     s 1, s 2 commenced 9 December 2022 (LA s 75 (1))
+                     pt 7 commenced 10 December 2022 (s 2)
+
+                  Statute Law Amendment Act 2025 A2025-29 sch 3 pt 3.55, sch 4
+                  pt 4.115
+                      notified LR 6 November 2025
+                      s 1, s 2 commenced 6 November 2025 (LA s 75 (1))
+                      sch 3 pt 3.55, sch 4 pt 4.115 commenced 26 November 2025 (s 2 (3),
+                      (9))
+
+
+
+
+    page 56                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                              Amendment history                  4
+
+
+4           Amendment history
+            Dictionary
+            s2                       om A2001-44 amdt 1.2649
+                                     ins A2006-42 amdt 3.119
+            Notes
+            s3                       om A2001-44 amdt 1.2649
+                                     ins A2006-42 amdt 3.119
+            Other limitations
+            s4                am A2002-11 amdt 2.67; A2006-42 amdt 3.120
+            Stolen property or interest in land
+            s5                 am A2006-42 amdt 3.121
+            Application of Act to governments
+            s7                 am A1993-44 sch 1; ss renum R5 LA; A2002-11 amdt 2.68;
+                                A2006-42 amdt 3.122
+            Derived rights and agency
+            s8                am Ord1990-5 s 6
+                              sub A2006-42 amdt 3.123
+                              def action om A2006-42 amdt 3.123
+                              def administrator om A2006-42 amdt 3.123
+                              def cause of action am A1992-23 sch 1
+                                  om A2006-42 amdt 3.123
+                              def Crown om A2002-11 amdt 2.69
+                              def deed om A2006-42 amdt 3.123
+                              def defendant om A2006-42 amdt 3.123
+                              def government ins A2002-11 amdt 2.70
+                                  om A2006-42 amdt 3.123
+                              def income om A2006-42 amdt 3.123
+                              def judgment om A2006-42 amdt 3.123
+                              def land am Ord1990-5 sch 1; A1995-54 sch
+                                  om A2006-42 amdt 3.123
+                              def mineral om A2006-42 amdt 3.123
+                              def mortgage am Ord1990-5 sch 1; A1995-54 sch
+                                  om A2006-42 amdt 3.123
+                              def mortgagee om A2006-42 amdt 3.123
+                              def mortgagor om A2006-42 amdt 3.123
+                              def personal injury om A2006-42 amdt 3.123
+                              def personal representative am Ord1990-5 sch 1
+                                  sub A2002-40 amdt 3.30
+                                  om A2006-42 amdt 3.123
+                              def plaintiff om A2006-42 amdt 3.123
+                              def principal money om A2006-42 amdt 3.123
+                              def successor om A2006-42 amdt 3.123
+                              def trust om A2006-42 amdt 3.123
+
+
+
+R28                                           Limitation Act 1985                                      page 57
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+4             Amendment history
+
+
+                 Application of provisions relating to accrual date
+                 s 8A               ins A2006-42 amdt 3.123
+                 Preliminary
+                 div 2.1 hdg              (prev pt 2 div 1 hdg) renum R5 LA
+                 General
+                 div 2.2 hdg              (prev pt 2 div 2 hdg) renum R5 LA
+                 General
+                 s 11                     am Ord1990-5 s 6
+                 Deed
+                 s 13                     am Ord1990-5 s 6
+                 Judgment
+                 s 14                     am Ord1990-5 s 6
+                 Penalty and forfeiture
+                 s 15               am Ord1990-5 s 6
+                 Compensation to relatives
+                 s 16             am Ord1990-5 sch 1; A2002-40 amdt 3.31
+                 Claims for common law compensation for workers compensation
+                 s 16A           ins A2001-81 s 35
+                 Motor accident claims
+                 s 16AA            ins A2019-12 amdt 3.69
+                 Other claims for damages for personal injury
+                 s 16B              ins A2003-35 s 58
+                                    am A2005-64 s 4; A2019-12 amdt 3.70
+                 Arbitral award
+                 s 17                     am Ord1990-5 s 6
+                 Successive wrongs to goods
+                 s 18            am Ord1990-5 s 6
+                 Shipping
+                 s 19                     am Ord1990-5 s 6; A2006-42 amdt 3.124, amdt 3.125
+                 Contribution between tortfeasors
+                 s 21              am Ord1990-5 s 6, sch 1; A2002-40 amdt 3.32; A2006-42
+                                    amdt 3.126
+                 Tax, licence fee or duty or penalty tax
+                 s 21A               ins A1993-82 s 4
+                                     am A2006-42 amdt 3.127
+
+
+
+
+    page 58                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                              Amendment history                  4
+
+
+            Defamation proceedings generally to be commenced within 1 year
+            s 21B            ins A1998-58 s 4
+                             sub A2006-1 amdt 1.3
+                             am A2021-15 amdt 1.1
+            Defamation—single publication rule
+            s 21BA          ins A2021-15 amdt 1.2
+            Extension of limitation period
+            s 21BB             ins A2021-15 amdt 1.2
+            Defamation—effect of limitation law concerning electronic defamatory
+            publications on other laws
+            s 21BC            ins A2021-15 amdt 1.2
+            No limitation period
+            div 2.2A hdg       ins A2016-53 s 8
+            Personal injury resulting from child abuse
+            s 21C hdg          sub A2017-14 s 38; A2022-21 s 17
+            s 21C              ins A2016-53 s 8
+                               am A2017-14 s 39, s 40; A2022-21 s 18, s 19
+            Mortgages
+            div 2.3 hdg              (prev pt 2 div 3 hdg) renum R5 LA
+            Mortgage under Land Titles Act 1925
+            s 22             am Ord1990-5 sch 1; A1995-54 sch
+            Redemption
+            s 23                     am Ord1990-5 s 6
+            Action for principal, possession or foreclosure
+            s 24               am Ord1990-5 s 6
+            Action for interest
+            s 25                am Ord1990-5 s 6
+            Adjustment of interest
+            s 26              am Ord1990-5 s 6
+            Fraud and conversion—trust property
+            s 27             am Ord1990-5 s 6
+            Trusts
+            div 2.4 hdg              (prev pt 2 div 4 hdg) renum R5 LA
+            Beneficiaries other than plaintiff
+            s 29               am Ord1990-5 s 6
+            General
+            div 3.1 hdg              (prev pt 3 div 1 hdg) renum R5 LA
+
+
+
+
+R28                                           Limitation Act 1985                                      page 59
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+4             Amendment history
+
+
+                 Disability
+                 s 30                     am Ord1990-5 s 6; A2003-35 s 59
+                 Special provision for injuries to children
+                 s 30A              ins A2003-35 s 60
+                                    (9)-(13) exp 9 September 2008 (s 30A (12))
+                                    am A2016-53 s 9; A2017-21 amdt 1.26, amdt 1.27; A2019-12
+                                      amdt 3.71; A2025-29 amdt 3.188
+                 Special provision in relation to children—claims relating to health services
+                 s 30B              ins A2003-35 s 61
+                                    am A2005-64 s 5; A2005-41 amdt 1.114; A2016-53 s 10;
+                                      A2017-14 s 41; A2022-21 s 20
+                 Notice to proceed
+                 s 31              am Ord1990-5 s 6; A1994-45 sch
+                 Confirmation
+                 s 32                     am Ord1990-5 s 6
+                 Fraud and concealment
+                 s 33             am Ord1990-5 s 6, sch 1
+                 Mistake
+                 s 34                     am Ord1990-5 s 6
+                 Personal injuries, latent damage to property and economic loss
+                 div 3.2 hdg         (prev pt 3 div 2 hdg) renum R5 LA
+                 Application of div 3.2
+                 s 35               am A2003-49 s 33
+                 Personal injuries
+                 s 36              am Ord1990-5 s 6, sch 1; A2002-40 amdt 3.33;
+                                    A2003-35 s 62; A2004-42 amdt 3.80; A2006-42 amdt 3.128,
+                                    amdt 3.129; A2019-12 amdt 3.72
+                 Action against estate of deceased person
+                 s 37              am Ord1990-5 sch 1
+                 Action by estate of deceased person
+                 s 38               am Ord1990-5 s 6; A2006-42 amdt 3.130, amdt 3.131
+                 Action for compensation to relatives
+                 s 39             am Ord1990-5 s 6; A2006-42 amdts 3.132-3.134
+                 Latent damage to property and economic loss
+                 s 40              am Ord1990-5 s 6; A2006-42 amdt 3.135, amdt 3.136
+                 Miscellaneous
+                 pt 4 hdg                 (prev pt 5 hdg) renum A1993-82 s 5
+                 Extinction of right and title
+                 div 4.1 hdg         (prev pt 4 div 1 hdg) renum R5 LA
+
+
+    page 60                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                              Amendment history                  4
+
+
+            Possessory lien
+            s 44                     am Ord1990-5 s 6
+            Extinction of right or title must be alleged in proceedings
+            s 45                am Ord1990-5 s 6
+            Arbitration
+            div 4.2 hdg              (prev pt 4 div 2 hdg) renum R5 LA
+            Application of Act to arbitration
+            s 47 hdg           am Ord1990-5 notes
+            Commencement of arbitration
+            s 49           am Ord1990-5 s 6; A2006-42 amdt 3.137; A2009-49 amdt
+                            3.106
+            Extension of limitation period
+            s 50               om A1990-32 s 6
+            Set-off etc
+            s 51                     am Ord1990-5 s 6
+            General
+            div 4.3 hdg              (prev pt 4 div 3 hdg) renum R5 LA
+            Recovery of State or Territory revenue amounts
+            s 54              orig s 54 om A1993-1 sch 1
+                              ins A1993-82 s 6
+                              am A2006-42 amdt 3.138
+            Choice of law
+            div 4.4 hdg              (prev pt 4 div 4 hdg) ins A1993-82 s 6
+                                     renum R5 LA
+            Definitions for div 4.4
+            s 55                ins A1993-82 s 6
+            Characterisation of limitation laws
+            s 56              ins A1993-82 s 6
+            Exercise of discretion under limitation law
+            s 57               ins A1993-82 s 6
+            Other provisions
+            div 4.5 hdg      ins A2003-35 s 63
+            Approved forms
+            s 58                     ins A2003-35 s 63
+                                     am A2006-42 amdt 3.139; A2025-29 amdt 4.115
+            Regulation-making power
+            s 59             ins A2003-35 s 63
+                             am A2025-29 amdt 4.116
+
+
+
+R28                                           Limitation Act 1985                                      page 61
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+4             Amendment history
+
+
+                 Transitional
+                 pt 5 hdg                 ins A2005-64 s 6
+                 Application of s 21B—Civil Law (Wrongs) Amendment Act 2005
+                 s 60               renum as s 101
+                 Application of amendments made by Civil Law (Wrongs) Amendment Act
+                 2003 (No 2)
+                 s 100             ins A2005-64 s 6
+                                   exp 23 December 2010 (s 100 (2) (LA s 88 declaration
+                                     applies))
+                 Application of s 21B—Civil Law (Wrongs) Amendment Act 2005
+                 s 101              (prev s 60) ins A2006-1 amdt 1.4
+                                    renum as s 101 R13 LA
+                                    exp 23 February 2009 (s 101 (6) (LA s 88 declaration applies))
+                 Transitional—Civil Law (Wrongs) Amendment Act 2021
+                 pt 6 hdg          ins A2021-15 amdt 1.3
+                                   exp 1 July 2024 (s 103)
+                 Application of amendments made by Civil Law (Wrongs) Amendment Act
+                 2021 to publication of defamatory matter
+                 s 102              ins A2021-15 amdt 1.3
+                                    exp 1 July 2024 (s 103)
+                 Expiry—pt 6
+                 s 103                    ins A2021-15 amdt 1.3
+                                          exp 1 July 2024 (s 103)
+                 Amendments of Acts
+                 sch             om A2001-44 amdt 1.2649
+                 Dictionary
+                 dict                     ins A2006-42 amdt 3.140
+                                          am A2009-49 amdt 3.107; A2021-15 amdt 1.4
+                                          def action ins A2006-42 amdt 3.140
+                                          def administrator ins A2006-42 amdt 3.140
+                                              sub A2007-3 amdt 3.333
+                                          def cause of action ins A2006-42 amdt 3.140
+                                          def deed ins A2006-42 amdt 3.140
+                                          def defendant ins A2006-42 amdt 3.140
+                                          def government ins A2006-42 amdt 3.140
+                                          def income ins A2006-42 amdt 3.140
+                                          def judgment ins A2006-42 amdt 3.140
+                                          def land ins A2006-42 amdt 3.140
+                                          def mortgage ins A2006-42 amdt 3.140
+                                          def mortgagee ins A2006-42 amdt 3.140
+                                          def mortgagor ins A2006-42 amdt 3.140
+                                          def personal injury ins A2006-42 amdt 3.140
+                                          def personal representative ins A2006-42 amdt 3.140
+
+
+    page 62                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                       Endnotes
+
+                                                                              Amendment history                  4
+
+
+                                     def plaintiff ins A2006-42 amdt 3.140
+                                     def principal money ins A2006-42 amdt 3.140
+                                     def successor ins A2006-42 amdt 3.140
+                                     def trust ins A2006-42 amdt 3.140
+                                     def under a disability ins A2006-42 amdt 3.140
+
+
+
+
+R28                                           Limitation Act 1985                                      page 63
+26/11/25                                     Effective: 26/11/25
+
+           Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+Endnotes
+
+5             Earlier republications
+
+
+5                 Earlier republications
+                  Some earlier republications were not numbered. The number in column 1 refers to
+                  the publication order.
+                  Since 12 September 2001 every authorised republication has been published in
+                  electronic pdf format on the ACT legislation register. A selection of authorised
+                  republications have also been published in printed format. These republications are
+                  marked with an asterisk (*) in column 1. Electronic and printed versions of an
+                  authorised republication are identical.
+
+                   Republication No              Amendments to                       Republication date
+                   1                             A1990-32                            31 May 1991
+                   2                             A1993-44                            31 August 1993
+                   3                             A1994-45                            6 February 1995
+                   4                             A1998-58                            31 March 1999
+                   5                             A2001-81                            11 January 2002
+                   6                             A2002-11                            31 May 2002
+                   7                             A2002-11                            1 July 2002
+                   8                             A2002-40                            1 November 2002
+                   9                             A2003-35                            9 September 2003
+                   9 (RI)                        A2003-35 †                          18 September 2003
+                   10                            A2003-49                            5 April 2004
+                   11                            A2004-42                            25 August 2004
+                   12                            A2005-64                            23 December 2005
+                   13                            A2006-3                             23 February 2006
+                   14                            A2006-3                             1 November 2006
+                   15                            A2006-42                            16 November 2006
+                   16                            A2007-3                             12 April 2007
+                   17*                           A2007-3                             10 September 2008
+                   18                            A2007-3                             24 February 2009
+                   19                            A2009-49                            17 December 2009
+
+
+
+
+    page 64                                  Limitation Act 1985                                                R28
+                                             Effective: 26/11/25                                            26/11/25
+
+                Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+                                                                                                        Endnotes
+
+                                                   Expired transitional or validating provisions                  6
+
+
+               Republication No              Amendments to                       Republication date
+               20                            A2009-49                            24 December 2010
+               21                            A2016-53                            26 August 2016
+               22                            A2017-14                            24 May 2017
+               23                            A2017-21                            15 August 2017
+               24                            A2019-12                            1 February 2020
+               25                            A2021-15                            1 July 2021
+               26                            A2022-21                            10 December 2022
+               27                            A2022-21                            2 July 2024
+               † Reissue includes additional editorial amendments under Legislation Act and
+                 textual correction
+
+
+6            Expired transitional or validating provisions
+             This Act may be affected by transitional or validating provisions that have expired.
+             The expiry does not affect any continuing operation of the provisions (see
+             Legislation Act 2001, s 88 (1)).
+             Expired provisions are removed from the republished law when the expiry takes
+             effect and are listed in the amendment history using the abbreviation ‘exp’ followed
+             by the date of the expiry.
+             To find the expired provisions see the version of this Act before the expiry took
+             effect. The ACT legislation register has point-in-time versions of this Act.
+
+
+
+
+© Australian Capital Territory 2025
+
+
+
+
+ R28                                           Limitation Act 1985                                      page 65
+ 26/11/25                                     Effective: 26/11/25
+
+            Authorised by the ACT Parliamentary Counsel—also accessible at www.legislation.act.gov.au
+

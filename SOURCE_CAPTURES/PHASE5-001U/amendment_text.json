@@ -1,0 +1,68 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "document_type": "GOVERNING AMENDMENT BY QUOTED REPLACEMENT — one amendment, one governing document. It admits no rule by itself, certifies no coverage, creates no finding class and produces no consumer-visible output",
+  "purpose": "record the owner-authorised amendment of the Gate 5.6 pre-admission sharing sentence by the quoted-replacement procedure, so that the sentence states which measurement satisfies the sharing condition at Gate 5.6 and which assignment remains reserved to Gate 5.7",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "amendment_procedure_applied": "CRP_CORE_CONSTITUTION.md sections 6.1, 6.2 and 6.5 — the document is named, the clause is named, the replaced text is quoted verbatim and the replacement text is stated; the amendment-history row is appended under section 6.5",
+  "digest_before": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+  "digest_after": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+  "bytes_before": 38651,
+  "bytes_after": 41267,
+  "line_endings": "LF preserved, exactly the convention the document already used",
+  "amendment_count": 2,
+  "replacements": 1,
+  "rows_appended": 1,
+  "amendments": [
+    {
+      "id": "A-U-1",
+      "type": "REPLACE_BY_EXTENSION",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Gate 5.6 (the pre-admission immutable-version sharing sentence, as extended by PHASE5-001S A-4)",
+      "line_before_amendment": 170,
+      "replaced_text": "the production admission identity and version remain reserved to Gate 5.7, and a scoped Gate 5.6 verdict must name that reservation rather than treat the condition as satisfied by it.",
+      "replacement_text": "the production admission identity and version remain reserved to Gate 5.7, and a scoped Gate 5.6 verdict must name that reservation rather than treat the condition as satisfied by it. The reservation is a Gate 5.7 assignment, not a Gate 5.6 measurement. Under owner authority PHASE5-001U, the sharing condition for such a scope is the condition that the governed rule record the scope reads, the source crosswalk, the tests and the explanation templates it reads and writes are each pinned to one shared, verified, immutable pre-admission version identity, each at an immutable digest; that condition is measurable, and is met or not met, before Gate 5.7 has assigned any production identity. A scoped Gate 5.6 verdict therefore records the sharing condition against that shared pre-admission version identity and names the production reservation beside it, and it may not treat the reservation, the existence of this clause, or the prospect of a later assignment as evidence that sharing holds. Gate 5.7 remains the only step that assigns a production identity and a production version string, the requirement to name the reservation is unchanged, and no gate is passed by this clause alone.",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "replaced_text_occurrences_before_amendment": 1,
+        "replacement_text_occurrences_before_amendment": 0,
+        "replacement_text_present_exactly_once_after_amendment": true,
+        "replacement_text_occurrences_after_amendment": 1,
+        "replaced_text_survives_verbatim_inside_the_replacement": true,
+        "replacement_text_is_an_extension_of_the_replaced_text": true,
+        "replaced_text_occurrences_in_the_amended_document": 1,
+        "note": "the replaced text still appears in the amended document because it is retained verbatim inside its replacement: nothing was deleted, so Core Constitution section 6.4 removal condition is not triggered and no requirement is removed"
+      },
+      "line_after_amendment": 263
+    },
+    {
+      "id": "A-U-2",
+      "type": "APPEND_ROW",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 8, Amendment History, appended row",
+      "appended_row": "| 2026-10-01 | PHASE5-001U | Valid owner amendment under Core Constitution section 6: Gate 5.6’s pre-admission sharing sentence gains the owner’s reading of how its reservation and its measurement relate (owner authority PHASE5-001U) — the sharing condition for a scope whose rule record Gate 5.7 has not admitted is the condition that the governed rule record the scope reads, the source crosswalk, the tests and the explanation templates it reads and writes are each pinned to one shared, verified, immutable pre-admission version identity at an immutable digest; that condition is measurable and is met or not met before Gate 5.7 assigns any production identity; a scoped Gate 5.6 verdict records the sharing condition against that shared pre-admission version identity and names the production reservation beside it, and may not treat the reservation, this clause, or the prospect of a later assignment as evidence that sharing holds. The requirement to name the reservation, Gate 5.7’s sole authority to assign the production identity and the production version string, every other Gate 5.6 clause, Gate 5.7 itself, the finding model, the stop conditions and the permanent exclusions are unchanged, no requirement is removed, and no gate is passed by this amendment alone. It admits no rule by itself, certifies no coverage, creates no finding class, changes no application behaviour and authorises no consumer-visible output. Both replaced text and replacement text are quoted in CRP_PHASE5_001U_VERSION_RESOLUTION_AND_SCOPED_ADMISSION.md and SOURCE_CAPTURES\\PHASE5-001U\\amendment_text.json |",
+      "removed_text": "",
+      "requirement_removed": false
+    }
+  ],
+  "inversion_check": {
+    "method": "the appended row is removed and the replacement is undone in reverse order; the reconstructed bytes are hashed",
+    "pre_amendment_digest": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+    "reconstructed_digest": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+    "reconstruction_matches_baseline": true,
+    "what_this_proves": "the amendment added exactly the two recorded items and changed nothing else in the document; a hidden edit, an extra character or a dropped requirement would change the reconstructed digest"
+  },
+  "what_the_replacement_text_says": [
+    "the sharing condition for a scope whose rule record Gate 5.7 has not admitted is the condition that the governed rule record it reads, the source crosswalk, the tests and the explanation templates it reads and writes are each pinned to one shared, verified, immutable pre-admission version identity at an immutable digest",
+    "that condition is measurable, and is met or not met, before Gate 5.7 has assigned any production identity",
+    "a scoped Gate 5.6 verdict records the sharing condition against that shared pre-admission version identity and names the production reservation beside it",
+    "the reservation, this clause, and the prospect of a later assignment are not evidence that sharing holds",
+    "Gate 5.7 remains the only step that assigns a production identity and a production version string"
+  ],
+  "what_no_replacement_did": "no requirement was removed: the sentence requiring a scoped Gate 5.6 verdict to name the production reservation survives verbatim and remains binding, and Gate 5.7 remains the only step that assigns the production identity and version",
+  "verdict": "AMENDMENT APPLIED — the Gate 5.6 sharing sentence states which measurement satisfies the sharing condition and which assignment stays reserved to Gate 5.7; the inverse reconstruction reproduces the pre-amendment bytes exactly, so nothing else in the document changed and no requirement was removed; no gate is passed by this amendment alone",
+  "created_by": "PHASE5-001U"
+}

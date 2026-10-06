@@ -1,0 +1,187 @@
+{
+  "artifact": "prerequisite_assessment.json",
+  "work_order": "PHASE5-001I-B",
+  "created_utc": "2026-09-30",
+  "document_type": "DRAFT prerequisite assessment for the rule-record draft",
+  "purpose": "record, from the governing instruments and the measured gate records, exactly what the approved sequence requires before this rule unit may be admitted, what evidence each gate already has, what it is missing, and whether Gate 5.3 can be completed for this exact-specimen boundary",
+  "status_of_this_artifact": {
+    "admission_state": "NOT_ADMITTED_DRAFT_ONLY",
+    "gate_credit": "NONE",
+    "is_gate_evidence_for_any_gate": false,
+    "admits_anything": false
+  },
+  "prerequisites_the_approved_sequence_imposes": [
+    {
+      "id": "P-1",
+      "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md (rank 5)",
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "line": 45,
+      "quoted_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "satisfied_now": false
+    },
+    {
+      "id": "P-2",
+      "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md (rank 5)",
+      "clause": "section 3, Phase 5.4, first bullet",
+      "quoted_text": "Build a candidate-to-rule-unit crosswalk. A rule unit is one independently testable legal proposition for one exact jurisdiction and statutory limb.",
+      "satisfied_now": false
+    },
+    {
+      "id": "P-3",
+      "instrument": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md (rank 6)",
+      "clause": "section 9.4, Next milestone M-1",
+      "line": 552,
+      "quoted_text": "**Milestone M-1 - Gate 5.3 passes for the single selected unit** (owner decision PROD-003: the unit is no longer required to be `US-NY`).",
+      "satisfied_now": false
+    }
+  ],
+  "measured_gate_state_now": {
+    "gate_5_1": "MET_WITH_RECORDED_ADMINISTRATIVE_LIMITATIONS",
+    "gate_5_2": "ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS, with the report-mapping route for CRP-LSRC-0354 now evidenced",
+    "gate_5_3": "STILL_EVIDENCE_GATED - reached for one candidate on one presentation, passed for none",
+    "gate_5_4": "NOT_STARTED",
+    "gate_5_5": "NOT_STARTED",
+    "gate_5_6": "NOT_STARTED",
+    "gate_5_7": "NOT_REACHED",
+    "admitted_governed_legal_rules": 0,
+    "permitted_legal_findings": 0,
+    "gate_5_3_recorded_as_passed": false,
+    "source_of_this_reading": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json and SOURCE_CAPTURES\\PROD-003\\gate_prerequisites.json; this order re-measures the same records and claims no change"
+  },
+
+  "gate_by_gate_evidence": [
+    {
+      "gate": "5.3",
+      "requirement": "each proposed candidate has a verifiable report representation and exact location, or remains explicitly unresolved/excluded with a source-grounded reason. No rule enters certification merely because a field seems likely to exist",
+      "existing_evidence": [
+        "PROD-003's register records the representation for PR-01: section, page, row label, record boundary, printed form, raw and normalized values, and the named extraction method",
+        "PHASE5-001I-A re-measured and reproduced the locations on the byte-pinned specimen (page 16 line 32; page 17 line 5; header on all 22 pages)",
+        "every unsupported input class has a recorded refusal and a fixed status",
+        "the second limb is recorded as unseated with a source-grounded reason rather than inferred"
+      ],
+      "missing_evidence": [
+        "a second independently authorized Equifax Canada specimen, or the owner's written acceptance of the single-specimen boundary (D-2)",
+        "the owner's determination of which printed field represents the admitted required field (the tradeline/collection divergence)",
+        "clearing of the register disposition: disposition UNRESOLVED, blocker REPORT_EVENT_DATE_MAPPING_UNVERIFIED, whose recorded clearing authority is an authorised evidence route for the report representation plus owner direction"
+      ],
+      "supplied_by_this_order": "none as gate evidence. This order drafts the record that would be needed; it does not claim the gate"
+    },
+    {
+      "gate": "5.4",
+      "requirement": "each proposed rule has a complete field-by-field trace to the owner-approved source, exact jurisdiction/limb, no unresolved affirmative element, and a deterministic test. Independent validation verifies faithful transcription and mapping; it does not repeat the owner's legal/source certification",
+      "existing_evidence": [
+        "the rule-record draft's governed fields, each carrying its recorded basis",
+        "PROD-003's crosswalk, and the PHASE5-001O ledger row it cites",
+        "the reproduction of PROD-003's arithmetic by PHASE5-001I-A"
+      ],
+      "missing_evidence": [
+        "effective dates/status - MISSING_EVIDENCE in the accepted record",
+        "the direct-report section 4 exception determination - owner decision",
+        "the permitted result ceiling decision - owner decision",
+        "an independent validation of faithful transcription and mapping",
+        "a Gate 5.3 pass for this candidate before the phase may begin"
+      ],
+      "supplied_by_this_order": "none as gate evidence. The draft cannot present 'no unresolved affirmative element' while the effective period and the exception are unresolved",
+      "this_draft_is_not_gate_5_4_evidence": true
+    },
+    {
+      "gate": "5.5",
+      "requirement": "evaluator output is deterministic, fully traceable to report and source, and cannot emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping, or an unresolved affirmative element",
+      "existing_evidence": [
+        "an internal, unadmitted prototype comparator with a pure calendar function, a five-state fact vocabulary and a fixed refusal-to-status mapping (PHASE5-001I-A)"
+      ],
+      "missing_evidence": [
+        "an admitted rule record for the evaluator to be rebuilt from",
+        "the build plan's fact-model statuses PRESENT and CONTRADICTED, which the internal prototype does not implement",
+        "explicit finding-class outputs, which this unit may not emit",
+        "the consumer-facing explanation the plan requires, including the timing qualification"
+      ],
+      "supplied_by_this_order": "none. Carrying the internal prototype forward would not answer this gate"
+    },
+    {
+      "gate": "5.6",
+      "requirement": "every test passes; independent replay reproduces each sampled result; no known false positive/negative category remains unexplained; rule corpus, source crosswalk, tests and explanation templates share the same immutable versions",
+      "existing_evidence": [
+        "41 internal tests with 0 failures over the pinned specimen, the arithmetic, the failure paths, the refusals and the state model"
+      ],
+      "missing_evidence": [
+        "the Gate 5.6 fixture set: clear breach, compliant, exact boundary, wrong event date, date unavailable, report contradiction, exception shown, exception unknown, effective-period uncertainty, preemption uncertainty, duplicate catalogue source, wrong jurisdiction, parser failure, OCR ambiguity, report section not inspected",
+        "an independent reviewer reproducing a sample from the source pin and report excerpt without seeing the evaluator output first",
+        "consumer-language validation",
+        "shared immutable versions across corpus, crosswalk, tests and templates"
+      ],
+      "supplied_by_this_order": "none",
+      "the_internal_tests_are_not_gate_5_6_evidence": true
+    },
+    {
+      "gate": "5.7",
+      "requirement": "a rule-corpus amendment admits only rules that passed Gates 5.1 to 5.6, with immutable IDs/versions and full provenance, and the owner approves the exact finding classes",
+      "existing_evidence": ["nothing admissible today: 0 admitted governed rules, 0 permitted findings"],
+      "missing_evidence": [
+        "the owner's rule-corpus amendment",
+        "the recorded admission of the exact finding classes",
+        "a validated evaluator",
+        "the owner's ceiling decision for this unit"
+      ],
+      "supplied_by_this_order": "none"
+    }
+  ],
+  "can_gate_5_3_be_completed_for_this_exact_specimen_boundary": {
+    "answer": "yes - for this one candidate on this one byte-pinned specimen, and only if the owner records three decisions first. It cannot be completed for a report class, for a second specimen, or for any other candidate, and this order neither completes it nor claims any part of it",
+    "why_yes": "the gate asks each proposed candidate to have a verifiable report representation and exact location, or a source-grounded unresolved status. For CA-NS-CRA-S10-3-C-LIMB-1 the representation and its exact location exist, are recorded, and were independently re-measured on the evidenced specimen; the unsupported classes and the second limb carry source-grounded statuses. What stands between that record and a Gate 5.3 pass is not missing representation evidence but unresolved owner decisions and an uncompelled register disposition",
+    "the_three_recorded_conditions": [
+      {
+        "condition": "the single-specimen boundary (D-2) is settled: either the owner accepts the one-specimen boundary in writing, or a second independently authorized Equifax Canada consumer specimen is supplied, evidenced, byte-pinned and tested",
+        "who": "owner (or a later evidence order)"
+      },
+      {
+        "condition": "the owner determines which printed field is the representation of the admitted required field, resolving the tradeline/collection divergence",
+        "who": "owner"
+      },
+      {
+        "condition": "the register disposition for CRP-LSRC-0354 is cleared from UNRESOLVED / REPORT_EVENT_DATE_MAPPING_UNVERIFIED under its recorded clearing authority (an authorised evidence route for the report representation plus owner direction)",
+        "who": "owner direction, exercised by whatever order the owner issues"
+      }
+    ],
+    "what_a_gate_5_3_pass_would_not_be": [
+      "not a whole-gate pass: it is a pass for one candidate on one presentation, and every other candidate keeps its source-grounded status",
+      "not an admission of a rule, a creation of coverage, or a finding",
+      "not the end of needed work: Gates 5.4 to 5.7 follow, and this draft is not their evidence"
+    ],
+    "who_may_do_it": "the owner, in a later order. This draft records the conditions and supplies no gate evidence"
+  },
+  "smallest_next_action_toward_admission": {
+    "action": "one owner decision note (an amendment or a recorded direction) that settles the three Gate 5.3 conditions for this candidate: the exact-specimen boundary, the printed-field seating, and the clearing of the register disposition - and records the permitted ceiling for this unit, which the owner has already indicated is the retained D3 / observation ceiling and not a finding class",
+    "why_this_is_the_smallest": "nothing else can be completed before it. Gate 5.4 may not begin until Gate 5.3 passes; the rule record cannot be finalised while the effective period and the exception are unresolved; the evaluator cannot be rebuilt until a rule record is admitted; and no admission is possible until a validated evaluator exists. Each of those is blocked on the same decision",
+    "what_follows_in_order": [
+      "1. the owner's decision note above",
+      "2. the Gate 5.3 record for this one candidate",
+      "3. the Gate 5.4 rule-record order, built from this draft, with the effective-period handling, the anniversary-boundary decision, the exception determination and the ceiling recorded",
+      "4. the Gate 5.5 rebuild of the evaluator against the admitted rule record, and the Gate 5.6 validation suite with an independent replay",
+      "5. the Gate 5.7 rule-corpus amendment and the explicit admission of any finding class"
+    ],
+    "what_this_order_does_not_do_about_it": "it does not make the decision, does not pre-empt it, and does not treat the draft as though it had been made"
+  },
+  "owner_decisions_owed": [
+    "the permitted result ceiling for this unit (the owner's stated position is observation-only; the record awaits the formal decision at admission)",
+    "the direct-report section 4 retention-exception determination (D-5 divergence)",
+    "the single-specimen boundary (D-2): accept in writing, or supply a second specimen",
+    "the printed-field seating determination (tradeline.lastPaymentDate against the printed collection field)",
+    "the effective-period handling for the relevant event (D-4), or continued acceptance of the mandatory timing qualification",
+    "the anniversary-boundary convention and the comparator conventions"
+  ],
+  "what_this_order_does_not_do": [
+    "it does not pass, advance, soften or waive any gate, and it claims no gate state at all",
+    "it does not admit a rule, create coverage or create a finding class",
+    "it does not authorize PROBABLE_VIOLATION or VIOLATION in any circumstance",
+    "it does not adopt the PHASE5-001I-A comparator as an admitted evaluator or its tests as Gate 5.6 evidence",
+    "it does not build or advertise a consumer-visible surface, and report checking remains unavailable for every region",
+    "it does not repair, rewrite or re-run any inherited artifact; the scope and custody discrepancies it found are recorded in SOURCE_CAPTURES\\PHASE5-001I-B\\scope_and_custody_reconciliation.json and left in place"
+  ],
+  "boundaries": [
+    "this assessment is a draft. It is not gate evidence, not an admission and not a certification of any kind",
+    "it re-measures the recorded gate state and claims no change to it",
+    "every unresolved item above is a recorded limitation, not a finding, a coverage claim or a promise"
+  ],
+  "created_by": "PHASE5-001I-B"
+}

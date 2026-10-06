@@ -1,0 +1,184 @@
+{
+  "artifact": "file_custody_manifest.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "purpose": "byte-level custody record for every file this order created, and the evidence that every pre-existing file except the amended governing document was left byte-identical",
+  "file_count": 26,
+  "total_bytes": 363251.0,
+  "files": [
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\amendment_application_result.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 2250,
+      "sha256": "39E1CCF3414B721E78A98CAB1AC773B90DF58C67F478C8222D9C22F6663B607C"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\amendment_authority_analysis.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 16774,
+      "sha256": "46ACBCF0D1403160207F245586B7C267C29864E615F863520BC79882E6E7654E"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\amendment_text.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 12096,
+      "sha256": "6B9BBE50DB0CE23EFE3C52D133275E77A13EDFD4DEDA096026BE7A388DCB825E"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\amendments_001p.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 6890,
+      "sha256": "BE2B888D1A6C806C251FBAF68DBB6D1AB4298FF44EB3B60A6BAF7EBBDA9AF798"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\apply_001p_amendments.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 5451,
+      "sha256": "CDC4292DCF02512742F7AF73EE29B77ECD01488F8333285B5E333106A14E16A3"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_amendment_records.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8130,
+      "sha256": "8E9E5F310F518DDE7A0A9CAAF841AE14CA1B7A1430DC2EAA830411585AD53272"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_authority_analysis.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 17389,
+      "sha256": "9536E498A79C8C0D8A84340216BE7C0C80DA6763769C63F009A0373F83A05D22"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_progression_records.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 16493,
+      "sha256": "2E7E8962C61A86D1F6C117FD1F0A578419644A645C07882C17BCF4193BD729D5"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_scope_definition.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8616,
+      "sha256": "60153B9F1B9D4F060958E0B546645B424EBABB28C34E81CC87BCA0FA4590B9E3"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_scoped_verdicts.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 17461,
+      "sha256": "136057AE76034F270B7EA89D22D740D67C7649B8F5808165C308B89330F3E381"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\build_001p_supplement_and_queue.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 15004,
+      "sha256": "490DBC51EC176071B98CFE688EA872D0EB411FD4EA0BAC5FF889B4C91285D52B"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\capture_001p_baseline.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 6356,
+      "sha256": "30992A67B7B898254BC5721A24666D50A31A4D1B47211129E1BAA7BEF14F4522"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\corpus_queue_preservation.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 4117,
+      "sha256": "B3516E02227C4B5A36CB37A77FDE64A61A8FE930A61BDAA66814CE54574A828A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\disposition_supplement.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8495,
+      "sha256": "68F4344435D89C5C78E998074F1FC57CB92DDAEA47ECDEF9D2BEFBB25C6C81FE"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 12761,
+      "sha256": "B7659A7C32A5964A3C8A21B620DDB8C0CC8EEE5B66D7A2F2E853CFDF2A463899"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\next_work_order.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 6354,
+      "sha256": "A09EB6DEF4F4018576B94EA77EAD31B5D09B19E132DBF2D89B427A0F6F38C1A2"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\preservation_and_change_record.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 6870,
+      "sha256": "4081F0B1BF463FD851136C3BE96528CD3330A3214B0F5D03BA891C36BEF08B02"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\preserved_files_before.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 91714,
+      "sha256": "A682C0C31E63DD3DF4E8BF43625D889A7056494C97D06F90A5882549BB58FA45"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\reference_reconciliation.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8517,
+      "sha256": "D0607146F69D3F1B6EAD4C0C4F2F9C32C84ADA0DF8EA6BBF6F1697A608249B0A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\revert_001p_amendments_result.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 1335,
+      "sha256": "238763A263F306E5B014CB1E9C47A4E4A3DCF333D2EA5CBBC5505B2CF6C03F91"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\revert_001p_amendments.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 3988,
+      "sha256": "27C4CC65394ADCA9769263F7D7CD5C53C082BF29A9D7E258744552454216A2B2"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\scope_definition.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8098,
+      "sha256": "64C808AB6B6C82E85D436CEC4232FCBBDE81090BFA0FFBFEA61EB8B2275FEA31"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_2_verdict.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 7630,
+      "sha256": "9048B5C47B1587E12CB0DD9A9CCEE7A273BA2E0E6DFCE8B00024FD8082984D19"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_3_verdict.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 8597,
+      "sha256": "DA45FE408BFD5EC8C8977BDA0943416FC9EFF7B1371D6B065B7F41A04286D391"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001P\\verify_and_manifest_001p.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001P",
+      "bytes": 27582,
+      "sha256": "018BE6D6F5A6DC1101AFE293323B7D7334F800C7A25BD5EA5848C01E335B9B48"
+    },
+    {
+      "relative_path_from_workspace": "CRP_PHASE5_001P_INCREMENTAL_UNIT_GATE_PROGRESSION.md",
+      "location": "workspace root",
+      "bytes": 34283,
+      "sha256": "40D1EBF5D0771714718379B614BEB59F92B2EB23990A4D4D3CD06D4C6D86232B"
+    }
+  ],
+  "exclusions": [
+    "file_custody_manifest.json (this file cannot carry its own digest)",
+    "verification_results.json (written after this manifest and therefore not listed here; it records that exclusion)"
+  ],
+  "amended_governing_document": {
+    "relative_path_from_workspace": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "before_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+    "after_sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+    "bytes": 33593
+  },
+  "preservation_reading": {
+    "baseline_files": 432,
+    "files_unchanged": 431,
+    "files_changed": 1,
+    "files_missing": 0,
+    "files_added_by_this_order": 28
+  },
+  "created_by": "PHASE5-001P"
+}

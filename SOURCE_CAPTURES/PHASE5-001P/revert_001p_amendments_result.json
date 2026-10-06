@@ -1,0 +1,20 @@
+{
+  "artifact": "revert_001p_amendments_result.json",
+  "work_order": "PHASE5-001P",
+  "purpose": "record the exact reversal that restored the amended document to its recorded baseline digest, so the intermediate state is measured rather than asserted",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "removals_taken": {
+    "appended_history_row": 1,
+    "A-1_paragraph_leading_\"\\n\\n\"": 1,
+    "A-1_paragraph_leading_\"\\n\"": 1,
+    "A-2_appended_sentence": 1,
+    "A-3_appended_sentence": 1
+  },
+  "digest_before_revert": "2C20E5A7BCD1B518C6EBB4064D53B05BAA757025879C8B443772B100D474CDD7",
+  "digest_after_revert": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+  "baseline_digest": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+  "reversal_reproduced_baseline": true,
+  "bytes_written": true,
+  "why_this_utility_exists": "the amendment set was corrected once during this order: the first application omitted a paragraph break in amendment A-1, and a second unguarded application duplicated the additive edits. The set was reversed exactly to the baseline digest recorded before any amendment and then re-applied in its recorded final form. This order records that intermediate state instead of hiding it.",
+  "created_by": "PHASE5-001P"
+}

@@ -1,0 +1,143 @@
+{
+  "artifact": "input_verification.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "verify every input and prerequisite this order relies on, from its own source, before the order claims anything about it",
+  "checks": [
+    {
+      "id": "I-01",
+      "claim": "the selected presentation PR-01 is recorded by PROD-003 and still present at its recorded path",
+      "passed": true,
+      "detail": "path read from the PROD-003 register"
+    },
+    {
+      "id": "I-02",
+      "claim": "the evidenced presentation digest matches the register",
+      "passed": true,
+      "detail": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F (recorded)"
+    },
+    {
+      "id": "I-03",
+      "claim": "the secondary specimen PR-02 is unchanged",
+      "passed": true,
+      "detail": "PR-02 digest, path read from the register"
+    },
+    {
+      "id": "I-04",
+      "claim": "the specimen is read in place from outside this repository",
+      "passed": true,
+      "detail": "nothing is copied into this repository"
+    },
+    {
+      "id": "I-05",
+      "claim": "the admitted corpus artifact carrying the rule is unchanged",
+      "passed": true,
+      "detail": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF"
+    },
+    {
+      "id": "I-06",
+      "claim": "the ledger row CRP-LSRC-0354 records the exact CA-NS association",
+      "passed": true,
+      "detail": "EXACT"
+    },
+    {
+      "id": "I-07",
+      "claim": "the ledger row records the same legacy rule id this unit implements",
+      "passed": true,
+      "detail": "ca-ns.cra.s10_3_c.debt_retention_6y"
+    },
+    {
+      "id": "I-08",
+      "claim": "the crosswalk selected this unit and records it as the first limb only",
+      "passed": true,
+      "detail": "CA-NS-CRA-S10-3-C-LIMB-1"
+    },
+    {
+      "id": "I-09",
+      "claim": "CRP-JURISDICTION-ENUM-1 enumerates CA / CA-NS",
+      "passed": true,
+      "detail": "the explicit selection this unit requires is an enumerated jurisdiction"
+    },
+    {
+      "id": "I-10",
+      "claim": "Gate 5.3 is not met and is not treated as passed",
+      "passed": true,
+      "detail": "STILL_EVIDENCE_GATED, and the recorded claim is the narrow one"
+    },
+    {
+      "id": "I-11",
+      "claim": "Gate 5.4 has not started and no governed rule is admitted",
+      "passed": true,
+      "detail": "NOT_STARTED, admitted rules 0"
+    },
+    {
+      "id": "I-12",
+      "claim": "no permitted legal finding exists",
+      "passed": true,
+      "detail": "0"
+    },
+    {
+      "id": "I-13",
+      "claim": "the owner-authorized internal-validation carve-out is recorded in the build plan",
+      "passed": true,
+      "detail": "section 3 carve-out and section 8 history row"
+    },
+    {
+      "id": "I-14",
+      "claim": "section 4 item 5 excludes the carve-out from the admitted specification and implementation",
+      "passed": true,
+      "detail": "section 4 item 5 qualified"
+    },
+    {
+      "id": "I-15",
+      "claim": "the amended build plan keeps its LF line endings and matches the amendment record",
+      "passed": true,
+      "detail": "OWNER_AUTHORIZED_INTERNAL_VALIDATION_CARVE_OUT_RECORDED_IN_THE_DOCUMENT"
+    },
+    {
+      "id": "I-16",
+      "claim": "the PROD-003 narrative repair placed its gate rows and its claim where they belong",
+      "passed": true,
+      "detail": "the 5.7 row and the gate-claim sentence returned to section 10 and the closing summary closes the document"
+    },
+    {
+      "id": "I-17",
+      "claim": "the repaired narrative keeps CRLF line endings",
+      "passed": true,
+      "detail": "CRLF preserved"
+    },
+    {
+      "id": "I-18",
+      "claim": "the named extraction and structure methods are present and read the evidenced document",
+      "passed": true,
+      "detail": "poppler pdfinfo and pdftotext read the specimen"
+    },
+    {
+      "id": "I-19",
+      "claim": "the PROD-003 chain was recorded green before this order changed anything",
+      "passed": true,
+      "detail": "ALL PROD-003 VALIDATION PASSED"
+    },
+    {
+      "id": "I-20",
+      "claim": "the consumer application data is unchanged and still reports report checking as unavailable",
+      "passed": true,
+      "detail": "generated jurisdiction data byte-identical to PROD-002 custody, and unavailable"
+    },
+    {
+      "id": "I-21",
+      "claim": "the unit requires the explicit authorized selection and refuses anything else",
+      "passed": true,
+      "detail": "CA / CA-NS mandatory"
+    },
+    {
+      "id": "I-22",
+      "claim": "the unit carries no finding authority and no consumer-visible surface",
+      "passed": true,
+      "detail": "observation class only"
+    }
+  ],
+  "check_count": 22,
+  "failures": [],
+  "verdict": "ALL PHASE5-001I-A INPUTS AND PREREQUISITES VERIFIED"
+}

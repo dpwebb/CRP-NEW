@@ -1,0 +1,741 @@
+{
+  "artifact": "input_verification.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "purpose": "pre-write verification that every input this order proceeds on is the input the governing records describe: every pin re-measured, and every input compared with the digest the earlier durable records already hold for the same file",
+  "method": "SHA-256 over each file with Get-FileHash, taken BEFORE this order wrote any artifact; recorded digests harvested generically from the earlier verification, custody and manifest records (any object carrying a path-like and a sha256-like property)",
+  "input_count": 37,
+  "matches_the_orders_own_pin": 36,
+  "input_conflicts_with_the_orders_own_pin": 0,
+  "absent_from_this_workspace": 1,
+  "agrees_with_a_recorded_digest": 35,
+  "no_prior_recorded_digest": 1,
+  "differences_requiring_an_explanation": 0,
+  "read_only_outside_the_workspace": {
+    "location": "C:\\Users\\webbd\\crp-credit-app (outside the workspace, read-only)",
+    "pointer_count": 3,
+    "all_match": true,
+    "do_not_match": 0,
+    "pointers": [
+      {
+        "label": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+        "location": "C:\\Users\\webbd\\crp-credit-app (outside the workspace, read-only)",
+        "recorded_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+        "measured_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+        "bytes": 192432,
+        "state": "MATCHES_THE_RECORDED_PIN"
+      },
+      {
+        "label": "packages\\backend\\fixtures\\reports\\equifax-david-webb.pdf",
+        "location": "C:\\Users\\webbd\\crp-credit-app (outside the workspace, read-only)",
+        "recorded_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "measured_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "bytes": 96393,
+        "state": "MATCHES_THE_RECORDED_PIN"
+      },
+      {
+        "label": "packages\\backend\\fixtures\\reports\\transunion-david-webb.pdf",
+        "location": "C:\\Users\\webbd\\crp-credit-app (outside the workspace, read-only)",
+        "recorded_sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+        "measured_sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+        "bytes": 362891,
+        "state": "MATCHES_THE_RECORDED_PIN"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+      "pinned_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+      "measured_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+      "bytes": 37993,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+      "pinned_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+      "measured_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+      "bytes": 9618,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+      "pinned_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+      "measured_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+      "bytes": 22891,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+      "pinned_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+      "measured_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+      "bytes": 17062,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+      "pinned_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+      "measured_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+      "bytes": 10911,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+      "pinned_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+      "measured_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+      "bytes": 25602,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+      "pinned_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+      "measured_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+      "bytes": 23328,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+      "pinned_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+      "measured_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+      "bytes": 41919,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+      "pinned_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+      "measured_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+      "bytes": 13183,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_2_verdict.json",
+      "pinned_sha256": "9048B5C47B1587E12CB0DD9A9CCEE7A273BA2E0E6DFCE8B00024FD8082984D19",
+      "measured_sha256": "9048B5C47B1587E12CB0DD9A9CCEE7A273BA2E0E6DFCE8B00024FD8082984D19",
+      "bytes": 7630,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "9048B5C47B1587E12CB0DD9A9CCEE7A273BA2E0E6DFCE8B00024FD8082984D19"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_3_verdict.json",
+      "pinned_sha256": "DA45FE408BFD5EC8C8977BDA0943416FC9EFF7B1371D6B065B7F41A04286D391",
+      "measured_sha256": "DA45FE408BFD5EC8C8977BDA0943416FC9EFF7B1371D6B065B7F41A04286D391",
+      "bytes": 8597,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "DA45FE408BFD5EC8C8977BDA0943416FC9EFF7B1371D6B065B7F41A04286D391"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json",
+      "pinned_sha256": "729D5EA0465061AD3DE262F3C8B9447CEACA1CD61F80890D38F88179E61D818D",
+      "measured_sha256": "729D5EA0465061AD3DE262F3C8B9447CEACA1CD61F80890D38F88179E61D818D",
+      "bytes": 32566,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "729D5EA0465061AD3DE262F3C8B9447CEACA1CD61F80890D38F88179E61D818D"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+      "pinned_sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+      "measured_sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+      "bytes": 56499,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+      "pinned_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+      "measured_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+      "bytes": 35071,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\scoped_gate_5_6_verdict.json",
+      "pinned_sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C",
+      "measured_sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C",
+      "bytes": 39460,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\next_work_order.json",
+      "pinned_sha256": "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B",
+      "measured_sha256": "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B",
+      "bytes": 11538,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_suite_001t.json",
+      "pinned_sha256": "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17",
+      "measured_sha256": "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17",
+      "bytes": 152419,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\negative_tests_001t.json",
+      "pinned_sha256": "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E",
+      "measured_sha256": "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E",
+      "bytes": 30136,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\replay_expectations_frozen.json",
+      "pinned_sha256": "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA",
+      "measured_sha256": "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA",
+      "bytes": 49310,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\independent_replay_001t.json",
+      "pinned_sha256": "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E",
+      "measured_sha256": "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E",
+      "bytes": 52073,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\consumer_language_validation_001t.json",
+      "pinned_sha256": "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6",
+      "measured_sha256": "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6",
+      "bytes": 35667,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_catalogue_001t.cjs",
+      "pinned_sha256": "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1",
+      "measured_sha256": "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1",
+      "bytes": 49316,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixtures_001t.cjs",
+      "pinned_sha256": "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF",
+      "measured_sha256": "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF",
+      "bytes": 5709,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\inputs_001t.cjs",
+      "pinned_sha256": "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8",
+      "measured_sha256": "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8",
+      "bytes": 6957,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+      "pinned_sha256": "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C",
+      "measured_sha256": "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C",
+      "bytes": 21125,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_text.json",
+      "pinned_sha256": "87DF82EE10D4BBBDCD51461A98716B15258AD3EA63176BB554CE6326EEE75BEA",
+      "measured_sha256": "87DF82EE10D4BBBDCD51461A98716B15258AD3EA63176BB554CE6326EEE75BEA",
+      "bytes": 15919,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "87DF82EE10D4BBBDCD51461A98716B15258AD3EA63176BB554CE6326EEE75BEA"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001S\\amendment_application_result.json",
+      "pinned_sha256": "DC700A7AAC22AC8EBAE80E33EBF7218E657C4C44674BB31EE2099F173DD88556",
+      "measured_sha256": "DC700A7AAC22AC8EBAE80E33EBF7218E657C4C44674BB31EE2099F173DD88556",
+      "bytes": 3636,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "DC700A7AAC22AC8EBAE80E33EBF7218E657C4C44674BB31EE2099F173DD88556"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001S\\owner_decisions.json",
+      "pinned_sha256": "813D9F32AE64F7D1EB61D3A3DECA76F29F2EE83A952279C41D0F85C0655A208F",
+      "measured_sha256": "813D9F32AE64F7D1EB61D3A3DECA76F29F2EE83A952279C41D0F85C0655A208F",
+      "bytes": 4979,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "813D9F32AE64F7D1EB61D3A3DECA76F29F2EE83A952279C41D0F85C0655A208F"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001S\\custody_supplement.json",
+      "pinned_sha256": "EDC80B298670067784979A11064CF95A09757A92DBA77C4E18559E03FA8CAA78",
+      "measured_sha256": "EDC80B298670067784979A11064CF95A09757A92DBA77C4E18559E03FA8CAA78",
+      "bytes": 9266,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "EDC80B298670067784979A11064CF95A09757A92DBA77C4E18559E03FA8CAA78"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "pinned_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "measured_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "bytes": 616237,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001K\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json",
+        "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+        "SOURCE_CAPTURES\\PROD-002\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\coverage_summary.json",
+      "pinned_sha256": "16B81448E73C8E526B488CDA1E3D162AAE49A698D3708BCF1620B85536AD97F6",
+      "measured_sha256": "16B81448E73C8E526B488CDA1E3D162AAE49A698D3708BCF1620B85536AD97F6",
+      "bytes": 19301,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [],
+      "recorded_in": [],
+      "agreement_with_recorded_digests": "NO_PRIOR_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json",
+      "pinned_sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+      "measured_sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+      "bytes": 2475693,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "pinned_sha256": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "measured_sha256": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "bytes": 9602,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+        "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_ONE_OF_THE_RECORDED_DIGESTS",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\harness.cjs",
+      "pinned_sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787",
+      "measured_sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787",
+      "bytes": 4678,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "pinned_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "measured_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "bytes": 38651,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+        "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+        "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001S\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json",
+        "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+        "SOURCE_CAPTURES\\PROD-002\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_ONE_OF_THE_RECORDED_DIGESTS",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "CRP_CORE_CONSTITUTION.md",
+      "pinned_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "measured_sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "bytes": 14820,
+      "present_in_this_workspace": true,
+      "state": "MATCHES_THE_ORDERS_OWN_PIN",
+      "recorded_digests": [
+        "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001S\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001Q\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001P\\input_verification.json",
+        "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+        "SOURCE_CAPTURES\\PROD-002\\input_verification.json"
+      ],
+      "agreement_with_recorded_digests": "AGREES_WITH_THE_RECORDED_DIGEST",
+      "difference_requiring_an_explanation": false
+    },
+    {
+      "path": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "pinned_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "measured_sha256": null,
+      "bytes": null,
+      "present_in_this_workspace": false,
+      "state": "ABSENT_FROM_THIS_WORKSPACE",
+      "recorded_digests": [
+        "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF"
+      ],
+      "recorded_in": [
+        "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+        "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+        "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json"
+      ],
+      "agreement_with_recorded_digests": "RECORDED_BUT_ABSENT_FROM_THIS_WORKSPACE",
+      "difference_requiring_an_explanation": false
+    }
+  ],
+  "conflict_list": [],
+  "absent_list": [
+    "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+  ],
+  "difference_list": [],
+  "interpretation": "Every input this order proceeds on either matches the digest this order pinned before writing, or is reported absent from this workspace. Where a pin and a digest an earlier durable record holds disagree, the row is reported as a difference requiring an explanation; none is silently accepted.",
+  "absent_by_design": {
+    "inputs": [
+      "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    ],
+    "reading": "Reported absent from this workspace, not accepted on assertion: the accepted legal authority source lives in the read-only legacy tree, where the pointer above is re-measured against the digest the corpus already records for it."
+  },
+  "inherited_suite_inspected_but_not_run": "internal-validation\\ca-ns-last-payment-six-year\\tests\\harness.cjs is measured at its pin and is NOT executed by this order: no earlier-package harness is run by PHASE5-001U.",
+  "boundary": "Read only. This order measured files and read records; it changed none of them and ran none of the package harnesses.",
+  "created_by": "PHASE5-001U"
+}

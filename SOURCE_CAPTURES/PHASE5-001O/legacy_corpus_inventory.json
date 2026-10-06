@@ -1,0 +1,530 @@
+{
+  "artifact": "legacy_corpus_inventory.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "located_legacy_corpus": {
+    "legacy_source_root": "C:\\Users\\webbd\\crp-credit-app",
+    "identified_from": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md line 5 (Legacy source root), and CRP_CORE_CONSTITUTION.md section 2.3",
+    "total_files_all": 23674,
+    "total_bytes_all": 1011190720.0,
+    "files_excluding_git_and_node_modules": 2225,
+    "bytes_excluding_git_and_node_modules": 83185398.0,
+    "excluded_git_or_node_modules_files": 21449,
+    "legal_corpus_module": "packages\\backend\\src\\services\\legalCorpus",
+    "legal_corpus_module_files": 20,
+    "legal_corpus_module_bytes": 1041768.0,
+    "legacy_evidence_files": 6
+  },
+  "admitted_artifact_verification": {
+    "admission_contract": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+    "admission_contract_sha256": "10B890F929D23ED8EAE5375AD689476829FE61754483AEB1B3D065998D97F811",
+    "admitted_artifact_count": 34,
+    "digest_matches": 34,
+    "digest_mismatches_or_missing": 0,
+    "all_digests_match": true
+  },
+  "legal_corpus_module_files": [
+    {
+      "name": "authorities.ca.ts",
+      "bytes": 6872,
+      "sha256": "DDC6FC2F92BC1F2824F499ED204941DE435B79227A5CD099DE324D7C73E01BE4",
+      "admitted": true
+    },
+    {
+      "name": "authorities.canada.ts",
+      "bytes": 42067,
+      "sha256": "34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1",
+      "admitted": true
+    },
+    {
+      "name": "authorities.ny.ts",
+      "bytes": 7873,
+      "sha256": "0D9E28FE8F34EA89C8F22F7727EDCD03CF63116D69AD8D65F8C1B5D107A6623A",
+      "admitted": true
+    },
+    {
+      "name": "authorities.ts",
+      "bytes": 4232,
+      "sha256": "79EC22A5F9AB6A12E86AD63606410CF5A19271786B089540EAC32038CA8E0EB5",
+      "admitted": true
+    },
+    {
+      "name": "authorities.wa.ts",
+      "bytes": 4188,
+      "sha256": "85912639F0AAD43AB754501B56357C0F976CA52AC246C1B7F92D0B1DF0DBB03E",
+      "admitted": true
+    },
+    {
+      "name": "coverage.ca.ts",
+      "bytes": 60054,
+      "sha256": "118F7C51AC20ACC41DEA8B5180CF0A974B518C9922BD4EA3C6DCF3EFFD5D76FB",
+      "admitted": true
+    },
+    {
+      "name": "coverage.canada.ts",
+      "bytes": 93147,
+      "sha256": "551B220C695D449652FC33ADFFE2EE5544EF95E397F25E3B420F64F92E1ED255",
+      "admitted": true
+    },
+    {
+      "name": "coverage.fcra.ts",
+      "bytes": 13775,
+      "sha256": "6F47F06B37FED14BE181D90864BC7E507E7DA57D21C0ECA87F0230E898C9DAD5",
+      "admitted": true
+    },
+    {
+      "name": "coverage.ny.ts",
+      "bytes": 22824,
+      "sha256": "612348DC5B87B90759C6151D753152E35893174428079698122FA23AFAC0F85C",
+      "admitted": true
+    },
+    {
+      "name": "coverage.regv.ts",
+      "bytes": 14042,
+      "sha256": "144B548F76548A9F81B65E724B73818A160AE6281C9E34E3260801FCF7C33824",
+      "admitted": true
+    },
+    {
+      "name": "coverage.wa.ts",
+      "bytes": 36987,
+      "sha256": "82C5D3B221D5EA0E253AC04F56691F69922D4D52FD6C7534192C8BD1355DE0AB",
+      "admitted": true
+    },
+    {
+      "name": "index.ts",
+      "bytes": 9678,
+      "sha256": "BC9421C499A17184AE738D695EE68B560EE9C561BEB6EFFF2343A9A4AC4D09F2",
+      "admitted": true
+    },
+    {
+      "name": "model.canada.ts",
+      "bytes": 107219,
+      "sha256": "6B6CB9A7249506A386E013FF4A995B176E0A4F79E22F319B7F2FB209CEF325C2",
+      "admitted": true
+    },
+    {
+      "name": "model.ts",
+      "bytes": 36685,
+      "sha256": "AC9AA2AE069287776BECF4A980E7B3707AEF38790FBD4625CC0CCFEF3B234E6C",
+      "admitted": false
+    },
+    {
+      "name": "rules.ca.ts",
+      "bytes": 124859,
+      "sha256": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "admitted": true
+    },
+    {
+      "name": "rules.canada.ts",
+      "bytes": 192432,
+      "sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "admitted": true
+    },
+    {
+      "name": "rules.fcra.ts",
+      "bytes": 65330,
+      "sha256": "22B4331901338ED58CB380F44CF951D354459F69AA16D57DBC5690945E779405",
+      "admitted": true
+    },
+    {
+      "name": "rules.ny.ts",
+      "bytes": 118266,
+      "sha256": "201F5035084F60C92B03E0140E32702ED72E79AD2CEE31405977E05525133590",
+      "admitted": true
+    },
+    {
+      "name": "rules.regv.ts",
+      "bytes": 21925,
+      "sha256": "A725DAEF3C07B1977A869C3A8E45C342B761C08AFE0EFE5537B4F48E5280A51C",
+      "admitted": true
+    },
+    {
+      "name": "rules.wa.ts",
+      "bytes": 59313,
+      "sha256": "A4BFE8999B9AB681C582A59F403280BECC06C0EA20EAEC8F6A456FEF18121E9D",
+      "admitted": true
+    }
+  ],
+  "admitted_artifacts": [
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\authorities.ts",
+      "recorded_sha256": "79EC22A5F9AB6A12E86AD63606410CF5A19271786B089540EAC32038CA8E0EB5",
+      "recorded_role": "Source registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\authorities.ts",
+      "exists": true,
+      "actual_bytes": 4232,
+      "actual_sha256": "79EC22A5F9AB6A12E86AD63606410CF5A19271786B089540EAC32038CA8E0EB5",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\authorities.ca.ts",
+      "recorded_sha256": "DDC6FC2F92BC1F2824F499ED204941DE435B79227A5CD099DE324D7C73E01BE4",
+      "recorded_role": "Source registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\authorities.ca.ts",
+      "exists": true,
+      "actual_bytes": 6872,
+      "actual_sha256": "DDC6FC2F92BC1F2824F499ED204941DE435B79227A5CD099DE324D7C73E01BE4",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\authorities.canada.ts",
+      "recorded_sha256": "34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1",
+      "recorded_role": "Source registry and retained-evidence pins",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\authorities.canada.ts",
+      "exists": true,
+      "actual_bytes": 42067,
+      "actual_sha256": "34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\authorities.ny.ts",
+      "recorded_sha256": "0D9E28FE8F34EA89C8F22F7727EDCD03CF63116D69AD8D65F8C1B5D107A6623A",
+      "recorded_role": "Source registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\authorities.ny.ts",
+      "exists": true,
+      "actual_bytes": 7873,
+      "actual_sha256": "0D9E28FE8F34EA89C8F22F7727EDCD03CF63116D69AD8D65F8C1B5D107A6623A",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\authorities.wa.ts",
+      "recorded_sha256": "85912639F0AAD43AB754501B56357C0F976CA52AC246C1B7F92D0B1DF0DBB03E",
+      "recorded_role": "Source registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\authorities.wa.ts",
+      "exists": true,
+      "actual_bytes": 4188,
+      "actual_sha256": "85912639F0AAD43AB754501B56357C0F976CA52AC246C1B7F92D0B1DF0DBB03E",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.ca.ts",
+      "recorded_sha256": "118F7C51AC20ACC41DEA8B5180CF0A974B518C9922BD4EA3C6DCF3EFFD5D76FB",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.ca.ts",
+      "exists": true,
+      "actual_bytes": 60054,
+      "actual_sha256": "118F7C51AC20ACC41DEA8B5180CF0A974B518C9922BD4EA3C6DCF3EFFD5D76FB",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.canada.ts",
+      "recorded_sha256": "551B220C695D449652FC33ADFFE2EE5544EF95E397F25E3B420F64F92E1ED255",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.canada.ts",
+      "exists": true,
+      "actual_bytes": 93147,
+      "actual_sha256": "551B220C695D449652FC33ADFFE2EE5544EF95E397F25E3B420F64F92E1ED255",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.fcra.ts",
+      "recorded_sha256": "6F47F06B37FED14BE181D90864BC7E507E7DA57D21C0ECA87F0230E898C9DAD5",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.fcra.ts",
+      "exists": true,
+      "actual_bytes": 13775,
+      "actual_sha256": "6F47F06B37FED14BE181D90864BC7E507E7DA57D21C0ECA87F0230E898C9DAD5",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.ny.ts",
+      "recorded_sha256": "612348DC5B87B90759C6151D753152E35893174428079698122FA23AFAC0F85C",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.ny.ts",
+      "exists": true,
+      "actual_bytes": 22824,
+      "actual_sha256": "612348DC5B87B90759C6151D753152E35893174428079698122FA23AFAC0F85C",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.regv.ts",
+      "recorded_sha256": "144B548F76548A9F81B65E724B73818A160AE6281C9E34E3260801FCF7C33824",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.regv.ts",
+      "exists": true,
+      "actual_bytes": 14042,
+      "actual_sha256": "144B548F76548A9F81B65E724B73818A160AE6281C9E34E3260801FCF7C33824",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\coverage.wa.ts",
+      "recorded_sha256": "82C5D3B221D5EA0E253AC04F56691F69922D4D52FD6C7534192C8BD1355DE0AB",
+      "recorded_role": "Coverage ledger",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\coverage.wa.ts",
+      "exists": true,
+      "actual_bytes": 36987,
+      "actual_sha256": "82C5D3B221D5EA0E253AC04F56691F69922D4D52FD6C7534192C8BD1355DE0AB",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\index.ts",
+      "recorded_sha256": "BC9421C499A17184AE738D695EE68B560EE9C561BEB6EFFF2343A9A4AC4D09F2",
+      "recorded_role": "Corpus assembly and validation reference",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\index.ts",
+      "exists": true,
+      "actual_bytes": 9678,
+      "actual_sha256": "BC9421C499A17184AE738D695EE68B560EE9C561BEB6EFFF2343A9A4AC4D09F2",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\model.canada.ts",
+      "recorded_sha256": "6B6CB9A7249506A386E013FF4A995B176E0A4F79E22F319B7F2FB209CEF325C2",
+      "recorded_role": "Corpus schema and taxonomy reference",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\model.canada.ts",
+      "exists": true,
+      "actual_bytes": 107219,
+      "actual_sha256": "6B6CB9A7249506A386E013FF4A995B176E0A4F79E22F319B7F2FB209CEF325C2",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.ca.ts",
+      "recorded_sha256": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.ca.ts",
+      "exists": true,
+      "actual_bytes": 124859,
+      "actual_sha256": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "recorded_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "exists": true,
+      "actual_bytes": 192432,
+      "actual_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.fcra.ts",
+      "recorded_sha256": "22B4331901338ED58CB380F44CF951D354459F69AA16D57DBC5690945E779405",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.fcra.ts",
+      "exists": true,
+      "actual_bytes": 65330,
+      "actual_sha256": "22B4331901338ED58CB380F44CF951D354459F69AA16D57DBC5690945E779405",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.ny.ts",
+      "recorded_sha256": "201F5035084F60C92B03E0140E32702ED72E79AD2CEE31405977E05525133590",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.ny.ts",
+      "exists": true,
+      "actual_bytes": 118266,
+      "actual_sha256": "201F5035084F60C92B03E0140E32702ED72E79AD2CEE31405977E05525133590",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.regv.ts",
+      "recorded_sha256": "A725DAEF3C07B1977A869C3A8E45C342B761C08AFE0EFE5537B4F48E5280A51C",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.regv.ts",
+      "exists": true,
+      "actual_bytes": 21925,
+      "actual_sha256": "A725DAEF3C07B1977A869C3A8E45C342B761C08AFE0EFE5537B4F48E5280A51C",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.wa.ts",
+      "recorded_sha256": "A4BFE8999B9AB681C582A59F403280BECC06C0EA20EAEC8F6A456FEF18121E9D",
+      "recorded_role": "Legal-rule corpus",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.wa.ts",
+      "exists": true,
+      "actual_bytes": 59313,
+      "actual_sha256": "A4BFE8999B9AB681C582A59F403280BECC06C0EA20EAEC8F6A456FEF18121E9D",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\nova-scotia\\source-retrievals\\historical-ns-cra-amending-act-ca28c40a.pdf",
+      "recorded_sha256": "CA28C40A5B1F5CA4D782F0C991179562F9B2DE1342CCC82C1BC0B31D757159E5",
+      "recorded_role": "Retained source evidence",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\nova-scotia\\source-retrievals\\historical-ns-cra-amending-act-ca28c40a.pdf",
+      "exists": true,
+      "actual_bytes": 222116,
+      "actual_sha256": "CA28C40A5B1F5CA4D782F0C991179562F9B2DE1342CCC82C1BC0B31D757159E5",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\nova-scotia\\source-retrievals\\historical-ns-cra-source-5ad22806.pdf",
+      "recorded_sha256": "5AD228066B3281E1702C2C63DA012C28128D444B8D528069075DC65939445500",
+      "recorded_role": "Retained source evidence",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\nova-scotia\\source-retrievals\\historical-ns-cra-source-5ad22806.pdf",
+      "exists": true,
+      "actual_bytes": 351156,
+      "actual_sha256": "5AD228066B3281E1702C2C63DA012C28128D444B8D528069075DC65939445500",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\nova-scotia\\source-retrievals\\ns-limitation-of-actions-source-1c2253d9.pdf",
+      "recorded_sha256": "1C2253D9EAFF51F81A2B678774D983B1756709A37AEAAA3D95FC463CA6B847FD",
+      "recorded_role": "Retained source evidence",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\nova-scotia\\source-retrievals\\ns-limitation-of-actions-source-1c2253d9.pdf",
+      "exists": true,
+      "actual_bytes": 215628,
+      "actual_sha256": "1C2253D9EAFF51F81A2B678774D983B1756709A37AEAAA3D95FC463CA6B847FD",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\ontario\\source-retrievals\\README.md",
+      "recorded_sha256": "9280833E0D3C797C1F05A2BFF56F8A4096B1613CA561E52AD33641BE306726A1",
+      "recorded_role": "Source-evidence custody record",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\ontario\\source-retrievals\\README.md",
+      "exists": true,
+      "actual_bytes": 2461,
+      "actual_sha256": "9280833E0D3C797C1F05A2BFF56F8A4096B1613CA561E52AD33641BE306726A1",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\ontario\\source-retrievals\\wo05-wo14-ontario-cra-source-efa6d96d.html",
+      "recorded_sha256": "EFA6D96D82D188FDA04B1AF154F898A93FFFB14B2A779544AB76FFC940EAA063",
+      "recorded_role": "Retained source evidence",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\ontario\\source-retrievals\\wo05-wo14-ontario-cra-source-efa6d96d.html",
+      "exists": true,
+      "actual_bytes": 125333,
+      "actual_sha256": "EFA6D96D82D188FDA04B1AF154F898A93FFFB14B2A779544AB76FFC940EAA063",
+      "digest_match": true
+    },
+    {
+      "relative_path": "evidence\\canada\\ontario\\source-retrievals\\wo15-ontario-cra-source-4c760ead.html",
+      "recorded_sha256": "4C760EAD418B84F97EEFB314865EC3509AA8E9DBDBFFFD04D582C99E7F7B1D7E",
+      "recorded_role": "Retained supplementary observation",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\evidence\\canada\\ontario\\source-retrievals\\wo15-ontario-cra-source-4c760ead.html",
+      "exists": true,
+      "actual_bytes": 125333,
+      "actual_sha256": "4C760EAD418B84F97EEFB314865EC3509AA8E9DBDBFFFD04D582C99E7F7B1D7E",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\credit-engine\\rules\\citations.json",
+      "recorded_sha256": "820407E6623E590D80CE4E0C6BB391C6DBB6E69EB77614BB6AE46B7FCDF4157B",
+      "recorded_role": "Citation registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\credit-engine\\rules\\citations.json",
+      "exists": true,
+      "actual_bytes": 174392,
+      "actual_sha256": "820407E6623E590D80CE4E0C6BB391C6DBB6E69EB77614BB6AE46B7FCDF4157B",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\credit-engine\\rules\\citations_registry.ts",
+      "recorded_sha256": "749A8384B13D3F7555AADE8922DF5886BFB07BD866CE7D3936C5FFA40CFAF1CB",
+      "recorded_role": "Citation-registry reference",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\credit-engine\\rules\\citations_registry.ts",
+      "exists": true,
+      "actual_bytes": 4960,
+      "actual_sha256": "749A8384B13D3F7555AADE8922DF5886BFB07BD866CE7D3936C5FFA40CFAF1CB",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\credit-engine\\rules\\citations_gate.ts",
+      "recorded_sha256": "53DB4E16271FFC7E5A51C1BC9706C7AC86C047866EF32407E33801E5BE8A2F01",
+      "recorded_role": "Citation-completeness reference",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\credit-engine\\rules\\citations_gate.ts",
+      "exists": true,
+      "actual_bytes": 6956,
+      "actual_sha256": "53DB4E16271FFC7E5A51C1BC9706C7AC86C047866EF32407E33801E5BE8A2F01",
+      "digest_match": true
+    },
+    {
+      "relative_path": "docs\\citation-objects.tsv",
+      "recorded_sha256": "C5915E80234A8C17FF7D2A466F12EFFF49F02143D0FFF7FAD269128E7AA3AE33",
+      "recorded_role": "Citation and jurisdiction-reference registry",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\docs\\citation-objects.tsv",
+      "exists": true,
+      "actual_bytes": 247105,
+      "actual_sha256": "C5915E80234A8C17FF7D2A466F12EFFF49F02143D0FFF7FAD269128E7AA3AE33",
+      "digest_match": true
+    },
+    {
+      "relative_path": "docs\\nova-scotia-source-retrievals.json",
+      "recorded_sha256": "E39B0D8D5C07ED3B2F336B99BC728F7D051CE1B62EB43E0C4B0DD3B9969C4FAE",
+      "recorded_role": "Source-retrieval provenance",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\docs\\nova-scotia-source-retrievals.json",
+      "exists": true,
+      "actual_bytes": 33750,
+      "actual_sha256": "E39B0D8D5C07ED3B2F336B99BC728F7D051CE1B62EB43E0C4B0DD3B9969C4FAE",
+      "digest_match": true
+    },
+    {
+      "relative_path": "docs\\ontario-source-retrievals.json",
+      "recorded_sha256": "BD269517BE64C8098E1B1F4FBA9288071F3807CB8386A418B7DA33611399EA13",
+      "recorded_role": "Source-retrieval provenance",
+      "admission_scope_note": "",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\docs\\ontario-source-retrievals.json",
+      "exists": true,
+      "actual_bytes": 15836,
+      "actual_sha256": "BD269517BE64C8098E1B1F4FBA9288071F3807CB8386A418B7DA33611399EA13",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\legalRules.ts",
+      "recorded_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "recorded_role": "Declarative legal rules, instruments, source locators, and recorded gaps",
+      "admission_scope_note": "— only `US_RULES`, `US_STATE_RULES`, `CA_RULES`, `PROVINCE_INSTRUMENTS`, `PROVINCE_CONTENT_RULES`, `UK_RULES`, `AU_RULES`, `UNVERIFIED_GAPS`, and their static legal-source fields",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalRules.ts",
+      "exists": true,
+      "actual_bytes": 155817,
+      "actual_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\backend\\src\\services\\solTable.ts",
+      "recorded_sha256": "E0C04B274FD748461FE8F3D33FB4E5DF52538AB324D7682E02B6B526926896EF",
+      "recorded_role": "Declarative limitation, refusal, gap, and source records",
+      "admission_scope_note": "— only `SOL_ROWS`, `SOL_GAPS`, `SOL_REFUSED_UNITS`, `JUDGMENT_ENFORCEMENT`, `FEDERAL_DEFAULT_UNITS`, and their static legal-source fields",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\solTable.ts",
+      "exists": true,
+      "actual_bytes": 341650,
+      "actual_sha256": "E0C04B274FD748461FE8F3D33FB4E5DF52538AB324D7682E02B6B526926896EF",
+      "digest_match": true
+    },
+    {
+      "relative_path": "packages\\shared\\src\\region-config\\subJurisdictions.ts",
+      "recorded_sha256": "1256287AE58E73FD6A0EB67F5F020BA892F8F588C417BB09A9D5AE3AEA7AC6DA",
+      "recorded_role": "Legacy jurisdiction-vocabulary source",
+      "admission_scope_note": "— only static `AUTHORIZED_COUNTRIES` and `SUB_JURISDICTIONS` declarations",
+      "legacy_absolute_path": "C:\\Users\\webbd\\crp-credit-app\\packages\\shared\\src\\region-config\\subJurisdictions.ts",
+      "exists": true,
+      "actual_bytes": 8132,
+      "actual_sha256": "1256287AE58E73FD6A0EB67F5F020BA892F8F588C417BB09A9D5AE3AEA7AC6DA",
+      "digest_match": true
+    }
+  ],
+  "what_this_does_not_do": [
+    "It does not copy, move, edit or delete any legacy file: the corpus is read-only for this order.",
+    "It does not re-review the legal content of any designated artifact; the digest match is a custody fact only.",
+    "It does not admit any additional legacy file beyond the artifacts the owner-approved contract designates."
+  ],
+  "created_by": "PHASE5-001O"
+}

@@ -1,0 +1,183 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 367,
+  "files_unchanged": 363,
+  "files_changed": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "after": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "bytes": 29858
+    },
+    {
+      "relative_path": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+      "before": "A6F0FE4383AA815B6CF136AC79DD21A2F29B34A73621366C28499A4D16254295",
+      "after": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "bytes": 49451
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "before": "A34943997AD061E345E811FF20BCB15817EDC8BEB493B9CB83420F0E9EE48B9D",
+      "after": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "bytes": 8833
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "before": "BC1B3FE81167F7BE4942FAE491886B35F5810914E977FACF242C37FCC5DD61E6",
+      "after": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "bytes": 4216
+    }
+  ],
+  "expected_changes": [
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+    "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+    "SOURCE_CAPTURES\\PROD-003\\input_verification.json"
+  ],
+  "expected_change_notes": [
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md — the owner-authorized internal-validation carve-out, applied by apply_001i_a_amendments.js",
+    "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md — the recorded assembly repair: the displaced section 10 gate row and claim sentence and the displaced closing fragment returned to their own sections, no claim added, removed or changed",
+    "SOURCE_CAPTURES\\PROD-003\\narrative_check.json — PROD-003's own narrative checker, re-run as this order's regression check of the repaired narrative, refreshed its own output with the repaired document's length (49,451 bytes); it is PROD-003's artifact, rewritten by PROD-003's own step, and its verdict is still NARRATIVE CHECKS PASSED",
+    "SOURCE_CAPTURES\\PROD-003\\input_verification.json — PROD-003's own input verification, re-run once as this order's regression check, now reports 17 checks with one expected difference: PROD-002's recorded digest of the build plan, which this order's owner-authorized amendment changed. inherited_chain_readings.json proves the difference is the amendment (before C80183314C…, after 54FCECE0A1…). The file is PROD-003's artifact and its reading is recorded, not hidden."
+  ],
+  "changed_as_expected": true,
+  "files_added_by_this_order": [
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\constants.cjs",
+      "sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155",
+      "bytes": 7797
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\document-model.cjs",
+      "sha256": "9B58638B08B1A0EA92DF6DAB4BA8BF7AD83D801AE2D31CC94A72168E83E3EC86",
+      "bytes": 6878
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\extraction.cjs",
+      "sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F",
+      "bytes": 5313
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\locators.cjs",
+      "sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530",
+      "bytes": 10239
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\presentation-contract.cjs",
+      "sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4",
+      "bytes": 5933
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\README.md",
+      "sha256": "09DEACD29355DD9A9F3D39B34F94738889249C701D5002F9168476274D0939D5",
+      "bytes": 3280
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\run-internal-validation.cjs",
+      "sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E",
+      "bytes": 9976
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\six-year-evaluator.cjs",
+      "sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD",
+      "bytes": 5215
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\synthetic\\make-synthetic-pdf.cjs",
+      "sha256": "29C7CF8F90AC55F7C21FE452E72F709595716C2FC475F9F4EF8BE72E8EC2BEA2",
+      "bytes": 4153
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\fixtures.cjs",
+      "sha256": "8DC71C793AF15D08BAD082E0757FEF3731EB184DB41EE3A19BAEF03DCDA56551",
+      "bytes": 4630
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\harness.cjs",
+      "sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787",
+      "bytes": 4678
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\run-tests.cjs",
+      "sha256": "1B057448BAE8FBD2E1A47A1F2E9CB4E26AD31FB84C5E1C6D5EF80C0790E7E2F2",
+      "bytes": 1027
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\a-pinned.cjs",
+      "sha256": "77B5B3EFE981DDC52AD69E55A9587DCE85A5681783E2107A517A39C441537CEA",
+      "bytes": 5909
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\b-arithmetic.cjs",
+      "sha256": "D4202FBA2C21175A0AE283C2A206161B0740DC8CFE64757AFA88AA4D42DCCCEB",
+      "bytes": 3772
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\c-paths.cjs",
+      "sha256": "4FE2BF3E9C70CA39F32313F96785B11BA306F4ED6D0C50302E4FDE9E286CE858",
+      "bytes": 5735
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\d-records.cjs",
+      "sha256": "9E93B47C2FB676DCE819F893350209E18B8161468C95A6FB3135E8A2466D0D3F",
+      "bytes": 4029
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\e-refusals.cjs",
+      "sha256": "17C58C42BCC5D1181208A32F053846677C7F38738B732D715C4EC5AA47CE59AE",
+      "bytes": 5548
+    },
+    {
+      "relative_path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\f-state.cjs",
+      "sha256": "0C514E09AFF7350E44596FA273CB7A3330D6CDFD85F90A20B0E225905AA219B1",
+      "bytes": 4094
+    }
+  ],
+  "files_added_outside_this_order": [],
+  "files_missing": [],
+  "consumer_application_files_changed": [],
+  "ledger_or_corpus_artifacts_changed": [
+    "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+    "SOURCE_CAPTURES\\PROD-003\\narrative_check.json"
+  ],
+  "legacy_corpus": {
+    "root": "C:\\Users\\webbd\\crp-credit-app",
+    "admitted_artifacts_re_verified": 34,
+    "admitted_artifacts_expected": 34,
+    "mismatches": [],
+    "consumer_specimens_re_verified": [
+      {
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "matches_recorded": true
+      },
+      {
+        "presentation_id": "PR-02",
+        "artifact_id": "LEG-CONSUMER-TU-CA",
+        "sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+        "matches_recorded": true
+      }
+    ],
+    "specimen_mismatches": [],
+    "generated_fixture_files": 461,
+    "generated_fixture_bytes": 23627410.0,
+    "files_created_deleted_or_modified": 0
+  },
+  "prod003_date_scoped_re_measurement": {
+    "note": "PROD-003's own verifier asserts that no file was added outside PROD-003 and that only the owner-amended readiness plan changed. Both are measurements at PROD-003's date. This order measures what that verifier would now report, without re-running it: re-running it would overwrite PROD-003's record of its own date.",
+    "prod003_baseline_files": 342,
+    "unchanged": 340,
+    "changed": [
+      "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md"
+    ],
+    "missing": [],
+    "additions_attributable_to_this_order": 50,
+    "reading": "REVIEW REQUIRED at PROD-003's custody step, by design: a later authorized order added its own files and changed two documents. PROD-003's recorded verdict is unchanged and is not re-claimed here."
+  },
+  "verdict": "PRESERVATION HELD — the only pre-existing files changed are the owner-amended build plan, the PROD-003 narrative repair, and two PROD-003 outputs refreshed by PROD-003's own steps (its narrative checker and its input verification, whose one expected difference is that amendment); every other inherited file is byte-identical, and the legacy corpus, both consumer specimens and the generated fixture corpus are untouched"
+}

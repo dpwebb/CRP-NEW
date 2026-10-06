@@ -1,0 +1,103 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001M",
+  "created_utc": "2026-09-30",
+  "purpose": "the exact replaced and replacement text of every authorized amendment, with the before and after state of each amended file, so that Core Constitution 6.2 is satisfied on the record rather than in prose",
+  "authority": "CRP_CORE_CONSTITUTION.md section 6.2, 6.4 and 6.5",
+  "file_state_change": [
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": {
+        "bytes": 18938,
+        "lines": 148,
+        "sha256": "4A31AC4C1011EE67D3B1678DB834401B252AFBCE6A18C49B99BEDF49119ED813"
+      },
+      "after": {
+        "bytes": 21997,
+        "lines": 156,
+        "sha256": "4EFFB76C6B89DBA7BC3C342104384F325E30B5DC59A9B88FEF0133CB83A99BB0"
+      },
+      "inversion_reconstruction_sha256": "4A31AC4C1011EE67D3B1678DB834401B252AFBCE6A18C49B99BEDF49119ED813",
+      "inversion_exact_match": true
+    },
+    {
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "before": {
+        "bytes": 30768,
+        "lines": 332,
+        "sha256": "F89C8C425A03760E0F73728AF44B2E22D34D2159D29E917F02451B5BBAB3B9AD"
+      },
+      "after": {
+        "bytes": 32294,
+        "lines": 337,
+        "sha256": "B21952A5C11998B06ADB4E19B80E97B959A6B36C346FAA2E2B18931A75766043"
+      },
+      "inversion_reconstruction_sha256": "F89C8C425A03760E0F73728AF44B2E22D34D2159D29E917F02451B5BBAB3B9AD",
+      "inversion_exact_match": true
+    }
+  ],
+  "amendments_to_approved_build_plan": [
+    {
+      "id": "M1-A",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.1, bullet 4",
+      "before_edit_locus": "line 52 of 148",
+      "after_edit_locus": "line 52 of 156",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "- Carry forward the B20 ruling: 39 probable candidates, 380 excluded, and 18 unresolved source records, including `CRP-LSRC-0354`, `0422`–`0425`, and `0427` pending exact report-field/event mapping. Reconcile these totals against the persisted source-discovery records before treating them as final.",
+      "replaced_chars": 299,
+      "replacement_text": "- Carry forward the B20 ruling as a preserved, unattributed historical record (owner disposition PHASE5-001M): 39 probable candidates, 380 excluded, and 18 unresolved source records (39 + 380 + 18 = 437), including `CRP-LSRC-0354`, `0422`–`0425`, and `0427` pending exact report-field/event mapping. The per-ID inventory behind that tally is absent from this workspace (per-ID basis `MISSING_EVIDENCE`), so the tally is retained without assigning any catalogue ID to any of its classes: it is not a certified operational count and is not the register's certified starting count. The requirement to reconcile these totals against the persisted source-discovery records is replaced by a reproducible reconciliation of the complete source-ID register: every catalogue ID accounted for exactly once, every count built from the register's own per-ID record dispositions, and every current count stated with the evidence it rests on, the meaning it carries and the limitations that remain unresolved. Duplicate identity remains a separate, unfinished requirement of this phase (bullet 3 above): the duplicate links are now explicit per relation and per row, but the identity of the six clusters `0315/0316/0317/0318/0320`, `0149/0150`, `0165/0166`, `0409/0411`, `0336/0349` and `0337/0351` could not be determined from the recorded descriptors, so those clusters remain open and queued, neither collapsed, merged nor re-classed, and no unique-legal-provision count may be certified while they stand unresolved.",
+      "replacement_chars": 1504
+    },
+    {
+      "id": "M1-B",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 6, first paragraph, the B20 sentence",
+      "before_edit_locus": "line 142 of 148",
+      "after_edit_locus": "line 142 of 156",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "The corrected-logic B20 report gives a provisional source-record tally of 39 probable candidates, 380 excluded, and 18 unresolved; it must be reconciled to durable records before becoming the register's certified starting count.",
+      "replaced_chars": 228,
+      "replacement_text": "The corrected-logic B20 report recorded a provisional source-record tally of 39 probable candidates, 380 excluded, and 18 unresolved (39 + 380 + 18 = 437). Under owner disposition PHASE5-001M that tally is preserved as an unattributed historical record whose per-ID inventory is absent from this workspace (per-ID basis `MISSING_EVIDENCE`): no catalogue ID may be assigned to any of its classes, it is not a certified operational count, and it is not the register's certified starting count. The count requirement it carried is replaced by the reproducible reconciliation of the complete source-ID register, with every current count stating its evidence, its meaning and its unresolved limitations. ",
+      "replacement_chars": 699
+    },
+    {
+      "id": "M1-C",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "new section 8 Amendment History (did not exist before)",
+      "before_edit_locus": "appended after the former final line 148",
+      "after_edit_locus": "lines 151 to 156 of 156",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "\n---\n\n## 8. Amendment History\n\n| Date | Work order | Change |\n| --- | --- | --- |\n| 2026-09-30 | PHASE5-001M | Valid owner amendment under Core Constitution section 6: section 3 Phase 5.1 bullet 4 and section 6 amended, and this amendment history section created under section 6.5. The PHASE4-002I-B20 tally is recorded as a preserved, unattributed historical record whose per-ID inventory is absent from this workspace (per-ID basis MISSING_EVIDENCE); no catalogue ID is assigned to any of its classes. The requirement to reconcile those totals against the persisted source-discovery records is replaced by a reproducible reconciliation of the complete source-ID register: all 437 catalogue IDs accounted for exactly once, every count built from recorded evidence, and every current count stating its evidence, its meaning and its unresolved limitations. The separate duplicate-identity requirement and the six identity-unresolved clusters (0315/0316/0317/0318/0320, 0149/0150, 0165/0166, 0409/0411, 0336/0349, 0337/0351) are preserved and remain open. The gate sequence, all gates and every unrelated acceptance condition are unchanged. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001M_B20_DISPOSITION_AND_GATE_5_1_AMENDMENT.md. Admits no rule, certifies no count or coverage, establishes no consumer-format support and passes no gate. |\n",
+      "replacement_chars": 1384
+    }
+  ],
+  "amendments_to_source_expansion_contract": [
+    {
+      "id": "M2-A",
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "clause": "section 6, owner decision block, the aggregate tally sentences",
+      "before_edit_locus": "lines 229 to 230 of 332",
+      "after_edit_locus": "lines 229 to 234 of 337",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "The resulting B20 source-record totals are 39 `PROBABLE_CANDIDATE`, 380\n`EXCLUDED`, and 18 `UNRESOLVED` (437 total). ",
+      "replaced_chars": 117,
+      "replacement_text": "The resulting B20 source-record tally was recorded as 39 `PROBABLE_CANDIDATE`, 380\n`EXCLUDED`, and 18 `UNRESOLVED` (39 + 380 + 18 = 437). Under owner disposition PHASE5-001M that tally is\npreserved as an unattributed historical record: its per-ID inventory is absent from this workspace,\nno catalogue ID is assigned to any of its classes, and it is not a certified operational count or a\nstarting count for any downstream step. Every current count must state the evidence it rests on, the\nmeaning it carries and the limitations that remain unresolved. ",
+      "replacement_chars": 552
+    },
+    {
+      "id": "M2-B",
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "clause": "section 9 Amendment History, one appended row",
+      "before_edit_locus": "appended after the former final row, line 332",
+      "after_edit_locus": "line 337 of 337",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001M | Valid owner amendment: section 6 owner-decision block. The PHASE4-002I-B20 aggregate is recorded as a preserved, unattributed historical record with per-ID basis MISSING_EVIDENCE; no catalogue ID is assigned to any of its classes, and it is not a certified operational count or a starting count for any downstream step. Every current count must state the evidence it rests on, the meaning it carries and the limitations that remain unresolved. The mapping gate for CRP-LSRC-0422, 0423, 0424, 0425, 0427 and CRP-LSRC-0354, the separate duplicate-identity requirement, the six identity-unresolved clusters (0315/0316/0317/0318/0320, 0149/0150, 0165/0166, 0409/0411, 0336/0349, 0337/0351), the separate unique-legal-provision count and every other condition of this contract are unchanged. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001M_B20_DISPOSITION_AND_GATE_5_1_AMENDMENT.md. No rule, coverage, source discovery, finding, candidate or count was created or certified, and Gate 5.1 is not passed by this amendment. |\n",
+      "replacement_chars": 1091
+    }
+  ]
+}

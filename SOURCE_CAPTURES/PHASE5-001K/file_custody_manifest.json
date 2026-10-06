@@ -1,0 +1,17 @@
+[
+  {
+    "file": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+    "bytes": 57342,
+    "sha256": "b7a973c3de5d0c34212f1acc548b830e1617165a83797a3843ac036c3987ad55"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv",
+    "bytes": 616237,
+    "sha256": "dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001K/rescreen_provenance.json",
+    "bytes": 374808,
+    "sha256": "d3d4e3daa1bb37df01037814139ae21022746e1730d897a5d6e6f6a4325364c3"
+  }
+]

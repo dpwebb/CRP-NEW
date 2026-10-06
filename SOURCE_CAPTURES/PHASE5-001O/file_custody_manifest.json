@@ -1,0 +1,312 @@
+{
+  "artifact": "file_custody_manifest.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "purpose": "byte-level custody record for every file this order created, and the evidence that the legacy corpus and every unamended pre-existing file were left untouched",
+  "file_count": 42,
+  "total_bytes": 3269797.0,
+  "files": [
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\admitted_artifacts.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 21429,
+      "sha256": "36A0D5D8C3FB5A3AA0F2140F3829C693908EBA1330FEBF9408F5E51091DBC5D9"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\amendment_text.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 34753,
+      "sha256": "41C8F282B7B1EF2CFFA82746D0FC5A8FB8FE4D7334637D7D43425D01E4290741"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\amendments_001o.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 9674,
+      "sha256": "6D74216B51D13818E752D08A428D26F09D97D3173CD5379EFED5B3D44C750343"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_001o_amendment_record.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 6822,
+      "sha256": "DC8CE7E4EFC080A3E1630A0B0D6C1C0DC5A83932139A507C862996E494EECB71"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_001o_coverage_ledger.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 36351,
+      "sha256": "C63AB43E63242EC532A00306B9874773C690B8698DD113082733F77E22CBA113"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_001o_gate_and_order.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 17919,
+      "sha256": "CB4934149910F86D83E1A7B563763E04E22736A3E2B23B2508601A10C69BCEC0"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_001o_inventory.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 6727,
+      "sha256": "2F5BAA7A6532F690E47C53A6AF74283B9C21F89547E46D1E1C6153D3F3B2AB2C"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_amendment_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 73,
+      "sha256": "0BCBB219C6F4C70E911E21C8C35C693B3D7CB7EC89D4F9473CAFC8809ACF0637"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_gate_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 140,
+      "sha256": "2A931C914FE2C57D02842CF864351D82438D68468E3FFEFF121735381330FEAF"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\build_ledger_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 590,
+      "sha256": "B2EE452B6C1CDB774EAEC10DE9C1A08A3569B94745A3CD308183EDDC2B4BF278"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\capture_001o_baseline.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1710,
+      "sha256": "3CE22DD380E678319DAC395DD8AB9DE3361FA4663941B2CFAF5B74944630951D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\coverage_summary.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 19301,
+      "sha256": "16B81448E73C8E526B488CDA1E3D162AAE49A698D3708BCF1620B85536AD97F6"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\file_custody_manifest.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 12859,
+      "sha256": "933BBCC5218C7B6D75C9DDD6657052672A1F3FE338548B5EF547345BE15567D5"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\fix_001o_blank_lines.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1476,
+      "sha256": "C7BF5ACB0EDD84069BA244BFF3B76CA114B408DB6FF28B2ED606B45C1911E31E"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 9819,
+      "sha256": "E5FF906A3CB375EA8DDAC7D54C980F67C8B172B8C952A9A6D4129844EDB5A63F"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\input_inventory.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 3292,
+      "sha256": "02A9311CC4A864B86ED012CC28D39BA5ED0CAA8345D9157B17640B6E44D2C4DA"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\legacy_corpus_inventory.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 25722,
+      "sha256": "5F2735CD84F392F11E81E7E15204C1A7B5BC3F7601DF8F4344169660E7F924B0"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\lib_001o.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 18090,
+      "sha256": "BAFF067CA9A6C0036C45354767CC8B5C8879324018C6AFDD3E75DECB16CA33BD"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\next_work_order.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 18006,
+      "sha256": "CFB69E83B3B93E2DF79B1E79F1D5F5326083F9BFD9B499AB01D8B257F6739430"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\normalize_001o_line_endings.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1189,
+      "sha256": "612660A835AF236ECFB685C3A5D913CADBBA5961D2FDFE7728D5AB475CAD4D2A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\preservation_and_change_record.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 2019,
+      "sha256": "74777C955C0C7CBB2F53F45279909930DC09897024972ABD8225F416F7141B03"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\preserved_files_before.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 59743,
+      "sha256": "491673029FE6932CF0A6D60F8C8303B26C4E9FD976A41962E9DA26FEEB4FA315"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_blocks_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1599,
+      "sha256": "DF883C112611773396521A91FB5889AF7EDC2C29DC1382F4214BC74434FA73D8"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_blocks.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1312,
+      "sha256": "337429E7C78C0B6F6173F3A8835DB71AA293A74EB775AE5CD5DED6D0B52E46C3"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_decl_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1446,
+      "sha256": "7EA91EE066A596C761079E38BEA8634B4AEA279C377ED52F96FB3446B6D67B2A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_decl.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1447,
+      "sha256": "91CC57626022BFD4140C484C3E4BB0641386C2BC9FBC61684A60B00BEC66B525"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_extract_debug_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1357,
+      "sha256": "070CD8A55F22D46876B5DB5B3A387A65750731F4B59958DCB54027D0823D0ADC"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_extract_debug.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1073,
+      "sha256": "61D706D77812F5BC2CDEA06C9665B107255B4F3F68F704F7AA1D545B2A8294E9"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_join_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 8153,
+      "sha256": "D69D631A26A0DCA71728AD0FD298599169323AEFC31712A2EC084ED6EA53CED4"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_join.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 2629,
+      "sha256": "F9DDA6B00E94344D5A021FDCA2CBD54B0FB78AC1662B3DE27161C224D163A367"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_legacy_corpus.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 3914,
+      "sha256": "AC1E330982C6C011B2086BC0FCBE01271552B3B9017E1E09A6BAB17225222511"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_legacy_rulesets.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 3106,
+      "sha256": "037788EE4ECC14B6F3E2EEEA57E5B2D8A99418BE4024C638D60168D381B9D9B4"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_one_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1454,
+      "sha256": "93DF747408C092F5441A3CB57D8E5C5A5D6BDD20F1EFB931C635507AF6735A56"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_one.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1287,
+      "sha256": "0DC3B080756E598B75E2A4D167976A4261025D4FD90D0CE62772508BBA7A7412"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_sol_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 10336,
+      "sha256": "A046A97C4DD60D9E33FBA24EB92605D14AC667C33FEE41B9273674C8B6358E59"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_sol.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 760,
+      "sha256": "152458C6B56E719D4BBAAF6E9F60A9AA553CFFC98B02E4943F025D579830530D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_unjoined_out.txt",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 5347,
+      "sha256": "F02F5A34425E0DD0C3AA91A997E5C671F4C1FE27B6438D29A23986F968F0C82B"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\probe_unjoined.js",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 1167,
+      "sha256": "5B5504854658B43BB50FAA32AAD6185CD564C46F368692FC73BDBE8E449470E2"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.csv",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 408839,
+      "sha256": "C6819EBA26352E66540764066552CA801EC8AA41B657977F44CBDA4F705597D7"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 2475693,
+      "sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001O\\verify_and_manifest_001o.ps1",
+      "location": "SOURCE_CAPTURES/PHASE5-001O",
+      "bytes": 11195,
+      "sha256": "364B5890EA7B5C33588DC90488C13554B297A4D6E2A88089BAC133AEC9249F40"
+    },
+    {
+      "relative_path_from_workspace": "CRP_PHASE5_001O_LEGACY_CORPUS_ACCEPTANCE_AND_COVERAGE_RECONCILIATION.md",
+      "location": "workspace root (narrative)",
+      "bytes": 19979,
+      "sha256": "6474F48CDD0A136ED8A651C7113C1F04EA350B10D9F8CC68DDA65CC683E2D3FE"
+    }
+  ],
+  "legacy_corpus": {
+    "legacy_source_root": "C:\\Users\\webbd\\crp-credit-app",
+    "admitted_artifacts_re_verified": 34,
+    "admitted_artifacts_expected": 34,
+    "mismatches": [],
+    "files_created_deleted_or_modified_in_the_legacy_corpus": 0
+  },
+  "artifact_checks": [
+    {
+      "artifact": "admitted_artifacts.json",
+      "parses": true,
+      "detail": "verified=34/34"
+    },
+    {
+      "artifact": "legacy_corpus_inventory.json",
+      "parses": true,
+      "detail": null
+    },
+    {
+      "artifact": "source_id_coverage_ledger.json",
+      "parses": true,
+      "detail": "rows=437"
+    },
+    {
+      "artifact": "coverage_summary.json",
+      "parses": true,
+      "detail": "ledger_rows=437; accepted=410"
+    },
+    {
+      "artifact": "amendment_text.json",
+      "parses": true,
+      "detail": "amendments=19; clean=True"
+    },
+    {
+      "artifact": "gate_reassessment_001o.json",
+      "parses": true,
+      "detail": null
+    },
+    {
+      "artifact": "next_work_order.json",
+      "parses": true,
+      "detail": null
+    }
+  ],
+  "ledger_rows": 437,
+  "ledger_csv_data_rows": 437,
+  "ledger_csv_matches_json": true,
+  "ledger_schema_problems": [],
+  "ledger_schema_clean": true,
+  "created_by": "PHASE5-001O"
+}

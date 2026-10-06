@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-10-05T17:37:30.649Z",
+  "sections": 77,
+  "runner_totals": {
+    "passed": 6393,
+    "failed": 23,
+    "skipped": 0
+  },
+  "executed_check_assertions": 6414,
+  "failed_check_assertions": 21,
+  "section_exceptions": 2,
+  "unique_executed_sites": 2868,
+  "duration_ms": 309435,
+  "dispositions": {
+    "KEEP": 3416,
+    "REMOVE_DUPLICATE": 2,
+    "ARCHIVE": 23,
+    "REWRITE": 31,
+    "CONSOLIDATE": 2942
+  },
+  "relevant_contract_assertions": 6389
+}

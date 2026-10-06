@@ -1,0 +1,67 @@
+{
+  "full_run": {
+    "passed": 4376,
+    "failed": 0,
+    "skipped": 0
+  },
+  "source_drift": [],
+  "scripts": [
+    {
+      "file": "closure-common-errors.cjs",
+      "output": "common-errors-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-consumer-results.cjs",
+      "output": "consumer-results-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-consumer-explanations.cjs",
+      "output": "consumer-explanations-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-consumer-support.cjs",
+      "output": "consumer-support-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-consumer-billing.cjs",
+      "output": "consumer-billing-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-consumer-imperatives-and-privacy.cjs",
+      "output": "BLOCKER-CONSUMER-LANGUAGE-001: implementation tested; staging pending\nBLOCKER-CONSUMER-INCOMPLETE-001: implementation tested; staging pending\nBLOCKER-CLARIFY-MATERIALITY-002: implementation tested; staging pending\nBLOCKER-PRIVACY-001: implementation tested; staging pending"
+    },
+    {
+      "file": "revalidate-gap-finding-002.cjs",
+      "output": "re-hashed accelerated-launch/adapters/rule-adapters.cjs\nre-hashed accelerated-launch/service/results.cjs\ngap-finding-002-evidence.json revalidated (2 source hash(es) refreshed)"
+    },
+    {
+      "file": "build-subscription-value-evidence.cjs",
+      "output": "subscription-value-evidence.json written (implementation scope recorded; staging PENDING)\n  bz-report-history: 51 passed, 0 failed\n  bw-browser-wizzard: 31 passed, 0 failed"
+    },
+    {
+      "file": "finding-coverage.cjs",
+      "output": "finding-coverage-evidence.json written (OPEN, inventory only)\nadapters: 19\nfinding_allowed: 14\ndemonstrated VIOLATION: 7 -> CA-NS-CRA-S10-3-F-DISMISSED-CHARGE, US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y, US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y, US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y, AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y, AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y, AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y\ndemonstrated PROBABLE_VIOLATION: 8 -> FCRA-605A-1-US-NATIONAL-10Y, FCRA-605A-3-US-NATIONAL-7Y, FCRA-605A-4-US-NATIONAL-7Y, FCRA-605A-5-US-NATIONAL-7Y, US-NY-GBL-380J-F1-II-JUDGMENT-5Y, US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y, US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y, US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y\nqualified unresolved-exception rules: FCRA-605A-1-US-NATIONAL-10Y, FCRA-605A-3-US-NATIONAL-7Y, FCRA-605A-4-US-NATIONAL-7Y, FCRA-605A-5-US-NATIONAL-7Y, US-NY-GBL-380J-F1-II-JUDGMENT-5Y, US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y, US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y\nobservation-only: 5\njurisdictions with demonstrated finding: 66/82\njurisdictions without demonstrated finding: 16/82"
+    },
+    {
+      "file": "closure-gap-ingest-001.cjs",
+      "output": "gap-ingest-001-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-gap-ingest-002.cjs",
+      "output": "gap-ingest-002-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-gap-ingest-004.cjs",
+      "output": "gap-ingest-004-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-gap-ingest-005.cjs",
+      "output": "gap-ingest-005-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    },
+    {
+      "file": "closure-gap-ingest-006.cjs",
+      "output": "gap-ingest-006-evidence.json written (IMPLEMENTED_AND_TESTED, staging PENDING)"
+    }
+  ],
+  "remaining_stale_pins": []
+}

@@ -1,0 +1,1230 @@
+{
+  "artifact": "replay_expectations_frozen.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "document_type": "FROZEN INDEPENDENT EXPECTATIONS — written before the evaluator was run on any sampled case",
+  "purpose": "freeze the independent reviewer's expectations, and the sources they were derived from, before any evaluator output for a sampled case was read",
+  "frozen_before_comparison": true,
+  "the_reviewer": {
+    "specialisation": "SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+    "reviewer_identity": "PHASE5-001T independent reviewer (procedural independence, recorded)",
+    "sample_count": 17,
+    "expectations": [
+      {
+        "id": "RS-01",
+        "reproduces": "the evidenced specimen: both facts PRESENT, the arithmetic PERIOD_NOT_EXCEEDED",
+        "values": {
+          "clock_start": "2021-02-01",
+          "reference_date": "2026-05-05"
+        },
+        "derived_from": [
+          "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it",
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "fact_statuses": {
+            "last_payment": "PRESENT",
+            "reference_date": "PRESENT"
+          },
+          "refusal": null,
+          "clock_start": "2021-02-01",
+          "reference_date": "2026-05-05",
+          "anniversary": "2027-02-01",
+          "span_in_days": 2191,
+          "elapsed_days": 1919,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+          "reason": null,
+          "boundary_case": null,
+          "outcome_withheld": false,
+          "the_registers_own_demonstration": {
+            "intervening_days": 1919,
+            "six_year_span_in_days": 2191,
+            "six_year_boundary_from_last_payment": "2027-02-01",
+            "result_on_this_specimen": "PERIOD_NOT_EXCEEDED"
+          },
+          "ties_to_the_registers_own_demonstration": true
+        }
+      },
+      {
+        "id": "RS-02",
+        "reproduces": "a clear breach of the arithmetic: PERIOD_EXCEEDED",
+        "values": {
+          "clock_start": "2019-01-01",
+          "reference_date": "2026-05-05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2019-01-01",
+          "reference_date": "2026-05-05",
+          "anniversary": "2025-01-01",
+          "span_in_days": 2192,
+          "elapsed_days": 2681,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "PERIOD_EXCEEDED",
+          "reason": null,
+          "boundary_case": null,
+          "outcome_withheld": false
+        }
+      },
+      {
+        "id": "RS-03",
+        "reproduces": "the exact sixth-anniversary day: the outcome is WITHHELD",
+        "values": {
+          "clock_start": "2021-02-01",
+          "reference_date": "2027-02-01"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2021-02-01",
+          "reference_date": "2027-02-01",
+          "anniversary": "2027-02-01",
+          "span_in_days": 2191,
+          "elapsed_days": 2191,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "UNRESOLVED",
+          "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+          "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+          "outcome_withheld": true
+        }
+      },
+      {
+        "id": "RS-04",
+        "reproduces": "a 29 February start: convention c2 clamps the anniversary, and the clamped day is itself withheld",
+        "values": {
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-02-28"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-02-28",
+          "anniversary": "2022-02-28",
+          "span_in_days": 2191,
+          "elapsed_days": 2191,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "UNRESOLVED",
+          "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+          "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+          "outcome_withheld": true
+        }
+      },
+      {
+        "id": "RS-05",
+        "reproduces": "the day before the clamped anniversary",
+        "values": {
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-02-27"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-02-27",
+          "anniversary": "2022-02-28",
+          "span_in_days": 2191,
+          "elapsed_days": 2190,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+          "reason": null,
+          "boundary_case": null,
+          "outcome_withheld": false
+        }
+      },
+      {
+        "id": "RS-06",
+        "reproduces": "the day after the clamped anniversary",
+        "values": {
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-03-01"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2016-02-29",
+          "reference_date": "2022-03-01",
+          "anniversary": "2022-02-28",
+          "span_in_days": 2191,
+          "elapsed_days": 2192,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "PERIOD_EXCEEDED",
+          "reason": null,
+          "boundary_case": null,
+          "outcome_withheld": false
+        }
+      },
+      {
+        "id": "RS-07",
+        "reproduces": "a reference date before the printed last payment date",
+        "values": {
+          "clock_start": "2020-06-15",
+          "reference_date": "2020-05-01"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "refusal": null,
+          "fact_statuses": {
+            "last_payment": "PRESENT"
+          },
+          "clock_start": "2020-06-15",
+          "reference_date": "2020-05-01",
+          "anniversary": "2026-06-15",
+          "span_in_days": 2191,
+          "elapsed_days": -45,
+          "conventions_carried": [
+            "c1",
+            "c2",
+            "c3",
+            "c4",
+            "c5",
+            "c6"
+          ],
+          "comparison_outcome": "UNRESOLVED",
+          "reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+          "boundary_case": null,
+          "outcome_withheld": false
+        }
+      },
+      {
+        "id": "RS-08",
+        "reproduces": "a report contradiction: the header carries two different Request Dates",
+        "values": {
+          "clock_start": "2021-02-01"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the pinned extraction-status vocabulary"
+        ],
+        "expectation": {
+          "reference_date_status": "CONTRADICTED",
+          "reference_date_reason": "REQUEST_DATE_DIFFERS_BETWEEN_PAGES",
+          "comparison_runs": false,
+          "refusal": null
+        }
+      },
+      {
+        "id": "RS-09",
+        "reproduces": "a date unavailable: the record prints the label with no value",
+        "values": {
+          "clock_start": "2021-02-01",
+          "reference_date": "2026-05-05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the pinned extraction-status vocabulary"
+        ],
+        "expectation": {
+          "last_payment_status": "EXTRACTION_UNRESOLVED",
+          "last_payment_reason": "LABEL_PRINTED_WITHOUT_VALUE",
+          "comparison_outcome": "UNRESOLVED",
+          "refusal": null
+        }
+      },
+      {
+        "id": "RS-10",
+        "reproduces": "the single absence path: the section is resolved and prints no contract debt record",
+        "values": {
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the pinned extraction-status vocabulary"
+        ],
+        "expectation": {
+          "unit_level_status": "ABSENT_FROM_REPORT",
+          "unit_level_reason": "SECTION_LOCATED_AND_RESOLVED_WITH_NO_CONTRACT_DEBT_RECORD",
+          "refusal": null
+        }
+      },
+      {
+        "id": "RS-11",
+        "reproduces": "a report section that was never inspected",
+        "values": {
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "unit_level_status": "EXTRACTION_UNRESOLVED",
+          "unit_level_reason": "SECTION_NOT_INSPECTED",
+          "refusal": null
+        }
+      },
+      {
+        "id": "RS-12",
+        "reproduces": "a document that declares itself a fixture: the presentation gate refuses it",
+        "values": {
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the pinned extraction-status vocabulary"
+        ],
+        "expectation": {
+          "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+          "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+          "facts_layer_runs": false
+        }
+      },
+      {
+        "id": "RS-13",
+        "reproduces": "a declared event-date mapping other than the recorded one",
+        "values": {
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen"
+        ],
+        "expectation": {
+          "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+          "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+          "facts_layer_runs": false
+        }
+      },
+      {
+        "id": "RS-14",
+        "reproduces": "an input resolving to the excluded second limb",
+        "values": {
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+        ],
+        "expectation": {
+          "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+          "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+          "comparison_runs": false
+        }
+      },
+      {
+        "id": "RS-15",
+        "reproduces": "the operative state of this scope: a fully eligible document against the record as it stands, NOT ADMITTED",
+        "values": {
+          "reference_date": "2026/05/05",
+          "clock_start": "2021/02/01"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the governed rule record at its pinned digest, whose admission state is NOT_ADMITTED",
+          "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+        ],
+        "expectation": {
+          "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+          "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+          "comparison_runs": false,
+          "outcome": null
+        }
+      },
+      {
+        "id": "RS-16",
+        "reproduces": "a jurisdiction other than CA / CA-NS",
+        "values": {
+          "reference_date": "2026/05/05",
+          "selected_region": "CA-ON"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+        ],
+        "expectation": {
+          "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+          "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+          "facts_layer_runs": false
+        }
+      },
+      {
+        "id": "RS-17",
+        "reproduces": "collection-record isolation: two contract debt records, each with its own printed date",
+        "values": {
+          "records": [
+            {
+              "clock_start": "2010/01/01"
+            },
+            {
+              "clock_start": "2021/02/01"
+            }
+          ],
+          "reference_date": "2026/05/05"
+        },
+        "derived_from": [
+          "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+          "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen"
+        ],
+        "expectation": {
+          "refusal": null,
+          "per_record": [
+            {
+              "record_index": 2,
+              "clock_start": "2010-01-01",
+              "reference_date": "2026-05-05",
+              "anniversary": "2016-01-01",
+              "span_in_days": 2191,
+              "elapsed_days": 5968,
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "comparison_outcome": "PERIOD_EXCEEDED",
+              "reason": null,
+              "boundary_case": null,
+              "outcome_withheld": false
+            },
+            {
+              "record_index": 3,
+              "clock_start": "2021-02-01",
+              "reference_date": "2026-05-05",
+              "anniversary": "2027-02-01",
+              "span_in_days": 2191,
+              "elapsed_days": 1919,
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+              "reason": null,
+              "boundary_case": null,
+              "outcome_withheld": false
+            }
+          ],
+          "no_merged_value": true
+        }
+      }
+    ],
+    "transcription_identity_reproduced_from_the_source_pin": {
+      "recorded_statutory_text": "A consumer reporting agency shall not include in a consumer report information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred.",
+      "reproduced_from_the_source_pin_rule_corpus_rendering": "A consumer reporting agency shall not include in a consumer report information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred.",
+      "reproduced_from_the_source_pin_timing_rendering": "information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred",
+      "the_rule_corpus_rendering_matches_the_record_exactly": true,
+      "both_renderings_state_the_same_period_and_the_same_start": true,
+      "neither_rendering_states_a_comparison_date_a_boundary_rule_or_a_day_count": true,
+      "source_pin_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_pin_sha256_matches_the_recorded_pin": true,
+      "what_the_text_does_not_state": [
+        "no day count",
+        "no rule for computing the anniversary of a 29 February start",
+        "no statement whether the sixth-anniversary day itself is inside or outside the period",
+        "no comparison or measuring date",
+        "no rule for how the excluded second limb interacts with the first"
+      ]
+    },
+    "the_provision_as_the_reviewer_read_it_from_the_pin": {
+      "rule_corpus_rendering": {
+        "lines": "the accepted source pin, the rule entry for this unit: the concatenated statutory text immediately above requiredReportFields",
+        "quote": "A consumer reporting agency shall not include in a consumer report information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred."
+      },
+      "timing_rendering": {
+        "lines": "the accepted source pin, the NS_S10_3_C_TIMING determination, its statedInProvision",
+        "quote": "information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred"
+      }
+    },
+    "the_report_excerpt_as_the_reviewer_read_it": {
+      "fact_02_last_payment_date": {
+        "raw_value_observed": "2021-02-01",
+        "raw_value_form": "DDDD/DD/DD (year/month/day)",
+        "normalized_value": "ISO 8601 (YYYY-MM-DD)",
+        "location": "row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17)"
+      },
+      "fact_03_request_date": {
+        "raw_value_observed": "2026-05-05",
+        "raw_value_form": "DDDD/DD/DD",
+        "normalized_value": "ISO 8601",
+        "location": "label \"Request Date\" in the page header, with the same value on all 22 pages"
+      },
+      "the_registers_own_demonstration": {
+        "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+        "inputs": {
+          "report_reference_date": {
+            "value": "2026-05-05",
+            "source_field": "Request Date",
+            "page": 1,
+            "present_on_every_page": true
+          },
+          "debt_item_last_payment_date": {
+            "value": "2021-02-01",
+            "source_field": "Last Payment Date",
+            "section": "Collections",
+            "page": 16
+          },
+          "intervening_days": 1919,
+          "six_year_boundary_from_last_payment": "2027-02-01",
+          "six_year_span_in_days": 2191
+        },
+        "comparison": "intervening_days > six_year_span_in_days",
+        "result_on_this_specimen": "PERIOD_NOT_EXCEEDED",
+        "meaning": "The deterministic evaluation runs and resolves on this specimen. PERIOD_NOT_EXCEEDED means the rule-supplied clock has not run out on the printed dates; it is a computed result, not an absence of data, and it emits no consumer finding.",
+        "unresolved_when": [
+          "the debt record prints no Last Payment Date",
+          "the report reference date is unreadable",
+          "the item is not a debt record at all",
+          "the uploaded document is not the supported presentation"
+        ]
+      }
+    },
+    "the_pinned_text_the_reviewer_derived_the_gates_from": {
+      "gate_order": [
+        "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "G3_PRESENTATION_ELIGIBILITY",
+        "G4_EVENT_DATE_MAPPING",
+        "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "G6_RULE_RECORD_ADMITTED"
+      ],
+      "the_order_rule": "every gate is evaluated and recorded; the refusal is the FIRST failing gate in this order, so the refusal never depends on which failure happened to be noticed first",
+      "decision_rules": [
+        {
+          "id": "R1",
+          "precedence": 1,
+          "result": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED"
+        },
+        {
+          "id": "R2",
+          "precedence": 2,
+          "result": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT"
+        },
+        {
+          "id": "R3",
+          "precedence": 3,
+          "result": "REFUSED_UNSUPPORTED_PRESENTATION"
+        },
+        {
+          "id": "R4",
+          "precedence": 4,
+          "result": "REFUSED_WRONG_EVENT_DATE_MAPPING"
+        },
+        {
+          "id": "R5",
+          "precedence": 5,
+          "result": "REFUSED_RULE_RECORD_NOT_ADMITTED"
+        },
+        {
+          "id": "R6",
+          "precedence": 6,
+          "result": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT"
+        },
+        {
+          "id": "S1",
+          "precedence": 7,
+          "result": "EXTRACTION_UNRESOLVED"
+        },
+        {
+          "id": "S2",
+          "precedence": 8,
+          "result": "CONTRADICTED"
+        },
+        {
+          "id": "S3",
+          "precedence": 9,
+          "result": "PRESENT"
+        },
+        {
+          "id": "S4",
+          "precedence": 10,
+          "result": "EXTRACTION_UNRESOLVED"
+        },
+        {
+          "id": "S5",
+          "precedence": 11,
+          "result": "ABSENT_FROM_REPORT"
+        },
+        {
+          "id": "S5b",
+          "precedence": 12,
+          "result": "EXTRACTION_UNRESOLVED (FIELD_LABEL_OUTSIDE_ANY_RECORD) — a value is never read outside a record, so the section's clean absence reading is not available"
+        },
+        {
+          "id": "S6",
+          "precedence": 13,
+          "result": "EXTRACTION_UNRESOLVED"
+        },
+        {
+          "id": "S7",
+          "precedence": 14,
+          "result": "PRESENT"
+        },
+        {
+          "id": "C1",
+          "precedence": 15,
+          "result": "the comparison does not run: UNRESOLVED, with a reason naming the fact and its status"
+        },
+        {
+          "id": "C2",
+          "precedence": 16,
+          "result": "UNRESOLVED, reason REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT"
+        },
+        {
+          "id": "C3",
+          "precedence": 17,
+          "result": "UNRESOLVED with boundary case BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY; the outcome is WITHHELD"
+        },
+        {
+          "id": "C4",
+          "precedence": 18,
+          "result": "PERIOD_EXCEEDED — an arithmetic result, not a finding"
+        },
+        {
+          "id": "C5",
+          "precedence": 19,
+          "result": "PERIOD_NOT_EXCEEDED — an arithmetic result, never a clearance and never a compliance statement"
+        }
+      ],
+      "six_conventions": [
+        {
+          "id": "c1",
+          "convention": "the anniversary is the clock start plus six calendar years, by calendar addition",
+          "is_a_requirement_of_the_text": false
+        },
+        {
+          "id": "c2",
+          "convention": "a 29 February start clamps to 28 February in a non-leap sixth year",
+          "is_a_requirement_of_the_text": false
+        },
+        {
+          "id": "c3",
+          "convention": "the six-year span in days is derived from the two dates and never hard-coded",
+          "is_a_requirement_of_the_text": false
+        },
+        {
+          "id": "c4",
+          "convention": "elapsed time is measured in whole days from the clock start to the reference date",
+          "is_a_requirement_of_the_text": false
+        },
+        {
+          "id": "c5",
+          "convention": "the period is exceeded when elapsed days exceed the span in days",
+          "is_a_requirement_of_the_text": false
+        },
+        {
+          "id": "c6",
+          "convention": "the exact sixth-anniversary day carries NO outcome: the comparison reports BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY with comparison_outcome UNRESOLVED, because the text does not settle whether that day is inside or outside the period",
+          "is_a_requirement_of_the_text": false
+        }
+      ],
+      "boundary_withheld": {
+        "rule": "when the reference date equals the sixth anniversary exactly, the outcome is WITHHELD. Neither reading of \"more than six years after\" is adopted by this record.",
+        "effect": "the unit produces no PERIOD_EXCEEDED and no PERIOD_NOT_EXCEEDED on that one day; the case is reported as a boundary case",
+        "the_internal_comparator_is_not_adopted": "the existing internal comparator treats that day as inside the period. That convention is NOT adopted by this record, and no result resting on it at the boundary may be relied on. Conforming an evaluator to this record is Gate 5.5 work.",
+        "how_the_withholding_is_made_deterministic": "the boundary is an exact date equality on two resolved dates and is evaluated before the greater-than branch, so the withheld day cannot fall into PERIOD_NOT_EXCEEDED by accident of ordering"
+      },
+      "statuses": [
+        "PRESENT",
+        "ABSENT_FROM_REPORT",
+        "CONTRADICTED",
+        "EXTRACTION_UNRESOLVED"
+      ]
+    },
+    "independence": {
+      "who_reviewed": "a second derivation written inside this order, from the source side of the record rather than from the evaluator: SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+      "what_independence_means_here": "the reviewer reads different inputs (the accepted source pin, the report excerpt as the register records it, and the pinned specification and status vocabulary as text) and carries its own arithmetic, written as a different algorithm; it does not read, require, import or execute the evaluator, and it reads no result of this order before its expectations are frozen",
+      "what_independence_does_not_mean_here": [
+        "it is not a second human reviewer: the same execution context authored both sides, so the independence is procedural and of derivation path, not of person",
+        "it is not independent legal review, and it decides no question of law: it reproduces arithmetic and reads statuses out of pinned text",
+        "it does not re-extract the report: the report excerpt is read as the register records it, and the specimen PDF is not opened by this order"
+      ],
+      "order_of_operations": "the comparison harness writes these expectations to replay_expectations_frozen.json and takes that file's digest BEFORE it runs the evaluator on any sampled case. The frozen digest is recorded in the comparison record, so the freeze is measurable rather than asserted.",
+      "sources_read": [
+        {
+          "role": "source_pin",
+          "path": "C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+          "sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+          "pinned": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+          "matches_its_pin": true
+        },
+        {
+          "role": "report_excerpt",
+          "path": "C:\\CRP-NEW\\SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+          "sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+          "pinned": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+          "matches_its_pin": true
+        },
+        {
+          "role": "specification_text",
+          "path": "C:\\CRP-NEW\\SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+          "sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+          "pinned": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+          "matches_its_pin": true
+        },
+        {
+          "role": "status_vocabulary_text",
+          "path": "C:\\CRP-NEW\\SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+          "sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+          "pinned": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+          "matches_its_pin": true
+        },
+        {
+          "role": "rule_record_text",
+          "path": "C:\\CRP-NEW\\SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+          "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+          "pinned": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+          "matches_its_pin": true
+        },
+        {
+          "role": "work_order_pins",
+          "path": "C:\\CRP-NEW\\SOURCE_CAPTURES\\PHASE5-001S\\next_work_order.json",
+          "sha256": "68D699006869DF81314AFBD687437B6BF4911458CBF18ED15286F345975559F5",
+          "pinned": null,
+          "matches_its_pin": true
+        }
+      ],
+      "sources_deliberately_not_read": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs (the executable form) — not required, not imported, not read",
+        "SOURCE_CAPTURES\\PHASE5-001T\\fixtures_001t.cjs (which loads the executable form for its constants) — not required",
+        "any result record of this order: no fixture result, no negative-test result and no evaluator output was read before these expectations were written"
+      ],
+      "the_reviewers_own_arithmetic": "whole days accumulated a year and a month at a time from 0001-01-01, with month lengths computed from the leap-year rule; the anniversary is built by adding six calendar years and clamping to the target month's length. The specification's helper uses a civil-day formula instead, so the two derivations do not share code."
+    }
+  },
+  "expectations": [
+    {
+      "id": "RS-01",
+      "reproduces": "the evidenced specimen: both facts PRESENT, the arithmetic PERIOD_NOT_EXCEEDED",
+      "values": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2026-05-05"
+      },
+      "expectation": {
+        "fact_statuses": {
+          "last_payment": "PRESENT",
+          "reference_date": "PRESENT"
+        },
+        "refusal": null,
+        "clock_start": "2021-02-01",
+        "reference_date": "2026-05-05",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 1919,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "boundary_case": null,
+        "outcome_withheld": false,
+        "the_registers_own_demonstration": {
+          "intervening_days": 1919,
+          "six_year_span_in_days": 2191,
+          "six_year_boundary_from_last_payment": "2027-02-01",
+          "result_on_this_specimen": "PERIOD_NOT_EXCEEDED"
+        },
+        "ties_to_the_registers_own_demonstration": true
+      },
+      "derived_from": [
+        "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it",
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-02",
+      "reproduces": "a clear breach of the arithmetic: PERIOD_EXCEEDED",
+      "values": {
+        "clock_start": "2019-01-01",
+        "reference_date": "2026-05-05"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2019-01-01",
+        "reference_date": "2026-05-05",
+        "anniversary": "2025-01-01",
+        "span_in_days": 2192,
+        "elapsed_days": 2681,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "boundary_case": null,
+        "outcome_withheld": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+      ]
+    },
+    {
+      "id": "RS-03",
+      "reproduces": "the exact sixth-anniversary day: the outcome is WITHHELD",
+      "values": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2027-02-01"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2021-02-01",
+        "reference_date": "2027-02-01",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+        "outcome_withheld": true
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+      ]
+    },
+    {
+      "id": "RS-04",
+      "reproduces": "a 29 February start: convention c2 clamps the anniversary, and the clamped day is itself withheld",
+      "values": {
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-02-28"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-02-28",
+        "anniversary": "2022-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+        "outcome_withheld": true
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+      ]
+    },
+    {
+      "id": "RS-05",
+      "reproduces": "the day before the clamped anniversary",
+      "values": {
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-02-27"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-02-27",
+        "anniversary": "2022-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2190,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "boundary_case": null,
+        "outcome_withheld": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-06",
+      "reproduces": "the day after the clamped anniversary",
+      "values": {
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-03-01"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2016-02-29",
+        "reference_date": "2022-03-01",
+        "anniversary": "2022-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2192,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "boundary_case": null,
+        "outcome_withheld": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-07",
+      "reproduces": "a reference date before the printed last payment date",
+      "values": {
+        "clock_start": "2020-06-15",
+        "reference_date": "2020-05-01"
+      },
+      "expectation": {
+        "refusal": null,
+        "fact_statuses": {
+          "last_payment": "PRESENT"
+        },
+        "clock_start": "2020-06-15",
+        "reference_date": "2020-05-01",
+        "anniversary": "2026-06-15",
+        "span_in_days": 2191,
+        "elapsed_days": -45,
+        "conventions_carried": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "c5",
+          "c6"
+        ],
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+        "boundary_case": null,
+        "outcome_withheld": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-08",
+      "reproduces": "a report contradiction: the header carries two different Request Dates",
+      "values": {
+        "clock_start": "2021-02-01"
+      },
+      "expectation": {
+        "reference_date_status": "CONTRADICTED",
+        "reference_date_reason": "REQUEST_DATE_DIFFERS_BETWEEN_PAGES",
+        "comparison_runs": false,
+        "refusal": null
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the pinned extraction-status vocabulary"
+      ]
+    },
+    {
+      "id": "RS-09",
+      "reproduces": "a date unavailable: the record prints the label with no value",
+      "values": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2026-05-05"
+      },
+      "expectation": {
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_PRINTED_WITHOUT_VALUE",
+        "comparison_outcome": "UNRESOLVED",
+        "refusal": null
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the pinned extraction-status vocabulary"
+      ]
+    },
+    {
+      "id": "RS-10",
+      "reproduces": "the single absence path: the section is resolved and prints no contract debt record",
+      "values": {
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "unit_level_status": "ABSENT_FROM_REPORT",
+        "unit_level_reason": "SECTION_LOCATED_AND_RESOLVED_WITH_NO_CONTRACT_DEBT_RECORD",
+        "refusal": null
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the pinned extraction-status vocabulary"
+      ]
+    },
+    {
+      "id": "RS-11",
+      "reproduces": "a report section that was never inspected",
+      "values": {
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_reason": "SECTION_NOT_INSPECTED",
+        "refusal": null
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-12",
+      "reproduces": "a document that declares itself a fixture: the presentation gate refuses it",
+      "values": {
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "facts_layer_runs": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the pinned extraction-status vocabulary"
+      ]
+    },
+    {
+      "id": "RS-13",
+      "reproduces": "a declared event-date mapping other than the recorded one",
+      "values": {
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "facts_layer_runs": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen"
+      ]
+    },
+    {
+      "id": "RS-14",
+      "reproduces": "an input resolving to the excluded second limb",
+      "values": {
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "comparison_runs": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+      ]
+    },
+    {
+      "id": "RS-15",
+      "reproduces": "the operative state of this scope: a fully eligible document against the record as it stands, NOT ADMITTED",
+      "values": {
+        "reference_date": "2026/05/05",
+        "clock_start": "2021/02/01"
+      },
+      "expectation": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "comparison_runs": false,
+        "outcome": null
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the governed rule record at its pinned digest, whose admission state is NOT_ADMITTED",
+        "the accepted source pin, read at its recorded digest, and the provision text reproduced from it"
+      ]
+    },
+    {
+      "id": "RS-16",
+      "reproduces": "a jurisdiction other than CA / CA-NS",
+      "values": {
+        "reference_date": "2026/05/05",
+        "selected_region": "CA-ON"
+      },
+      "expectation": {
+        "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "facts_layer_runs": false
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7"
+      ]
+    },
+    {
+      "id": "RS-17",
+      "reproduces": "collection-record isolation: two contract debt records, each with its own printed date",
+      "values": {
+        "records": [
+          {
+            "clock_start": "2010/01/01"
+          },
+          {
+            "clock_start": "2021/02/01"
+          }
+        ],
+        "reference_date": "2026/05/05"
+      },
+      "expectation": {
+        "refusal": null,
+        "per_record": [
+          {
+            "record_index": 2,
+            "clock_start": "2010-01-01",
+            "reference_date": "2026-05-05",
+            "anniversary": "2016-01-01",
+            "span_in_days": 2191,
+            "elapsed_days": 5968,
+            "conventions_carried": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6"
+            ],
+            "comparison_outcome": "PERIOD_EXCEEDED",
+            "reason": null,
+            "boundary_case": null,
+            "outcome_withheld": false
+          },
+          {
+            "record_index": 3,
+            "clock_start": "2021-02-01",
+            "reference_date": "2026-05-05",
+            "anniversary": "2027-02-01",
+            "span_in_days": 2191,
+            "elapsed_days": 1919,
+            "conventions_carried": [
+              "c1",
+              "c2",
+              "c3",
+              "c4",
+              "c5",
+              "c6"
+            ],
+            "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+            "reason": null,
+            "boundary_case": null,
+            "outcome_withheld": false
+          }
+        ],
+        "no_merged_value": true
+      },
+      "derived_from": [
+        "the pinned deterministic evaluator specification, read as text: its six conventions, its fixed gate order, its decision rules R1 to R6 and its status rules S1 to S7",
+        "the report excerpt as the register records it: field FACT-02 (Last Payment Date) and field FACT-03 (Request Date), and the register's own demonstration of the arithmetic on this specimen"
+      ]
+    }
+  ],
+  "created_by": "PHASE5-001T"
+}

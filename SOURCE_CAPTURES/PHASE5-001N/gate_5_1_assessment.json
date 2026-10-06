@@ -1,0 +1,52 @@
+{
+  "artifact": "gate_5_1_assessment.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 9 - assess what remains necessary for Gate 5.1, including the separate corpus-wide unique-legal-provision count",
+  "created_utc": "2026-09-30",
+  "gate_text_verbatim": "Gate 5.1: every source ID is accounted for once, all counts reconcile, duplicate links are explicit, and no unresolved item was silently excluded. If reports are only present in chat, first create the durable, schema-conforming rescreen register from the accepted reports, with provenance to each batch and correction.",
+  "gate_text_source": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, Gate 5.1 - not amended by PHASE5-001M and not touched by this order",
+  "conditions": [
+    {"condition": "every source ID is accounted for once", "state": "MET", "basis": "recomputed from the 001K row file: 437 rows, 437 distinct IDs, suffix range 0001-0437, none missing, none repeated. This order removes nothing and adds no ID."},
+    {"condition": "no unresolved item was silently excluded", "state": "MET", "basis": "the twenty-five relation records and fifteen rows were reproduced and each now carries either a determination or an explicit residual with the exact missing fact named; nothing was dropped, defaulted or merged"},
+    {"condition": "the durable, schema-conforming rescreen register exists with provenance to each batch and correction", "state": "MET", "basis": "SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv and rescreen_provenance.json, unchanged by this order"},
+    {"condition": "all counts reconcile", "state": "NOT FULLY MET", "basis": "the register's own per-ID counts reconcile exactly and this order reconciles the twenty-five scoped relation records, but the separately required corpus-wide unique-legal-provision count over all 437 rows is still missing and one scoped pair (the CRAIN pair) remains unresolved. No count is certified here."},
+    {"condition": "duplicate links are explicit", "state": "ADVANCED, NOT FULLY RESOLVED", "basis": "PHASE5-001L determined all 2358 relations and this order determines the twenty-five that were left unresolved: twenty-two as DISTINCT, two as IDENTICAL at instrument level, and one remains IDENTITY_UNRESOLVED with its exact missing fact named. Fourteen of the fifteen pairs are now determined; the CRAIN pair is not, and the two instrument-level pairs carry no provision-level identity."}
+  ],
+  "gate_5_1_result": {
+    "status": "NOT PASSED",
+    "status_after_001m": "NOT PASSED, blocked on the duplicate-identity requirement of Phase 5.1 bullet 3",
+    "what_this_order_changed": "five of the six clusters are determined and no longer block that requirement: the PIPEDA five-row cluster is ten distinct recorded items, the West Virginia pair and the New York pair are each two distinct statutory limbs, and the Nova Scotia and Ontario pairs are each one instrument reference with no provision recorded",
+    "what_still_blocks": [
+      "the separate corpus-wide unique-legal-provision count over all 437 rows, which no scoped determination can produce",
+      "the CRAIN pair (CRP-LSRC-0409 / CRP-LSRC-0411): IDENTITY_UNRESOLVED, with the exact missing fact named as the CRAIN table row and version behind each recorded start",
+      "the open question whether any legal-provision count should treat the two instrument-level pairs, which record no provision at all, as contributing an entry"
+    ],
+    "declared_passed_by_this_order": false
+  },
+  "single_next_bounded_prerequisite": {
+    "action": "perform the corpus-wide unique-legal-provision count over all 437 rows under the amended Phase 5.1 bullet 3, carrying the fourteen determinations this order records, the ten identical clusters and the 346 rows with no duplicate relationship, and stating for the resulting count its evidence, its meaning and its limitations; retain the CRAIN pair as an explicit unresolved input unless the missing CRAIN row and version are produced first",
+    "why_it_is_single": "the duplicate-identity half of bullet 3 is now determined for fourteen of fifteen pairs, so the only work that can move this gate is the count itself; nothing else in the gate is outstanding",
+    "what_it_would_not_do": "it would not pass Gate 5.1 by itself, admit a rule, create coverage or a finding, certify a candidate count, or begin Gate 5.2",
+    "still_not_performed": "not performed by this order"
+  },
+  "dependencies_and_qualifications_preserved": [
+    "Gate 5.3 and the M-1 dependency remain unresolved and untouched",
+    "the candidate qualifications of the accepted B20 owner decisions remain as recorded; this order certified no candidate and moved no record between classes",
+    "the six B20 mapping IDs (CRP-LSRC-0354, 0422, 0423, 0424, 0425, 0427) remain UNRESOLVED pending exact report-field/event mapping",
+    "the historical B20 aggregate (39 probable candidates, 380 excluded, 18 unresolved) remains a preserved, unattributed historical record with per-ID basis MISSING_EVIDENCE and is not reconciled, certified or used as a starting count here",
+    "the owner question whether any of the ten demonstrably identical clusters should one day be a single catalogue entry remains open",
+    "the four rows this order determines identical at instrument level (0336, 0349, 0337, 0351) are not authorised for removal, merge or collapse; removal_permitted stays NO on them and on all 437 rows",
+    "the UK_TO_GB_RECONCILIATION_REQUIRED status carried by the CRAIN rows is unchanged",
+    "the PHASE5-001H item 1 Ontario instrument-identity question (the 'within a reasonable time' passage attributed to different Ontario instruments) is separate, open, and neither resolved nor reopened by the Ontario cluster determination made here",
+    "the PHASE5-001H item 3 correction that the Nova Scotia PDF bytes must not be counted twice as new authority is applied: R09 is the same bytes as the 001G capture and the admission-contract retained-evidence pin"
+  ],
+  "boundary_confirmation": {
+    "sources_removed": 0, "records_merged": 0, "dispositions_inherited": 0, "rows_reclassified": 0,
+    "owner_rulings_that_manufacture_identity": 0,
+    "new_rules_interpreted_admitted_or_applied": 0, "coverage_or_findings_created": 0,
+    "gate_5_2_begun": false, "phase5_001i_issued": false,
+    "git_operations": 0, "moves_renames_deletions": 0,
+    "private_reports_or_transmissions": 0, "purchases_logins_or_external_contact": 0
+  },
+  "created_by": "PHASE5-001N"
+}

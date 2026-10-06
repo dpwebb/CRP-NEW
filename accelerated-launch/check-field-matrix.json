@@ -1,0 +1,122 @@
+{
+  "artifact": "check-field-matrix.json",
+  "work_order": "B6-INGEST-004",
+  "purpose": "Compact mapping of every assessment to its required facts, and whether the general intake establishes those facts. Statutory comparisons are reused, never duplicated; a known presentation is required only where the recorded restriction is exact-specimen.",
+  "checks": [
+    {
+      "check_id": "GENERAL-FACT-ITEM-DATE-AFTER-REPORT-DATE",
+      "class": "REPORT_FACT_CONSISTENCY",
+      "required_fields": ["reference_date", "any entry date on a record"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — runs on every general report with a readable report date and at least one entry date"
+    },
+    {
+      "check_id": "FCRA-605A-5-US-NATIONAL-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["reportedAccount.adverseRatingDate (the 'NN days past due as of Mon YYYY' annotation)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — the general intake now reads the adverse-rating annotation and this check runs on a general US report that prints it"
+    },
+    {
+      "check_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["liability.closedDate on a credit-account record that prints a closure date"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — the general intake now reads a closure date (Closed/Paid/Settled) and this check runs on a general AU report that prints it"
+    },
+    {
+      "check_id": "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["enquiry.date on a credit-enquiry record"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — the general intake now reads a credit-enquiry date and this check runs on a general AU report that prints it"
+    },
+    {
+      "check_id": "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["overdue.originalListingDate on an overdue/default record (never the current-listing date)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — the general intake now reads an original-listing date and this check runs on a general AU report that prints it; a record without it is UNRESOLVED, never aged from a current-listing date"
+    },
+    {
+      "check_id": "CA-NS-CRA-S10-3-C-LIMB-1",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["tradeline.lastPaymentDate", "reference_date"],
+      "established_by_general_intake": false,
+      "status": "WITHHELD",
+      "reason": "exact-specimen restriction (PR-01 digest); the recorded CA-NS ceiling is preserved and is not loosened by general intake"
+    },
+    {
+      "check_id": "CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["bankruptcy.dischargeDate (a clearly labelled discharge date on a bankruptcy public record, unambiguous and free of material contradiction)"],
+      "established_by_general_intake": true,
+      "status": "ACCEPTED_AS_REPORTED_FACT — OWNER-EVIDENCE-001 v1.0",
+      "reason": "the discharge date is now accepted as the bureau's reported fact when clearly labelled, unambiguous and correctly associated (never a filing, update or trustee date); the check still runs only on the exact-specimen PR-01 presentation, so a general report does not broaden the CA-NS statutory surface"
+    },
+    {
+      "check_id": "FCRA-605A-1-US-NATIONAL-10Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.bankruptcyOrderForReliefDate or publicRecord.bankruptcyAdjudicationDate (an explicit 'Order for Relief' / 'Adjudicated' label on a bankruptcy public record)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: reassessed from NOT_REPORT_EVIDENCED; a filing date is never substituted"
+    },
+    {
+      "check_id": "FCRA-605A-2-US-NATIONAL-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.judgmentEntryDate (an explicit 'Date of Entry' / 'Date Entered' label on a judgment public record)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: the 'statute of limitations if longer' alternative is a named unresolved computation (the 7-year minimum is compared)"
+    },
+    {
+      "check_id": "FCRA-605A-3-US-NATIONAL-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.taxLienPaidDate (an explicit 'Date Paid' / 'Date Released' / 'Date Satisfied' label on a tax-lien public record)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: reassessed from NOT_REPORT_EVIDENCED"
+    },
+    {
+      "check_id": "FCRA-605A-4-US-NATIONAL-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["collection.delinquencyDate (a clearly labelled 'Date of First Delinquency'/'Date Delinquent' on the collection record), moved 180 days by § 605(c)(1)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-003 D2: the 180-day rule is applied; a collection-placement/update/payment date is never substituted"
+    },
+    {
+      "check_id": "US-NY-GBL-380J-F1-II-JUDGMENT-5Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.judgmentEntryDate AND publicRecord.judgmentSatisfactionDate within five years of entry"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-003 D3: a multi-fact limb; a satisfaction label without its date does not establish the condition"
+    },
+    {
+      "check_id": "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.taxLienPaidDate"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: reassessed from NOT_REPORT_EVIDENCED"
+    },
+    {
+      "check_id": "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.bankruptcyAdjudicationDate (an explicit 'Adjudicated' / 'Adjudication' label)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: reassessed from NOT_REPORT_EVIDENCED; a filing date is never substituted"
+    },
+    {
+      "check_id": "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["publicRecord.bankruptcyOrderForReliefDate (an explicit 'Order for Relief' label)"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — ACCEPT-002: reassessed from NOT_REPORT_EVIDENCED; a filing date is never substituted"
+    },
+    {
+      "check_id": "US-CA-CCRAA-1785-13-A-8-ADVERSE-7Y",
+      "class": "STATUTORY_RULE_COMPARISON",
+      "required_fields": ["reportedAccount.adverseRatingDate (the 'NN days past due as of Mon YYYY' annotation on a non-collection account), measured seven years from the rating date with NO 180-day offset"],
+      "established_by_general_intake": true,
+      "status": "CONNECTED — OWNER-CANDIDATE-007 (B): the residual adverse-information rule applies event-date timing and defers collection/charge-off accounts to the (a)(5) collection branch (which carries the 180-day offset)"
+    }
+  ]
+}
+

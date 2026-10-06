@@ -1,0 +1,289 @@
+{
+  "artifact": "file_custody_manifest.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "byte-level custody record for every file this order created or changed, with the evidence that no ledger, corpus, enumeration, application file or unrelated artifact was touched",
+  "file_count": 51,
+  "files": [
+    {
+      "relative_path_from_workspace": "CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md",
+      "bytes": 30613,
+      "sha256": "52F6E5207AB67040F03AECC8B436157242574486B8A93FBC84EFA6A3D4FA8442"
+    },
+    {
+      "relative_path_from_workspace": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "bytes": 29858,
+      "sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0"
+    },
+    {
+      "relative_path_from_workspace": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+      "bytes": 49451,
+      "sha256": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\constants.cjs",
+      "bytes": 7797,
+      "sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\document-model.cjs",
+      "bytes": 6878,
+      "sha256": "9B58638B08B1A0EA92DF6DAB4BA8BF7AD83D801AE2D31CC94A72168E83E3EC86"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\extraction.cjs",
+      "bytes": 5313,
+      "sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\locators.cjs",
+      "bytes": 10239,
+      "sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\presentation-contract.cjs",
+      "bytes": 5933,
+      "sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\README.md",
+      "bytes": 3280,
+      "sha256": "09DEACD29355DD9A9F3D39B34F94738889249C701D5002F9168476274D0939D5"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\run-internal-validation.cjs",
+      "bytes": 9976,
+      "sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\six-year-evaluator.cjs",
+      "bytes": 5215,
+      "sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\synthetic\\make-synthetic-pdf.cjs",
+      "bytes": 4153,
+      "sha256": "29C7CF8F90AC55F7C21FE452E72F709595716C2FC475F9F4EF8BE72E8EC2BEA2"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\fixtures.cjs",
+      "bytes": 4630,
+      "sha256": "8DC71C793AF15D08BAD082E0757FEF3731EB184DB41EE3A19BAEF03DCDA56551"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\harness.cjs",
+      "bytes": 4678,
+      "sha256": "573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\run-tests.cjs",
+      "bytes": 1027,
+      "sha256": "1B057448BAE8FBD2E1A47A1F2E9CB4E26AD31FB84C5E1C6D5EF80C0790E7E2F2"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\a-pinned.cjs",
+      "bytes": 5909,
+      "sha256": "77B5B3EFE981DDC52AD69E55A9587DCE85A5681783E2107A517A39C441537CEA"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\b-arithmetic.cjs",
+      "bytes": 3772,
+      "sha256": "D4202FBA2C21175A0AE283C2A206161B0740DC8CFE64757AFA88AA4D42DCCCEB"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\c-paths.cjs",
+      "bytes": 5735,
+      "sha256": "4FE2BF3E9C70CA39F32313F96785B11BA306F4ED6D0C50302E4FDE9E286CE858"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\d-records.cjs",
+      "bytes": 4029,
+      "sha256": "9E93B47C2FB676DCE819F893350209E18B8161468C95A6FB3135E8A2466D0D3F"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\e-refusals.cjs",
+      "bytes": 5548,
+      "sha256": "17C58C42BCC5D1181208A32F053846677C7F38738B732D715C4EC5AA47CE59AE"
+    },
+    {
+      "relative_path_from_workspace": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\f-state.cjs",
+      "bytes": 4094,
+      "sha256": "0C514E09AFF7350E44596FA273CB7A3330D6CDFD85F90A20B0E225905AA219B1"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\amendment_application_result.json",
+      "bytes": 1228,
+      "sha256": "CD459D24F10D5CA9B39F0CE3CF5C7B2C3BDAC3AA6902CD27DCAE0AC8F1030C5D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\amendment_text.json",
+      "bytes": 5315,
+      "sha256": "1916F6A2D8AEF9499A480BF7739B6EC92518028F91BB5A34190CB5A28C395FB5"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\apply_001i_a_amendments.js",
+      "bytes": 11292,
+      "sha256": "271AB16EB86558E474479C0C4BCF5BE6060E3BCEC2800E3B5BE8C0741E0EFF7E"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_evaluation_record.cjs",
+      "bytes": 4792,
+      "sha256": "853E4AED7719E97DF868DF08EF229A07597BB2BA51889583414FD8F47BE985FD"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_extraction_record.cjs",
+      "bytes": 5136,
+      "sha256": "1B398520D0CFF58C6F3C06E4BDD8CCA9C371E7C48A954934FC7ACB4DF68DD33B"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs",
+      "bytes": 18548,
+      "sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\capture_001i_a_baseline.ps1",
+      "bytes": 1794,
+      "sha256": "1EF0A0667B22A8E24CB503AD934ABFF1DDF72D8EDF04340FC803DE5DD05B63A3"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\check_001i_a_narrative.cjs",
+      "bytes": 7749,
+      "sha256": "44782C3541B9DB0739A0C471FFD61D95F857210F27EB68CACDE1A039DDA7C921"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json",
+      "bytes": 4799,
+      "sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\evaluation_results.json",
+      "bytes": 9221,
+      "sha256": "8A82C16EE52ACEFFF33F2A41717984051A869ED0B2B86DA796819B22D31E6E9A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json",
+      "bytes": 11375,
+      "sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\gate_sequence_assessment.json",
+      "bytes": 5156,
+      "sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\identifier_scan.json",
+      "bytes": 28640,
+      "sha256": "19C7C3F51C81346975008B6AAD2016385BCF93774208A4471C2247D722EABBD2"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "bytes": 7095,
+      "sha256": "E98459E9E70147C7DE7876874EAC55ABAF54DC7290BA967F53C7907EA5ACDB8D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\input_verification.json",
+      "bytes": 4821,
+      "sha256": "F6BF0C3DB61ADA103F7296D2213A48A2859E0D220C5F2151E0B030FAF63F7741"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\narrative_check.json",
+      "bytes": 6752,
+      "sha256": "F415096192A18251FB97F6CD887CC556C62F1945895BB9A3440EC55686972800"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\presentation_boundary.json",
+      "bytes": 3806,
+      "sha256": "8392E4CEDA0B337E096D26EA823C46DB1826FEAB6D2CD1E46F6A030653F06849"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "bytes": 9524,
+      "sha256": "DCC6720E4EC70372522DA81AD48BCD5B870C6EABFB0CAFA1A6AA1AAA149471F9"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_001i_a_section_map.cjs",
+      "bytes": 3488,
+      "sha256": "9FC8E8CC5AC42898E6683ACD91BE881BAD183E66C9B3BEA9E386A08F200A21F5"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_001i_a_specimen_lines.cjs",
+      "bytes": 4398,
+      "sha256": "EEB858737D6DB58BC215BDCE72B14A0408578BC22B4EB07EBC4A2F28CDE5CA1E"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_specimen_lines.json",
+      "bytes": 3306,
+      "sha256": "E71154E0FD007A63E5CDAF0EA83035A4C424241B39A89B0DB3483D90BA04CCA8"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\probe_specimen_section_map.json",
+      "bytes": 5668,
+      "sha256": "0A8AF5A54E72C8951D669A93ACC57B3AA869027B5C4DA311F282978938B919ED"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\run_001i_a_all.ps1",
+      "bytes": 5238,
+      "sha256": "14902C4B94BF18C4373BBE71B4D74847080A3764D2A0D7A315410793C0A12C8F"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\scan_001i_a_identifiers.cjs",
+      "bytes": 6669,
+      "sha256": "F1F281D15A36133AB9389BFD4DC52A02D44B74C0BC462860CEAFC794AFCE41B1"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "bytes": 9602,
+      "sha256": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_custody.ps1",
+      "bytes": 13197,
+      "sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_inherited_chain.cjs",
+      "bytes": 5629,
+      "sha256": "B6406BE43094F3EEA202CB0D6225A8FD3EA853F57442B5F2FCD87A8BC2C548FC"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_inputs.cjs",
+      "bytes": 10252,
+      "sha256": "46655949366ED020AE98892E19CE15B6AD47C520A6EA5EF52349DBA9EEF81AEF"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "bytes": 8833,
+      "sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "bytes": 4216,
+      "sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C"
+    }
+  ],
+  "legacy_corpus": {
+    "root": "C:\\Users\\webbd\\crp-credit-app",
+    "admitted_artifacts_re_verified": 34,
+    "admitted_artifacts_expected": 34,
+    "mismatches": [],
+    "consumer_specimens_re_verified": [
+      {
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "matches_recorded": true
+      },
+      {
+        "presentation_id": "PR-02",
+        "artifact_id": "LEG-CONSUMER-TU-CA",
+        "sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+        "matches_recorded": true
+      }
+    ],
+    "specimen_mismatches": [],
+    "generated_fixture_files": 461,
+    "generated_fixture_bytes": 23627410.0,
+    "files_created_deleted_or_modified": 0
+  },
+  "created_by": "PHASE5-001I-A"
+}

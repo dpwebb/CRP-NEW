@@ -1,0 +1,133 @@
+{
+  "artifact": "crp-lsrc-0362-provision-retrieval.json",
+  "work_order": "OWNER-CA-ORDINARY-REPORT-002",
+  "created_utc": "2026-10-04",
+  "purpose": "Retrieve or locate the authoritative text of the provision this workspace implements for CRP-LSRC-0362, recording source identity, applicable edition and relevant application context, so that the implemented reliability concern can be checked against the provision's own wording rather than against its legacy rule name or an unrecorded gloss.",
+  "authority_basis": [
+    "The owner instruction for this batch: complete a bounded legal-attribution and presentation check (provision text, attribution, one coherent consumer issue, temporal applicability, selected/downloaded content).",
+    "WORKSPACE AGENTS.md: CRP identifies compliance violations and probable violations from recorded rules and source-linked report evidence with specific uncertainty; the legacy rule name is not a substitute for the provision's wording."
+  ],
+  "source_entry_id": "CRP-LSRC-0362",
+  "legacy_rule_id": "ca-on.cra.s9_3_a.best_evidence_basis",
+  "instrument": {
+    "title": "Consumer Reporting Act",
+    "revision": "R.S.O. 1990, CHAPTER C.33",
+    "provision": "s. 9(3)(a)",
+    "section_heading": "9. Procedures of agencies",
+    "publisher": "Government of Ontario — e-Laws (Ontario's official source of consolidated law)",
+    "publisher_url": "https://www.ontario.ca/laws/statute/90c33",
+    "language": "English (the Act is published in English and French; the English version is used here)"
+  },
+  "applicable_edition": {
+    "consolidation_period": "From July 1, 2026 to the e-Laws currency date",
+    "last_amendment_shown": "2025, c. 24, Sched. 6",
+    "statement_source": "the e-Laws page header of https://www.ontario.ca/laws/statute/90c33, retrieved 2026-10-04",
+    "why_this_edition": "A report assessment made today is attributed to the provision as consolidated and in force at the report's own reference period. The consolidation in force is therefore the applicable edition, and it is recorded with its period and its last amendment rather than left implicit."
+  },
+  "section_9_structure_located": {
+    "basis": "the authoritative consolidated index (CanLII, RSO 1990, c C.33) and the e-Laws table of contents for the same Act",
+    "subsections": [
+      "9(1) Procedures of agencies",
+      "9(2) Information included in consumer report",
+      "9(3) Idem",
+      "9(4) Maintenance of files"
+    ],
+    "significance": "s. 9(2) and 9(3) are the subsections that govern what a consumer report may INCLUDE. s. 9(3)(a) sits inside that list, not inside a retention or timing provision."
+  },
+  "located_provision_text": {
+    "quoted_subsection_lead_in": "9(3) A consumer reporting agency shall not include in a consumer report,",
+    "quoted_paragraph_a": "(a) any credit information based on evidence that is not the best evidence reasonably available;",
+    "quoted_paragraph_b": "(b) any unfavourable personal information unless it has made reasonable efforts to corroborate the evidence on which the personal information is based, and the lack of corroboration is noted with and accompanies the information;",
+    "why_these_are_quoted": "The implemented rule is a CONTENT rule. Its attribution to s. 9(3)(a) may only be recorded against the provision's own words, so the words are recorded here and carried into the rule's recorded subject, its limb and its consumer wording."
+  },
+  "collection_route": [
+    {
+      "source": "Government of Ontario — e-Laws, Consumer Reporting Act (https://www.ontario.ca/laws/statute/90c33)",
+      "retrieved_utc": "2026-10-04",
+      "role": "AUTHORITATIVE_SOURCE_IDENTITY_AND_EDITION",
+      "contributed": "publisher identity, the instrument's title and revision, the consolidation period, the last amendment shown, and the Act's table of contents",
+      "limitation": "The e-Laws page states the whole Act on one page. In this environment the retrieval tool returns only the head and tail of a page that size, so the body of section 9 was not visible from this URL. The limitation is recorded rather than concealed; nothing was inferred from a page part that was not returned."
+    },
+    {
+      "source": "CanLII — RSO 1990, c C.33 | Consumer Reporting Act, consolidated statute page (retrieved through the Internet Archive copy of https://www.canlii.org/en/on/laws/stat/rso-1990-c-c33/latest/rso-1990-c-c33.html)",
+      "retrieved_utc": "2026-10-04",
+      "role": "AUTHORITATIVE_CONSOLIDATED_INDEX",
+      "contributed": "the subsection structure and headings of section 9 (9(1) Procedures of agencies, 9(2) Information included in consumer report, 9(3) Idem, 9(4) Maintenance of files) and a verbatim rendering of s. 9(3)(b). The copy states the version in force since December 10, 2019 and records that it is current to 2019-12-04 according to the e-Laws site.",
+      "limitation": "A consolidation current to 2019-12-04 is an additional edition, not the edition in force today. It is used here for provision STRUCTURE and for the wording of the companion paragraph, not as the current consolidation."
+    },
+    {
+      "source": "Published rendering of the section quoting s. 9(3)(a) and (b) verbatim (secondary compilation, ontariorealestatesource.com, located by phrase search)",
+      "retrieved_utc": "2026-10-04",
+      "role": "CORROBORATING_RENDERING_OF_PARAGRAPH_A",
+      "contributed": "the wording of s. 9(3)(a) — 'any credit information based on evidence that is not the best evidence reasonably available' — and its place in the same list as s. 9(3)(b)",
+      "limitation": "Not an official source. It is relied on only because it reproduces the provision in the same list order and wording as the authoritative consolidated index renders the companion paragraph (b), and because the admitted legacy rule id `ca-on.cra.s9_3_a.best_evidence_basis` independently names the same operative words ('best evidence'). It is not treated as the authoritative text, and the authoritative full-page render of paragraph (a) remains unavailable in this environment."
+    },
+    {
+      "source": "Government of Ontario — e-Laws, Protect Ontario by Cutting Red Tape Act, 2025, S.O. 2025, c. 24 (https://www.ontario.ca/laws/statute/s25024)",
+      "retrieved_utc": "2026-10-04",
+      "role": "AMENDMENT_CHECK_LAST_AMENDMENT",
+      "contributed": "Schedule 6 (Consumer Reporting Act) amends subsection 12(3) of the Consumer Reporting Act. It does not touch section 9, so the Act's last amendment does not change the provision this rule is attributed to."
+    },
+    {
+      "source": "Government of Ontario — e-Laws, Access to Consumer Credit Reports and Elevator Availability Act, 2018, S.O. 2018, c. 7 (https://www.ontario.ca/laws/statute/S18007)",
+      "retrieved_utc": "2026-10-04",
+      "role": "AMENDMENT_CHECK_MAJOR_CONSUMER_AMENDMENT",
+      "contributed": "the Act's own explanatory note lists its amendments to the Consumer Reporting Act: section 12 remade (consumer scores and disclosure), new section 12.0.1, security freezes (s. 12.4, 12.5), the Registrar's powers (s. 14), and a new section 16.1. It records no amendment to section 9."
+    }
+  ],
+  "wording_verification_status": {
+    "paragraph_a_wording": "LOCATED_AND_RECORDED",
+    "paragraph_a_basis": "corroborating published rendering of the provision, consistent with the authoritative consolidated index's rendering of the companion paragraph and with the admitted legacy rule id's own operative words; the authoritative full-page render of the Act is not obtainable in this environment and that limitation is retained",
+    "paragraph_b_wording": "VERIFIED_FROM_THE_AUTHORITATIVE_CONSOLIDATED_INDEX",
+    "subsection_identity_and_heading": "VERIFIED_FROM_THE_AUTHORITATIVE_CONSOLIDATED_INDEX_AND_THE_PUBLISHER_TABLE_OF_CONTENTS",
+    "edition_and_publisher": "VERIFIED_FROM_THE_PUBLISHER",
+    "sha256": null,
+    "hash_basis": "Not computed and not asserted: the retrieval route returns extracted page text rather than the byte stream, so no digest is claimed for the retrieved pages.",
+    "what_is_not_claimed": [
+      "no claim that an official e-Laws page render of s. 9(3)(a) was obtained in this environment",
+      "no claim about the Act's original commencement date, which is not recorded in this workspace",
+      "no claim about any historical version of s. 9(3)(a) other than the editions named above"
+    ]
+  },
+  "attribution_check": {
+    "implemented_concern": "an ordinary account whose printed opened date is later than its printed closed date: the report's own two printed values for that single account cannot both be right",
+    "provision_concern": "s. 9(3)(a) prohibits including in a consumer report any credit information based on evidence that is not the best evidence reasonably available",
+    "result": "SUPPORTS_THE_ASSESSMENT",
+    "basis": "If the best evidence reasonably available for one account had been relied on, that account's own printed opened and closed values would agree. Values that cannot both be right are therefore affirmative evidence, still rebuttable, that the credit information included for that account was not based on the best evidence reasonably available. The provision speaks to the evidence basis of included credit information, and a transcription or update error that leaves a printed value unfaithful to the best available evidence falls inside the same limb, so the mapping holds on either reading.",
+    "confidence_ceiling_justified": "PROBABLE_VIOLATION. The report establishes the conflict between its own values; it establishes neither which value is unreliable nor whether a benign explanation applies. A VIOLATION ceiling remains refused, not downgraded.",
+    "scope_limits_recorded": [
+      "the limb is confined to CREDIT information: this rule runs only on an ordinary credit account record (record kind CONSUMER_CREDIT_LIABILITY) and never on personal information, so the companion personal-information limb of the same subsection is not invoked",
+      "the Act's own definition of 'credit information' enumerates kinds of information about a consumer (for example paying habits and outstanding debt obligations) and does not name account dates expressly; the rule therefore rests on the account's dates being information about the consumer's debt obligation, and that reading is recorded here as a stated interpretive limit rather than presented as settled",
+      "no exception recorded in the located text is evaluated, and off-report knowledge (a furnisher's own records) is never inferred"
+    ]
+  },
+  "corrected_recorded_subject": {
+    "previous_recording_defect": "the rule's recorded subject previously read 'information that is not based on the most reliable evidence reasonably available'. That phrasing is not this provision's. It is a gloss on the phrase used by a different Canadian instrument, and it was substituted for the provision's own wording.",
+    "corrected_subject": "a consumer reporting agency shall not include in a consumer report any credit information based on evidence that is not the best evidence reasonably available (Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a))",
+    "consequence": "the gloss is replaced everywhere it was recorded — the adapter limb, the adapter exceptions basis, the finding gate, the runtime comments, the consumer wording and the disposition record. The adapter id and the legacy rule id are internal keys and are preserved unchanged, because provenance and internal classification are not rewritten by a wording correction."
+  },
+  "temporal_applicability": {
+    "status": "NOT_RECORDED_FOR_THIS_PROVISION",
+    "what_is_recorded": "the consolidation period of the applicable edition (from July 1, 2026 to the e-Laws currency date), its last amendment (2025, c. 24, Sched. 6), and that the last amendment does not touch section 9",
+    "what_is_not_recorded": "the commencement date of the R.S.O. 1990 revision or of s. 9(3)(a), and any historical version list for the provision",
+    "corrected_earlier_assertion": "An earlier statement in this workspace said that no effective date was needed because the rule counts no period and performs no arithmetic against a reference date. That was wrong. Temporal applicability is a condition of LEGAL ATTRIBUTION for every rule, including a content rule: a provision must be in force, and the version applied must be the one governing the report's period, before the provision can be named against a report. It is a different question from retention arithmetic, which this rule does not perform (it counts no period, applies no day offset and ages nothing). The two are kept apart here: the arithmetic claim is true, the applicability claim is not made.",
+    "how_the_rule_keeps_this_honest": [
+      "the rule emits no period-based conclusion and states no retention period",
+      "the rule's recorded edition is the consolidation in force, recorded with its period and last amendment",
+      "the rule claims no commencement date, and the absence of one is recorded as a retained limitation rather than assumed away"
+    ]
+  },
+  "consumer_presentation_outcome": {
+    "attribution": "RETAINED as a qualified probable issue: the provision supports the assessment, so the statutory attribution and the statutory coverage claim are kept, with the provision's own wording recorded and the specific uncertainty stated",
+    "specific_uncertainty_retained": "which of the two printed values is unreliable is not established by the report, and a benign explanation (a later correction of one date, or an account reopened after it was closed) may exist",
+    "one_coherent_issue": "the same printed conflict previously reached the consumer twice — once as the shared factual observation and once as the Ontario probable issue. They are now presented as ONE issue carrying both supported bases (the factual conflict the report prints, and the recorded Ontario rule it raises) with ONE verification request. Internal classifications, provenance and source locations are preserved inside the issue.",
+    "request_type": "VERIFICATION, never a correction demand: what the report shows is a probable reporting issue to verify, not an established violation"
+  },
+  "retained_limitations": [
+    "LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED",
+    "PROVISION_COMMENCEMENT_NOT_RECORDED",
+    "AUTHORITATIVE_FULL_PAGE_RENDER_OF_PARAGRAPH_A_UNAVAILABLE_IN_THIS_ENVIRONMENT",
+    "ACT_DEFINITION_OF_CREDIT_INFORMATION_IS_AN_ENUMERATION_AND_DOES_NOT_NAME_ACCOUNT_DATES_EXPRESSLY"
+  ],
+  "note": "This record corrects the recorded legal basis of one implemented rule. It reopens no settled ledger item, resolves no other source ID, and changes neither the ceiling, the packet position nor the rule's scope. CRP-LSRC-0363 to CRP-LSRC-0372 remain SCREEN_INCONCLUSIVE and unimplemented."
+}

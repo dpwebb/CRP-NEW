@@ -1,0 +1,59 @@
+{
+  "artifact": "next_bounded_action.json",
+  "work_order": "PHASE5-001M",
+  "created_utc": "2026-09-30",
+  "purpose": "identify, without performing, the next bounded action for the unresolved duplicate identity that now stands as the remaining Gate 5.1 prerequisite",
+  "not_performed": "This order identifies the action and stops. No source was retrieved, no identity was adjudicated, no cluster was collapsed, merged or re-classed, and no count was certified.",
+  "bounded_action": {
+    "working_title": "PHASE5-001N - Resolve the six identity-unresolved duplicate clusters",
+    "objective": "decide, for each of the six clusters and for each member row, whether the rows record one legal provision and version or distinct provisions, so that the unique-legal-provision count required by Phase 5.1 bullet 3 can be finalised",
+    "scope_in": [
+      "the six clusters and their fifteen member rows only",
+      "0315/0316/0317/0318/0320 (five rows)",
+      "0149/0150 (two rows)",
+      "0165/0166 (two rows)",
+      "0409/0411 (two rows)",
+      "0336/0349 (two rows)",
+      "0337/0351 (two rows)",
+      "the twenty-five IDENTITY_UNRESOLVED relations recorded for those rows in SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json",
+      "for each cluster, the recorded descriptors already present in the 001K and 001L artifacts"
+    ],
+    "scope_out": [
+      "the other twenty-two rows in the ten demonstrably identical clusters (identity is already determined there)",
+      "the two thousand three hundred and seventeen relations already determined distinct as recorded",
+      "every disposition, jurisdiction, legal-test or candidate question",
+      "the six B20 mapping IDs, whose pending exact report-field/event mapping is a separate Phase 5.2 or 5.3 task",
+      "any count certification beyond the unique-provision count for these fifteen rows"
+    ],
+    "two_permitted_routes": [
+      "an owner ruling on identity for each cluster, stated against the recorded descriptors and quoted back verbatim in the record; or",
+      "retrieval of the recorded source artifact for each member row, sufficient to compare instrument, provision descriptor, locator, jurisdiction reference and effective-information keys at first hand"
+    ],
+    "acceptance_criteria": [
+      "each of the six clusters carries one recorded determination per relation, either IDENTICAL_PROVISION_AND_VERSION or DISTINCT_PROVISION_OR_VERSION, or an explicit residual IDENTITY_UNRESOLVED with the exact missing field named",
+      "every one of the fifteen rows keeps its recorded disposition and remains in the catalogue",
+      "no row is deleted, collapsed, merged or re-classed by the identity determination alone",
+      "the resulting unique-legal-provision count is stated with its evidence, its meaning and any residual limitation, and is not published as a certified corpus or coverage count",
+      "removal_permitted stays NO unless and until the owner separately authorises a catalogue change, which would itself be an amendment under Core Constitution section 6"
+    ],
+    "stop_conditions": [
+      "a returned source contradicts a recorded catalogue field, so the contradiction must be reported rather than resolved by preference",
+      "a cluster turns out to require a legal interpretation rather than a source comparison",
+      "the retrieval route is unavailable for a member row, in which case that row stays explicitly IDENTITY_UNRESOLVED and is queued, and does not block the other five clusters"
+    ],
+    "what_it_would_unblock": "the duplicate-identity half of Gate 5.1 and the finalisation of the separately required unique-legal-provision count, and nothing else",
+    "what_it_would_not_do": [
+      "it would not pass Gate 5.1 by itself: passage is a separate determination made against the gate text",
+      "it would not admit a rule, create coverage or authorise a finding",
+      "it would not certify the B20 aggregate, 425 or 416",
+      "it would not begin Gate 5.2 or Phase 5.3"
+    ]
+  },
+  "other_open_items_unchanged_and_out_of_scope": [
+    "the owner question whether any of the ten demonstrably identical clusters should one day be a single catalogue entry",
+    "M-1 (mentioned in the alternate US consumer format investigation) remains unresolved",
+    "the six B20 mapping IDs CRP-LSRC-0354, 0422, 0423, 0424, 0425 and 0427 remain UNRESOLVED pending exact report-field/event mapping"
+  ],
+  "boundaries": "Planning record only; no work of the identified action was performed by this order.",
+  "created_by": "PHASE5-001M"
+}

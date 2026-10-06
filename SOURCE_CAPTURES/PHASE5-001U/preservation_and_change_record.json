@@ -1,0 +1,257 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 552,
+  "files_unchanged": 551,
+  "files_changed": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+      "after": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+      "bytes": 41267
+    }
+  ],
+  "changed_count": 1,
+  "files_missing": [],
+  "missing_count": 0,
+  "files_added_by_this_order": [
+    {
+      "relative_path": "CRP_PHASE5_001U_VERSION_RESOLUTION_AND_SCOPED_ADMISSION.md",
+      "bytes": 17264,
+      "sha256": "C063C072F102D6594969A34E7CD4C235354CE4C51922600DE7AB73821362E882"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_build_admission_stdout.txt",
+      "bytes": 2886,
+      "sha256": "8A5A2B1B988A0976E619F0CF4F86FB398D0E6FE99D329041C9D37EEF7DA640D4"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_probe_corpus_out.json",
+      "bytes": 3567,
+      "sha256": "CB84AB9F578D5298662B858260FABDDC2FB7FC173533A08D3BF392BAEC8A0463"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_probe_measure_stdout.txt",
+      "bytes": 4302,
+      "sha256": "44015C96BE2DA3B3718BE542E30B7C9635330CC8A6A2D64B464C9474D4EA063B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\admission_record_001u.json",
+      "bytes": 24120,
+      "sha256": "8CCD23C3E974F51D6893C0D831D67E95CF039BAB62A5DB24FDDEBAD845590800"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_001u.cjs",
+      "bytes": 6183,
+      "sha256": "1BB07112C6972185D7B7EAD4E49C7606CED724BAB88964B7839C9EBEF481CD4E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_application_result.json",
+      "bytes": 2511,
+      "sha256": "85254FD53190BDE1C09C5AF4769328A8EA39F839F81E224450C5D8FB5F7D715F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_text.json",
+      "bytes": 8092,
+      "sha256": "1253FE9647E1E63B2E5B216998495F7E91571B242A918802BF1DB57CC3E6840C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\apply_amendment_001u.cjs",
+      "bytes": 9641,
+      "sha256": "16DE46041929E0276A66A9BE8CEF1B4DC074EDFEA1AB55CFF46C49D0E89FEF69"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_admission.cjs",
+      "bytes": 40794,
+      "sha256": "CECDAC200A5EB9CBDE47AB569C6365B2842307EB4A99C14210193F135C1A6015"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_next_order.cjs",
+      "bytes": 15272,
+      "sha256": "DFCAA387B9371A37CE6230B6E50DE56FA28E2FAF3AE3906529BDD13C4251CD94"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_owner_records.cjs",
+      "bytes": 24691,
+      "sha256": "71D46813B2126C673ADB5E6CEACBE1AF923AC96A5FBD12A98EFE0A7281CB3B6D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_successor_verdict.cjs",
+      "bytes": 9795,
+      "sha256": "402D27AF641A389B546C2513A5809BF38DDE2122EBB3814037A05A2F8B7812A3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_verdict.cjs",
+      "bytes": 26607,
+      "sha256": "4D1BBA02DB230A9855D13501EC424839805AF5EAF80DD08381E77593ED02698E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\capture_001u_baseline.ps1",
+      "bytes": 19413,
+      "sha256": "99DD667E00F5D652D68AC778D5BDE05941A87933877BC8D4230BBCBEC2BA8DB0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\counts_001u.json",
+      "bytes": 8763,
+      "sha256": "D5D79B13357E0D09D449D8439DAACC1262CBA9DDA84139E7A5B832D3198F7ADD"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\gate56_001u.cjs",
+      "bytes": 27807,
+      "sha256": "67BF21507CBC188CC25EC00032B7BD88CE2BCB8F1D5F67836C22F03FE29C8D81"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\gate57_001u.cjs",
+      "bytes": 24093,
+      "sha256": "A1F363987AAC89016DF2A682C679257C346BC72C42CC5815D7CFDF841DE7249C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\input_verification.json",
+      "bytes": 36658,
+      "sha256": "6EDA67FF58D04D2C56DAD303F7C755669577ACE6B2F31332504D6755A62C5714"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\lib_001u.cjs",
+      "bytes": 18636,
+      "sha256": "D5E8BF8CF4530E6917CD153429615B0BB8FAC03E51A7FD5A0950212A6736DA7C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\next_work_order.json",
+      "bytes": 15293,
+      "sha256": "3493F61C088F3283FD8D8AF50A632886D257D6BB71D7F2433B642EAF56FA4DAF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\owner_decision_record.json",
+      "bytes": 12242,
+      "sha256": "BC0DD7C6C63CE13A90919C3FF3442B200BBE8FCA5D7FC8087D5EED0AE57CD79D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\post_assignment_binding_verification_001u.json",
+      "bytes": 30710,
+      "sha256": "DE4320DEC1D3F8BCA7EF542B1B450DB574443D796FF6E6F31CE26F55B2125637"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\preserved_files_before.json",
+      "bytes": 117086,
+      "sha256": "3294070D5EEC77EFBAA89931C2CB7987A468322FDFBD1BCE52A34867F78AF7AB"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\probe_corpus_001u.cjs",
+      "bytes": 3654,
+      "sha256": "94B90F7161D45655E6105CB54C4F5713A1AF60A714D800A15C7AEB74EF2E91B0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\probe_measure_001u.cjs",
+      "bytes": 1065,
+      "sha256": "894E9D0C5544F79DDCDD2765E71C6DEA95F88AF75E7EFDAD6F4A7D4D4C2B0104"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\rule_corpus_amendment_001u.json",
+      "bytes": 21661,
+      "sha256": "C2AD41D86D04A44C62367B2C7936E47049D64092E30CE8FA01A8F23C74EFFCE6"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_6_verdict_successor.json",
+      "bytes": 25814,
+      "sha256": "A855EB2C2C954987AD11DC985F0C3527CECF56E2575A8E67CAF87E239410A07F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_7_verdict.json",
+      "bytes": 27670,
+      "sha256": "B2F7E711F8EDE1B10D04A8A1917437375643E493448B00D2F5ECA847A26E4A07"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\verify_and_manifest_001u.ps1",
+      "bytes": 52831,
+      "sha256": "5F4B3A99951A1B56101BAA36C5A7D6FCC36FF367E953F9357EB4ABF1C3CC0411"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\version_conflict_resolution_record.json",
+      "bytes": 13021,
+      "sha256": "B1360ADEEED8873B8D631C0F90256585AC69602780F93B3D20F6C04289F476B5"
+    }
+  ],
+  "added_count": 31,
+  "files_added_to_the_workspace_by_other_work_after_the_baseline": [
+    {
+      "relative_path": ".clinerules\\parallel-research.md",
+      "bytes": 1500,
+      "sha256": "C53946CB452683FD7095AFA82787BBF9EDED687724E11889EEDD2A3F826813B4"
+    },
+    {
+      "relative_path": "accelerated-launch\\build_launch_matrix.py",
+      "bytes": 4468,
+      "sha256": "C57059045310F471185CC25186914AA8CD90405234F2A06F1DBE7201BDAF9E82"
+    },
+    {
+      "relative_path": "accelerated-launch\\jurisdiction-router.cjs",
+      "bytes": 741,
+      "sha256": "A83EA0A08C6A5C4AF033FBC974681176C1DC84640BEC1FB26FD159E2D419A74B"
+    },
+    {
+      "relative_path": "accelerated-launch\\launch-matrix.csv",
+      "bytes": 20460,
+      "sha256": "5742398CC62F64787114DE1EDDF07F226EAE4B08E0AEF938806D36ACBEFF10D6"
+    },
+    {
+      "relative_path": "accelerated-launch\\launch-matrix.json",
+      "bytes": 86051,
+      "sha256": "D9D50709E8B8879BC4E163FF0C2F074D904B112CB5DEE0AA55DB09048C2CC1EA"
+    },
+    {
+      "relative_path": "accelerated-launch\\test-router.cjs",
+      "bytes": 813,
+      "sha256": "934187D61DB7246F78EB3CAE0646DE25DDCAB6B76F1342A1421D0C626E34956B"
+    },
+    {
+      "relative_path": "CRP_ACCELERATED_ALL_82_IMPLEMENTATION_PROGRAM.md",
+      "bytes": 5127,
+      "sha256": "76DB474E3BE3FF7E1859686DF439E9BA76D174437301B79770379E1B203B5D0D"
+    },
+    {
+      "relative_path": "CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md",
+      "bytes": 13665,
+      "sha256": "6B579E9E8B85B8E35DDAC523847B8B08DD9B6E840FFE93549D04606D9A9FD0EC"
+    }
+  ],
+  "added_by_other_work_count": 8,
+  "other_work_note": "these files appeared in the workspace after this order's baseline was captured and before this harness ran. No command of this order writes outside its own package and the governing plan, so they are not this order's output; they are listed rather than ignored so that the baseline comparison is complete. None of them is a pinned input, an earlier artifact this order must not touch, or the register (V-U07).",
+  "expected_changes": "EXACTLY ONE pre-existing file: CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md, at 1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50 before the amendment. The amendment replaces the conflicting half-sentence of the Gate 5.6 clause that the PHASE5-001S amendment A-4 introduced, and appends one amendment-history row. No other pre-existing file may change, and no earlier baseline or manifest may be overwritten.",
+  "authorised_changes_by_this_order": 1,
+  "unauthorised_changes_by_this_order": 0,
+  "undeclared_changes": 0,
+  "governed_documents_amended": 1,
+  "earlier_baselines_overwritten": 0,
+  "earlier_manifests_edited": 0,
+  "the_authorised_change": {
+    "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "digest_before": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+    "digest_after": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+    "digest_measured_now": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+    "amendment": "A-U-1 — the Gate 5.6 pre-admission sharing sentence extended by the quoted-replacement procedure of CRP_CORE_CONSTITUTION.md sections 6.1, 6.2 and 6.5, plus one amendment-history row under section 6.5",
+    "replacements_applied": 1,
+    "rows_appended": 1,
+    "requirement_removed": false,
+    "requirement_removed_because": "the replacement is an extension: the replaced text survives verbatim inside it, so nothing the Gate 5.6 sentence required was deleted or weakened",
+    "recorded_in": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_text.json and SOURCE_CAPTURES\\PHASE5-001U\\amendment_application_result.json",
+    "authorised_by": "the owner instrument recorded in SOURCE_CAPTURES\\PHASE5-001U\\owner_decision_record.json",
+    "applied_once": true,
+    "applier_re_run": false,
+    "why_the_applier_was_not_re_run": "it edits the governed plan: re-running it would be a second write to a governing document. It carries a pinned-digest guard and an already-applied guard, and this run verified the plan stands at the recorded after digest, with the replacement occurring exactly once."
+  },
+  "historical_preservation_failure_preserved_unchanged": {
+    "the_failure": "PHASE5-001R changed SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json without authorisation, disclosed it, and did not repair it",
+    "still_recorded_as": "PRESERVED: the withheld PHASE5-001R Gate 5.5 verdict stands at B3A019E6… and that order's own preservation finding is unedited",
+    "covered_prospectively_by": "OWNER DECISION 1, recorded in SOURCE_CAPTURES\\PHASE5-001S\\custody_supplement.json",
+    "edited_by_this_order": false,
+    "separated_from_this_orders_result": "yes — this record reports the one authorised change of this order and the absence of any other change; the historical failure is reported as history, not as a count in this order's preservation result"
+  },
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "inherited_suite_run": false,
+  "output_character": "one admission, observation-only: no consumer-visible output, no authorised finding class, no application change, no deployment and no external transmission",
+  "verdict": "PRESERVATION HELD FOR THIS ORDER — exactly one pre-existing file was changed, it is the one authorised amendment of the governing build plan, and nothing else outside this order's own package was written, deleted or re-classified",
+  "created_by": "PHASE5-001U"
+}

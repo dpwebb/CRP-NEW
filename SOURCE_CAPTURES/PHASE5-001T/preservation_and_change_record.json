@@ -1,0 +1,160 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 527,
+  "files_unchanged": 527,
+  "files_changed": [],
+  "changed_count": 0,
+  "files_missing": [],
+  "missing_count": 0,
+  "files_added_by_this_order": [
+    {
+      "relative_path": "CRP_PHASE5_001T_GATE_5_6_VALIDATION.md",
+      "bytes": 29334,
+      "sha256": "3C1E262E2F2533B673AF58E716E995B5CC7F765254B760D4000FC163909294E7"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_consumer_language.cjs",
+      "bytes": 11742,
+      "sha256": "85AE1D085B9F0E34C462CDF9060350FB7053964EBD51F1193A72C145A9D73950"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_fixture_suite.cjs",
+      "bytes": 11951,
+      "sha256": "D25C6634FD8BB7851B22A95D8BCA3D672C5A345F717DF1ACB947FB715F9D6595"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_independent_replay.cjs",
+      "bytes": 20628,
+      "sha256": "DAD32006616CEE05D31DE0925E71137E1076943871DC8890D5230D9C83912501"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_negative_tests.cjs",
+      "bytes": 27269,
+      "sha256": "C6ED8D90843FA8EC7D4A2148F9611F3BFEF7BEA91A578584037B10049E97568A"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_next_order.cjs",
+      "bytes": 8866,
+      "sha256": "313D9C6BD9CA96E58F9C6C1943A676C4BDDBCD52CB34CBF7C27E855574745357"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_verdict.cjs",
+      "bytes": 31644,
+      "sha256": "E4CFBB4C434AB9A4DF9D2C218F7AF47B47D16F3AE773AD99B503AE72A51BCD98"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\capture_001t_baseline.ps1",
+      "bytes": 16027,
+      "sha256": "D4ABF850560E18B7D813206E6283584113A7C954424C54C00D0AF8FEB6D0ED91"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\consumer_language_validation_001t.json",
+      "bytes": 35667,
+      "sha256": "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+      "bytes": 132232,
+      "sha256": "9FBC9799A6D17AA95F073577FE0BE5C8E38ADAE76EB50DDB3ADA72A557D5D26D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_catalogue_001t.cjs",
+      "bytes": 49316,
+      "sha256": "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_suite_001t.json",
+      "bytes": 152419,
+      "sha256": "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixtures_001t.cjs",
+      "bytes": 5709,
+      "sha256": "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\independent_replay_001t.json",
+      "bytes": 52073,
+      "sha256": "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+      "bytes": 29101,
+      "sha256": "14F5512A2222BD9407D49121083583C1CF69B8E074D08B229922FDC7DED0DD76"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\inputs_001t.cjs",
+      "bytes": 6957,
+      "sha256": "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\negative_tests_001t.json",
+      "bytes": 30136,
+      "sha256": "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\next_work_order.json",
+      "bytes": 11538,
+      "sha256": "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\preservation_and_change_record.json",
+      "bytes": 7235,
+      "sha256": "7CFD7D8FEDE3FC024658F40493F36281164AC30E84AEC698950ED9656AD8E4FE"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\preserved_files_before.json",
+      "bytes": 111780,
+      "sha256": "6AD26B6140F89A914FE264DC359B23F0CF78C20C469E356EEA06CEB7217AD900"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\replay_expectations_frozen.json",
+      "bytes": 49310,
+      "sha256": "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+      "bytes": 21125,
+      "sha256": "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\scoped_gate_5_6_verdict.json",
+      "bytes": 39460,
+      "sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json",
+      "bytes": 21014,
+      "sha256": "1FE5035E9CF76C5307925D99F0C1AA09D1B21B93D1195B586612798402B1D7CF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\verify_and_manifest_001t.ps1",
+      "bytes": 41967,
+      "sha256": "B9CAACB604A67453D11DE6D9931C5DA46DA5E0AB32CB627BC117DD89B9CE2F0F"
+    }
+  ],
+  "added_count": 25,
+  "expected_changes": "NONE. This order carries no amendment authority by design: it amends no governing document and edits no earlier artifact, and it writes nothing into any prior evidence package.",
+  "authorised_changes_by_this_order": 0,
+  "unauthorised_changes_by_this_order": 0,
+  "undeclared_changes": 0,
+  "governed_documents_amended": 0,
+  "earlier_baselines_overwritten": 0,
+  "earlier_manifests_edited": 0,
+  "historical_preservation_failure_preserved_unchanged": {
+    "the_failure": "PHASE5-001R changed SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json without authorisation, disclosed it, and did not repair it",
+    "still_recorded_as": "PRESERVED: the withheld PHASE5-001R Gate 5.5 verdict stands at B3A019E6… and that order's own preservation finding is unedited",
+    "covered_prospectively_by": "OWNER DECISION 1, recorded in SOURCE_CAPTURES\\PHASE5-001S\\custody_supplement.json",
+    "edited_by_this_order": false,
+    "separated_from_this_orders_result": "yes — this record reports only what this order changed, which is nothing outside its own package, and the historical failure is reported as history, not as a count in this order's preservation result"
+  },
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "inherited_suite_run": false,
+  "output_character": "observation-only, packet-ineligible: no consumer-visible output, no admission, no coverage, no finding class, no application change, no deployment and no external transmission",
+  "verdict": "PRESERVATION HELD FOR THIS ORDER — no pre-existing file was deleted or changed, and nothing outside this order's own package was written",
+  "created_by": "PHASE5-001T"
+}

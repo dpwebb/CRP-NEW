@@ -1,0 +1,365 @@
+{
+  "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
+  "generated_at": "2026-10-06T02:14:54.239Z",
+  "read_only": true,
+  "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
+  "groups": [
+    {
+      "id": "RUNTIME",
+      "file_count": 51,
+      "digest": "55448293CD5FE3DCC61705777B84033E1ADD8A5583B8AFE26253B84B3319AED3",
+      "files": [
+        {
+          "file": "accelerated-launch/service/accounts.cjs",
+          "sha256": "3CE5F6756674EE2D358B4651AF601DD09A147E47382B8D0E9BBD2142127F9442"
+        },
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "sha256": "CBCD94EA80FFEFD306BC10FADE2E3FEB0CAD5F6BB9F2BFD089FE65099345FB8C"
+        },
+        {
+          "file": "accelerated-launch/service/applicability.cjs",
+          "sha256": "06CAA6BFD27ED924FE88B0B80A5F0424B9112D94718D8DB63FBCA321479592B2"
+        },
+        {
+          "file": "accelerated-launch/service/billing-credits.cjs",
+          "sha256": "378C254E3AAB0C6C3685816B162817A54267C5ACA1F3A40D58BA884EAFB97835"
+        },
+        {
+          "file": "accelerated-launch/service/build-subscription-value-evidence.cjs",
+          "sha256": "29FCAA615941018DA0DC2B6B8B6A44A419E01539071ACBE3B257C4B14A04B924"
+        },
+        {
+          "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
+          "sha256": "82B630BD9F226CC16857FC772E7CC167EBB4EE3E603511E5862358A177044520"
+        },
+        {
+          "file": "accelerated-launch/service/case-status.cjs",
+          "sha256": "6AAAE21835BCA96E4B5A56962FE15773537CF2FDB0D198B951A5E53C451BDF9D"
+        },
+        {
+          "file": "accelerated-launch/service/cases.cjs",
+          "sha256": "BC939771E39E6F5DF97D1B18AA009E72FB58F45F68616F18CF9FD4401622852B"
+        },
+        {
+          "file": "accelerated-launch/service/clarification.cjs",
+          "sha256": "D0F5A64BA45CFEC211B6C121D0FD43B90E08162CC3CD4DDA91F0DCA3086167B8"
+        },
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "sha256": "6F35E40AB550D0617DF192D65D2BF079595AADB6A5A32BAA33D5E1AB549A68AA"
+        },
+        {
+          "file": "accelerated-launch/service/comparison.cjs",
+          "sha256": "23FEBDB75CC54236F2E7D22464E24A3F92DCBC14769259B1BC0900F789E39634"
+        },
+        {
+          "file": "accelerated-launch/service/content-assessments.cjs",
+          "sha256": "659E1FA06B0052A12D2EC3E919D4157B8FF199D04941DB814680A9099B84E4BC"
+        },
+        {
+          "file": "accelerated-launch/service/coverage-matrix.cjs",
+          "sha256": "E72042FA3FF340812D63159FC7B439F632CD09B8296F879C8E733CB352750052"
+        },
+        {
+          "file": "accelerated-launch/service/demo.cjs",
+          "sha256": "4DF8523D56517C331360E1B45CE79BD7750D3A7CB7F2C8AFF4C2602D6E3F126D"
+        },
+        {
+          "file": "accelerated-launch/service/drafts.cjs",
+          "sha256": "8400DD521B36B99A1F5F4B33325AA6D0878B6B676C11C2AA4EE889050B8E8452"
+        },
+        {
+          "file": "accelerated-launch/service/entitlement.cjs",
+          "sha256": "8384A9B6D500CBD22C0F7A9429B5C38AD5EC2383D326F307493EFAADA8636589"
+        },
+        {
+          "file": "accelerated-launch/service/errors.cjs",
+          "sha256": "7E0485357B0162434D862CEF56FF8E4A2A621ED9F2AE519024DEE4DA0F34A445"
+        },
+        {
+          "file": "accelerated-launch/service/evaluation.cjs",
+          "sha256": "9C4973470A391307B8DD7A0FD754428355A7015562A0506C10092979378BEFA5"
+        },
+        {
+          "file": "accelerated-launch/service/evidence-validator.cjs",
+          "sha256": "1A15AFD477E8A4DD27370C3EAB0959426284518C1AB975D236CA872D9315E05B"
+        },
+        {
+          "file": "accelerated-launch/service/factual-checks.cjs",
+          "sha256": "1064328982D1C6CC4144567AFFE905EA3BDAAFC95221E15695072715F14426DD"
+        },
+        {
+          "file": "accelerated-launch/service/fdt-acceptance.cjs",
+          "sha256": "80E571C55F38764FE4FB3B0346FE5BEAF70734D48FB7D8C9AF7AEB12D1D86567"
+        },
+        {
+          "file": "accelerated-launch/service/fdt-benchmark.cjs",
+          "sha256": "B5782725EC2DFDFF99BA1343A37876BE5FEA0EFCB0CBDE46D8F0E955B9F9EFCE"
+        },
+        {
+          "file": "accelerated-launch/service/fdt-recovery.cjs",
+          "sha256": "ACBC8AA4F315875AC72A08CC427E17CCEF2EA28B4903BAC122EA7E0969889845"
+        },
+        {
+          "file": "accelerated-launch/service/finding-coverage.cjs",
+          "sha256": "34B9DBA9CA96D7F74F6E1683542283C830C916B5B2DF8B0D77A825C1F9AE08D2"
+        },
+        {
+          "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
+          "sha256": "86640BC5D446005C16875530293B218E3C1EABEEC6D855CB00AF63F3687DB222"
+        },
+        {
+          "file": "accelerated-launch/service/format-families/ca-consumer-format-scope.cjs",
+          "sha256": "7C005CB6C0A2EC428ED0292985A2F99D3BE062739283BA347D952BD60E8CE1B1"
+        },
+        {
+          "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+          "sha256": "7C13D1CAFF9B87BED2F49F9AF4AFF6761030881C187C8CF3CD05BF0F1528B775"
+        },
+        {
+          "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
+          "sha256": "A8CEFC01C93C301BE76B851664276FEFD09386459CFB90B63E835C690D6E9288"
+        },
+        {
+          "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+          "sha256": "80FE7EA70EEE01DC3BEA4B223B05A92E2A8925F34F86BDE8C5FA3460D8C67E8B"
+        },
+        {
+          "file": "accelerated-launch/service/formats.cjs",
+          "sha256": "8E435D8F3E29E6F820BD86792BEAA25E2AD71DBC0FA94AA7A1A30F2DF31D0031"
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "sha256": "7BA75A11CA7FF4C1AFF68714F0676E9948C11C1B539931681F0196E203829EE8"
+        },
+        {
+          "file": "accelerated-launch/service/issues.cjs",
+          "sha256": "78E298B66303DC7EDDB96487BDAD320C2131DA58A7958C21A68F87488C9C0BBF"
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "sha256": "ACF98DAF555A2CAD77C0C309B533A93E02253FAFB0F7FCC149BE9BCE88CC6779"
+        },
+        {
+          "file": "accelerated-launch/service/logger.cjs",
+          "sha256": "C16E6D0F584F4A0FC5EEDA0CE81014A86268EF7075915DAF12F2DC84CCFC154F"
+        },
+        {
+          "file": "accelerated-launch/service/multi-file-assembly.cjs",
+          "sha256": "3A9CC4B1AC91EEBA8A38F7F004F019D554DA33A9A241B2E900C5C6D9C7765DB8"
+        },
+        {
+          "file": "accelerated-launch/service/ocr/local-ocr.cjs",
+          "sha256": "1B4B4B62DCD965AFD63A3B87D461F3389ACB7106972C52C41C600D28C40353FE"
+        },
+        {
+          "file": "accelerated-launch/service/packets.cjs",
+          "sha256": "3E8D0BFEB63EDB608DB5ADB40D96B6A1DE695067E6C53089F29FD96185D7050A"
+        },
+        {
+          "file": "accelerated-launch/service/payment-history-grid.cjs",
+          "sha256": "A55E14826866AFFEC64A23DDE7F3DC458CE3F22A8AECE6302B9367D07924B912"
+        },
+        {
+          "file": "accelerated-launch/service/payment-provider.cjs",
+          "sha256": "4516A8AC623CF52F1DCEFC139B876259275CC4EA008901F389FB17F6506A7548"
+        },
+        {
+          "file": "accelerated-launch/service/plan-catalog.cjs",
+          "sha256": "96905A04A2C66D7BA85BD1A1E5D0CEDEDB80AAF90B622F8160DBECAABC1937E7"
+        },
+        {
+          "file": "accelerated-launch/service/privacy.cjs",
+          "sha256": "99B0C97DF0AC49BD10658C8A343F40801408189C77C7DD1A182A2B4F6724D6BE"
+        },
+        {
+          "file": "accelerated-launch/service/private-store.cjs",
+          "sha256": "003FDA7F9CBE2481F5075253654B302E6BAC4DB99297C641003DEC56116CE5C6"
+        },
+        {
+          "file": "accelerated-launch/service/release-check.cjs",
+          "sha256": "B2ED135DD32B0397E7B1D3FB3E9B3BD68AC49D9651F18ED3D6682761BB25426D"
+        },
+        {
+          "file": "accelerated-launch/service/results.cjs",
+          "sha256": "6C4D79F4E945FE863613D16F57B490AD37DECE5E8DA3CE2E1F9FD3CA98822D75"
+        },
+        {
+          "file": "accelerated-launch/service/retention.cjs",
+          "sha256": "631A92462B43638E99B114BE8048508451CED89E2E3E09F1B2A746F1B8BF8C2F"
+        },
+        {
+          "file": "accelerated-launch/service/server.cjs",
+          "sha256": "090041331B4AB7DAF33D570A7A7A24A4BA3353D5891023C2900B55AEECFAD41C"
+        },
+        {
+          "file": "accelerated-launch/service/store-diagnostic.cjs",
+          "sha256": "B9A63F7A90D9C24ADF9C2EE0CFBEF5D7CDDA0F29B9AD4D721B4CE0A7599BF18D"
+        },
+        {
+          "file": "accelerated-launch/service/stripe.cjs",
+          "sha256": "1604A3C783B4E7F2599E7BA3CCCB6FCEE9029B744196010DB81C92AD133A89FC"
+        },
+        {
+          "file": "accelerated-launch/service/support.cjs",
+          "sha256": "3B4692F345087F8277AA84F1942101EBA3E8BDF50B7B480B8ACF61154E51710C"
+        },
+        {
+          "file": "accelerated-launch/service/upgrade-credit.cjs",
+          "sha256": "650D3C7B568E7BD9756B78C9BBD28C1F8BDD298F7433569414B680A26B7F35DA"
+        },
+        {
+          "file": "accelerated-launch/service/uploads.cjs",
+          "sha256": "25904C79938706BE6E1CB8EA340517F8A78A3E3AB1BFC5DAEA7A813463832405"
+        }
+      ]
+    },
+    {
+      "id": "READER_SUPPORT",
+      "file_count": 9,
+      "digest": "022146E09009DB2B3DBA38371C47FC8DF23CA4B9932FFA6486BE0ECB025A4C4F",
+      "files": [
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+          "sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+          "sha256": "6F19174D9E3333788F0BD1127264017998A8FFCB9F8A01C6F3EFBD00CE716853"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/extraction.cjs",
+          "sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/locators.cjs",
+          "sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/presentation-contract.cjs",
+          "sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/run-internal-validation.cjs",
+          "sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+          "sha256": "844E41CDEC338E3CF9461021B8E8F5FFB972E0BC376F252BCD7DF9372D1C10CF"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/six-year-evaluator.cjs",
+          "sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD"
+        },
+        {
+          "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+          "sha256": "12F18CABE0C1CF37F0C2054B48069ABB3BF1B24FE0F33B5ECC4EF010D9A5BDD3"
+        }
+      ]
+    },
+    {
+      "id": "RULE_CONFIGURATION",
+      "file_count": 7,
+      "digest": "41590739A8426A74A1840477C9E31BE5AED95960D55BB7F3E238BE561D112B98",
+      "files": [
+        {
+          "file": "accelerated-launch/adapters/adapter-configs.json",
+          "sha256": "0EB99ABBB76C0D70F59E2FFF9D9F72378F2BE7A69BB4BCE583C1BC4B394BF022"
+        },
+        {
+          "file": "accelerated-launch/adapters/applicability-records.json",
+          "sha256": "88AB83B28DDD294D55DDC59117D934E470CD21BD39CAB6BD41C444689E2F2611"
+        },
+        {
+          "file": "accelerated-launch/adapters/evaluation-primitives.cjs",
+          "sha256": "A943043C76150B523AB131507E04CAD4219F433627F9A14E5325DAC838CC5B95"
+        },
+        {
+          "file": "accelerated-launch/adapters/report-use.cjs",
+          "sha256": "0797A7CBAFC716E4E61FD10D0F77ACBE6A8C74509FB7799AB22921336F333522"
+        },
+        {
+          "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
+          "sha256": "C3CC6E5CA39AA30C02CC23276F9F0264A57E23370BE71340641DF5B63E964AC6"
+        },
+        {
+          "file": "accelerated-launch/adapters/rule-adapters.cjs",
+          "sha256": "DD630B41DCC5B01905496CDD242B6C4E44A9CF43FC8C31448D80C2E38AE52214"
+        },
+        {
+          "file": "accelerated-launch/adapters/test-adapters.cjs",
+          "sha256": "BFDD7D48E9EEEBD02F1E71CC47FE79293794FB7579BADEF80A4A7A31BDA30013"
+        }
+      ]
+    },
+    {
+      "id": "RULE_CONFIGURATION_TOP_LEVEL",
+      "file_count": 9,
+      "digest": "BA7C10B5941AAF38A533D58DE86699C4CD0FA4C45E76B993A7FBA4C6BB019CF0",
+      "files": [
+        {
+          "file": "accelerated-launch/benchmark-ingestion.cjs",
+          "sha256": "56C5899D7A1B6FBE83B65980A75148DF2D76FF83E5D92E1281DDAE54901A63BE"
+        },
+        {
+          "file": "accelerated-launch/check-field-matrix.json",
+          "sha256": "18BA195228E8BFE34A19C119EF28E4F76C7327C923C98990947965D9957A9A68"
+        },
+        {
+          "file": "accelerated-launch/coverage-matrix.json",
+          "sha256": "AD83360300BBEFCF4FD26759EEBD074293BC70EFF31947FC1634E1D84F4F4D09"
+        },
+        {
+          "file": "accelerated-launch/jurisdiction-router.cjs",
+          "sha256": "A83EA0A08C6A5C4AF033FBC974681176C1DC84640BEC1FB26FD159E2D419A74B"
+        },
+        {
+          "file": "accelerated-launch/launch-matrix.json",
+          "sha256": "449B60DBED4CF458DCF3968731E246429997212E17FAF53158DE5B73F392F1DC"
+        },
+        {
+          "file": "accelerated-launch/reported-fact-policy.approval.json",
+          "sha256": "57060D45EA2DD06B1AAB34E2E2CE4ED0CC65F42BB2498EAAA426EB434CF5C48E"
+        },
+        {
+          "file": "accelerated-launch/reported-fact-policy.cjs",
+          "sha256": "42A1DD443D938F7A946B8E9E2586818E23941A1EA82FF52D0A431EDF83F5595E"
+        },
+        {
+          "file": "accelerated-launch/reported-fact-policy.json",
+          "sha256": "9D81D094394A8F8F053F3792A888C690ADDD0713565013D9396355675AEE0ADD"
+        },
+        {
+          "file": "accelerated-launch/test-router.cjs",
+          "sha256": "B2ED51FD3E31B15DA28925E53E31896D82A24A64EB420EC8A6DEE822C515EC4A"
+        }
+      ]
+    },
+    {
+      "id": "SERVED_ASSETS",
+      "file_count": 4,
+      "digest": "FF4A87D680C6421F6A37604323F40B3F3C482281D054A593AFB794A0EF2760BF",
+      "files": [
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "sha256": "2AA86EF97E94BC8D937FA8E7B373CE70170C07FB89D7953715CBCF10D254EDF8"
+        },
+        {
+          "file": "accelerated-launch/service/ui/favicon.svg",
+          "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+        },
+        {
+          "file": "accelerated-launch/service/ui/index.html",
+          "sha256": "1BDABF62E56C66B85E0B4467EB0B6D175207115F10714DDFF85E08C6EE6172CF"
+        },
+        {
+          "file": "accelerated-launch/service/ui/style.css",
+          "sha256": "2EDBFC4FE9761CAE77CA286C08B211DB4694863C4E7E9DA396B4B6CA8CB50E67"
+        }
+      ]
+    }
+  ],
+  "manifest_digest": "6C3EC8B12B8E5C200718EDDE45FA209442ABE68BE6C782107560E0CC568E7049",
+  "total_file_count": 80
+}

@@ -1,0 +1,223 @@
+{
+  "artifact": "output_vocabulary_and_explanation_surface.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "document_type": "OUTPUT VOCABULARY AND EXPLANATION SURFACE — one scope only. NOT ADMITTED, no consumer surface, no emission",
+  "purpose": "record the exact values this unit may produce on each axis, the labels it may never produce, and the explanation surface every observation-class result would have to carry, so that a numerical comparison can never silently become a legal conclusion",
+  "governing_text_read": {
+    "phase_5_5_bullet_outputs": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 135,
+      "text": "- Implement explicit outputs for `VIOLATION`, `PROBABLE_VIOLATION`, and no finding. The product surfaces only violations and probable violations to the consumer; internal unresolved/excluded states remain audit data, not consumer finding labels."
+    },
+    "phase_5_5_bullet_explanation": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 136,
+      "text": "- Explain each finding with the applicable statute/citation, report quotation/location, what requirement appears unmet, why the confidence class is limited, unresolved exception/timing/applicability qualifications, and the distinction between the report's assertion and independently verified truth."
+    },
+    "gate_5_5": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 138,
+      "text": "**Gate 5.5:** evaluator output is deterministic, fully traceable to report and source, and cannot emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping, or an unresolved affirmative element."
+    }
+  },
+  "the_five_concepts_are_five": [
+    {
+      "concept": "presentation eligibility",
+      "axis": "document",
+      "values": [
+        "ELIGIBLE",
+        "REFUSED_WITH_A_NAMED_CAUSE"
+      ],
+      "never_means": "it is never a fact status and never a comparison outcome"
+    },
+    {
+      "concept": "extraction status",
+      "axis": "fact",
+      "values": [
+        "RESOLVED",
+        "EXTRACTION_UNRESOLVED",
+        "UNSUPPORTED_PRESENTATION",
+        "NOT_A_DEBT_RECORD",
+        "ABSENT_FROM_REPORT"
+      ],
+      "never_means": "it is never absence-by-parser-failure and never an outcome"
+    },
+    {
+      "concept": "date-comparison outcome",
+      "axis": "arithmetic",
+      "values": [
+        "PERIOD_EXCEEDED",
+        "PERIOD_NOT_EXCEEDED",
+        "UNRESOLVED"
+      ],
+      "never_means": "it is never a finding and never a status"
+    },
+    {
+      "concept": "rule applicability and qualifications",
+      "axis": "rule",
+      "values": [
+        "APPLICABLE_ON_THIS_READING_WITH_QUALIFICATIONS",
+        "QUALIFICATION_CARRIED"
+      ],
+      "never_means": "a qualification is never a finding and never a clearance"
+    },
+    {
+      "concept": "observation eligibility",
+      "axis": "output",
+      "values": [
+        "OBSERVATION_CLASS_ONLY",
+        "INTERNAL_OBSERVATION_RECORD_ONLY"
+      ],
+      "never_means": "it is never permission to show anything to anyone"
+    }
+  ],
+  "record_ceiling_carried": {
+    "permitted_result_ceiling": "OBSERVATION_CLASS_ONLY",
+    "finding_classes_available": [],
+    "authorised_finding_classes": "NONE — neither VIOLATION nor PROBABLE_VIOLATION is authorized, in any circumstance, for any input",
+    "classification_retained": {
+      "determinability": "D3",
+      "recorded_conclusion": "REPORT_RELEVANT_BUT_NOT_DETECTABLE",
+      "permitted_conclusion": "observation",
+      "packet_eligibility": "ineligible",
+      "retained_unchanged": true,
+      "recorded_in": "the admitted legacy artifact CANADA_RULE_CLASSIFICATION_RECORDS entry for ca-ns.cra.s10_3_c.debt_retention_6y (lines 2442-2450) and SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json"
+    },
+    "proposed_ceiling_not_adopted": "PROD-003 crosswalk and candidate_rule_units propose PROBABLE_VIOLATION (never VIOLATION), conditional on the rule record recording the direct-report section 4 retention exception. The condition is not exercised and the owner withholds the proposal, so it is not adopted."
+  },
+  "permitted_output_axes": {
+    "presentation_eligibility": [
+      "ELIGIBLE",
+      "REFUSED"
+    ],
+    "refusal": [
+      "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+      "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+      "REFUSED_UNSUPPORTED_PRESENTATION",
+      "REFUSED_WRONG_EVENT_DATE_MAPPING",
+      "REFUSED_RULE_RECORD_NOT_ADMITTED",
+      "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT"
+    ],
+    "extraction_status": [
+      "RESOLVED",
+      "EXTRACTION_UNRESOLVED",
+      "UNSUPPORTED_PRESENTATION",
+      "NOT_A_DEBT_RECORD",
+      "ABSENT_FROM_REPORT"
+    ],
+    "comparison_outcome": [
+      "PERIOD_EXCEEDED",
+      "PERIOD_NOT_EXCEEDED",
+      "UNRESOLVED"
+    ],
+    "boundary_case": [
+      "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+    ],
+    "emission": [
+      "NOT_EMITTED",
+      "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED"
+    ],
+    "observation_eligibility": [
+      "OBSERVATION_CLASS_ONLY",
+      "INTERNAL_OBSERVATION_RECORD_ONLY"
+    ]
+  },
+  "forbidden_labels": [
+    "VIOLATION",
+    "PROBABLE_VIOLATION",
+    "any other finding label or finding class, however phrased",
+    "BREACH_ESTABLISHED and any synonym of an established breach",
+    "COMPLIANT, WITHIN_THE_LIMIT and any statement that the report or the debt satisfies the provision",
+    "any statement that the provision applied to this debt at the relevant time",
+    "any statement that the report is inaccurate, unlawful or actionable",
+    "any request for additional consumer evidence"
+  ],
+  "the_numeric_result_is_not_a_legal_conclusion": {
+    "rule": "a comparison outcome is an arithmetic result on two printed dates. It is reported as what the report prints and what the arithmetic returns, never as what the law requires or what the agency did.",
+    "mechanism": "the comparison outcome is carried on its own axis, every explanation template states the assertion-versus-verified-truth distinction, and no template may render a finding label",
+    "the_assertion_is_never_verified_truth": "the extraction does not prove that the payment occurred and no statement may say it did"
+  },
+  "explanation_surface": {
+    "required_parts": {
+      "applicable_statute_or_citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+      "report_quotation_and_location": "the printed label, its pages and its value, quoted from the presentation as the fact model records them",
+      "what_requirement_appears_unmet": "stated only as a description of what the report prints and what the arithmetic returns. It is never stated as a legal conclusion and never as an established breach.",
+      "why_the_confidence_class_is_limited": "the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.",
+      "unresolved_qualifications": "the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full",
+      "assertion_versus_verified_truth": "the extraction does not prove that the payment occurred and no statement may say it did"
+    },
+    "every_template_carries": [
+      "the applicable citation, as recorded: Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+      "the report quotation and its location",
+      "the requirement the report's own print appears not to meet, stated as a description of the print",
+      "why the confidence class is limited, as recorded",
+      "the unresolved exception, timing and applicability qualifications, verbatim",
+      "the distinction between the report's assertion and independently verified truth",
+      "renders_a_finding_label: false"
+    ],
+    "mandatory_qualification_texts_carried_verbatim": {
+      "timing": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+      "classification": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result.",
+      "boundary": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+      "specimen": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format.",
+      "effect": "each qualification narrows what may be said; none widens it. All are output restrictions, not findings and not admissions."
+    },
+    "templates": [
+      {
+        "state": "PERIOD_EXCEEDED",
+        "when": "both facts are PRESENT and the elapsed days exceed the derived six-year span",
+        "finding_label_rendered": false,
+        "may_say": "the report prints a last payment date, and the arithmetic measured from that date to the report's own reference date exceeds the six-calendar-year span computed from the same date.",
+        "must_say": "that is an arithmetic result only. Whether the provision applied to this debt, whether the printed date is true, and whether the agency did anything the law forbids are all separate questions this unit does not answer.",
+        "carries_all_four_qualifications": true
+      },
+      {
+        "state": "PERIOD_NOT_EXCEEDED",
+        "when": "both facts are PRESENT and the elapsed days are less than the derived six-year span",
+        "finding_label_rendered": false,
+        "may_say": "the arithmetic measured from the printed date to the report's own reference date does not exceed the six-calendar-year span computed from the same date.",
+        "must_say": "this is not a clearance and not a statement of compliance: it says nothing about the provision's applicability, about any other date, or about any other report.",
+        "carries_all_four_qualifications": true
+      },
+      {
+        "state": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+        "when": "both facts are PRESENT and the reference date is exactly the sixth anniversary of the printed date",
+        "finding_label_rendered": false,
+        "outcome": "WITHHELD — UNRESOLVED",
+        "must_say": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day.",
+        "carries_all_four_qualifications": true
+      },
+      {
+        "state": "UNRESOLVED",
+        "when": "a fact the comparison needs is not PRESENT, or the reference date precedes the printed date, or the boundary case was reached",
+        "finding_label_rendered": false,
+        "must_say": "no comparison was made and no result is given. The reason is named in the record: the fact status and its reason, or the comparison reason.",
+        "carries_all_four_qualifications": true
+      },
+      {
+        "state": "THE_NAMED_REFUSALS",
+        "when": "any gate fails: REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED, REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT, REFUSED_UNSUPPORTED_PRESENTATION, REFUSED_WRONG_EVENT_DATE_MAPPING, REFUSED_RULE_RECORD_NOT_ADMITTED, REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "finding_label_rendered": false,
+        "must_say": "the evaluation did not run or produced no outcome, the refusal is named, and nothing whatever is asserted about the report, the debt or any person.",
+        "carries_all_four_qualifications": false,
+        "instead": "a refusal carries the reason and the boundary of the refusal only: no qualification, no outcome and no observation is produced"
+      }
+    ]
+  },
+  "what_may_be_shown_today": {
+    "consumer_visible_output": "NONE",
+    "packet": "ineligible",
+    "application": "unchanged; report checking remains \"not yet available\"",
+    "note": "the templates above specify how a lawful observation-class explanation would have to read if a surface ever existed. They are not a surface, they are not reachable, and they authorize nothing."
+  },
+  "boundaries": [
+    "No finding class is implemented, emitted, implied or promised for this unit, in any circumstance, for any input.",
+    "A qualification is an output restriction, not a finding and not an admission.",
+    "This record admits no rule, creates no coverage and no candidate, and passes no gate corpus-wide."
+  ],
+  "created_by": "PHASE5-001R"
+}

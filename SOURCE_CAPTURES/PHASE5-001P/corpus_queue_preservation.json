@@ -1,0 +1,73 @@
+{
+  "artifact": "corpus_queue_preservation.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "purpose": "record that the corpus-wide unfinished queue is preserved exactly as PHASE5-001K and PHASE5-001L/M/N/O left it, and that no corpus-wide gate is claimed, so a scoped verdict cannot be read as a corpus-wide pass",
+  "measured_from": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv, re-parsed by this order",
+  "register_digest": {
+    "recorded": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+    "measured_now": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+    "unchanged": true,
+    "bytes": 616237
+  },
+  "corpus_totals": {
+    "data_rows": 437,
+    "distinct_source_entry_ids": 437
+  },
+  "dispositions": {
+    "UNRESOLVED": 416,
+    "GAP": 18,
+    "REFUSAL": 3
+  },
+  "disposition_states": {
+    "BLOCKED_MISSING_EVIDENCE": 416,
+    "RECORDED_DURABLE": 21
+  },
+  "blocker_types": {
+    "NO_DURABLE_RESCREEN_RECORD": 409,
+    "NO_OPEN_ITEM_RECORDED": 5,
+    "RECORDED_OPEN_ITEM": 16,
+    "CANDIDATE_REPRESENTATION_UNRESOLVED_GATE_5_3_M1": 1,
+    "REPORT_EVENT_DATE_MAPPING_UNVERIFIED": 6
+  },
+  "open_queue_size": 416,
+  "the_row_this_scope_concerns": {
+    "source_entry_id": "CRP-LSRC-0354",
+    "disposition": "UNRESOLVED",
+    "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+    "blocker_type": "REPORT_EVENT_DATE_MAPPING_UNVERIFIED",
+    "note": "unchanged in the register file; the scoped verdict changes its reading, not its record"
+  },
+  "corpus_wide_gate_status_kept_separate": {
+    "note": "these are the corpus-wide states, recorded separately from the two scoped verdicts and not changed by them",
+    "5.1": "MET with recorded administrative limitations (PHASE5-001O amendment); unchanged",
+    "5.2": "NOT PASSED — 409 rows carry NO_DURABLE_RESCREEN_RECORD, six rows depend on a report mapping, and one row is closed by owner direction; no durable corpus-wide pass exists",
+    "5.3": "NOT PASSED corpus-wide — reached for one candidate on one presentation and passed for none; no corpus-wide intended-format inventory exists",
+    "5.4": "NOT STARTED corpus-wide. A Gate 5.4 work order may now be issued for this scope only, because both preceding gates hold a passing verdict for that same scope",
+    "5.5": "NOT STARTED",
+    "5.6": "NOT STARTED",
+    "5.7": "NOT REACHED — 0 admitted governed rules and 0 permitted findings",
+    "scoped_verdicts_recorded_by_this_order": {
+      "5.2": "PASSED_FOR_THIS_SCOPE",
+      "5.3": "PASSED_FOR_THIS_SCOPE"
+    }
+  },
+  "nothing_converted": {
+    "statement": "no row was converted into GAP or REFUSAL and no missing work was relabelled to satisfy a criterion. The GAP and REFUSAL counts measured above are the register's recorded values, unchanged by this order.",
+    "evidence": [
+      "the register CSV digest is unchanged from the baseline this order measured before amending anything",
+      "the disposition distribution is unchanged: 416 UNRESOLVED, 18 GAP, 3 REFUSAL",
+      "the blocker distribution is unchanged: 409 NO_DURABLE_RESCREEN_RECORD, 6 REPORT_EVENT_DATE_MAPPING_UNVERIFIED, 1 CANDIDATE_REPRESENTATION_UNRESOLVED_GATE_5_3_M1, plus the 21 durably-recorded rows"
+    ]
+  },
+  "rows_that_remain_evidence_or_work_blocked": [
+    "409 rows: NO_DURABLE_RESCREEN_RECORD — documentation work in an authorised batch, with an evidence route only where the disposition turns on report mapping",
+    "6 rows: REPORT_EVENT_DATE_MAPPING_UNVERIFIED — CRP-LSRC-0354 (this scope's source record, residual alternative only), 0422, 0423, 0424, 0425, 0427",
+    "1 row: CRP-LSRC-0194 — closed by owner direction until a concrete new consumer-format source appears"
+  ],
+  "preservation_and_custody_reference": {
+    "measured_by": "preservation_and_change_record.json and file_custody_manifest.json",
+    "reading": "the only pre-existing file this order changed is the amended build plan; every register, provenance, ledger, crosswalk, catalogue, application and manifest file remains byte-identical to its baseline digest"
+  },
+  "created_by": "PHASE5-001P"
+}

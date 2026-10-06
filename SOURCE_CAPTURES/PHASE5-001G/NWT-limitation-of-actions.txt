@@ -1,0 +1,1367 @@
+     LIMITATION OF ACTIONS ACT                                LOI SUR LES PRESCRIPTIONS
+        R.S.N.W.T. 1988,c.L-8                                   L.R.T.N.-O. 1988, ch. L-8
+
+
+
+
+     INCLUDING AMENDMENTS MADE BY                             MODIFIÉE PAR
+        R.S.N.W.T. 1988,c.8(Supp.)                             L.R.T.N.-O. 1988, ch. 8 (Suppl.)
+           In force July 19, 1993;                                En vigueur le 19 juillet 1993
+           SI-008-93                                              TR-008-93
+        S.N.W.T. 1995,c.8                                      L.T.N.-O. 1995, ch. 8
+
+
+
+
+This consolidation is not an official statement of the     La présente codification administrative ne constitue pas
+law. It is an office consolidation prepared by             le texte officiel de la loi; elle n’est établie qu’à titre
+Legislation Division, Department of Justice, for           documentaire par les Affaires législatives du ministère
+convenience only. The authoritative text of statutes can   de la Justice. Seules les lois contenues dans les Lois
+be ascertained from the Revised Statutes of the            révisées des Territoires du Nord-Ouest (1988) et dans
+Northwest Territories, 1988 and the Annual Volumes         les volumes annuels des Lois des Territoires du Nord-
+of the Statutes of the Northwest Territories.              Ouest ont force de loi.
+
+Any Certified Bills not yet included in the Annual         Les projets de loi certifiés ne figurant pas dans les
+Volumes can be obtained through the Office of the          volumes annuels peuvent être obtenus en s’adressant au
+Clerk of the Legislative Assembly.                         bureau du greffier de l’Assemblée législative.
+
+Certified Bills, copies of this consolidation and other    Les projets de loi certifiés, copies de la présente
+G.N.W.T. legislation can be accessed on-line at            codification administrative et autres lois du G.T.N.-O.
+                                                           sont disponibles en direct à l’adresse suivante :
+http://www.justice.gov.nt.ca/Legislation/SearchLeg&
+Reg.shtml                                                  http://www.justice.gov.nt.ca/Legislation/SearchLeg&
+                                                           RegFR.shtml
+                      LIMITATION OF ACTIONS ACT                                       LOI SUR LES PRESCRIPTIONS
+
+                                INTERPRETATION                                                    DÉFINITIONS
+
+Definitions   1. In this Act,                                                  1. Les définitions qui suivent s’appliquent à la Définitions
+                                                                              présente loi.
+              "action" means a civil proceeding; (action)
+                                                                              «action» Toute procédure civile. (action)
+              "assurance" means any transfer, deed or instrument,
+              other than a will, by which land may be conveyed or             «bien-fonds» Sont assimilés à un bien-fonds tous les
+              transferred; (transfert)                                        héritages corporels ainsi que toute partie de l’un d’eux,
+                                                                              ou tout domaine franc ou domaine à bail, ou tout
+              "disability" means disability as a result of being a            intérêt dans l’un d’eux. (land)
+              minor or arising from unsoundness of mind;
+              (incapacite)                                                    «créancier hypothécaire» Est assimilé à un créancier
+                                                                              hypothécaire le titulaire d’une charge. (mortgagee)
+              "heirs" includes the persons entitled beneficially to the
+              real estate of a deceased intestate; (héritiers)                «débiteur hypothécaire» Est assimilé à un débiteur
+                                                                              hypothécaire le débiteur d’une charge. (mortgagor)
+              "land" includes all corporeal hereditaments, and any
+              share or any freehold or leasehold estate or any interest       «héritiers» Sont assimilées à des héritiers les
+              in any of them; (bien-fonds)                                    personnes ayant droit à titre de bénéficiaire aux biens
+                                                                              immobiliers d’une personne décédée intestat. (heirs)
+              "mortgage" includes charge; (hypothèque)
+                                                                              «hypothèque»      S’entend également d’une charge.
+              "mortgagee"       includes     chargee;     (créancier          (mortgage)
+              hypothécaire)
+                                                                              «incapacité» Incapacité d’une personne mineure ou
+              "mortgagor" includes chargor; (débiteur hypothécaire)           faible d’esprit. (disability)
+
+              "proceedings" includes action, entry, taking of                 «loyer» Rente-service ou loyer aux termes d’une
+              possession, distress and sale proceedings under an              cession à bail. (rent)
+              order of a court or under a power of sale contained in
+              a mortgage or conferred by an Act; (procédure)                  «procédure» Action, droit de rentrée, prise de
+                                                                              possession, et procédures de saisie et de vente prévues
+              "rent" means a rent service or rent reserved on a               aux termes d’une ordonnance judiciaire ou d’un
+              demise; (loyer)                                                 pouvoir de vendre contenu dans une hypothèque ou
+                                                                              accordé par une loi. (proceedings)
+              "rent charge" includes all annuities and periodical
+              sums of money charged on or payable out of land.                «rente foncière» Sont assimilées à une rente foncière
+              (rente foncière)                                                les rentes ainsi que les sommes périodiques grevant un
+                                                                              bien-fonds ou exigibles sur celui-ci. (rent charge)
+
+                                                                              «transfert» Tout transfert, acte ou instrument, autre
+                                                                              qu’un testament, par lequel un bien-fonds peut être
+                                                                              cédé ou transféré. (assurance)
+
+
+
+
+                                                                          1
+                                    PART I                                                         PARTIE I
+
+                            LIMITATION PERIOD                                           DÉLAIS DE PRESCRIPTION
+
+                            SPECIFIED ACTIONS                                           ACTIONS PARTICULIÈRES
+
+Limitation   2. (1) The following actions must be commenced                  2. (1) Les actions suivantes se prescrivent par les Délais de
+periods                                                                                                                              prescription
+             within and not after the following times:                      délais indiqués ci-dessous :
+                  (a)   actions for penalties imposed by any Act                        a) l’action en recouvrement d’une sanction
+                        brought by an informer suing for himself                           imposée par une loi, intentée soit par un
+                        or herself alone or for Her Majesty as well                        dénonciateur poursuivant en son nom
+                        as for himself or herself, or by any person                        seulement ou en son nom et en celui de
+                        authorized to sue for such penalties, not                          Sa Majesté, soit par une personne
+                        being the person aggrieved, within one                             autorisée, autre que la personne lésée,
+                        year after the cause of action arose;                              se prescrit par un an à compter de la
+                 (b)    actions for penalties, damages or sums of                          naissance de la cause d’action;
+                        money in the nature of penalties given by                      b) l’action en recouvrement d’une
+                        any Act to Her Majesty or the person                               sanction, de dommages-intérêts ou
+                        aggrieved, or partly to one and partly to the                      d’une somme de la nature d’une
+                        other, within two years after the cause of                         sanction accordés par une loi à Sa
+                        action arose;                                                      Majesté ou à la personne lésée, ou en
+                  (c)   actions of defamation, whether libel or                            partie à l’une et en partie à l’autre, se
+                        slander, within two years after the                                prescrit par deux ans à compter de la
+                        publication of the libel or the speaking of                        naissance de la cause d’action;
+                        the slanderous words, or where special                          c) l’action en diffamation, écrite ou
+                        damage is the gist of the action, within two                       verbale, se prescrit par deux ans à
+                        years after the occurrence of the special                          compter de la publication de l’écrit
+                        damage;                                                            diffamatoire ou de la profération des
+                 (d)    actions for trespass to the person, assault,                       paroles calomnieuses; l’action fondée
+                        battery, wounding or other injury to the                           sur un dommage particulier se prescrit
+                        person, whether arising from an unlawful                           par deux ans à compter de la
+                        act or from negligence, or for false                               survenance du dommage;
+                        imprisonment or malicious prosecution,                         d) l’action pour atteinte à la personne,
+                        within two years after the cause of action                         voies de fait, coups et blessures, que
+                        arose;                                                             l’action découle d’un acte illégal ou
+                  (e)   actions for trespass or injury to real                             d’une négligence, ou l’action pour
+                        property or chattels, whether direct or                            séquestration ou poursuite abusive se
+                        indirect, and whether arising from an                              prescrit par deux ans à compter de la
+                        unlawful act or from negligence, or for the                        naissance de la cause d’action;
+                        taking away, conversion or detention of                         e) l’action pour atteinte ou dommages
+                        chattels, within six years after the cause of                      causés directement ou indirectement à
+                        action arose;                                                      des biens immobiliers ou à des
+                  (f)   actions for the recovery of money, except                          mobiliers, que l’action soit le résultat
+                        in respect of a debt charged on land,                              d’un acte illégal ou d’une négligence,
+                        whether recoverable as a debt or damages                           ou pour dépossession, appropriation
+                        or otherwise, and whether on a                                     illicite ou rétention de biens mobiliers
+                        recognizance, bond, covenant or other                              se prescrit par six ans à compter de la
+                        specialty or on a simple contract, express                         naissance de la cause d’action;
+                        or implied, and actions for an account or                       f) l’action en recouvrement d’une somme,
+                        for not accounting, within six years after                         sauf l’action relative à une créance
+                        the cause of action arose;                                         grevant un bien-fonds, que cette somme
+                 (g)    actions grounded on fraudulent                                     soit recouvrable notamment à titre de
+                        misrepresentation, within six years after                          dette ou de dommages-intérêts, ou que
+                        the discovery of the fraud;                                        cette somme découle d’un engagement,
+
+                                                                        2
+                     (h)    actions grounded on accident, mistake or                          d’un cautionnement, d’un contrat scellé
+                            other equitable ground of relief not                              ou non ou d’une convention verbale,
+                            specifically dealt with in paragraphs (a) to                      expresse ou tacite, se prescrit par six
+                            (g), within six years after the discovery of                      ans à compter de la naissance de la
+                            the cause of action;                                              cause d’action; il en est de même de
+                      (i)   actions on a judgment or order for the                            l’action en reddition de comptes ou
+                            payment of money, within 10 years after                           pour non-reddition de comptes;
+                            the cause of action on the judgment or                         g) l’action fondée sur une déclaration
+                            order arose;                                                      inexacte et frauduleuse se prescrit par
+                      (j)   any other action not specifically provided                        six ans à compter de la découverte de la
+                            for in this Act or any other Act, within six                      fraude;
+                            years after the cause of action arose.                         h) l’action fondée sur un accident, une
+                                                                                              erreur ou autre motif de recours reconnu
+                                                                                              en equity, sauf les motifs mentionnés
+                                                                                              aux alinéas a) à g), se prescrit par six
+                                                                                              ans à compter de la découverte de la
+                                                                                              cause d’action;
+                                                                                           i) l’action en exécution d’un jugement ou
+                                                                                              d’une ordonnance prévoyant le
+                                                                                              paiement d’une somme se prescrit par
+                                                                                              10 ans à compter de la naissance de la
+                                                                                              cause d’action faisant l’objet du
+                                                                                              jugement ou de l’ordonnance;
+                                                                                           j) toute autre action qui ne fait pas
+                                                                                              explicitement l’objet d’une disposition
+                                                                                              de la présente loi ou d’une autre loi se
+                                                                                              prescrit par six ans à compter de la
+                                                                                              naissance de la cause d’action.
+
+Exception           (2) Nothing in subsection (1) extends to any action               (2) Le paragraphe (1) ne s’applique pas à une Exception
+                 where the time for bringing the action is specially            action dont le délai de prescription est expressément
+                 limited by an Act.                                             prévu par une loi.
+Definition       2.1. (1)For the purposes of this section, "action" means       2.1. (1) Pour l’application du présent article, «action» Définition
+of "action"
+                 an action for trespass to the person, assault, battery,        comprend, dans le cas où la cause d’action est de de «action»
+                 wounding or other injury to the person where the cause         nature sexuelle, l’action pour atteinte à la personne, les
+                 of action is based on conduct of a sexual nature.              voies de fait, coups et autres blessures.
+No limitation       (2) The limitation period set out in paragraph                    (2) Par dérogation à l’alinéa 2(1)d), il n’y a pas Aucun délai
+period for
+                 2(1)(d) does not apply in respect of an action where           de délai de prescription à l’égard d’une action dans le de prescription
+sexual assault                                                                                                                           pour les
+in certain       one of the parties had an intimate relationship with the       cas où l’une des parties a eu des relations intimes avec agressions
+situations       aggrieved person, had a relationship of trust with the         la personne lésée ou était dans une situation de sexuelles
+                 aggrieved person or was someone upon whom the                  confiance avec cette dernière, ou était une personne de dans certains
+                                                                                                                                         cas
+                 aggrieved person was dependent.                                qui dépendait la personne lésée.
+Other               (3) Where the relationship between the parties is                 (3) Dans le cas où la relation entre les parties Début de
+limitation
+                 not one of those described in subsection (2), the              n’est pas visée par le paragraphe (2), le délai de l’autre
+period does                                                                                                                            période de
+not start        limitation period set out in paragraph 2(1)(d) does not        prescription prévu à l’alinéa 2(1)d) ne débute qu’à prescription
+until person     commence so long as the aggrieved person is                    compter du moment où la personne lésée n’est plus
+capable of       incapable of commencing the action because of his or           dans l’incapacité d’intenter l’action en raison de son
+commencing
+                 her physical, mental or psychological condition.               état physique, mental ou psychologique.
+action
+
+Presumption         (4) Unless the contrary is proved, an aggrieved                  (4) À moins de preuve à l’effet contraire, la Présomption
+                 person shall be presumed to have been incapable,               personne lésée est présumée avoir été dans l’incapacité
+
+
+                                                                            3
+               because of his or her physical, mental or psychological           d’intenter l’action plus tôt en raison de son état
+               condition, of commencing an action earlier than it was            physique, mental ou psychologique.
+               commenced.
+
+Prior             (5) This section applies whether or not the right of                (5) Le présent article s’applique même si le droit Délais de
+limitation
+               an aggrieved person to bring the action was at any time           de la personne lésée d’intenter une action était à prescription
+periods do                                                                                                                               antérieurs ne
+not apply      governed by a limitation period.             S.N.W.T.             quelque moment que ce soit régi par un délai de s’appliquent
+               1995,c.8,s.2.                                                     prescription. L.T.N.-O. 1995, ch. 8, art. 2.            pas
+
+Concealed       3. When the existence of a cause of action has been               3. Lorsque l’existence d’une cause d’action est Manoeuvre
+fraud
+               concealed by the fraud of the person setting up this              cachée par une manoeuvre frauduleuse de la personne frauduleuse
+               Part or Part II as a defence, the cause of action shall be        qui invoque en défense la présente partie ou la partie
+               deemed to have arisen when the fraud was first known              II, la cause d’action est réputée avoir pris naissance au
+               or discovered.                                                    moment où la manoeuvre frauduleuse a d’abord été
+                                                                                 connue ou découverte.
+Item in         4. No claim in respect of an item in an account that              4. Aucune réclamation portant sur un article d’un Article
+account
+               arose more than six years before the commencement of              compte et prenant naissance plus de six ans avant le d’un
+                                                                                                                                        compte
+               the action is enforceable by action by reason only of             début de l’action n’est exécutoire au moyen d’une
+               some other claim in respect of another item in the                action pour le seul motif qu’une autre réclamation
+               same account having arisen within six years before the            portant sur un autre article du même compte a pris
+               commencement of the action.                                       naissance moins de six ans avant le début de l’action.
+Foreign        4.1. Where an action is one defined in subsection                    4.1. Lorsque, dans une action au sens du La loi des
+limitation
+               2.1(1) and the court determines, in that action, that the         paragraphe 2.1(1), le tribunal établit que la loi d’un territoires
+does not                                                                                                                                     s’applique
+apply          law of a jurisdiction other than the Territories is               ressort autre que celui des territoires s’applique, et que
+               applicable and that the law of that jurisdiction                  le droit de ce ressort relatif aux prescriptions est, quant
+               governing the limitation of actions is, for the purposes          aux matières de droit international, de nature
+               of private international law, classified as procedural,           procédurale, le tribunal applique la loi des territoires
+               the court shall apply the law of the Territories as set           établie à l’article 2.1. L.T.N.-O. 1995, ch. 8, art. 3.
+               out in section 2.1. S.N.W.T. 1995, c.8,s.3.
+
+                                   DISABILITIES                                                      INCAPACITÉS
+
+Person under    5. Where a person entitled to bring any action                    5. La personne qui a le droit d’intenter l’une des Incapables
+disability
+               mentioned in paragraphs 2(1)(c) to (i) is under                   actions mentionnées aux alinéas 2(1)c) à i), mais qui
+               disability at the time the cause of action arises, the            est frappée d’incapacité à la date à laquelle la cause
+               person may bring the action within the time limited by            d’action prend naissance, peut l’intenter dans les délais
+               this Act with respect to the action or at any time within         applicables fixés par la présente loi ou à tout moment
+               two years after the person first ceased to be under               dans les deux ans suivant la date à laquelle son
+               disability.                                                       incapacité cesse.
+
+               ACKNOWLEDGMENTS AND PART PAYMENT                                  RECONNAISSANCES ET PAIEMENT PARTIEL
+
+Subsequent      6. (1) Whenever any person who is, or would have                  6. (1) Lors qu’une personne ou son représentant, Actes
+acts
+               been but for the passage of time, liable to an action for         qui, sans le délai de prescription, serait ou aurait été subséquents
+               the recovery of money as a debt, or his or her agent in           passible, d’une action en recouvrement d’une somme
+               that behalf,                                                      comme créance :
+                     (a)    conditionally or unconditionally promises                        a) promet conditionnellement ou non à son
+                            his or her creditor or the agent of the                             créancier ou au représentant de celui-ci,
+                            creditor in writing signed by the debtor or                         au moyen d’un écrit revêtu de sa
+                            the agent of the debtor to pay the debt,                            signature ou de celle de son
+                    (b)     gives a written acknowledgment of the                               représentant, d’acquitter le montant de
+                            debt signed by the debtor or the agent of                           la créance;
+                            the debtor to his or her creditor or the agent                  b) donne à son créancier ou au
+
+                                                                             4
+                         of the creditor, or                                                   représentant de celui-ci une
+                   (c)   makes a part payment on account of the                                reconnaissance écrite de la créance,
+                         principal debt or interest on the principal                           revêtue de sa signature ou de celle de
+                         debt, to his or her creditor or the agent of                          son représentant;
+                         the creditor,                                                    c) fait à son créancier ou au représentant
+              an action to recover any such debt may be brought                                de celui-ci un paiement partiel à valoir
+              within six years after the date of the promise,                                  sur le principal du montant de la
+              acknowledgment or part payment, as the case may be,                              créance ou sur les intérêts qui s’y
+              notwithstanding that the action would otherwise be                               rattachent,
+              barred under this Act.                                           l’action en recouvrement d’une telle dette se prescrit
+                                                                               par six ans à compter de la date de la promesse, de la
+                                                                               reconnaissance ou du paiement partiel, selon le cas,
+                                                                               malgré le fait que l’action serait autrement prescrite en
+                                                                               vertu des dispositions de la présente loi.
+
+Effect of        (2) A written acknowledgment of a debt or a part                    (2) La reconnaissance écrite d’une créance ou le Effet d’une
+written
+              payment on account of the principal debt or interest on          paiement partiel à valoir sur le principal du montant de reconnaissance
+acknowledg-                                                                                                                             écrite
+ment          the principal debt has full effect whether or not a              la créance ou des intérêts courus a plein effet, qu’une
+              promise to pay can be implied from that and whether              promesse de payer puisse ou non s’en inférer et qu’elle
+              or not it is accompanied by a refusal to pay.                    soit ou non accompagnée d’un refus de payer.
+Joint          7. Where there are two or more joint debtors, joint              7. Les débiteurs, contractants ou obligés Contractants et
+contractors
+              contractors, joint obligors or joint covenantors, or             conjoints — ou les exécuteurs testamentaires ou débiteurs liés
+and                                                                                                                                     conjointement
+covenantors   executors or administrators of any debt or, contractor,          administrateurs de biens de l’un d’entre eux — ne
+              obligor or covenator, no such joint debtor, joint                perdent pas le bénéfice de la présente loi et ne peuvent
+              contractor, joint obligor or joint covenantor, or                être tenus responsable à l’égard d’une promesse écrite
+              executor or administrator shall lose the benefit of this         et signée ou d’un paiement du principal ou des intérêts
+              Act so as to be chargeable in respect or by reason only          effectué par l’un d’eux.
+              of any written acknowledgment or promise made and
+              signed, or by reason of any payment of any principal
+              or interest made, by any other or others of them.
+Recovery       8. In actions commenced against two or more joint                8. Dans une action intentée contre au moins deux Recouvrement
+against
+              debtors, joint contractors, joint obligors or joint              débiteurs, contractants ou obligés conjoints, ou contre les
+those                                                                                                                                   débiteurs
+acknow-       covenantors, or executors or administrators referred to          exécuteurs testamentaires ou administrateurs visés à conjoints
+ledging       in section 7, if it appears at the trial or otherwise that       l’article 7, s’il ressort au procès ou autrement que le
+              the plaintiff, though barred by this Act, as to one or           demandeur, même si la présente loi lui interdit
+              more of such joint debtors, joint contractors, joint             d’intenter une action en recouvrement contre l’une ou
+              obligors or joint covenantors, or executors or                   plusieurs de ces débiteurs, contractants ou obligés
+              administrators, is nevertheless entitled to recover              conjoints, ou des exécuteurs testamentaires ou
+              against any other or others of the defendants by virtue          administrateurs, a néanmoins le droit de le faire contre
+              of a new acknowledgment, promise or payment,                     tout autre défendeur en vertu d’une nouvelle
+              judgment shall be given for the plaintiff as to the              reconnaissance ou promesse, ou en vertu d’un nouveau
+              defendant or defendants against whom the plaintiff is            paiement, jugement doit être rendu en faveur du
+              entitled to recover, and for the other defendant or              demandeur contre tout défendeur à l’égard duquel il a
+              defendants against the plaintiff.                                un droit de recouvrement et contre le demandeur en
+                                                                               faveur de tout défendeur à l’égard duquel le
+                                                                               demandeur n’a aucun droit de recouvrement.
+
+
+
+
+                                                                           5
+Endorsements    9. No endorsement or memorandum of any payment                   9. N’est pas réputé constituer une preuve suffisante Endossement
+of payments
+               written or made on any promissory note, bill of                  de paiement permettant de soustraire le cas à des
+                                                                                                                                          bénéficiaires
+               exchange or other writing, by or on behalf of the                l’application de la présente loi l’endossement ou la
+               person to whom the payment has been made, shall be               note constatant un paiement écrit ou fait sur un billet
+               deemed sufficient proof of the payment, so as to take            à ordre, une lettre de change ou tout autre écrit, par la
+               the case out of the operation of this Act.                       personne à laquelle le paiement a été fait ou au nom de
+                                                                                celle-ci.
+Counterclaim   10. This Part applies to any claim of the nature                 10. La présente partie s’applique à toute demande Demande
+and set-off
+               mentioned in this Part alleged by way of counterclaim            que fait un défendeur par voie de demande reconven-
+                                                                                                                                       tionnelle
+               or set-off on the part of any defendant.                         reconventionnelle ou qu’il soulève par voie de
+                                                                                compensation lorsque la demande se rattache à l’une
+                                                                                ou l’autre des catégories d’action mentionnées dans la
+                                                                                présente partie.
+
+                                       PART II                                                        PARTIE II
+
+                               CHARGES ON LAND                                              CHARGES GREVANT UN
+                                 AND LEGACIES                                               BIEN-FONDS ET UN LEGS
+
+Recovery of    11.     (1) No proceedings shall be taken to recover             11. (1) L’action en recouvrement :                        Recouvrement
+money
+                     (a)    a rent charge or sum of money secured by                        a) d’une rente foncière ou d’une somme de sommes
+charged                                                                                                                                   grevant un
+on land                     a mortgage or otherwise charged on or                               garantie par une hypothèque ou grevant bien-fonds
+                            payable out of any land or rent charge,                             de toute autre façon un bien-fonds ou
+                     (b)    a legacy, whether it is or is not charged on                        une rente foncière;
+                            land, or                                                        b) d’un legs, que celui-ci grève ou non un
+                     (c)    the personal estate or any share of the                             bien-fonds;
+                            personal estate of a person dying intestate                     c) de tout ou partie des biens mobiliers
+                            and possessed by his or her personal                                d’un intestat qui sont en la possession
+                            representative,                                                     du représentant personnel,
+               except within 10 years after a present right to recover          se prescrit par 10 ans à compter de la date à laquelle le
+               it accrued to a person capable of giving a discharge for         droit immédiat de recouvrer ces sommes ou ces biens
+               it or a release of it, unless before the expiration of the       échoit à une personne capable d’en donner quittance
+               10 years                                                         ou libération, à moins qu’avant l’expiration de cette
+                     (d)    some part of the rent charge, sum of                période de 10 ans :
+                            money, legacy or estate or share or some                        d) une partie de la rente foncière ou de la
+                            interest on it has been paid by a person                            somme ou des intérêts s’y rattachant ait
+                            bound or entitled to make a payment of it                           été payée par la personne tenue ou
+                            or his or her agent in that behalf to a                             ayant le droit d’en effectuer le
+                            person entitled to receive the payment or                           paiement, ou par son représentant, à une
+                            his or her agent, or                                                personne y ayant droit ou à son
+                     (e)    some acknowledgment in writing of the                               représentant;
+                            right to the rent charge, sum of money,                         e) une reconnaissance du droit à la rente
+                            legacy, estate or share signed by any                               foncière, à la somme, au legs, à la
+                            person so bound or entitled or his or her                           succession ou à la partie de celle-ci ait
+                            agent in that behalf has been given to a                            été donnée par écrit et signée par la
+                            person entitled to receive it or his or her                         personne tenue ou ayant le droit d’en
+                            agent,                                                              effectuer le paiement, ou par son
+               and in that case, no action shall be brought except                              représentant, à une personne y ayant
+               within 10 years after the payment or acknowledgment,                             droit ou à son représentant;
+               or at the last of the payments or acknowledgements, if           dans un tel cas, l’action se prescrit par 10 ans à
+               more than one was made or given.                                 compter de la date de ce paiement ou de cette
+                                                                                reconnaissance, ou du dernier de ces paiements ou de
+                                                                                la dernière de ces reconnaissances, s’il y en a eu
+
+
+                                                                            6
+                                                                                  plusieurs.
+
+Reversion not      (2) In the case of a reversionary interest in land, no              (2) Dans le cas d’un intérêt réversif à l’égard Intérêt
+in possession
+                right to recover the sum of money charged on it shall             d’un bien-fonds, aucun droit de recouvrement de la réversif
+                be deemed to accrue until the interest has fallen into            somme le grevant n’est réputé échoir tant qu’il n’y a
+                possession.                                                       pas possession de l’intérêt réversif.
+Recovery of     12. No proceedings shall be taken to recover any                  12. L’action en recouvrement d’une somme payable Recouvrement
+money
+                sum of money payable under an agreement for the sale              aux termes d’une convention de vente d’un bien-fonds de sommes
+payable                                                                                                                                     payables aux
+on agreement    of land except within 10 years after a present right to           se prescrit par 10 ans à compter de la date à laquelle le termes d’une
+of sale         recover the sum of money accrued to a person entitled             droit immédiat de recouvrer cette somme est échu à convention de
+                to receive it, or capable of giving a release of it, unless       une personne ayant le droit de la recevoir ou étant vente
+                before the expiration of the 10 years                             capable d’en donner quittance, à moins qu’avant
+                     (a)     some part of the sum of money, or some               l’expiration de ce délai de 10 ans :
+                             interest on it, has been paid by a person                        a) une partie de la somme ou des intérêts
+                             bound or entitled to make a payment of it,                           s’y rattachant ait été payée par la
+                             or his or her agent in that behalf, to a                             personne tenue ou ayant le droit d’en
+                             person entitled to receive it or his or her                          effectuer le paiement, ou par son
+                             agent, or                                                            représentant, à une personne ayant ce
+                     (b)     some acknowledgment in writing of the                                droit ou à son représentant;
+                             right to receive the sum of money signed                         b) une reconnaissance écrite du droit de
+                             by the person so bound or entitled, or his                           recevoir cette somme, signée par la
+                             or her agent in that behalf, has been given                          personne ainsi tenue ou ayant ce droit,
+                             to a person entitled to receive the sum of                           ou par son représentant, ait été donnée
+                             money or his or her agent,                                           à une personne ayant le droit de la
+                and in that case, no action shall be brought except                               recevoir ou à son représentant.
+                within 10 years after the payment or acknowledgment,              Dans un tel cas, l’action se prescrit par 10 ans à
+                or the last of the payments or acknowledgments, if                compter de la date de ce paiement ou de cette
+                more than one was made or given.                                  reconnaissance, ou du dernier de ces paiements ou de
+                                                                                  la dernière de ces reconnaissances, s’il y en a
+                                                                                  plusieurs.
+Recovery of     13. (1) No arrears of rent, or of interest in respect             13. (1) L’action en recouvrement d’arriérés de loyer Recouvrement
+rent and
+                of any sum of money to which section 11 or 12 applies             ou d’intérêts portant sur une somme à laquelle de loyer
+interest                                                                                                                                     et d’intérêts
+charged on      or any damages in respect of such arrears shall be                s’applique l’article 11 ou 12, ou de dommages-intérêts grevant un
+land            recovered by any proceeding, except within six years              relatifs à ces arriérés, se prescrit par six ans à compter bien-fonds
+                after a present right to recover it accrued to a person           de la date à laquelle le droit immédiat de les recouvrer
+                capable of giving a discharge for it or a release of it           est échu à une personne capable d’en donner libération
+                unless, before the expiration of the six years                    ou quittance, à moins qu’avant l’expiration de ce délai
+                     (a)    some part of the arrears has been paid by a           de six ans :
+                            person bound or entitled to make a                                 a) une partie de ces arriérés ait été payée
+                            payment of it or his or her agent in that                             par une personne tenue ou ayant le droit
+                            behalf to a person entitled to receive it or                          d’en effectuer le paiement, ou par son
+                            his or her agent, or                                                  représentant, à une personne ayant le
+                     (b)    some acknowledgment in writing of the                                 droit de les recevoir ou à son
+                            right to the arrears signed by a person so                            représentant;
+                            bound or entitled or his or her agent in that                     b) une reconnaissance écrite du droit aux
+                            behalf has been given to a person entitled                            arriérés, signée par la personne ainsi
+                            to receive the arrears or his or her agent,                           tenue ou ayant ce droit, ou par son
+                and in that case, no proceedings shall be taken except                            représentant ait été donnée à une
+                within six years after the payment or acknowledgment,                             personne ayant le droit de la recevoir ou
+                or the last of the payments or acknowledgments, if                                à son représentant.
+                more than one was made or given.                                  Dans un tel cas, la procédure se prescrit par six ans à
+                                                                                  compter de la date de ce paiement ou de cette
+
+
+                                                                              7
+                                                                                 reconnaissance, ou du dernier de ces paiements ou de
+                                                                                 la dernière de ces reconnaissances, s’il y en a eu
+                                                                                 plusieurs.
+
+Exemption         (2) Subsection (1) does not apply to an action for                   (2) Le paragraphe (1) ne s’applique pas à une Exemption
+               redemption or similar proceedings brought by a                    action en extinction d’hypothèque ou à une procédure
+               mortgagor or by any person claiming under the                     semblable intentée par un débiteur hypothécaire ou par
+               mortgagor.                                                        son ayant droit.
+Recovery       14. Where a prior mortgagee has been in possession                14. Lorsqu’un créancier hypothécaire ayant Recouvrement
+where prior
+               of land within one year before an action is brought by            l’antériorité est en possession d’un bien-fonds dans par le
+mortgagee in                                                                                                                             créancier
+possession     a person entitled to a subsequent mortgage on the same            l’année précédant une action intentée par une personne hypothécaire
+               land, the person entitled to the subsequent mortgage              ayant droit à une hypothèque postérieure, cette ayant
+               may recover in that action the arrears of interest that           dernière peut recouvrer dans l’action les arriérés l’antériorité
+               have become due during the whole time the prior                   d’intérêts qui sont arrivés à échéance pendant toute la
+               mortgagee was in such possession or receipt, although             période durant laquelle le créancier hypothécaire ayant
+               that time may have exceeded the term of six years.                l’antériorité est en possession de ce bien-fonds, bien
+                                                                                 que cette période ait pu dépasser le délai de six ans.
+Recovery of    15. (1) No action shall be brought to recover a sum               15. (1) L’action en recouvrement d’une somme ou Recouvrement
+sums secured
+               of money or legacy charged on or payable out of any               d’un legs grevant un bien-fonds ou une rente foncière de sommes
+by express                                                                                                                              garanties par
+trust          land or rent charge, though secured by an express trust,          ou exigibles sur ceux-ci, même s’ils sont garantis par une fiducie
+               or to recover any arrears of rent or of interest in respect       une fiducie explicite, ou en recouvrement des arriérés explicite
+               of a sum of money or legacy so charged or payable or              de loyer ou des intérêts s’y rattachant, ou encore des
+               so secured, or any damages in respect of those arrears,           dommages-intérêts s’y rapportant, ne peut être
+               except within the time within which it would be                   introduite que dans le délai dans lequel il serait
+               recoverable if there were no such trust.                          recouvrable si une telle fiducie n’existait pas.
+Saving            (2) Subsection (1) does not operate so as to affect                  (2) Le paragraphe (1) n’a pas pour effet de Exception
+               any claim of a cestui que trust against his or her trustee        porter atteinte à la demande que présente le
+               for property held on an express trust.                            bénéficiaire de la fiducie à l’encontre de son fiduciaire
+                                                                                 relativement aux biens détenus en vertu d’une fiducie
+                                                                                 explicite.
+
+                                       PART III                                                       PARTIE III
+
+                                        LAND                                                        BIEN-FONDS
+
+                        RIGHT TO TAKE PROCEEDINGS                                                DROIT D’ACTION
+
+Definitions    16.   In this Part,                                               16. Les définitions qui suivent s’appliquent à la Définitions
+                                                                                 présente partie.
+               "claimant" means the person taking the proceedings to
+               recover land where there is no predecessor;                       «demandeur» La personne qui engage une action en
+               (demandeur)                                                       recouvrement d’un bien-fonds lorsqu’il n’y a pas de
+                                                                                 prédécesseur. (claimant)
+               "predecessor" means the person to whom the right to
+               take proceedings to recover land accrues and through              «prédécesseur» La personne à laquelle est échu le
+               whom another person claims. (prédécesseur)                        droit d’introduire une action en recouvrement d’un
+                                                                                 bien-fonds et l’ayant droit du demandeur.
+                                                                                 (predecessor)
+
+
+
+
+                                                                             8
+Land Titles      17. This Part is subject to the Land Titles Act.                  17. Les dispositions de la Loi sur les titres de Loi sur les
+Act
+                 R.S.N.W.T. 1988,c.8(Supp.),s.215.                                 biens-fonds l’emportent sur celles de la présente partie. titres de
+                                                                                                                                             biens-fonds
+                                                                                   L.R.T.N.-O. 1988, ch. 8 (Suppl.), art. 215.
+Recovery         18. No person shall take proceedings to recover any               18. L’action en recouvrement d’un bien-fonds se Recouvrement
+of land                                                                                                                                    d’un
+                 land except                                                       prescrit :
+                                                                                                                                           bien-fonds
+                      (a)   within 10 years after the time at which the                       a) par 10 ans à compter de la date à
+                            right to do so first accrued to the person                           laquelle ce droit est échu initialement à
+                            through whom he or she claims; or                                    son titulaire original;
+                     (b)    if the right did not accrue to such a                             b) si le droit n’est pas échu à un tel
+                            predecessor, then within 10 years after the                          prédécesseur, par 10 ans à compter de la
+                            time at which the right first accrued to the                         date à laquelle le droit est échu
+                            person taking the proceedings.                                       initialement à la personne qui introduit
+                                                                                                 l’action.
+
+                                    SPECIAL CASES                                                  CAS PARTICULIERS
+
+Accrual of       19.     Where                                                     19. Lorsque :                                           Naissance
+right on
+                       (a)    a claimant or a predecessor has in respect                      a) d’une part, un demandeur ou un du droit
+dispossession                                                                                                                              lors de la
+                              of the estate or interest claimed been in                           prédécesseur est, en ce qui concerne le dépossession
+                              possession of the land or in receipt of the                         domaine ou l’intérêt réclamé, en
+                              profits of the land, and                                            possession du bien-fonds ou en reçoit
+                       (b)    while entitled to the possession or receipts                        les profits;
+                              has been dispossessed or has discontinued                       b) d’autre part, alors qu’il a droit à la
+                              the possession or receipt,                                          possession ou la perception des profits,
+                 the right to take proceedings to recover the land shall                          le demandeur ou le prédécesseur est
+                 be deemed to have first accrued at the time of the                               dépossédé du bien-fonds ou cesse de le
+                 dispossession or discontinuance of possession or at the                          posséder ou d’en recevoir les profits,
+                 last time at which any such profits were so received.             le droit d’engager une action en recouvrement du
+                                                                                   bien-fonds est réputé avoir pris naissance à la date de
+                                                                                   cette dépossession ou de cette cessation de possession,
+                                                                                   ou à la dernière date de perception de ces profits.
+Accrual of       20. Where a claimant claims the estate or interest of             20. Lorsque la réclamation du demandeur porte sur Naissance
+right on death
+                 a deceased predecessor who was in possession of the               le domaine ou l’intérêt d’un prédécesseur décédé qui, du droit
+of predecessor                                                                                                                             lors du
+                 land or in receipt of the profits of the land in respect of       au décès, était en possession du bien-fonds en question décès du
+                 the same estate or interest at the time of his or her             ou en recevait les profits, et qui est la dernière prédécesseur
+                 death was the last person entitled to the estate or               personne à avoir ce domaine ou cet intérêt, le droit
+                 interest who was in possession or receipt, the right to           d’engager une action en recouvrement du bien-fonds
+                 take proceedings to recover the land shall be deemed              est réputé avoir pris naissance à la date du décès du
+                 to have first accrued at the time of the death of the             prédécesseur.
+                 predecessor.
+Accrual of       21.    Where                                                      21. Lorsque :                                          Naissance du
+right
+                      (a)     the claimant claims in respect of an estate                   a) la réclamation du demandeur porte sur droit en vertu
+according to                                                                                                                              du transfert
+assurance                     or interest in possession, granted,                              un domaine ou sur un intérêt à l’égard
+                              appointed or otherwise assured to the                            de la possession, cédé, assigné par
+                              claimant or a predecessor by a person                            mandat de désignation ou autrement
+                              being in respect of the estate or interest in                    transféré à lui-même ou à un
+                              the possession of the land or in receipt of                      prédécesseur par une personne qui,
+                              the profits of the land, and                                     quant à ce domaine ou à cet intérêt, était
+                      (b)     no person entitled under the assurance has                       en possession du bien-fonds ou en
+                              been in possession or receipt,                                   recevait les profits;
+                 the right to take proceedings to recover the land shall                    b) aucun ayant droit visé par le transfert
+                 be deemed to have first accrued at the time at which                          n’a été en possession ou n’a reçu les
+
+                                                                               9
+                   the claimant or his or her predecessor became entitled                       profits,
+                   to that possession or receipt by virtue of the assurance.     le droit d’engager une action en recouvrement du
+                                                                                 bien-fonds est réputé avoir pris naissance à la date à
+                                                                                 laquelle le demandeur ou son prédécesseur a acquis le
+                                                                                 droit à la possession ou aux profits en vertu du
+                                                                                 transfert.
+
+Accrual of         22. Where the claimant or the predecessor becomes             22. Lorsque le demandeur ou le prédécesseur Naissance
+right
+                   entitled by reason of forfeiture or breach of condition,      acquiert le droit de recouvrer un bien-fonds en raison du droit
+on forfeiture                                                                                                                           lors de la
+                   then the right to take proceedings to recover the land        d’une déchéance ou de la violation d’une condition, le déchéance
+                   shall be deemed to have first accrued whenever the            droit d’engager une action est réputé avoir pris
+                   forfeiture was incurred or the condition was broken.          naissance au moment où s’est produite la déchéance ou
+                                                                                 la violation de la condition.
+
+                                    FUTURE ESTATES                                               DOMAINES FUTURS
+
+When right         23. Where the estate or interest claimed has been an          23. Lorsque le domaine ou l’intérêt réclamé est un Naissance
+accrues as to
+                   estate or interest in reversion or remainder or other         domaine, un intérêt de réversion, un résidu ou un autre du droit
+future estate                                                                                                                             dans le
+                   future estate or interest, including in it an executory       domaine ou intérêt futur, y compris un legs non réalisé, cas d’un
+                   devise, and no person has obtained the possession of          et que nul n’a obtenu la possession du bien-fonds domaine
+                   the land or is in receipt of the profits of the land in       faisant l’objet du domaine ou de l’intérêt, ou n’a reçu futur
+                   respect of the estate or interest, the right to take          les profits de ce bien-fonds, le droit d’engager une
+                   proceedings to recover the land shall be deemed to            action en recouvrement du bien-fonds est réputé avoir
+                   have first accrued at the time at which the estate or         pris naissance à la date à laquelle le domaine ou
+                   interest became an estate or interest in possession, by       l’intérêt en question est devenu un domaine ou un
+                   the determination of any estate or estates in respect of      intérêt dans la possession, par la résolution de tout
+                   which the land has been held or the profits of the land       domaine en vertu duquel le bien-fonds a été tenu ou les
+                   have been received notwithstanding the claimant or the        profits de ce dernier ont été reçus, bien que le
+                   predecessor has at any time before the creation of the        demandeur ou le prédécesseur ait été, à tout moment
+                   estate or estates that has determined been in the             avant la création du ou des domaines qui ont pris fin,
+                   possession of the land or in receipt of the profits of the    en possession du bien-fonds, ou en ait reçu les profits.
+                   land.
+Proceedings as     24. Where the person last entitled to any particular          24. Lorsque le dernier détenteur d’un domaine Actions
+to future estate
+                   estate on which any future estate or interest was             particulier auquel se rattachait un domaine futur ou un dans le
+                                                                                                                                           cas d’un
+                   expectant was not in possession of the land or in             intérêt en expectative n’est pas en possession du domaine
+                   receipt of the profits of the land at the time when his or    bien-fonds ou n’en reçoit pas les profits à la date de futur
+                   her interest determined, no proceedings to recover the        résolution de son intérêt, l’action en recouvrement du
+                   land shall be taken by any person becoming entitled in        bien-fonds que peut engager une personne qui acquiert
+                   possession to a future estate or interest except within       un droit actuel sur un domaine ou un intérêt futurs se
+                   10 years after the time when the right to take                prescrit par 10 ans à compter de la date à laquelle le
+                   proceedings first accrued to the person whose interest        droit de l’engager est initialement échu à la personne
+                   has so determined, or within five years after the time        dont l’intérêt a ainsi pris fin ou par cinq ans à compter
+                   when the estate of the person becoming entitled in            de la date à laquelle la personne devant acquérir ce
+                   possession has become vested in possession,                   domaine actuel l’acquiert effectivement, selon le plus
+                   whichever of these two periods is the longer.                 long de ces deux délais.
+Where              25. Where the right to take proceedings to recover            25. Lorsque se prescrit le droit d’engager une action Prescription
+proceedings
+                   the land has been barred, no proceedings shall be taken       en recouvrement du bien-fonds, aucune action ne peut du droit
+barred                                                                                                                                    d’engager
+                   by any person afterwards claiming to be entitled to the       être engagée par une personne prétendant par la suite une action
+                   same land in respect of any subsequent estate or              avoir un domaine ou un résidu à l’égard de ce même
+                   interest under any will or assurance executed or taking       bien-fonds, en vertu d’un testament ou d’un transfert
+                   effect after the time when a right to take proceedings        passé ou prenant effet après la date à laquelle le droit
+                   first accrued to the owner of the particular estate           d’engager une procédure est initialement échu au
+                   whose interest has so determined.                             propriétaire du domaine particulier dont l’intérêt a
+
+                                                                                10
+                                                                               ainsi pris fin.
+
+Bar to           26. When the right of a person to take proceedings            26. Lorsque se prescrit, par l’expiration du délai Domaine en
+estate in
+                 to recover land to which the person may have been             applicable en l’espèce, le droit que possède une possession et
+possession and                                                                                                                          droit futur
+future estate    entitled for an estate or interest in possession entitling    personne d’engager une action en recouvrement d’un exclus
+                 the person to take proceedings has been barred by the         bien-fonds à l’égard duquel elle peut avoir eu un
+                 determination of the period that is applicable, and the       domaine ou un intérêt dans la possession lui
+                 person has at any time during that period been entitled       permettant d’engager une action et que cette personne
+                 to any other estate, interest, right or possibility in        a, à tout moment pendant ce délai, droit à tout autre
+                 reversion, remainder or otherwise in or to the same           domaine, intérêt, droit ou possibilité, notamment
+                 land, no proceedings shall be taken by the person or          résiduel ou de réversion, quant au même bien-fonds,
+                 any person claiming through the person to recover the         aucune action ne peut être engagée par cette personne,
+                 land in respect of that other estate, interest, right or      ou par un ayant droit de celle-ci, pour recouvrer le
+                 possibility, unless in the meantime the land has been         bien-fonds faisant l’objet du domaine, de l’intérêt, du
+                 recovered by a person entitled to an estate, interest or      droit ou de la possibilité, à moins que ce bien-fonds
+                 right that has been limited or taken effect after or in       n’ait été recouvré entre-temps par une personne ayant
+                 defeasance of the estate or interest in possession.           droit à un domaine, à un intérêt ou à un droit qui a été
+                                                                               restreint ou qui a pris effet à la suite du domaine ou
+                                                                               intérêt actuel, ou en annulation de ceux-ci.
+Where right of   27. When the right to take proceedings to recover             27. Lorsque le droit d’engager une action en Déchéance
+forfeiture
+                 any land first accrued to a claimant or a predecessor by      recouvrement d’un bien-fonds est initialement échu à non
+not claimed                                                                                                                           invoquée
+                 reason of any forfeiture or breach of condition in            un demandeur ou à un prédécesseur en raison d’une
+                 respect of an estate or interest in reversion or              déchéance ou de la violation d’une condition
+                 remainder and the land has not been recovered by              relativement à un domaine ou à un intérêt de réversion
+                 virtue of that right, the right to take proceedings shall     ou d’un résidu et que le bien-fonds n’a pas été
+                 be deemed to have first accrued at the time when the          recouvré en vertu de ce droit, le droit d’engager une
+                 estate or interest became an estate or interest in            action est réputé avoir pris naissance à la date à
+                 possession.                                                   laquelle le domaine ou l’intérêt est devenu un domaine
+                                                                               ou un intérêt dans la possession.
+
+                             LANDLORD AND TENANT                                           LOCATEUR ET LOCATAIRE
+
+When right       28.     Where                                                 28. Lorsque :                                             Loyer
+accrues where
+                       (a)   a person is in possession of land, or in                      a) une personne est en possession d’un injustement
+rent                                                                                                                                     reçu
+wrongfully                   receipt of the profits of land by virtue of a                    bien-fonds ou en reçoit les profits en
+received                     lease in writing, by which a rent amounting                      vertu d’un bail écrit prévoyant un loyer
+                             to the yearly sum or value of at least $4 is                     d’un montant ou d’une valeur de 4 $ par
+                             reserved,                                                        année ou plus;
+                       (b)   the rent reserved by the lease has been                       b) le loyer prévu par ce bail est reçu par
+                             received by a person wrongfully claiming                         une personne prétendant injustement
+                             to be entitled to the land in reversion                          avoir à l’égard du bien-fonds un droit
+                             immedi a t e l y e x p e c t a n t o n the                       réversif devant suivre immédiatement la
+                             determination of the lease, and                                  résolution du bail;
+                       (c)   no payment in respect of the rent reserved                    c) aucun paiement du loyer prévu par le
+                             by the lease has afterwards been made to                         bail n’est ensuite effectué à la personne
+                             the person rightfully entitled to it,                            y ayant légitimement droit,
+                 the right of the claimant or his or her predecessor to        le droit du demandeur ou de son prédécesseur
+                 take proceedings to recover the land after the                d’engager une action en recouvrement du bien-fonds
+                 determination of the lease shall be deemed to have first      après l’expiration du bail est réputé avoir pris
+                 accrued at the time at which the rent reserved by the         naissance à la date à laquelle le loyer prévu par le bail
+                 lease was first so received by the person wrongfully          est ainsi reçu pour la première fois par la personne
+                 claiming and no such right shall be deemed to have            prétendant injustement y avoir droit, et un tel droit
+                 first accrued on the determination of the lease to the        n’est pas réputé être initialement échu à la personne y
+
+
+                                                                              11
+                person rightfully entitled.                                 ayant légitimement droit lors de l’expiration du bail.
+
+Accrual of      29. Where a person is in possession of land or in           29. Lorsqu’une personne est en possession d’un Naissance
+right
+                receipt of the profits of land as a tenant from year to     bien-fonds ou en reçoit les profits à titre de locataire à du droit et
+where tenant                                                                                                                           location à
+from year to    year, or other period, without a lease in writing, the      l’année ou pour une autre période, sans aucun bail l’année
+year            right of the claimant or his or her predecessor to take     écrit, le droit du demandeur ou de son prédécesseur
+                proceedings to recover the land shall be deemed to          d’engager une action en recouvrement du bien-fonds
+                have first accrued at the determination of the first of     est réputé avoir pris naissance à l’expiration de la
+                such years or other periods, or at the last time, before    première de ces années ou périodes, ou à la dernière
+                his or her right to take proceedings being barred under     date, avant que son droit de l’engager ait été prescrit
+                any other provision of this Act, when any rent payable      en vertu de toute autre disposition de la présente loi, à
+                in respect of the tenancy was received by the claimant      laquelle un loyer exigible relativement à cette location
+                or his or her predecessor or the agent of either,           a été reçu par le demandeur, son prédécesseur ou le
+                whichever happens last.                                     représentant de l’un ou l’autre, si cette dernière date
+                                                                            est postérieure.
+Accrual of      30. (1) Where a person is in possession of land or          30. (1) Lorsqu’une personne est en possession d’un Naissance
+right
+                in receipt of the profits of land as tenant at will, the    bien-fonds ou en reçoit les profits à titre de locataire à du droit et
+where tenancy                                                                                                                          location à
+at will         right of the claimant or his or her predecessor to take     discrétion, le droit du demandeur ou de son discrétion
+                proceedings to recover the land shall be deemed to          prédécesseur d’engager une action en recouvrement de
+                have first accrued either at the determination of the       ce bien-fonds est réputé avoir pris naissance soit à
+                tenancy or at the expiration of one year after its          l’expiration de la location, soit à l’expiration d’une
+                commencement, at which time, if the tenant was then         année après son commencement, date à laquelle la
+                in possession, the tenancy shall be deemed to have          location est réputée avoir pris fin, si le locataire était
+                been determined.                                            alors en possession du bien-fonds.
+Exception           (2) No mortgagor or cestui que trust under an                 (2) Aucun débiteur hypothécaire ou bénéficiaire Exception
+                express trust shall be deemed to be a tenant at will to     d’une fiducie explicite n’est réputé être un locataire à
+                his or her mortgagee or trustee within the meaning of       discrétion de son créancier hypothécaire ou de son
+                this section.                                               fiduciaire au sens du présent article.
+Running of      31. (1) In every case of concealed fraud by the             31. (1) En cas de manoeuvre frauduleuse de la part Absence de
+time where
+                person setting up this Part as a defence, or by some        d’une personne qui invoque la présente partie comme prescription
+fraud                                                                                                                                 en cas de
+concealed       other person through whom that person claims, the           moyen de défense, ou de tout autre ayant droit du manoeuvre
+                right of any person to bring an action for the recovery     demandeur, le droit d’une personne d’intenter une frauduleuse
+                of land of which he or she or any person through            action en recouvrement d’un bienfonds dont
+                whom he or she claims may have been deprived by the         elle-même ou l’ayant droit du demandeur peut avoir
+                fraud shall be deemed to have first accrued at and not      été dépossédé par cette manoeuvre frauduleuse est
+                before the time at which the fraud was or with              réputé avoir pris naissance exactement à la date à
+                reasonable diligence might have been first known or         laquelle cette manoeuvre frauduleuse a d’abord été
+                discovered.                                                 connue ou découverte, ou aurait pu l’être s’il y avait eu
+                                                                            diligence raisonnable.
+Purchaser           (2) Nothing in subsection (1) enables an owner of             (2) Le paragraphe (1) ne permet pas au Acheteur
+                land to bring an action for the recovery of the land, or    propriétaire d’un bien-fonds d’intenter une action en
+                for setting aside a conveyance of the land, on account      recouvrement de ce bien-fonds ou en annulation de son
+                of fraud against a purchaser in good faith for valuable     transfert pour cause de fraude, à l’encontre d’un
+                consideration, who has not assisted in the commission       acheteur de bonne foi et moyennant contrepartie
+                of the fraud, and who, at the time that he or she made      valable, lorsque cet acheteur n’aide pas à commettre la
+                the purchase, did not know, and had no reason to            fraude et lorsqu’à la date à laquelle il fait l’achat, il ne
+                believe, that the fraud had been committed.                 sait pas et n’a aucune raison de croire qu’une telle
+                                                                            fraude a été commise.
+Acknowledg-     32. When an acknowledgment in writing of the title          32. Lorsqu’une reconnaissance écrite du titre de Reconnais-
+ment
+                of a person entitled to any land signed by the person in    propriété d’une personne ayant droit à un bienfonds, sance
+equivalent                                                                                                                              équivalente à
+
+
+                                                                           12
+to possession   possession of the land or in receipt of the profits of the    signée par la personne qui se trouve en possession du une
+                land or his or her agent in that behalf has been given to     bien-fonds ou qui en reçoit les profits, ou par son possession
+                him or her or his or her agent before his or her right to     représentant, a été donnée à l’ayant droit ou à son
+                take proceedings to recover the land having been              représentant avant qu’ait été prescrit par les
+                barred under the provisions of this Act, then the             dispositions de la présente loi son droit d’engager une
+                possession or receipt of or by the person by whom the         action en recouvrement du bien-fonds, la possession
+                acknowledgment was given shall be deemed,                     ou la réception des profits par la personne qui a donné
+                according to the meaning of this Act, to have been the        cette reconnaissance est alors réputée, aux fins de la
+                possession or receipt of or by the person to whom or to       présente loi, avoir été la possession exercée ou la
+                whose agent the acknowledgment was given at the               réception faite par la personne à laquelle, ou au
+                time of giving the acknowledgment, and the right of           représentant de laquelle, cette reconnaissance a été
+                the last mentioned person, or of any person claiming          donnée à la date de sa remise, et le droit de cette
+                through that person, to take proceedings shall be             dernière personne ou de son ayant droit d’engager une
+                deemed to have first accrued at and not before the time       action est réputé avoir pris naissance exactement à la
+                at which the acknowledgment, or at the last of the            date à laquelle a été donnée la reconnaissance ou la
+                acknowledgments, if more than one, was given.                 dernière de ces reconnaissances, s’il y en a eu
+                                                                              plusieurs.
+
+                                       PART IV                                                     PARTIE IV
+
+                           MORTGAGES OF REAL AND                                        HYPOTHÈQUES SUR BIENS
+                             PERSONAL PROPERTY                                         MOBILIERS ET IMMOBILIERS
+
+                                    REDEMPTION                                                      RACHAT
+
+Where           33. (1) When a mortgagee or a person claiming                 33. (1) Lorsqu’un créancier hypothécaire ou son Action en
+mortgagee                                                                                                                              extinction
+                through a mortgagee                                           ayant droit :
+in possession                                                                                                                          d’hypothèque
+barred               (a)    has obtained the possession of any real or                    a) ou bien a obtenu la possession d’un
+                            personal property comprised in a                                 bien mobilier ou immobilier compris
+                            mortgage, or                                                     dans son hypothèque;
+                     (b)    is in receipt of the profits of any land                      b) ou bien reçoit les profits d’un bienfonds
+                            comprised in a mortgage,                                         compris dans cette hypothèque,
+                the mortgagor or any person claiming through the              toute action en extinction de l’hypothèque que peut
+                mortgagor shall not bring any action to redeem the            intenter le débiteur hypothécaire ou son ayant droit se
+                mortgage except within 10 years after the time at             prescrit par 10 ans à compter de la date à laquelle le
+                which the mortgagee or a person claiming through the          créancier hypothécaire a obtenu cette possession ou a
+                mortgagee obtained the possession or first received           reçu pour la première fois ces profits, à moins qu’une
+                any profits unless before the expiration of the 10 years      reconnaissance écrite, signée par le créancier
+                an acknowledgment in writing of the title of the              hypothécaire ou son ayant droit, ou par le représentant
+                mortgagor or of his or her right to redeem is given to        du créancier hypothécaire ou de l’ayant droit, du titre
+                the mortgagor or a person claiming his or her estate or       de propriété du débiteur hypothécaire, ou de son droit
+                interest or to the agent of the mortgagor or person           de rachat, soit donnée au débiteur hypothécaire ou à
+                signed by the mortgagee or the person claiming                une personne réclamant son domaine ou son intérêt, ou
+                through him or her or the agent in that behalf of either      au représentant du débiteur hypothécaire ou de cette
+                of them, in that case, the action shall not be brought        personne. Dans ce cas, toute action se prescrit par 10
+                except within 10 years after the time at which the            ans à compter de la date à laquelle a été donnée cette
+                acknowledgment or the last of the acknowledgments,            reconnaissance ou la dernière des reconnaissances, s’il
+                if more than one, was given.                                  y en a plusieurs.
+More than one      (2) Where there is more than one mortgagor or                    (2) Lorsqu’il existe plusieurs débiteurs Plus d’un
+mortgagor
+                more than one person claiming through the mortgagor           hypothécaires ou plusieurs ayants droit du ou des débiteur
+                                                                                                                                    hypothécaire
+                or mortgagors the acknowledgment, if given to any of          débiteurs hypothécaires, une reconnaissance est aussi
+                the mortgagors or persons or his or her or their agent,       valide, si elle est donnée à l’un des débiteurs
+                shall be as effectual as if the acknowledgment had            hypothécaires ou à l’un des ayants droit, ou à leur
+
+
+                                                                             13
+               been given to all the mortgagors or persons.                     représentant, que si elle avait été donnée à l’ensemble
+                                                                                des débiteurs hypothécaires ou ayants droit.
+
+Acknowledg-        (3) Where there is more than one mortgagee or                      (3) Lorsqu’il existe plusieurs créanciers Plus d’un
+ments to one
+               more than one person claiming the estate or interest of          hypothécaires ou plusieurs personnes réclamant le créancier
+where more                                                                                                                                hypothécaire
+than one       the mortgagee or mortgagees, an acknowledgment                   domaine ou l’intérêt du ou des créanciers
+mortgagee      signed by one or more of the mortgagees or persons or            hypothécaires, une reconnaissance signée par l’un ou
+               his or her or their agent in that behalf shall be effectual      plusieurs de ces créanciers hypothécaires ou par l’une
+               only as against the party or parties signing, and the            ou plusieurs de ces personnes, ou par le représentant
+               person or persons claiming any part of the mortgage              d’un ou plusieurs de ces créanciers hypothécaires ou
+               money or property by, through or under him or her or             d’une ou plusieurs de ces personnes n’est valide qu’à
+               them, and any person or persons entitled to any estate           l’égard de la partie ou des parties signataires, de la ou
+               or estates, interest or interests, to take effect after or in    des personnes réclamant une partie de l’argent ou des
+               defeasance of his or her or their estate or estates,             biens garantis par l’hypothèque comme ayant droit de
+               interest or interests and shall not operate to give to the       l’un ou de plusieurs d’entre eux, et de toute personne
+               mortgagor or mortgagors a right to redeem the                    ayant droit à un domaine ou à un intérêt devant
+               mortgage as against the person or persons entitled to            prendre effet à la suite de leurs domaines ou de leurs
+               any undivided or divided part of the money or                    intérêts, ou à l’annulation de ceux-ci. Cette
+               property.                                                        reconnaissance ne peut avoir pour effet de donner au
+                                                                                débiteur hypothécaire ou aux débiteurs hypothécaires
+                                                                                un droit d’extinction d’hypothèque en ce qui concerne
+                                                                                la ou les personnes ayant droit à une partie indivise ou
+                                                                                divise de l’argent ou des biens.
+Where              (4) Where the mortgagees or persons mentioned in                    (4) Lorsque les créanciers hypothécaires ou les Propriété
+property
+               this section who have given an acknowledgment are                personnes mentionnées dans le présent article qui ont divise
+divided
+               entitled to a divided part of the property comprised in          donné la reconnaissance ont droit à une partie divise
+               the mortgage or some estate or interest in the property,         du bien compris dans l’hypothèque, ou à un domaine
+               and not to any ascertained part of the mortgage money,           ou à un intérêt à l’égard de celui-ci, et non à l’égard
+               the mortgagor or mortgagors are entitled to redeem the           d’une partie déterminée de la somme garantie par
+               same divided part of the property on payment with                l’hypothèque, le ou les débiteurs hypothécaires ont le
+               interest of the part of the mortgage money that bears            droit, selon le cas, de racheter la même partie divise du
+               the same proportion to the whole of the mortgage                 bien sur paiement de la partie de la somme garantie par
+               money as the value of the divided part of the property           l’hypothèque, augmentée des intérêts, qui est à
+               bears to the value of the whole of the property                  l’ensemble de cette somme ce que la valeur de la part
+               comprised in the mortgage.                                       divise du bien est à l’ensemble du bien compris dans
+                                                                                l’hypothèque.
+
+                             FORECLOSURE OR SALE                                             FORCLUSION OU VENTE
+
+Foreclosure    34. No mortgagee or person claiming through a                    34. L’action en forclusion ou en vente aux enchères Forclusion
+or sale
+               mortgagee shall take proceedings for the foreclosure or          prévue par une hypothèque de biens mobiliers ou ou vente
+               sale under a mortgage of real or personal property or            immobiliers, ou l’action en recouvrement de biens
+               to recover the property mortgaged except within 10               hypothéqués, que peut engager un créancier
+               years after the right to take the proceedings first              hypothécaire ou son ayant droit se prescrit par 10 ans
+               accrued to the mortgagee, or if the right did not accrue         à compter de la date à laquelle le droit de l’engager est
+               to the mortgagee, then within 10 years after the right           initialement échu au créancier hypothécaire ou, si le
+               first accrued to a person claiming through the                   droit n’est pas échu au créancier hypothécaire, par 10
+               mortgagee.                                                       ans à compter de la date à laquelle le droit est échu
+                                                                                pour la première fois à l’ayant droit du créancier
+                                                                                hypothécaire.
+Payment or     35. When any person bound or entitled to make                    35. Lorsqu’une personne tenue ou ayant le droit Paiement ou
+acknowledg-
+               payment of the principal money or interest secured by            d’effectuer le paiement du principal ou de l’intérêt reconnaissance
+ment by                                                                                                                               par le débiteur
+               a mortgage of real or personal property, or his or her           garanti par une hypothèque sur des biens mobiliers ou
+
+                                                                               14
+person           agent in that behalf, at any time before the expiration      immobiliers, ou son représentant autorisé à cet égard,
+bound or
+                 of 10 years after the accrual of the right to take           à tout moment avant l’expiration du délai de 10 ans à
+entitled
+                 proceedings for foreclosure or sale or to take               compter de la naissance du droit d’engager une action
+                 proceedings to recover the property, pays any part of        en forclusion ou en vente, ou en recouvrement des
+                 the money or interest to a person entitled to receive it,    biens hypothéqués, paie une partie de ce principal ou
+                 or his or her agent, the right to take proceedings shall     de cet intérêt à une personne ayant le droit de les
+                 be deemed to have first accrued                              recevoir, ou à son représentant, le droit d’engager
+                      (a)    at and not before the time at which the          l’action est réputé avoir pris naissance :
+                             payment of the last of the payments, if                      a) pour la première fois exactement à la
+                             more than one, was made; or                                      date à laquelle le paiement ou le dernier
+                      (b)    if any acknowledgment of the nature                              des paiements, s’il y en a plusieurs, est
+                             described in section 32 was given at any                         effectué;
+                             time before the expiration of 10 years after                 b) si une reconnaissance, au sens de
+                             the accrual of the right to take proceedings,                    l’article 32, a été donnée avant
+                             then at the time at which the                                    l’expiration du délai de 10 ans à
+                             acknowledgment or the last of the                                compter de la naissance du droit
+                             acknowledgments, if more than one, was                           d’engager l’action, à la date à laquelle
+                             given.                                                           la reconnaissance, ou la dernière des
+                                                                                              reconnaissances, s’il y en a plusieurs,
+                                                                                              est donnée.
+
+                                        PART V                                                      PARTIE V
+
+                    AGREEMENTS FOR THE SALE OF LAND                               CONVENTIONS DE VENTE DE BIEN-FONDS
+
+Purchaser        36. (1) No purchaser of land, or any person                  36. (1) L’action que peut intenter l’acheteur d’un Acheteur
+of land
+                 claiming through him or her, shall bring an action in        bien-fonds, ou son ayant droit, relativement à la d’un
+                                                                                                                                     bien-fonds
+                 respect of the agreement for the sale of the land except     convention de vente du bien-fonds se prescrit :
+                      (a)    within 10 years after the right to bring the               a) soit par 10 ans à compter de la date à
+                             action first accrued to the purchaser; or                     laquelle le droit de l’intenter est échu
+                      (b)    if the right did not accrue to the purchaser,                 initialement à l’acheteur;
+                             then within 10 years after the right first                 b) soit par 10 ans à compter de la date à
+                             accrued to a person claiming through the                      laquelle le droit est échu initialement à
+                             purchaser.                                                    un ayant droit de l’acheteur.
+When rights of      (2) When any person bound or entitled to make                   (2) Lorsqu’une personne tenue ou ayant le droit Naissance des
+purchaser
+                 payment of the purchase money, or his or her agent in        d’effectuer le paiement du prix d’achat, ou son droits de
+accrue                                                                                                                                  l’acheteur
+                 that behalf, at any time before the expiration of 10         représentant, avant l’expiration du délai de 10 ans à
+                 years after the accrual of the right to bring the action,    compter de la naissance du droit d’intenter l’action,
+                 pays any part of the money payable under the                 paie une partie de la somme due en vertu de la
+                 agreement of sale to a person entitled to receive it, or     convention de vente à une personne ayant le droit de la
+                 his or her agent, or if any acknowledgment in writing        recevoir, ou à son représentant, ou lorsqu’une
+                 of the right of the purchaser or person claiming             reconnaissance écrite du droit foncier de l’acheteur ou
+                 through the purchaser to the land, or to make those          de son ayant droit, ou une reconnaissance écrite de leur
+                 payments, was given before the expiration of the 10          droit d’effectuer ce paiement, a été donnée avant
+                 years to the purchaser or person claiming through the        l’expiration de ce délai de 10 ans à l’acheteur ou à son
+                 purchaser, or to the agent of the purchaser or person,       ayant droit, ou au représentant de cet acheteur ou de
+                 signed by the vendor or the person claiming through          cet ayant droit, cette reconnaissance étant signée par le
+                 the vendor or the agent in that behalf of either of them,    vendeur, par son ayant droit ou par leur représentant,
+                 then the right to take proceedings shall be deemed to        le droit d’engager une action est alors réputé avoir pris
+                 have first accrued                                           naissance :
+                      (a)    at the time at which the payment or the last                 a) soit à la date à laquelle le paiement, ou
+                             of the payments, if more than one, was                           le dernier paiement s’il y en a eu
+                             made; or                                                         plusieurs, est effectué;
+
+
+                                                                             15
+                       (b)   at the time at which the acknowledgment                      b) soit à la date à laquelle la
+                             or the last of the acknowledgments, if more                     reconnaissance, ou la dernière des
+                             than one, was given.                                            reconnaissances, s’il y en a plusieurs,
+                                                                                             est donnée.
+
+Vendor of        37. No vendor of land or person claiming through              37. L’action en annulation, en résiliation, ou en Vendeur d’un
+land
+                 him or her shall take proceedings for cancellation,           rescision de la convention de vente du bien-fonds, ou bien-fonds
+                 determination or rescission of the agreement for the          l’action en forclusion ou en vente aux termes de cette
+                 sale of the land, or for foreclosure or sale under the        convention, ou l’action en recouvrement du
+                 agreement or to recover the land, except                      bien-fonds, que peut engager le vendeur d’un
+                      (a)    within 10 years after the right to take the       bien-fonds ou son ayant droit se prescrivent :
+                             proceedings first accrued to the vendor; or                   a) soit par 10 ans à compter de la date à
+                      (b)    if the right did not accrue to the vendor,                       laquelle le droit d’engager une telle
+                             then within 10 years after the right first                       action est échu initialement au vendeur;
+                             accrued to a person claiming through the                     b) soit, si le droit n’est pas échu à ce
+                             vendor.                                                          dernier, par 10 ans à compter de la date
+                                                                                              à laquelle le droit est échu initialement
+                                                                                              à un ayant droit du vendeur.
+When rights of   38. When any person bound or entitled to make                 38. Lorsqu’une personne tenue ou ayant le droit Naissance
+vendor accrue
+                 payment of the purchase money, or his or her agent in         d’effectuer le paiement du prix d’achat, ou son des droits
+                                                                                                                                        du vendeur
+                 that behalf, at any time before the expiration of 10          représentant, à tout moment avant l’expiration du délai
+                 years after the accrual of the right to take the              de 10 ans à compter de la naissance du droit d’engager
+                 proceedings mentioned in section 37, pays any part of         l’action mentionné à l’article 37 paie une partie de la
+                 the money payable under the agreement of sale to a            somme due aux termes de la convention de vente à une
+                 person entitled to receive it, or his or her agent, or if,    personne ayant le droit de la recevoir, ou à son
+                 at any time before the expiration of the 10 years, any        représentant, ou lorsque, avant l’expiration de ce délai
+                 acknowledgment in writing of the right of the vendor          de 10 ans, une reconnaissance écrite du droit du
+                 or person claiming through the vendor to the land, or         vendeur ou de son ayant droit au bien-fonds ou à la
+                 to receive the payment, was given to the vendor or            réception du paiement est donnée au vendeur, à son
+                 person claiming through the vendor, or to the agent of        ayant droit ou à leur représentant, cette reconnaissance
+                 the vendor or person, signed by the purchaser or the          étant signée par l’acheteur, par son ayant droit ou par
+                 person claiming through the purchaser or the agent in         leur représentant, le droit d’engager une action est
+                 that behalf of either of them, then the right to take         alors réputé avoir pris naissance :
+                 proceedings shall be deemed to have first accrued                         a) soit exactement à la date à laquelle le
+                      (a)    at, and not before, the time at which the                        paiement, ou le dernier des paiements,
+                             payment or last of the payments, if more                         s’il y en a eu plusieurs, est effectué;
+                             than one, was made; or                                        b) soit à la date à laquelle la
+                      (b)    at the time at which the acknowledgment,                         reconnaissance, ou la dernière des
+                             or last of the acknowledgments, if more                          reconnaissances, s’il y en a eu
+                             than one, was given.                                             plusieurs, est donnée.
+
+                                        PART VI                                                     PARTIE VI
+
+                         CONDITIONAL SALES OF GOODS                                VENTES CONDITIONNELLES DE BIENS
+
+Definitions      39.    In this Part,                                          39. Les définitions qui suivent s’appliquent à la Définitions
+                                                                               présente partie.
+                 "buyer" means the person who buys or hires goods by
+                 a conditional sale; (acheteur)                                «acheteur» La personne qui achète ou loue des objets
+                                                                               par vente conditionnelle. (buyer)
+                 "conditional sale" means
+                     (a)    a contract for the sale of goods under             «biens» Tous les biens mobiliers, à l’exclusion des
+                            which possession is or is to be delivered to       choses non possessoires ou de l’argent. S’entend
+
+
+                                                                              16
+                          the buyer and the property in the goods is         également des emblavures, des récoltes industrielles
+                          to vest in the buyer at a subsequent time on       sur pied ou des choses qui sont attachées au bien-fonds
+                          payment of the whole or part of the price          ou en font partie intégrante, dont il est convenu
+                          or the performance of any other condition,         qu’elles seront séparées avant la vente ou aux termes
+                          or                                                 du contrat de vente. (goods)
+                   (b)    a contract for the hiring of goods by which
+                          it is agreed that the hirer shall become, or       «vendeur» La personne qui vend ou donne à louer des
+                          have the option of becoming, the owner of          biens par vente conditionnelle. (seller)
+                          the goods on full compliance with the
+                          terms of the contract;                (vente       «vente conditionnelle» Selon le cas :
+                          conditionnelle)                                              a) un contrat de vente de biens en vertu
+                                                                                           duquel la possession est ou doit être
+              "goods" means all chattels personal other than things                        transmise à l’acheteur, et la propriété de
+              in action or money, and includes emblements,                                 ces biens doit lui être dévolue à une
+              industrial growing crops, and things attached to or                          date ultérieure sur paiement de tout ou
+              forming part of the land that are agreed to be severed                       partie du prix ou sur exécution d’une
+              before sale or under the contract of sale; (biens)                           autre condition;
+                                                                                       b) un contrat de location de biens aux
+              "seller" means the person who sells or lets to hire                          termes duquel il est convenu que le
+              goods by a conditional sale. (vendeur)                                       locataire deviendra ou aura la faculté de
+                                                                                           devenir le propriétaire des biens après
+                                                                                           avoir satisfait entièrement aux
+                                                                                           conditions du contrat. (conditional
+                                                                                           sale)
+
+Rights of     40. No seller shall take proceedings for the sale of or        40. L’action en recouvrement de biens visés par une Droit du
+seller
+              to recover any goods the subject of a conditional sale         vente conditionnelle qu’un vendeur peut engager se vendeur
+              except                                                         prescrit :
+                   (a)    within 10 years after the right to take the                   a) soit par 10 ans à compter de la date à
+                          proceedings first accrued to the seller; or                      laquelle le droit d’engager l’action est
+                   (b)    if the right did not accrue to the seller, then                  échu initialement au vendeur;
+                          within 10 years after the right first accrued                 b) soit si le droit n’est pas échu à ce
+                          to a person claiming through the seller.                         dernier, par 10 ans à compter de la date
+                                                                                           à laquelle ce droit est échu initialement
+                                                                                           à un ayant droit du vendeur.
+When rights   41. When any person bound or entitled to make                  41. Lorsqu’une personne tenue ou ayant le droit Naissance
+accrue
+              payment of the price, or his or her agent in that behalf,      d’effectuer le paiement du prix, ou son représentant, à des droits
+              at any time before the expiration of 10 years after the        tout moment avant l’expiration du délai de 10 ans à
+              accrual of the right to take the proceedings pays any          compter de la naissance du droit d’engager l’action
+              part of the price or interest to a person entitled to          paie une partie du prix ou de l’intérêt à une personne
+              receive it, or his or her agent, or if at any time before      ayant le droit de le recevoir, ou à son représentant, ou
+              the expiration of the 10 years, any acknowledgment in          lorsque, avant l’expiration de ce délai de 10 ans, une
+              writing of the right of the seller or person claiming          reconnaissance écrite du droit du vendeur ou de son
+              through the seller to the goods or to receive the              ayant droit aux biens ou à la réception du paiement a
+              payment was given to the seller or person claiming             été donnée au vendeur ou à son ayant droit, cette
+              through the seller signed by the buyer or the person           reconnaissance étant signée par l’acheteur, par son
+              claiming through the buyer, or the agent in that behalf        ayant droit ou par leur représentant autorisé à cet
+              of either of them, then the right to take proceedings          égard, le droit d’engager l’action est alors réputé avoir
+              shall be deemed to have first accrued                          pris naissance :
+                   (a)     at, and not before, the time at which the                     a) soit exactement à la date à laquelle le
+                           payment or last of the payments, if more                          paiement, ou le dernier des paiements,
+                           than one, was made; or                                            s’il y en a eu plusieurs, est effectué;
+                   (b)     at the time at which the acknowledgment,                      b) soit à la date à laquelle la
+
+
+                                                                            17
+                              or last of the acknowledgments, if more                           reconnaissance, ou la dernière des
+                              than one, was given.                                              reconnaissances, s’il y en a eu
+                                                                                                plusieurs, est donnée.
+
+                                         PART VII                                                     PARTIE VII
+
+                                         GENERAL                                            DISPOSITIONS GÉNÉRALES
+
+Possession        42. (1) No person shall be deemed to have been in              42. (1) Nul n’est réputé être en possession d’un Possession
+of land
+                  possession of land, within the meaning of this Act,            bien-fonds, au sens de la présente loi, du simple fait d’un
+                                                                                                                                        bien-fonds
+                  merely by reason of having made an entry on the land.          qu’il en a pris possession.
+Claim on land        (2) No continual or other claim on or near any land               (2) Nulle revendication continuelle ou autre Revendication
+                  preserves any right of making any entry or distress or         d’un bien-fonds ou de ses environs ne garantit le droit d’un
+                                                                                                                                         bien-fonds
+                  bringing an action.                                            de procéder à une prise de possession ou à une saisie,
+                                                                                 ou d’intenter une action.
+Receipt of rent      (3) The receipt of the rent payable by a tenant at                (3) La perception du loyer payable par un Perception
+as profits
+                  will, tenant from year to year or other lessee, shall, as      locataire à discrétion, par un locataire à l’année ou un du loyer
+                                                                                                                                          constituant
+                  against that lessee or any person claiming under him or        autre preneur à bail est, en ce qui concerne ce preneur une perception
+                  her, but subject to the lease, be deemed to be the             à bail ou son ayant droit, mais sous réserve du bail, des profits
+                  receipt of the profits of the land for the purposes of this    réputée constituer la perception des profits du
+                  Act.                                                           bien-fonds aux fins de la présente loi.
+Extinguish-       43. At the determination of the period limited by this         43. L’expiration du délai que la présente loi accorde Extinction
+ment
+                  Act, to any person for taking proceedings to recover           à une personne pour engager une action en du droit
+of right
+                  any land, rent charge or money charged on land, the            recouvrement d’un bien-fonds, d’une rente foncière ou
+                  right and title of that person to the land, or rent charge     d’une somme grevant un bien-fonds entraîne
+                  or the recovery of the money out of the land is                l’extinction du droit et du titre de propriété de cette
+                  extinguished.                                                  personne sur ce bien-fonds ou sur cette rente foncière,
+                                                                                 et l’extinction du droit au recouvrement de la somme
+                                                                                 grevant le bien-fonds.
+Administrator     44. For the purpose of Parts II to IV, an                      44. Pour l’application des parties II à IV, la personne Adminis-
+                  administrator claiming the estate or interest of the           réclamant le domaine ou l’intérêt d’une personne ateur
+                  deceased person of whose property he or she has been           décédée à l’égard des biens dont elle a été nommée
+                  appointed administrator, shall be deemed to claim as if        administrateur est réputé les réclamer comme s’il n’y
+                  there had been no interval of time between the death of        avait eu aucun intervalle entre le décès de cette
+                  the deceased person and the grant of the letters of            personne et l’octroi des lettres d’administration.
+                  administration.
+Persons under     45. (1) When at the time at which the right to take            45. (1) Si une personne est frappée d’incapacité au Incapables
+disability
+                  any proceedings referred to in Part II, III or IV first        moment où le droit d’engager une action visée à la
+                  accrued to a person, the person was under disability,          partie II, III ou IV lui est initialement échu, cette
+                  the person or a person claiming through him or her             personne ou son ayant droit peut, par dérogation à la
+                  may, notwithstanding anything in this Act, take                présente loi, engager l’action à tout moment dans les
+                  proceedings at any time within six years after the             six ans qui suivent la date à laquelle la personne à
+                  person to whom the right first accrued first ceased to         laquelle le droit est initialement échu cesse d’être
+                  be under disability or died, whichever event first             incapable ou décède selon le premier événement à
+                  happened, except that if he or she died without ceasing        survenir. Cependant, si elle décède étant toujours
+                  to be under disability, no further time to take                frappée d’incapacité, aucun délai supplémentaire pour
+                  proceedings shall be allowed, by reason of the                 engager une action ne peut être accordé en raison de
+                  disability of any other person.                                l’incapacité d’une autre personne.
+Ultimate limit       (2) Notwithstanding subsection (1), no proceedings               (2) Par dérogation au paragraphe (1), toute Délai
+                                                                                                                                          ultime
+
+
+                                                                                18
+                shall be taken by a person under disability at the time        action susceptible d’être engagée par une personne qui
+                the right to do so first accrued to the person or by any       est frappée d’incapacité au moment où son droit de
+                person claiming through him or her, except within 30           l’engager prend naissance ou par son ayant droit se
+                years after that time.                                         prescrit par 30 ans à compter de la date à laquelle ce
+                                                                               droit prend naissance.
+
+Return to       46. In respect of a cause of action as to which the            46. Dans le cas d’actions à l’égard desquelles une Retour
+Territories
+                time for taking proceedings is limited by this Act other       prescription est établie par la présente loi, sauf celles dans les
+                                                                                                                                         territoires
+                than those mentioned in paragraphs 2(1)(a) or (b), if a        mentionnées à l’alinéa 2(1)a) ou b), lorsqu’une
+                person is out of the Territories at the time a cause of        personne se trouve à l’extérieur des territoires au
+                action against that person arises within the Territories,      moment où prend naissance dans les territoires une
+                the person entitled to the action may bring the action         cause d’action contre elle, la personne ayant le droit
+                within two years after the return of the person to the         d’intenter une action peut le faire dans un délai de
+                Territories or within the time otherwise limited by this       deux ans à compter du retour dans les territoires de la
+                Act for bringing the action.                                   personne susmentionnée ou dans le délai que prescrit
+                                                                               la présente loi.
+Joint debtors   47. (1) Where a person has a cause of action                   47. (1) Une personne ayant une cause d’action à Débiteurs
+within
+                against joint debtors, joint contractors, joint obligors or    l’encontre de débiteurs, contractants, obligés ou conjoints
+Territories                                                                                                                            dans les
+                joint covenantors, the person is not entitled to any time      auteurs d’engagements conjoints ne peut bénéficier territoires
+                within which to commence the action against such of            d’un délai de prescription supplémentaire pour intenter
+                them as were within the Territories at the time the            une action contre ceux d’entre eux qui se trouvaient
+                cause of action accrued by reason only that one or             dans les territoires au moment où la cause d’action a
+                more of them was at that time out of the Territories.          pris naissance pour le seul motif que l’un ou plusieurs
+                                                                               d’entre eux se trouvaient à ce moment à l’extérieur des
+                                                                               territoires.
+Joint debtors      (2) A person having a cause of action referred to in              (2) Il ne peut être interdit à une personne Débiteurs
+who return
+                subsection (1) is not barred from commencing an                possédant une cause d’action mentionnée au conjoints à
+from outside                                                                                                                            l’extérieur des
+Territories     action against a joint debtor, joint contractor, joint         paragraphe (1) d’intenter une action contre un débiteur territoires
+                obligor or joint covenantor who was out of the                 conjoint, un contractant conjoint, un obligé conjoint ou
+                Territories at the time the cause of action accrued, after     l’auteur d’un engagement conjoint qui se trouvait à
+                his or her return to the Territories by reason only that       l’extérieur des territoires au moment où la cause
+                judgment has been already recovered against such of            d’action a pris naissance après son retour pour le seul
+                the joint debtors, joint contractors, joint obligors or        motif qu’un jugement a déjà été obtenu contre ceux
+                joint covenantors as were at that time within the              des débiteurs conjoints, des contractants conjoints, des
+                Territories.                                                   obligés conjoints ou des auteurs de l’engagement qui
+                                                                               se trouvaient dans les territoires à cette époque.
+
+
+
+
+                                                                              19
+Right to       48. No right to the access and use of light or any        48. Nul ne peut acquérir par prescription le droit Acquisition
+certain
+               other easement, right in gross or profit à prendre is     d’accès à la lumière ou d’usage de celle-ci, toute autre du droit à
+uses by                                                                                                                           certains
+prescription   acquired by any person by prescription and no such        servitude, un droit indépendant ou un profit à prendre, usages par
+               right shall be deemed to have been so acquired before     et aucun droit de cette nature ne peut être réputé avoir prescription
+               April 15, 1948.                                           été acquis de cette façon avant le 15 avril 1948.
+Refusing       49. Nothing in this Act shall be construed to             49. La présente loi n’a pas pour effet d’empêcher Acquiesce-
+relief in
+               interfere with any rule of equity in refusing relief on   l’application d’une règle d’equity lorsqu’un ment
+acquiescence
+               the ground of acquiescence, or otherwise, to any          redressement est refusé, notamment pour cause
+               person whose right to bring an action is not barred by    d’acquiescement, à une personne dont le droit
+               virtue of this Act.                                       d’intenter une action n’est pas prescrit aux termes de
+                                                                         la présente loi.
+Urea           50. Notwithstanding any of the provisions of this         50. Par dérogation aux autres dispositions de la Urée-
+formaldehyde
+               Act, any action in respect of the installation of urea    présente loi, toute action relative à l’installation de formaldéhyde
+               formaldehyde and the effects of it against a              l’urée-formaldéhyde ou à ses effets, intentée contre un
+               manufacturer, installer or other party must be            fabricant, un installateur ou une autre partie, doit être
+               commenced on or before December 31, 1985, or              introduite à la plus tardive des dates suivantes : soit au
+               within six years after the date of installation,          plus tard le 31 décembre 1985, soit dans les six ans de
+               whichever date is later.                                  la date d’installation.
+
+
+
+
+                                                                           20
+              TABLE OF CONTENTS                                 TABLE DES MATIÈRES
+
+                INTERPRETATION                                         DÉFINITIONS
+
+Definitions                                    1        Définitions
+
+                       PART I                                           PARTIE I
+
+              LIMITATION PERIODS                             DÉLAIS DE PRESCRIPTION
+
+               SPECIFIED ACTIONS                             ACTIONS PARTICULIÈRES
+
+Limitation periods                             2   (1) Délais de prescription
+Exception                                          (2) Exception
+Definition of "action"                         2.1 (1) Définition de «action»
+No limitation period for sexual assault in             Aucun délai de prescription pour les agressions
+ certain situations                                (2) sexuelles dans certains cas
+Other limitation period does not start until       (3) Début de l’autre période de prescription
+ person capable of commencing action
+Presumption                                        (4) Présomption
+Prior limitation periods do not apply              (5) Délais de prescription antérieurs ne
+                                                        s’appliquent pas
+Concealed fraud                                3       Manoeuvre frauduleuse
+Item in account                                4       Article d’un compte
+Foreign limitation does not apply              4.1     La loi des territoires s’applique
+
+                   DISABILITIES                                       INCAPACITÉS
+
+Person under disability                        5        Incapables
+
+          ACKNOWLEDGMENTS AND                                 RECONNAISSANCES ET
+              PART PAYMENT                                     PAIEMENT PARTIEL
+
+Subsequent acts                                6    (1) Actes subséquents
+Effect of written acknowledgment                    (2) Effet d’une reconnaissance écrite
+Joint contractors and covenantors              7        Contractants et débiteurs liés conjointement
+Recovery against those acknowledging           8        Recouvrement contre les débiteurs conjoints
+Endorsements of payments                       9        Endossement des bénéficiaires
+Counterclaim and set-off                       10       Demande reconventionnelle
+
+                       PART II                                         PARTIE II
+
+               CHARGES ON LAND                               CHARGES GREVANT UN
+                 AND LEGACIES                                BIEN-FONDS ET UN LEGS
+
+Recovery of money charged on land              11   (1) Recouvrement de sommes grevant un
+                                                          bien-fonds
+Reversion not in possession                         (2) Intérêt réversif
+Recovery of money payable on                            Recouvrement de sommes payables aux termes
+ agreement of sale                             12        d’une convention de vente
+Recovery of rent and interest charged                   Recouvrement de loyer et d’intérêts grevant un
+ on land                                       13   (1) bien-fonds
+Exemption                                           (2) Exemption
+Recovery where prior mortgagee                          Recouvrement par le créancier hypothécaire
+
+                                                        21
+ in possession                              14        ayant l’antériorité
+Recovery of sums secured by express trust   15   (1) Recouvrement de sommes garanties par une
+                                                      fiducie explicite
+Saving                                           (2) Exception
+
+                      PART III                                       PARTIE III
+
+                       LAND                                         BIEN-FONDS
+
+         RIGHT TO TAKE PROCEEDINGS                               DROIT D’ACTION
+
+Definitions                                 16         Définitions
+Land Titles Act                             17         Loi sur les titres de biens-fonds
+Recovery of land                            18         Recouvrement d’un bien-fonds
+
+                   SPECIAL CASES                               CAS PARTICULIERS
+
+Accrual of right on dispossession           19         Naissance du droit lors de la dépossession
+Accrual of right on death of predecessor    20         Naissance du droit lors du décès du
+                                                        prédécesseur
+Accrual of right according to assurance     21         Naissance du droit en vertu du transfert
+Accrual of right on forfeiture              22         Naissance du droit lors de la déchéance
+
+                FUTURE ESTATES                                 DOMAINES FUTURS
+
+When right accrues as to future estate      23         Naissance du droit dans le cas d’un domaine
+                                                         futur
+Proceedings as to future estate             24         Actions dans le cas d’un domaine futur
+Where proceedings barred                    25         Prescription du droit d’engager une action
+Bar to estate in possession and future      26         Domaine en possession et droit futur exclus
+  estate
+Where right of forfeiture not claimed       27         Déchéance non invoquée
+
+           LANDLORD AND TENANT                              LOCATEUR ET LOCATAIRE
+
+When right accrues where rent               28         Loyer injustement reçu
+ wrongfully received
+Accrual of right where tenant from          29         Naissance du droit et location à l’année
+ year to year
+Accrual of right where tenancy at will      30   (1) Naissance du droit et location à discrétion
+Exception                                        (2) Exception
+Running of time where fraud concealed       31   (1) Absence de prescription en cas de manoeuvre
+                                                      frauduleuse
+Purchaser                                        (2) Acheteur
+Acknowledgment equivalent to possession     32       Reconnaissance équivalente à une possession
+
+                      PART IV                                        PARTIE IV
+
+          MORTGAGES OF REAL AND                           HYPOTHÈQUES SUR BIENS
+            PERSONAL PROPERTY                            MOBILIERS ET IMMOBILIERS
+
+                   REDEMPTION                                         RACHAT
+
+Where mortgagee in possession barred        33   (1) Action en extinction d’hypothèque
+More than one mortgagor                          (2) Plus d’un débiteur hypothécaire
+Acknowledgments to one where more                (3) Plus d’un créancier hypothécaire
+ than one mortgagee
+Where property divided                           (4)
+
+
+                                                       22
+            FORECLOSURE OR SALE                                Propriété divise
+
+Foreclosure or sale                                 34               FORCLUSION OU VENTE
+Payment or acknowledgment by person                 35
+ bound or entitled                                             Forclusion ou vente
+                                                               Paiement ou reconnaissance par le débiteur
+                       PART V
+
+             AGREEMENTS FOR THE                                              PARTIE V
+                SALE OF LAND
+                                                                    CONVENTIONS DE VENTE
+Purchaser of land                                   36   (1)           DE BIEN-FONDS
+When rights of purchaser accrue                          (2)
+Vendor of land                                      37         Acheteur d’un bien-fonds
+When rights of vendor accrue                        38         Naissance des droits de l’acheteur
+                                                               Vendeur d’un bien-fonds
+                      PART VI                                  Naissance des droits du vendeur
+
+       CONDITIONAL SALES OF GOODS                                            PARTIE VI
+
+                                                                    VENTES CONDITIONNELLES
+Definitions                                         39                      DE BIENS
+Rights of seller                                    40
+When rights accrue                                  41         Définitions
+                                                               Droit du vendeur
+                      PART VII                                 Naissance des droits
+
+                     GENERAL                                                PARTIE VII
+
+Possession of land                                  42   (1)     DISPOSITIONS GÉNÉRALES
+Claim on land                                            (2)
+Receipt of rent as profits                               (3) Possession d’un bien-fonds
+                                                             Revendication d’un bien-fonds
+Extinguishment of right                             43       Perception du loyer constituant une perception
+Administrator                                       44         des profits
+Persons under disability                            45   (1) Extinction du droit
+Ultimate limit                                           (2) Administrateur
+Return to Territories                               46       Incapables
+Joint debtors within Territories                    47   (1) Délai ultime
+Joint debtors who return from outside Territories        (2) Retour dans les territoires
+Right to certain uses by prescription               48       Débiteurs conjoints dans les territoires
+                                                             Débiteurs conjoints à l’extérieur des territoires
+Refusing relief in acquiescence                     49       Acquisition du droit à certains usages par
+Urea formaldehyde                                   50         prescription
+                                                             Acquiescement
+                                                             Urée-formaldéhyde
+
+
+
+
+                                                               23
+                Printed by                                           Imprimé par
+Territorial Printer, Northwest Territories        l’imprimeur territorial, Territoires du Nord-Ouest
+      Yellowknife, N.W.T./1997©                           Yellowknife (T. N.-O.)/1997©
+
+
+
+
+                                             24
+

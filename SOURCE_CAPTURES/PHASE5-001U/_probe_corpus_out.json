@@ -1,0 +1,97 @@
+{
+ "register": {
+  "rows": 437,
+  "columns": 23,
+  "disposition_tally": {
+   "UNRESOLVED": 416,
+   "GAP": 18,
+   "REFUSAL": 3
+  },
+  "disposition_state_tally": {
+   "BLOCKED_MISSING_EVIDENCE": 416,
+   "RECORDED_DURABLE": 21
+  },
+  "blocker_type_tally": {
+   "NO_DURABLE_RESCREEN_RECORD": 409,
+   "NO_OPEN_ITEM_RECORDED": 5,
+   "RECORDED_OPEN_ITEM": 16,
+   "CANDIDATE_REPRESENTATION_UNRESOLVED_GATE_5_3_M1": 1,
+   "REPORT_EVENT_DATE_MAPPING_UNVERIFIED": 6
+  }
+ },
+ "register_rows_of_interest": [
+  {
+   "source_entry_id": "CRP-LSRC-0001",
+   "record_type": "AUTHORITY_RECORD",
+   "legal_family": "F2",
+   "canonical_country_code": "null",
+   "canonical_region_code": "null",
+   "provision_or_citation": "NOT RECORDED (registrar record, locatorPrefix `15 U.S.C. §`)",
+   "canonical_entry_id": "CRP-LSRC-0001",
+   "duplicate_group_id": "NONE",
+   "disposition": "UNRESOLVED",
+   "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+   "blocker_type": "NO_DURABLE_RESCREEN_RECORD"
+  },
+  {
+   "source_entry_id": "CRP-LSRC-0354",
+   "record_type": "CONTENT_RULE",
+   "legal_family": "F1",
+   "canonical_country_code": "CA",
+   "canonical_region_code": "CA-NS",
+   "provision_or_citation": "s. 10(3)(c)",
+   "canonical_entry_id": "CRP-LSRC-0354",
+   "duplicate_group_id": "NONE",
+   "disposition": "UNRESOLVED",
+   "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+   "blocker_type": "REPORT_EVENT_DATE_MAPPING_UNVERIFIED"
+  },
+  {
+   "source_entry_id": "CRP-LSRC-0437",
+   "record_type": "GAP",
+   "legal_family": "F2",
+   "canonical_country_code": "null",
+   "canonical_region_code": "null",
+   "provision_or_citation": "Privacy (Credit Reporting) Code 2024, s. 16 (data quality), s. 20 (correction timelines), s. 21 (dispute flagging) — owner-supplied identification; pinpoint text and locators not retrieved in this work order",
+   "canonical_entry_id": "CRP-LSRC-0437",
+   "duplicate_group_id": "NONE",
+   "disposition": "GAP",
+   "disposition_state": "RECORDED_DURABLE",
+   "blocker_type": "RECORDED_OPEN_ITEM"
+  }
+ ],
+ "crosswalk_top_level_keys": [
+  "artifact",
+  "work_order",
+  "created_utc",
+  "purpose",
+  "scope_decision",
+  "criteria",
+  "selected",
+  "runner_up",
+  "rejections",
+  "dependencies",
+  "preserved",
+  "boundaries",
+  "created_by"
+ ],
+ "crosswalk_unit_id_hits": 1,
+ "crosswalk_carrier_trail": ".selected",
+ "crosswalk_carrier": {
+  "combination_id": "PROD-003-SELECTED-1",
+  "jurisdiction": {
+   "country_code": "CA",
+   "region_code": "CA-NS",
+   "display_name": "Nova Scotia",
+   "selectable": true,
+   "ledger_records_for_region": 16
+  },
+  "bureau": "Equifax (Canada, consumer channel)",
+  "presentation": "PR-01",
+  "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+  "legacy_rule_reference": "ca-ns.cra.s10_3_c.debt_retention_6y",
+  "source_entry_id": "CRP-LSRC-0354",
+  "permitted_result_ceiling": "PROBABLE_VIOLATION (never VIOLATION); conditional on the rule record recording the direct-report contract section 4 retention exception, otherwise observation-class only",
+  "why_this_one": "It is the only combination in which a real consumer disclosure supplies, at a located page and record, the exact printed field the admitted rule text reads, and in which the resulting evaluation is a pure function of two resolved dates. Every other accepted rule that carries a report-detectable mapping needs a presentation from a market where no consumer disclosure with demonstrated extraction exists, or needs an external fact the report cannot carry."
+ }
+}

@@ -1,0 +1,169 @@
+Limitations, C.C.S.M. c. L150                                      Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+    (d) a proceeding to enforce an order of a Manitoba                 d) aux instances introduites à des fins d'exécution
+    court, or any other order, including a certificate                 d'une ordonnance rendue par un tribunal
+    evidencing an amount owing, that may be enforced                   du Manitoba ou de toute autre ordonnance
+    in the same way as an order of a Manitoba court.                   exécutoire au même titre qu'une ordonnance rendue
+                                                                       par un tribunal du Manitoba, y compris un certificat
+                                                                       attestant une somme exigible.
+
+Orders made on or after October 1, 2012                            Ordonnances rendues le 1er octobre 2012 ou par la
+3(2)      For certainty, no limitation period applies to           suite
+a proceeding to enforce an order referred to in                    3(2)       Il demeure entendu qu'aucun délai de
+clause (1)(d) made on or after October 1, 2012.                    prescription ne s'applique aux instances visées à
+                                                                   l'alinéa (1)d) qui sont introduites à des fins d'exécution
+S.M. 2023, c. 22, s. 2.
+                                                                   d'une ordonnance rendue le 1er octobre 2012 ou par la
+                                                                   suite.
+                                                                   L.M. 2023, c. 22, art. 2.
+
+
+Relationship to other Acts                                         Lien avec les autres lois
+4(1)     This Act does not apply to a claim                        4(1)      La présente loi ne s'applique pas à une
+                                                                   réclamation dans les cas suivants :
+    (a) that is subject to a limitation provision in another
+    Act, except in the circumstance mentioned in                       a) la réclamation est assujettie à une disposition en
+    section 13 and subsection 14(1) (suspension of                     matière de prescription qui est prévue par une autre
+    limitation periods); or                                            loi, sauf dans les cas prévus par l'article 13 ou le
+                                                                       paragraphe 14(1);
+    (b) if another enactment states that no limitation
+    period applies to the claim.                                       b) un autre texte stipule qu'aucun délai de
+                                                                       prescription ne s'y applique.
+
+Conflict with another Act                                          Incompatibilité
+4(2)      If a provision of this Act is inconsistent or in         4(2)       Les dispositions de toute autre loi l'emportent
+conflict with a provision of another Act, the provision            sur les dispositions incompatibles de la présente loi.
+of the other Act prevails.
+
+Act binds the Crown                                                Couronne liée
+5        This Act binds the Crown.                                 5      La présente loi lie la Couronne.
+
+
+
+
+              BASIC LIMITATION PERIOD                                      DÉLAI DE PRESCRIPTION DE BASE
+
+Basic limitation period — 2 years from discovery                   Délai de prescription de base — deux ans à compter
+6        Unless this Act provides otherwise, a                     de la découverte des faits
+proceeding respecting a claim must not be commenced                6          Sauf disposition contraire de la présente loi,
+more than two years after the day the claim is                     les instances à l'égard d'une réclamation se prescrivent
+discovered.                                                        par deux ans à compter du jour de la découverte des
+                                                                   faits.
+
+
+
+                                                               3
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                          Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                               À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                  Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+When is a claim discovered?                                    Date de la découverte des faits
+7          A claim is discovered under this Act on the         7          Sous le régime de la présente loi, les faits sont
+day the claimant first knew or ought to have known all         découverts le jour où le requérant prend connaissance
+of the following:                                              ou aurait dû prendre connaissance de tous les éléments
+                                                               suivants :
+   (a) that injury, loss or damage has occurred;
+                                                                   a) le préjudice, la perte ou les dommages sont
+   (b) that the injury, loss or damage was caused by or            survenus;
+   contributed to by an act or omission;
+                                                                   b) le préjudice, la perte ou les dommages ont été
+   (c) that the act or omission was that of a person               causés en tout ou en partie par un acte ou une
+   against whom the claim is or may be made;                       omission;
+
+   (d) that, given the nature and circumstances of the             c) l'acte ou l'omission ont été commis par la
+   injury, loss or damage, a proceeding would be an                personne contre laquelle la réclamation est faite ou
+   appropriate means to seek to remedy it.                         pourrait l'être;
+
+                                                                   d) étant donné la nature et les circonstances du
+                                                                   préjudice, de la perte ou des dommages,
+                                                                   l'introduction d'une instance serait un moyen
+                                                                   approprié de tenter d'en obtenir réparation.
+
+Date of injury, loss or damage — specific cases                Date de la survenance du préjudice, de la perte ou
+8          For the purpose of clause 7(a), the day an          des dommages — cas particuliers
+injury, loss or damage occurs is as follows:                   8         Pour l'application de l'alinéa 7a), le jour où le
+                                                               préjudice, la perte ou les dommages surviennent
+   (a) in the case of a continuous act or omission, the        correspond :
+   day the act or omission ceases;
+                                                                   a) dans le cas d'un acte ou d'une omission continus,
+   (b) in the case of a series of acts or omissions                au jour où cessent l'acte ou l'omission;
+   respecting the same obligation, the day the last act
+   or omission in the series occurs;                               b) dans le cas d'une série d'actes ou d'omissions qui
+                                                                   se rapportent à une même obligation, au jour où a
+   (c) in the case of a claim to realize on collateral             lieu le dernier acte ou la dernière omission de la
+   under a security agreement, the day the default first           série;
+   occurs;
+                                                                   c) dans le cas d'une réclamation visant la réalisation
+   (d) in the case of a claim to redeem collateral under           d'un bien grevé aux termes d'un contrat de sûreté, au
+   a security agreement, the day the creditor takes                premier jour où survient le défaut;
+   possession of the collateral;
+                                                                   d) dans le cas d'une réclamation visant le rachat d'un
+   (e) in the case of a default in performing a demand             bien grevé aux termes d'un contrat de sûreté, au jour
+   obligation, the day the default occurs, once a                  où le créancier prend possession du bien;
+   demand for performance is made;
+                                                                   e) dans le cas du défaut d'exécution d'un
+                                                                   engagement à vue, au premier jour où le défaut
+                                                                   survient, une fois qu'une demande d'exécution est
+                                                                   présentée;
+
+
+
+
+                                                           4
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                    Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                         À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                   Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   (f) in the case of a claim for contribution or                   f) dans le cas d'une réclamation pour contribution ou
+   indemnity by one alleged wrongdoer against                       indemnité faite par un des prétendus transgresseurs
+   another, the day the liability of the claimant, in               contre un autre, au jour où, relativement à l'affaire
+   relation to the matter for which contribution or                 pour laquelle une contribution ou une indemnité est
+   indemnity is sought, is confirmed by a court                     demandée, la responsabilité du requérant est
+   judgment, arbitration award or settlement                        confirmée par un jugement du tribunal, une sentence
+   agreement.                                                       arbitrale ou un règlement à l'amiable.
+
+Burden of proof                                                 Fardeau de la preuve
+9          The claimant has the burden of proving that          9         Il incombe au requérant de prouver qu'une
+a proceeding has been commenced within the basic                instance a été introduite avant l'expiration du délai de
+limitation period.                                              prescription de base.
+
+
+
+
+         ULTIMATE LIMITATION PERIOD                                   DÉLAI DE PRESCRIPTION MAXIMAL
+
+Ultimate limitation period — 15 years                           Délai de prescription maximal — 15 ans
+10(1)     Even if the basic limitation period for a claim       10(1)     Même si le délai de prescription de base n'a
+has not expired, a proceeding must not be commenced             pas expiré à l'égard de la réclamation visée, les
+more than 15 years after the day the act or omission on         instances se prescrivent par 15 ans à compter du jour où
+which the claim is based took place.                            se sont produits l'acte ou l'omission ayant donné lieu à
+                                                                une réclamation.
+
+Exception for Aboriginal claims — 30 years                      Exception à l'égard des réclamations des
+10(2)    As an exception to subsection (1), a                   Autochtones — 30 ans
+proceeding respecting                                           10(2)     Par dérogation au paragraphe (1), les
+                                                                instances concernant ce qui suit se prescrivent
+   (a) existing Aboriginal and treaty rights that are           par 30 ans à compter du jour où se sont produits l'acte
+   recognized and affirmed in the Constitution                  ou l'omission ayant donné lieu à la réclamation :
+   Act, 1982; or
+                                                                    a) les droits existants — ancestraux ou issus de
+   (b) an equitable claim by an Aboriginal people                   traités — des Autochtones que reconnaît et que
+   against the Crown;                                               confirme la Loi constitutionnelle de 1982;
+
+must not be commenced more than 30 years after the                  b) les réclamations en equity faites par un peuple
+day the act or omission on which the claim is based took            autochtone contre la Couronne.
+place.
+
+
+
+
+                                                            5
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                     Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                          À jour du 30 mai 2023 au 28 sept. 2026
+

@@ -1,0 +1,27 @@
+{
+  "compared_with_audit_snapshot": "2026-10-05T17:32:21.160Z",
+  "changed": [
+    "accelerated-launch\\service\\build-subscription-value-evidence.cjs",
+    "accelerated-launch\\service\\comparison.cjs",
+    "accelerated-launch\\service\\evaluation.cjs",
+    "accelerated-launch\\service\\tests\\run-tests.cjs",
+    "accelerated-launch\\service\\tests\\sections\\al-common-errors.cjs",
+    "accelerated-launch\\service\\tests\\sections\\av-consumer-results.cjs",
+    "accelerated-launch\\service\\tests\\sections\\az-consumer-support-ui.cjs",
+    "accelerated-launch\\service\\tests\\sections\\ba-consumer-billing.cjs",
+    "accelerated-launch\\service\\tests\\sections\\bl-us-ca-correction-packet.cjs",
+    "accelerated-launch\\service\\tests\\sections\\bw-browser-wizzard.cjs",
+    "accelerated-launch\\service\\tests\\sections\\bx-all82-factual-verification.cjs",
+    "accelerated-launch\\service\\tests\\sections\\bz-report-history.cjs",
+    "accelerated-launch\\service\\tests\\sections\\e-qualifications.cjs",
+    "accelerated-launch\\service\\tests\\sections\\h-legacy-parity.cjs",
+    "accelerated-launch\\service\\tests\\sections\\i-shared-regressions.cjs",
+    "accelerated-launch\\service\\tests\\sections\\k-ui-smoke.cjs",
+    "accelerated-launch\\service\\tests\\sections\\n-applicability-records.cjs",
+    "accelerated-launch\\service\\tests\\sections\\o-all82-infrastructure.cjs",
+    "accelerated-launch\\service\\tests\\sections\\v-presentation-and-release.cjs",
+    "accelerated-launch\\service\\ui\\app.js",
+    "accelerated-launch\\adapters\\rule-adapter-catalog.json",
+    "accelerated-launch\\adapters\\test-adapters.cjs"
+  ]
+}

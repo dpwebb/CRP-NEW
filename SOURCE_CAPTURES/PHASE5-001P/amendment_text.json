@@ -1,0 +1,140 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "purpose": "the exact replaced and replacement text of every amendment this order made to a governing document, with the before and after state of the amended file, so Core Constitution section 6.2 is satisfied on the record rather than in prose",
+  "authority": "CRP_CORE_CONSTITUTION.md sections 6.1 to 6.5",
+  "amendment_count": 4,
+  "documents_amended": [
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md"
+  ],
+  "file_state_change": [
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": {
+        "bytes": 29858,
+        "sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0"
+      },
+      "after": {
+        "bytes": 33593,
+        "sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+      },
+      "changed": true
+    }
+  ],
+  "inversion_check": {
+    "method": "the three replacements are reversed and the appended amendment-history row is removed from the amended file; the reconstruction must be byte-identical to the baseline this order measured before amending",
+    "baseline_sha256_from_preserved_files_before": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+    "reconstructed_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+    "reconstruction_matches_baseline": true,
+    "meaning": "a match proves the amendment consists of exactly these three replacements and this one appended row, and that no other byte of the document was altered"
+  },
+  "mechanical_check_result": {
+    "problems": [],
+    "clean": true
+  },
+  "amendments": [
+    {
+      "id": "A-1",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "type": "REPLACE_AND_EXTEND_REQUIREMENT",
+      "located_at_line_before": 45,
+      "located_at_line_after": 45,
+      "replaced_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "replaced_chars": 221,
+      "replacement_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.\n\n**Owner authority PHASE5-001P — scoped gate verdicts and incremental rule-unit progression.** This\nparagraph adds a scope to the sequencing sentence above. It weakens no gate's own conditions.\n\n- **Corpus-wide gates stay corpus-wide.** Gate 5.1 to Gate 5.7 keep their text exactly as recorded and\n  remain unfinished while any record they quantify is unresolved. They are recorded separately from any\n  scoped verdict. A scoped verdict is never a corpus-wide pass and never clears a row outside its scope.\n- **For progression purposes only, a gate may also be recorded as passed for one explicitly named\n  scope.** A scope names, at minimum, the jurisdiction (country and region), the rule unit, the statutory\n  limb, the report presentation, the evidence references it relies on, and its exclusions.\n- **A scoped verdict states, criterion by criterion,** the gate's own text, the state of each criterion\n  within that scope, the evidence for each state, and every item the scope excludes or leaves unresolved.\n- **A later phase may begin for a named scope only when every preceding gate carries a passing verdict\n  for that same scope.** A verdict does not transfer to another scope, and one passing verdict implies no\n  other.\n- **The corpus-wide unfinished queue is preserved as recorded.** A scoped verdict resolves, promotes,\n  re-classifies and closes no row. Missing work may not be converted into `GAP` or `REFUSAL` in order to\n  satisfy a criterion; where a criterion cannot be met within a scope, that scope's verdict names the\n  unmet criterion instead of being issued.\n- **No scoped verdict admits a rule,** creates coverage or a candidate, authorizes a finding class, or\n  changes the recorded state of the application, which still reports report checking as not yet\n  available.",
+      "replacement_chars": 2015,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": true,
+        "occurs_exactly_once_before_replacement": true
+      },
+      "after_file": {
+        "bytes": 33593,
+        "sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+      }
+    },
+    {
+      "id": "A-2",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Gate 5.2",
+      "type": "REPLACE_AND_EXTEND_REQUIREMENT",
+      "located_at_line_before": 87,
+      "located_at_line_after": 109,
+      "replaced_text": "**Gate 5.2:** all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable; every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal. Legal/source fields are accepted under PHASE5-001A, not re-litigated. No batch is accepted based solely on an unverified completion summary.",
+      "replaced_chars": 353,
+      "replacement_text": "**Gate 5.2:** all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable; every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal. Legal/source fields are accepted under PHASE5-001A, not re-litigated. No batch is accepted based solely on an unverified completion summary. This condition is corpus-wide: it stays unpassed while any of the 437 entries lacks a reconciled report-only disposition or a documented reason it is not assessable, and a scoped verdict recorded under the PHASE5-001P paragraph above is read against the records inside its named scope only. Such a verdict neither states nor implies that this corpus-wide condition is satisfied.",
+      "replacement_chars": 732,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": true,
+        "occurs_exactly_once_before_replacement": true
+      },
+      "after_file": {
+        "bytes": 33593,
+        "sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+      }
+    },
+    {
+      "id": "A-3",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.3, bullet 1 (intended-format inventory)",
+      "type": "REPLACE_AND_EXTEND_REQUIREMENT",
+      "located_at_line_before": 91,
+      "located_at_line_after": 113,
+      "replaced_text": "- Inventory the actual consumer-report formats/fields that the future application is intended to support. Do not use the old detector's field limitations as the new product boundary.",
+      "replaced_chars": 182,
+      "replacement_text": "- Inventory the actual consumer-report formats/fields that the future application is intended to support. Do not use the old detector's field limitations as the new product boundary. For a scope named under the PHASE5-001P paragraph above, the intended format is the presentation that scope names: recording that one presentation explicitly satisfies this bullet for that scope, and every other format is recorded as unsupported and not inventoried. No corpus-wide intended-format inventory is created or implied by that record.",
+      "replacement_chars": 528,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": true,
+        "occurs_exactly_once_before_replacement": true
+      },
+      "after_file": {
+        "bytes": 33593,
+        "sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+      }
+    },
+    {
+      "id": "A-4",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 8, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "located_at_line_after": 238,
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "| 2026-09-30 | PHASE5-001I-A |",
+      "replacement_text": "| 2026-09-30 | PHASE5-001P | Valid owner amendment under Core Constitution section 6: section 3's ordering sentence gains the scoped-gate-verdict and incremental rule-unit progression paragraph (owner authority PHASE5-001P) — corpus-wide gate conditions stay unchanged and are recorded separately, a gate may also be recorded as passed for one explicitly named scope, a later phase may begin for a named scope only when every preceding gate holds a passing verdict for that same scope, the corpus-wide unfinished queue is preserved as recorded, no row is promoted or re-classified, and no missing work may be converted into GAP or REFUSAL to satisfy a criterion; Gate 5.2 records that its condition is corpus-wide and is not satisfied by a scoped verdict; Phase 5.3 bullet 1 records that a named scope's intended format is the presentation that scope names. Gate 5.3's own text is per-candidate and needed no change. It admits no rule, certifies no coverage, passes no corpus-wide gate, creates no finding class and changes no application behaviour. Both replaced text and replacement text are quoted in CRP_PHASE5_001P_INCREMENTAL_UNIT_GATE_PROGRESSION.md and SOURCE_CAPTURES\\PHASE5-001P\\amendment_text.json. |",
+      "replacement_chars": 1211,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 33593,
+        "sha256": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+      }
+    }
+  ],
+  "boundaries": {
+    "documents_deliberately_not_amended": [
+      "CRP_CORE_CONSTITUTION.md, CRP_LEGAL_INVARIANT.md, JURISDICTION_CONTRACT.md and CRP_JURISDICTION_ENUMERATION.md: no clause of theirs requires corpus-wide completion before individual-unit progression. Section 5's default direction still refuses a finding where no applicable governed rule is admitted, and section 3's conflict protocol is untouched.",
+      "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md, CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md, CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md and CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md: the corpus-wide-progression clauses are not in these rank-4 instruments. Their candidate gate is per-candidate, their acceptance directive is per-statute, and their adoption clause governs admission rather than progression. Amending them would have changed acceptance conditions this order does not touch.",
+      "Gate 5.1, Gate 5.3, Gate 5.4, Gate 5.5, Gate 5.6 and Gate 5.7: each is already per-unit or per-rule in its own text, so none required a scoped reading.",
+      "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md and the earlier PHASE5-001x records: rank-6 analysis and completion records. They are preserved verbatim and reconciled in reference_reconciliation.json; rewriting a completion report so that it no longer records what was recorded is the alteration the procedure forbids."
+    ],
+    "what_this_does_not_do": [
+      "No corpus-wide gate is passed, advanced, softened or waived by these amendments.",
+      "No rule, coverage, candidate, finding class or certified count is created.",
+      "No register row, ledger row, crosswalk entry or historical manifest is edited."
+    ]
+  },
+  "created_by": "PHASE5-001P"
+}

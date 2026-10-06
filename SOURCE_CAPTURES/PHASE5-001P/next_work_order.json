@@ -1,0 +1,52 @@
+{
+  "artifact": "next_work_order.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "type": "ISSUED WORK ORDER — not executed by the order that issues it",
+  "issued_for": "Gate 5.4 — Select and certify rule units, for one scope only",
+  "order_id": "PHASE5-001Q",
+  "title": "Gate 5.4 rule-record finalization for CA-NS-CRA-S10-3-C-LIMB-1 on PR-01",
+  "authority": {
+    "why_this_order_may_now_issue": "the amended build plan allows a later phase to begin for a named scope only when every preceding gate carries a passing verdict for that same scope. Gate 5.2 and Gate 5.3 each carry a passing scoped verdict for SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT, recorded criterion by criterion in this package.",
+    "governing_text": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3 (Gate 5.4, and the PHASE5-001P scoped-progression paragraph)",
+    "scope": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+    "still_required_of_the_issuing_owner": "the order itself must carry its own authorisation and its own scope; nothing in this record authorises it to exceed the scope above",
+    "what_it_may_not_do": [
+      "it may not begin Gate 5.4 for any other jurisdiction, unit, limb or presentation",
+      "it may not admit a rule, create coverage or a candidate, or authorize a finding class",
+      "it may not treat this order's scoped verdicts as Gate 5.5 or Gate 5.6 evidence"
+    ]
+  },
+  "deliverables": [
+    "1. The complete field-by-field governed rule record for CA-NS-CRA-S10-3-C-LIMB-1, built from CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md, carrying: immutable RULE_ID; RULE_VERSION as a placeholder reserved to Gate 5.7; exact jurisdiction (CA / CA-NS) and the jurisdiction-enumeration version; source ID and pin (CRP-LSRC-0354; rules.canada.ts at its recorded digest); formal-edition status as an administrative limitation; effective dates and status; the exact legal proposition for s. 10(3)(c)'s last-payment limb; applicability; report-required facts; decisive facts; exceptions; the deterministic breach test; the report representation and locators (FACT-02 and FACT-03); the consumer citation; and the consumer-facing qualifications.",
+    "2. The six outstanding rule-record decisions, each recorded explicitly: (a) the admitted rule record's required field name per owner decision D-2 (collection.lastPaymentDate) and whether the legacy required-field name is amended; (b) the effective-period handling (effectiveFrom and effectiveTo null, status in_force, basis recorded_gap_commencement_not_read) and the exact wording of the mandatory plain-English timing qualification; (c) the anniversary-boundary convention, the month-end clamp for a 29 February start, and the derived day-count convention, all as conventions and none presented as a requirement of the text; (d) the exception determination, including whether the direct-report contract section 4 retention route is ever relied on, and the divergence between that route and the recorded legacy D3 conclusion; (e) the ceiling field carrying D-5's observation-class decision and the retained D3 classification; (f) the immutable rule version string and the admission form, both reserved to Gate 5.7.",
+    "3. Independent validation of faithful transcription and field-by-field mapping to the accepted legal record — the check Gate 5.4 itself requires; it does not repeat the owner's legal/source certification.",
+    "4. A Gate 5.4 verdict record that quotes the gate's text, states every criterion for this scope, gives the evidence for each state, and names any criterion it cannot meet instead of issuing the verdict.",
+    "5. The order's own verification, preservation and custody records, in the form this workspace uses."
+  ],
+  "explicit_exclusions": [
+    "no new legal research, no source retrieval, no source paraphrase and no re-interpretation of the accepted legal authority",
+    "no rule admission and no coverage claim; 0 admitted rules and 0 permitted findings remain the recorded counts",
+    "no evaluator build or rebuild (Gate 5.5), no fixture or independent-replay suite (Gate 5.6), no admission (Gate 5.7)",
+    "no consumer-visible output of any class, no application change, no deployment, no consumer-data transmission",
+    "no work on the second limb beyond recording it as unseated; no disposition, promotion or re-classification of any register row",
+    "no edit to the corpus-wide queue, the register, the ledger, the crosswalk, the catalogue or any historical manifest beyond the already-recorded supplement, which only a separate owner order may apply"
+  ],
+  "notes_carried_forward": [
+    "the PHASE5-001I-A internal comparator may be read as preparation, but it must be re-created and re-validated under Gates 5.5 and 5.6 before any admission, and it is not gate evidence",
+    "the effective-period, exception and calculation-convention uncertainties stay separate from legal-corpus acceptance: none of them reopens the accepted statute",
+    "the recorded legacy D3 / observation classification and packet ineligibility are preserved and may not be overridden"
+  ],
+  "stop_conditions": [
+    "a concrete source conflict, amendment, repeal or supersession indicator that changes legal content: hold for owner/legal direction rather than guessing",
+    "a required governed field that cannot be evidenced without inventing an element or reading in an off-report requirement",
+    "any request for additional consumer evidence, which the direct-report contract forbids"
+  ],
+  "acceptance_criteria": [
+    "every required governed field is recorded for this scope, with no unresolved affirmative element other than those the contracts expressly permit",
+    "the transcription and mapping are independently checked against the accepted legal record and the representation register",
+    "the verdict record quotes the gate text and states each criterion for this scope, with the evidence for each",
+    "the order's preservation and custody records show that no earlier artifact was changed outside its own package"
+  ],
+  "what_this_issuing_order_did_not_do": "it did not execute any part of Gate 5.4: no rule record was finalised, no rule was selected, no field was recorded outside this scope, and no admission was prepared. The order is issued, not begun."
+}

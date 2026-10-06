@@ -1,0 +1,272 @@
+{
+  "artifact": "custody_reconciliation_001i_a.json",
+  "work_order": "PHASE5-001I-C",
+  "created_utc": "2026-09-30",
+  "document_type": "Supplemental custody correction record for PHASE5-001I-A",
+  "purpose": "correct the custody picture of PHASE5-001I-A without repairing anything: record the two inventory artifacts that order asserted but never wrote, record the three changes made to PROD-003's artifacts, preserve the original manifests and failure records, distinguish original recorded hashes from current hashes and explain each difference, inventory the six files that no existing manifest lists, attribute each to an author and an order where that can be established, and state plainly what this order authorizes",
+  "what_this_record_is_and_is_not": {
+    "is": "the durable correction PHASE5-001I-B's reconciliation called for, written by an order the owner authorised to produce current reconciliation records",
+    "is_not": "a repair, a rewrite, a re-run, a retrofit of authorization, or a manufactured historical artifact",
+    "authorized_by_this_order": "current reconciliation only - measuring, recording and explaining what exists today, and stating what each recorded digest originally was and why it differs now where it does",
+    "not_authorized_by_this_order": [
+      "the original changes: this order does not authorize, excuse or validate them retroactively, and no date in this record backdates any authorization",
+      "writing permitted_files.json, implementation_manifest.json or any other missing historical manifest as though it had been written at the time",
+      "overwriting, editing or regenerating any historical manifest, baseline or validation record",
+      "repairing the PROD-003 narrative, refreshing any PROD-003 output, or re-running any inherited step",
+      "restoring any file to a recorded pre-change digest"
+    ],
+    "what_remains_unauthorized": "three of the four pre-existing changes PHASE5-001I-A made or caused remain unauthorized by any owner instrument after this record as before it: the PROD-003 narrative repair and the two refreshed PROD-003 outputs. This record explains them; it does not authorize them"
+  },
+  "part_1_the_two_inventory_artifacts_that_were_asserted_but_never_written": {
+    "the_assertion": [
+      "CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md line 125, section 5: 'Nothing else was created; permitted_files.json and implementation_manifest.json record the inventory by digest.'",
+      "the same narrative's section 11 run table, line 307, lists step 4's output as 'gate_sequence_assessment.json, presentation_boundary.json, classification_record.json, permitted_files.json, implementation_manifest.json'"
+    ],
+    "the_measurement": {
+      "SOURCE_CAPTURES\\PHASE5-001I-A\\permitted_files.json": "ABSENT - Test-Path false",
+      "SOURCE_CAPTURES\\PHASE5-001I-A\\implementation_manifest.json": "ABSENT - Test-Path false",
+      "corroboration": "neither name appears in PHASE5-001I-A's own 51-entry custody manifest, which was re-measured by this order with 0 differences"
+    },
+    "the_cause_measured_statically": {
+      "file": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs",
+      "defect": "the body of its inventory() helper is displaced. The function opens at line 249 and its closing brace is the file's final non-empty line, 313. Inside that body sit the two inventory() calls (lines 259-261), the permitted_files.json write (lines 263-291), the implementation_manifest.json write (lines 293-306) and the two console.log calls (lines 308-309). No top-level statement calls inventory(), so the body never executes",
+      "brace_depth_measurement": "depth 0 at line 247, depth 1 from line 249 through line 312, depth 0 at line 313: both write() calls are inside the function body, not at top level",
+      "syntax": "node --check exits 0 - the file parses; parsing was never the problem",
+      "what_executes": "only the top-level statements before the function definition: the writes of gate_sequence_assessment.json, presentation_boundary.json and classification_record.json",
+      "why_the_chain_reported_success": "run_001i_a_all.ps1 records each step's pass as ($code -eq 0) at line 47, i.e. on exit code alone. Step 4 exited 0 because nothing failed: the body simply never ran. The recorded validation shows step 4 exit_code 0, passed true, under the verdict ALL PHASE5-001I-A VALIDATION PASSED",
+      "same_defect_class_as": "the displaced-block defect PHASE5-001I-A repaired in PROD-003's narrative; in its own builder the same class of defect was present and was not noticed or repaired"
+    },
+    "why_this_matters_beyond_bookkeeping": [
+      "the file boundary PHASE5-001I-A carried now exists in exactly two places, and they disagree: the builder's self-declared boundary names the two pre-existing files the order changes, while the verifier the same order actually executed expects four (verify_001i_a_custody.ps1 lines 47-52: the build plan, the PROD-003 narrative, SOURCE_CAPTURES\\PROD-003\\narrative_check.json and SOURCE_CAPTURES\\PROD-003\\input_verification.json)",
+      "a later order re-verifying PHASE5-001I-A custody therefore has no order-authored whitelist artifact to check against, only a self-declared expectation. PHASE5-001I-B recorded the same finding and reached the same conclusion",
+      "the implementation inventory is therefore evidenced only by PHASE5-001I-A's 51-entry custody manifest, which remains valid and re-measures clean"
+    ],
+    "disposition": "RECORDED AND LEFT IN PLACE. Neither artifact is written, the builder is not repaired, and the narrative's line 125 assertion stands uncorrected: this record is the durable correction, and it names that assertion rather than editing it",
+    "what_a_later_order_may_do_if_the_owner_authorizes_it": "reconstruct the whitelist as a clearly-dated CURRENT reconstruction that states it was not written at the time, or repair the builder under its own authority and record the repair. Neither is done here"
+  },
+
+  "part_2_the_changes_made_to_another_order_artifacts": {
+    "measured_manifest_delta_now": {
+      "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json": "51 entries, 0 differing, 0 missing - PHASE5-001I-A's own package re-measures clean",
+      "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json": "23 entries, 3 differing - the PROD-003 narrative and its two refreshed outputs"
+    },
+    "changes": [
+      {
+        "change": 1,
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "original_recorded_hash": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+        "current_hash": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+        "current_bytes": 29858,
+        "explanation": "the owner-authorized internal-validation carve-out, in the CRP_CORE_CONSTITUTION.md section 6.2 quoted-replacement form, with an amendment record carrying the before and after digests and a section 8 Amendment History row",
+        "authorization": "AUTHORIZED - the only one of the four changes with an owner instrument behind it (SOURCE_CAPTURES\\PHASE5-001I-A\\amendment_text.json and amendment_application_result.json)",
+        "status": "inside PHASE5-001I-A's self-declared boundary; the current state matches the recorded after-digest"
+      },
+      {
+        "change": 2,
+        "path": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+        "original_recorded_hash": "A6F0FE4383AA815B6CF136AC79DD21A2F29B34A73621366C28499A4D16254295",
+        "original_recorded_bytes": 49453,
+        "current_hash": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+        "current_bytes": 49451,
+        "explanation": "the recorded assembly repair: the displaced section 10 gate row and claim sentence and the displaced closing fragment returned to their own sections; no claim added, removed or changed",
+        "authorization": "UNAUTHORIZED BY ANY OWNER INSTRUMENT. The only durable statements are PHASE5-001I-A's own records: its narrative section 10, its preservation_and_change_record.json and its custody verifier",
+        "durable_consequence_left_in_place": "PROD-003's own file_custody_manifest.json still records the pre-repair digest A6F0FE43 at 49453 bytes while the document measures 1F556779 at 49451 bytes. That inconsistency inside another order's custody record is recorded here and deliberately not repaired, because repairing it would overwrite a historical manifest"
+      },
+      {
+        "change": 3,
+        "path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+        "original_recorded_hash": "BC1B3FE81167F7BE4942FAE491886B35F5810914E977FACF242C37FCC5DD61E6",
+        "current_hash": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+        "current_bytes": 4216,
+        "explanation": "PROD-003's own narrative checker, refreshed by re-running PROD-003's own step as a regression check",
+        "authorization": "UNAUTHORIZED, AND OUTSIDE THE BOUNDARY PHASE5-001I-A WROTE FOR ITSELF",
+        "current_verdict": "NARRATIVE CHECKS PASSED, 0 failures, over the repaired narrative: a passing record left in a changed state"
+      },
+      {
+        "change": 4,
+        "path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+        "original_recorded_hash": "A34943997AD061E345E811FF20BCB15817EDC8BEB493B9CB83420F0E9EE48B9D",
+        "current_hash": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+        "current_bytes": 8833,
+        "explanation": "PROD-003's own input verification, re-run once as a regression check",
+        "authorization": "UNAUTHORIZED, AND OUTSIDE THE BOUNDARY PHASE5-001I-A WROTE FOR ITSELF",
+        "current_verdict": "INPUT VERIFICATION FAILED - see failures. The single failing check is 'PHASE5-001O inputs stable since PROD-002', detail '12 of 13 unchanged'. It is a durable, currently-visible consequence of the owner-authorized build-plan amendment sitting inside another order's artifact",
+        "preserved_not_repaired": "the failure record is preserved exactly as written. Re-running or editing it would erase the only durable evidence of the consequence"
+      }
+    ],
+    "what_this_record_does_not_claim": [
+      "it does not claim that finding a defect confers authority to edit another order's record",
+      "it does not claim the repair was excused by the document's rediscovered validity: its own checks passed at PROD-003's date and still pass, so no recorded acceptance criterion required the repair",
+      "it does not claim the two refreshed outputs were authorized: they were not named in the boundary the order wrote for itself, and the expectation that covered them was authored by the same order that produced them",
+      "it does not re-claim, re-write or re-date any of PROD-003's recorded verdicts"
+    ]
+  },
+  "part_3_original_records_and_failure_records_preserved": {
+    "statement": "every original manifest, baseline, validation record and failure record involved in this reconciliation is present, byte-unchanged by this order, and named here with its current digest, so a future reader can tell a recorded hash from a current one",
+    "original_recorded_vs_current": "the hashes below are the CURRENT measured digests of records that themselves contain the ORIGINAL recorded digests. Where the two differ inside a file, the difference is explained in part 2 and nowhere is it reconciled by editing",
+    "records": [
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json",
+        "sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1",
+        "bytes": 6300,
+        "records": "PROD-003's 23 files as at PROD-003's date, including the pre-repair narrative digest A6F0FE43 at 49453 bytes. Preserved unchanged"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\preserved_files_before.json",
+        "sha256": "24605499EB12F7A94F447C6D7BE2D338CE508856D3B15883E1596CE155553C2D",
+        "bytes": 72708,
+        "records": "PROD-003's 342-file baseline, captured before PROD-003 wrote anything. Preserved unchanged"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\validation_results.json",
+        "sha256": "361B9ACB2D1154B113E83648E439B8AD773D32141DF4C62A8C831E67A03BB248",
+        "bytes": 11154,
+        "records": "PROD-003's nine-step chain, verdict ALL PROD-003 VALIDATION PASSED. A record of PROD-003's own date; preserved unchanged and not re-claimed"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+        "sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+        "bytes": 8833,
+        "records": "the failure record itself: INPUT VERIFICATION FAILED, one failing check, preserved in place as written"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+        "sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+        "bytes": 4216,
+        "records": "PROD-003's narrative checks, NARRATIVE CHECKS PASSED, 0 failures, preserved unchanged after its refresh"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+        "sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+        "bytes": 12849,
+        "records": "PHASE5-001I-A's 51 entries; re-measured by this order with 0 differing and 0 missing"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+        "sha256": "2055CFD0CFF6473302F16097F9691C642C9E5B60E0127CB882ACE88D6E9FC104",
+        "bytes": 77796,
+        "records": "PHASE5-001I-A's 367-file baseline"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+        "sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF",
+        "bytes": 27877,
+        "records": "PHASE5-001I-A's 15-step chain, verdict ALL PHASE5-001I-A VALIDATION PASSED; step 4 recorded exit_code 0 while the two artifacts stayed unwritten"
+      }
+    ],
+    "what_was_not_done_to_them": "none of the eight is edited, re-run, regenerated, renamed, moved or deleted by this order; each digest above was measured read-only and each measurement is recorded in this package's verification record"
+  },
+  "part_4_the_six_files_that_no_existing_manifest_lists": {
+    "what_the_six_are": "the custody-support artifacts of two earlier orders: each order's baseline, its custody manifest and its validation record. They are the six files PHASE5-001I-B identified as recorded by neither PROD-003's manifest nor PHASE5-001I-A's manifest",
+    "inventory": [
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+        "bytes": 12849,
+        "sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+        "last_write_utc": "2026-09-30T21:49:29Z",
+        "role": "PHASE5-001I-A's byte-level custody manifest, 51 entries",
+        "written_by": "verify_001i_a_custody.ps1, run as step 15 of run_001i_a_all.ps1",
+        "attribution": "ESTABLISHED: PHASE5-001I-A",
+        "why_no_manifest_lists_it": "excluded by construction: verify_001i_a_custody.ps1 line 156 excludes preserved_files_before.json, file_custody_manifest.json and validation_results.json from the manifest it writes"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+        "bytes": 77796,
+        "sha256": "2055CFD0CFF6473302F16097F9691C642C9E5B60E0127CB882ACE88D6E9FC104",
+        "last_write_utc": "2026-09-30T21:25:32Z",
+        "role": "PHASE5-001I-A's baseline, 367 files",
+        "written_by": "capture_001i_a_baseline.ps1, before the order wrote anything else",
+        "attribution": "ESTABLISHED: PHASE5-001I-A",
+        "why_no_manifest_lists_it": "excluded by construction at the same line 156"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+        "bytes": 27877,
+        "sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF",
+        "last_write_utc": "2026-09-30T21:49:29Z",
+        "role": "PHASE5-001I-A's 15-step validation record",
+        "written_by": "run_001i_a_all.ps1, at line 63 of that script",
+        "attribution": "ESTABLISHED: PHASE5-001I-A",
+        "why_no_manifest_lists_it": "excluded by construction at the same line 156, and written after the manifest-writing step"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json",
+        "bytes": 6300,
+        "sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1",
+        "last_write_utc": "2026-09-30T21:23:49Z",
+        "role": "PROD-003's custody manifest, 23 entries",
+        "written_by": "verify_prod003_custody.ps1, at line 131 of that script",
+        "attribution": "ESTABLISHED: PROD-003",
+        "why_no_manifest_lists_it": "excluded by construction: verify_prod003_custody.ps1 line 108 excludes the same three names from the manifest it writes"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\preserved_files_before.json",
+        "bytes": 72708,
+        "sha256": "24605499EB12F7A94F447C6D7BE2D338CE508856D3B15883E1596CE155553C2D",
+        "last_write_utc": "2026-09-30T21:06:01Z",
+        "role": "PROD-003's baseline, 342 files",
+        "written_by": "capture_prod003_baseline.ps1, at line 41 of that script",
+        "attribution": "ESTABLISHED: PROD-003",
+        "why_no_manifest_lists_it": "excluded by construction at the same line 108"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\validation_results.json",
+        "bytes": 11154,
+        "sha256": "361B9ACB2D1154B113E83648E439B8AD773D32141DF4C62A8C831E67A03BB248",
+        "last_write_utc": "2026-09-30T21:23:49Z",
+        "role": "PROD-003's nine-step validation record",
+        "written_by": "run_prod003_all.ps1, at line 50 of that script",
+        "attribution": "ESTABLISHED: PROD-003",
+        "why_no_manifest_lists_it": "excluded by construction at the same line 108, and written after the manifest-writing step"
+      }
+    ],
+    "measured_scope_of_the_absence": "the workspace holds 12 file_custody_manifest.json files. A search of all 12 for each of these six paths returns no match: no manifest anywhere in this workspace lists any of them, not only the two PHASE5-001I-B reconciled against",
+    "the_absence_is_a_convention_not_a_lost_record": "each order's custody verifier deliberately excludes its own baseline, its own manifest and its own validation record, because a manifest cannot list itself and a validation record written by the same chain that writes the manifest cannot be listed in it without a second pass. The convention is explicit in the two verifier scripts named above, and it is why these six files are the ones with no manifest entry",
+    "current_custody": {
+      "unchanged_since_the_earliest_recorded_digest": "all six digests above are identical to the digests the same six files carry in SOURCE_CAPTURES\\PHASE5-001I-B\\preserved_files_before.json, which is the earliest recorded digest set for them. The measurement is 6 of 6 matching",
+      "unchanged_since_this_order_baseline": "all six are also present in this order's preserved_files_before.json with the same digests, so this order changed none of them",
+      "timestamp_consistency": "each file's last-write time falls inside the window of the order that wrote it (PROD-003: 21:06:01Z to 21:23:49Z; PHASE5-001I-A: 21:25:32Z to 21:49:29Z). A timestamp is consistent with the recorded authorship; it is not proof of it",
+      "no_digest_predates_them": "for these six files the earliest recorded digest is PHASE5-001I-B's baseline. Nothing earlier in this workspace records what they contained"
+    },
+    "explicit_unknowns_left_unknown": [
+      "whether any of the six was modified between its own order's close and PHASE5-001I-B's baseline cannot be established from any recorded digest, because no digest of these six predates that baseline. It is recorded as UNKNOWN rather than assumed unchanged",
+      "the exact ordering of the two 001I-A files that share the 21:49:29Z timestamp is inferred from the chain's step order rather than measured",
+      "whether each of PROD-003's three files was written by its named script in a single run is not recorded per file; the scripts are established as their writers and the chains are recorded as having run, but no per-file write log exists"
+    ],
+    "what_is_established": "author attribution for all six, the exclusion rule that keeps them out of their own manifests, and byte-identity across the two baselines that do record them. No attribution remains unknown for the six themselves; the unknowns above concern timing and earlier state, and they are recorded as unknown rather than filled"
+  },
+  "further_discrepancies_re_verified_and_left_in_place": [
+    {
+      "discrepancy": "PHASE5-001I-A's narrative run table records '39 files scanned, 0 findings' while its identifier_scan.json records files_scanned 50. The narrative checker verifies the finding count and never the file count",
+      "measured_now": "identifier_scan.json files_scanned 50; the narrative's line unchanged at 39",
+      "disposition": "recorded, not corrected. Neither number is edited"
+    },
+    {
+      "discrepancy": "the legacy regression corpus measures 462 files and 23,639,181 bytes, while the recorded measure is 461 files and 23,627,410 bytes",
+      "measured_now": "462 files / 23,639,181 bytes total; 461 PDFs / 23,627,410 bytes; the one extra file is the corpus directory's own MANIFEST.json, 11,771 bytes, last written 2026-09-26, before any CRP order",
+      "disposition": "recorded, not corrected. The 461 PDFs match the recorded measure exactly, so the discrepancy is the manifest file and nothing else"
+    },
+    {
+      "discrepancy": "PROD-002 recorded the build plan at C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD, which the owner-authorized PHASE5-001I-A amendment superseded",
+      "measured_now": "SOURCE_CAPTURES\\PROD-002\\preserved_files_before.json line 301 and its input_verification.json lines 75-76 still carry the superseded digest; the build plan now measures 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "disposition": "recorded, not corrected, and PROD-002's recorded verdicts are neither re-claimed nor rewritten"
+    }
+  ],
+  "part_5_what_this_order_authorizes_and_what_it_does_not": {
+    "authorizes": [
+      "the current reconciliation records in this package: the decision record, the proposed register update, this custody correction and the verification record",
+      "the measurements they rest on, each taken read-only from the files that carry it"
+    ],
+    "does_not_authorize": [
+      "the original changes: the PROD-003 narrative repair and the two refreshed PROD-003 outputs remain unauthorized by any owner instrument, exactly as recorded before this order",
+      "any repair, rewrite, re-run, restore or regeneration of an inherited artifact, manifest, baseline or failure record",
+      "the manufacture of the missing permitted_files.json or implementation_manifest.json, or of any other historical manifest that was never written",
+      "any backdating: nothing in this package claims an authorization that existed before the owner issued it",
+      "any register edit: the disposition update remains a proposal",
+      "any gate state change, rule admission, coverage, candidate or finding"
+    ],
+    "the_intended_reading": "this record closes the gap between what PHASE5-001I-A asserted about its own boundary and what its boundary actually was, without changing a byte of any file it describes"
+  },
+  "verdict": "PHASE5-001I-A CUSTODY CORRECTED ON THE RECORD, NOT IN THE FILES. Two inventory artifacts that order asserted were never written, and the cause is measured in its own builder; three of the four pre-existing changes it made or caused carry no owner instrument and remain unauthorized, with one durable inconsistency left inside PROD-003's own custody record; every original manifest, baseline, validation record and failure record is preserved unchanged with its digest recorded; the six files that no manifest lists are inventoried, attributed to their authors and their orders, explained by an explicit exclusion convention, and confirmed byte-identical across the two baselines that do record them; and this order authorizes current reconciliation only, never the original changes",
+  "created_by": "PHASE5-001I-C"
+}

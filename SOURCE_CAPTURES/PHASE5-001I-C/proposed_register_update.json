@@ -1,0 +1,132 @@
+{
+  "artifact": "proposed_register_update.json",
+  "work_order": "PHASE5-001I-C",
+  "created_utc": "2026-09-30",
+  "document_type": "PROPOSED register disposition update - recorded, not applied",
+  "purpose": "identify exactly which existing record would change, which fields within it, why, under which authority and with what limits, so that a later owner-issued order can apply a scoped update without silently reinterpreting the earlier unresolved status",
+  "status": {
+    "applied": false,
+    "applied_by_this_order": false,
+    "why_not_applied_here": "the record belongs to PHASE5-001K (its register, its provenance and its narrative) and to the derived ledger and crosswalk rows of PHASE5-001O and PROD-003. This order carries no authorisation to edit another order's register, and the owner authorised the recording of the decisions and this proposal only",
+    "what_would_apply_it": "a later owner-issued order that edits the register row in an authorised batch and records its own before/after digests, in the form PHASE5-001K and PHASE5-001O used",
+    "if_no_order_ever_applies_it": "nothing here has any effect. The register row stands exactly as recorded, the blocker stands as recorded, and these decisions remain a recorded owner direction that no register entry reflects"
+  },
+  "the_record_that_would_change": {
+    "role": "canonical register row",
+    "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+    "row": "the data row whose source_entry_id is CRP-LSRC-0354 (the row at file line 355; line 1 is the header)",
+    "row_identity": "23 columns, all fields quoted; the row's own clearing_authority column names the authority that clears it",
+    "why_this_record_first": "it is the durable register that Gate 5.2 and the register's own sections 5, 10 and 10.1 read, and it is the record whose blocker_type the owner's decision D-4 names",
+    "current_values_verbatim": {
+      "source_entry_id": "CRP-LSRC-0354",
+      "disposition": "UNRESOLVED",
+      "disposition_basis": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md §6 owner-decision block (named per-ID mapping instruction) + build plan §3 Phase 5.1 carry-forward line; no class inferred for any other ID",
+      "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+      "blocker_type": "REPORT_EVENT_DATE_MAPPING_UNVERIFIED",
+      "missing_artifact": "exact report representation and field mapping for Nova Scotia Credit Reporting Act s 10(3)(c) - the exact presentation mapping to the last-payment event, preserving the last-payment-date and no-payment/default-date alternatives",
+      "clearing_authority": "AUTHORISED_EVIDENCE_ROUTE (report representation) plus OWNER_DIRECTION; contract §6 states that no additional consumer evidence may be requested"
+    },
+    "what_would_be_added_or_changed": "the field-level proposal below. Three fields keep their exact current values, two free-text fields change additively, and four clearly-named fields are added. No vocabulary value is invented and no disposition is promoted"
+  },
+  "mirror_records_carrying_the_same_disposition": [
+    {
+      "role": "narrative register",
+      "path": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+      "where": "section 10's blocker table (the REPORT_EVENT_DATE_MAPPING_UNVERIFIED row, line 235), section 10.1's itemised evidence-route table (the CRP-LSRC-0354 row, line 247), section 5's disposition table (the UNRESOLVED row and its 416 count, line 113), and the section 11 totals",
+      "what_would_change": "the 0354 rows' missing-artifact wording and a dated note of the owner decision; the counts in sections 5 and 11 do not change, because the row stays UNRESOLVED"
+    },
+    {
+      "role": "per-ID provenance",
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json",
+      "where": "step_09_open_blocker_queue -> entries[source_entry_id = CRP-LSRC-0354]",
+      "what_would_change": "the same missing_artifact wording and the added fields, so the queue stops describing the last-payment presentation as unverified"
+    },
+    {
+      "role": "coverage-ledger mirror",
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json and SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.csv",
+      "where": "the CRP-LSRC-0354 row's register_state block and its remaining_implementation_dependencies entry REGISTER_DISPOSITION_UNRESOLVED",
+      "what_would_change": "the same scoped wording; the dependency entry stays, because the row's disposition stays UNRESOLVED and the second limb remains unseated"
+    },
+    {
+      "role": "crosswalk mirror",
+      "path": "SOURCE_CAPTURES\\PROD-003\\candidate_rule_units.json",
+      "where": "report_mapping_blocked_rows[source_entry_id = CRP-LSRC-0354] (the count of such rows is 7 and would not change) and selected_unit.ledger_dependencies",
+      "what_would_change": "the same scoped wording; no count, no selection and no ceiling field changes here, and the unit's report_fact_mapping entries already record FACT-02 and FACT-03 as DEMONSTRATED_EXTRACTABLE"
+    },
+    {
+      "role": "inventory of the disposition as the row reads today",
+      "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+      "where": "unresolved_mappings (three items, the second being the second-specimen requirement) and field_records[FACT-02, FACT-03]",
+      "what_would_change": "nothing is required for correctness; the register's own FACT-02 and FACT-03 records already state the demonstrated mapping, and the second unresolved_mappings item is answered in writing by owner decision D-1 while the reuse boundary it describes is retained by D-6. A later order may add a cross-reference; this order adds none"
+    }
+  ],
+  "why_this_scoped_change_and_not_a_wider_one": {
+    "what_the_owner_authorized": "clearing REPORT_EVENT_DATE_MAPPING_UNVERIFIED only for the demonstrated fields on this exact specimen, with unrelated rule, timing, exception and presentation dependencies explicitly not cleared",
+    "what_the_blocker_covered": "the contract's instruction for this ID is one mapping task with two alternatives: 'the exact presentation mapping to the last-payment event, preserving the last-payment-date and no-payment/default-date alternatives'",
+    "what_is_now_demonstrated": "the last-payment-date alternative: the printed Last Payment Date row inside a Collections contract debt record on the byte-pinned PR-01 specimen, located at page 16 line 32 and page 17 line 5, with raw and normalized values recorded by two independent records and the printed Request Date header accepted as the specimen's reference date",
+    "what_is_not_demonstrated": "the no-payment/default-date alternative. The presentation prints no field the admitted text reads as the date the default in payment occurred, so that alternative stays unseated and its part of the blocker stays",
+    "the_consequence_for_the_row": "the blocker cannot be cleared outright without asserting more than the evidence supports. It is narrowed to the alternative that remains, and the row keeps its UNRESOLVED disposition and its BLOCKED_MISSING_EVIDENCE state",
+    "why_no_new_blocker_value_is_needed": "the residual issue is still exactly a report-event/date mapping question, so REPORT_EVENT_DATE_MAPPING_UNVERIFIED remains the correct value in the closed vocabulary the register uses. Nothing is renamed and nothing is added to the vocabulary"
+  },
+
+  "proposed_field_level_update": {
+    "rule_applied": "additive and scoped: no existing string is deleted or re-worded beyond the one free-text field whose assertion is now false, no vocabulary value is invented, no disposition is promoted, no class is inferred, and the earlier unresolved status is described and narrowed rather than reinterpreted",
+    "fields_left_exactly_unchanged": {
+      "disposition": "UNRESOLVED",
+      "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+      "blocker_type": "REPORT_EVENT_DATE_MAPPING_UNVERIFIED"
+    },
+    "why_those_three_stay_unchanged": "the row still blocks on missing evidence: the no-payment/default-date alternative has no located field on this presentation, so the row is not a durably dispositioned candidate and may not be promoted to one. REPORT_EVENT_DATE_MAPPING_UNVERIFIED remains the exact description of the residual issue, so the closed vocabulary needs no new value",
+    "fields_proposed_to_change": [
+      {
+        "field": "missing_artifact",
+        "before": "exact report representation and field mapping for Nova Scotia Credit Reporting Act s 10(3)(c) - the exact presentation mapping to the last-payment event, preserving the last-payment-date and no-payment/default-date alternatives",
+        "after": "exact presentation mapping for the residual no-payment/default-date alternative of Nova Scotia Credit Reporting Act s 10(3)(c). The last-payment-date alternative is demonstrated on the byte-pinned Equifax Canada consumer specimen PR-01 (SHA-256 E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F): the printed Last Payment Date row inside a Collections contract debt record, page 16 line 32 and page 17 line 5, read as the collection-scoped fact collection.lastPaymentDate (PHASE5-001I-C decision D-2). The no-payment/default-date alternative remains unmapped on this presentation and unevaluated",
+        "why": "the current string asserts that the last-payment presentation is unverified, which owner decision D-4 has cleared for the demonstrated fields on this specimen. Leaving it untouched would keep a durable register asserting something no longer true"
+      },
+      {
+        "field": "disposition_basis",
+        "before": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md §6 owner-decision block (named per-ID mapping instruction) + build plan §3 Phase 5.1 carry-forward line; no class inferred for any other ID",
+        "after": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md §6 owner-decision block (named per-ID mapping instruction) + build plan §3 Phase 5.1 carry-forward line; no class inferred for any other ID + owner decisions D-1 to D-6 recorded in PHASE5-001I-C (CRP_PHASE5_001I_C_OWNER_REPRESENTATION_DECISIONS.md; SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json), with the demonstrated mapping recorded at SOURCE_CAPTURES\\PROD-003\\report_representation_register.json field_records FACT-02 and FACT-03, re-measured at SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json fact_records, and reconciled at CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md sections 4, 5 and 11",
+        "why": "the basis must name the durable record the clearing rests on, and it is appended rather than replaced so the original basis stays legible"
+      }
+    ],
+    "fields_proposed_to_be_added": [
+      {
+        "field": "representation_cleared_for",
+        "value": "PR-01 only: LEG-CONSUMER-EQ-CA, SHA-256 E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F, 96393 bytes, 22 pages - FACT-02 (the printed Collections Last Payment Date row) and FACT-03 (the printed Request Date page header). Cleared for the last-payment limb only"
+      },
+      {
+        "field": "cleared_by",
+        "value": "owner decisions D-1 to D-6, recorded in CRP_PHASE5_001I_C_OWNER_REPRESENTATION_DECISIONS.md and SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json"
+      },
+      {
+        "field": "clearing_scope_limit",
+        "value": "one candidate, one presentation, one limb, two demonstrated fields. No report-family admission, no consumer-upload availability, no reuse of the locator on another specimen, and no effect on any other row"
+      },
+      {
+        "field": "not_cleared",
+        "value": "the no-payment/default-date alternative and the second limb; the effective-period and applicability-in-time question and its mandatory timing qualification; the direct-report contract section 4 retention exception; the result ceiling and the recorded D3 / observation classification; the presentation boundary beyond this specimen; every other rule, timing, exception and presentation dependency; every other row of the register"
+      }
+    ],
+    "alternative_form_if_the_owner_prefers_a_purely_additive_row": "leave missing_artifact verbatim as well and confine the update to disposition_basis and the four added fields. The form recommended above is preferred, because the row's own text would otherwise still assert that the last-payment mapping is unverified",
+    "no_backdating": "the change carries the date it is applied, not the date of this proposal, and it records that it reconciles the owner's decision of 2026-09-30 rather than having authorized anything earlier"
+  },
+  "what_this_proposal_does_not_do": [
+    "it changes nothing now: no register file, narrative, provenance record, ledger row or crosswalk entry is edited by this order",
+    "it does not promote the row to a candidate, clear the row's UNRESOLVED disposition, or infer any class for it or for any other ID",
+    "it does not clear the blocker for the other five mapping IDs, for CRP-LSRC-0194, or for any NO_DURABLE_RESCREEN_RECORD row",
+    "it does not touch Gate 5.2's counts: the row stays in the 416 UNRESOLVED and in the open-blocker queue",
+    "it does not admit a rule, create coverage, create a finding class or change any gate state",
+    "it does not reopen the accepted legal authority, the source pin or any jurisdiction determination"
+  ],
+  "gate_effect": "none. A register-row annotation is not a gate pass, and this artifact is not gate evidence for any gate. Gate 5.3 stays reached for this candidate and passed for none; Gate 5.2 stays incomplete; Gate 5.4 has not started",
+  "authority": {
+    "clearing_authority_recorded_on_the_row": "AUTHORISED_EVIDENCE_ROUTE (report representation) plus OWNER_DIRECTION; contract §6 states that no additional consumer evidence may be requested",
+    "evidence_route_satisfied_by": "records already in this workspace - PROD-003's representation register, PHASE5-001I-A's re-measurement, PHASE5-001I-B's reconciliation. No new external evidence, no consumer-report retrieval and no network call were used, which matters because the contract forbids requesting additional consumer evidence",
+    "owner_direction_recorded_at": "SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json, decisions D-1 to D-4",
+    "who_may_apply_it": "the owner, in a later order; this order proposes only",
+    "rank": "this proposal is rank-6 work-order evidence. It amends no rank-4 or rank-5 instrument and cannot override the register's own governing contracts"
+  },
+  "created_by": "PHASE5-001I-C"
+}

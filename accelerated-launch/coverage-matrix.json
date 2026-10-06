@@ -1,0 +1,128 @@
+{
+  "artifact": "coverage-matrix.json",
+  "work_order": "B6-INGEST-002",
+  "authority": "Owner-authorized consumer-credit-report ingestion expansion, 2026-10-01",
+  "status": "MEASURED — supported rows are cross-checked against the registered adapters at runtime. B6-INGEST-002 adds a general intake path: any plausible bureau report (bureau identity plus report-like content) is read and its readable facts extracted, labelled example-backed extraction, never a validated family. This file distinguishes validated presentation families / exact specimens from that general intake, and claims no present-day GB support.",
+  "general_intake": {
+    "presentation_id": "GENERAL-BUREAU-REPORT",
+    "admission_path": "BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY",
+    "accepts": "any document that identifies a credit bureau and prints report-like content (accounts, balances, payment status, report dates, collections, inquiries, public records)",
+    "does_not_require": "a known layout, pinned specimen digest, official specimen or exact heading sequence",
+    "insufficient": "a bureau name/logo alone",
+    "extraction": "reference date, account/collection/inquiry/public-record entries with page/line locations, raw values, normalized dates and per-field uncertainty",
+    "assessments": "a general report-fact consistency check (any entry date later than the report's own date); statutory checks stay bound to their own presentations",
+    "labels": "example-backed extraction, never a validated presentation family; no claim of authenticity or universal accuracy",
+    "refusals": "UNRELATED_DOCUMENT for a clearly unrelated document, UNREADABLE_DOCUMENT for a report that could not be read"
+  },
+  "markets": {
+    "CA": [
+      {
+        "bureau": "Equifax", "country": "CA", "channel": "consumer",
+        "support_state": "SUPPORTED_EXACT_SPECIMEN", "presentation_id": "PR-01", "admission_path": "EXACT_SPECIMEN_DIGEST",
+        "evidence": { "artifacts": ["LEG-CONSUMER-EQ-CA"], "currency": "SUPPORTED_PRESENTATION_FOR_ONE_SELECTED_UNIT", "present_day": true },
+        "reading": { "native_or_scan": "native text on every page (22/22)" },
+        "extraction_fields": ["Request Date", "collection account Last Payment Date"],
+        "compatible_assessments": ["CA-NS six-year last-payment statutory limb (bound to PR-01 only)", "4 report-fact consistency checks (CA-FACT-*)"],
+        "boundary": "one pinned specimen; no Equifax Canada format family is admitted"
+      },
+      {
+        "bureau": "TransUnion", "country": "CA", "channel": "consumer",
+        "support_state": "SUPPORTED_FAMILY", "presentation_id": "FAM-TU-CA-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
+        "evidence": { "artifacts": ["LEG-CONSUMER-TU-CA"], "currency": "EVIDENCED_FROM_ONE_REAL_PRESENT_DAY_SPECIMEN", "present_day": true },
+        "reading": { "native_or_scan": "native text on every page (12/12), RC4 copy-permitted" },
+        "extraction_fields": ["file reference date", "tradeline Reported/Last Payment/Status dates", "enquiry Date"],
+        "compatible_assessments": ["2 report-fact consistency checks (CA-TU-FACT-*)", "no statutory unit is seated here"],
+        "boundary": "one real specimen evidences the structure; a different product, print date or language is refused"
+      },
+      {
+        "bureau": "Equifax", "country": "CA", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-005", "PUB-006", "PUB-007", "PUB-008"], "why_insufficient": "annotated user guides and a historical FCAC page; none is a report presentation" },
+        "next_step": "a second same-bureau same-product Equifax Canada specimen, or an official current Equifax layout specification"
+      },
+      {
+        "bureau": "TransUnion", "country": "CA", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": [], "why_insufficient": "one specimen evidences the family; no second variant is on hand" },
+        "next_step": "a second genuine TransUnion Canada consumer disclosure to widen the family"
+      }
+    ],
+    "US": [
+      {
+        "bureau": "Experian", "country": "US", "channel": "consumer",
+        "support_state": "SUPPORTED_FAMILY", "presentation_id": "US-CONSUMER-DISCLOSURE", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
+        "evidence": { "artifacts": ["PUB-001"], "currency": "EVIDENCED_FROM_ONE_CAPTURED_OFFICIAL_CONSUMER_SAMPLE", "present_day": false, "vintage_note": "dated 2015" },
+        "reading": { "native_or_scan": "scanned/image-only (zero native text), read by local OCR" },
+        "extraction_fields": ["account name/status", "date opened", "date of status", "first reported", "adverse rating date"],
+        "compatible_assessments": ["FCRA-605A-4-US-NATIONAL-7Y (reports APPLICABILITY_UNRESOLVED on the evidence on hand)"],
+        "boundary": "one captured official consumer sample evidences the structure; subscriber eSolutions samples are refused as out-of-channel"
+      },
+      {
+        "bureau": "Equifax", "country": "US", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-003", "ALT-007", "ALT-008", "ALT-005"], "why_insufficient": "TotalView and OneView are subscriber guides; the redesign announcement evidences format drift, not a consumer disclosure" },
+        "next_step": "a genuine US Equifax consumer disclosure specimen, or an authoritative current consumer layout specification"
+      },
+      {
+        "bureau": "TransUnion", "country": "US", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-002", "ALT-002", "PUB-015", "PUB-025", "ALT-006"], "why_insufficient": "print-image guide and TUXML samples are subscriber formats; the third-party deck is not an official consumer artifact" },
+        "next_step": "a genuine US TransUnion consumer disclosure specimen, or an authoritative current consumer layout specification"
+      }
+    ],
+    "GB": [
+      {
+        "bureau": "Experian", "country": "GB", "channel": "consumer",
+        "support_state": "HISTORICAL_EVIDENCE_ONLY", "presentation_id": "FAM-GB-EXP-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
+        "evidence": { "artifacts": ["PUB-009"], "currency": "HISTORICAL_DEMONSTRATION_EVIDENCE_ONLY", "present_day": false, "vintage_note": "1 June 2007, marked fictitious on its own face" },
+        "reading": { "native_or_scan": "native text on every page (9/9)" },
+        "extraction_fields": ["application/electoral/public-record/credit-account dates", "previous searches", "retention policy statements"],
+        "compatible_assessments": ["2 report-fact consistency checks (GB-FACT-*)", "1 printed-policy observation (GB-PRINTED-RETENTION-POLICY-ON-ITEM)", "no statutory unit"],
+        "boundary": "present-day GB support is NOT claimed; the 2007 example evidences structure only"
+      },
+      {
+        "bureau": "Equifax", "country": "GB", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-011", "PUB-024"], "why_insufficient": "glossary returned 404 and the statutory route is HTML; no consumer report specimen captured" },
+        "next_step": "a genuine current Equifax GB consumer report"
+      },
+      {
+        "bureau": "TransUnion", "country": "GB", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-010", "PUB-018"], "why_insufficient": "guide returned 403 and the statutory route is HTML; no consumer report specimen captured" },
+        "next_step": "a genuine current TransUnion GB consumer report"
+      },
+      {
+        "bureau": "Experian", "country": "GB", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-009"], "why_insufficient": "the only Experian GB artifact is the 2007 fictitious training sample" },
+        "next_step": "a genuine current Experian GB consumer report"
+      }
+    ],
+    "AU": [
+      {
+        "bureau": "Equifax", "country": "AU", "channel": "consumer",
+        "support_state": "SUPPORTED_FAMILY", "presentation_id": "FAM-AU-EQX-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
+        "evidence": { "artifacts": ["PUB-012"], "currency": "EVIDENCED_FROM_ONE_CAPTURED_PUBLIC_SAMPLE", "present_day": false, "vintage_note": "Mar17 URL; cover prints a 2016 report date" },
+        "reading": { "native_or_scan": "native text (14 pages)" },
+        "extraction_fields": ["credit enquiries", "overdue account original-listing date", "consumer credit liability dates", "date will be deleted"],
+        "compatible_assessments": ["AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y (APPLICABLE branch not exercised on the sample on hand)"],
+        "boundary": "one captured public sample evidences the structure"
+      },
+      {
+        "bureau": "Experian", "country": "AU", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-022", "PUB-023"], "why_insufficient": "integrated route and field guide are HTML, not a report specimen" },
+        "next_step": "a genuine Experian AU consumer report"
+      },
+      {
+        "bureau": "illion", "country": "AU", "channel": "consumer", "support_state": "MISSING",
+        "evidence": { "artifacts": ["PUB-020", "PUB-022"], "why_insufficient": "the compliance review is not a report specimen; the integrated route is HTML" },
+        "next_step": "a genuine illion AU consumer report"
+      }
+    ]
+  },
+  "acquisition_queue": [
+    { "rank": 1, "market": "US", "bureau": "Equifax", "channel": "consumer", "reason": "largest remaining consumer market; subscriber guides already pin creditor-classification field names", "blocker": "no genuine consumer disclosure specimen" },
+    { "rank": 2, "market": "US", "bureau": "TransUnion", "channel": "consumer", "reason": "same US consumer market; print-image and TUXML are out-of-channel", "blocker": "no genuine consumer disclosure specimen" },
+    { "rank": 3, "market": "AU", "bureau": "Experian", "channel": "consumer", "reason": "official integrated Experian/illion route is live", "blocker": "no report specimen" },
+    { "rank": 4, "market": "AU", "bureau": "illion", "channel": "consumer", "reason": "official integrated Experian/illion route is live", "blocker": "no report specimen" },
+    { "rank": 5, "market": "GB", "bureau": "Experian", "channel": "consumer", "reason": "only the 2007 fictitious training sample exists; current GB remains blocked", "blocker": "no current consumer report specimen" },
+    { "rank": 6, "market": "GB", "bureau": "Equifax", "channel": "consumer", "reason": "current GB support cannot be claimed without it", "blocker": "no consumer report specimen" },
+    { "rank": 7, "market": "GB", "bureau": "TransUnion", "channel": "consumer", "reason": "current GB support cannot be claimed without it", "blocker": "no consumer report specimen" },
+    { "rank": 8, "market": "CA", "bureau": "Equifax", "channel": "consumer", "reason": "PR-01 is digest-only; a second specimen or an official layout spec would promote it to a family", "blocker": "one specimen only" },
+    { "rank": 9, "market": "CA", "bureau": "TransUnion", "channel": "consumer", "reason": "the family is evidenced by one specimen; a second variant would widen it", "blocker": "one specimen only" }
+  ]
+}

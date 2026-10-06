@@ -1,0 +1,41 @@
+# Owner imperatives
+
+SEVEN-DAY EXECUTION OVERRIDE — READ FIRST: `CRP_OWNER_VERSION_1_SEVEN_DAY_EXECUTION_001.md` governs version 1 scheduling and reviews. Target a complete approved-scope staging candidate by October 11, 2026; preserve all 82 jurisdictions and release safeguards. It supersedes conflicting older queues and repeated research sequences. Use `CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md` as the single remaining-work schedule. Cline is the implementation writer; no concurrent implementation edits. Each extra prerequisite requires a demonstrated defect, consumer impact and smallest fix. Apply at the next safe boundary of current work; documentation adoption is not runtime completion.
+
+SCALING RULE: build by reusable layout families, shared report facts and check/packet mechanisms—not 82 jurisdictions × bureau combinations. Batch ready related mappings; verify representative distinct end-to-end paths and reuse automated regional coverage loops. Country-specific layout and legal differences still require supported mappings. See the scaling clarification in `CRP_OWNER_REPORT_DATA_TO_ISSUE_BLOCKER_001.md`.
+
+HIGHEST BUILD PRIORITY: read `CRP_OWNER_REPORT_DATA_TO_ISSUE_BLOCKER_001.md` FIRST. BLOCKER-REPORT-DATA-TO-ISSUE-001 is an OPEN production blocker. Build relevant ordinary-report parsing, functional accepted compliance/factual checks, and existing packet delivery together in bounded upload-to-packet slices, starting with TransUnion Canada account-table gaps. This supersedes older isolated-rule/count-first sequencing. Preserve all 82 and the simple consumer flow; do not complete three separate systems before integrating them.
+
+Version 1 scope discipline applies to ingestion and the legal corpus as well as issues/packets: read the owner extension in `CRP_OWNER_SIMPLE_CONSUMER_FLOW_001.md`. Reuse working readers and accepted relevant sources; do not require perfect whole-report extraction or exhaustive corpus research before supported issues are delivered. Additional scope belongs in the version 2.0 roadmap; preserve all 82 currently promised jurisdictions and unfinished core obligations. The architect must control drift without relying on repeated owner reminders.
+
+Read `CRP_OWNER_SIMPLE_CONSUMER_FLOW_001.md` FIRST for assessment, packet and architect-review work. The standing consumer promise is upload → actual/probable/potential issues → choose disputes → review/approve → packet to send to the bureau. Keep source research and audit detail internal. Do not add certainty gates, routine legal nuances or repeated research prerequisites to supported potential issues. Every additional requirement must fix a concrete consumer-impacting defect; preserve independently supported factual issues and packets when only legal attribution is uncertain.
+
+PRIME DIRECTIVE: Ingest the report → compare its data against RELEVANT credit-report compliance requirements (including applicable legal statutes) → report supported probable/potential issues to the consumer → configure a dispute packet for the issues they choose to dispute. This complete consumer path is the first order of business and must govern every architect handoff, build batch and review. Read `CRP_OWNER_POTENTIAL_ISSUE_STANDARD_001.md`; do not substitute exhaustive legal proof or peripheral work for this outcome.
+
+Read `CRP_OWNER_POTENTIAL_ISSUE_STANDARD_001.md` FIRST for assessment, finding and packet work. The owner requires consumer-first detection of supported potential violations and common reporting problems, not definite-proof-only screening. Use distinct definite, probable and potential evidence thresholds; supported uncertain issues may support factual verification/correction packets. This amendment supersedes conflicting definite-proof-only or VIOLATION-only packet requirements. Apply its mandatory batch review gate and disclose it at the next Cline handoff. Documentation adoption is not runtime completion.
+
+Read `CRP_OWNER_BATCH_EXECUTION_001.md` for every implementation batch and architect handoff. It establishes standing execution rules: related outcome batches, reuse of accepted corpus and meaningful tests, routine decisions within explicit batch authority, consolidated legal decisions, and incremental evidence maintenance. Preserve the consumer Wizzard. Apply after the currently executing batch returns; do not issue a competing task.
+
+Read `CRP_OWNER_BUILD_FIRST_VERIFICATION_001.md`. Build the reconciled core platform first. Robust passing technical tests may establish the basis for consumer outcomes and implementation closure; live staging review with fictional artifacts follows after technical readiness. Do not hold independent implementation work for hosted verification or conflate technical closure with production readiness.
+
+Read `CRP_FINAL_RELEASE_SCOPE_001.md` first. Initial release blockers must map to the approved one-time/subscriber minimum. Unrelated additions belong in CRP_OPTIONAL_UPGRADES_ROADMAP_001.md and do not block launch. Do not demote unfinished core coverage, packets, reliable intake, privacy, billing or release provenance to optional.
+
+Latest owner correction (October 4): allow one brief public legal-advice disclaimer solely in a small, readable footer section of the main page. Do not repeat it in any other area, including results, explanations, billing/support views, packets, downloads or consumer communications. This narrow exception supersedes older absolute bans. See CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md.
+
+Read `CRP_OWNER_SUBSCRIBER_OFFERING_001.md` first. It is the current approved product scope and consumer presentation authority: reporting issues/probable reporting issues, consumer-controlled correction packets, continuing report comparison, all 82 jurisdictions, no litigation service or public legal-advice disclaimers. Preserve internal classifications and evidence gates. Conflicting older UI-label requirements are superseded.
+
+Read `CRP_OWNER_DISPUTE_PACKET_READINESS_BLOCKER_001.md`. BLOCKER-DISPUTE-PACKET-001 is an OPEN production blocker. Finding coverage, all-82 facilitation and consumer-ready dispute packets are separate required outcomes. Do not treat assessment reports or demonstrations as packet readiness.
+
+Read `CRP_OWNER_ALL82_FACILITATION_BLOCKER_001.md`. BLOCKER-ALL82-FACILITATION-001 is an OPEN production blocker alongside substantive finding coverage. Every promised jurisdiction needs a tested usable consumer journey; a selector or shared infrastructure alone is insufficient.
+
+Read `CRP_OWNER_FINDING_COVERAGE_BLOCKER_001.md`. BLOCKER-FINDING-COVERAGE-001 is an explicit OPEN production blocker and the current build priority. Completed infrastructure/classifier blockers do not prove substantive consumer-promise coverage. Do not silently reduce the promised scope.
+
+Read `CRP_OWNER_CONSUMER_INCONSISTENCY_RELEASE_BLOCKERS_001.md`. Its three consumer inconsistencies are explicit release blockers. Do not close them without the specified behavioral fixes and passing tests. Consumer questions must have a governed, material effect on findings; do not use questions to cure mandatory report omissions.
+
+Read and follow `CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md` for every consumer-facing change.
+
+CRP identifies compliance violations and probable violations using governed rules and source-linked report evidence. Do not add "not legal advice", "not legal advise", or equivalent legal-advice disclaimers to UI, explanations, reports, downloads or consumer communications. Explain the finding and its evidence directly. Preserve specific uncertainty, accurate coverage, and the distinction between observations and findings.
+
+Follow `CRP_OWNER_BLOCKER_CLOSURE_POLICY_001.md`: implementation closure, staging verification and production readiness are separate statuses. Passing behavioral tests can establish implementation closure; retain failed or pending staging outcomes honestly.
+
+Do not surface reasons why potential findings could not be completed, unresolved-value cards, or failed/not-run check qualifications to consumers. Keep those details internal. Do not imply that incomplete checks establish compliance or absence of violations. Follow the additional imperative in `CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md`.

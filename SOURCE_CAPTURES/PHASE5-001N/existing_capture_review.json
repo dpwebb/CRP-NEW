@@ -1,0 +1,188 @@
+{
+  "artifact": "existing_capture_review.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 2 - inspect the existing captures first and identify, for every member row, its jurisdiction, legislative instrument, exact provision, relevant version or date, and source provenance",
+  "created_utc": "2026-09-30",
+  "what_already_exists_in_this_workspace": {
+    "SOURCE_CAPTURES/PHASE5-001G/NS-consumer-reporting.pdf": "351156 bytes, sha256 5AD228066B3281E1702C2C63DA012C28128D444B8D528069075DC65939445500 - the recorded locator document for the Nova Scotia cluster, captured by PHASE5-001G with its text derivative NS-consumer-reporting.txt (46081 bytes, sha256 C7EB74B9D9BE0104709200E283010225F52951F88EFBD6C0D5F8DBCB6641DDEA)",
+    "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md section 2": "designates the same bytes as retained source evidence: evidence\\canada\\nova-scotia\\source-retrievals\\historical-ns-cra-source-5ad22806.pdf, sha256 5AD228066B3281E1702C2C63DA012C28128D444B8D528069075DC65939445500. The Nova Scotia capture therefore adds no new authority bytes and is cross-referenced rather than counted twice (PHASE5-001H correction item 3).",
+    "legacy_rule_digests": "legalRules.ts FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6, solTable.ts E0C04B274FD748461FE8F3D33FB4E5DF52538AB324D7682E02B6B526926896EF and authorities.canada.ts 34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1 are the recorded source artifacts of the fifteen rows",
+    "no_other_existing_capture": "the workspace was searched for the recorded locators and content strings; no capture exists for the FCAC page, the PIPEDA consolidation, W. Va. Code section 55-2-6, N.Y. Gen. Bus. Law section 380-j, the Experian CRAIN retention table or the Ontario statute. The recorded content strings appear only as recorded descriptors in the catalogue and in SOURCE_CAPTURES/PHASE5-001L/duplicate_identity_analysis.json",
+    "consequence": "for five of the six clusters the existing evidence is the recorded descriptor plus the legacy source-artifact digest; only Nova Scotia already held the locator document, so steps 3 and 4 retrieved the remaining material"
+  },
+  "rows": [
+    {
+      "id": "CRP-LSRC-0315", "cluster": "PIPEDA", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "FEDERAL (COUNTRY_WIDE_SOURCE; canonical_country_code and canonical_region_code blank)",
+      "instrument_recorded": "PIPEDA", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html",
+      "effective_recorded": "years=3; start=`the date of the enquiry`", "verification_recorded": "verified=false",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | FEDERAL | PIPEDA | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; recorded locator only", "version_or_date_recorded": "NOT RECORDED",
+      "sufficiency": "INSUFFICIENT - instrument, provision, version and date are unattributed, so the recorded locator itself had to be retrieved"
+    },
+    {
+      "id": "CRP-LSRC-0316", "cluster": "PIPEDA", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "FEDERAL (COUNTRY_WIDE_SOURCE; canonical codes blank)",
+      "instrument_recorded": "PIPEDA", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html",
+      "effective_recorded": "years=6; start=`the date of discharge`", "verification_recorded": "verified=false",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | FEDERAL | PIPEDA | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; recorded locator only", "version_or_date_recorded": "NOT RECORDED",
+      "sufficiency": "INSUFFICIENT - as row 0315"
+    },
+    {
+      "id": "CRP-LSRC-0317", "cluster": "PIPEDA", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "FEDERAL (COUNTRY_WIDE_SOURCE; canonical codes blank)",
+      "instrument_recorded": "PIPEDA", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html",
+      "effective_recorded": "years=3; start=`3 years after all debts in the proposal are paid, or 6 years after signing - whichever comes...` (recorded)",
+      "verification_recorded": "verified=false",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | FEDERAL | PIPEDA | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; recorded locator only", "version_or_date_recorded": "NOT RECORDED",
+      "sufficiency": "INSUFFICIENT - as row 0315; the recorded start string is itself truncated in the record"
+    },
+    {
+      "id": "CRP-LSRC-0318", "cluster": "PIPEDA", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "FEDERAL (COUNTRY_WIDE_SOURCE; canonical codes blank)",
+      "instrument_recorded": "PIPEDA", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html",
+      "effective_recorded": "years=2; start=`the date the plan's debts are paid off`", "verification_recorded": "verified=false",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | FEDERAL | PIPEDA | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; recorded locator only", "version_or_date_recorded": "NOT RECORDED",
+      "sufficiency": "INSUFFICIENT - as row 0315"
+    },
+    {
+      "id": "CRP-LSRC-0320", "cluster": "PIPEDA", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "FEDERAL (COUNTRY_WIDE_SOURCE; canonical codes blank)",
+      "instrument_recorded": "PIPEDA", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html",
+      "effective_recorded": "years=6; start=`the date of the judgment`", "verification_recorded": "verified=false",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | FEDERAL | PIPEDA | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; recorded locator only", "version_or_date_recorded": "NOT RECORDED",
+      "sufficiency": "INSUFFICIENT - as row 0315"
+    },
+    {
+      "id": "CRP-LSRC-0149", "cluster": "WV", "record_type": "LIMITATION_RECORD", "legal_family": "F1",
+      "jurisdiction_recorded": "US-WV (EXACT; US / US-WV)",
+      "instrument_recorded": "W. Va. Code", "provision_recorded": "§ 55-2-6",
+      "locator_recorded": "OWNER-APPROVED STATUTORY AUTHORITY (2026-09-17, owner-supplied mapping approved as truth): no URL recorded (note body withheld)",
+      "effective_recorded": "years=5", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\solTable.ts", "source_artifact_sha256": "E0C04B274FD748461FE8F3D33FB4E5DF52538AB324D7682E02B6B526926896EF",
+      "register": {"legal_provision_key": "US | US-WV | US-WV | W. Va. Code | § 55-2-6", "canonical_entry_id": "CRP-LSRC-0149", "duplicate_group_id": "DUP-PAIR-004", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; the recorded locator is not a URL", "version_or_date_recorded": "owner approval date 2026-09-17; no statutory edition recorded",
+      "sufficiency": "INSUFFICIENT - no URL and no edition, so the official West Virginia Code text had to be retrieved to test whether one section carries both recorded values"
+    },
+    {
+      "id": "CRP-LSRC-0150", "cluster": "WV", "record_type": "LIMITATION_RECORD", "legal_family": "F1",
+      "jurisdiction_recorded": "US-WV (EXACT; US / US-WV)",
+      "instrument_recorded": "W. Va. Code", "provision_recorded": "§ 55-2-6",
+      "locator_recorded": "OWNER-APPROVED STATUTORY AUTHORITY (2026-09-17, owner-supplied mapping approved as truth): no URL recorded (note body withheld)",
+      "effective_recorded": "years=10", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\solTable.ts", "source_artifact_sha256": "E0C04B274FD748461FE8F3D33FB4E5DF52538AB324D7682E02B6B526926896EF",
+      "register": {"legal_provision_key": "US | US-WV | US-WV | W. Va. Code | § 55-2-6", "canonical_entry_id": "CRP-LSRC-0149", "duplicate_group_id": "DUP-PAIR-004", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; the recorded locator is not a URL", "version_or_date_recorded": "owner approval date 2026-09-17; no statutory edition recorded",
+      "sufficiency": "INSUFFICIENT - as row 0149"
+    },
+    {
+      "id": "CRP-LSRC-0165", "cluster": "NY", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "`US-NY` (bare `NY` law const `NY_GBL`) (EXACT; US / US-NY)",
+      "instrument_recorded": "Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25", "provision_recorded": "§ 380-j(f)(1)(ii)",
+      "locator_recorded": "https://newyork.public.law/laws/n.y._general_business_law_section_380-j",
+      "effective_recorded": "start=`the date the judgment was entered (judgment satisfied within 5 years of entry)`", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": "US | US-NY | `US-NY` (bare `NY` law const `NY_GBL`) | Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25 | § 380-j(f)(1)(ii)", "canonical_entry_id": "CRP-LSRC-0165", "duplicate_group_id": "DUP-PAIR-005", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none", "version_or_date_recorded": "NOT RECORDED; no effective period recorded",
+      "sufficiency": "PARTIAL - the provision and the locator are recorded, but the clause text was not in the workspace, so the clause had to be retrieved to test which limb each row records"
+    },
+    {
+      "id": "CRP-LSRC-0166", "cluster": "NY", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "US-NY (EXACT; US / US-NY)",
+      "instrument_recorded": "Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25", "provision_recorded": "§ 380-j(f)(1)(ii)",
+      "locator_recorded": "https://newyork.public.law/laws/n.y._general_business_law_section_380-j",
+      "effective_recorded": "start=`the date of entry, or the end of the governing statute of limitations, whichever is longer`", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": "US | US-NY | US-NY | Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25 | § 380-j(f)(1)(ii)", "canonical_entry_id": "CRP-LSRC-0165", "duplicate_group_id": "DUP-PAIR-005", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none", "version_or_date_recorded": "NOT RECORDED; no effective period recorded",
+      "sufficiency": "PARTIAL - as row 0165"
+    },
+    {
+      "id": "CRP-LSRC-0409", "cluster": "CRAIN", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "UK (UK_TO_GB_RECONCILIATION_REQUIRED; canonical_country_code and canonical_region_code blank)",
+      "instrument_recorded": "Credit Reference Agency Information Notice (CRAIN) retention table",
+      "provision_recorded": "`Credit account performance data - 6 years for live decision-making from the date the accoun...` (recorded label)",
+      "locator_recorded": "https://www.experian.co.uk/legal/crain/data-retention-periods",
+      "effective_recorded": "years=6; start=`the date the account is settled or closed`", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | UK | Credit Reference Agency Information Notice (CRAIN) retention table | `Credit account performance data - 6 years for live decision-making from the date the accoun...` (recorded label)", "canonical_entry_id": "CRP-LSRC-0409", "duplicate_group_id": "DUP-PAIR-014", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none", "version_or_date_recorded": "NOT RECORDED; the recorded label is a truncated table label and is not a statutory provision",
+      "sufficiency": "PARTIAL - the recorded locator exists, but the recorded label is truncated and neither recorded start string appears in any workspace artifact, so the locator had to be retrieved and tested item by item"
+    },
+    {
+      "id": "CRP-LSRC-0411", "cluster": "CRAIN", "record_type": "CONTENT_RULE", "legal_family": "F1",
+      "jurisdiction_recorded": "UK (UK_TO_GB_RECONCILIATION_REQUIRED; canonical codes blank)",
+      "instrument_recorded": "Credit Reference Agency Information Notice (CRAIN) retention table",
+      "provision_recorded": "`Credit account performance data - 6 years for live decision-making from the date the accoun...` (recorded label)",
+      "locator_recorded": "https://www.experian.co.uk/legal/crain/data-retention-periods",
+      "effective_recorded": "years=6; start=`the date the arrears were recorded`", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": " |  | UK | Credit Reference Agency Information Notice (CRAIN) retention table | `Credit account performance data - 6 years for live decision-making from the date the accoun...` (recorded label)", "canonical_entry_id": "CRP-LSRC-0409", "duplicate_group_id": "DUP-PAIR-014", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none", "version_or_date_recorded": "NOT RECORDED; the recorded label is a truncated table label and is not a statutory provision",
+      "sufficiency": "PARTIAL - as row 0409; the two rows share one recorded label while recording different starts"
+    },
+    {
+      "id": "CRP-LSRC-0336", "cluster": "NS", "record_type": "AUTHORITY_RECORD", "legal_family": "F2",
+      "jurisdiction_recorded": "NS (EXACT; CA / CA-NS)",
+      "instrument_recorded": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://nslegislature.ca/sites/default/files/legc/statutes/consumer%20reporting.pdf",
+      "effective_recorded": "NOT RECORDED", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": "CA | CA-NS | NS | Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93 | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "YES - SOURCE_CAPTURES/PHASE5-001G/NS-consumer-reporting.pdf (351156 bytes) is the same bytes as this locator, and its sha256 is a retained-evidence pin of CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md section 2",
+      "version_or_date_recorded": "NOT RECORDED in the row; the retrieved document is the office consolidation 'CHAPTER 93 OF THE REVISED STATUTES, 1989', as amended to 2018, (c) 2019",
+      "sufficiency": "PARTIAL - the instrument is confirmed by an existing capture, but neither row records any provision, so the relation is an instrument-level question"
+    },
+    {
+      "id": "CRP-LSRC-0349", "cluster": "NS", "record_type": "AUTHORITY_RECORD", "legal_family": "F2",
+      "jurisdiction_recorded": "`CANADA_NOVA_SCOTIA` (`CA-NS`) (EXACT; CA / CA-NS)",
+      "instrument_recorded": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://nslegislature.ca/sites/default/files/legc/statutes/consumer%20reporting.pdf",
+      "effective_recorded": "NOT RECORDED", "verification_recorded": "retrievedOn=2026-09-27",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\authorities.canada.ts", "source_artifact_sha256": "34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1",
+      "register": {"legal_provision_key": "CA | CA-NS | `CANADA_NOVA_SCOTIA` (`CA-NS`) | Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93 | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0349", "duplicate_group_id": "DUP-PAIR-011", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "YES - the same 001G PDF; this row carries the second retained-evidence pin source (authorities.canada.ts, declared as 'Source registry and retained-evidence pins' by the admission contract)",
+      "version_or_date_recorded": "source-recorded retrieval date 2026-09-27; no statutory edition recorded",
+      "sufficiency": "PARTIAL - as row 0336; the two rows differ only in their legacy jurisdiction token, verification state and source artifact"
+    },
+    {
+      "id": "CRP-LSRC-0337", "cluster": "ON", "record_type": "AUTHORITY_RECORD", "legal_family": "F2",
+      "jurisdiction_recorded": "ON (EXACT; CA / CA-ON)",
+      "instrument_recorded": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.ontario.ca/laws/statute/90c33",
+      "effective_recorded": "NOT RECORDED", "verification_recorded": "verified=true",
+      "source_artifact": "packages\\backend\\src\\services\\legalRules.ts", "source_artifact_sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "register": {"legal_provision_key": "CA | CA-ON | ON | Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0315", "duplicate_group_id": "DUP-PAIR-010", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "no capture of the statute text exists; the recorded locator was retrieved by this order and returns the e-Laws JavaScript application shell only (54243 bytes, no statute text and no statute-specific marker)",
+      "version_or_date_recorded": "NOT RECORDED in the row or in the retrieved response",
+      "sufficiency": "PARTIAL - no provision is recorded in either ON row, so the relation is an instrument-level question, and the official text was not retrievable within this order's bounded attempts"
+    },
+    {
+      "id": "CRP-LSRC-0351", "cluster": "ON", "record_type": "AUTHORITY_RECORD", "legal_family": "F2",
+      "jurisdiction_recorded": "`CANADA_ONTARIO` (`CA-ON`) (EXACT; CA / CA-ON)",
+      "instrument_recorded": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33", "provision_recorded": "NOT RECORDED",
+      "locator_recorded": "https://www.ontario.ca/laws/statute/90c33",
+      "effective_recorded": "NOT RECORDED", "verification_recorded": "retrievedOn=2026-09-27",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\authorities.canada.ts", "source_artifact_sha256": "34DED0275F522CD579E86F22DC97A5FD46CB308924A8288A065550B02C52A0B1",
+      "register": {"legal_provision_key": "CA | CA-ON | `CANADA_ONTARIO` (`CA-ON`) | Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 | NOT RECORDED", "canonical_entry_id": "CRP-LSRC-0349", "duplicate_group_id": "DUP-PAIR-011", "duplicate_link_basis": "IDENTICAL_ARTIFACT_AND_CITATION", "disposition": "UNRESOLVED", "disposition_state": "BLOCKED_MISSING_EVIDENCE", "blocker_type": "NO_DURABLE_RESCREEN_RECORD"},
+      "existing_capture": "none; same route limitation as row 0337",
+      "version_or_date_recorded": "source-recorded retrieval date 2026-09-27; no statutory edition recorded",
+      "sufficiency": "PARTIAL - as row 0337; the two rows differ only in their legacy jurisdiction token, verification state and source artifact"
+    }
+  ],
+  "created_by": "PHASE5-001N"
+}

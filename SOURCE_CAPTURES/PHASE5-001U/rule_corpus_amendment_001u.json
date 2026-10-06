@@ -1,0 +1,416 @@
+{
+  "artifact": "rule_corpus_amendment_001u.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "document_type": "RULE-CORPUS AMENDMENT — one rule unit, admitted at its immutable ID and assigned version, for one scope only",
+  "purpose": "record, as the governed legal rule corpus amendment Gate 5.7 requires, exactly one admitted rule unit with its immutable ID, its assigned version, its full provenance, the digests it is bound by and the output restrictions it carries — and record separately every count this amendment does and does not affect",
+  "the_governing_requirement_this_amendment_satisfies": {
+    "the_gate": "Gate 5.7",
+    "the_requirement_quoted_from_the_plan": "the plan requires, for this stage, a rule-corpus amendment containing immutable IDs and versions, approved by the owner after Gates 5.1–5.6 pass for this scope, together with the exclusion counts recorded separately and the coverage counts updated",
+    "where_it_is_recorded": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md, section 3 (Gate 5.7) and its Phase 5.7 bullets",
+    "how_this_amendment_satisfies_it": [
+      "immutable IDs: the rule unit ID the record carries is immutable, and the rule record itself records rule_id_is_immutable = true",
+      "versions: the assigned production version string is recorded in this amendment and in the admission record, and it supersedes the pre-admission identity by reference without editing the pinned rule record",
+      "owner approval: the owner instrument this order carries approves the amendment authority and the admission; the finding-class decision it carries is read as it is, not filled",
+      "Gates 5.1–5.6: every scoped verdict stands at its own digest, and Gate 5.6 passes all four clauses on this order's re-measurement",
+      "exclusion counts recorded separately: recorded in counts_001u.json, with the one historical excluded figure marked uncertified and unattributed",
+      "coverage counts: recorded in counts_001u.json as they are, without converting available figures into governed coverage"
+    ]
+  },
+  "the_amendment": {
+    "amendment_id": "A-U-2",
+    "form": "extension-only addition of one admitted rule to the governed legal rule corpus, recorded in this order's artifacts",
+    "what_it_adds": "exactly one complete rule unit, at its immutable ID, its assigned version and its full provenance",
+    "what_it_changes_in_the_plan": "nothing: the plan was amended once by A-U-1 earlier in this order, and this admission is recorded in artifacts rather than by a second plan amendment",
+    "approved_by_the_owner": {
+      "instrument": "SOURCE_CAPTURES\\PHASE5-001U\\owner_decision_record.json",
+      "instrument_sha256": "BC0DD7C6C63CE13A90919C3FF3442B200BBE8FCA5D7FC8087D5EED0AE57CD79D",
+      "decision": "OWNER-DECISION-2 — the scope admission, conditional on all four scoped Gate 5.6 criteria passing",
+      "how_approval_is_read": "the instrument authorises this amendment expressly; the amendment is not inferred from the admission, and the admission is not inferred from the amendment"
+    },
+    "the_condition_it_waited_on": {
+      "requirement": "all four scoped Gate 5.6 criteria pass",
+      "measured_now": "SATISFIED",
+      "tally": {
+        "gate": "5.6, scoped",
+        "clauses": 4,
+        "met": 4,
+        "not_met": 0,
+        "clauses_met_verbatim_list": [
+          "every test passes",
+          "independent replay reproduces each sampled result",
+          "no known false positive/negative category remains unexplained",
+          "rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions"
+        ],
+        "clauses_not_met_verbatim_list": []
+      },
+      "verdict_record": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_6_verdict_successor.json",
+      "verdict_sha256": "A855EB2C2C954987AD11DC985F0C3527CECF56E2575A8E67CAF87E239410A07F"
+    },
+    "entries_before_this_amendment": {
+      "governed_rules_admitted": 0,
+      "governed_coverage_entries": 0,
+      "authorised_finding_classes": 0
+    },
+    "entries_after_this_amendment": {
+      "governed_rules_admitted": 1,
+      "governed_coverage_entries": 1,
+      "authorised_finding_classes": 0
+    }
+  },
+  "rules_admitted": [
+    {
+      "immutable_rule_id": "CA-NS-CRA-S10-3-C-LIMB-1",
+      "assigned_rule_version": "1.0.0",
+      "assigned_version_string": "CA-NS-CRA-S10-3-C-LIMB-1/v1.0.0",
+      "production_admission_identity": "CA-NS-CRA-S10-3-C-LIMB-1@ADMITTED-v1.0.0-C24CA3FD3AA3",
+      "pre_admission_identity_this_supersedes": "CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3",
+      "version_field_of_the_pinned_rule_record": "RESERVED_TO_GATE_5_7 — resolved by reference, in this record and in the admission record; the pinned rule record is not edited and its digest does not move",
+      "jurisdiction": {
+        "country_code": "CA",
+        "region_code": "CA-NS",
+        "instrument": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93",
+        "cited_provision": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)"
+      },
+      "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+      "limb_in_scope": "the first limb of s. 10(3)(c): six years after the last payment made on the debt",
+      "limb_out_of_scope_and_unseated": "the second limb (no payment made on the debt: six years from the date the default in payment occurred). It is excluded from this scope because the presentation prints no field the admitted text reads as that date (PROD-003 field_records FACT-05, status EXTRACTION_UNRESOLVED for PR-01).",
+      "presentation": {
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "admission_boundary": "This one artifact, at this digest, from this consumer channel, is the supported presentation. (SOURCE_CAPTURES\\PROD-003\\report_representation_register.json, presentations[PR-01].admission_boundary)"
+      },
+      "source_entry": {
+        "source_entry_id": "CRP-LSRC-0354",
+        "provision_or_citation": "s. 10(3)(c)",
+        "catalogue_row_state": "UNRESOLVED / BLOCKED_MISSING_EVIDENCE",
+        "catalogue_row_state_after_this_amendment": "UNCHANGED — this order does not clear, move or re-state the register row of the source entry it admits; the row still reads UNRESOLVED / BLOCKED_MISSING_EVIDENCE"
+      },
+      "accepted_source_pin": {
+        "artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+        "sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+        "bytes": 192432,
+        "pin": "OWNER_ACCEPTED_LEGAL_AUTHORITY",
+        "role": "the accepted legal authority pin: it establishes what the law says and is not consumer evidence; it is cited and it is not read by the evaluator"
+      },
+      "governed_rule_record": {
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "bytes": 37993,
+        "governed_fields_recorded": 13,
+        "unresolved_dependencies_carried": 13
+      }
+    }
+  ],
+  "rules_not_admitted_this_amendment": {
+    "count": 0,
+    "statement": "this amendment admits exactly one rule unit and admits no other: zero further units are admitted, and no unit is silently dropped",
+    "candidates_preserved_as_candidates": [
+      {
+        "combination_id": "PROD-003-RUNNER-UP-1",
+        "rule_unit": "ca-on.cra.s9_3_f.debt_or_collection_7y",
+        "source_entry_id": "CRP-LSRC-0367",
+        "state": "PRESERVED AS A CANDIDATE — not admitted, not dispositioned, and not converted into a governed rule by this order"
+      }
+    ],
+    "combinations_recorded_as_rejected_and_left_as_recorded": {
+      "count": 7,
+      "state": "each recorded rejection is preserved as recorded; none is re-opened, re-classified or suppressed by this order"
+    },
+    "the_corpus_rows_this_amendment_does_not_move": "UNCHANGED — this order does not clear, move or re-state the register row of the source entry it admits; the row still reads UNRESOLVED / BLOCKED_MISSING_EVIDENCE"
+  },
+  "counts_this_amendment_records": {
+    "register_rows_read": 437,
+    "register_disposition_tally": {
+      "UNRESOLVED": 416,
+      "GAP": 18,
+      "REFUSAL": 3
+    },
+    "register_excluded_rows": 0,
+    "register_excluded_note": "no register row carries a disposition of EXCLUDED: the register's own dispositions are UNRESOLVED, GAP and REFUSAL, and the only excluded figure in the record is the preserved historical tally, recorded separately and uncertified",
+    "the_preserved_historical_tally": {
+      "recorded_in": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "sentence_present_in_the_document": true,
+      "sentence_occurrences": 2,
+      "probable_candidates": 39,
+      "excluded": 380,
+      "unresolved": 18,
+      "sum": 437,
+      "status": "PRESERVED AS AN UNATTRIBUTED HISTORICAL RECORD (owner disposition PHASE5-001M): its per-ID inventory is absent from this workspace, so no catalogue ID is assigned to any of its classes, it is not a certified operational count, and this order does not use it as a count of excluded, unresolved or probable source entries.",
+      "why_it_is_recorded_here": "the Phase 5.7 bullet requires excluded counts to be recorded separately and not represented as certified; the only excluded figure the record holds is this preserved historical tally, and it is recorded as exactly that"
+    },
+    "coverage_summary_counts_are_planning_figures": {
+      "what_they_are": {
+        "accepted_entries": 410,
+        "accepted_content_rules": 249,
+        "accepted_limitation_records": 111,
+        "accepted_authority_records": 27,
+        "accepted_citation_records": 23
+      },
+      "what_they_are_not": "they are not certified governed coverage: they count accepted source records available for implementation, and this amendment converts exactly one of them into one governed rule",
+      "coverage_summary_register_disposition": {
+        "UNRESOLVED": 416,
+        "GAP": 18,
+        "REFUSAL": 3
+      },
+      "canonical_jurisdiction_status": {
+        "EXACT": 311,
+        "COUNTRY_WIDE_SOURCE": 100,
+        "UK_TO_GB_RECONCILIATION_REQUIRED": 14,
+        "GAP": 9,
+        "RECORDED_REFUSAL": 3
+      },
+      "limitation_or_retention_family_entries": 225,
+      "per_jurisdiction_ca_ns": {
+        "total": 16,
+        "accepted": 15,
+        "content_rule": 10,
+        "limitation_record": 0,
+        "mapped": 14,
+        "country_wide_source": 0
+      }
+    }
+  },
+  "what_this_amendment_does_not_do": [
+    "it admits no rule for any other jurisdiction, rule unit, limb or presentation, and it does not advance the corpus-wide Gate 5.7 queue",
+    "it authorises no finding class and produces no consumer-visible output of any class",
+    "it clears no register row: the source entry of the admitted rule still reads UNRESOLVED / BLOCKED_MISSING_EVIDENCE",
+    "it does not edit the governed rule record, its digest, any earlier verdict, manifest, baseline or register row",
+    "it does not decide the effective period, the direct-report section 4 retention exception, the anniversary-boundary question, the comparison reference date or the printed-field question",
+    "it does not integrate anything into the application, deploy anything or transmit anything"
+  ],
+  "bound_by_digests": {
+    "the_rule_itself": [
+      {
+        "record": "rule_record",
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "register",
+        "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+        "sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "crosswalk",
+        "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+        "sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_evaluation_this_rule_is_admitted_with": [
+      {
+        "record": "fact_model",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+        "sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "status_vocabulary",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+        "sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "specification",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+        "sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "evaluator",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+        "sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "determinism_check",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+        "sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "output_surface",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+        "sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "inputs_source",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\inputs_001t.cjs",
+        "sha256": "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "reviewer_source",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+        "sha256": "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_tests_it_passed": [
+      {
+        "record": "fixture_suite",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_suite_001t.json",
+        "sha256": "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "negative_tests",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\negative_tests_001t.json",
+        "sha256": "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "replay_expectations",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\replay_expectations_frozen.json",
+        "sha256": "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "independent_replay",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\independent_replay_001t.json",
+        "sha256": "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "consumer_language",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\consumer_language_validation_001t.json",
+        "sha256": "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "fixture_catalogue_source",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_catalogue_001t.cjs",
+        "sha256": "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "fixtures_source",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\fixtures_001t.cjs",
+        "sha256": "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_corpus_records_the_counts_are_read_from": [
+      {
+        "record": "rescreen_register",
+        "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+        "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "coverage_summary",
+        "path": "SOURCE_CAPTURES\\PHASE5-001O\\coverage_summary.json",
+        "sha256": "16B81448E73C8E526B488CDA1E3D162AAE49A698D3708BCF1620B85536AD97F6",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "coverage_ledger",
+        "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json",
+        "sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_scoped_gate_verdicts_it_stands_on": [
+      {
+        "record": "scoped Gate 5.2 verdict",
+        "path": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_2_verdict.json",
+        "sha256": "9048B5C47B1587E12CB0DD9A9CCEE7A273BA2E0E6DFCE8B00024FD8082984D19",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "scoped Gate 5.3 verdict",
+        "path": "SOURCE_CAPTURES\\PHASE5-001P\\scoped_gate_5_3_verdict.json",
+        "sha256": "DA45FE408BFD5EC8C8977BDA0943416FC9EFF7B1371D6B065B7F41A04286D391",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "scoped Gate 5.4 verdict",
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json",
+        "sha256": "729D5EA0465061AD3DE262F3C8B9447CEACA1CD61F80890D38F88179E61D818D",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "withheld Gate 5.5 verdict, preserved",
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+        "sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "successor scoped Gate 5.5 verdict",
+        "path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+        "sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "original scoped Gate 5.6 verdict, preserved as the predecessor",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\scoped_gate_5_6_verdict.json",
+        "sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "successor scoped Gate 5.6 verdict: the four clauses on this re-measurement",
+        "path": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_6_verdict_successor.json",
+        "sha256": "A855EB2C2C954987AD11DC985F0C3527CECF56E2575A8E67CAF87E239410A07F",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_authority_and_its_resolution": [
+      {
+        "record": "the owner instrument this order carries, quoted",
+        "path": "SOURCE_CAPTURES\\PHASE5-001U\\owner_decision_record.json",
+        "sha256": "BC0DD7C6C63CE13A90919C3FF3442B200BBE8FCA5D7FC8087D5EED0AE57CD79D",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "the version-conflict resolution record",
+        "path": "SOURCE_CAPTURES\\PHASE5-001U\\version_conflict_resolution_record.json",
+        "sha256": "B1360ADEEED8873B8D631C0F90256585AC69602780F93B3D20F6C04289F476B5",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "the amendment text (A-U-1, quoted)",
+        "path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_text.json",
+        "sha256": "1253FE9647E1E63B2E5B216998495F7E91571B242A918802BF1DB57CC3E6840C",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "the amendment application result",
+        "path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_application_result.json",
+        "sha256": "85254FD53190BDE1C09C5AF4769328A8EA39F839F81E224450C5D8FB5F7D715F",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "the governing build plan, as amended by this order",
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "sha256": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+        "present_in_this_workspace": true
+      },
+      {
+        "record": "the governing build plan as it stood before this order amended it",
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "present_in_this_workspace": false
+      },
+      {
+        "record": "the rank-2 core constitution, read only",
+        "path": "CRP_CORE_CONSTITUTION.md",
+        "sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+        "present_in_this_workspace": true
+      }
+    ],
+    "the_reserved_draft_order_this_admission_executes": [
+      {
+        "record": "the reserved order this admission executes",
+        "path": "SOURCE_CAPTURES\\PHASE5-001T\\next_work_order.json",
+        "sha256": "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B",
+        "present_in_this_workspace": true
+      }
+    ]
+  },
+  "created_by": "PHASE5-001U"
+}

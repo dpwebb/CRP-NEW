@@ -1,0 +1,70 @@
+{
+  "artifact": "scoped_gate_5_2_verdict.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+  "gate": "Gate 5.2 — Reconcile accepted legal decisions and finish report-only dispositions",
+  "gate_text_quoted_verbatim": [
+    "**Gate 5.2:** all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable; every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal. Legal/source fields are accepted under PHASE5-001A, not re-litigated. No batch is accepted based solely on an unverified completion summary.",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md, section 3, Gate 5.2, now at line 109 of the amended document (line 87 before amendment A-2)",
+    "The amendment A-2 sentence now recorded in that paragraph: \"This condition is corpus-wide: it stays unpassed while any of the 437 entries lacks a reconciled report-only disposition or a documented reason it is not assessable, and a scoped verdict recorded under the PHASE5-001P paragraph above is read against the records inside its named scope only. Such a verdict neither states nor implies that this corpus-wide condition is satisfied.\""
+  ],
+  "authority_for_this_scoped_verdict": "amendment A-1 (build plan section 3, the scoped-gate-verdict paragraph) read with amendment A-2. Amendment A-1 is the owner's PHASE5-001P authority; a scoped verdict is read against the records inside its named scope only.",
+  "verdict": "PASSED_FOR_THIS_SCOPE",
+  "corpus_wide_verdict": "NOT PASSED — the corpus-wide Gate 5.2 condition is unchanged and unfinished: 409 rows carry NO_DURABLE_RESCREEN_RECORD, six more depend on a report mapping (five of them other than this unit) and CRP-LSRC-0194 is closed by owner direction. This verdict neither states nor implies otherwise. It is recorded separately in corpus_queue_preservation.json.",
+  "criteria": [
+    {
+      "criterion_verbatim": "all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable",
+      "scoped_reading": "read for this scope as: the in-scope source record bears a reconciled report-only disposition, or a documented reason it is not assessable",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv, row CRP-LSRC-0354: disposition UNRESOLVED, disposition_state BLOCKED_MISSING_EVIDENCE, blocker_type REPORT_EVENT_DATE_MAPPING_UNVERIFIED, with a disposition_basis naming the expansion contract section 6 owner-decision block and the build plan's Phase 5.1 carry-forward line",
+        "the row is one of the 416 UNRESOLVED rows and one of the seven rows the register's section 10.1 itemises as needing an evidence route; it is not claimed to be durably dispositioned, and its disposition is not promoted by this order"
+      ]
+    },
+    {
+      "criterion_verbatim": "every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal",
+      "scoped_reading": "read for this scope as: the unresolved item that bears on this unit carries a concrete report-mapping task, or is a recorded irreducible gap or refusal",
+      "state": "MET within the scope",
+      "evidence": [
+        "the unresolved item bearing on this unit is the residual no-payment/default-date alternative of s. 10(3)(c): the exact presentation field, on an evidenced consumer presentation, that the admitted text reads as the date the default in payment occurred, or a recorded determination for that presentation that it prints none",
+        "it is a report-mapping task on the record: SOURCE_CAPTURES\\PROD-003\\report_representation_register.json field_records FACT-05 records the field as EXTRACTION_UNRESOLVED for PR-01 with its basis ('the record prints Date Assigned, First Delinquency, Date Paid/Settled, Date Verified and Last Payment Date, and none of them is the date the default in payment occurred as the admitted rule text reads that limb') and FACT-02's second_limb_note records that the limb stays UNSEATED",
+        "the other half of the original blocker — the last-payment-date alternative — is demonstrated on this specimen and cleared for it by owner decision D-4 (printed Last Payment Date row inside a Collections contract debt record, page 16 line 32 and page 17 line 5, read as the collection-scoped fact collection.lastPaymentDate per D-2)",
+        "NOT converted: the residual is recorded as a report-mapping task and is not re-classified as a GAP or a REFUSAL. The owner forbade converting missing work into GAP or REFUSAL merely to satisfy a gate, and the register's disposition vocabulary and this row's UNRESOLVED status are unchanged"
+      ]
+    },
+    {
+      "criterion_verbatim": "Legal/source fields are accepted under PHASE5-001A, not re-litigated",
+      "state": "MET",
+      "evidence": [
+        "nothing in this order reopens a source, jurisdiction, effective-period or legal-test determination",
+        "the accepted source pin is unchanged: packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts, SHA-256 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF, re-measured by this order in input_verification.json"
+      ]
+    },
+    {
+      "criterion_verbatim": "No batch is accepted based solely on an unverified completion summary",
+      "state": "MET",
+      "evidence": [
+        "every input this verdict rests on was re-measured by this order before it wrote anything: input_verification.json records each file with its digest and the digest the inherited record recorded for it",
+        "the verdict rests on records that each carry their own verification: PROD-003's representation register and crosswalk, PHASE5-001I-A's independent re-measurement, PHASE5-001I-B's hash verification and reconciliation, PHASE5-001I-C's 32 checks with 0 failures, and PHASE5-001K's register re-derived from the register file alone",
+        "no new external evidence, consumer-report retrieval or network call was used; the contract states that no additional consumer evidence may be requested"
+      ]
+    }
+  ],
+  "in_scope_records": [
+    "the rule unit CA-NS-CRA-S10-3-C-LIMB-1 and its source record CRP-LSRC-0354, read for this unit's last-payment limb only"
+  ],
+  "what_remains": [
+    "the residual report-mapping task on CRP-LSRC-0354: the no-payment/default-date alternative of s. 10(3)(c), which this verdict leaves unmapped and unevaluated",
+    "the other five report-mapping IDs: CRP-LSRC-0422, 0423, 0424, 0425, 0427",
+    "CRP-LSRC-0194: closed by owner direction until a concrete new consumer-format source appears",
+    "the 409 NO_DURABLE_RESCREEN_RECORD rows: documentation work in an authorised batch, unchanged"
+  ],
+  "what_this_verdict_does_not_do": [
+    "it does not manufacture a disposition for the whole CRP-LSRC-0354 source from its first limb: the row keeps UNRESOLVED / BLOCKED_MISSING_EVIDENCE / REPORT_EVENT_DATE_MAPPING_UNVERIFIED, the second limb stays unseated, and no class is inferred for the row or any other ID",
+    "it does not promote, clear, close or re-classify any register row, and it edits no register, ledger, crosswalk or manifest: the field-level supplement is recorded, not applied",
+    "it does not satisfy, weaken or advance the corpus-wide Gate 5.2 condition, and it gives no corpus-wide gate-completion credit",
+    "it admits no rule, creates no coverage or candidate and authorizes no finding class",
+    "it is not independent validation and is not Gate 5.4 or Gate 5.6 evidence"
+  ]
+}

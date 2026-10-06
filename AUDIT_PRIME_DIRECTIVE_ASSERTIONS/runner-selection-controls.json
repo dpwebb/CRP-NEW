@@ -1,0 +1,15 @@
+{
+  "results": [
+    {
+      "argument": "--lane=not-a-lane",
+      "exit": 2,
+      "rejected": true
+    },
+    {
+      "argument": "not-a-section",
+      "exit": 2,
+      "rejected": true
+    }
+  ],
+  "release_evidence_unchanged": true
+}

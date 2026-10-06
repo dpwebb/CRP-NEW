@@ -1,0 +1,338 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "purpose": "the checks this order ran over its own artifacts, its amendments, the preserved corpus, the register and the read-only legacy pointers",
+  "checks": [
+    {
+      "id": "V-01",
+      "what": "the baseline was taken before any amendment",
+      "passed": true,
+      "detail": "baseline files: 432; the 7 files PHASE5-001I-C added are included, so the count reconciles with its own 425-file reading"
+    },
+    {
+      "id": "V-02",
+      "what": "exactly one pre-existing file changed, and it is the amended governing document",
+      "passed": true,
+      "detail": "changed: CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md"
+    },
+    {
+      "id": "V-03",
+      "what": "no pre-existing file is missing",
+      "passed": true,
+      "detail": "missing: 0"
+    },
+    {
+      "id": "V-04",
+      "what": "every file this order added is its own output",
+      "passed": true,
+      "detail": "added: 28 files (this order's package plus its narrative)"
+    },
+    {
+      "id": "V-05",
+      "what": "the amendment run applied each amendment exactly once",
+      "passed": true,
+      "detail": "actions: A-1=APPLIED, A-2=APPLIED, A-3=APPLIED, A-4=APPLIED; problems: 0"
+    },
+    {
+      "id": "V-06",
+      "what": "the amended document kept its LF line endings and trailing newline",
+      "passed": true,
+      "detail": "LF preserved"
+    },
+    {
+      "id": "V-07",
+      "what": "the application result records this document and this document only",
+      "passed": true,
+      "detail": "document: CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md; digest_after: 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C; measured now: 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+    },
+    {
+      "id": "V-08",
+      "what": "the inversion check reconstructs the pre-amendment bytes exactly",
+      "passed": true,
+      "detail": "baseline 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0 = reconstructed 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0"
+    },
+    {
+      "id": "V-09",
+      "what": "every amendment is recorded with its type",
+      "passed": true,
+      "detail": "amendments: A-1:REPLACE_AND_EXTEND_REQUIREMENT, A-2:REPLACE_AND_EXTEND_REQUIREMENT, A-3:REPLACE_AND_EXTEND_REQUIREMENT, A-4:APPEND_AMENDMENT_HISTORY"
+    },
+    {
+      "id": "V-10",
+      "what": "every replacement text is present and no replaced text was lost",
+      "passed": true,
+      "detail": "mechanical checks clean"
+    },
+    {
+      "id": "V-11",
+      "what": "the appended amendment-history row is quoted from the amended file",
+      "passed": true,
+      "detail": "A-4 present"
+    },
+    {
+      "id": "V-12",
+      "what": "the scoped-progression paragraph is in the amended document",
+      "passed": true,
+      "detail": "A-1 replacement text present"
+    },
+    {
+      "id": "V-13",
+      "what": "Gate 5.2 records that its condition is corpus-wide and unaffected by a scoped verdict",
+      "passed": true,
+      "detail": "A-2 sentence present"
+    },
+    {
+      "id": "V-14",
+      "what": "Phase 5.3 bullet 1 carries its scoped reading",
+      "passed": true,
+      "detail": "A-3 sentence present"
+    },
+    {
+      "id": "V-15",
+      "what": "the pre-existing continuation instruction is preserved verbatim",
+      "passed": true,
+      "detail": "section 6 clause intact"
+    },
+    {
+      "id": "V-16",
+      "what": "the ordering sentence and the PHASE5-001I-A carve-out are preserved verbatim",
+      "passed": true,
+      "detail": "both intact"
+    },
+    {
+      "id": "V-18",
+      "what": "step 1s clause inventory is recorded and only three clauses were amended",
+      "passed": true,
+      "detail": "clauses: 9; amended: C-1,C-2,C-3"
+    },
+    {
+      "id": "V-19",
+      "what": "the authority analysis records the amendment targets before and after digests that match the file",
+      "passed": true,
+      "detail": "before 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0; after 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C"
+    },
+    {
+      "id": "V-20",
+      "what": "the amendment procedure quoted is the Constitution section 6 procedure",
+      "passed": true,
+      "detail": "clause 6.2 quoted"
+    },
+    {
+      "id": "V-21",
+      "what": "the scope names jurisdiction, unit, limb, presentation, evidence and exclusions",
+      "passed": true,
+      "detail": "scope_id: SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT; exclusions: 9"
+    },
+    {
+      "id": "V-22",
+      "what": "the scope names the exclusion of every finding class and the observation ceiling",
+      "passed": true,
+      "detail": "ceiling recorded"
+    },
+    {
+      "id": "V-23",
+      "what": "the scoped Gate 5.2 verdict states a scoped pass, and the corpus-wide state is recorded as not passed",
+      "passed": true,
+      "detail": "PASSED_FOR_THIS_SCOPE / NOT PASSED — the cor"
+    },
+    {
+      "id": "V-24",
+      "what": "the scoped Gate 5.3 verdict states a scoped pass, and the corpus-wide state is recorded as not passed",
+      "passed": true,
+      "detail": "PASSED_FOR_THIS_SCOPE"
+    },
+    {
+      "id": "V-25",
+      "what": "both verdicts quote the gate text and are recorded against the same scope",
+      "passed": true,
+      "detail": "gate text quoted verbatim in both"
+    },
+    {
+      "id": "V-26",
+      "what": "every criterion of both gates is stated with a state and evidence",
+      "passed": true,
+      "detail": "gate 5.2 criteria: 4; gate 5.3 criteria: 4"
+    },
+    {
+      "id": "V-27",
+      "what": "Gate 5.2s scoped verdict refuses to manufacture a source-wide disposition",
+      "passed": true,
+      "detail": "stated"
+    },
+    {
+      "id": "V-28",
+      "what": "Gate 5.3s scoped verdict records the intended format as PR-01 only and the alternative as unresolved",
+      "passed": true,
+      "detail": "stated"
+    },
+    {
+      "id": "V-17",
+      "what": "the corrected intermediate state is recorded, and its reversal reproduced the baseline",
+      "passed": true,
+      "detail": "before revert 2C20E5A7BCD1B518C6EBB4064D53B05BAA757025879C8B443772B100D474CDD7; after revert 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0"
+    },
+    {
+      "id": "V-29",
+      "what": "the disposition supplement is recorded and applied to nothing",
+      "passed": true,
+      "detail": "applied: false"
+    },
+    {
+      "id": "V-30",
+      "what": "the supplement carries five scoped fields and limitations from PHASE5-001I-C",
+      "passed": true,
+      "detail": "ids: S-1,S-2,S-3,S-4,S-5"
+    },
+    {
+      "id": "V-31",
+      "what": "the supplement states which original unresolved statuses remain",
+      "passed": true,
+      "detail": "items: 6"
+    },
+    {
+      "id": "V-32",
+      "what": "the supplement records that the 001K register and the historical manifests are unchanged",
+      "passed": true,
+      "detail": "register unchanged"
+    },
+    {
+      "id": "V-33",
+      "what": "the corpus queue is re-measured from the register file and unchanged",
+      "passed": true,
+      "detail": "rows 437, distinct 437, digest DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB"
+    },
+    {
+      "id": "V-34",
+      "what": "the recorded dispositions and blockers are the register's own unchanged values",
+      "passed": true,
+      "detail": "dispositions {\"UNRESOLVED\":416,\"GAP\":18,\"REFUSAL\":3}; blockers {\"NO_DURABLE_RESCREEN_RECORD\":409,\"NO_OPEN_ITEM_RECORDED\":5,\"RECORDED_OPEN_ITEM\":16,\"CANDIDATE_REPRESENTATION_UNRESOLVED_GATE_5_3_M1\":1,\"REPORT_EVENT_DATE_MAPPING_UNVERIFIED\":6}"
+    },
+    {
+      "id": "V-35",
+      "what": "the corpus-wide gate states are recorded separately from the scoped verdicts",
+      "passed": true,
+      "detail": "separated"
+    },
+    {
+      "id": "V-36",
+      "what": "no missing work was converted into GAP or REFUSAL",
+      "passed": true,
+      "detail": "recorded with evidence"
+    },
+    {
+      "id": "V-37",
+      "what": "the register row this scope concerns is unchanged in the register file",
+      "passed": true,
+      "detail": "row unchanged"
+    },
+    {
+      "id": "V-38",
+      "what": "ten earlier statements are reconciled and nothing earlier was rewritten",
+      "passed": true,
+      "detail": "rows: 10"
+    },
+    {
+      "id": "V-39",
+      "what": "the Gate 5.4 work order is issued for this scope, with its exclusions and its non-execution stated",
+      "passed": true,
+      "detail": "issued, not executed"
+    },
+    {
+      "id": "V-40",
+      "what": "the work order forbids admission, coverage, findings and consumer-visible output",
+      "passed": true,
+      "detail": "exclusions present"
+    },
+    {
+      "id": "V-41",
+      "what": "every JSON artifact this order wrote parses",
+      "passed": true,
+      "detail": "files: 16; unparsable: 0"
+    },
+    {
+      "id": "V-42",
+      "what": "no placeholder or tail marker remains in this order's artifacts",
+      "passed": true,
+      "detail": "no markers found"
+    },
+    {
+      "id": "V-43",
+      "what": "no artifact in this order claims a corpus-wide gate pass, and the corpus-wide state is stated as not passed",
+      "passed": true,
+      "detail": "pass claims found: 0; NOT PASSED corpus-wide statements: 1"
+    },
+    {
+      "id": "V-44",
+      "what": "the accepted source pin is byte-identical and was not written",
+      "passed": true,
+      "detail": "rules.canada.ts: 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF"
+    },
+    {
+      "id": "V-45",
+      "what": "the PR-01 specimen is byte-identical and was not written",
+      "passed": true,
+      "detail": "PR-01: E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F"
+    },
+    {
+      "id": "V-46",
+      "what": "the PR-02 corroborating specimen is byte-identical and was not written",
+      "passed": true,
+      "detail": "PR-02: 244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4"
+    },
+    {
+      "id": "V-47",
+      "what": "the application message is unchanged and the application is byte-identical",
+      "passed": true,
+      "detail": "Report checking not yet available. preserved"
+    },
+    {
+      "id": "V-48",
+      "what": "no register, ledger, crosswalk, provenance or manifest file changed",
+      "passed": true,
+      "detail": "only the amended plan changed"
+    },
+    {
+      "id": "V-49",
+      "what": "every input was re-measured and no recorded digest disagreed",
+      "passed": true,
+      "detail": "inputs 35; match 26; differ 0; missing 0"
+    },
+    {
+      "id": "V-50",
+      "what": "the narrative exists and is a substantive record",
+      "passed": true,
+      "detail": "bytes: 34283"
+    },
+    {
+      "id": "V-51",
+      "what": "the custody manifest re-measures with no mismatch",
+      "passed": true,
+      "detail": "entries: 26; mismatching: 0"
+    }
+  ],
+  "check_count": 51,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001P CHECKS PASSED",
+  "scope_note": "these checks verify this order's own artifacts, its amendments, its preservation and its custody. They are not independent validation, they are not Gate 5.4 or Gate 5.6 evidence, and they pass no corpus-wide gate.",
+  "corpus_wide_status_kept_separate": {
+    "5.1": "MET with recorded administrative limitations; unchanged",
+    "5.2": "NOT PASSED corpus-wide; a scoped verdict is recorded separately",
+    "5.3": "NOT PASSED corpus-wide; a scoped verdict is recorded separately",
+    "5.4": "NOT STARTED; issued as PHASE5-001Q for this scope only, not executed",
+    "5.5": "NOT STARTED",
+    "5.6": "NOT STARTED",
+    "5.7": "NOT REACHED; 0 admitted governed rules, 0 permitted findings"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not independent validation and is not gate evidence for any gate",
+    "it does not pass any corpus-wide gate and does not advance Gate 5.2 or Gate 5.3 corpus-wide",
+    "it does not admit a rule, create coverage or a candidate, or authorize a finding class",
+    "it does not apply the disposition supplement, which remains recorded and unapplied",
+    "it does not convert any recorded limitation into a criterion satisfaction",
+    "it does not retroactively authorize the earlier custody discrepancies recorded by PHASE5-001I-B and PHASE5-001I-C"
+  ],
+  "verdict_summary": "AMENDMENTS APPLIED AND MEASURED, SCOPED GATES 5.2 AND 5.3 PASSED FOR THIS SCOPE, CORPUS-WIDE STATE UNCHANGED, PRESERVATION HELD",
+  "created_by": "PHASE5-001P"
+}

@@ -1,0 +1,164 @@
+{
+  "artifact": "preservation_and_change_record.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "baseline_artifact": "preserved_files_before.json",
+  "baseline_files": 478,
+  "files_unchanged": 477,
+  "files_changed": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "before": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+      "after": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "bytes": 9602
+    }
+  ],
+  "files_missing": [],
+  "files_added_by_this_order": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_determinism_check.js",
+      "bytes": 26985,
+      "sha256": "F436A729FA409C99892455BBC3D224E1007FF49A12470000C101D3F0B52CA6C2"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_evaluator_spec.js",
+      "bytes": 18610,
+      "sha256": "B154B752382A2A2BA50141BA20B252F24596D85327BE56ECAD0A9802CEE1B327"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_fact_model.js",
+      "bytes": 13476,
+      "sha256": "36BA2092B655E31827026BA9F13EB24D8BF14A57A255D463B595DB1453365A97"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_gate55.js",
+      "bytes": 35432,
+      "sha256": "764DF04C99F44AA15D828E96DED677A7CF383D358325981C5F7363EE3C448D1B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_implementation_comparison.js",
+      "bytes": 20018,
+      "sha256": "FA8994C425F51629B6177B08469FC030DFFC1D5CED9F911F72DD438C14F0AF2B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_next_order.js",
+      "bytes": 15734,
+      "sha256": "4FE83D50FEEBE3F87E21368C9AF97EBABE2D507FADB4CBBDE07403C698082291"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_output_surface.js",
+      "bytes": 11334,
+      "sha256": "D631D751901586DEEC03E317B13E12888F5EE21999BC9115F1644420395505C8"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_status_vocabulary.js",
+      "bytes": 11908,
+      "sha256": "4F58362A31C1114E20181509ED966C67262E5BCC8063F7D8324C348E860ECEB3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\capture_001r_baseline.ps1",
+      "bytes": 14921,
+      "sha256": "8C421D0DE9948B8E3D16AFA95EA4FE720C587A321D5CAAC3023E9A8418B7B893"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+      "bytes": 25602,
+      "sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+      "bytes": 23328,
+      "sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+      "bytes": 10911,
+      "sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json",
+      "bytes": 120762,
+      "sha256": "A2AB85EBD058656ED68136E7EAE5DE104FF0610EFF1BF6B7170C94DC8083A1A0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\implementation_comparison.json",
+      "bytes": 17981,
+      "sha256": "859FA96A236404903D4EC6DE3086DF91B2887479B68750F68EDEE3C3964A3FEA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+      "bytes": 40073,
+      "sha256": "8E536DFF130C3FF9DAFB75C8572BFDD2A8834925C99B5EFBC41D129D1838479B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+      "bytes": 41919,
+      "sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\next_work_order.json",
+      "bytes": 17953,
+      "sha256": "12D1F99038EBD4D52EA8E0B5D46A176DE2A77734A7C89FA46A03E709A20CCA07"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+      "bytes": 13183,
+      "sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\preservation_and_change_record.json",
+      "bytes": 7563,
+      "sha256": "036335997B11E8805CC2655FE15191D3756D15C808AAF5D2AD843572A4C55143"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\preserved_files_before.json",
+      "bytes": 101234,
+      "sha256": "A0D527A15352FBAA734D27758C0D0E1099AB9A9CF0661FBFB8B669D24F7221F1"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+      "bytes": 17062,
+      "sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+      "bytes": 56499,
+      "sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\verification_results.json",
+      "bytes": 18877,
+      "sha256": "2DED2B975C1E9CC9E85C99AE26DA0D6212C6899E9F544A4F9B584D25586BEF01"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\verify_and_manifest_001r.ps1",
+      "bytes": 32484,
+      "sha256": "FA48633A30AC29CD12517A82BA4E8E0AA6AE7F1D5D196209841038EA295806E3"
+    },
+    {
+      "relative_path": "CRP_PHASE5_001R_DETERMINISTIC_EVALUATION_SPECIFICATION_AND_GATE_5_5_VERDICT.md",
+      "bytes": 36468,
+      "sha256": "FCE92AF0292D08EF726C2D5400A638E703EABF8FDD93DC8F827FBCC961F6FCB4"
+    }
+  ],
+  "expected_changes": "none. This order was authorised to change no pre-existing file. One was changed, and it is disclosed below rather than absorbed: the PHASE5-001I-A internal test suite writes its results into its own package when it is run, and this order ran it once before that was established. The run was removed from every builder of this order, and the file is measured stable across builder runs from that point on.",
+  "disclosed_changes_by_this_order": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "before": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+      "after": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "cause": "this order re-ran the PHASE5-001I-A internal test suite to measure the comparison's \"its tests pass\" point. That suite's harness writes its results into its own package (tests/harness.cjs finish()).",
+      "content_measured": "the record is the same suite's results, regenerated: 41 tests, 0 failures, ALL PHASE5-001I-A TESTS PASSED. No evidence is lost; the byte-level identity of the file is.",
+      "unauthorised": true,
+      "authorised_by": "nothing. This order was authorised to change no pre-existing file.",
+      "recurring": "no: the run was removed from this order's builders, and the disclosure records the check that proves the file is now stable across builder runs."
+    }
+  ],
+  "disclosed_change_count": 1,
+  "undeclared_changes": [],
+  "legal_corpus_untouched": true,
+  "legacy_corpus_files_written_or_deleted": 0,
+  "governed_documents_amended": [],
+  "output_character": "observation-only, packet-ineligible: no consumer-visible output, no application change, no deployment",
+  "verdict": "PRESERVATION NOT FULLY HELD — no pre-existing file was deleted, and no pre-existing file was changed outside the one change this order discloses and does not authorise"
+}

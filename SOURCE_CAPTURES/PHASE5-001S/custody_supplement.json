@@ -1,0 +1,115 @@
+{
+  "artifact": "custody_supplement.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "document_type": "SUPPLEMENTAL CUSTODY DECISION — Owner Decision 1, recorded",
+  "purpose": "link the original recorded hash, the current measured hash, the cause, the affected order and the prospective baseline of one artifact, and record exactly what the exception does and does not do",
+  "issued_under": "OWNER DECISION 1 — CUSTODY EXCEPTION (owner_decisions.json)",
+  "the_artifact": {
+    "relative_path_from_workspace": "SOURCE_CAPTURES\\\\PHASE5-001I-A\\\\test_results_001i_a.json",
+    "owning_package": "SOURCE_CAPTURES\\PHASE5-001I-A (the internal-validation package of PHASE5-001I-A)",
+    "artifact": "test_results_001i_a.json",
+    "status_under_this_decision": "CURRENT RETAINED ARTIFACT — accepted for prospective use at its full measured hash"
+  },
+  "the_chain": {
+    "original_recorded_hash": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+    "original_recorded_bytes": 9602,
+    "original_hash_recorded_by": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json (the manifest of the order that owns the artifact)",
+    "current_measured_hash": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+    "current_measured_bytes": 9602,
+    "current_hash_measured_by": "PHASE5-001S, read-only, immediately before this record was written",
+    "current_hash_matches_what_PHASE5_001R_recorded_as_the_after_state": true,
+    "cause": "PHASE5-001R re-ran the PHASE5-001I-A internal test suite to measure its implementation comparison's \"its tests pass\" point. That suite's harness (tests/harness.cjs, in its finish() step) writes its results into its own package, so running the suite rewrites the package's own results file.",
+    "affected_order": "PHASE5-001R — the order that ran the suite and caused the change",
+    "owning_order_of_the_artifact": "PHASE5-001I-A",
+    "disclosure_record": "SOURCE_CAPTURES\\PHASE5-001R\\preservation_and_change_record.json (disclosed_changes_by_this_order) and SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json (acceptance criterion 7, NAMED — NOT MET IN THIS SCOPE)",
+    "unauthorised_at_the_time": true,
+    "authorised_by_at_the_time": "nothing. This order was authorised to change no pre-existing file.",
+    "recurrence_removed": "no: the run was removed from this order's builders, and the disclosure records the check that proves the file is now stable across builder runs."
+  },
+  "what_the_artifact_holds_now": {
+    "measured_by_this_order": "the file was parsed read-only at its measured digest; its suite was not run",
+    "work_order_recorded_inside_it": "PHASE5-001I-A",
+    "test_count": 41,
+    "failures": 0,
+    "verdict_recorded_inside_it": "ALL PHASE5-001I-A TESTS PASSED",
+    "reading": "the artifact is the same suite's results, regenerated: the same tests, 0 failures. No evidence is lost; the byte-level identity of the file is.",
+    "and_this_is_not_evidence": "Owner Decision 1 records that these passing tests are NOT Gate 5.6 evidence, and this order treats them as no evidence for any gate. The comparison that reads them is not gate evidence either."
+  },
+  "what_this_exception_does": [
+    "accepts the regenerated artifact as the CURRENT retained artifact",
+    "authorises prospective use of it at its full measured hash, which the prospective baseline now records"
+  ],
+  "what_this_exception_does_not_do": [
+    "it does not retroactively authorise the original write: that write remains unauthorised in the historical record",
+    "it does not establish that the old bytes were recovered: they were not, and they cannot be reconstructed from a digest",
+    "it does not erase the preservation failure: PHASE5-001R's criterion 7 stays NAMED — NOT MET IN THIS SCOPE in its own record, which is preserved unchanged",
+    "it does not retroactively authorise any earlier custody discrepancy, including the ones earlier orders recorded and did not authorise",
+    "it does not authorise any reuse of the writing harness: re-running any harness that writes into a prior evidence package remains forbidden",
+    "it does not convert the historical failure into a pass, a gap or a refusal, and it changes no count"
+  ],
+  "historical_records_preserved_unchanged": [
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+      "still_holds": "the original digest E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22 for the artifact, which is deliberately NOT updated: the manifest records what the artifact was when that order closed.",
+      "edited_by_this_order": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\\\PHASE5-001I-A\\\\test_results_001i_a.json",
+      "sha256": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "still_holds": "the regenerated results",
+      "edited_by_this_order": false,
+      "note": "read-only: this order measured it and parsed it, and wrote nothing to it."
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+      "sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+      "still_holds": "the WITHHELD verdict and criterion 7 as NAMED — NOT MET IN THIS SCOPE",
+      "edited_by_this_order": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\preservation_and_change_record.json",
+      "sha256": "C5F5C84C38863D3993B1CD54895FC887990DB5599FFEDEA754AD4945B5EE6910",
+      "still_holds": "the disclosed change with unauthorised: true and the verdict PRESERVATION NOT FULLY HELD",
+      "edited_by_this_order": false
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001R\\verification_results.json",
+      "sha256": "74E604E5FE2D0D054E0BF325B6C47B389A358C87E3CE1243D35491627D51395F",
+      "still_holds": "that order's 22 checks with 0 failures",
+      "edited_by_this_order": false
+    }
+  ],
+  "no_earlier_baseline_overwritten": [
+    "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json, SOURCE_CAPTURES\\PHASE5-001I-B\\preserved_files_before.json, SOURCE_CAPTURES\\PHASE5-001I-C\\preserved_files_before.json, SOURCE_CAPTURES\\PHASE5-001P\\preserved_files_before.json, SOURCE_CAPTURES\\PHASE5-001Q\\preserved_files_before.json and SOURCE_CAPTURES\\PHASE5-001R\\preserved_files_before.json are all untouched: this order wrote its own baseline under its own package and did not rewrite any earlier one",
+    "the historical failure records and manifests stay where they were written, each measured at its recorded digest above"
+  ],
+  "progression_assessment": {
+    "the_question": "does the preservation criterion that withheld the PHASE5-001R verdict now permit progression for this scope?",
+    "historical_state": "FAILED AND STILL FAILED — PHASE5-001R acceptance criterion 7 remains NAMED — NOT MET IN THIS SCOPE in that order's verdict, and the change remains unauthorised in its preservation record. This order edits neither record and restates the failure as nothing else.",
+    "state_under_the_exception": "COVERED BY A RECORDED OWNER EXCEPTION — the owner has accepted the current artifact as the retained artifact and authorised prospective use of it at its full measured hash, so the obstacle to progression that the failure created is cleared without the failure being denied or repaired.",
+    "what_progression_this_clears": [
+      "the scoped Gate 5.5 verdict for this scope may now be issued on a preservation reading covered by a recorded owner instrument",
+      "the Gate 5.6 order may issue for this scope once every preceding scoped gate holds a passing verdict"
+    ],
+    "what_it_does_not_clear": [
+      "it does not restore the previous bytes, and the artifact's byte-level identity remains different from the one its own manifest holds",
+      "it does not validate the artifact's content, and its tests remain non-evidence for Gate 5.6",
+      "it clears nothing for any other scope, and it leaves Gate 5.5 unpassed corpus-wide"
+    ]
+  },
+  "prospective_baseline": {
+    "artifact": "SOURCE_CAPTURES\\PHASE5-001S\\prospective_baseline.json",
+    "what_it_records": "the workspace as it stands after this order's amendment, with the retained artifact at its full measured hash",
+    "hash_recorded_there": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511"
+  },
+  "limitations": [
+    "this is a custody record about byte identity and prospective use. It certifies no legal content, validates no test result and passes no gate",
+    "it does not repair the preservation failure and does not present the original write as authorised",
+    "it authorises nothing outside the artifact named above",
+    "observation-only, packet-ineligible: it produces no consumer-visible output and changes no application behaviour"
+  ],
+  "verdict": "SUPPLEMENTAL CUSTODY DECISION RECORDED — the chain (original hash, current measured hash, cause, affected order, prospective baseline) is linked, the historical failure is preserved as a failure, and prospective use of the current artifact at its full measured hash is covered by the recorded owner exception",
+  "created_by": "PHASE5-001S"
+}

@@ -1,0 +1,331 @@
+{
+  "artifact": "owner_representation_decisions.json",
+  "work_order": "PHASE5-001I-C",
+  "created_utc": "2026-09-30",
+  "document_type": "Owner representation decisions for one candidate, recorded durably",
+  "purpose": "record the owner's six PHASE5-001I-C decisions on the report representation for CA-NS-CRA-S10-3-C-LIMB-1, each with the scope it authorizes, the things it does not authorize, the record it binds and the condition it leaves open; and record the classification and ceiling the owner has settled, the uncertainties that stay separate from legal-corpus acceptance, and the smallest next action",
+  "status_of_this_artifact": {
+    "admission_state": "DECISIONS_RECORDED_NOT_AN_ADMISSION",
+    "governed_rule_created": false,
+    "coverage_created": false,
+    "candidate_created": false,
+    "finding_class_created_or_authorized": false,
+    "gate_credit": "NONE",
+    "gate_credit_note": "no gate is passed, advanced, softened or waived by these decisions. Gate 5.3 stays reached for one candidate on one presentation and passed for none; Gate 5.2 remains the earliest incomplete gate in the sequence; Gates 5.4, 5.5 and 5.6 remain NOT_STARTED; Gate 5.7 remains NOT_REACHED; 0 governed rules are admitted and 0 legal findings are permitted",
+    "consumer_visible": false,
+    "reachable_from_a_consumer_surface": false,
+    "admits_or_evidences_a_report_family": false,
+    "report_checking_availability": "not available for any region, unchanged",
+    "instrument_rank": "rank-6 work-order evidence. The rank-4 direct-report contract and the rank-5 build plan govern its content; this record amends neither document and cannot override either"
+  },
+  "how_these_decisions_are_recorded": {
+    "instrument": "the owner's PHASE5-001I-C instruction, issued in conversation and recorded here durably, because the build plan section 3 requires exactly that: 'Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records' (CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, line 45)",
+    "who_wrote_this_record": "the order the owner issued, PHASE5-001I-C. The recorder is not independent of the instruction, and that limitation is stated rather than hidden: this artifact is the durable instrument, not an independent verification of the instruction",
+    "owner_scope_fixed_for_this_order": "the owner fixed the order's scope (read PHASE5-001I-B and its evidence, verify current inputs, record six decisions, create only its own records) and prohibited a gate-passed statement by owner preference alone",
+    "what_this_record_is_not": "not a legal certification, not an admission, not gate evidence, not a coverage or candidate record, and not a substitute for the owner amendment form (CRP_CORE_CONSTITUTION.md section 6.2) where an amendment to a rank-4 or rank-5 instrument is required",
+    "precedent": "PHASE5-001I-A recorded the same limitation about its own originating instruction, and this order records it again rather than implying a provenance that does not exist"
+  },
+  "decisions": [
+    {
+      "id": "D-1",
+      "decision": "Accept PR-01 for the exact byte-pinned Equifax Canada consumer specimen only.",
+      "as_recorded_by_the_owner": "Accept PR-01 for the exact byte-pinned Equifax Canada consumer specimen only. This is internal validation support, not admission of a report family or availability for consumer uploads.",
+      "what_it_settles": "the single-specimen boundary PROD-003 carried as dependency D-2 and PHASE5-001I-B recorded as the first of three Gate 5.3 conditions. D-2 offered exactly two routes - 'supply a second specimen, or accept the single-specimen boundary in writing' - and this decision takes the second route in writing, for this narrow representation decision and nothing wider",
+      "specimen": {
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "publisher": "Equifax (Canada, consumer channel)",
+        "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "bytes": 96393,
+        "pages": 22,
+        "page_size": "594.96 x 841.92 pts (A4)",
+        "read_mode": "read-only in place from outside this repository; nothing copied, moved, renamed or transmitted",
+        "digest_verified_by_this_order": true
+      },
+      "what_it_authorizes": [
+        "internal validation support that reads this specimen's exact bytes through the locators already recorded by PROD-003 and re-measured by PHASE5-001I-A and PHASE5-001I-B",
+        "the specimen standing as the evidenced presentation for the one selected candidate and the one limb"
+      ],
+      "what_it_does_not_authorize": [
+        "admission of a report family, a report class or a bureau product line",
+        "availability for consumer uploads of any kind",
+        "support for any other Equifax Canada product, report version, print date or channel",
+        "support for another bureau, including PR-02 (TransUnion Canada), which corroborates the field only",
+        "a scan, a page without native text, an encrypted or unreadable document, a subscriber or screening document, a training artifact or a generated fixture",
+        "any coverage claim beyond the owner-accepted legal authority already recorded for CRP-LSRC-0354"
+      ],
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json presentations[PR-01]",
+        "SOURCE_CAPTURES\\PROD-003\\crosswalk.json dependencies[D-2]",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md section 4 and section 11"
+      ],
+      "condition_it_leaves_open": "the refusal path is unchanged: any document that is not these exact bytes is refused as NOT_THE_EVIDENCED_SPECIMEN -> UNSUPPORTED_PRESENTATION. Whether the locator may be called reusable, and whether any broader format support may be claimed, is D-6's question and stays open"
+    },
+    {
+      "id": "D-2",
+      "decision": "Use collection.lastPaymentDate for the printed Last Payment Date within its own Collections record; do not relabel it as a tradeline fact; record the legacy field-name divergence explicitly.",
+      "as_recorded_by_the_owner": "Use collection.lastPaymentDate for the printed Last Payment Date within its own Collections record. Do not relabel it as a tradeline fact. Record the legacy field-name divergence explicitly.",
+      "what_it_settles": "the second of PHASE5-001I-B's three Gate 5.3 conditions - which printed field represents the required fact - settled without erasing the divergence: the fact the unit reads is collection-scoped, and the admitted rule record's required field name is not satisfied by relabelling",
+      "printed_field_and_fact": {
+        "printed_label": "Last Payment Date",
+        "prints_in": "a contract debt record inside the Collections section",
+        "printed_form": "DDDD/DD/DD (four-digit year, then month, then day)",
+        "printed_value_on_this_specimen": "2021/02/01, normalized 2021-02-01, identical on both collection records",
+        "locators": [
+          "record 1: page 16, line 32, inside the record that begins at page 16 line 8 and ends at page 16 line 38",
+          "record 2: page 17, line 5, inside the record that begins at page 16 line 39 and continues to page 17 line 11"
+        ],
+        "fact_as_used": "collection.lastPaymentDate, COLLECTION_RECORD_SPECIFIC, bound to that record and to no other"
+      },
+      "the_divergence_recorded_explicitly": {
+        "state": "DIVERGENCE_RECORDED_NOT_SEATED",
+        "admitted_field_name": "tradeline.lastPaymentDate - the only requiredReportFields entry of the legacy rule record ca-ns.cra.s10_3_c.debt_retention_6y",
+        "printed_field_is_on": "a collection record",
+        "legacy_schema_fact_on_the_other_side": "the legacy corpus's own record states that a collection carries no such field, so neither the printed openedDate nor its reportedDate fallback is used for one - the field the presentation prints on a collection is a field the legacy extraction schema records as absent for that kind of item",
+        "carried_to": "the Gate 5.4 rule record, where the field name the admitted rule carries is decided. This order chooses neither route and does not seat the printed field as the admitted tradeline field",
+        "routes_recorded_and_not_chosen": [
+          "an owner rule-corpus amendment seating the printed collection field as the representation of the required field",
+          "a determination that the printed field does not satisfy the admitted requirement, in which case the first limb has no admitted representation on this presentation and the unit cannot be admitted for that limb"
+        ]
+      },
+      "what_it_authorizes": [
+        "reading that row, and only that row, as the representation of the last-payment event for this unit on this specimen",
+        "the record-boundary binding the draft already uses: a value is never borrowed from another record, another section or another page"
+      ],
+      "what_it_does_not_authorize": [
+        "renaming, widening or paraphrasing the admitted field name",
+        "seating the printed collection field as a tradeline fact",
+        "treating the printed value as proof that the payment occurred - it stays a report-stated historical event",
+        "defaulting from Date Paid/Settled, First Delinquency, Date Assigned or Date Verified",
+        "reading a label printed outside any contract debt record, or a label printed twice in one record",
+        "any conclusion about the second limb"
+      ],
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json field_records[FACT-02]",
+        "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json fact_records[DEBT_LAST_PAYMENT_DATE]",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md section 4",
+        "SOURCE_CAPTURES\\PHASE5-001I-B\\field_crosswalk.json"
+      ],
+      "condition_it_leaves_open": "which field name the admitted rule record carries, and whether the legacy required-field name is amended or the printed field is seated by amendment - a Gate 5.4/Gate 5.7 decision requiring a later owner instrument"
+    },
+    {
+      "id": "D-3",
+      "decision": "Accept the demonstrated Request Date header mapping as the specimen's reference date; preserve unresolved legal/reference-date conventions.",
+      "as_recorded_by_the_owner": "Accept the demonstrated Request Date header mapping as the specimen's reference date. Preserve unresolved legal/reference-date conventions.",
+      "what_it_settles": "that the printed Request Date is this specimen's reference date for the internal comparison - the point in time the elapsed period is measured against, which the admitted statutory text does not itself name",
+      "printed_field_and_use": {
+        "printed_label": "Request Date",
+        "prints_in": "the page header, line 1 of every page",
+        "printed_form": "DDDD/DD/DD",
+        "printed_value_on_this_specimen": "2026/05/05, normalized 2026-05-05, one identical value on all 22 pages",
+        "accepted_use": "the specimen's reference date for the evaluation",
+        "reading_rule": "read from the page header only, and only when the same value appears on every page; otherwise the reference date stays unresolved and the comparison does not run"
+      },
+      "what_it_authorizes": [
+        "using that printed value as the comparison's reference date on this specimen",
+        "the documented limit that the value must be identical on every page before it may be used"
+      ],
+      "what_it_does_not_authorize": [
+        "treating the request date as a statutory effective date",
+        "treating it as the date of any underlying event, including the last payment",
+        "treating it as a jurisdiction signal that selects anything",
+        "treating it as evidence that any payment was made or that any debt is reportable",
+        "substituting another date when the header is absent, unreadable or inconsistent - the comparison must not run, and the fact is never recorded as ABSENT_FROM_REPORT"
+      ],
+      "conventions_preserved_as_unresolved": [
+        "whether a report's request date is the legally correct measuring point for a report-content prohibition, or whether the text implies a different reference point",
+        "the statutory effective-date and commencement handling for the provision",
+        "the anniversary-boundary convention (whether the sixth-anniversary day is inside or outside the period)",
+        "the month-end clamp for a 29 February start, and the derived day-count convention",
+        "any interaction between the reference date and the effective-period question recorded separately below"
+      ],
+      "status": "RESOLVED as to the mapping accepted here; the legal and calculation conventions above remain PENDING_ADMISSION and this decision does not convert any of them into a requirement of the accepted text",
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json field_records[FACT-03]",
+        "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json fact_records[REPORT_REFERENCE_DATE]",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md section 5"
+      ],
+      "condition_it_leaves_open": "every convention above is carried to the Gate 5.4 rule record and to admission; if the owner later fixes a different reference point, the convention here is replaced and no result computed under it may be relied on"
+    },
+    {
+      "id": "D-4",
+      "decision": "Clear REPORT_EVENT_DATE_MAPPING_UNVERIFIED only for the demonstrated fields on this exact specimen; do not clear unrelated rule, timing, exception or presentation dependencies.",
+      "as_recorded_by_the_owner": "Clear REPORT_EVENT_DATE_MAPPING_UNVERIFIED only for the demonstrated fields on this exact specimen. Do not clear unrelated rule, timing, exception or presentation dependencies.",
+      "what_it_settles": "the third of PHASE5-001I-B's three Gate 5.3 conditions - the register disposition - settled in the narrowest form: the clearing runs to two demonstrated fields on one byte-pinned specimen and to nothing else",
+      "cleared_for": {
+        "scope": "one candidate, one presentation, one limb, two fields",
+        "candidate": "CA-NS-CRA-S10-3-C-LIMB-1 (source entry CRP-LSRC-0354, legacy rule ca-ns.cra.s10_3_c.debt_retention_6y)",
+        "presentation": "PR-01 only, the byte-pinned Equifax Canada consumer specimen E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "fields": [
+          "FACT-02: the printed Last Payment Date row inside a Collections contract debt record (page 16 line 32; page 17 line 5)",
+          "FACT-03: the printed Request Date page header (line 1 of all 22 pages)"
+        ],
+        "limb": "the first limb only - six years from the last payment made on the debt"
+      },
+      "not_cleared": [
+        "the no-payment/default-date alternative and the second limb it serves: FACT-05 is unseated on this presentation, so the row's blocker as to that alternative remains",
+        "the effective-period and applicability-in-time question, and the mandatory plain-English timing qualification",
+        "the direct-report contract section 4 retention exception, which stays RECORDED, NOT RELIED ON",
+        "the result ceiling and the recorded legacy D3 / observation classification",
+        "the presentation boundary beyond this exact specimen, including any reuse of the locator on another document",
+        "every other rule, timing, exception and presentation dependency, and every other row of the register",
+        "the other five mapping-blocked IDs (CRP-LSRC-0422, 0423, 0424, 0425, 0427) and CRP-LSRC-0194",
+        "any row whose blocker is NO_DURABLE_RESCREEN_RECORD"
+      ],
+      "how_it_is_applied": "not by this order. The scoped field-level update is proposed in SOURCE_CAPTURES\\PHASE5-001I-C\\proposed_register_update.json and would be applied by a later owner-issued order that edits the register row in an authorised batch",
+      "what_it_does_not_authorize": [
+        "it does not clear the no-payment/default-date alternative, the second limb's blocker, or the row's UNRESOLVED disposition",
+        "it does not clear the effective-period question, the timing qualification, the section 4 exception, the ceiling or the classification",
+        "it does not clear the presentation boundary beyond this exact specimen",
+        "it does not clear the other five mapping IDs, CRP-LSRC-0194 or any NO_DURABLE_RESCREEN_RECORD row",
+        "it does not edit any register file: the update exists only as a proposal in this package",
+        "it does not pass a gate, admit a rule or create coverage, a candidate or a finding"
+      ],
+      "no_silent_reinterpretation": "the row's disposition stays UNRESOLVED and no class is inferred for the row or for any other ID; the earlier unresolved status is described and narrowed, not overwritten",
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv row CRP-LSRC-0354",
+        "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md sections 5, 10 and 10.1",
+        "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json step_09_open_blocker_queue",
+        "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json and .csv row CRP-LSRC-0354",
+        "SOURCE_CAPTURES\\PROD-003\\candidate_rule_units.json report_mapping_blocked_rows"
+      ],
+      "condition_it_leaves_open": "the residual blocker on the same row, and the fact that the register's disposition vocabulary is closed: this order invents no value and promotes no disposition"
+    },
+    {
+      "id": "D-5",
+      "decision": "Retain D3 / observation classification and packet ineligibility; neither PROBABLE_VIOLATION nor VIOLATION is authorized.",
+      "as_recorded_by_the_owner": "Retain D3 / observation classification and packet ineligibility. Neither PROBABLE_VIOLATION nor VIOLATION is authorized.",
+      "what_it_settles": "the classification and the result ceiling for this unit as far as this order may record them",
+      "classification_retained": {
+        "determinability": "D3",
+        "recorded_conclusion": "REPORT_RELEVANT_BUT_NOT_DETECTABLE",
+        "permitted_conclusion": "observation",
+        "packet_eligibility": "ineligible",
+        "where_recorded": "the admitted legacy artifact packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts (SHA-256 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF) and SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json",
+        "effect": "unchanged by this order and not overridden by it"
+      },
+      "ceiling_recorded_for_this_unit": {
+        "value": "OBSERVATION_CLASS_ONLY",
+        "finding_classes_available": "none - neither VIOLATION nor PROBABLE_VIOLATION is authorized",
+        "effect_on_the_proposed_ceiling_of_the_crosswalk": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json and candidate_rule_units.json propose a permitted_result_ceiling of PROBABLE_VIOLATION, conditional on the rule record recording the direct-report contract section 4 retention exception. That proposal is not authorized for this unit; the conditional route is not exercised, and the ceiling stays observation-class",
+        "direct_report_section_4_exception": "remains RECORDED, NOT RELIED ON",
+        "what_a_later_change_would_require": "a new owner instrument; a rank-6 order cannot create a finding class, and this order creates none"
+      },
+      "what_it_does_not_authorize": [
+        "any finding of either class, in any circumstance, for any input",
+        "any consumer-visible statement that a breach occurred or probably occurred",
+        "any packet, dossier or report output for this unit",
+        "any override, softening or replacement of the recorded legacy classification",
+        "any inference that a report-stated historical event is true"
+      ],
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PROD-003\\crosswalk.json selected.permitted_result_ceiling and dependencies[D-5]",
+        "SOURCE_CAPTURES\\PROD-003\\candidate_rule_units.json selected_unit.permitted_result_ceiling",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md section 8 and section 10",
+        "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json"
+      ],
+      "condition_it_leaves_open": "the rule record must carry this ceiling, the retained classification and the mandatory plain-English timing qualification; nothing here admits a rule or begins Gate 5.4"
+    },
+    {
+      "id": "D-6",
+      "decision": "Accept the single specimen as sufficient for this narrow representation decision; a second specimen is required before claiming broader format support unless separately justified and authorized.",
+      "as_recorded_by_the_owner": "Accept the single specimen as sufficient for this narrow representation decision. A second specimen is required before claiming broader format support, unless separately justified and authorized.",
+      "what_it_settles": "the reuse boundary that sits beside D-1: sufficiency for the narrow decision, and the threshold for anything wider",
+      "sufficient_for": [
+        "this candidate's representation decision on this presentation",
+        "the internal validation support D-1 describes",
+        "the scoped register clearing D-4 authorizes"
+      ],
+      "requiring_a_second_specimen_or_a_separate_owner_instrument": [
+        "calling the locator reusable rather than demonstrated once",
+        "any claim of broader format support, including another Equifax Canada product, version, print date or channel",
+        "any support for another bureau",
+        "any availability of consumer uploads",
+        "any statement that a report family is supported"
+      ],
+      "how_a_wider_claim_could_be_made": "only by a second independently authorized specimen, evidenced, byte-pinned and tested under this contract, or by a separate owner justification and authorization recorded as its own instrument; this order creates neither",
+      "what_it_does_not_authorize": [
+        "it does not establish support for any other document, product, version, print date, channel or bureau",
+        "it does not make the locator reusable or the presentation supported as a class",
+        "it does not make consumer uploads available or a report family supported",
+        "it does not extend the register clearing of D-4 beyond the demonstrated fields on this specimen",
+        "it does not create coverage, a candidate, a finding or gate evidence"
+      ],
+      "records_it_binds": [
+        "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json unresolved_mappings",
+        "SOURCE_CAPTURES\\PROD-003\\crosswalk.json dependencies[D-2]",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md section 4 and section 11"
+      ],
+      "condition_it_leaves_open": "the second specimen, if the owner later issues it, and the separate authorization it would need"
+    }
+  ],
+  "gate_effect_of_these_decisions": {
+    "gate_5_1": "MET_WITH_RECORDED_ADMINISTRATIVE_LIMITATIONS - unchanged",
+    "gate_5_2": "NOT PASSED. The recorded state remains ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS; 'advanceable' is a work-direction reading, not a pass, and no durable record declares this gate passed",
+    "gate_5_3": "NOT PASSED, and still reached for this one candidate only. The representation decision for this candidate is complete; the gate is not, for the reasons recorded criterion-by-criterion in SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json",
+    "gate_5_4": "NOT_STARTED, and it may not begin while Gate 5.3 is unpassed. The claim PROD-003 recorded in its prerequisites ('Phase 5.4 may therefore begin for this one unit only') is not adopted by this order",
+    "gate_5_5": "NOT_STARTED",
+    "gate_5_6": "NOT_STARTED",
+    "gate_5_7": "NOT_REACHED",
+    "admitted_governed_legal_rules": 0,
+    "permitted_legal_findings": 0,
+    "gate_passed_statement_issued": false,
+    "why_no_pass_is_issued": "the owner prohibited a gate-passed statement by owner preference alone, and the sequence does not permit one: the predecessor Gate 5.2 is incomplete, one Phase 5.3 criterion is unmet, and no record declares this gate passed"
+  },
+  "uncertainties_kept_separate_from_legal_corpus_acceptance": {
+    "why_this_section_exists": "the owner required effective-period, exception and calculation-convention uncertainties to stay separate from legal-corpus acceptance. None of them reopens the accepted statute, and none is a reason to reject it",
+    "legal_corpus_acceptance_not_reopened": {
+      "source_entry": "CRP-LSRC-0354",
+      "instrument": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+      "acceptance_state": "OWNER_ACCEPTED_LEGAL_AUTHORITY under the PHASE5-001O directive",
+      "source_pin": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts, SHA-256 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF, unchanged",
+      "effect_of_this_order": "none - this order did no legal research, retrieved no source, paraphrased no proposition and re-litigated nothing"
+    },
+    "effective_period_and_applicability_in_time": "effectiveFrom null, effectiveTo null, status in_force, basis recorded_gap_commencement_not_read, with LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED among the recorded administrative limitations. The mandatory plain-English timing qualification stays on any output, and effective_dates_status stays UNRESOLVED_MISSING_EVIDENCE",
+    "the_exception": "the direct-report contract section 4 retention-exception determination stays undecided and NOT RELIED ON; the divergence between that route and the recorded legacy D3 conclusion is carried, and the owner's D-5 decision governs meanwhile",
+    "calculation_and_reference_conventions": "the reference-date use accepted by D-3; the anniversary boundary (whether the sixth-anniversary day is inside the period); the month-end clamp for a 29 February start; the derived day count. Each is a convention the internal comparator implements, none is a requirement of the accepted text, and each is reserved to Gate 5.4",
+    "the_second_limb": "FACT-05, the default-in-payment date, is unseated on this presentation; the no-payment/default-date alternative remains unmapped and unevaluable here",
+    "presentation_boundary": "one specimen, one presentation; broader format support is not claimed (D-6)",
+    "operational_applicability": "which legacy row supplies the production clock, and the s. 10(3)(c) against s. 10(ha) citation seam - RECORDED, NOT RESOLVED",
+    "versioning_and_admission": "no immutable rule version string, no admission record and no admitted artifact exist for this unit; the rule-record draft stays a draft with no gate credit"
+  },
+  "what_these_decisions_do_not_do": [
+    "they admit no rule, create no coverage, create no candidate and create no finding class",
+    "they pass, advance, soften or waive no gate",
+    "they do not adopt the PHASE5-001I-A comparator as an admitted evaluator, and they do not treat its tests as Gate 5.6 evidence",
+    "they do not repair, rewrite, re-run or tidy any inherited artifact, and they overwrite no historical manifest",
+    "they do not edit the register: the disposition change exists only as a proposal in this package",
+    "they do not backdate any authorization, and they do not manufacture a missing historical manifest",
+    "they do not authorize deployment, consumer-visible output, uploads, hosting, billing, authentication or external report processing",
+    "they do not reinterpret the earlier unresolved status of the register row; they describe and narrow it"
+  ],
+  "next_minimal_action": {
+    "what": "one owner-issued order that closes the remaining acceptance work of Gate 5.2 - the earliest incomplete gate in the sequence - or, if Gate 5.2 is to be left as it stands, an owner amendment recording how its remaining criterion is satisfied; only then the Gate 5.3 record for this candidate and the Gate 5.4 rule-record order",
+    "why_it_is_this_and_not_something_else": "the build plan orders the work so that a later phase cannot begin before its stated gate passes (CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, line 45). This candidate's representation work is done, but Gate 5.3 cannot be recorded as a phase completion while its predecessor is incomplete, and no Gate 5.4 order may be issued before that",
+    "the_prior_gate_that_is_incomplete": {
+      "gate": "5.2",
+      "its_text": "all 437 entries have a reconciled report-only disposition or a documented reason they are not assessable; every unresolved record has a concrete report-mapping task or is an irreducible gap/refusal. Legal/source fields are accepted under PHASE5-001A, not re-litigated. No batch is accepted based solely on an unverified completion summary. (build plan section 3, line 87)",
+      "remaining_acceptance_work": [
+        "criterion 2 as to 409 rows: each NO_DURABLE_RESCREEN_RECORD row needs either a durable per-ID disposition (which the register's own authority column says is recoverable from material already in this workspace) or an explicit recorded determination that it is an irreducible gap/refusal for a named reason. Today its recorded task is documentation work, which is neither of the two things the criterion allows",
+        "criterion 2 as to the seven evidence-route rows: each needs its blocker re-stated as what remains, not what was - for CRP-LSRC-0354 specifically, the residual no-payment/default-date alternative",
+        "a durable criterion-by-criterion Gate 5.2 verdict record, quoting the gate text and stating pass or no-pass for each criterion. No such record exists today: the recorded state is ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS",
+        "where an owner wants a recorded administrative limitation to satisfy a criterion, an owner amendment in the CRP_CORE_CONSTITUTION.md section 6.2 form. A rank-6 order cannot convert a limitation into a criterion satisfaction"
+      ],
+      "evidence_that_this_work_is_the_prior_gate": [
+        "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json gate_status[\"5.2\"]: requirement_now 'Unchanged.', state ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS",
+        "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md line 493: the owner constraint that 'the approved plan's Gate 5.2 prerequisite also needs durable verification before Phase 5.3 completion can be claimed'",
+        "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md section 10: 416 non-durable rows, of which 409 are work-blocked"
+      ]
+    },
+    "the_rule_record_decisions_that_follow_for_gate_5_4": [
+      "which field name the admitted rule record carries, per D-2, and whether the legacy required-field name is amended",
+      "the effective-period handling and the exact wording of the mandatory timing qualification",
+      "the anniversary-boundary and calculation conventions, per D-3",
+      "the exception determination, and whether the section 4 retention route is ever relied on",
+      "the ceiling field, carrying D-5's observation-class decision and the retained D3 classification",
+      "the immutable rule version string and the admission form itself, at Gate 5.7"
+    ],
+    "what_this_order_does_not_do_about_it": "it does not issue that order, does not pre-empt it, and does not treat the representation decision as though a gate had passed"
+  },
+  "created_by": "PHASE5-001I-C"
+}

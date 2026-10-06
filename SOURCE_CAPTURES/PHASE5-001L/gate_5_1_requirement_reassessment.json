@@ -1,0 +1,49 @@
+{
+  "artifact": "gate_5_1_requirement_reassessment.json",
+  "work_order": "PHASE5-001L",
+  "gate": "PHASE5 gate 5.1",
+  "created_utc": "2026-09-30",
+  "authority": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, Phase 5.1 (line 47 onwards) and its Gate 5.1 text (line 55)",
+  "gate_text_verbatim": "Gate 5.1: every source ID is accounted for once, all counts reconcile, duplicate links are explicit, and no unresolved item was silently excluded. If reports are only present in chat, first create the durable, schema-conforming rescreen register from the accepted reports, with provenance to each batch and correction.",
+  "phase_5_1_requirement_reassessment": [
+    {"requirement": "Preserve the 437-entry source catalogue as the authoritative baseline; do not rewrite its legal content in this step.", "state": "SATISFIED", "basis": "The catalogue is unchanged at 437 entries, 447,509 bytes, sha256 3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d, which is the state 001K itself recorded after its own section 12.5 appendix. This order wrote nothing outside its own evidence directory and its preservation digest reproduces exactly."},
+    {"requirement": "Reconcile every catalogue ID to exactly one current corrected-logic disposition from the plan's vocabulary, as applicable to the actual record schema.", "state": "SATISFIED AS RECORDED BY 001K - NOT ADVANCED BY THIS ORDER", "basis": "The 001K row file holds 437 rows with one disposition each: GAP 18, REFUSAL 3, UNRESOLVED 416. This order reproduced those counts exactly and did not re-class any row."},
+    {"requirement": "Record the unique legal-provision key and explicit canonical/duplicate links. Count source records separately from unique legal provisions; do not infer duplication from adjacent IDs.", "state": "PARTIALLY SATISFIED - THE DUPLICATE-LINK HALF IS NOW DETERMINED AT RELATION LEVEL; THE SEPARATE UNIQUE-PROVISION COUNT IS NOT PUBLISHABLE", "basis": "429 distinct legal_provision_key values and 437 source records are recorded. This order added a determination for all 2,358 duplicate relations (16 identical, 25 unresolved, 2,317 distinct as recorded) and derived every relationship membership from recorded descriptors, never from adjacency: the ten identical clusters are evidenced by listed field-level differences (title variant, jurisdiction token, or no difference at all), not by neighbouring IDs."},
+    {"requirement": "Carry forward the B20 ruling of 39 probable candidates, 380 excluded and 18 unresolved, including CRP-LSRC-0354 and 0422-0425 and 0427, and reconcile these totals against the persisted source-discovery records before treating them as final.", "state": "NOT SATISFIED - BLOCKED, MISSING EVIDENCE", "basis": "The per-ID basis does not exist in this workspace: no list, no per-ID class, no source-discovery record set. The catalogue carries no B20 class on any of its 437 entries and exactly one durable discovery record exists in the whole workspace, covering one ID. See b20_basis_search.json."},
+    {"requirement": "Keep the wildcard and unspecified-jurisdiction gaps visible, and keep unknown family identifiers opaque unless an approved mapping is found.", "state": "SATISFIED", "basis": "Three entries carry a wildcard or unspecified marker, including CRP-LSRC-0435, whose GAP record is intact with the AU-* wildcard preserved and expressly not closed, and the owner-supplied mapping held separately. This order changed none of them and identified no unknown family identifier."}
+  ],
+  "gate_condition_reassessment": [
+    {"condition": "every source ID is accounted for once", "state": "MET", "independent_measurement": "437 rows, 437 distinct source_entry_id values, 0 missing, 0 repeated, 0 non-catalogue identifiers, 0 catalogue identifiers absent from the row file"},
+    {"condition": "all counts reconcile", "state": "NOT MET", "reason": "The register's own row counts reconcile, but the carried-forward B20 aggregate does not. The failure is evidential, not arithmetic: 39 + 380 + 18 = 437, yet only one of the 39 can be attributed to a durable per-ID record and none of the 380 or the 18 can be attributed at all. No count may be certified while that aggregate is carried forward as a starting count."},
+    {"condition": "duplicate links are explicit", "state": "ADVANCED FROM LEDGER-ONLY TO DETERMINED - STILL NOT FULLY RESOLVED", "reason": "001K left same-provision identity across differing artifacts open. This order determined all 2,358 relations: 2,317 distinct as recorded, 16 identical at recorded-descriptor level, 25 unresolved. Ten identical clusters carry 22 rows and 12 demonstrable excess rows; six unresolved clusters carry 15 rows and up to 9 further excess rows. Identity for those six clusters is unresolved, so the unique-provision count is still not final."},
+    {"condition": "no unresolved item was silently excluded", "state": "MET", "reason": "416 unresolved rows are queued individually in the 001K row file with a named blocker, and this order queues the 15 unresolved-identity rows individually in duplicate_determinations.csv. None was dropped, defaulted, inferred or merged."},
+    {"condition": "if reports are only present in chat, first create the durable, schema-conforming rescreen register with provenance to each batch and correction", "state": "MET BY 001K", "reason": "The 001K register and row file are durable and carry batch provenance; this order verified their custody 3/3."}
+  ],
+  "gate_5_1_result": {
+    "status": "NOT PASSED",
+    "passing_conditions": 2,
+    "partially_advanced_conditions": 1,
+    "failing_conditions": 1,
+    "blocking_item": "The carried-forward B20 aggregate 39 / 380 / 18 has no per-ID basis in this workspace and cannot be reconciled here.",
+    "single_owner_decision_required": "Either amend the two governing instructions so that the aggregate is recorded as an unattributed historical statement rather than the register's certified starting count, or supply the per-ID inventory behind the tally. The proposed wording is in b20_basis_search.json, proposed_owner_disposition, and is not enacted.",
+    "what_is_now_settled": "The duplicate-identity work of gate 5.1 is complete on the evidence available: every duplicate relation is determined, every determination is per row, and the only identities still open are six explicitly queued clusters.",
+    "what_remains_blocked": "The count certification, because a certified count depends on the aggregate reconciliation, and the six unresolved identity clusters prevent the unique-provision count from being final in any case."
+  },
+  "count_sensitivity": {
+    "purpose": "bookkeeping only, to show the reader exactly what the duplicate determinations mean for counting",
+    "source_records": 437,
+    "rows_with_no_duplicate_relationship": 346,
+    "rows_with_a_duplicate_relationship": 91,
+    "rows_demonstrably_identical_at_recorded_descriptor_level": 22,
+    "demonstrable_excess_rows": 12,
+    "upper_bookkeeping_value_437_minus_12": 425,
+    "rows_with_unresolved_identity": 15,
+    "maximum_further_excess_if_every_unresolved_cluster_is_one_provision": 9,
+    "lower_bookkeeping_value_425_minus_9": 416,
+    "coincidence_warning": "The lower bookkeeping value 416 equals the count of UNRESOLVED rows in the 001K row file. That is a numerical coincidence between two unrelated quantities and must not be read as agreement, corroboration or identity.",
+    "certification": "NOT CERTIFIED. These are recorded-descriptor indicators. They are not a legal-provision count, not a candidate count and not a coverage measure, and they must not be published as the corpus count or used as a starting count for any downstream step."
+  },
+  "boundaries": "Documentation, measurement and verification only. No internet research, no new legal interpretation, no rule admission, no catalogue change, no report, no finding and no transmission.",
+  "created_by": "PHASE5-001L"
+}
+

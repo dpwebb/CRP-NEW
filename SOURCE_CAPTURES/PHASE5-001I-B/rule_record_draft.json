@@ -1,0 +1,575 @@
+{
+  "artifact": "rule_record_draft.json",
+  "work_order": "PHASE5-001I-B",
+  "created_utc": "2026-09-30",
+  "document_type": "DRAFT rule record, prepared for the rule-record order that would seek Gate 5.4",
+  "purpose": "assemble, from existing materials only, the field-by-field rule record that a Gate 5.4 order would need, so that every field either carries its recorded basis or is left explicitly unresolved - and so that nothing in the draft can be mistaken for an admitted rule, a coverage claim, a finding or gate evidence",
+  "status_of_this_artifact": {
+    "admission_state": "NOT_ADMITTED_DRAFT_ONLY",
+    "governed_rule_created": false,
+    "coverage_created": false,
+    "finding_class_created": false,
+    "gate_credit": "NONE",
+    "gate_credit_note": "no gate is passed, advanced, softened or waived by this draft. Gate 5.3 stays reached for one candidate on one presentation and passed for none; Gate 5.4 remains NOT_STARTED; Gates 5.5 and 5.6 remain NOT_STARTED; Gate 5.7 remains NOT_REACHED",
+    "consumer_visible": false,
+    "reachable_from_a_consumer_surface": false,
+    "admitted_evaluator": false,
+    "adopts_the_001i_a_comparator_as_an_admitted_evaluator": false,
+    "uses_001i_a_tests_as_gate_5_6_evidence": false,
+    "is_gate_evidence_for_any_gate": false,
+    "instrument_rank": "rank-6 work-order evidence. The rank-4 direct-report contract and the rank-5 build plan govern its content; this draft does not amend them and cannot override them"
+  },
+  "restriction_recorded": {
+    "applies": true,
+    "requirement": "the approved build plan orders Phase 5.4 after Gate 5.3, and Gate 5.3 is not passed for this unit",
+    "clauses": [
+      {
+        "id": "P-1",
+        "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "clause": "section 3, the ordering sentence that opens the gate sequence",
+        "line": 45,
+        "quoted_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+        "satisfied_for_this_draft": false
+      },
+      {
+        "id": "P-2",
+        "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "clause": "section 3, Phase 5.4 - select and certify rule units",
+        "quoted_text": "Build a candidate-to-rule-unit crosswalk. A rule unit is one independently testable legal proposition for one exact jurisdiction and statutory limb.",
+        "satisfied_for_this_draft": false
+      },
+      {
+        "id": "P-3",
+        "instrument": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+        "clause": "section 9.4, Next milestone M-1",
+        "line": 552,
+        "quoted_text": "**Milestone M-1 - Gate 5.3 passes for the single selected unit**",
+        "satisfied_for_this_draft": false
+      }
+    ],
+    "statement": "Gate 5.3 is reached for exactly one candidate on exactly one presentation and is passed for none (SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json; SOURCE_CAPTURES\\PROD-003\\gate_prerequisites.json). Gate 5.4 therefore has not properly begun and this draft is preparation only. A rank-6 work order cannot override a rank-5 plan (CRP_CORE_CONSTITUTION.md sections 2.1 and 2.2), so the draft records the restriction instead of asserting a permission. Nothing here waives, softens or advances it.",
+    "how_this_order_proceeds_anyway": "the owner issued PHASE5-001I-B as a bounded, internal preparation order, and it is executed as one: no gate is claimed, no rule is admitted, no artifact here is gate evidence, and no further repair is made to any inherited artifact"
+  },
+  "1_exact_accepted_statute_and_legacy_rule_references": {
+    "statute_as_accepted": {
+      "instrument_title": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93",
+      "provision": "s. 10(3)(c)",
+      "accepted_source_entry": "CRP-LSRC-0354",
+      "owner_acceptance_state": "OWNER_ACCEPTED_LEGAL_AUTHORITY",
+      "acceptance_basis": "OWNER_DIRECTIVE_PHASE5-001O",
+      "acceptance_is_independent_verification_by_this_order": false,
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json row CRP-LSRC-0354 (owner_acceptance); CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 2.1 item 1 and section 6, owner ruling PHASE5-001A"
+    },
+    "admitted_source_artifact": {
+      "relative_path": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+      "sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "bytes": 192432,
+      "admitted": true,
+      "admission_source": "SOURCE_CAPTURES\\PHASE5-001O\\admitted_artifacts.json",
+      "re_verified_by_this_order": true
+    },
+    "legacy_rule_reference": {
+      "legacy_rule_id": "ca-ns.cra.s10_3_c.debt_retention_6y",
+      "export_at_line": "export const NS_S10_3_C = nsRule({ (line 182)",
+      "legacy_provision_field": "s. 10(3)(c)",
+      "legacy_required_report_fields": [
+        "tradeline.lastPaymentDate"
+      ],
+      "legacy_declared_external_facts_required": [
+        "whether any payment was made on the debt - the provision's second limb applies where no payment was made",
+        "the date on which the default in payment occurred - the provision's own start for its second limb, which the legacy determination records as a fact no canonical report field carries"
+      ],
+      "legacy_timing_determination": "NS_S10_3_C_TIMING (line 564), reportField tradeline.lastPaymentDate (line 576)",
+      "legacy_classification_record": "CANADA_RULE_CLASSIFICATION_RECORDS entry for ca-ns.cra.s10_3_c.debt_retention_6y (block starts line 2440, entry line 2442)",
+      "legacy_read_note": "the row's own readNote records that both second-limb facts cannot be measured from the report, so 'the row stands at D3 with both facts recorded as required from outside'"
+    },
+    "statutory_text_as_admitted": "A consumer reporting agency shall not include in a consumer report information regarding any debt more than six years after the last payment was made on the debt or, where no payment was made, more than six years after the date on which the default in payment occurred.",
+    "authority_discipline": [
+      "the legacy statute is accepted as legal authority because the owner accepted it, not because a legacy artifact says so: legacy material is rank 10 and carries no authority in this repository (CRP_CORE_CONSTITUTION.md section 2.3)",
+      "missing historical provenance does not invalidate the accepted statute (owner decision this order; build plan section 2.1 item 1 as amended by PHASE5-001O: the digest-bound accepted source is the pin and an unrecorded formal edition, historical version or prior-review record is an administrative limitation)",
+      "no new legal research was performed for this draft, no official source was retrieved, and no text of the statute was paraphrased into a new proposition",
+      "the recorded citation seam is preserved and not repaired: the legacy production row that supplies a debt's clock quotes s. 10(ha) - the residual paragraph, recorded elsewhere in the same corpus as s. 10(3)(ha) - while the paragraph that states the period for a debt is s. 10(3)(c); the legacy record calls that a pre-existing engine measurement and a remaining citation seam, and moves no period, start, anchor or finding"
+    ],
+    "status": "RESOLVED_FROM_EXISTING_RECORDS"
+  },
+
+
+  "2_jurisdiction_applicability_and_explicit_selection": {
+    "applicability": {
+      "country_code": "CA",
+      "region_code": "CA-NS",
+      "display_name": "Nova Scotia",
+      "canonical_jurisdiction_status": "EXACT",
+      "legacy_jurisdiction_reference": "CA-NS",
+      "ledger_records_for_region": 16,
+      "enumeration_contract": "CRP-JURISDICTION-ENUM-1 (CRP_JURISDICTION_ENUMERATION.md, sha256 D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93)",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json row CRP-LSRC-0354 established_jurisdiction_associations; SOURCE_CAPTURES\\PROD-003\\crosswalk.json selected.jurisdiction"
+    },
+    "selection_must_be_explicit": {
+      "rule": "the caller supplies the jurisdiction; the unit never infers it from the report",
+      "refusals_verified_live_by_001i_a": [
+        "an absent selection is refused as REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED (exit 2)",
+        "a selection outside the authorized combination, for example CA-ON, is refused as REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT (exit 2)"
+      ],
+      "a_report_is_not_a_jurisdiction_signal": "nothing printed in a report - an address, a bureau name, a province field - selects a jurisdiction for this unit; the printed report is evidence about representation only (PROD-003 section 5.1)"
+    },
+    "not_covered_by_this_draft": [
+      "any other province or territory, including the recorded runner-up CA-ON x ca-on.cra.s9_3_f.debt_or_collection_7y, whose representation PROD-003 explicitly did not verify",
+      "any other country, bureau, channel or presentation",
+      "the question which province's law applies to a given consumer or report: that is an owner/product question, not decided by this draft"
+    ],
+    "status": "RESOLVED_FROM_EXISTING_RECORDS"
+  },
+  "3_limb_scope_first_limb_only": {
+    "included_limb": {
+      "id": "CA-NS-CRA-S10-3-C-LIMB-1",
+      "statement": "first limb only: six years from the last payment made on the debt",
+      "clock_start": "the date the report states the last payment was made on that debt"
+    },
+    "excluded_limb": {
+      "statement": "the second limb - where no payment was made, six years from the date on which the default in payment occurred - is excluded from this unit",
+      "why": [
+        "the presentation prints no field the admitted text reads as the date the default in payment occurred: the collection record prints Date Assigned, First Delinquency, Date Paid/Settled, Date Verified and Last Payment Date",
+        "whether any payment was made is a fact the legacy record itself lists as required from outside the report",
+        "no printed date may be substituted for it: First Delinquency and Date Assigned are explicitly not the default-in-payment date (PROD-003 sections 6.1 and 6.3; register FACT-04 and FACT-05)"
+      ],
+      "effect": "a debt the report shows as never paid is outside this unit. Such a case must not be inferred, defaulted or evaluated, and it must not be reported as absent or as compliant",
+      "recorded_state": "second limb UNSEATED (PROD-003 dependency D-1)"
+    },
+    "recorded_risk_of_the_included_limb": "the admitted text states one period with two starts. A record that reads only the first limb is reading a limb the text supplies, but the provision as a whole is not thereby satisfied: the excluded limb remains part of the provision and is carried as a recorded limitation on every result",
+    "status": "RESOLVED_FROM_EXISTING_RECORDS, with the excluded limb explicitly unseated"
+  },
+  "4_the_report_fact_the_unit_reads_is_collection_scoped": {
+    "printed_field": {
+      "label": "Last Payment Date",
+      "prints_in": "a contract debt record inside the Collections section",
+      "printed_form": "DDDD/DD/DD (four-digit year, then month, then day)",
+      "value_on_the_evidenced_specimen": "2021/02/01, normalized 2021-02-01, identical on both collection records",
+      "locators": [
+        "record 1: page 16, line 32, inside the record that begins at page 16 line 8 and ends at page 16 line 38",
+        "record 2: page 17, line 5, inside the record that begins at page 16 line 39 and continues to page 17 line 11"
+      ],
+      "section_heading": "Collections, page 16 line 4; the section resolves to pages 16-17",
+      "record_boundary_label": "Date Assigned",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json FACT-02; SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json collection_records"
+    },
+    "fact_as_drafted": {
+      "drafted_fact_id": "collection.lastPaymentDate",
+      "scope": "COLLECTION_RECORD_SPECIFIC",
+      "definition": "the date the printed collection record states the last payment on that debt was made, bound to that record and to no other",
+      "binding_rule": "a value is never borrowed from another record, another section or another page; a label printed outside any contract debt record is never read; a label printed twice in one record leaves the fact unresolved"
+    },
+    "do_not_silently_treat_it_as_a_tradeline_fact": {
+      "state": "RECORDED_NOT_RESOLVED",
+      "admitted_field_name": "tradeline.lastPaymentDate (the only requiredReportFields entry of the legacy rule record)",
+      "printed_field_is_on": "a collection record",
+      "recorded_divergence": "the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record. The legacy corpus's own record states the opposite schema fact: 'a collection carries no such field, so neither the printed openedDate nor its reportedDate fallback is used for one' - i.e. the field the presentation prints on a collection is a field the legacy extraction schema records as absent for that kind of item",
+      "what_the_draft_does": [
+        "records the fact the unit reads as a collection-scoped fact with its own name",
+        "does NOT seat the printed collection field as the admitted tradeline field",
+        "does NOT rename, widen or paraphrase the admitted field name",
+        "does NOT rely on the divergence either way: it is carried as an unresolved admission question"
+      ],
+      "routes_recorded_and_not_chosen": [
+        "an owner rule-corpus amendment seating the printed collection field as the representation of the required field",
+        "a decision that the printed field does not satisfy the admitted field requirement, in which case the first limb has no admitted representation on this presentation and the unit cannot be admitted for it"
+      ],
+      "who_decides": "the owner, at admission (Gate 5.4 / Gate 5.7). This draft chooses neither route"
+    },
+    "fact_semantics": "a report-stated historical event: the report asserts the last payment date; the extraction does not prove that the payment occurred, and no result may say that it did (register FACT-02 date_meaning)",
+    "status": "RESOLVED_AS_TO_WHAT_IS_READ; UNRESOLVED_AS_TO_WHETHER_IT_SEATS_THE_ADMITTED_FIELD"
+  },
+  "5_report_reference_date": {
+    "printed_field": {
+      "label": "Request Date",
+      "prints_in": "the page header, line 1 of every page",
+      "printed_form": "DDDD/DD/DD",
+      "value_on_the_evidenced_specimen": "2026/05/05, normalized 2026-05-05, one identical value on all 22 pages",
+      "recorded_in": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json FACT-03; SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json fact_records"
+    },
+    "meaning_as_recorded": "the date the consumer requested the report, printed by the bureau in the page header (register date_meanings)",
+    "used_as": "the evaluation reference date - the only point in time this unit compares the elapsed period against",
+    "limitations": [
+      "it is not a statutory effective date",
+      "it is not the date of any underlying event, including the last payment",
+      "it is not a jurisdiction signal and selects nothing",
+      "it is not evidence that any payment was made or that any debt is reportable",
+      "it is the report's own reference point, and nothing more"
+    ],
+    "reading_rule": "read from the page header only, and only when the same value appears on every page. A header with no such label, a header the method cannot read, or two different values across pages leaves the reference date unresolved: the comparison then does not run, the fact is never recorded as ABSENT_FROM_REPORT, and no other date is substituted",
+    "unresolved_requirement_this_convention_meets": {
+      "state": "DRAFT_CONVENTION_PENDING_ADMISSION",
+      "statement": "the admitted text names no comparison date. It states a period and a start, and nothing about the point in time from which elapsed time is measured for a report-content prohibition. Some reference point is therefore required for any deterministic comparison, and the report's own printed request date is the only one this presentation evidences. The choice is recorded as a convention of the internal evaluation, not as a requirement of the accepted text, and it must be settled at admission: if the owner determines a different reference point, this convention is replaced and no result computed under it may be relied on",
+      "recorded_basis": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json date_meanings used_as 'the evaluation reference date'; PROD-003 section 8"
+    },
+    "status": "RESOLVED_FROM_EXISTING_RECORDS as to meaning and location; the use of it as the comparison date is a recorded convention pending admission"
+  },
+
+  "6_period_calculation_and_boundary_treatment": {
+    "established_rule_requirements": {
+      "source": "the admitted text only",
+      "period_stated": "six years",
+      "start_stated": "the last payment made on the debt",
+      "prohibition_attaches": "the prohibition is expressed as 'more than six years after the last payment was made on the debt'",
+      "what_the_text_does_not_state": [
+        "no day count",
+        "no rule for computing the anniversary of a 29 February start",
+        "no statement whether the sixth-anniversary day itself is inside or outside the period",
+        "no comparison date at all (see section 5)",
+        "no rule for how the excluded second limb interacts with the first"
+      ]
+    },
+    "implementation_conventions_used_by_the_internal_comparator_and_not_yet_established": {
+      "artefact": "internal-validation\\ca-ns-last-payment-six-year\\six-year-evaluator.cjs (rank 8, internal only; it is NOT an admitted evaluator and this draft does not adopt it)",
+      "calendar_addition": "anniversary = clock start plus six calendar years (addCalendarYears, with a month-end clamp)",
+      "day_span": "the six-year span in days is derived from the two dates and is never hard-coded",
+      "elapsed": "intervening days from the clock start to the reference date",
+      "comparison": "intervening_days > six_year_span_in_days",
+      "anniversary_boundary": "the sixth-anniversary day is treated as INSIDE the period, so the period is exceeded only after it; the internal record states that whether 'more than six years after' is inclusive or exclusive of that day is a legal question reserved to the rule record (Gate 5.4)",
+      "leap_day": "a 29 February start clamps to 28 February in a non-leap sixth year",
+      "arithmetic": "proleptic Gregorian integer day arithmetic; no clock, locale, time zone, host or session state is read",
+      "measured_on_the_specimen": {
+        "last_payment": "2021-02-01",
+        "reference_date": "2026-05-05",
+        "anniversary": "2027-02-01",
+        "intervening_days": 1919,
+        "six_year_span_in_days": 2191,
+        "outcome": "PERIOD_NOT_EXCEEDED",
+        "reproduction": "PROD-003 recorded the same four figures; PHASE5-001I-A reproduced them from its own arithmetic (REPRODUCED)"
+      },
+      "measured_variation": "a six-year span containing two leap days is one day wider: 2,192 for 2019-03-01 to 2025-03-01 against 2,191 for 2021-02-01 to 2027-02-01"
+    },
+    "what_this_draft_requires_at_admission": [
+      "each convention above must be either confirmed by the owner and the rule record or replaced; none may be carried into an admitted evaluator by default",
+      "the anniversary-boundary question must be answered explicitly. It changes the outcome only on the exact anniversary day, which is why the internal comparator reports boundary_case EXACTLY_AT_SIX_YEAR_ANNIVERSARY instead of deciding it",
+      "no implementation convention may be presented as a requirement of the text, and no requirement of the text may be replaced by a convention"
+    ],
+    "PERIOD_EXCEEDED_is_not_a_finding": "PERIOD_EXCEEDED is an arithmetic outcome. Alone it decides nothing, supports nothing and authorizes nothing. The unit's ceiling is an observation-class statement and no finding of either class may be emitted (owner decision this order; PROD-003 section 7.4; PHASE5-001I-A section 7)",
+    "status": "PARTLY_ESTABLISHED - see established_rule_requirements against implementation_conventions_used_by_the_internal_comparator_and_not_yet_established"
+  },
+
+
+  "7_effective_period_and_applicability_in_time": {
+    "what_the_existing_records_hold": {
+      "effective_information_as_recorded": "effectiveFrom=null; effectiveTo=null; status=in_force; basis=recorded_gap_commencement_not_read",
+      "recorded_in": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json row CRP-LSRC-0354 legacy_statute_or_provision.effective_information_as_recorded",
+      "source_locator": "NOT RECORDED",
+      "administrative_limitations": [
+        "LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED",
+        "PRIOR_REVIEW_RECORD_NOT_HELD_IN_THIS_WORKSPACE",
+        "FORMAL_EDITION_OR_HISTORICAL_VERSION_NOT_RECORDED"
+      ],
+      "what_this_supports": "that the accepted source records the provision as in force, and that the commencement is a recorded gap",
+      "what_this_does_not_support": "any statement about whether the provision applied to this debt at any particular time, or from which date it applied"
+    },
+    "owner_decision_applied": "missing historical provenance does not invalidate the accepted statute. The digest-bound accepted source is the pin, and an unrecorded formal edition, historical version or prior-review record is an administrative limitation to be stated, not a ground to reject the source (owner decision this order; build plan section 2.1 item 1 as amended by PHASE5-001O)",
+    "effect_on_any_conclusion": {
+      "timing_qualification": "MANDATORY on any result, statement or output this unit's rule could ever produce",
+      "unqualified_conclusion": "PROHIBITED. No draft field, no comparison outcome and no eventual emission may assert that the provision applied, applies or did not apply to this debt, or that a period ran from any particular statutory commencement",
+      "recorded_basis": "PROD-003 dependency D-4 and section 7.4 (a plain-English timing qualification is required); register date_meanings (the Request Date is not a statutory effective date); PHASE5-001I-A classification_record second_limb_and_timing"
+    },
+    "draft_qualification_text_for_the_rule_record_to_carry": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when the six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied, and it makes no claim about statutory timing.",
+    "effective_dates_status_field": {
+      "draft_value": "UNRESOLVED_MISSING_EVIDENCE - effectiveFrom null, effectiveTo null, status in_force as recorded, commencement not read",
+      "must_not_be_defaulted_to": "a commencement date, a version, or 'in force at all material times'",
+      "what_would_close_it": "a later owner, legal or evidence order recording the provision's commencement or otherwise determining its temporal applicability for the relevant event"
+    },
+    "why_a_recorded_provision_in_force_does_not_close_this": "the accepted source records the provision as in force today. A six-year retention clock runs from an event in 2021, and the recorded gap is precisely whether the provision existed and applied at the material times. That question is a Gate 5.4 field (effective dates/status) and it is not answered by any record in this workspace",
+    "status": "UNRESOLVED_MISSING_EVIDENCE - the timing qualification stands and no unqualified conclusion is permitted"
+  },
+
+  "8_the_recorded_direct_report_exception_and_the_legacy_d3_classification": {
+    "the_recorded_exception": {
+      "instrument": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md (rank 4), section 4, Permanent Exclusions, first exclusion",
+      "quoted_lines_91_93": "limitation, accrual, debt-enforcement, or retention rules whose legal clock requires proving a true external event, unless the only unresolved fact is that underlying historical event and the rule satisfies the report-assertion probable-finding gate in Sections 6 and 7",
+      "quoted_route": "The report-assertion route in CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md Section 5 applies only after a later governed rule is admitted with complete required fields and official source evidence. (section 7, line 328)",
+      "state_in_this_order": "RECORDED, NOT RELIED ON - neither the exception nor the route is used, implied or promised by this draft. The route requires an admitted governed rule and a recorded exception determination, and neither exists"
+    },
+    "the_legacy_classification": {
+      "classification": "REPORT_RELEVANT_BUT_NOT_DETECTABLE",
+      "determinability_level": "D3",
+      "permitted_conclusion": "observation",
+      "packet_eligible": false,
+      "reason_as_recorded": "the paragraph states two facts a report does not carry - whether any payment was made on the debt, and the date of the default its second limb runs from - so the paragraph's condition cannot be established from an authorized report",
+      "level_definition_as_recorded": "D3: the text states a report-detectable obligation, but establishing it needs an essential fact from outside the report, so the report alone is not sufficient (legacy governance contract, line 130)",
+      "binding_as_recorded": "the only binding between level and conclusion is D0-D3 -> observation (legacy governance contract, line 144)"
+    },
+    "the_conflict_described_without_resolving_it": [
+      "on the recorded legacy reading, the provision as a whole is not detectable from an authorized report, so the ceiling is an observation-class statement",
+      "on the recorded direct-report reading, a retention rule whose legal clock needs a true external event may proceed to the probable path where the only unresolved fact is that underlying historical event and the report itself states it, and where the Section 6 and Section 7 conditions are met",
+      "the two readings also reason from different schemas: the legacy classification reasons in part from a schema in which 'a collection carries no such field', while the CRP presentation evidence now supplies the first limb's printed anchor on a real consumer disclosure (PROD-003 section 7.4)",
+      "PROD-003 records both, calls the divergence recorded and not overridden, and states that the owner's rule-corpus amendment decides which governs"
+    ],
+    "owner_decisions_applied_by_this_draft": [
+      "the legacy statute remains owner-accepted legal authority",
+      "the D3 / observation classification is retained",
+      "PROBABLE_VIOLATION is not authorized",
+      "VIOLATION is not authorized",
+      "an exception not established by the report is not treated as absent"
+    ],
+    "what_this_draft_does": [
+      "records the exception verbatim and describes the conflict",
+      "retains the observation classification and the observation-only ceiling",
+      "adopts no PROBABLE_VIOLATION route and creates no finding class",
+      "leaves the section 4 determination to the owner at admission, and states that if the owner declines the exception the ceiling remains observation-class with no finding of either class (PROD-003 section 7.4 condition, unchanged)"
+    ],
+    "what_this_draft_does_not_do": [
+      "it does not override the owner's observation decision, and it does not treat itself as the rule-corpus amendment that would settle the divergence",
+      "it does not adopt the PROD-003 section 7.4 PROBABLE_VIOLATION ceiling, which the owner's decision withholds"
+    ],
+    "permitted_result_ceiling_as_drafted": "OBSERVATION_CLASS_ONLY_UNTIL_THE_OWNER_DECIDES_AT_GATE_5_4. VIOLATION is unavailable in all circumstances. PROBABLE_VIOLATION is not authorized",
+    "status": "RECORDED - the conflict stands unresolved and the owner's observation decision governs"
+  },
+
+  "9_extraction_status_and_comparison_outcome_are_separate_fields": {
+    "extraction_status": {
+      "field": "extraction_status, one value per fact target",
+      "values": [
+        "RESOLVED",
+        "EXTRACTION_UNRESOLVED",
+        "UNSUPPORTED_PRESENTATION",
+        "NOT_A_DEBT_RECORD",
+        "ABSENT_FROM_REPORT"
+      ],
+      "substitutions_forbidden": [
+        "EXTRACTION_UNRESOLVED is never ABSENT_FROM_REPORT",
+        "a parser failure is never absence and never evidence",
+        "a non-debt region is never read for a value",
+        "a refused document is never an empty report",
+        "UNSUPPORTED_PRESENTATION for one fact is never a statement that the report lacks the fact"
+      ],
+      "absence_path": "ABSENT_FROM_REPORT has exactly one reachable path: the Collections section is located and resolved and prints no contract debt record. It is a resolved reading, never a parser silence (PHASE5-001I-A extraction_results.json status_model)",
+      "refusal_to_status_mapping": "fixed, not contextual: DOCUMENT_NOT_READABLE and DOCUMENT_ENCRYPTED -> EXTRACTION_UNRESOLVED; NOT_A_PDF_CONTAINER, IMAGE_ONLY_OR_NO_TEXT_LAYER, PAGE_GEOMETRY_MISMATCH, SYNTHETIC_OR_FIXTURE_MARKER and NOT_THE_EVIDENCED_SPECIMEN -> UNSUPPORTED_PRESENTATION"
+    },
+    "comparison_outcome": {
+      "field": "comparison_outcome, a different field, computed only when both facts are RESOLVED",
+      "values": [
+        "PERIOD_NOT_EXCEEDED",
+        "PERIOD_EXCEEDED",
+        "UNRESOLVED"
+      ],
+      "rule": "an extraction status is never a comparison outcome and a comparison outcome is never an extraction status. No comparison runs while either fact is unresolved. UNRESOLVED as an outcome is not a status and never stands in for one"
+    },
+    "neither_field_is_a_finding": "neither the extraction status nor the comparison outcome is a legal finding, a coverage claim or an admission. No outcome or status of this unit may be rendered as VIOLATION, PROBABLE_VIOLATION or any finding class",
+    "why_the_separation_matters_at_admission": "the build plan's Gate 5.5 requires that an evaluator cannot emit on incomplete extraction, wrong event-date mapping or an unresolved affirmative element; that requirement is only testable if the two vocabularies are separate fields with fixed meanings",
+    "status": "RESOLVED_FROM_EXISTING_RECORDS (the vocabulary and the separation are implemented and verified in PHASE5-001I-A; the wording is drafted here for the rule record)"
+  },
+  "10_output_eligibility_and_every_unresolved_dependency": {
+    "output_eligibility_as_drafted": {
+      "ceiling": "OBSERVATION_CLASS_ONLY_UNTIL_THE_OWNER_DECIDES_AT_GATE_5_4",
+      "consumer_visible_output": "NONE - no output of any class may be produced, shown, hosted, transmitted or implied",
+      "finding_classes_available": [],
+      "admitted_evaluator": false,
+      "deployment": "not authorized and not performed; report checking remains 'not yet available' for all 82 regions",
+      "condition_for_any_change": "only an owner rule-corpus amendment that admits this rule unit, records the ceiling and the section 4 determination, and follows validated Gates 5.3 to 5.6",
+      "what_may_be_produced_today": "internal arithmetic records and internal analysis only, marked not admitted and not presentation evidence"
+    },
+    "unresolved_dependencies": [
+      {
+        "id": "D-1",
+        "dependency": "the second limb (no payment made: six years from the date the default in payment occurred) is unseated on PR-01",
+        "effect": "this unit is the first limb only; a never-paid debt is out of scope and must not be defaulted",
+        "owner_action": "none required for the first limb"
+      },
+      {
+        "id": "D-2",
+        "dependency": "the locator is demonstrated on one specimen only",
+        "effect": "the presentation boundary is one specimen, not a report class; structural similarity admits nothing",
+        "owner_action": "supply a second independently authorized Equifax Canada specimen, or accept the single-specimen boundary in writing"
+      },
+      {
+        "id": "D-3",
+        "dependency": "the rule record does not exist and no governed rule is admitted",
+        "effect": "Gate 5.4 has not begun; the PROD-003 section 7.4 ceiling is a proposal, not an admission",
+        "owner_action": "issue the rule-record order this draft prepares"
+      },
+      {
+        "id": "D-4",
+        "dependency": "the effective period of s. 10(3)(c) is unresolved in the admitted record",
+        "effect": "a timing qualification is mandatory on any output and an unqualified conclusion is prohibited",
+        "owner_action": "accept the qualification, or authorize effective-period work"
+      },
+      {
+        "id": "D-5",
+        "dependency": "the recorded legacy D3 / observation classification diverges from the direct-report contract section 4 retention exception",
+        "effect": "only the owner's rule-corpus amendment settles which ceiling governs; until then no finding of either class",
+        "owner_action": "decide at admission"
+      },
+      {
+        "id": "D-6",
+        "dependency": "no admitted rule and no admitted evaluator exist",
+        "effect": "no consumer-visible output of any class may be produced",
+        "owner_action": "issue the rule-record, validation and admission orders"
+      },
+      {
+        "id": "D-7",
+        "dependency": "the positive path (PERIOD_EXCEEDED) is not demonstrated on a real specimen",
+        "effect": "the internal positive path is exercised on synthetic input only, which is never presentation evidence",
+        "owner_action": "none; a recorded limitation"
+      },
+      {
+        "id": "B-1",
+        "dependency": "field-name divergence: the admitted field is tradeline.lastPaymentDate, the printed field is on a collection record",
+        "effect": "the fact is drafted collection-scoped and is not seated as the admitted field",
+        "owner_action": "decide at admission whether the printed collection field is the representation of the required field"
+      },
+      {
+        "id": "B-2",
+        "dependency": "operational applicability information is missing: the ledger row records the source locator as NOT RECORDED, no prior review record is held, and the legacy production row that supplies a debt's clock quotes a different paragraph than the one this unit reads",
+        "effect": "this draft states what the accepted record holds and does not assert how any production system applied it",
+        "owner_action": "the citation seam is recorded, not repaired, per the legacy record's own instruction"
+      },
+      {
+        "id": "B-3",
+        "dependency": "the register disposition for CRP-LSRC-0354 is UNRESOLVED with blocker REPORT_EVENT_DATE_MAPPING_UNVERIFIED",
+        "effect": "the candidate cannot be treated as resolved while its report-event/date mapping is not verified in the register",
+        "owner_action": "clear it under the recorded clearing authority: an authorised evidence route for the report representation plus owner direction"
+      },
+      {
+        "id": "B-4",
+        "dependency": "the comparison reference date is a recorded convention, not a requirement of the text",
+        "effect": "the convention must be settled at admission or replaced",
+        "owner_action": "confirm the report's request date as the reference point, or determine another"
+      },
+      {
+        "id": "B-5",
+        "dependency": "the anniversary-boundary question (inclusive or exclusive of the sixth anniversary day) is unanswered",
+        "effect": "the outcome can differ only on the exact anniversary day; the internal record reports the boundary case instead of deciding it",
+        "owner_action": "decide at admission"
+      },
+      {
+        "id": "B-6",
+        "dependency": "missing historical provenance and missing effective-period information",
+        "effect": "recorded as administrative limitations, not as grounds to reject the accepted source; the timing qualification is carried on every statement",
+        "owner_action": "none; the limitations are stated with any statement"
+      }
+    ],
+    "status": "OBSERVATION_CLASS_ONLY - no emission is permitted and every dependency above remains open"
+  },
+
+  "11_the_exact_specimen_boundary": {
+    "evidenced_presentation": {
+      "presentation_id": "PR-01",
+      "definition": "the Equifax Canada consumer-channel credit report evidenced by PROD-003's register",
+      "artifact_id": "LEG-CONSUMER-EQ-CA",
+      "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+      "bytes": 96393,
+      "pages": 22,
+      "page_geometry": "A4, 594.96 x 841.92 pt (tolerance 0.5 pt)",
+      "native_text": "22 of 22 pages",
+      "re_verified_by_this_order": true
+    },
+    "the_boundary_rule": "structural similarity alone admits nothing. A document that satisfies every structural predicate of this contract but is not the evidenced specimen is refused as NOT_THE_EVIDENCED_SPECIMEN, producing UNSUPPORTED_PRESENTATION. One specimen does not establish support for any other report from that bureau",
+    "what_is_refused": [
+      "another Equifax Canada product, another report version or another print date",
+      "another bureau, including the TransUnion Canada specimen PR-02",
+      "a subscriber, business, screening or tenant-screening document",
+      "a scan, photograph, mobile view or any page without native text (no OCR is specified)",
+      "a generated or synthetic fixture, including this order's own test fixtures",
+      "an encrypted or unreadable document, recorded as a document-level extraction failure and never as absence"
+    ],
+    "what_PR_02_does_and_does_not_establish": "PR-02 corroborates the FIELD, because it independently prints its own Last Payment Date with a value. It does not corroborate the layout: its sections, record blocks and labels differ, it prints no Request Date label, and no rule may be evaluated against it with PR-01's locator (PROD-003 section 5)",
+    "no_extrapolation": [
+      "no statement about Equifax Canada as a bureau, its other products, or its report versions",
+      "no statement about any other market, province, bureau or channel",
+      "no statement that a second specimen would resolve: a second specimen must be separately evidenced, byte-pinned, admitted and tested before the locator is called reusable (dependency D-2)"
+    ],
+    "status": "RESOLVED_AS_TO_WHAT_IS_SUPPORTED; the single-specimen boundary remains open as D-2"
+  },
+
+
+  "12_required_evidence_for_gates_5_3_to_5_7_existing_versus_missing": {
+    "note": "this draft supplies no gate evidence. The per-gate inventory, the assessment of whether Gate 5.3 can be completed for this exact-specimen boundary, and the smallest next action are set out in full in SOURCE_CAPTURES\\PHASE5-001I-B\\prerequisite_assessment.json; the summary below is the draft's own reading of that inventory",
+    "summary": [
+      {
+        "gate": "5.3",
+        "requirement": "each proposed candidate has a verifiable report representation and exact location, or remains explicitly unresolved/excluded with a source-grounded reason",
+        "existing": "for CA-NS-CRA-S10-3-C-LIMB-1 the representation and its exact location are recorded and independently measured on PR-01: section, page, line, record binding, printed and normalized values, a named extraction method, and refusals for every unsupported input class",
+        "missing": "the owner's decision on the single-specimen boundary (or a second specimen), the owner's decision on which printed field represents the admitted required field, and the clearing of the register disposition UNRESOLVED / REPORT_EVENT_DATE_MAPPING_UNVERIFIED",
+        "can_be_completed_for_this_exact_specimen_boundary": "yes, for this one candidate on this one specimen, if the owner records those decisions. That is a Gate 5.3 pass for one candidate, not a whole-gate pass, and this order neither claims nor attempts it"
+      },
+      {
+        "gate": "5.4",
+        "requirement": "a complete field-by-field trace to the owner-approved source, exact jurisdiction/limb, no unresolved affirmative element, and a deterministic test",
+        "existing": "this draft's governed fields, each carrying its recorded basis; the crosswalk; the ledger row; the reproduction of PROD-003's arithmetic",
+        "missing": "effective dates/status (MISSING_EVIDENCE), the section 4 exception determination, the owner's ceiling decision, an independent validation of faithful transcription, and a Gate 5.3 pass before the phase may begin",
+        "this_draft_is_not_gate_5_4_evidence": true
+      },
+      {
+        "gate": "5.5",
+        "requirement": "evaluator output deterministic, fully traceable to report and source, and unable to emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping or an unresolved affirmative element",
+        "existing": "the internal PHASE5-001I-A comparator as an unadmitted prototype, with its status vocabulary, locators and refusal mapping",
+        "missing": "the admitted rule record it must be rebuilt from; the build plan's fact-model statuses PRESENT and CONTRADICTED, which the internal prototype does not implement; explicit finding-class outputs, which this unit may not emit; and the consumer-facing explanation the plan requires",
+        "missing_note": "the plan requires a rebuilt evaluator for this gate; carrying the internal prototype forward is not a Gate 5.5 answer"
+      },
+      {
+        "gate": "5.6",
+        "requirement": "every test passes; independent replay reproduces each sampled result; no known false positive/negative category unexplained; corpus, crosswalk, tests and explanation templates share immutable versions",
+        "existing": "41 internal tests with 0 failures, over the pinned specimen, the arithmetic, the failure paths, the refusals and the state model",
+        "missing": "the Gate 5.6 fixture set (clear breach, compliant, exact boundary, wrong event date, date unavailable, report contradiction, exception shown, exception unknown, effective-period uncertainty, preemption uncertainty, duplicate source, wrong jurisdiction, parser failure, OCR ambiguity, section not inspected); an independent reviewer replaying a sample without seeing the evaluator output first; consumer-language validation; shared immutable versions",
+        "the_internal_tests_are_not_gate_5_6_evidence": true
+      },
+      {
+        "gate": "5.7",
+        "requirement": "formal owner admission of at least one complete rule unit by rule-corpus amendment, with immutable IDs/versions and full provenance, and finding classes authorized explicitly",
+        "existing": "nothing admissible today: 0 admitted governed rules, 0 permitted findings",
+        "missing": "the owner's rule-corpus amendment; the recorded admission of the exact finding classes; a validated evaluator; and the owner's ceiling decision for this unit"
+      }
+    ],
+    "status": "INVENTORY COMPLETE - existing evidence is distinguished from missing evidence for every gate"
+  },
+
+  "build_plan_phase_5_4_governed_fields_crossreference": {
+    "note": "the build plan requires these fields in every selected rule unit. Each is mapped to where this draft answers it and to the state of that answer",
+    "fields": [
+      { "field": "immutable rule ID/version", "answered_in": "3_limb_scope_first_limb_only.included_limb.id", "draft_value": "CA-NS-CRA-S10-3-C-LIMB-1 (draft; a version string must be assigned at admission)", "state": "DRAFT_VALUE_PENDING_ADMISSION" },
+      { "field": "exact jurisdiction", "answered_in": "2_jurisdiction_applicability_and_explicit_selection", "draft_value": "CA / CA-NS, association EXACT", "state": "RESOLVED_FROM_EXISTING_RECORDS" },
+      { "field": "source ID and pin", "answered_in": "1_exact_accepted_statute_and_legacy_rule_references", "draft_value": "CRP-LSRC-0354; rules.canada.ts at 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF", "state": "RESOLVED_FROM_EXISTING_RECORDS" },
+      { "field": "formal edition status", "answered_in": "7_effective_period_and_applicability_in_time", "draft_value": "FORMAL_EDITION_OR_HISTORICAL_VERSION_NOT_RECORDED - a recorded administrative limitation, which the owner decision says does not invalidate the accepted source", "state": "UNRESOLVED_BUT_NOT_BLOCKING_UNDER_THE_OWNER_DECISION" },
+      { "field": "effective dates/status", "answered_in": "7_effective_period_and_applicability_in_time", "draft_value": "effectiveFrom null, effectiveTo null, status in_force, commencement not read", "state": "UNRESOLVED_MISSING_EVIDENCE" },
+      { "field": "exact legal text/proposition", "answered_in": "1_", "draft_value": "the admitted text quoted verbatim, first limb drafted and second limb excluded", "state": "RESOLVED_FROM_EXISTING_RECORDS" },
+      { "field": "applicability", "answered_in": "2_ and 3_", "draft_value": "explicit CA/CA-NS selection, first limb only, one-specimen boundary", "state": "RESOLVED_FROM_EXISTING_RECORDS; the temporal half is unresolved (see effective dates/status)" },
+      { "field": "report-required facts", "answered_in": "4_the_report_fact_the_unit_reads_is_collection_scoped and 5_report_reference_date", "draft_value": "the printed collection Last Payment Date and the printed Request Date", "state": "RESOLVED_AS_TO_WHAT_IS_READ; the field-name seating is unresolved" },
+      { "field": "decisive facts", "answered_in": "4_ and 5_", "draft_value": "the two resolved dates; nothing else is decisive, and no fact outside the report is decisive except the report-asserted last payment itself", "state": "RESOLVED_FROM_EXISTING_RECORDS" },
+      { "field": "exceptions", "answered_in": "8_", "draft_value": "the direct-report section 4 retention exception is recorded and NOT relied on; no exception determination is made", "state": "UNRESOLVED_OWNER_DECISION" },
+      { "field": "deterministic breach test", "answered_in": "6_period_calculation_and_boundary_treatment", "draft_value": "anniversary = start + 6 calendar years; span and elapsed days derived; exceeded when elapsed > span; conventions listed separately from requirements", "state": "PARTLY_ESTABLISHED - conventions need confirming at admission" },
+      { "field": "consumer citation", "answered_in": "1_", "draft_value": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)", "state": "RESOLVED_FROM_EXISTING_RECORDS" },
+      { "field": "consumer-facing qualifications", "answered_in": "7_ (timing qualification text) and 10_ (ceiling)", "draft_value": "the draft qualification text plus the observation-only ceiling", "state": "DRAFT_TEXT_PENDING_ADMISSION; nothing here is consumer-visible" }
+    ],
+    "gate_5_4_reading": "the trace exists field by field, but the draft cannot present 'no unresolved affirmative element' while the effective period and the exception are unresolved, and Phase 5.4 may not begin before Gate 5.3 passes. This crossreference is preparation, not a Gate 5.4 submission"
+  },
+
+  "unresolved_fields_summary": [
+    "effective dates/status (a Gate 5.4 required field) - MISSING_EVIDENCE",
+    "the section 4 retention-exception determination - OWNER_DECISION",
+    "the permitted result ceiling for this unit - OWNER_DECISION (observation-class only today)",
+    "whether the printed collection Last Payment Date seats the admitted tradeline.lastPaymentDate field - OWNER_DECISION",
+    "the single-specimen boundary (D-2) - OWNER_DECISION, or a second independently authorized specimen",
+    "the comparison reference date as a convention - PENDING_ADMISSION",
+    "the anniversary-boundary convention (inclusive or exclusive of the sixth anniversary day) - PENDING_ADMISSION, reserved to Gate 5.4",
+    "the leap-day clamp and the derived-day-count conventions - PENDING_ADMISSION",
+    "the register disposition UNRESOLVED / REPORT_EVENT_DATE_MAPPING_UNVERIFIED - OWNER_DIRECTION plus an authorised evidence route",
+    "the operational applicability of the legacy production clock (which row supplies it, and the s. 10(3)(c) against s. 10(ha) citation seam) - RECORDED, NOT RESOLVED",
+    "the second limb and FACT-05 - UNSEATED on this presentation",
+    "no immutable version string, no admission record and no admitted artefact - PENDING_ADMISSION"
+  ],
+  "owner_decisions_of_this_order_applied": [
+    "the legacy statute remains owner-accepted legal authority",
+    "the D3 / observation classification is retained",
+    "PROBABLE_VIOLATION is not authorized",
+    "VIOLATION is not authorized",
+    "missing historical provenance does not invalidate the accepted statute",
+    "missing operational applicability information remains explicit and is not filled by inference",
+    "the gate sequence is preserved and this work takes no gate-completion credit",
+    "no new legal research, no consumer-report retrieval, no external transmission and no consumer-visible output"
+  ],
+  "boundaries": [
+    "this is a draft. It admits no rule, creates no coverage, creates no finding class, passes no gate and produces no output for any person",
+    "it is not the governed legal-rule corpus of build plan section 4 item 4, not the deterministic specification of section 4 item 5, and not gate evidence for any gate",
+    "it does not adopt the PHASE5-001I-A comparator as an admitted evaluator and does not treat the internal tests as Gate 5.6 evidence",
+    "it uses existing materials only: no legal research, no report retrieval, no external transmission, no consumer-visible output and no deployment",
+    "it modifies no extractor, evaluator, application, corpus, register or governing document, and it repairs no inherited artifact",
+    "everything unresolved above is a recorded limitation, not a finding, a coverage claim or a promise"
+  ],
+  "created_by": "PHASE5-001I-B"
+}

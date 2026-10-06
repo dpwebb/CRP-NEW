@@ -1,0 +1,281 @@
+{
+  "artifact": "transcription_mapping_validation.json",
+  "work_order": "PHASE5-001Q",
+  "created_utc": "2026-09-30",
+  "deliverable": "deliverable 3 of the issuing order — independent validation of faithful transcription and field-by-field mapping to the accepted legal record",
+  "document_type": "INDEPENDENT VALIDATION, ONE SCOPE ONLY. It is not a legal review, it does not repeat the owner's certification, and it passes no corpus-wide gate.",
+  "what_it_validated": {
+    "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "scope": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+    "record_validated": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+    "decisions_validated": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record_decisions.json"
+  },
+  "what_was_validated_against": [
+    "the admitted artifact itself, re-read read-only at C:\\Users\\webbd\\crp-credit-app\\packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts: its own quoted strings at lines 186-188, its required-field declaration at line 189, and its own classification entry at lines 2442-2450",
+    "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json row CRP-LSRC-0354 (jurisdiction, source artifact, digest, effective information)",
+    "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json (FACT-02, FACT-03, the date meanings, the register's own deterministic demonstration)",
+    "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md lines 91-93 and 328-329 (the exception and the route, verbatim)",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md line 124 (the required governed fields) and line 128 (the gate text)",
+    "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json, SOURCE_CAPTURES\\PHASE5-001I-B\\rule_record_draft.json and SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json (the accepted internal records)",
+    "SOURCE_CAPTURES\\PHASE5-001P\\next_work_order.json (the deliverable that defines this validation)"
+  ],
+  "method": "each check re-derives its own values from the sources above and compares them with the record. The statute text is reassembled from the artifact's own string literals rather than accepted on the record's word. The day arithmetic is recomputed here from the two dates by proleptic Gregorian calendar addition and integer day subtraction. Every date either artifact prints must be traceable to the register, to this order's own creation date, or to a recomputation performed in this file.",
+  "checks": [
+    {
+      "id": "V-T1",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the source pin is re-measured, not restated",
+      "passed": true,
+      "detail": "measured 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF (192432 bytes); the record pins 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF (192432 bytes) and the ledger row records the same digest"
+    },
+    {
+      "id": "V-T2",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the accepted text is reassembled from the artifact's own quoted strings and matches the record character-for-character",
+      "passed": true,
+      "detail": "reassembled 269 characters from artifact lines 186-188; identical to the record's quoted text, and the record's basis cites those lines"
+    },
+    {
+      "id": "V-T3",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the record's quoted text is the text the accepted internal draft already carried",
+      "passed": true,
+      "detail": "the accepted draft section 1 carries the same quotation, so no re-interpretation or paraphrase was introduced by this order"
+    },
+    {
+      "id": "V-T4",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the first-limb proposition is derived from the accepted text at the limb boundary and matches the artifact and the record",
+      "passed": true,
+      "detail": "derived limb (161 chars) is the record's limb statement with or without its sentence-final period; the artifact carries the same words as its own string; the second limb is the residue after the boundary and is excluded"
+    },
+    {
+      "id": "V-T5",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the recorded divergence names the artifact's own required-field literal, and the collection-scoped name separately",
+      "passed": true,
+      "detail": "artifact line 189 declares tradeline.lastPaymentDate; the record carries that literal in its divergence record and carries collection.lastPaymentDate as the fact it reads"
+    },
+    {
+      "id": "V-T6",
+      "gate_5_4_criterion": "mapping to the accepted legal record (independent validation)",
+      "what": "the retained classification matches the artifact's own entry and the accepted classification record, field by field",
+      "passed": true,
+      "detail": "artifact lines 2442-2450 and the accepted classification record agree with the retained block: D3 / REPORT_RELEVANT_BUT_NOT_DETECTABLE / observation / ineligible"
+    },
+    {
+      "id": "V-T7",
+      "gate_5_4_criterion": "faithful transcription (independent validation)",
+      "what": "the proposition is the accepted wording, not a paraphrase",
+      "passed": true,
+      "detail": "the proposition as recorded (162 chars) is the derived limb, the accepted text, or a literal part of it; no wording of this order's own is substituted for the accepted text"
+    },
+    {
+      "id": "V-M1",
+      "gate_5_4_criterion": "exact jurisdiction/limb",
+      "what": "the jurisdiction and the limb are mapped to the accepted ledger row, value by value",
+      "passed": true,
+      "detail": "ledger canonical values CA / CA-NS / EXACT are the record's values; the second limb is recorded unseated and is not inferred"
+    },
+    {
+      "id": "V-M2",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "the source entry id resolves to exactly one accepted ledger row, and the legacy rule id exists in the artifact",
+      "passed": true,
+      "detail": "ledger rows carrying CRP-LSRC-0354: 1; artifact lines carrying the legacy rule id: 2"
+    },
+    {
+      "id": "V-M3",
+      "gate_5_4_criterion": "no unresolved affirmative element",
+      "what": "the effective-period value is the ledger row's recorded value, parsed part by part, and is carried as unresolved",
+      "passed": true,
+      "detail": "the ledger row records: effectiveFrom=null; effectiveTo=null; status=in_force; basis=recorded_gap_commencement_not_read; the record carries it unresolved with a mandatory qualification rather than defaulting it"
+    },
+    {
+      "id": "V-M4",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "the rule-read fact maps to register FACT-02: id, raw value, normalized value, section and locator",
+      "passed": true,
+      "detail": "register FACT-02: Collections / observed 2021-02-01 / locator identical"
+    },
+    {
+      "id": "V-M5",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "the reference date maps to register FACT-03 (Report reference date, printed as Request Date) and is recorded as a convention input, not as a fact the rule reads",
+      "passed": true,
+      "detail": "register FACT-03 = Report reference date, printed as the label \"Request Date\" / 2026-05-05; the record distinguishes it from the rule-read fact and from any statutory date"
+    },
+    {
+      "id": "V-M6",
+      "gate_5_4_criterion": "a deterministic test",
+      "what": "the anniversary, the span and the elapsed days are recomputed from the two dates and agree with the record and with the register's own demonstration",
+      "passed": true,
+      "detail": "recomputed here: anniversary 2027-02-01, span 2191 days, elapsed 1919 days, outcome PERIOD_NOT_EXCEEDED — the record states 2027-02-01, 2191, 1919, PERIOD_NOT_EXCEEDED, and the register's own demonstration states the same five values"
+    },
+    {
+      "id": "V-M7",
+      "gate_5_4_criterion": "a deterministic test",
+      "what": "the month-end clamp recorded as convention c2 is the result this calendar arithmetic produces",
+      "passed": true,
+      "detail": "2020-02-29 plus six calendar years recomputes to 2026-02-28, which is the clamp the record records as convention c2"
+    },
+    {
+      "id": "V-M8",
+      "gate_5_4_criterion": "a concrete contradiction or change indicator is held for owner/legal direction rather than guessed",
+      "what": "no invented date: every date printed by this order traces to the register, to its own creation date, or to a recomputation here",
+      "passed": true,
+      "detail": "dates printed: 2026-09-30, 2021-02-01, 2026-05-05, 2027-02-01; unexplained: none"
+    },
+    {
+      "id": "V-M9",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "all 13 governed fields the controlling instrument requires are recorded, and no field is added to the set",
+      "passed": true,
+      "detail": "parsed from build plan line 124: immutable rule ID/version | exact jurisdiction | source ID and pin | formal edition status | effective dates/status | exact legal text/proposition | applicability | report-required facts | decisive facts | exceptions | deterministic breach test | consumer citation | consumer-facing qualifications — missing: none; added: none"
+    },
+    {
+      "id": "V-M10",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "every governed field carries a value, a basis, a named state and an effect on output eligibility",
+      "passed": true,
+      "detail": "all 13 fields are populated in all four respects, and each state is a named state rather than a blank"
+    },
+    {
+      "id": "V-M11",
+      "gate_5_4_criterion": "mapping to the accepted legal record (independent validation)",
+      "what": "the recorded exception and the route it opens are verbatim quotations of the rank-4 contract, and the route is recorded as not relied on",
+      "passed": true,
+      "detail": "contract lines 91-93 and 328-329 reproduce word for word once markdown marks are removed (269 and 189 characters); state RECORDED_NOT_RELIED_ON; route_satisfied false, so the exception is available to nothing"
+    },
+    {
+      "id": "V-M18",
+      "gate_5_4_criterion": "a complete field-by-field trace to the owner-approved source",
+      "what": "the two copies of the exception (governed field and exceptions section) state the same thing",
+      "passed": true,
+      "detail": "the governed field and the exceptions section carry one state (RECORDED_NOT_RELIED_ON) and one route reading (satisfied=false)"
+    },
+    {
+      "id": "V-M12",
+      "gate_5_4_criterion": "no unresolved affirmative element",
+      "what": "no finding class is created, and every mention of a finding label in this order's artifacts restricts it",
+      "passed": true,
+      "detail": "ceiling OBSERVATION_CLASS_ONLY; available finding classes 0; strings asserting a finding: 0"
+    },
+    {
+      "id": "V-M13",
+      "gate_5_4_criterion": "a deterministic test",
+      "what": "all six arithmetic conventions are recorded as conventions and none as a requirement of the text, and the anniversary-boundary question is withheld rather than answered",
+      "passed": true,
+      "detail": "six conventions, none presented as a requirement of the text; the boundary outcome is withheld in the record and in the decisions record alike"
+    },
+    {
+      "id": "V-M14",
+      "gate_5_4_criterion": "no unresolved affirmative element",
+      "what": "each of the six decisions the issuing order names is recorded, with its own effect on evaluation, its own effect on output eligibility and its own Gate 5.4 criterion",
+      "passed": true,
+      "detail": "items of the issuing order's deliverable 2 covered: 6/6; decisions short of an effect or a criterion: none"
+    },
+    {
+      "id": "V-M15",
+      "gate_5_4_criterion": "mapping to the accepted legal record (independent validation)",
+      "what": "every owner decision this order resolves or carries exists in the accepted PHASE5-001I-C record",
+      "passed": true,
+      "detail": "the accepted record holds 6 owner decisions (D-1, D-2, D-3, D-4, D-5, D-6); this order cites 6 of them and invents none"
+    },
+    {
+      "id": "V-M16",
+      "gate_5_4_criterion": "no unresolved affirmative element",
+      "what": "the record asserts no admission, no coverage, no candidate, no finding class and no consumer-visible reach",
+      "passed": true,
+      "detail": "state NOT_ADMITTED; admitted governed rules after this order: 0; permitted findings after this order: 0"
+    },
+    {
+      "id": "V-M17",
+      "gate_5_4_criterion": "no unresolved affirmative element",
+      "what": "the effective period, the exception and the calculation conventions are carried separately, each with its own named state",
+      "passed": true,
+      "detail": "three distinct named states for three distinct questions; the timing qualification text is carried verbatim in the decisions record"
+    }
+  ],
+  "check_count": 25,
+  "failure_count": 0,
+  "failed": [],
+  "criterion_coverage": {
+    "faithful transcription (independent validation)": {
+      "check_ids": [
+        "V-T1",
+        "V-T2",
+        "V-T3",
+        "V-T4",
+        "V-T5",
+        "V-T7"
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "mapping to the accepted legal record (independent validation)": {
+      "check_ids": [
+        "V-T6",
+        "V-M11",
+        "V-M15"
+      ],
+      "passed": 3,
+      "failed": 0
+    },
+    "exact jurisdiction/limb": {
+      "check_ids": [
+        "V-M1"
+      ],
+      "passed": 1,
+      "failed": 0
+    },
+    "a complete field-by-field trace to the owner-approved source": {
+      "check_ids": [
+        "V-M2",
+        "V-M4",
+        "V-M5",
+        "V-M9",
+        "V-M10",
+        "V-M18"
+      ],
+      "passed": 6,
+      "failed": 0
+    },
+    "no unresolved affirmative element": {
+      "check_ids": [
+        "V-M3",
+        "V-M12",
+        "V-M14",
+        "V-M16",
+        "V-M17"
+      ],
+      "passed": 5,
+      "failed": 0
+    },
+    "a deterministic test": {
+      "check_ids": [
+        "V-M6",
+        "V-M7",
+        "V-M13"
+      ],
+      "passed": 3,
+      "failed": 0
+    },
+    "a concrete contradiction or change indicator is held for owner/legal direction rather than guessed": {
+      "check_ids": [
+        "V-M8"
+      ],
+      "passed": 1,
+      "failed": 0
+    }
+  },
+  "verdict": "FAITHFUL TRANSCRIPTION AND FIELD-BY-FIELD MAPPING VERIFIED FOR THIS ONE SCOPE — 25 checks, 0 failures",
+  "scope_note": "this validation covers one rule unit, one statutory limb and one byte-pinned presentation. It is the evidence for the Gate 5.4 validation criterion in that scope only. It is not independent legal review, it does not repeat or replace the owner's legal/source certification, and it passes no corpus-wide gate.",
+  "what_this_validation_does_not_do": [
+    "it does not re-interpret or re-certify the accepted legal authority, and it decides no legal question",
+    "it does not resolve the effective period, the exception, the anniversary-boundary reading or the calculation conventions; it verifies that each is recorded in its own recorded state and that none was filled with an invented fact",
+    "it admits no rule, creates no coverage and no candidate, authorizes no finding class, and produces no consumer-visible output",
+    "it is not Gate 5.5 or Gate 5.6 evidence and does not advance any corpus-wide gate"
+  ],
+  "created_by": "PHASE5-001Q"
+}

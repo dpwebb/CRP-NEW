@@ -1,0 +1,175 @@
+{
+  "artifact": "counts_001u.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "document_type": "COUNTS RECORD — the corpus counts this admission records, each from its own source, with the uncertified ones named as uncertified",
+  "purpose": "satisfy the Phase 5.7 requirement that excluded, unresolved, gap and refusal counts be recorded separately and that no unresolved jurisdiction or provision be represented as certified, and record the governed counts this one admission changes and the ones it does not",
+  "the_four_counts_the_plan_names_recorded_separately": {
+    "excluded": {
+      "count": 0,
+      "source": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv (per-row disposition column)",
+      "what_it_counts": "register rows whose disposition is EXCLUDED",
+      "certified": false,
+      "note": "the register records no row as excluded; excluded source entries are recorded only in the preserved historical tally, which is not attributable to any catalogue ID"
+    },
+    "unresolved": {
+      "count": 416,
+      "source": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv (per-row disposition column)",
+      "what_it_counts": "register rows whose disposition is UNRESOLVED",
+      "certified": false,
+      "note": "an unresolved row is not a candidate, not a refusal and not a certification; the admitted rule unit's own source row is one of these rows and stays one"
+    },
+    "gap": {
+      "count": 18,
+      "source": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv (per-row disposition column)",
+      "what_it_counts": "register rows whose disposition is GAP",
+      "certified": false,
+      "note": "a gap is recorded as a gap; no entry is invented to close it"
+    },
+    "refusal": {
+      "count": 3,
+      "source": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv (per-row disposition column)",
+      "what_it_counts": "register rows whose disposition is REFUSAL",
+      "certified": false,
+      "note": "a refusal is retained as a refusal"
+    }
+  },
+  "the_register_this_record_reads": {
+    "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+    "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+    "columns": 23,
+    "rows": 437,
+    "disposition_tally": {
+      "UNRESOLVED": 416,
+      "GAP": 18,
+      "REFUSAL": 3
+    },
+    "disposition_state_tally": {
+      "BLOCKED_MISSING_EVIDENCE": 416,
+      "RECORDED_DURABLE": 21
+    },
+    "blocker_type_tally": {
+      "NO_DURABLE_RESCREEN_RECORD": 409,
+      "RECORDED_OPEN_ITEM": 16,
+      "REPORT_EVENT_DATE_MAPPING_UNVERIFIED": 6,
+      "NO_OPEN_ITEM_RECORDED": 5,
+      "CANDIDATE_REPRESENTATION_UNRESOLVED_GATE_5_3_M1": 1
+    },
+    "the_disposition_tally_sums_to_the_row_count": true
+  },
+  "the_preserved_historical_tally": {
+    "recorded_in": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "sentence_present_in_the_document": true,
+    "sentence_occurrences": 2,
+    "probable_candidates": 39,
+    "excluded": 380,
+    "unresolved": 18,
+    "sum": 437,
+    "status": "PRESERVED AS AN UNATTRIBUTED HISTORICAL RECORD (owner disposition PHASE5-001M): its per-ID inventory is absent from this workspace, so no catalogue ID is assigned to any of its classes, it is not a certified operational count, and this order does not use it as a count of excluded, unresolved or probable source entries.",
+    "why_it_is_recorded_here": "the Phase 5.7 bullet requires excluded counts to be recorded separately and not represented as certified; the only excluded figure the record holds is this preserved historical tally, and it is recorded as exactly that"
+  },
+  "no_unresolved_jurisdiction_or_provision_is_represented_as_certified": {
+    "rule": "nothing in this record converts an unresolved row, an unresolved jurisdiction, an unresolved provision or an unresolved status into a certified one",
+    "the_unresolved_units_this_record_names": {
+      "jurisdictions_with_a_status_other_than_exact": {
+        "EXACT": 311,
+        "COUNTRY_WIDE_SOURCE": 100,
+        "UK_TO_GB_RECONCILIATION_REQUIRED": 14,
+        "GAP": 9,
+        "RECORDED_REFUSAL": 3
+      },
+      "instrument_class_screen_inconclusive": 66,
+      "accepted_records_available_for_implementation": {
+        "accepted_entries": 410,
+        "accepted_content_rules": 249,
+        "accepted_limitation_records": 111,
+        "accepted_authority_records": 27,
+        "accepted_citation_records": 23
+      }
+    },
+    "the_only_certified_rule_this_order_produces": "the one rule unit this order admits, and nothing else"
+  },
+  "governed_counts": {
+    "what_counts_as_governed": "only admitted rule records and the validated evaluator capability of those records: a coverage figure that counts accepted source records available for implementation is a planning figure and is not governed coverage",
+    "governed_rules_admitted": {
+      "before_this_order": 0,
+      "after_this_order": 1,
+      "source": "SOURCE_CAPTURES\\PHASE5-001U\\admission_record_001u.json"
+    },
+    "governed_coverage_entries": {
+      "before_this_order": 0,
+      "after_this_order": 1,
+      "what_it_covers": "CA / CA-NS, rule unit CA-NS-CRA-S10-3-C-LIMB-1, presentation PR-01, first limb only"
+    },
+    "permitted_findings": {
+      "before_this_order": 0,
+      "after_this_order": 0,
+      "why_unchanged": "no finding class is authorised: the owner withholds the finding-class decision and the ceiling stays OBSERVATION_CLASS_ONLY"
+    },
+    "authorised_finding_classes": {
+      "count": 0,
+      "list": []
+    },
+    "consumer_visible_outputs": {
+      "count": 0,
+      "why": "the ceiling is observation-only and this order produces internal records only"
+    }
+  },
+  "planning_counts_that_remain_planning_counts": {
+    "where_they_come_from": "SOURCE_CAPTURES\\PHASE5-001O\\coverage_summary.json at 16B81448E73C8E526B488CDA1E3D162AAE49A698D3708BCF1620B85536AD97F6",
+    "accepted_entries": 410,
+    "accepted_content_rules": 249,
+    "accepted_limitation_records": 111,
+    "accepted_authority_records": 27,
+    "accepted_citation_records": 23,
+    "owner_acceptance_tally": {
+      "OWNER_ACCEPTED_LEGAL_AUTHORITY": 410,
+      "NOT_ACCEPTED_NO_STATUTE_RECORDED": 21,
+      "ACCEPTED_AS_RECORDED_MATERIAL_NOT_AS_A_STATUTE": 6
+    },
+    "limitation_or_retention_family_entries": 225,
+    "per_jurisdiction_ca_ns": {
+      "total": 16,
+      "accepted": 15,
+      "content_rule": 10,
+      "limitation_record": 0,
+      "mapped": 14,
+      "country_wide_source": 0
+    },
+    "enumeration_coverage": {
+      "canonical_regions_in_the_enumeration": 82,
+      "canonical_regions_appearing_in_the_ledger": 81,
+      "canonical_regions_with_at_least_one_accepted_entry": 81,
+      "canonical_regions_with_no_ledger_row": [
+        "US-UM"
+      ],
+      "canonical_regions_with_a_ledger_row_but_no_accepted_entry": [],
+      "statement": "Every canonical region except those listed here appears in the ledger. A region with no ledger row has no recorded source entry; no entry may be invented for it."
+    },
+    "statement": "these figures describe what is available to implement inside the accepted corpus. They are recorded unchanged, they are not certified coverage, and this order converts exactly one of them into one governed rule."
+  },
+  "register_rows_this_order_changes": {
+    "dispositioned": 0,
+    "cleared": 0,
+    "moved": 0,
+    "evidence_of_that": {
+      "source_entry_id": "CRP-LSRC-0354",
+      "record_type": "CONTENT_RULE",
+      "canonical_country_code": "CA",
+      "canonical_region_code": "CA-NS",
+      "provision_or_citation": "s. 10(3)(c)",
+      "disposition": "UNRESOLVED",
+      "disposition_state": "BLOCKED_MISSING_EVIDENCE",
+      "blocker_type": "REPORT_EVENT_DATE_MAPPING_UNVERIFIED",
+      "state_after_this_order": "UNCHANGED — this order does not clear, move or re-state the register row of the source entry it admits; the row still reads UNRESOLVED / BLOCKED_MISSING_EVIDENCE"
+    },
+    "why_it_matters": "a certified rule does not clear the register row of the source entry it was derived from: the row's clearing authority is an authorised evidence route for the report representation together with owner direction, and this order supplies neither"
+  },
+  "what_this_record_does_not_do": [
+    "it does not present the preserved historical tally as a certified operational count",
+    "it does not present planning figures as governed coverage, and it does not present governed figures as corpus-wide totals",
+    "it does not clear, move or re-state any register row",
+    "it does not count the unadmitted candidates, the rejected combinations or the corpus-wide queue as admitted, dispositioned or certified"
+  ],
+  "created_by": "PHASE5-001U"
+}

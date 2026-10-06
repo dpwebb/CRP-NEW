@@ -1,0 +1,222 @@
+{
+  "artifact": "narrative_check.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "the required sections and facts are present in this order's narrative, and no forbidden claim appears",
+  "narrative_bytes": 30613,
+  "checks": [
+    {
+      "check": "narrative exists",
+      "passed": true,
+      "detail": "CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md"
+    },
+    {
+      "check": "narrative has substantive length",
+      "passed": true,
+      "detail": "30502 characters"
+    },
+    {
+      "check": "narrative section ## The answer in one table",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 1. What the owner authorized",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 2. The prerequisite",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 3. The owner-authorized amendment",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 4. The exact supported presentation boundary",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 5. What was implemented",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 6. The two facts",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 7. The deterministic comparison",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 8. The classification",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 9. The tests",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 10. Privacy, custody and preservation",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 11. The verification run",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 12. Remaining admission dependencies",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative section ## 13. Boundaries",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "narrative names the unit, the jurisdiction and the presentation",
+      "passed": true,
+      "detail": "unit, CA/CA-NS, PR-01"
+    },
+    {
+      "check": "narrative records the evidenced digest",
+      "passed": true,
+      "detail": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F"
+    },
+    {
+      "check": "narrative records the recorded restriction",
+      "passed": true,
+      "detail": "restriction recorded with its clause"
+    },
+    {
+      "check": "narrative records that no gate is passed",
+      "passed": true,
+      "detail": "none — this order claims no gate state at all, and it records every gate state it measured as unchanged"
+    },
+    {
+      "check": "narrative records the amendment and its limits",
+      "passed": true,
+      "detail": "OWNER_AUTHORIZED_INTERNAL_VALIDATION_CARVE_OUT_RECORDED_IN_THE_DOCUMENT"
+    },
+    {
+      "check": "narrative records the reproduced arithmetic",
+      "passed": true,
+      "detail": "REPRODUCED"
+    },
+    {
+      "check": "narrative records the outcome on the specimen",
+      "passed": true,
+      "detail": "RESOLVED"
+    },
+    {
+      "check": "narrative records the preserved classification and the ceiling",
+      "passed": true,
+      "detail": "D3 / observation preserved"
+    },
+    {
+      "check": "narrative states that PERIOD_EXCEEDED alone is not a finding",
+      "passed": true,
+      "detail": "the comparison is not a finding"
+    },
+    {
+      "check": "narrative records the test count and the verdict",
+      "passed": true,
+      "detail": "41 tests"
+    },
+    {
+      "check": "narrative records the refusal boundary",
+      "passed": true,
+      "detail": "one specimen, not a report class"
+    },
+    {
+      "check": "narrative records the identifier scan",
+      "passed": true,
+      "detail": "50 files scanned, 0 findings"
+    },
+    {
+      "check": "narrative records preservation and the date-scoped PROD-003 reading",
+      "passed": true,
+      "detail": "preservation held and the expected reading recorded"
+    },
+    {
+      "check": "narrative records the PROD-003 narrative repair",
+      "passed": true,
+      "detail": "the repair is disclosed"
+    },
+    {
+      "check": "narrative records the input verification",
+      "passed": true,
+      "detail": "22 checks"
+    },
+    {
+      "check": "narrative records that report checking remains unavailable",
+      "passed": true,
+      "detail": "consumer surface unchanged"
+    },
+    {
+      "check": "narrative names the remaining dependencies and the next work order",
+      "passed": true,
+      "detail": "dependencies and next order"
+    },
+    {
+      "check": "narrative does not claims a gate passed",
+      "passed": true,
+      "detail": "Gate 5\\.[3-7] (has )?(passed|is met|now passes)"
+    },
+    {
+      "check": "narrative does not claims report checking is available",
+      "passed": true,
+      "detail": "report checking is (now )?available"
+    },
+    {
+      "check": "narrative does not claims a finding was emitted",
+      "passed": true,
+      "detail": "(emits?|emitted|authorizes|authorized) (a |the )?(VIOLATION|PROBABLE_VIOLATION)"
+    },
+    {
+      "check": "narrative does not claims a probable class is permitted",
+      "passed": true,
+      "detail": "PROBABLE_VIOLATION (is|was) (permitted|authorized|available)"
+    },
+    {
+      "check": "narrative does not claims the rule or evaluator is admitted",
+      "passed": true,
+      "detail": "(the rule is admitted|evaluator is admitted|an admitted evaluator now)"
+    },
+    {
+      "check": "narrative does not claims a consumer-visible result",
+      "passed": true,
+      "detail": "consumer-visible (result|output)s? (was|were) (produced|shown|displayed)"
+    },
+    {
+      "check": "narrative does not claims a deployment",
+      "passed": true,
+      "detail": "(deployed to|uploaded to|hosted at|published to) (the )?(consumer|production|hosting)"
+    },
+    {
+      "check": "narrative does not claims the legacy system was changed",
+      "passed": true,
+      "detail": "legacy (system|corpus) (was|has been) (modified|updated|written)"
+    },
+    {
+      "check": "narrative does not claims support beyond the evidenced specimen",
+      "passed": true,
+      "detail": "supported for (every|all|any other) (Equifax|report|presentation)"
+    }
+  ],
+  "check_count": 42,
+  "failures": [],
+  "verdict": "NARRATIVE CHECKS PASSED"
+}

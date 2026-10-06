@@ -1,0 +1,72 @@
+{
+  "artifact": "file_custody_manifest.json",
+  "work_order": "PHASE5-001I-C",
+  "created_utc": "2026-09-30",
+  "purpose": "record every artifact this order wrote that existed before this manifest, with its role, byte count and digest, so the package can be re-verified after the fact",
+  "written_when": "after the narrative and the three JSON records existed, and before the verification record, which is written last",
+  "file_count": 5,
+  "files": [
+    {
+      "relative_path_from_workspace": "CRP_PHASE5_001I_C_OWNER_REPRESENTATION_DECISIONS.md",
+      "role": "the work-order narrative for PHASE5-001I-C",
+      "bytes": 36455,
+      "sha256": "B77530DD454C84893317FAE586A5D2FC70706AC8F1AEC7C16655FEF0F262D202"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json",
+      "role": "the decision record - the six owner decisions, each with its scope, non-effects, binding records and open condition, the ceiling, the separations and the next minimal action",
+      "bytes": 31946,
+      "sha256": "DCB251E0A967B8A125F552A1DB0CF7C69116DC29716A0472FBD2850001AC956F"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-C\\proposed_register_update.json",
+      "role": "the proposed register disposition update - PROPOSED, NOT APPLIED: the canonical row, the five mirrors, the field-level before/after, the limits and the authority",
+      "bytes": 14773,
+      "sha256": "2A4B1BA4B00245487CBFE0A499157E9C841129E50A36A791857E64CEE7205E9A"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-C\\custody_reconciliation_001i_a.json",
+      "role": "the supplemental custody correction for PHASE5-001I-A - the two unwritten inventory artifacts, the four changes with original and current hashes, the preserved records, the six manifest-less files, the further discrepancies and the limits on what this order authorizes",
+      "bytes": 24950,
+      "sha256": "0E20B8AAE6C617537F44B39BEF8A5437EED43841B144E668F22321691A3E4B9C"
+    },
+    {
+      "relative_path_from_workspace": "SOURCE_CAPTURES\\PHASE5-001I-C\\preserved_files_before.json",
+      "role": "the custody baseline captured before this order wrote anything - 425 files with bytes and SHA-256",
+      "bytes": 90405,
+      "sha256": "D791C0DF197300868AC2E96929B1663BC3D01A0407DDF8D3AC309444F5275FFB"
+    }
+  ],
+  "total_bytes": 198529,
+  "exclusions": [
+    "this manifest cannot list its own digest; the verification record prints it",
+    "SOURCE_CAPTURES\\PHASE5-001I-C\\verification_results.json is written after this manifest, so it is not listed here; its digest is not recorded by any artifact of this order - the same convention that keeps each earlier order's own baseline, manifest and validation record out of its manifest (verify_001i_a_custody.ps1 line 156; verify_prod003_custody.ps1 line 108)"
+  ],
+  "files_changed_by_this_order": [],
+  "files_removed_by_this_order": [],
+  "legacy_corpus": {
+    "root": "C:\\Users\\webbd\\crp-credit-app",
+    "admitted_artifacts_expected": 34,
+    "admitted_artifacts_re_verified": 34,
+    "mismatches": [],
+    "consumer_specimens_re_verified": [
+      {
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "matches_recorded": true
+      },
+      {
+        "presentation_id": "PR-02",
+        "artifact_id": "LEG-CONSUMER-TU-CA",
+        "sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+        "matches_recorded": true
+      }
+    ],
+    "generated_fixture_files": 461,
+    "generated_fixture_bytes": 23627410,
+    "note": "the fixture figures are the recorded measure of the corpus PDFs (Get-ChildItem -Recurse -File -Filter *.pdf); the corpus directory also holds its own MANIFEST.json, 11771 bytes, which that measure excludes",
+    "files_created_deleted_or_modified": 0
+  },
+  "created_by": "PHASE5-001I-C"
+}

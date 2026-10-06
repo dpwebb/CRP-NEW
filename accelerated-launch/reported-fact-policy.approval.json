@@ -1,0 +1,8 @@
+{
+  "policy_id": "OWNER-EVIDENCE-001",
+  "version": "1.0",
+  "approved_digest": "d48e463375a2b7fb1497a3fa2f51cd9683863a3f2b37a11cf38e455811e8cb47",
+  "approved_by": "Owner",
+  "approved_at": "2026-10-01",
+  "approval_basis": "Issued within the acceptance work. Any change to the policy text or version changes the digest and is rejected unless the owner issues an amendment and a new version; released v1.0 bytes are preserved."
+}

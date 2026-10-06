@@ -1,0 +1,589 @@
+{
+  "captured_at": "2026-10-05T17:32:21.160Z",
+  "files": [
+    {
+      "path": "accelerated-launch\\service\\accounts.cjs",
+      "sha256": "3ce5f6756674ee2d358b4651af601dd09a147e47382b8d0e9bbd2142127f9442"
+    },
+    {
+      "path": "accelerated-launch\\service\\app.cjs",
+      "sha256": "ea25f834bc9d9d6e5c1c0b9729db1b2aac89589ae69c852016ebbe22a7d778fe"
+    },
+    {
+      "path": "accelerated-launch\\service\\applicability.cjs",
+      "sha256": "4be499cfe24906aa03066689c8a737521b51971080a441e533f945d7a19df93b"
+    },
+    {
+      "path": "accelerated-launch\\service\\billing-credits.cjs",
+      "sha256": "378c254e3aab0c6c3685816b162817a54267c5aca1f3a40d58ba884eafb97835"
+    },
+    {
+      "path": "accelerated-launch\\service\\build-subscription-value-evidence.cjs",
+      "sha256": "916b39b8dc68291d8af9bb86b1ac201bf27ad182fdf19c027e91a89d7c2bcf7e"
+    },
+    {
+      "path": "accelerated-launch\\service\\ca-consumer-file-facts.cjs",
+      "sha256": "82b630bd9f226cc16857fc772e7cc167ebb4ee3e603511e5862358a177044520"
+    },
+    {
+      "path": "accelerated-launch\\service\\case-status.cjs",
+      "sha256": "6aaae21835bca96e4b5a56962fe15773537cf2fdb0d198b951a5e53c451bdf9d"
+    },
+    {
+      "path": "accelerated-launch\\service\\cases.cjs",
+      "sha256": "bc939771e39e6f5df97d1b18aa009e72fb58f45f68616f18cf9fd4401622852b"
+    },
+    {
+      "path": "accelerated-launch\\service\\clarification.cjs",
+      "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+    },
+    {
+      "path": "accelerated-launch\\service\\common-errors.cjs",
+      "sha256": "430a7a5b2a60a3ed0ec5f0f7f915c3e1e837a981f36b31d2695cc07bd765c5e1"
+    },
+    {
+      "path": "accelerated-launch\\service\\comparison.cjs",
+      "sha256": "64b94dbe55563694a1332a4fc22989833b69892a656a7eec8931b98196e67b8a"
+    },
+    {
+      "path": "accelerated-launch\\service\\content-assessments.cjs",
+      "sha256": "659e1fa06b0052a12d2ec3e919d4157b8ff199d04941db814680a9099b84e4bc"
+    },
+    {
+      "path": "accelerated-launch\\service\\coverage-matrix.cjs",
+      "sha256": "e72042fa3ff340812d63159fc7b439f632cd09b8296f879c8e733cb352750052"
+    },
+    {
+      "path": "accelerated-launch\\service\\demo.cjs",
+      "sha256": "4df8523d56517c331360e1b45ce79bd7750d3a7cb7f2c8aff4c2602d6e3f126d"
+    },
+    {
+      "path": "accelerated-launch\\service\\drafts.cjs",
+      "sha256": "8400dd521b36b99a1f5f4b33325aa6d0878b6b676c11c2aa4ee889050b8e8452"
+    },
+    {
+      "path": "accelerated-launch\\service\\entitlement.cjs",
+      "sha256": "8384a9b6d500cbd22c0f7a9429b5c38ad5ec2383d326f307493efaada8636589"
+    },
+    {
+      "path": "accelerated-launch\\service\\errors.cjs",
+      "sha256": "96d56cab7d5d59f7da343c73124313cc0009cd0e903ca3335bc5ce9548466b53"
+    },
+    {
+      "path": "accelerated-launch\\service\\evaluation.cjs",
+      "sha256": "f13bb5e2127f06c600c08db8547270b8662cd0ea1e60a16885689c9b55ab5490"
+    },
+    {
+      "path": "accelerated-launch\\service\\evidence-validator.cjs",
+      "sha256": "1a15afd477e8a4dd27370c3eab0959426284518c1ab975d236ca872d9315e05b"
+    },
+    {
+      "path": "accelerated-launch\\service\\factual-checks.cjs",
+      "sha256": "1064328982d1c6cc4144567affe905ea3bdaafc95221e15695072715f14426dd"
+    },
+    {
+      "path": "accelerated-launch\\service\\fdt-acceptance.cjs",
+      "sha256": "80e571c55f38764fe4fb3b0346fe5beaf70734d48fb7d8c9af7aeb12d1d86567"
+    },
+    {
+      "path": "accelerated-launch\\service\\fdt-benchmark.cjs",
+      "sha256": "b5782725ec2dfdff99ba1343a37876be5fea0efcb0cbde46d8f0e955b9f9efce"
+    },
+    {
+      "path": "accelerated-launch\\service\\fdt-recovery.cjs",
+      "sha256": "acbc8aa4f315875ac72a08cc427e17ccef2ea28b4903bac122ea7e0969889845"
+    },
+    {
+      "path": "accelerated-launch\\service\\finding-coverage.cjs",
+      "sha256": "34b9dba9ca96d7f74f6e1683542283c830c916b5b2df8b0d77a825c1f9ae08d2"
+    },
+    {
+      "path": "accelerated-launch\\service\\format-families\\au-equifax-consumer.cjs",
+      "sha256": "77e08f6dcc02c6b62bdd588fdfde8ac477ec0b6444af3af196940fe9e74c76ad"
+    },
+    {
+      "path": "accelerated-launch\\service\\format-families\\ca-consumer-format-scope.cjs",
+      "sha256": "7c005cb6c0a2ec428ed0292985a2f99d3be062739283ba347d952bd60e8ce1b1"
+    },
+    {
+      "path": "accelerated-launch\\service\\format-families\\gb-experian-consumer.cjs",
+      "sha256": "d6ed0e8072c4a6dc66dfd4c6957bdbf73bae6b7bcda88eb23253f3d4f92884e0"
+    },
+    {
+      "path": "accelerated-launch\\service\\format-families\\tu-ca-consumer.cjs",
+      "sha256": "12ab976fe501ea0b543dea97e16520cb0ca62a309839dc292b7421da722a2ee9"
+    },
+    {
+      "path": "accelerated-launch\\service\\format-families\\us-experian-consumer.cjs",
+      "sha256": "80fe7ea70eee01dc3bea4b223b05a92e2a8925f34f86bde8c5fa3460d8c67e8b"
+    },
+    {
+      "path": "accelerated-launch\\service\\formats.cjs",
+      "sha256": "6a1ca55cc3e0d1796d64a38bbaf6632c9541cf7a22e5d6f43cfa006479186122"
+    },
+    {
+      "path": "accelerated-launch\\service\\general-intake.cjs",
+      "sha256": "2d8068a07cc5bd05e20a3059071aa805ec4d694d855a783b24e15bf81a5dd5e5"
+    },
+    {
+      "path": "accelerated-launch\\service\\issues.cjs",
+      "sha256": "41c5e60a996477b452e4febe6c0cf94dcd3e8ea4d88086b4468e8fb0596dd05d"
+    },
+    {
+      "path": "accelerated-launch\\service\\journey.cjs",
+      "sha256": "acf98daf555a2cad77c0c309b533a93e02253fafb0f7fcc149be9bce88cc6779"
+    },
+    {
+      "path": "accelerated-launch\\service\\logger.cjs",
+      "sha256": "c16e6d0f584f4a0fc5eeda0ce81014a86268ef7075915daf12f2dc84ccfc154f"
+    },
+    {
+      "path": "accelerated-launch\\service\\multi-file-assembly.cjs",
+      "sha256": "3a9cc4b1ac91eeba8a38f7f004f019d554da33a9a241b2e900c5c6d9c7765db8"
+    },
+    {
+      "path": "accelerated-launch\\service\\ocr\\local-ocr.cjs",
+      "sha256": "1b4b4b62dcd965afd63a3b87d461f3389acb7106972c52c41c600d28c40353fe"
+    },
+    {
+      "path": "accelerated-launch\\service\\packets.cjs",
+      "sha256": "8bb804839e6a47cdb2d061bf5d251438a5f53ac257ea65d6dc531a5f71f0beb5"
+    },
+    {
+      "path": "accelerated-launch\\service\\payment-history-grid.cjs",
+      "sha256": "a55e14826866affec64a23dde7f3dc458ce3f22a8aece6302b9367d07924b912"
+    },
+    {
+      "path": "accelerated-launch\\service\\payment-provider.cjs",
+      "sha256": "4516a8ac623cf52f1dcefc139b876259275cc4ea008901f389fb17f6506a7548"
+    },
+    {
+      "path": "accelerated-launch\\service\\plan-catalog.cjs",
+      "sha256": "96905a04a2c66d7ba85bd1a1e5d0cededb80aaf90b622f8160dbecaabc1937e7"
+    },
+    {
+      "path": "accelerated-launch\\service\\privacy.cjs",
+      "sha256": "99b0c97df0ac49bd10658c8a343f40801408189c77c7dd1a182a2b4f6724d6be"
+    },
+    {
+      "path": "accelerated-launch\\service\\private-store.cjs",
+      "sha256": "003fda7f9cbe2481f5075253654b302e6bac4db99297c641003dec56116ce5c6"
+    },
+    {
+      "path": "accelerated-launch\\service\\release-check.cjs",
+      "sha256": "abe80c4b842feca13f3b154254787e37abef025755fae82ac5e211e92db11736"
+    },
+    {
+      "path": "accelerated-launch\\service\\release-scope.json",
+      "sha256": "3bbcb80e76f4c283bcf313b2ee905fec606413c3c51a29783b51e1c6f64a57fb"
+    },
+    {
+      "path": "accelerated-launch\\service\\report-use-policy.json",
+      "sha256": "9f219f763c5355240f7fe82780c0a34ef3d8fa658dfb57472877e38a3e493983"
+    },
+    {
+      "path": "accelerated-launch\\service\\results.cjs",
+      "sha256": "6c4d79f4e945fe863613d16f57b490ad37dece5e8da3ce2e1f9fd3ca98822d75"
+    },
+    {
+      "path": "accelerated-launch\\service\\retention.cjs",
+      "sha256": "631a92462b43638e99b114be8048508451ced89e2e3e09f1b2a746f1b8bf8c2f"
+    },
+    {
+      "path": "accelerated-launch\\service\\server.cjs",
+      "sha256": "090041331b4ab7daf33d570a7a7a24a4ba3353d5891023c2900b55aeecfad41c"
+    },
+    {
+      "path": "accelerated-launch\\service\\store-diagnostic.cjs",
+      "sha256": "b9a63f7a90d9c24adf9c2ee0cfbef5d7cdda0f29b9ad4d721b4ce0a7599bf18d"
+    },
+    {
+      "path": "accelerated-launch\\service\\stripe.cjs",
+      "sha256": "1604a3c783b4e7f2599e7ba3cccb6fcee9029b744196010db81c92ad133a89fc"
+    },
+    {
+      "path": "accelerated-launch\\service\\support.cjs",
+      "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\harness.cjs",
+      "sha256": "681080251bebaecb96a484cad4b3b3c641cbe6b586d7cac4b4f546deb1232ba6"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\run-tests.cjs",
+      "sha256": "68031f43027a316e5227b837c9ec6d59a336d7782c84b3cf853fb6f420720168"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\a-isolation.cjs",
+      "sha256": "8f6ed1ef223ec4a46519466cc6b79068f81e274b1023b8bb322f23b0350d368d"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ab-acceptance-statutory.cjs",
+      "sha256": "c4b88f94722ec77639fe42697ade2336c0091524cf52067bb978387a3b380f36"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ac-evidence-policy.cjs",
+      "sha256": "e6f2e1e3ad2cd47e5617a1229c89b2b88e443437aced4ee9416f1e6b00cd5ccf"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ad-legal-event-facts.cjs",
+      "sha256": "8c2aabb7b146bd8f0e6a1e2637bbd9b33ae50c9f42695f5e448eb991d79c5d3f"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ae-accept-003.cjs",
+      "sha256": "e813ca8a5c8c666c01ff29dd69a84ff57b95594b1e93548120ef71ed05bbec33"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\af-accept-004.cjs",
+      "sha256": "2dd260678b7dabfe92f583be8c5144e29b8a102a384ce2397e1289558cb753aa"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ag-accept-006.cjs",
+      "sha256": "08057c4773a5045d4ba4475e89598d336f7cd94578487b17123ec03218167876"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ah-multifile-assessment.cjs",
+      "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\aj-ingest-dates.cjs",
+      "sha256": "766a63879ead33257a4bc30bcca910d4909a1a959f30a1f39da7e864f37e32ba"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ak-ingest-008-009-010.cjs",
+      "sha256": "c527ea14506e922eb3dbeee97dfc342fb2fa46d49b9f70cf3f6447fcc010d5fd"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\al-common-errors.cjs",
+      "sha256": "3179107705e26a1c548a64da2b1dd3e00ef57c7bddf9477d84ed29ca02a7621d"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\am-fdt-recovery.cjs",
+      "sha256": "073c52a95d7511a4fcffbdfae0b11d248103157efa6483102ff56f1810200114"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\an-payment-history-grid.cjs",
+      "sha256": "b30bca5f29ac9f49c54b8b014b0e57aac0be48fc0ab2e03c6bd883d5a6e884b3"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ao-ingest-008-mixed-page.cjs",
+      "sha256": "74ea9edd289fce706c52eaeb82d306e61810f95bc29c52ea915b64abf420eeac"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ap-accept-010-consistency.cjs",
+      "sha256": "f83bc98a3a8333afe6a1e915d16bf34d84af97f336eb3212e72d728b5c4a9260"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\aq-gap-finding-001.cjs",
+      "sha256": "1051dccbe94ac024b9fcacf03a56d2348652bbda878cb1840aebae6d6cbc124c"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ar-gap-finding-003.cjs",
+      "sha256": "7bda8c4307829ebb4cd76048d8571a0eececa0022ff121b9f75a7964d8201e6b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\as-gap-finding-004.cjs",
+      "sha256": "b99c6f79793bd76679569fb7e159b287f8a25c929a8a92026b3ca5f5d977b0bb"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\at-gap-finding-002.cjs",
+      "sha256": "79b849664af26656aa5d5ca3f73ca3baccf8d76f14e880756aea582920b5404a"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\au-closure-policy.cjs",
+      "sha256": "f6fe3e5fdbc17f0afe44882e24266f89680a492328f6eef2242ddcc560d2849b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\av-consumer-results.cjs",
+      "sha256": "46946fce3ec29dfae0878f4defe03b65d2edfe0ff0861ae6f642fe17925e0c30"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\aw-consumer-explanations.cjs",
+      "sha256": "c61e11b4a8824ed46ee337a7aac74a85edfe84fb4a456e63803ffecc697d6ca2"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ax-consumer-privacy.cjs",
+      "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ay-consumer-support.cjs",
+      "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\az-consumer-support-ui.cjs",
+      "sha256": "abb2c49822f33540f4c72ec70d52e06863847c94827df137b928096a37eb9362"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\b-jurisdiction-and-refusals.cjs",
+      "sha256": "2974973da6141fc3f05e1a093e6957af816f70f0d65438e7ed79ce1123fba9cd"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\ba-consumer-billing.cjs",
+      "sha256": "e4b093c6e9aff8c529c4b76e6d8ba3bae1412685bce7f8f94abe3d567f961608"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bb-gap-ingest-001.cjs",
+      "sha256": "e25b51d421c06ae5904405079d08cc624ddc0bdc826260322b062437f7621178"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bc-gap-ingest-002.cjs",
+      "sha256": "7ba31c33b88afd8a32dd6c97d83a00f3b2294aeb56122db6f0b5be99592dbca1"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bd-gap-ingest-004.cjs",
+      "sha256": "953e54f11b26d1745d8ea36b9ce653898568920ab581ed3ee0c1356f2eca0bb3"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\be-gap-ingest-005.cjs",
+      "sha256": "c55c1415eea9d29619a801664b4f7d721938d12b89ff662ad0f1bdab2173a76f"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bf-gap-ingest-006.cjs",
+      "sha256": "8efd99f60750ee4ff7c1346ddda6a1b5dd7a7534d36e43ac268fcb0f27ccf0ac"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bg-report-use.cjs",
+      "sha256": "79e6731f1b0555946cfa32db48a7bfcc6d4e260120c5408c98044784afe7d2d9"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bh-ns-dismissed-charge.cjs",
+      "sha256": "9596d0f79863c2fff5f882c673d51bbe18d3a259fadc9201a123e2c738c526b5"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bh-ns-judgment-content.cjs",
+      "sha256": "3bbbb13a15047eb81a083a32e26a8b4cfb9c22238cd48d976172db90d83e380c"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bi-us-ca-tax-lien.cjs",
+      "sha256": "af7f17dd2fd648ce0935b1e7fa121e951987da313fcee8aea1ea99e7419db97c"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bj-us-ca-collection.cjs",
+      "sha256": "c6c1ae83ab4eef5495a28ee2a62fcd0b957f8974560cc5db5a33ae6d7c429fc5"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bk-us-ca-adverse-rating.cjs",
+      "sha256": "0b56adafda5df4b21f723e7ebe70e020b44a566522b36595ed742b37f957658e"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bl-us-ca-correction-packet.cjs",
+      "sha256": "b2900be26c956eca9e32d0bc4edb3090e9fb6ba7f5b4c25b246188b3bdbfb7f6"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bm-prime-directive-batch1.cjs",
+      "sha256": "32724df88b486069478f83ddfb6b652a987fbc1dc13705b50dc28cf7957f04d3"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bn-prime-directive-ui.cjs",
+      "sha256": "77492e57509406e3738e089c0252c801e3e538b0c10224c98d40bed6a64eb6e3"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bo-prime-directive-interaction.cjs",
+      "sha256": "1b7a109b738b4797bf6047dbb5f943944a8f50a63c0abbd026658974fc8edd34"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bp-prime-directive-batch2.cjs",
+      "sha256": "11460838469f3ecfec04efbcc316a5b39abbff75fb3b6e858462c2ccd8fe85da"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bq-format-capability.cjs",
+      "sha256": "d8f7b24729e7c855d9dfee4c3f2690b2df20f36cbdcd3a22cb743d0dd1e25e6b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\br-qualified-assessment.cjs",
+      "sha256": "bd799b4354ff9845faaa732d0566e31e648f0d91bc52cc52b93f5cd83552b446"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bs-prime-directive-delivery.cjs",
+      "sha256": "decf0a68363b4e0bb499e348790f95be6b934bcc3225a7c29ae193a1c4d33d81"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bt-ordinary-field-coverage.cjs",
+      "sha256": "509f415910882a1ee931f5368e8fc3da2d649f5d1e66831520fd1f126c6bc613"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bu-gb-tu-ca-fields.cjs",
+      "sha256": "3b2980c8016beddcbd6c7a319c6a74d872ed828960b78ce118cb5f8672c77c49"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bv-admission-and-upload.cjs",
+      "sha256": "03368e84b06fa6b22c7d69d0be01558053f10e3b98f57faf2301f75f257ebadc"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bw-browser-wizzard.cjs",
+      "sha256": "70147a6b245e3b9e25dfa5e448a712eb988d49d570630f7c55a0319592b99014"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bx-all82-factual-verification.cjs",
+      "sha256": "3fb30814bbf07c72918219b99b5a2c4f1bf98abf19fbe779a52c20d921837e8a"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\by-packet-reconciliation.cjs",
+      "sha256": "b8228fbc5a28b5fe29c5dbfa00009936587a15888418b84bdd514ac3f7cef482"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\bz-report-history.cjs",
+      "sha256": "822d3803dc83c6fac6fe7ff843d1c82cc23400c1dfbeb4a8d4ea636095ab91d9"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\c-extraction-not-absence.cjs",
+      "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\d-record-independence.cjs",
+      "sha256": "05c752b98c1d36d4668ad2e2d56be7a096eb395f4f5ec6b34e421d9560f25f0a"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\e-qualifications.cjs",
+      "sha256": "706dad0ce75454154de9c284412cfb71a0c752480b2a391625003b4f987f4489"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\f-signout-and-deletion.cjs",
+      "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\g-privacy.cjs",
+      "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\h-legacy-parity.cjs",
+      "sha256": "2171d4fe336988fed0f3326df3e914ab217776770dc71fd5a899fca053888d6a"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\i-shared-regressions.cjs",
+      "sha256": "562df6ba23976f1a4305548177f72785b23963dddd7e0a885ff06be580bbdeb9"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\j-specimen-journey.cjs",
+      "sha256": "223d2219aacca515db18cbe54b46369ac1b5c2b2f49cb17ea5c994f36de1dc00"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\k-ui-smoke.cjs",
+      "sha256": "8e333c1c42568cda69ebc202ddbf3976d3f2bcb182bac6f8e723a0af7f5aaf64"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\l-au-format-family.cjs",
+      "sha256": "41e07bea1f658ace15193548d52767a67978bcc4fb4f76fc2ea03c72b7f1b157"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\m-au-journey.cjs",
+      "sha256": "6cc21d7668c37ffb607d1586f30a95847af6d0db773c3279025a17034e7eaf21"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\n-applicability-records.cjs",
+      "sha256": "3aad8f6aefaa27c6fda8b2fa8bba92048a00e6610e455f5d8bfab2c49ecae79a"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\o-all82-infrastructure.cjs",
+      "sha256": "bd99321e9cbef4d23deb269da29a6cfbd588dc0ba7352cf2eaee632185e30741"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\p-us-consumer-format.cjs",
+      "sha256": "db48af0a1d0de19d0eb89eedd706d80e366221c86efd69f064b0f0867039e0c2"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\q-record-applicability.cjs",
+      "sha256": "d7f08556e67003a841b33d428e2575cc21d5bfda36c6d29a8c40969cf2549cca"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\r-ca-factual-assessment.cjs",
+      "sha256": "1ba28c9b5ffd08634d3c55962cd324096ebb34ea75be5c26907bddaa8d0bab96"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\s-gb-consumer-format.cjs",
+      "sha256": "9e036a41aef615bf2c4746420b2521820e17b7d5f14537392b947f3a83052fce"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\t-entitlement.cjs",
+      "sha256": "870de2a865cd22457826b75fcfa09e4b7676e524281c5f6a62edea6a3416d979"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\u-hardening.cjs",
+      "sha256": "0ac4549ac78529c496741413b44c17d3c3159654ebc2a66e4b3d220c001a74ae"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\v-presentation-and-release.cjs",
+      "sha256": "7f6a1b62219040619ff0d107d0200831d404d96aec61aae7359f4e89bc2548ac"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\w-ca-second-bureau-format.cjs",
+      "sha256": "218081fb55de785d4218745188270d6b6ee157bb9d8342f976c9b175c7fed042"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\x-b4-pay-001.cjs",
+      "sha256": "bc7f639ddc57d5eb18092211edfbde14e9ecf89adee872dd2c10249b05a95d4b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\y-ingest-coverage-matrix.cjs",
+      "sha256": "5f7a8b0da46ca682ac4815380f7d6e13314f8956cdf48690173c784a0112822c"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\sections\\z-general-intake.cjs",
+      "sha256": "902879f578c88b9ac6eb8c5bc1113e28e81ca8dd522d8d1de91ac97cd8bec15b"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\test-matched-payment-evidence.cjs",
+      "sha256": "0b967aa0e85da5ef9cfed7b9cacbbb2cf750079a6492e3b290bca79ea8c20bad"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\test-store-diagnostic.cjs",
+      "sha256": "b905dc1285558e656477ba1ec16aa25173c44250ba15bf9ff0612bcfdba9951e"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\test-stripe-adapter.cjs",
+      "sha256": "d72546a1e356b8d522a2c808d5f5d61c485eb7f0ba5cb793e35685ec97fff5b3"
+    },
+    {
+      "path": "accelerated-launch\\service\\tests\\test-upgrade-credit.cjs",
+      "sha256": "86dcf2d46c60b1f7ca5b80ade18d6ccd0ec0a163dcffc34ff10c1dc96340e7a1"
+    },
+    {
+      "path": "accelerated-launch\\service\\ui\\app.js",
+      "sha256": "a8fa9a63f716a3f6f95f9ea675dabfcfa5021374c2d86ba47c1c1f3ce44f4bcc"
+    },
+    {
+      "path": "accelerated-launch\\service\\ui\\index.html",
+      "sha256": "1bdabf62e56c66b85e0b4467eb0b6d175207115f10714ddff85e08c6ee6172cf"
+    },
+    {
+      "path": "accelerated-launch\\service\\ui\\style.css",
+      "sha256": "3fe285dfc2c71c2d57e71ded272bb0f25bec276040c5bc716f7c8558dc8f26b1"
+    },
+    {
+      "path": "accelerated-launch\\service\\upgrade-credit.cjs",
+      "sha256": "650d3c7b568e7bd9756b78c9bbd28c1f8bdd298f7433569414b680a26b7f35da"
+    },
+    {
+      "path": "accelerated-launch\\service\\uploads.cjs",
+      "sha256": "25904c79938706be6e1cb8ea340517f8a78a3e3ab1bfc5daea7a813463832405"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\adapter-configs.json",
+      "sha256": "25e4d69846359c5922f3bcc5f78f9f851c4a6949b46d3e2716ee8c2dfa6d0660"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\applicability-records.json",
+      "sha256": "6e45459c8caf0155f8d6c7aef10d60353515d1f772ee8e614477209f286df451"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\evaluation-primitives.cjs",
+      "sha256": "a943043c76150b523ab131507e04cad4219f433627f9a14e5325dac838cc5b95"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\report-use.cjs",
+      "sha256": "0797a7cbafc716e4e61fd10d0f77acbe6a8c74509fb7799ab22921336f333522"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\rule-adapter-catalog.json",
+      "sha256": "1b6cfd3fe2c273a90903d548564c137e0366646ed1e181f0094b918a8193b7f9"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\rule-adapters.cjs",
+      "sha256": "f911bf8940dbb8c63ebdfc7e504b2a193b3fe641014164878ed4ed6055cbb405"
+    },
+    {
+      "path": "accelerated-launch\\adapters\\test-adapters.cjs",
+      "sha256": "7a500fe196c1e0be9a36f1d84caf9636d680ac42a785e1ffdac6576b5fff5a8c"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "artifact": "source_text_comparison.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 5 - compare provisions using exact locators and quoted supporting text",
+  "created_utc": "2026-09-30",
+  "rule_applied": "Only the quoted text retrieved at the exact locator, compared against the field value each row records, is used. A citation string, a URL, a file hash, an adjacent ID, a neighbouring row or a truncated label is recorded as context and is never used on its own to establish that two rows record one legal provision.",
+  "comparisons": [
+    {
+      "cluster": "PIPEDA",
+      "rows": ["CRP-LSRC-0315", "CRP-LSRC-0316", "CRP-LSRC-0317", "CRP-LSRC-0318", "CRP-LSRC-0320"],
+      "exact_locators": [
+        {"locator": "https://www.canada.ca/en/financial-consumer-agency/services/credit-reports-score/information-credit-report.html", "capture": "R01 (28353 bytes, sha256 0EBB2C9D084E293925605FF37B8C197E574EB7A956A7D9DD2424F1B6E9DA28AF)"},
+        {"locator": "https://laws-lois.justice.gc.ca/eng/acts/P-8.6/FullText.html", "capture": "R03 (221452 bytes, sha256 C753EB2C41CD17FFE4B829A09DF5CF6B57165FF2D4C29E358AA122AC57149CB8)"}
+      ],
+      "quoted_supporting_text": {
+        "R01_enquiries": "\"credit inquiries by lenders: 3 years with Equifax or 6 years with TransUnion\"",
+        "R01_bankruptcy": "\"Usually, both Equifax and TransUnion remove a bankruptcy from your credit report 6 years after you're discharged.\"; also \"bankruptcy: 6 or 7 years, depending on the province\"",
+        "R01_proposals": "\"Equifax and TransUnion remove a consumer proposal from your credit report: 3 years after you've paid off all the debts included in the proposal, or 6 years after you sign the proposal (whichever comes first)\"",
+        "R01_debt_management_plans": "\"Credit bureaus remove this information from your credit report 2 years after you finish paying off your debts.\"",
+        "R01_judgments": "\"Credit bureaus usually keep judgments on your credit report for 6 years. TransUnion keeps this information longer in some provinces:\"",
+        "R01_late_or_unpaid": "\"information about late or unpaid credit cards and loans: up to 6 years\"",
+        "R01_publisher_metadata": "dcterms.creator \"Financial Consumer Agency of Canada\"; dcterms.issued 2016-05-27; dcterms.modified 2026-07-01",
+        "R03_pipeda_4_5_1": "\"Personal information shall not be used or disclosed for purposes other than those for which it was collected, except with the consent of the individual or as required by law. Personal information shall be retained only as long as necessary for the fulfilment of those purposes.\"",
+        "R03_pipeda_4_5_2": "\"Organizations should develop guidelines and implement procedures with respect to the retention of personal information. These guidelines should include minimum and maximum retention periods. ... An organization may be subject to legislative requirements with respect to retention periods.\""
+      },
+      "comparison": "Each of the five recorded values maps to a different item of the retrieved page: three years from the date of the enquiry (enquiries), six years from discharge (bankruptcy), three years after the proposal debts are paid or six years after signing (consumer proposals), two years after the plan's debts are paid off (debt management plans), six years from the date of the judgment (judgments). No two rows share an item, a period or a trigger. The recorded instrument (PIPEDA) contains none of them: the official consolidation returns zero occurrences of 'credit report', 'credit bureau', 'Equifax', 'TransUnion', 'enquir', 'judgment' and 'six years', and its only retention text is the general principle at Principle 4.5 quoted above, which fixes no period and no item.",
+      "contradiction_reported": "the recorded instrument_title attributes these five statements to PIPEDA, but neither the recorded locator (an FCAC consumer-information page whose publisher metadata names the Financial Consumer Agency of Canada) nor the official PIPEDA consolidation states them. Under stop condition 1 the contradiction is reported, not resolved by preference: no instrument field and no locator field is rewritten by this order.",
+      "missing_fact_named": "the exact instrument and provision, if any, behind each recorded retention item is not identified in any workspace artifact; the five rows record no provision (provision_or_citation NOT RECORDED) and the page they cite describes bureau practice rather than stating a statutory provision"
+    },
+    {
+      "cluster": "WV",
+      "rows": ["CRP-LSRC-0149", "CRP-LSRC-0150"],
+      "exact_locators": [
+        {"locator": "https://code.wvlegislature.gov/55-2-6/", "capture": "R04 (50737 bytes, sha256 D7760D672346D312ACCC3A0D101175115198112DB12BEBD573D72A78540791B0)"},
+        {"locator": "https://code.wvlegislature.gov/55-2-12/", "capture": "R05 (50788 bytes, sha256 568C53D73013B21FFE0260B0CCD53B959B29C665C7B3C0FC7025862F10074294)"}
+      ],
+      "quoted_supporting_text": {
+        "R04_section_heading": "\"§55-2-6. Actions to recover on award or contract other than judgment or recognizance.\"",
+        "R04_ten_year_limbs": "\"...If the case be upon an indemnifying bond taken under any statute, or upon a bond of an executor, administrator or guardian, curator, committee, sheriff or deputy sheriff, clerk or deputy clerk, or any other fiduciary or public officer, within ten years; if it be upon any other contract in writing under seal, within ten years; if it be upon an award, or upon a contract in writing, signed by the party to be charged thereby, or by his agent, but not under seal, within ten years...\"",
+        "R04_five_year_limb": "\"...and if it be upon any other contract, express or implied, within five years, unless it be an action by one party against his copartner for a settlement of the partnership accounts, or upon accounts concerning the trade or merchandise between merchant and merchant, their factors or servants, where the action of account would lie, in either of which cases the action may be brought until the expiration of five years from a cessation of the dealings in which they are interested together, but not after.\"",
+        "R05_section_heading": "\"§55-2-12. Personal actions not otherwise provided for.\"",
+        "R05_body": "\"Every personal action for which no limitation is otherwise prescribed shall be brought: (a) Within two years next after the right to bring the same shall have accrued, if it be for damage to property; (b) within two years next after the right to bring the same shall have accrued if it be for damages for personal injuries; and (c) within one year next after the right to bring the same shall have accrued if it be for any other matter of such nature that, in case a party die, it could not have been brought at common law by or against his personal representative.\""
+      },
+      "comparison": "Both recorded values are real limbs of the single section each row cites: years=5 matches the section's five-year limb and years=10 matches its ten-year limbs. The ten-year value is not attributable to section 55-2-12, whose retrieved text carries only two-year and one-year periods. Neither row records which limb it applies.",
+      "contradiction_reported": "none - the official text contradicts neither recorded value",
+      "missing_fact_named": "the record does not state which limb of § 55-2-6 each row applies and carries no statutory edition or retrieval record; whether the two rows are two limbs used for two scenarios, or one value mis-recorded, cannot be determined from the record, so the limb correspondence is recorded and not certified as a mapping"
+    },
+    {
+      "cluster": "NY",
+      "rows": ["CRP-LSRC-0165", "CRP-LSRC-0166"],
+      "exact_locators": [
+        {"locator": "https://newyork.public.law/laws/n.y._general_business_law_section_380-j", "capture": "R07 (30809 bytes, sha256 144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC)", "note": "the locator the two rows themselves record; the operator is not a legislative publisher"},
+        {"locator": "https://www.nysenate.gov/legislation/laws/GBS/380-J", "capture": "R06 (5741 bytes, sha256 E358BFADCF7090330FE6F614ACD8F7AAB31F6C92B7AB7A4753F98ABF6BB0B830)", "note": "official publisher named by the source-discovery record; blocked by a Cloudflare managed challenge - a blocked route, not evidence"}
+      ],
+      "quoted_supporting_text": {
+        "R07_clause_f_1_ii": "\"judgements which, from date of entry, antedate the report by more than seven years or until the governing statute of limitations has expired, whichever is the longer period; or judgments which, from date of entry, having been satisfied within a five year period from such entry date, shall be removed from the report five years after such entry date;\"",
+        "R07_neighbouring_limbs_quoted_for_context_only": "\"(iii) paid tax liens which, from date of payment, antedate the report by more than seven years... (iv) accounts placed for collection or charged to profit and loss which antedate the report by more than seven years...\"",
+        "R07_effective_date_notes": "the reproduction carries the statute's own effective-date notes for later items (\"* NB Effective until May 26, 2027 *\" and the 2027/2032 variants), which is why the retrieved page cannot be treated as version-free"
+      },
+      "comparison": "Clause (ii) is one clause containing two limbs: the entry-or-limitation-period limb (seven years or the governing limitation period, whichever is longer) and the satisfied-judgment limb (a judgment satisfied within five years of entry is removed five years after the entry date). The two rows record one limb each - 0166 records the entry/SOL start and 0165 records the satisfied-within-five-years start - so the rows are not the same recorded rule even though both cite § 380-j(f)(1)(ii).",
+      "contradiction_reported": "none between the citation and the content: both recorded starts are textually present inside the clause the rows cite. Recorded as a shared-descriptor note: the clause-level descriptor is identical on both rows, so the clause descriptor alone could never separate them.",
+      "missing_fact_named": "the official publisher text was not retrieved (route blocked), so the clause text used here is the reproduction at the rows' own recorded locator; a statutory edition/consolidation identifier is still not recorded for either row"
+    },
+    {
+      "cluster": "CRAIN",
+      "rows": ["CRP-LSRC-0409", "CRP-LSRC-0411"],
+      "exact_locators": [
+        {"locator": "https://www.experian.co.uk/legal/crain/data-retention-periods", "capture": "R08 (107806 bytes, sha256 25DB48E9B53D714EE7024271A67CD14CF1983A77F3CE512AF4EBC129899CF516)"}
+      ],
+      "quoted_supporting_text": {
+        "R08_page_identity": "title \"Experian's Credit Reference Data Retention Periods\"; introduction \"The retention periods in the table are those linked to in section 7 of CRAIN. These periods are subject to regular review and may change from time to time.\"",
+        "R08_item_recorded_on_both_rows": "\"Credit account performance data\" - retention stated as \"11 years. This consists of six years for live decision-making plus a further five years for profiling and statistical analysis.\"",
+        "R08_other_items_for_context": "\"Judgment data - 11 years. This consists of six years for live decision-making plus a further five years...\"; \"Insolvency data - 6 years from the start date, or until the stated end date (whichever is latest)...\"; \"Rental related data - 12 years.\"",
+        "R08_absence_tests": "the retrieved page contains zero occurrences of 'arrears', zero of 'settled' and one of 'closed' (in 'closed ER record'). Neither recorded start string - 'the date the account is settled or closed' and 'the date the arrears were recorded' - appears anywhere in the retrieved page."
+      },
+      "comparison": "The two rows record one identical, truncated table label and two different starts, and the retrieved page can confirm neither start and contains no arrears item at all. The recorded label alone cannot separate them, and the page's current text does not reproduce either row's content, so the pair can be shown to be neither two items nor one item on this evidence.",
+      "contradiction_reported": "the retrieved page does not reproduce either recorded start value, and both rows record the same label while recording different starts. Under stop condition 1 this is reported rather than resolved by preference. The recorded label is a truncated table label, not a statutory provision; CRAIN is an industry notice published by a credit reference agency, not a legislative instrument.",
+      "missing_fact_named": "the CRAIN table row and version in force when each value was recorded: specifically (a) the row stating 6 years from the date the account is settled or closed and (b) the row stating 6 years from the date the arrears were recorded. Until those are produced, retained or shown to exist, the pair stays IDENTITY_UNRESOLVED."
+    },
+    {
+      "cluster": "NS",
+      "rows": ["CRP-LSRC-0336", "CRP-LSRC-0349"],
+      "exact_locators": [
+        {"locator": "https://nslegislature.ca/sites/default/files/legc/statutes/consumer%20reporting.pdf", "capture": "R09 (351156 bytes, sha256 5AD228066B3281E1702C2C63DA012C28128D444B8D528069075DC65939445500)", "note": "byte-identical to SOURCE_CAPTURES/PHASE5-001G/NS-consumer-reporting.pdf and to the retained-evidence pin historical-ns-cra-source-5ad22806.pdf in CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md section 2"}
+      ],
+      "quoted_supporting_text": {
+        "R09_title_page": "\"Consumer Reporting Act\" / \"CHAPTER 93 OF THE REVISED STATUTES, 1989\" / \"as amended by 1999, c. 4, ss. 10-16; 2010, c. 47; 2014, c. 39, ss. 4, 5; 2017, c. 9, ss. 14-31; 2018, c. 43, ss. 13-16\" / \"(c) 2019 Her Majesty the Queen in right of the Province of Nova Scotia\" / \"Published by Authority of the Speaker of the House of Assembly, Halifax\"",
+        "R09_long_title": "\"An Act to Control the Storage and Supply of Personal Information by Consumer Reporting Agencies\""
+      },
+      "comparison": "Both rows name the same instrument with the same title and chapter, the same locator and the same canonical region (CA-NS), and neither records any provision. The retrieved official consolidation is the instrument both rows name, and it is the same document for the row recorded with the token 'NS' and the row recorded with the token 'CANADA_NOVA_SCOTIA'.",
+      "contradiction_reported": "none",
+      "missing_fact_named": "neither row records a provision, so no provision-level identity exists to determine for this pair; the provision each row would need before it could support a rule remains unrecorded"
+    },
+    {
+      "cluster": "ON",
+      "rows": ["CRP-LSRC-0337", "CRP-LSRC-0351"],
+      "exact_locators": [
+        {"locator": "https://www.ontario.ca/laws/statute/90c33", "capture": "R10 (54243 bytes, sha256 883E8CC3C00645487D5369AE687EF000A754C4A61CB27C18DD0E27CEC4045022)", "note": "PARTIAL - the route returns the e-Laws JavaScript application shell. The capture contains no occurrence of '90c33', 'statute', 'C.33' or 'api/v2', no statute text and no statute-specific marker."}
+      ],
+      "quoted_supporting_text": {
+        "R10_observed_title": "<title>e-Laws | Ontario.ca</title> with the application bundle reference /laws/assets/styles/ds-theme.css; the statute text is fetched at run time by the application from the https://www.ontario.ca/laws/api/v2/legislation endpoint family, which is observed in the e-Laws bundle already captured by PHASE5-001H as ONT-elaws-main-js-route-probe.js",
+        "R10_no_statute_text": "no statutory text was obtainable from this route, so no provision text is compared for this cluster"
+      },
+      "comparison": "Both rows name the same instrument, the same citation, the same locator and the same canonical region (CA-ON), and neither records any provision. The recorded identity fields agree text for text apart from the legacy jurisdiction token ('ON' against 'CANADA_ONTARIO'), the verification state ('verified=true' against 'retrievedOn=2026-09-27') and the source artifact. The official text itself was not retrievable in this order, so this cluster's determination is an instrument-level determination on the recorded fields and not a comparison of quoted provision text.",
+      "contradiction_reported": "none in the records; the route limitation is recorded as a limitation rather than treated as a contradiction",
+      "missing_fact_named": "the current consolidation text and edition of the Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 - needed before any provision-level identity could be asserted for these two rows. The e-Laws data service that would supply it was not resolved in twelve candidate route forms, and the statute route returns only the application shell."
+    }
+  ],
+  "created_by": "PHASE5-001N"
+}

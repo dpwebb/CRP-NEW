@@ -1,0 +1,1048 @@
+{
+  "artifact": "internal_determinism_check.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "document_type": "INTERNAL DETERMINISM CHECK — synthetic inputs only. NOT ADMITTED, no emission, no consumer-visible output",
+  "purpose": "record the results of running the specification's executable form over synthetic inputs only, so that determinism, the refusal behaviour, the withheld boundary day and the clamp are measured rather than asserted",
+  "what_this_check_is": {
+    "inputs": "synthetic, in-memory observations and synthetic in-memory inputs only. No report is opened, no specimen is read, no OCR is run and no consumer data exists anywhere in it.",
+    "subject": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs, the executable form of deterministic_evaluator_specification.json",
+    "subject_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+    "rule_record_read": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json, read as data and never as an admission",
+    "method": "each case declares what the specification requires, runs the executable form, and compares the two. Key order is normalised; nothing else is."
+  },
+  "case_count": 27,
+  "failure_count": 0,
+  "failed_cases": [],
+  "verdict": "ALL SYNTHETIC CASES MATCH THE SPECIFICATION",
+  "cases": [
+    {
+      "id": "D-01",
+      "name": "the evidenced specimen reproduces the record's own measured arithmetic",
+      "synthetic_input": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2026-05-05"
+      },
+      "expected": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 1919,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 1919,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record's deterministic_breach_test.arithmetic.measured_on_the_specimen, which records the same four numbers"
+    },
+    {
+      "id": "D-02",
+      "name": "the exact sixth-anniversary day is WITHHELD: the boundary case is returned and no outcome is produced",
+      "synthetic_input": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2027-02-01"
+      },
+      "expected": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+      },
+      "observed": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to convention c6 and to the record's boundary_treatment. This is the behaviour the internal comparator of PHASE5-001I-A does NOT have, and the record does not adopt its contrary reading."
+    },
+    {
+      "id": "D-03",
+      "name": "the day before the sixth anniversary is not exceeded",
+      "synthetic_input": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2027-01-31"
+      },
+      "expected": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2190,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2190,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to conventions c4 and c5"
+    },
+    {
+      "id": "D-04",
+      "name": "the day after the sixth anniversary is exceeded",
+      "synthetic_input": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2027-02-02"
+      },
+      "expected": {
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2192,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": 2192,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to convention c5, and records that an exceeded period is an arithmetic result and not a finding"
+    },
+    {
+      "id": "D-05",
+      "name": "the 29 February clamp: a leap-day start clamps to 28 February, and the clamped day is itself the withheld boundary",
+      "synthetic_input": {
+        "clock_start": "2020-02-29",
+        "reference_date": "2026-02-28"
+      },
+      "expected": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+      },
+      "observed": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2191,
+        "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to conventions c2 and c6, exercised on a leap-day start as the record requires"
+    },
+    {
+      "id": "D-06",
+      "name": "the day after the clamped anniversary is exceeded",
+      "synthetic_input": {
+        "clock_start": "2020-02-29",
+        "reference_date": "2026-03-01"
+      },
+      "expected": {
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2192,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "PERIOD_EXCEEDED",
+        "reason": null,
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2192,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to conventions c2 and c5"
+    },
+    {
+      "id": "D-07",
+      "name": "the day before the clamped anniversary is not exceeded",
+      "synthetic_input": {
+        "clock_start": "2020-02-29",
+        "reference_date": "2026-02-27"
+      },
+      "expected": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2190,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+        "reason": null,
+        "anniversary": "2026-02-28",
+        "span_in_days": 2191,
+        "elapsed_days": 2190,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to conventions c2 and c5"
+    },
+    {
+      "id": "D-08",
+      "name": "a reference date before the printed last payment date does not compare",
+      "synthetic_input": {
+        "clock_start": "2021-02-01",
+        "reference_date": "2020-12-31"
+      },
+      "expected": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": -32,
+        "boundary_case": null
+      },
+      "observed": {
+        "comparison_outcome": "UNRESOLVED",
+        "reason": "REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+        "anniversary": "2027-02-01",
+        "span_in_days": 2191,
+        "elapsed_days": -32,
+        "boundary_case": null
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "the record does not address this shape; the specification names it as one named unresolved state rather than leaving it to the raw arithmetic"
+    },
+    {
+      "id": "D-09",
+      "name": "a contract debt record that prints no Last Payment Date label leaves the fact unresolved and never absent",
+      "synthetic_input": {
+        "record": "a contract debt record with zero label occurrences"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_NOT_PRINTED_ON_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_NOT_PRINTED_ON_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record's report-required-facts rule: a missing value is EXTRACTION_UNRESOLVED and never ABSENT_FROM_REPORT"
+    },
+    {
+      "id": "D-10",
+      "name": "a label printed twice in one record leaves the fact unresolved",
+      "synthetic_input": {
+        "record": "one contract debt record printing the label twice, with identical values"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record's own binding rule verbatim: a label printed twice in one record leaves the fact unresolved, even where the two printed values are identical"
+    },
+    {
+      "id": "D-11",
+      "name": "a label printed without a value leaves the fact unresolved",
+      "synthetic_input": {
+        "record": "the label present, no value after it"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_PRINTED_WITHOUT_VALUE",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "LABEL_PRINTED_WITHOUT_VALUE",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the fact model: a blank value is not a value and is not an absence"
+    },
+    {
+      "id": "D-12",
+      "name": "a value that is not in the presentation's printed form is unresolved",
+      "synthetic_input": {
+        "record": "a printed value in a foreign form"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "VALUE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "EXTRACTION_UNRESOLVED",
+        "last_payment_reason": "VALUE_NOT_A_WELL_FORMED_PRINTED_DATE",
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the fact model: the only accepted printed form is the presentation's own, and a foreign form is never guessed at"
+    },
+    {
+      "id": "D-13",
+      "name": "a resolved Collections section printing no contract debt record is the single ABSENT_FROM_REPORT path",
+      "synthetic_input": {
+        "section": "resolved, and no contract debt record printed"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": "ABSENT_FROM_REPORT",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": "ABSENT_FROM_REPORT",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record's absence_path, which has exactly this one path. It is a resolved reading, not a parser silence."
+    },
+    {
+      "id": "D-14",
+      "name": "a Request Date that differs between pages is CONTRADICTED, not unknown",
+      "synthetic_input": {
+        "header": "two pages, two different printed Request Dates"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "CONTRADICTED",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "CONTRADICTED",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the gate's four-status vocabulary, which names CONTRADICTED as a status of its own. The internal comparator folds this shape into EXTRACTION_UNRESOLVED and is not adopted here."
+    },
+    {
+      "id": "D-15",
+      "name": "a header label missing from one page leaves the reference date unresolved",
+      "synthetic_input": {
+        "header": "present on one page of two"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "EXTRACTION_UNRESOLVED",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record's reading rule: the same value must appear on every page, or the comparison does not run"
+    },
+    {
+      "id": "D-16",
+      "name": "a PR-01-shaped document that is not the evidenced specimen is refused, and no fact status is produced",
+      "synthetic_input": {
+        "presentation": "the documented contract shape at a different digest"
+      },
+      "expected": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the scope's admission boundary: structural similarity admits nothing, and a refused document is never reported as an empty report"
+    },
+    {
+      "id": "D-17",
+      "name": "an image-only or text-less document is refused as an unsupported presentation",
+      "synthetic_input": {
+        "presentation": "the evidenced digest, but the document carries no native text"
+      },
+      "expected": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_UNSUPPORTED_PRESENTATION",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G3_PRESENTATION_ELIGIBILITY",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the record: no OCR is performed and a document that cannot be read is refused, not searched"
+    },
+    {
+      "id": "D-18",
+      "name": "an absent jurisdiction selection is refused before anything else is read",
+      "synthetic_input": {
+        "selection": "none"
+      },
+      "expected": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G1_JURISDICTION_SELECTION_SUPPLIED",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the constitution's rule that jurisdiction is never inferred: an absent selection is a refusal, never a guess from the report"
+    },
+    {
+      "id": "D-19",
+      "name": "a selection outside CA / CA-NS is refused",
+      "synthetic_input": {
+        "selection": "CA / ON"
+      },
+      "expected": {
+        "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the scope: this unit is one jurisdiction, one unit, one limb, one presentation"
+    },
+    {
+      "id": "D-20",
+      "name": "a declared mapping other than the recorded one is refused",
+      "synthetic_input": {
+        "mapping": "the last-payment role declared against Date Paid/Settled"
+      },
+      "expected": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G4_EVENT_DATE_MAPPING",
+        "fact_layer": "NOT_RUN_DOCUMENT_OR_MAPPING_GATE_FAILED",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": null,
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the gate's wrong-event-date-mapping condition: a printed date is read only through its own recorded event role"
+    },
+    {
+      "id": "D-21",
+      "name": "an input resolving to the excluded second limb is refused as an unresolved affirmative element",
+      "synthetic_input": {
+        "input": "a no-payment-made assertion"
+      },
+      "expected": {
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the scope: the second limb is unseated and must not be inferred, defaulted or evaluated, so an input that would need it is refused after the document layer is read"
+    },
+    {
+      "id": "D-22",
+      "name": "the operative state of this scope: a fully eligible document and an unadmitted rule record refuse, with no outcome",
+      "synthetic_input": {
+        "rule_record": "the governed rule record as it stands, NOT ADMITTED"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to the gate's unapproved-rules condition as a refusal behaviour, and records why no case in this check emits a result"
+    },
+    {
+      "id": "D-23",
+      "name": "a synthetic input whose rule record is marked admitted passes the gate chain and still emits nothing",
+      "synthetic_input": {
+        "rule_record": "a synthetic in-memory copy marked ADMITTED — not an admission and not evidence of one"
+      },
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "fact_layer": "RUN",
+        "comparison_layer": "RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "outcome": {
+          "not_a_finding": true,
+          "per_record_comparisons": [
+            {
+              "record_index": 2,
+              "clock_start": "2021-02-01",
+              "reference_date": "2026-05-05",
+              "anniversary": "2027-02-01",
+              "span_in_days": 2191,
+              "elapsed_days": 1919,
+              "comparison": "elapsed_days > span_in_days",
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+              "reason": null,
+              "boundary_case": null
+            }
+          ]
+        }
+      },
+      "observed": {
+        "refusal": null,
+        "outcome": {
+          "per_record_comparisons": [
+            {
+              "record_index": 2,
+              "clock_start": "2021-02-01",
+              "reference_date": "2026-05-05",
+              "anniversary": "2027-02-01",
+              "span_in_days": 2191,
+              "elapsed_days": 1919,
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "comparison": "elapsed_days > span_in_days",
+              "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+              "reason": null,
+              "boundary_case": null
+            }
+          ],
+          "not_a_finding": true
+        },
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "first_failing_gate": null,
+        "fact_layer": "RUN",
+        "comparison_layer": "RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "demonstrates the second, structural closure: even with every gate passed, the ceiling is observation-class only, no finding class is available to this unit and no consumer surface exists, so nothing is emitted"
+    },
+    {
+      "id": "D-24",
+      "name": "on the withheld day a fully eligible synthetic input reports the boundary case and still produces no outcome on that day",
+      "synthetic_input": {
+        "reference_date": "exactly the sixth anniversary, synthetic in-memory dates"
+      },
+      "expected": {
+        "refusal": null,
+        "first_failing_gate": null,
+        "fact_layer": "RUN",
+        "comparison_layer": "RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": true,
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "outcome": {
+          "not_a_finding": true,
+          "per_record_comparisons": [
+            {
+              "record_index": 2,
+              "clock_start": "2021-02-01",
+              "reference_date": "2027-02-01",
+              "anniversary": "2027-02-01",
+              "span_in_days": 2191,
+              "elapsed_days": 2191,
+              "comparison": "elapsed_days > span_in_days",
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "comparison_outcome": "UNRESOLVED",
+              "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+              "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY"
+            }
+          ]
+        }
+      },
+      "observed": {
+        "refusal": null,
+        "outcome": {
+          "per_record_comparisons": [
+            {
+              "record_index": 2,
+              "comparison_outcome": "UNRESOLVED",
+              "reason": "THE_REFERENCE_DATE_IS_THE_SIXTH_ANNIVERSARY_AND_THE_TEXT_DOES_NOT_SETTLE_INCLUSION",
+              "anniversary": "2027-02-01",
+              "span_in_days": 2191,
+              "elapsed_days": 2191,
+              "boundary_case": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+              "conventions_carried": [
+                "c1",
+                "c2",
+                "c3",
+                "c4",
+                "c5",
+                "c6"
+              ],
+              "clock_start": "2021-02-01",
+              "reference_date": "2027-02-01",
+              "comparison": "elapsed_days > span_in_days"
+            }
+          ],
+          "not_a_finding": true
+        },
+        "emission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+        "first_failing_gate": null,
+        "fact_layer": "RUN",
+        "comparison_layer": "RUN",
+        "last_payment_status": "PRESENT",
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": null,
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": true
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "conforms to convention c6 and records that the boundary qualification becomes mandatory exactly on that day"
+    },
+    {
+      "id": "D-25",
+      "name": "the same synthetic inputs return identical records when re-run",
+      "synthetic_input": {
+        "inputs": "the specimen comparison, the boundary comparison and the unadmitted-rule evaluation, each run twice"
+      },
+      "expected": {
+        "specimen": true,
+        "boundary": true,
+        "evaluation": true
+      },
+      "observed": {
+        "specimen": true,
+        "boundary": true,
+        "evaluation": true
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "determinism measured, not asserted: the executable form holds no module-level mutable state and reads nothing outside its arguments"
+    },
+    {
+      "id": "D-26",
+      "name": "the executable form reads no clock, locale, time zone, host, session, environment or random source",
+      "synthetic_input": {
+        "file": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs"
+      },
+      "expected": {
+        "forbidden_reads_found": [],
+        "clean": true
+      },
+      "observed": {
+        "forbidden_reads_found": [],
+        "clean": true
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "the file is scanned as text: it must not reach for a clock, a locale, a time zone, the host environment or a random source, and it must not read the file system at all"
+    },
+    {
+      "id": "D-27",
+      "name": "a section that prints the label only outside any contract debt record is unresolved, not absent",
+      "synthetic_input": {
+        "section": "resolved, no contract debt record, and a stray Last Payment Date label in the section preamble"
+      },
+      "expected": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "observed": {
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+        "outcome": null,
+        "emission": "NOT_EMITTED",
+        "first_failing_gate": "G6_RULE_RECORD_ADMITTED",
+        "fact_layer": "RUN",
+        "comparison_layer": "NOT_RUN",
+        "last_payment_status": null,
+        "last_payment_reason": null,
+        "reference_status": "PRESENT",
+        "unit_level_status": "EXTRACTION_UNRESOLVED",
+        "ceiling": "OBSERVATION_CLASS_ONLY",
+        "boundary_mandatory_here": false
+      },
+      "passed": true,
+      "against_the_rule_records_own_test": "a refinement this order reached by reading the record's own reliability rule rather than by copying the internal comparator's test result: a value is never read outside a record, so a stray label leaves the fact unresolved and the section's clean absence reading is not available"
+    }
+  ],
+  "emission_tally": {
+    "cases_that_emitted_a_result": 0,
+    "note": "no case emits. Every case either returns a named refusal with no outcome, or returns an observation-class record whose emission state is NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED. That is the behaviour the gate's unapproved-rules and no-finding condition requires of this unit."
+  },
+  "cases_recorded_against_the_records_own_test": 27,
+  "boundary_and_clamp_cases": [
+    {
+      "id": "D-02",
+      "name": "the exact sixth-anniversary day is WITHHELD: the boundary case is returned and no outcome is produced",
+      "passed": true
+    },
+    {
+      "id": "D-03",
+      "name": "the day before the sixth anniversary is not exceeded",
+      "passed": true
+    },
+    {
+      "id": "D-04",
+      "name": "the day after the sixth anniversary is exceeded",
+      "passed": true
+    },
+    {
+      "id": "D-05",
+      "name": "the 29 February clamp: a leap-day start clamps to 28 February, and the clamped day is itself the withheld boundary",
+      "passed": true
+    },
+    {
+      "id": "D-06",
+      "name": "the day after the clamped anniversary is exceeded",
+      "passed": true
+    },
+    {
+      "id": "D-07",
+      "name": "the day before the clamped anniversary is not exceeded",
+      "passed": true
+    },
+    {
+      "id": "D-24",
+      "name": "on the withheld day a fully eligible synthetic input reports the boundary case and still produces no outcome on that day",
+      "passed": true
+    }
+  ],
+  "what_this_check_is_not": [
+    "it is not presentation evidence: no report was read, and a synthetic result is never evidence about a report",
+    "it is not the legally reviewed fixture suite and not the independent replay sample: both are Gate 5.6 work (build plan lines 142 and 147) and both are expressly excluded from this order",
+    "it is not a gate: it evidences one criterion of Gate 5.5 within one scope, and it passes no gate corpus-wide",
+    "it does not authorize a finding class, create coverage or a candidate, or admit a rule"
+  ],
+  "what_this_check_does_not_claim": [
+    "it does not claim that any result rests on the admitted text: the rule record is NOT ADMITTED, and the admitted-rule copy used by two cases is a synthetic in-memory copy that admits nothing",
+    "it does not claim that the emission path is demonstrated: the emission path on an admitted rule record is unexercised in this scope",
+    "it does not adopt, conform or modify the internal comparator of PHASE5-001I-A, whose boundary treatment the rule record does not adopt",
+    "it does not decide the effective period, the exception or the anniversary-boundary reading"
+  ],
+  "boundaries": [
+    "Observation-only and packet-ineligible: nothing in this record may be shown, hosted, transmitted or implied to any consumer.",
+    "The counts stand at 0 admitted governed rules and 0 permitted findings, unchanged by this order."
+  ],
+  "created_by": "PHASE5-001R"
+}

@@ -1,0 +1,138 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "document_type": "AMENDMENT RECORD — every quoted replacement and the appended row, with its mechanical checks",
+  "purpose": "record, for the amended rank-5 build plan, exactly which clause was quoted and replaced, what the replacement says, that no requirement was removed, and that undoing the amendment reconstructs the pre-amendment bytes exactly",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "amendment_procedure_applied": "CRP_CORE_CONSTITUTION.md sections 6.1, 6.2, 6.4 and 6.5",
+  "digest_before": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+  "digest_after": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+  "bytes_before": 33593,
+  "bytes_after": 38651,
+  "line_endings": "LF preserved",
+  "amendment_count": 5,
+  "replacements": 4,
+  "rows_appended": 1,
+  "amendment_types": {
+    "REPLACE_BY_EXTENSION": "the clause's own text is quoted and retained verbatim, and the replacement appends the scoped reading. This is the minimum form that satisfies section 6.2 (the replacement text is stated) while satisfying section 6.4 (no requirement is removed).",
+    "APPEND_AMENDMENT_HISTORY_ROW": "section 6.5 requires the amendment history to be recorded in the amended document itself; one row is appended and every earlier row is preserved."
+  },
+  "amendments": [
+    {
+      "id": "A-1",
+      "type": "REPLACE_BY_EXTENSION",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, the final bullet of the PHASE5-001P scoped-progression paragraph (the clause that closes the ordering authority)",
+      "replaced_text": "- **No scoped verdict admits a rule,** creates coverage or a candidate, authorizes a finding class, or\n  changes the recorded state of the application, which still reports report checking as not yet\n  available.",
+      "replacement_text": "- **No scoped verdict admits a rule,** creates coverage or a candidate, authorizes a finding class, or\n  changes the recorded state of the application, which still reports report checking as not yet\n  available.\n\n**Owner authority PHASE5-001S — pre-admission specification and validation sequence.** This paragraph\nnames the sequence in which a rule record is finalised, specified, validated and admitted, and it\nweakens no gate's own conditions.\n\n- **The gates are separated by what each one reads.** Gate 5.4 finalises the governed rule record for a\n  named scope. Gates 5.5 and 5.6 read that finalised record whether or not Gate 5.7 has admitted it.\n  Gate 5.7 remains the only step that admits a governed rule, and it remains the step that follows a\n  successful Gate 5.6. Admission is not a precondition of specifying or validating an evaluator; it is\n  the precondition of emitting a result.\n- **A pre-admission rule record is a pinned, scoped record.** It carries its immutable rule ID, its\n  source pin, its exact jurisdiction and statutory limb, its determined test, and a recorded\n  pre-admission version identity derived from the record's own content. Its production admission\n  identity and its production version string remain reserved to Gate 5.7.\n- **An unadmitted rule can never emit a consumer result.** Until Gate 5.7 admits it, the evaluator must\n  refuse to emit on it: a named refusal and no result. No gate may produce a finding class, coverage or\n  consumer-visible output from a pre-admission record.\n- **No rule may be admitted early to satisfy a gate.** Admission is not a Gate 5.5 or Gate 5.6\n  deliverable, and a rule may not be admitted in order to make a gate criterion pass.\n- **Nothing is removed by this paragraph.** Each gate's own conditions, each stop condition, the finding\n  boundary, the permanent exclusions and the authority order are unchanged; this paragraph only records\n  which rule record the specification and validation gates may read while Gate 5.7 has not yet admitted\n  it. It admits no rule by itself and it creates no coverage, no candidate and no finding class.",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "replacement_text_present_exactly_once": true,
+        "replacement_text_occurrences": 1,
+        "replaced_text_survives_verbatim_inside_the_replacement": true,
+        "replacement_text_is_an_extension_of_the_replaced_text": true,
+        "replaced_text_occurrences_in_the_amended_document": 1,
+        "note": "the replaced text still appears in the amended document — because it is retained verbatim inside its replacement. Nothing was deleted, so Core Constitution section 6.4's removal condition is not triggered."
+      },
+      "line_after_amendment": 65
+    },
+    {
+      "id": "A-2",
+      "type": "REPLACE_BY_EXTENSION",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.5, bullet 3 (the evaluator's inputs)",
+      "replaced_text": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps.",
+      "replacement_text": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps. For a scope named under the PHASE5-001S paragraph above, `admitted rule records` in this bullet is read as the governed rule record that Gate 5.4 has finalised for that scope, read at its pinned pre-admission version: a record Gate 5.7 has not yet admitted is a valid input to this specification and to Gate 5.6, and the evaluator must still refuse to emit on it until Gate 5.7 admits it, so the emission condition Gate 5.5 itself sets is unchanged by this reading.",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "replacement_text_present_exactly_once": true,
+        "replacement_text_occurrences": 1,
+        "replaced_text_survives_verbatim_inside_the_replacement": true,
+        "replacement_text_is_an_extension_of_the_replaced_text": true,
+        "replaced_text_occurrences_in_the_amended_document": 1,
+        "note": "the replaced text still appears in the amended document — because it is retained verbatim inside its replacement. Nothing was deleted, so Core Constitution section 6.4's removal condition is not triggered."
+      },
+      "line_after_amendment": 157
+    },
+    {
+      "id": "A-3",
+      "type": "REPLACE_BY_EXTENSION",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 4, Durable artifacts to create, item 5 (the deterministic fact/evaluator specification)",
+      "replaced_text": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+      "replacement_text": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing. Under the PHASE5-001S paragraph, `admitted` in this item is read as passed Gate 5.4 and Gate 5.3 for the named scope: the artifact may be built and validated on the finalised rule record at its pinned pre-admission version, and it must refuse to emit on that record until Gate 5.7 admits it. Formal admission at Gate 5.7 remains the step that makes a rule production-authoritative, and it is not a precondition of this artifact.",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "replacement_text_present_exactly_once": true,
+        "replacement_text_occurrences": 1,
+        "replaced_text_survives_verbatim_inside_the_replacement": true,
+        "replacement_text_is_an_extension_of_the_replaced_text": true,
+        "replaced_text_occurrences_in_the_amended_document": 1,
+        "note": "the replaced text still appears in the amended document — because it is retained verbatim inside its replacement. Nothing was deleted, so Core Constitution section 6.4's removal condition is not triggered."
+      },
+      "line_after_amendment": 188
+    },
+    {
+      "id": "A-4",
+      "type": "REPLACE_BY_EXTENSION",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Gate 5.6 (the immutable-version sharing condition)",
+      "replaced_text": "**Gate 5.6:** every test passes; independent replay reproduces each sampled result; no known false positive/negative category remains unexplained; rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions.",
+      "replacement_text": "**Gate 5.6:** every test passes; independent replay reproduces each sampled result; no known false positive/negative category remains unexplained; rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions. Under the PHASE5-001S paragraph above, for a scope whose governed rule record Gate 5.7 has not yet admitted, the sharing condition is measured against that record's pinned pre-admission version identity together with the immutable digests of the crosswalk, the tests and the explanation templates the scope reads and writes; the production admission identity and version remain reserved to Gate 5.7, and a scoped Gate 5.6 verdict must name that reservation rather than treat the condition as satisfied by it.",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "replacement_text_present_exactly_once": true,
+        "replacement_text_occurrences": 1,
+        "replaced_text_survives_verbatim_inside_the_replacement": true,
+        "replacement_text_is_an_extension_of_the_replaced_text": true,
+        "replaced_text_occurrences_in_the_amended_document": 1,
+        "note": "the replaced text still appears in the amended document — because it is retained verbatim inside its replacement. Nothing was deleted, so Core Constitution section 6.4's removal condition is not triggered."
+      },
+      "line_after_amendment": 170
+    },
+    {
+      "id": "A-5",
+      "type": "APPEND_AMENDMENT_HISTORY_ROW",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 8, Amendment History, appended row",
+      "appended_row": "| 2026-09-30 | PHASE5-001S | Valid owner amendment under Core Constitution section 6: section 3's scoped-progression paragraph gains the pre-admission specification and validation sequence paragraph (owner authority PHASE5-001S) — Gate 5.4 finalises a rule record and Gates 5.5 and 5.6 read that finalised record whether or not Gate 5.7 has admitted it, a pre-admission record is pinned by its immutable rule ID and a content-derived pre-admission version identity while its production admission identity and version stay reserved to Gate 5.7, an unadmitted rule must still refuse to emit and can never produce a finding class, coverage or consumer-visible output, and no rule may be admitted early to satisfy a gate; section 3 Phase 5.5 bullet 3 records how the phrase `admitted rule records` is read for a named scope; section 4 item 5 records that its admission precondition is the Gate 5.4 and Gate 5.3 pass for the named scope rather than Gate 5.7 admission; Gate 5.6 records how its immutable-version sharing condition is measured against a pinned pre-admission rule-record version, with the production admission identity reserved to Gate 5.7 and that reservation to be named rather than passed. Gate 5.5's own sentence, Gate 5.4, the finding model, the stop conditions, the permanent exclusions and every other clause are unchanged, no requirement is removed by any of the four replacements, and no gate is passed by this amendment alone. It admits no rule, certifies no coverage, creates no finding class, changes no application behaviour and authorises no consumer-visible output. Both replaced text and replacement text are quoted in CRP_PHASE5_001S_GATE_5_5_BLOCKER_RESOLUTION.md and SOURCE_CAPTURES\\PHASE5-001S\\amendment_text.json. |",
+      "removed_text": "",
+      "requirement_removed": false,
+      "mechanical_check": {
+        "row_present_in_the_amended_document": true,
+        "row_occurrences": 1,
+        "every_earlier_row_preserved": true,
+        "section": "section 8, Amendment History — appended under Core Constitution section 6.5, which requires the change record to live in the amended document itself"
+      },
+      "line_after_amendment": 262
+    }
+  ],
+  "inversion_check": {
+    "method": "the appended row is removed and each replacement is undone in reverse order; the reconstructed bytes are hashed",
+    "pre_amendment_digest": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+    "reconstructed_digest": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+    "reconstruction_matches_baseline": true,
+    "what_this_proves": "the amendment added exactly the five recorded items and changed nothing else in the document. A hidden edit, an extra character or a dropped requirement would change the reconstructed digest."
+  },
+  "what_the_replacement_texts_say": [
+    "A-1 records the pre-admission sequence in the ordering authority: Gate 5.4 finalises a rule record, Gates 5.5 and 5.6 read that finalised record whether or not Gate 5.7 has admitted it, admission remains the precondition of emitting rather than of specifying, a pre-admission record is pinned by a content-derived pre-admission version identity, an unadmitted rule must refuse to emit, and no rule may be admitted early to satisfy a gate",
+    "A-2 records how `admitted rule records` is read in Phase 5.5 bullet 3 for a named scope: the finalised Gate 5.4 record at its pinned pre-admission version, with the emission prohibition unchanged",
+    "A-3 records that section 4 item 5's admission precondition is the Gate 5.4 and Gate 5.3 pass for the named scope, not Gate 5.7 admission, and that the artifact must refuse to emit until Gate 5.7 admits the rule",
+    "A-4 records how Gate 5.6's immutable-version sharing condition is measured for a scope whose rule record is unadmitted: against the pinned pre-admission version identity and the immutable digests of the crosswalk, tests and templates, with the production admission identity reserved to Gate 5.7 and that reservation to be named rather than passed",
+    "A-5 appends the amendment-history row for PHASE5-001S under section 6.5"
+  ],
+  "what_no_replacement_did": [
+    "it did not delete, narrow, paraphrase or renumber anything: the replaced text survives byte-for-byte inside every replacement",
+    "it did not touch Gate 5.5's own sentence, which is the prohibition the pre-admission sequence relies on",
+    "it did not move Gate 5.7, change the finding model, change a stop condition, change the permanences or change the scope boundary",
+    "it did not admit a rule, create coverage or a candidate, create a finding class or change the application"
+  ],
+  "verdict": "AMENDMENT RECORDED AND INVERTIBLE — five amendments to the rank-5 build plan, each an extension, each present exactly once, and the reconstruction of the pre-amendment bytes matches the recorded digest",
+  "created_by": "PHASE5-001S"
+}

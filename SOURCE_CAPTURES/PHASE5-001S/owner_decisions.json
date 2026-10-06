@@ -1,0 +1,59 @@
+{
+  "artifact": "owner_decisions.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "document_type": "OWNER DECISION RECORD — the two decisions this order carries, quoted, with what each does and does not do",
+  "purpose": "record the two owner decisions verbatim, so that the authority this order acts under is durable and its limits cannot be read past",
+  "decisions": [
+    {
+      "id": "OWNER-DECISION-1",
+      "title": "CUSTODY EXCEPTION",
+      "decision_verbatim": "OWNER DECISION 1 — CUSTODY EXCEPTION\n\nAccept the regenerated PHASE5-001I-A test_results_001i_a.json as the current retained artifact, with its unauthorized regeneration explicitly recorded.\n\nThis decision:\n- Does not retroactively authorize the original write.\n- Does not establish that the old bytes were recovered.\n- Does not erase the preservation failure.\n- Does authorize prospective use of the current artifact at its full measured hash.\n- Does not treat its 41 passing tests as Gate 5.6 evidence.\n\nCreate a supplemental custody decision linking the original recorded hash, current hash, cause, affected order and prospective baseline. Preserve historical manifests and failure records.",
+      "what_it_authorises": [
+        "prospective use of the current retained artifact at its full measured hash",
+        "recording that hash as part of the prospective baseline this order establishes"
+      ],
+      "what_it_expressly_does_not_do": [
+        "it does not retroactively authorise the original write",
+        "it does not establish that the old bytes were recovered",
+        "it does not erase the preservation failure, which stays recorded as a failure",
+        "it does not treat the artifact's 41 passing tests as Gate 5.6 evidence"
+      ],
+      "what_this_order_did_under_it": [
+        "created the supplemental custody decision (custody_supplement.json) linking the original recorded hash, the current measured hash, the cause, the affected order and the prospective baseline",
+        "kept the original preservation criterion marked failed in the historical record, and recorded the progression assessment separately under the exception",
+        "preserved the historical manifests and failure records untouched, each measured at its recorded digest",
+        "did not re-run, re-read or regenerate the artifact's suite, and did not write to the artifact"
+      ]
+    },
+    {
+      "id": "OWNER-DECISION-2",
+      "title": "PRE-ADMISSION SEQUENCE",
+      "decision_verbatim": "OWNER DECISION 2 — PRE-ADMISSION SEQUENCE\n\nGate 5.5 specification and Gate 5.6 validation may use a finalized, scoped Gate 5.4 rule record that is NOT_ADMITTED. Gate 5.7 remains the admission step after successful preceding gates.\n\nAn unadmitted rule must remain unable to emit consumer results. Do not admit the rule early to satisfy the circular requirement.",
+      "what_it_authorises": [
+        "Gate 5.5 specification and Gate 5.6 validation to read the finalised, scoped Gate 5.4 rule record while it is NOT_ADMITTED",
+        "the pre-admission sequence to be recorded in the governing document by quoted-replacement amendment"
+      ],
+      "what_it_expressly_does_not_do": [
+        "it does not admit the rule: Gate 5.7 remains the admission step, after successful preceding gates",
+        "it does not permit an unadmitted rule to emit a consumer result, and it does not weaken the prohibition in the Gate 5.5 sentence",
+        "it does not permit the rule to be admitted early in order to satisfy the circular requirement",
+        "it does not change any gate's own conditions, the finding model, the stop conditions or the permanent exclusions"
+      ],
+      "what_this_order_did_under_it": [
+        "identified the exact governing clauses that create the circular prerequisite (amendment_authority_analysis.json: CIR-1, CIR-2, CIR-3, with the sequencing and admission clauses quoted)",
+        "applied the minimum quoted-replacement amendment through the governing procedure (amendments_001s.js, amendment_application_result.json, amendment_text.json), preserving every other gate requirement and recording the amendment history",
+        "recorded the amendment in the amended document itself, as Core Constitution section 6.5 requires"
+      ]
+    }
+  ],
+  "decision_count": 2,
+  "what_neither_decision_does": [
+    "neither decision admits a governed rule, creates coverage or a candidate, or creates a finding class",
+    "neither decision authorises consumer-visible output, an application change, a deployment or an external transmission",
+    "neither decision changes the observation-only classification or the packet-ineligible status of this work",
+    "neither decision clears any register row, promotes any record or changes the corpus-wide gate states"
+  ],
+  "verdict": "TWO OWNER DECISIONS RECORDED — one custody exception and one pre-admission sequence, each with its limits stated",
+  "created_by": "PHASE5-001S"
+}

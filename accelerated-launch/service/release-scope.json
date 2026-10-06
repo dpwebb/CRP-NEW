@@ -1,0 +1,378 @@
+{
+  "authority": "OWNER-FINAL-RELEASE-SCOPE-001",
+  "date": "2026-10-04",
+  "scope_document": "CRP_FINAL_RELEASE_SCOPE_001.md",
+  "checks": [
+    {
+      "id": "PRIVATE_DATA_DIRECTORY_OUTSIDE_THE_REPOSITORY",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "report bytes must never be written into a tree that is copied or published"
+    },
+    {
+      "id": "NO_SECRET_MATERIAL_IN_SERVICE_SOURCES",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a credential committed to source has been published"
+    },
+    {
+      "id": "PRODUCTION_TEMPLATE_NAMES_ONLY",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "the committed template must name what is required and supply nothing"
+    },
+    {
+      "id": "SUPPORT_REFERENCE_SECRET_IS_CONFIGURED",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "support references are derived from a server-side secret; without a configured secret they are process-generated and change on restart, so a release must configure one"
+    },
+    {
+      "id": "STATIC_ALLOWLIST_MATCHES_THE_PRIVATE_UI_TREE",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "an allowlist that does not match the tree either serves nothing or serves too much"
+    },
+    {
+      "id": "LOG_SINK_ADMITS_ONLY_WHITELISTED_FIELDS",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "no report text, identifier, address or path may reach a log by any call site"
+    },
+    {
+      "id": "ALL_82_REGIONS_PRESENT_IN_THE_LAUNCH_MATRIX",
+      "customer_requirement": "ALL82",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "the launch requirement is 82 working jurisdictions, not 81"
+    },
+    {
+      "id": "NO_REGION_IS_ADVERTISED_AS_LAUNCH_READY",
+      "customer_requirement": "ALL82",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a row may only be ready when its journey, checks, billing and host all pass"
+    },
+    {
+      "id": "PAYMENT_PROVIDER_IS_CONFIGURED_FOR_BILLING",
+      "customer_requirement": "PURCHASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "test-verified billing is not live billing; a launch needs live keys and live evidence, and neither is authorized here"
+    },
+    {
+      "id": "MATCHED_TEST_CHECKOUT_EVIDENCE",
+      "customer_requirement": "PURCHASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a real matched hosted Checkout -> verified webhook -> entitlement/download must be evidenced before launch, separately from mocks and generic triggers"
+    },
+    {
+      "id": "RUNTIME_PATH_PORTABILITY",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a runtime module that hardcodes a Windows checkout path cannot run on the Linux host"
+    },
+    {
+      "id": "SUPPORTED_FORMAT_MESSAGING_MATCHES_THE_REGISTRY",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "the wizard must not promise a format the admission gate will refuse"
+    },
+    {
+      "id": "PLAN_CATALOG_PRICES_EVERY_PLAN_ABOVE_THE_PROVIDER_MINIMUM",
+      "customer_requirement": "PURCHASE",
+      "release_scope": "DIAGNOSTIC",
+      "blocks_launch": false,
+      "reason": "a provider rejects a charge below its own minimum"
+    },
+    {
+      "id": "EVERY_MARKET_HAS_A_MATRIX_ROW",
+      "customer_requirement": "ALL82",
+      "release_scope": "DIAGNOSTIC",
+      "blocks_launch": false,
+      "reason": "a whole market must not vanish from the matrix silently"
+    },
+    {
+      "id": "EVIDENCE_ARTIFACTS_PRESENT_AND_SEPARATE",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "DIAGNOSTIC",
+      "blocks_launch": false,
+      "reason": "each batch keeps its own evidence so no historical package is regenerated in place"
+    },
+    {
+      "id": "PRIVATE_DATA_DIRECTORY_IS_DURABLE",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a data directory inside the operating system temp area can be cleaned by the system, which would destroy the consumer’s only copy of their report"
+    },
+    {
+      "id": "STATE_FILE_IS_READABLE_WHERE_A_DATA_DIRECTORY_EXISTS",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a release must not start against an unreadable state file"
+    },
+    {
+      "id": "ALL_82_JURISDICTIONS_HAVE_MEANINGFUL_ASSESSMENTS_ON_SUPPORTED_FORMATS",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a jurisdiction with no working assessment is not launched, and a matrix row that claims one must name the format it rests on"
+    },
+    {
+      "id": "CANADIAN_GENERAL_UPLOAD_SUPPORT_ESTABLISHED_WITHIN_STATED_BOUNDARIES",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Canada must actually read a consumer's own file, and must state which layouts it reads rather than promising a bureau"
+    },
+    {
+      "id": "CURRENT_GB_SUPPORT_IS_ESTABLISHED",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a market whose only format evidence is a fictitious 2007 example has no present-day support, and saying so is the honest release position"
+    },
+    {
+      "id": "ACCOUNT_ISOLATION_AND_DELETION_PASS",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "one consumer must never see another's case, and deletion must remove the report bytes as well as the row"
+    },
+    {
+      "id": "SUPPORTED_CHECKS_AND_LIMITATIONS_SHOWN_BEFORE_PURCHASE",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a consumer must see what each selection can check and what it cannot before paying or uploading"
+    },
+    {
+      "id": "DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "a release needs a named build, a named host and a recorded owner authorization; none of the three exists yet"
+    },
+    {
+      "id": "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "failure-to-detect mitigation (equivalent labels/codes, contextual structure, completeness checks, bounded targeted recovery, same-record corroboration and missed-fact/incorrect-reading benchmarks) is a mandatory launch requirement; the served release must demonstrate it behaviorally, not merely carry a local benchmark"
+    },
+    {
+      "id": "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "the conditional \"a quick clarification\" workflow (at most two simple consequential questions after automatic recovery, with skip and I-don't-know, and separately stored supplemental answers) is a mandatory launch requirement"
+    },
+    {
+      "id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "common credit-report error checks is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "ordered image-set / multi-page coherence is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "multi-line account/collection/public-record boundaries is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "OCR confidence / coordinates preservation is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-004_DATE_FORMS",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "unambiguous written date forms is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "numeric date conventions is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "month-only / partial-date precision is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "report/reference date identification is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "partial native-text layer recovery is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-009_BUREAU_SEGMENTATION",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "combined-report bureau segmentation is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "realistic upload/image-set limits is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-FINDING-001_EXCEPTION_EVALUATION",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "rule-specific exception evaluation is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "end-to-end PROBABLE_VIOLATION path is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "rule identity/version binding is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "source-linked finding facts is a mandatory production blocker (build plan §8.1/§8.2); a passing flag alone does not clear it"
+    },
+    {
+      "id": "BLOCKER-RESULTS-001",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Owner-required consumer capability under build plan §8.3; implementation and served-release behavior must be verified"
+    },
+    {
+      "id": "BLOCKER-EXPLANATIONS-001",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Owner-required consumer capability under build plan §8.3; implementation and served-release behavior must be verified"
+    },
+    {
+      "id": "BLOCKER-BILLING-001",
+      "customer_requirement": "PURCHASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Owner-required consumer capability under build plan §8.3; implementation and served-release behavior must be verified"
+    },
+    {
+      "id": "BLOCKER-PRIVACY-001",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Owner-required consumer capability under build plan §8.3; implementation and served-release behavior must be verified"
+    },
+    {
+      "id": "BLOCKER-SUPPORT-001",
+      "customer_requirement": "TRUST_AND_RELEASE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Owner-required consumer capability under build plan §8.3; implementation and served-release behavior must be verified"
+    },
+    {
+      "id": "BLOCKER-CONSUMER-LANGUAGE-001",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Explicit owner release blocker: consumer behavior conflicts with the product promise"
+    },
+    {
+      "id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Explicit owner release blocker: consumer behavior conflicts with the product promise"
+    },
+    {
+      "id": "BLOCKER-CLARIFY-MATERIALITY-002",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Explicit owner release blocker: consumer behavior conflicts with the product promise"
+    },
+    {
+      "id": "BLOCKER-FINDING-COVERAGE-001",
+      "customer_requirement": "ISSUES",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "The promised substantive finding coverage must be executable and tested; limited adapter coverage does not fulfill the all-82 consumer promise"
+    },
+    {
+      "id": "BLOCKER-ALL82-FACILITATION-001",
+      "customer_requirement": "ALL82",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "All 82 promised jurisdictions require usable tested consumer facilitation, not merely selectable routes"
+    },
+    {
+      "id": "BLOCKER-DISPUTE-PACKET-001",
+      "customer_requirement": "PACKETS",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "Promised consumer-reviewed jurisdiction-appropriate dispute packets must be implemented and tested"
+    },
+    {
+      "id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+      "customer_requirement": "INTAKE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "The report-data-to-issue chain spans INTAKE (read the material fields a supported report actually prints) -> ISSUES (apply the relevant accepted checks to those facts) -> PACKETS (deliver the consumer's selected dispute), while preserving ALL82 factual journeys. Reading a report is not enough when its material account data is ignored, and a single-slice closure does not establish comprehensive coverage"
+    },
+    {
+      "id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+      "customer_requirement": "CONTINUING_VALUE",
+      "release_scope": "CORE",
+      "blocks_launch": true,
+      "reason": "The approved subscription offering requires owned report history and meaningful subsequent-report comparison"
+    }
+  ]
+}

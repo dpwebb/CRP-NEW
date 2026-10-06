@@ -1,0 +1,746 @@
+           Consumer Reporting Act
+  CHAPTER 93 OF THE REVISED STATUTES, 1989
+                             as amended by
+
+        1999, c. 4, ss. 10-16; 2010, c. 47; 2014, c. 39, ss. 4, 5;
+             2017, c. 9, ss. 14-31; 2018, c. 43, ss. 13-16
+
+
+
+
+© 2019 Her Majesty the Queen in right of the Province of Nova Scotia
+  Published by Authority of the Speaker of the House of Assembly
+                              Halifax
+This page is intentionally blank.
+                  CHAPTER 93 OF THE REVISED STATUTES, 1989
+                   amended 1999, c. 4, ss. 10-16; 2010, c. 47; 2014, c. 39, ss. 4, 5;
+                            2017, c. 9, ss. 14-31; 2018, c. 43, ss. 13-16
+
+                    An Act to Control the Storage and Supply
+                           of Personal Information by
+                         Consumer Reporting Agencies
+                                                                  Table of Contents
+
+                                             (The table of contents is not part of the statute)
+
+                                                                                                                                                          Section
+
+Short title...........................................................................................................................................        1
+Interpretation and application ...........................................................................................................                    2
+                                                                     Administration
+
+Registrar of Consumer Reporting Agencies......................................................................................                              2A
+
+                                                                           Permits
+
+Contents of Register..........................................................................................................................               3
+Registration required.........................................................................................................................               4
+Registration .......................................................................................................................................         5
+Further information and material ......................................................................................................                     5A
+Refusal of permit or renewal.............................................................................................................                    6
+Cancellation of registration...............................................................................................................                  7
+New application when circumstances change...................................................................................                                 8
+
+                                              Regulation of Consumer Reporting Agencies
+
+Confidentiality ..................................................................................................................................            9
+Reporting...........................................................................................................................................         10
+Consent and notice ............................................................................................................................              11
+Disclosure..........................................................................................................................................         12
+Protests ..............................................................................................................................................      13
+
+                                                                       Enforcement
+
+Changes in information..................................................................................................................... 14
+Agency to notify Registrar of changes.............................................................................................. 15
+Complaints ........................................................................................................................................ 16
+Investigation ordered by Minister ..................................................................................................... 17
+Investigation ordered by Registrar.................................................................................................... 18
+Exceptions to confidentiality ............................................................................................................ 19
+Service of documents ........................................................................................................................ 20
+Order to comply with Act.................................................................................................................. 21
+Supplying of false information prohibited ........................................................................................ 22
+Offence, penalties and limitation period ........................................................................................... 23
+Limitation period............................................................................................................................... 23A
+Prima facie proof of facts.................................................................................................................. 24
+Regulations........................................................................................................................................ 25
+Regulations Act ................................................................................................................................. 26
+
+                                                                     __________
+
+
+
+
+                                                                                                                                         OCTOBER 11, 2018
+2                                   consumer reporting                          R.S., c. 93
+
+Short title
+       1           This Act may be cited as the Consumer Reporting Act. R.S., c. 93, s. 1.
+
+Interpretation and application
+      2      (1)    In this Act,
+                          (a)     “consumer” means a natural person;
+                           (b)    “consumer report” means a written, oral or other com-
+                   munication by a consumer reporting agency of information as that
+                   word is defined in this Section pertaining to a consumer for considera-
+                   tion in connection with a purpose set out in clause (c) of subsection (1)
+                   of Section 9;
+                          (c)      “consumer reporting agency” means a person who for
+                   gain or profit furnishes consumer reports;
+                          (d)     repealed 2017, c. 9, s. 14.
+                           (e)    “file” when used as a noun, means all of the informa-
+                   tion pertaining to a consumer that is recorded or retained by a con-
+                   sumer reporting agency, regardless of the manner or form in which
+                   the information is stored;
+                          (f)    “information” means information respecting a con-
+                   sumer’s identity, residence, dependents, marital status, employment,
+                   borrowing and repayment history, income, assets and liabilities,
+                   credit worthiness, education, character, reputation, health, physical or
+                   personal characteristics or mode of living;
+                          (g)     “Minister” means the Minister of Service Nova Scotia;
+                           (h)    “person” means a natural person, an association of nat-
+                   ural persons, a partnership, co-operative or a corporation, and their
+                   heirs, executors, administrators, successors and assigns;
+                         (ha) “Registrar” means the Registrar of Consumer Report-
+                   ing Agencies;
+                           (i)   “user” means a person who prepares a consumer report
+                   for his own use or causes a consumer reporting agency to prepare a
+                   consumer report for his use.
+
+               (2)       This Act applies notwithstanding any agreement or waiver to
+the contrary. R.S., c. 93, s. 2; 2014, c. 39, s. 4; 2017, c. 9, s. 14.
+
+                                    ADMINISTRATION
+
+Registrar of Consumer Reporting Agencies
+       2A     (1)    The Minister shall appoint a Registrar of Consumer Reporting
+Agencies who has the functions and duties set out in this Act and the regulations
+and such other functions and duties pursuant to this Act and the regulations as the
+Minister may determine.
+
+OCTOBER 11, 2018
+R.S., c. 93                                consumer reporting                                  3
+
+               (2)     The Minister may, in the absence or incapacity of the Regis-
+trar or when the office of the Registrar is vacant, authorize another person to act in
+the Registrar’s stead.
+
+               (3)     The Minister may appoint one or more deputy registrars as
+required to assist the Registrar in the performance of the Registrar’s duties.
+
+              (4)     A deputy registrar may perform any of the duties and exercise
+any of the powers of the Registrar as directed by the Registrar.
+
+               (5)        A person appointed or authorized to act pursuant to this Sec-
+tion must be employed pursuant to the Civil Service Act and that Act applies to that
+person. 2014, c. 39, s. 5; 2017, c. 9, s. 15.
+
+                                                   PERMITS
+
+Contents of Register
+        3      The Registrar shall keep a register, to be called the Consumer Report-
+ing Agencies Register, in which he shall enter the name of every consumer report-
+ing agency which holds a permit under this Act, the name under which the business
+is carried on, the address or the addresses, if more than one, at or from which the
+business is carried on and such other matters as are prescribed by the regulations.
+R.S., c. 93, s. 3; 1999, c. 4, s. 10; 2017, c. 9, s. 17.
+
+
+Registration required
+       4       No person shall conduct or act as a consumer reporting agency unless
+he holds a valid permit under this Act. R.S., c. 93, s. 4; 1999, c. 4, s. 11; 2017, c. 9, s. 17.
+
+Registration
+       5       (1)    An applicant is entitled to a permit or renewal of a permit by
+the Registrar except where
+                           (a)    having regard to his financial position, the applicant
+                    cannot reasonably be expected to be financially responsible in the
+                    conduct of his business;
+                           (b)   the past conduct of the applicant affords reasonable
+                    grounds for belief that he will not carry on business in accordance
+                    with law and with integrity and honesty;
+                              (c)       the applicant is a corporation and
+                                     (i)     having regard to its financial position, it cannot
+                              reasonably be expected to be financially responsible in the
+                              conduct of its business, or
+                                     (ii)   the past conduct of its officers or directors
+                              affords reasonable grounds for belief that its business will not
+                              be carried on in accordance with law and with integrity and
+                              honesty; or
+
+                                                                                 OCTOBER 11, 2018
+4                                    consumer reporting                               R.S., c. 93
+
+                           (d)    the applicant is carrying on activities that are, or will
+                   be, if the applicant is issued a permit, in contravention of this Act or
+                   the regulations.
+
+              (2)     A permit is subject to such terms and conditions to give effect
+to the purposes of this Act as are consented to by the applicant or prescribed by the
+regulations.
+
+                   (3)    A permit is not transferable. R.S., c. 93, s. 5; 1999, c. 4, s. 12; 2017,
+c. 9, s. 18.
+
+
+Further information and material
+       5A      The Registrar may require at any time any further information or
+material to be submitted by any applicant or any person issued a permit pursuant to
+this Act within a specified time and may require, where the Registrar considers
+advisable, verification by affidavit or otherwise of any information or material then
+or previously submitted. 2017, c. 9, s. 19.
+
+Refusal of permit or renewal
+        6     (1)     The Registrar may refuse to issue a permit to an applicant
+where, in the Registrar’s opinion, the applicant is disentitled to a permit under Sec-
+tion 5.
+
+               (2)    The Registrar may refuse to renew or may suspend or revoke
+a permit for any reason that would disentitle the permit holder to a permit under
+Section 5 if the permit holder were an applicant or if the permit holder is in breach
+of a term or condition of the permit. 1999, c. 4, s. 13; 2017, c. 9, s. 20.
+
+Cancellation of registration
+        7      (1)    The Registrar may cancel a permit upon the request in writing
+of the permit holder in the prescribed form surrendering the permit holder’s permit.
+
+               (2)    Where, within the time prescribed or, if no time is prescribed,
+before expiry of the permit holder’s permit, a permit holder has applied for renewal
+of the permit and paid the prescribed fee, the permit holder’s permit is deemed to
+continue until
+                          (a)     the renewal is granted; or
+                          (b)     the renewal is refused.
+
+               (3)     A person aggrieved by a decision of the Registrar may appeal
+therefrom to a judge of the Supreme Court of Nova Scotia, and the judge may con-
+firm, vary or set aside the decision. R.S., c. 93, s. 7; 1999, c. 4, s. 14; 2017, c. 9, s. 21.
+
+
+
+
+OCTOBER 11, 2018
+R.S., c. 93                          consumer reporting                                      5
+
+New application when circumstances change
+      8      A further application for a permit may be made upon new or other
+evidence or where it is clear that material circumstances have changed. R.S., c. 93,
+s. 8; 1999, c. 4, s. 15.
+
+
+                                 REGULATION OF
+                           CONSUMER REPORTING AGENCIES
+
+Confidentiality
+       9      (1)    No consumer reporting agency and no officer or employee
+thereof shall knowingly furnish any information from the files of the consumer
+reporting agency except in a consumer report given
+                            (a)    in response to the order of a court having jurisdiction
+                    to issue such an order;
+                           (b)  in accordance with the written instructions of the con-
+                    sumer to whom the information relates; or
+                           (c)    to a person who it has reason to believe
+                                  (i)    intends to use the information in connection
+                           with the extension of credit to or the collection of a debt of the
+                           consumer to whom the information pertains,
+                                  (ii)   intends to use the information in connection
+                           with the entering into or renewal of a tenancy agreement by
+                           the consumer,
+                                 (iii)    intends to use the information for employment
+                           purposes,
+                                  (iv) intends to use the information in connection
+                           with the underwriting of insurance involving the consumer,
+                                  (v)    intends to use the information to determine the
+                           consumer’s eligibility for any matter under a statute or regula-
+                           tion where the information is relevant to the requirement pre-
+                           scribed by law,
+                                   (vi) otherwise has a direct business need for the
+                           information in connection with a business transaction involv-
+                           ing the consumer.
+
+                (2)    No person shall knowingly obtain any information from the
+files of a consumer reporting agency respecting a consumer except for the purposes
+referred to in subsection (1).
+
+               (3)     Notwithstanding subsections (1) and (2), a consumer report-
+ing agency may furnish identifying information respecting any consumer, limited to
+his name, address, former addresses, places of employment, or former places of
+employment, to any department of the Province or of Canada or any province
+thereof, notwithstanding that such information is not to be used for a purpose men-
+tioned in clause (c) of subsection (1).
+                                                                               OCTOBER 11, 2018
+6                                     consumer reporting                        R.S., c. 93
+
+              (3A) Notwithstanding subsections (1) and (2), where the Minister,
+or a person designated by the Minister, requests a consumer reporting agency to
+provide identifying information respecting a consumer, including the consumer’s
+name, address and former addresses, places and former places of employment and
+social insurance number, for the purpose of collecting a debt or fine owing by the
+consumer to Her Majesty in right of the Province,
+                          (a)    the consumer reporting agency shall provide the infor-
+                   mation to the Minister or the Minister’s designate, as the case may
+                   be; and
+                             (b)    the provision of the information is not a consumer
+                   report.
+
+                 (4)    A consumer reporting agency shall not sell, lease or transfer
+title to its files or any of them except to another consumer reporting agency who
+holds a permit under this Act. R.S., c. 93, s. 9; 2010, c. 47, s. 1; 2017, c. 9, s. 22.
+
+Reporting
+        10    (1)     Every consumer reporting agency shall adopt all procedures
+reasonable for ensuring the greatest possible accuracy and fairness in the contents of
+its consumer reports.
+
+                   (2)       A consumer reporting agency shall not report
+                          (a)   any information that is not stored in a form capable of
+                   being produced under Section 12;
+                          (b)     any information that is not extracted from information
+                   appearing in files stored or collected in a repository located in Canada.
+
+                   (3)       A consumer reporting agency shall not include in a consumer
+report
+                          (a)     any information unless the name and address of the
+                   source of the information is recorded or retained in its files or can be
+                   readily ascertained by the consumer;
+                          (b)     any information concerning the consumer unless it has
+                   made reasonable efforts to verify the information and unless it has
+                   recorded in its files the efforts taken to verify the information;
+                           (c)    information regarding any debt more than six years
+                   after the last payment was made or, where no payment was made,
+                   more than six years after the date on which the default in payment
+                   occurred;
+                          (ca) information regarding any judgment against the con-
+                   sumer more than six years after the judgment was given, unless the
+                   judgment creditor or an agent of the judgment creditor confirms that
+                   the judgment remains unpaid, in whole or in part, and the confirma-
+                   tion appears in the file;
+
+
+OCTOBER 11, 2018
+R.S., c. 93                          consumer reporting                                 7
+
+                      (d)  information as to any judgment against the consumer
+              unless mention is made of the name and, where available, the address
+              of the judgment creditor as given at the date of entry of the judgment
+              and the amount or, where the judgment is known to have been
+              assigned, where available, the name and address of the assignee;
+                     (da) information regarding any actions or other court pro-
+              ceedings that are more than six years old or actions or court proceed-
+              ings commenced against the consumer more than twelve months
+              prior to the making of the report unless the consumer reporting
+              agency has ascertained the current status of the action or proceeding
+              and has a record of this on file;
+                     (e)    information as to the bankruptcy of a consumer after
+              six years from the date of the discharge of the consumer unless he has
+              been bankrupt more than once;
+                     (f)     information regarding any criminal or summary con-
+              viction charges against the consumer where the charges have been
+              dismissed, set aside, withdrawn or in respect of which a stay of pro-
+              ceedings has been entered;
+                      (g)    information as to convictions for crimes or summary
+              offences after seven years from the date of conviction or, where the
+              conviction resulted in imprisonment, from the date of the termination
+              of the sentence, provided information as to convictions for crimes
+              shall not be reported if at any time it is learned that after a conviction
+              a full pardon has been granted;
+                      (h)     any information given orally unless the content of the
+              oral report is noted in writing in the file;
+                      (ha) any other information adverse to the consumer’s inter-
+              est more than six years after the event that gave rise to the informa-
+              tion; or
+                       (i)       any other information prescribed by the regulations.
+              R.S., c. 93, s. 10; 2018, c. 43, s. 13.
+
+
+Consent and notice
+        11     (1)    No person shall procure or cause to be prepared a consumer
+report respecting a consumer
+                       (a)       without the express written consent of the consumer; or
+                     (b)     unless he notifies the consumer in writing that a con-
+              sumer report has been or will be requested and advises him not later
+              than ten days after the report has been requested of the name and
+              address of the consumer reporting agency.
+
+                (2)     The notice and consent referred to in this Section may be con-
+tained in an application for credit, insurance, employment or tenancy if it is clearly
+set forth in type not less than ten point in size above the signature of the consumer.
+
+                                                                          OCTOBER 11, 2018
+8                                   consumer reporting                          R.S., c. 93
+
+              (3)     Where a user of information contained in a consumer report
+denies a benefit in whole or in part to a consumer, or increases the cost of the benefit
+to a consumer, the user shall advise the consumer in writing immediately
+                           (a)    that a benefit has been denied him in whole or in part
+                   or increased in cost;
+                          (b)     of his right to have disclosed to him all information
+                   pertaining to him in the files of the consumer reporting agency from
+                   whom the report was obtained;
+                         (c)     of the name and address of the consumer reporting
+                   agency;
+                          (d)    of the source and nature of information obtained else-
+                   where than from a consumer reporting agency. R.S., c. 93, s. 11.
+
+Disclosure
+       12     (1)   Every consumer reporting agency shall, at the written request
+of a consumer and during normal business hours, clearly and accurately disclose to
+the consumer, without charge,
+                          (a)     the nature and substance of all information in its files
+                   pertaining to the consumer at the time of the request;
+                           (b)    the sources of its information unless they can be read-
+                   ily ascertained by the consumer;
+                          (c)    the names of the recipients of any consumer report per-
+                   taining to the consumer that it has furnished within the preceding
+                   twelve months;
+                           (d)    copies of any written report made pertaining to the
+                   consumer to any other person or, where the report was oral, particu-
+                   lars of the content of such oral report,
+and shall inform the consumer of his right to protest any information contained in
+the file under Sections 13 and 14 and the manner in which a protest may be made.
+
+              (2)     A consumer reporting agency may withhold from the disclo-
+sures required by subsection (1) any medical information obtained from the con-
+sumer’s own physician and which the physician has specifically requested in
+writing be withheld from the consumer in his own best interest.
+
+                   (3)    The disclosures required under this Section shall be made to
+the consumer
+                           (a)     in person if he appears in person and furnishes proper
+                   identification;
+                           (b)     by telephone if he has made a written request, with suf-
+                   ficient identification, for telephone disclosure and the toll charge, if
+                   any, for the telephone call is prepaid by or charged directly to the
+                   consumer.
+
+OCTOBER 11, 2018
+R.S., c. 93                     consumer reporting                                     9
+
+               (4)     Every consumer reporting agency shall provide trained person-
+nel to explain to the consumer any information furnished to him under this Section.
+
+              (5)    The consumer shall be permitted to be accompanied by one
+other person of his choosing to whom the consumer reporting agency may be
+required by the consumer to disclose his file.
+
+            (6)     The consumer reporting agency shall permit the consumer to
+whom information is disclosed under this Section to make an abstract thereof.
+
+                (7)   A consumer reporting agency shall require reasonable identi-
+fication of the consumer and a person accompanying him before making disclosures
+under this Section.
+
+              (8)     A consumer reporting agency shall not require a consumer to
+give any undertaking or waive or release any right or chose in action as a condition
+precedent to his access to his file under this Section. R.S., c. 93, s. 12.
+
+Protests
+        13     (1)     Where a consumer disputes the accuracy of any information
+relating to him in the files of a consumer reporting agency he may file a statement of
+protest with the consumer reporting agency or the user or both.
+
+                (2)   Where a statement of protest is filed in accordance with sub-
+section (1), the consumer reporting agency or the user shall immediately
+                    (a)      attempt to verify the information and, where the infor-
+              mation cannot be verified, expunge the information from the con-
+              sumer’s file; or
+                     (b)     where the veracity of the information is sustained,
+              record the protest in the consumer’s file,
+and report the action taken
+                      (c)     to the consumer; and
+                     (d)    to any person to whom it furnished a consumer report
+              within the preceding sixty days.
+
+                (3)    Where a consumer report is made by a consumer reporting
+agency to a user in the Province and the office of the consumer reporting agency is
+not located in the Province, the user is responsible for complying with subsection (2).
+
+              (4)    Where a consumer reporting agency makes a report to a user
+whose office is located outside the Province, the consumer reporting agency is
+responsible for complying with subsection (2).
+
+               (5)    Where a consumer is dissatisfied by the action taken by the
+consumer reporting agency or the user under this Section he may appeal to the Reg-
+istrar who shall investigate the matter. R.S., c. 93, s. 13; 2017, c. 9, s. 23.
+
+                                                                         OCTOBER 11, 2018
+10                                 consumer reporting                        R.S., c. 93
+
+                                    ENFORCEMENT
+
+Changes in information
+       14     (1)     The Registrar may order a consumer reporting agency to
+amend or delete any information, or by order restrict or prohibit the use of any
+information, that in his opinion is inaccurate or incomplete or that does not comply
+with the provisions of this Act or the regulations.
+
+               (2)     The Registrar may order a consumer reporting agency to fur-
+nish notification to any person who has received a consumer report of any amend-
+ments, deletions, restrictions or prohibitions imposed by the Registrar.
+
+               (3)    Where the consumer or consumer reporting agency considers
+himself aggrieved by a decision of the Registrar under this Section, he may apply to
+a judge of the Supreme Court of Nova Scotia and the judge may confirm, vary or set
+aside the decision. R.S., c. 93, s. 14; 2017, c. 9, s. 24.
+
+Agency to notify Registrar of changes
+       15      Every consumer reporting agency shall, within five days after the
+event, notify the Registrar in writing of
+                   (a)   any change in its address for service;
+             (b)     any change in the officers in the case of a corporation or of the
+        members in the case of a partnership; and
+               (c)       in the case of a corporation, any change in the ownership of its
+        shares. R.S., c. 93, s. 15; 2017, c. 9, s. 25.
+
+Complaints
+        16     (1)     Where the Registrar receives a complaint in respect of a con-
+sumer reporting agency and so requests in writing, the consumer reporting agency
+shall, where it has received the consumer’s consent in writing, furnish the Registrar
+with such information respecting the matter complained of as the Registrar requires.
+
+               (2)    The request under subsection (1) shall indicate the nature of
+the inquiry involved.
+
+               (3)    For the purposes of subsection (1), the Registrar or any person
+designated in writing by him may on notice at any reasonable time enter upon the
+business premises of the consumer reporting agency to make an inspection in rela-
+tion to the complaint. R.S., c. 93, s. 16; 2017, c. 9, s. 26.
+
+Investigation ordered by Minister
+       17     The Minister may by order appoint a person to make an investigation
+into any matter to which this Act applies as may be specified in the Minister’s order
+and the person appointed shall report the result of his investigation to the Minister,
+and for the purposes of the investigation the person making it has all the powers,
+
+
+OCTOBER 11, 2018
+R.S., c. 93                    consumer reporting                                     11
+
+privileges and immunities of a commissioner appointed under the Public Inquiries
+Act. R.S., c. 93, s. 17.
+
+Investigation ordered by Registrar
+       18     (1)    Where, upon a statement made under oath, the Registrar
+believes on reasonable and probable grounds that any person has
+                     (a)     contravened any of the provisions of this Act or the
+              regulations; or
+                     (b)     committed an offence under the Criminal Code (Can-
+              ada) or under the law of any jurisdiction that is relevant to his fitness
+              for holding a permit under this Act,
+the Registrar may by order appoint one or more persons to make an investigation to
+ascertain whether such a contravention of the Act or regulation or the commission
+of such an offence has occurred and the person appointed shall report the result of
+his investigation to the Registrar.
+
+              (2)     For purposes relevant to the subject-matter of an investigation
+under this Section, and notwithstanding Section 9, the person appointed to make the
+investigation may inquire into and examine the affairs of the person in respect of
+whom the investigation is being made and may
+                     (a)    upon production of his appointment, enter at any rea-
+              sonable time the business premises of such person and examine
+              books, papers, documents, consumer files and things relevant to the
+              subject-matter of the investigation; and
+                     (b)     inquire into negotiations, transactions, loans or bor-
+              rowings made by or on behalf of or in relation to such person and into
+              property, assets or things owned, acquired or alienated in whole or in
+              part by him or any person acting on his behalf that are relevant to the
+              subject-matter of the investigation,
+and for the purposes of the inquiry the person making the investigation has all the
+powers, privileges and immunities of a commissioner appointed under the Public
+Inquiries Act.
+
+              (3)     No person shall obstruct a person appointed to make an inves-
+tigation under this Section or withhold from him or conceal or destroy any books,
+papers, documents or things relevant to the subject-matter of the investigation.
+
+                (4)    Where a judge of the Supreme Court of Nova Scotia is satis-
+fied, upon an ex parte application by the person making an investigation under this
+Section, that the investigation has been ordered and that such person has been
+appointed to make it and that there is reasonable ground for believing there are in
+any building, dwelling, receptacle or place any books, papers, documents or things
+relating to the person whose affairs are being investigated and to the subject-matter
+of the investigation, the judge may, whether or not an inspection has been made or
+attempted under clause (a) of subsection (2), issue an order authorizing the person
+
+
+                                                                         OCTOBER 11, 2018
+12                                   consumer reporting                        R.S., c. 93
+
+making the investigation, together with such police officer or officers as he calls
+upon to assist him, to enter and search, if necessary by force, such building, dwell-
+ing, receptacle or place for such books, papers, documents or things and to examine
+them, but every such entry and search shall be made between sunrise and sunset
+unless the judge, by the order, authorizes the person making the investigation to
+make the search at night.
+
+              (5)     Any person making an investigation under this Section may,
+upon giving a receipt therefor, remove any books, papers, documents or things
+examined under clause (a) of subsection (2) or subsection (4) relating to the person
+whose affairs are being investigated and to the subject-matter of the investigation
+for the purpose of making copies of such books, papers or documents, but such cop-
+ying shall be carried out with reasonable dispatch and the books, papers or docu-
+ments in question shall be promptly thereafter returned to the person whose affairs
+are being investigated.
+
+              (6)    Any copy made as provided in subsection (5) and certified to
+be a true copy by the person making the investigation is admissible in evidence in
+any action, proceeding or prosecution as prima facie proof of the original book,
+paper or document and its contents.
+
+              (7)    The Minister or Registrar may appoint any expert to examine
+books, papers, documents or things examined under clause (a) of subsection (2) or
+under subsection (4). R.S., c. 93, s. 18; revision corrected 1999; 2017, c. 9, s. 27.
+
+Exceptions to confidentiality
+       19      (1)    Every person employed in the administration of this Act,
+including any person making an inquiry, inspection or an investigation under Sec-
+tion 16, 17 or 18 shall preserve secrecy in respect of all matters that come to his
+knowledge in the course of his duties, employment, inquiry, inspection or investiga-
+tion and shall not communicate any such matters to any other person except
+                           (a)    as may be required in connection with the administra-
+                   tion of this Act, and the regulations or any proceedings under this Act
+                   or the regulations; or
+                           (b)     to his counsel; or
+                           (c)     with the consent of the person to whom the informa-
+                   tion relates.
+
+               (2)   No person to whom subsection (1) applies shall be required to
+give testimony in any civil suit or proceeding with regard to information obtained
+by him in the course of his duties, employment, inquiry, inspection or investigation
+except in a proceeding under this Act or the regulations. R.S., c. 93, s. 19.
+
+Service of documents
+       20     (1)     Any notice or order required to be given, delivered or served
+under this Act or the regulations is sufficiently given, delivered or served if deliv-
+
+
+OCTOBER 11, 2018
+R.S., c. 93                                consumer reporting                                 13
+
+ered personally or sent by registered mail addressed to the person to whom delivery
+or service is required to be made at his last-known address.
+
+               (2)     Where service is made by registered mail, the service shall be
+deemed to be made on the third day after the day of mailing unless the person on
+whom service is being made establishes that he did not, acting in good faith,
+through absence, accident, illness or other cause beyond his control, receive the
+notice or order until a later date. R.S., c. 93, s. 20.
+
+Order to comply with Act
+        21      (1)    Where it appears to the Registrar that any person does not com-
+ply with any provision of this Act, the regulations or an order made under this Act,
+notwithstanding the imposition of any penalty in respect of such non-compliance and
+in addition to any other rights he may have, the Registrar may apply to a judge of the
+Supreme Court of Nova Scotia for an order directing such person to comply with
+such provision, and upon the application the judge may make such order or such
+other order as the judge thinks fit.
+
+             (2)    An appeal lies to the Nova Scotia Court of Appeal from an
+order made under subsection (1). R.S., c. 93, s. 21; 2017, c. 9, s. 28.
+
+Supplying of false information prohibited
+       22     No person shall knowingly supply false or misleading information to
+another who is engaged in making a consumer report. R.S., c. 93, s. 22.
+
+Offence, penalties and limitation period
+      23     (1)     Every person who
+                          (a)    knowingly, furnishes false information in any applica-
+                   tion under this Act or in any statement or return required to be fur-
+                   nished under this Act or the regulations;
+                          (b)   fails to comply with any order, direction or other
+                   requirement made under this Act; or
+                             (c)       contravenes any provision of this Act or the regulations,
+and every director or officer of a corporation who knowingly concurs in such fur-
+nishing, failure or contravention, is guilty of an offence and on summary conviction
+is liable to a fine of not more than two thousand dollars or to imprisonment for a
+term of not more than one year, or to both.
+
+               (2)    Where a corporation is convicted of an offence under subsec-
+tion (1), the maximum penalty that may be imposed upon the corporation is twenty-
+five thousand dollars and not as provided therein.
+
+                   (3) and (4)         repealed 2018, c. 43, s. 14.
+
+R.S., c. 93, s. 23; 2017, c. 9, s. 29; 2018, c. 43, s. 14.
+
+
+
+                                                                                  OCTOBER 11, 2018
+14                                  consumer reporting                          R.S., c. 93
+
+Limitation period
+       23A A prosecution for an offence under this Act or the regulations may
+not be commenced more than three years after the later of
+                   (a)    the date on which the offence was committed; and
+                  (b)    the date on which evidence of the offence first came to the
+          attention of the Registrar. 2018, c. 43, s. 15.
+
+Prima facie proof of facts
+      24     (1)    A statement as to
+                         (a)      whether a permit was issued or was not issued to a per-
+                   son under this Act;
+                          (b)    the filing or non-filing of any document or material
+                   required or permitted to be filed with the Registrar;
+                          (c)     the time when the facts upon which proceedings are
+                   based first came to the knowledge of the Registrar; or
+                          (d)     any other matter pertaining to such issuance or non-
+                   issuance of a permit or, filing or non-filing,
+purporting to be certified by the Registrar is, without proof of the office or signature
+of the Registrar, receivable in evidence as prima facie proof of the facts stated
+therein for all purposes in any action, proceeding or prosecution.
+
+               (2)     Any document under this Act purporting to be signed by the
+Minister, or any certified copy thereof, is receivable in evidence in any action, pros-
+ecution or other proceeding as prima facie proof that the document is signed by the
+Minister without proof of the office or signature of the Minister. R.S., c. 93, s. 24; 2017,
+c. 9, s. 30.
+
+
+Regulations
+       25     For the purpose of carrying out the provisions of this Act, the Gover-
+nor in Council may make regulations
+                  (a)    exempting any class of persons from this Act or the regula-
+          tions or any provision thereof;
+                 (b)    governing applications for a permit or the renewal of a permit
+          and prescribing terms and conditions of permits;
+                 (c)    requiring the payment of fees on application for a permit or
+          the renewal of a permit, and prescribing the amount of the fees;
+                 (d)     requiring consumer reporting agencies that hold a permit
+          under this Act to be bonded in such form and terms and with such collateral
+          security as are prescribed, and providing for the forfeiture of bonds and the
+          disposition of the proceeds;
+                  (e)    requiring and governing the books, accounts and records that
+          shall be kept by consumer reporting agencies;
+
+OCTOBER 11, 2018
+R.S., c. 93                               consumer reporting                              15
+
+                (f)    prescribing information that may not be reported by a con-
+         sumer reporting agency or contained in its files;
+                   (g)      prescribing information that must be contained in a consumer
+         report;
+                (h)    requiring consumer reporting agencies to make returns and
+         furnish information to the Registrar;
+                 (i)    prescribing forms for the purposes of this Act and providing
+         for their use;
+                 (j)    requiring any information required to be furnished or con-
+         tained in any form or return to be verified by affidavit;
+                   (ja)     defining any word or expression used but not defined in this
+         Act;
+                (k)    respecting such other matters as he deems necessary for the
+         carrying out of the intent and purposes of this Act. R.S., c. 93, s. 25; 1999, c. 4,
+         s. 16; 2017, c. 9, s. 31; 2018, c. 43, s. 16.
+
+
+Regulations Act
+       26     The exercise by the Governor in Council of the authority contained in
+Section 25 shall be regulations within the meaning of the Regulations Act. R.S., c. 93,
+s. 26.
+
+
+                                                __________
+
+
+
+
+                                                                              OCTOBER 11, 2018
+

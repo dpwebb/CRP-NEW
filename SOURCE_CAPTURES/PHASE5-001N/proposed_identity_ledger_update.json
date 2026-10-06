@@ -1,0 +1,36 @@
+{
+  "artifact": "proposed_identity_ledger_update.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 7 - produce a proposed identity-ledger update as a new artifact",
+  "created_utc": "2026-09-30",
+  "status": "PROPOSED ONLY - NOT APPLIED",
+  "not_applied_statement": "Nothing in this file has been written into CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md, SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv, SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json, SOURCE_CAPTURES/PHASE5-001L/duplicate_determinations.csv or CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md. Those files remain byte-identical. This artifact is a new file and is the only place these findings are carried forward.",
+  "what_applying_it_would_and_would_not_do": {
+    "would": "replace the single value IDENTITY_UNRESOLVED with the per-pair determination recorded in relation_determinations.json and, for the two limb-level clusters, add the limb descriptor that distinguishes the rows",
+    "would_not": "remove, merge, delete or collapse any row; inherit any disposition; change any disposition or blocker field; re-class any row; assign any B20 class; add or change any rule, coverage or finding; or authorise removal - removal_permitted stays NO on all 437 rows"
+  },
+  "authorisation_needed_before_application": "an explicit owner work order. Any change to a rank 4 or rank 5 governing document, and any change to a catalogue entry, is an amendment under Core Constitution section 6 and cannot be made by this investigation.",
+  "proposed_rows": [
+    {"id": "CRP-LSRC-0315", "proposed_relation_values": ["P01 DISTINCT", "P02 DISTINCT", "P03 DISTINCT", "P04 DISTINCT"], "proposed_identity_descriptor": "FCAC credit-report retention item: enquiries", "proposed_recorded_item": "credit inquiries by lenders - 3 years with Equifax or 6 years with TransUnion", "proposed_provision_field": "unchanged (NOT RECORDED)", "proposed_notes": "instrument attribution contested by contradiction C-1; not rewritten"},
+    {"id": "CRP-LSRC-0316", "proposed_relation_values": ["P01 DISTINCT", "P05 DISTINCT", "P06 DISTINCT", "P07 DISTINCT"], "proposed_identity_descriptor": "FCAC credit-report retention item: bankruptcy", "proposed_recorded_item": "bankruptcy - 6 years after discharge (6 or 7 years depending on the province)"},
+    {"id": "CRP-LSRC-0317", "proposed_relation_values": ["P02 DISTINCT", "P05 DISTINCT", "P08 DISTINCT", "P09 DISTINCT"], "proposed_identity_descriptor": "FCAC credit-report retention item: consumer proposal", "proposed_recorded_item": "consumer proposal - 3 years after the proposal debts are paid off, or 6 years after signing, whichever comes first"},
+    {"id": "CRP-LSRC-0318", "proposed_relation_values": ["P03 DISTINCT", "P06 DISTINCT", "P08 DISTINCT", "P10 DISTINCT"], "proposed_identity_descriptor": "FCAC credit-report retention item: debt management plan", "proposed_recorded_item": "debt management plan - 2 years after the plan's debts are paid off"},
+    {"id": "CRP-LSRC-0320", "proposed_relation_values": ["P04 DISTINCT", "P07 DISTINCT", "P09 DISTINCT", "P10 DISTINCT"], "proposed_identity_descriptor": "FCAC credit-report retention item: judgment", "proposed_recorded_item": "judgment - 6 years from the date of the judgment"},
+    {"id": "CRP-LSRC-0149", "proposed_relation_values": ["P11 DISTINCT"], "proposed_identity_descriptor": "W. Va. Code section 55-2-6, five-year limb", "proposed_recorded_item": "years=5", "proposed_provision_field": "unchanged (§ 55-2-6)", "proposed_notes": "limb correspondence recorded, not certified as a mapping"},
+    {"id": "CRP-LSRC-0150", "proposed_relation_values": ["P11 DISTINCT"], "proposed_identity_descriptor": "W. Va. Code section 55-2-6, ten-year limbs", "proposed_recorded_item": "years=10", "proposed_provision_field": "unchanged (§ 55-2-6)", "proposed_notes": "as row 0149"},
+    {"id": "CRP-LSRC-0165", "proposed_relation_values": ["P12 DISTINCT"], "proposed_identity_descriptor": "N.Y. Gen. Bus. Law section 380-j(f)(1)(ii), satisfied-judgment limb", "proposed_recorded_item": "start = the date the judgment was entered (judgment satisfied within 5 years of entry)"},
+    {"id": "CRP-LSRC-0166", "proposed_relation_values": ["P12 DISTINCT"], "proposed_identity_descriptor": "N.Y. Gen. Bus. Law section 380-j(f)(1)(ii), entry-or-limitation-period limb", "proposed_recorded_item": "start = the date of entry, or the end of the governing statute of limitations, whichever is longer"},
+    {"id": "CRP-LSRC-0409", "proposed_relation_values": ["P13 IDENTITY_UNRESOLVED"], "proposed_identity_descriptor": "residual unresolved - recorded start not reproducible at the recorded locator", "proposed_notes": "exact missing fact recorded in relation_determinations.json P13"},
+    {"id": "CRP-LSRC-0411", "proposed_relation_values": ["P13 IDENTITY_UNRESOLVED"], "proposed_identity_descriptor": "residual unresolved - recorded start not reproducible at the recorded locator", "proposed_notes": "as row 0409"},
+    {"id": "CRP-LSRC-0336", "proposed_relation_values": ["P14 IDENTICAL (instrument level, no provision recorded)"], "proposed_identity_descriptor": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93 - instrument reference, no provision recorded", "proposed_notes": "instrument level only; no provision-level effect and no collapse"},
+    {"id": "CRP-LSRC-0349", "proposed_relation_values": ["P14 IDENTICAL (instrument level, no provision recorded)"], "proposed_identity_descriptor": "as row 0336", "proposed_notes": "as row 0336"},
+    {"id": "CRP-LSRC-0337", "proposed_relation_values": ["P15 IDENTICAL (instrument level, no provision recorded)"], "proposed_identity_descriptor": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 - instrument reference, no provision recorded", "proposed_notes": "instrument level only; official text not retrieved, missing fact named"},
+    {"id": "CRP-LSRC-0351", "proposed_relation_values": ["P15 IDENTICAL (instrument level, no provision recorded)"], "proposed_identity_descriptor": "as row 0337", "proposed_notes": "as row 0337"}
+  ],
+  "fields_a_future_application_would_also_have_to_reconcile": [
+    "the register's duplicate_evidence text still calls every one of these strings a 'string-identity duplicate indicator only, not a proven duplicate legal provision'; applying this ledger would update that wording for the twenty-four resolved records and leave it for the CRAIN pair",
+    "the register's canonical_entry_id values record indicator anchors only (for example CRP-LSRC-0336 and CRP-LSRC-0337 currently point at CRP-LSRC-0315); any change to them is a register change requiring authorisation and was not made here",
+    "no field in the current register schema can express a limb descriptor or an instrument-level-only identity, so an application would need either a schema addition or a parallel ledger, which is itself an owner decision"
+  ],
+  "created_by": "PHASE5-001N"
+}

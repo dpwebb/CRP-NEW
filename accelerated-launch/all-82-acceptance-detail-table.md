@@ -1,0 +1,101 @@
+# All-82 acceptance detail table
+
+**Generated capability table — NOT deployed per-region test evidence.** Derived mechanically from `accelerated-launch/launch-matrix.json` (`regions`) by `SOURCE_CAPTURES/ACCEPT-004/build-all82-detail-table.cjs` under OWNER-ACCEPT-004. It records what adapters and factual checks are *bound* to each region, not that a per-region upload was tested on a deployed build. `launch_ready` is `no` for every region. `statutory_adapters_bound` is the number of rule adapters recorded against the region; a bound adapter is not an executed check (execution depends on the uploaded report's facts).
+
+| country | region | name | accepted exact records | statutory adapters bound | factual checks | policy observations | applicability state | working assessment | launch ready |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| AU | AU-ACT | Australian Capital Territory | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-NSW | New South Wales | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-NT | Northern Territory | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-QLD | Queensland | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-SA | South Australia | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-TAS | Tasmania | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-VIC | Victoria | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| AU | AU-WA | Western Australia | 1 | 3 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| CA | CA-AB | Alberta | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-BC | British Columbia | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-MB | Manitoba | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-NB | New Brunswick | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-NL | Newfoundland and Labrador | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-NS | Nova Scotia | 15 | 2 | 4 | 0 | MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT | yes | no |
+| CA | CA-NT | Northwest Territories | 3 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-NU | Nunavut | 3 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-ON | Ontario | 15 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-PE | Prince Edward Island | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-QC | Quebec | 2 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-SK | Saskatchewan | 4 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| CA | CA-YT | Yukon | 3 | 0 | 4 | 0 | MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| GB | GB-ENG | England | 2 | 0 | 3 | 1 | MEANINGFUL_FACTUAL_AND_PRINTED_POLICY_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| GB | GB-NIR | Northern Ireland | 1 | 0 | 3 | 1 | MEANINGFUL_FACTUAL_AND_PRINTED_POLICY_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| GB | GB-SCT | Scotland | 1 | 0 | 3 | 1 | MEANINGFUL_FACTUAL_AND_PRINTED_POLICY_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| GB | GB-WLS | Wales [Cymru GB-CYM] | 2 | 0 | 3 | 1 | MEANINGFUL_FACTUAL_AND_PRINTED_POLICY_ASSESSMENT_NO_STATUTORY_LIMB | yes | no |
+| US | US-AK | Alaska | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-AL | Alabama | 3 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-AR | Arkansas | 3 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-AS | American Samoa | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-AZ | Arizona | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-CA | California | 59 | 6 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-CO | Colorado | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-CT | Connecticut | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-DC | District of Columbia | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-DE | Delaware | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-FL | Florida | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-GA | Georgia | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-GU | Guam | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-HI | Hawaii | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-IA | Iowa | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-ID | Idaho | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-IL | Illinois | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-IN | Indiana | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-KS | Kansas | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-KY | Kentucky | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-LA | Louisiana | 3 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MA | Massachusetts | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MD | Maryland | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-ME | Maine | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MI | Michigan | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MN | Minnesota | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MO | Missouri | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MP | Northern Mariana Islands | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MS | Mississippi | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-MT | Montana | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NC | North Carolina | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-ND | North Dakota | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NE | Nebraska | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NH | New Hampshire | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NJ | New Jersey | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NM | New Mexico | 3 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NV | Nevada | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-NY | New York | 66 | 8 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-OH | Ohio | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-OK | Oklahoma | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-OR | Oregon | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-PA | Pennsylvania | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-PR | Puerto Rico | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-RI | Rhode Island | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-SC | South Carolina | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-SD | South Dakota | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-TN | Tennessee | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-TX | Texas | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-UM | United States Minor Outlying Islands | 0 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-UT | Utah | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-VA | Virginia | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-VI | Virgin Islands, U.S. | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-VT | Vermont | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-WA | Washington | 25 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-WI | Wisconsin | 1 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-WV | West Virginia | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+| US | US-WY | Wyoming | 2 | 5 | 0 | 0 | MEANINGFUL_STATUTORY_ASSESSMENT | yes | no |
+
+## By country
+
+| country | regions | statutory adapters bound (sum) | regions with a working assessment | launch-ready regions |
+| --- | --- | --- | --- | --- |
+| AU | 8 | 24 | 8 | 0 |
+| CA | 13 | 2 | 13 | 0 |
+| GB | 4 | 0 | 4 | 0 |
+| US | 57 | 289 | 57 | 0 |
+
+Total regions: 82. Launch-ready regions: 0.
+
+This table is the measured per-region detail. The 228 content-rule mapping and the 11-versus-7 useful-check benchmark reconciliation remain open; see the acceptance register.

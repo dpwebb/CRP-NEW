@@ -1,0 +1,4968 @@
+{
+  "mode": "FULL_CURRENT_PRODUCT",
+  "duration_ms": 165177,
+  "selected_sections": [
+    "a-isolation",
+    "ax-consumer-privacy",
+    "b-refusals",
+    "c-extraction",
+    "d-records",
+    "e-qualifications",
+    "f-deletion",
+    "g-privacy",
+    "h-legacy-parity",
+    "i-shared-regressions",
+    "j-specimen-journey",
+    "k-ui-smoke",
+    "l-au-format-family",
+    "m-au-journey",
+    "n-applicability",
+    "o-all82-infrastructure",
+    "p-us-consumer-format",
+    "q-record-applicability",
+    "r-ca-factual-assessment",
+    "s-gb-consumer-format",
+    "t-entitlement",
+    "u-hardening",
+    "v-presentation-and-release",
+    "w-ca-second-bureau-format",
+    "x-b4-pay-001",
+    "y-ingest-coverage-matrix",
+    "z-general-intake",
+    "ab-acceptance-statutory",
+    "ac-evidence-policy",
+    "ad-legal-event-facts",
+    "ae-accept-003",
+    "af-accept-004",
+    "ag-accept-006",
+    "ah-multifile-assessment",
+    "aj-ingest-dates",
+    "ak-ingest-008-009-010",
+    "al-common-errors",
+    "am-fdt-recovery",
+    "an-payment-history-grid",
+    "ao-ingest-008-mixed-page",
+    "ap-accept-010-consistency",
+    "aq-gap-finding-001",
+    "ar-gap-finding-003",
+    "as-gap-finding-004",
+    "at-gap-finding-002",
+    "au-closure-policy",
+    "av-consumer-results",
+    "aw-consumer-explanations",
+    "ay-consumer-support",
+    "az-consumer-support-ui",
+    "ba-consumer-billing",
+    "bb-gap-ingest-001",
+    "bc-gap-ingest-002",
+    "bd-gap-ingest-004",
+    "be-gap-ingest-005",
+    "bf-gap-ingest-006",
+    "bg-report-use",
+    "bh-ns-judgment-content",
+    "bh-ns-dismissed-charge",
+    "bi-us-ca-tax-lien",
+    "bj-us-ca-collection",
+    "bk-us-ca-adverse-rating",
+    "bl-us-ca-correction-packet",
+    "bm-prime-directive-batch1",
+    "bn-prime-directive-ui",
+    "bo-prime-directive-interaction",
+    "bp-prime-directive-batch2",
+    "bq-format-capability",
+    "br-qualified-assessment",
+    "bs-prime-directive-delivery",
+    "bt-ordinary-field-coverage",
+    "bu-gb-tu-ca-fields",
+    "bv-admission-and-upload",
+    "bw-browser-wizzard",
+    "bx-all82-factual-verification",
+    "by-packet-reconciliation",
+    "bz-report-history"
+  ],
+  "unrun_sections": [],
+  "source_audit": "NOT_RUN_SEPARATE_LANE",
+  "source_hashes": [
+    {
+      "file": "accelerated-launch\\service\\accounts.cjs",
+      "sha256": "3ce5f6756674ee2d358b4651af601dd09a147e47382b8d0e9bbd2142127f9442"
+    },
+    {
+      "file": "accelerated-launch\\service\\app.cjs",
+      "sha256": "ea25f834bc9d9d6e5c1c0b9729db1b2aac89589ae69c852016ebbe22a7d778fe"
+    },
+    {
+      "file": "accelerated-launch\\service\\applicability.cjs",
+      "sha256": "4be499cfe24906aa03066689c8a737521b51971080a441e533f945d7a19df93b"
+    },
+    {
+      "file": "accelerated-launch\\service\\billing-credits.cjs",
+      "sha256": "378c254e3aab0c6c3685816b162817a54267c5aca1f3a40d58ba884eafb97835"
+    },
+    {
+      "file": "accelerated-launch\\service\\build-subscription-value-evidence.cjs",
+      "sha256": "29fcaa615941018da0dc2b6b8b6a44a419e01539071acbe3b257c4b14a04b924"
+    },
+    {
+      "file": "accelerated-launch\\service\\ca-consumer-file-facts.cjs",
+      "sha256": "82b630bd9f226cc16857fc772e7cc167ebb4ee3e603511e5862358a177044520"
+    },
+    {
+      "file": "accelerated-launch\\service\\case-status.cjs",
+      "sha256": "6aaae21835bca96e4b5a56962fe15773537cf2fdb0d198b951a5e53c451bdf9d"
+    },
+    {
+      "file": "accelerated-launch\\service\\cases.cjs",
+      "sha256": "bc939771e39e6f5df97d1b18aa009e72fb58f45f68616f18cf9fd4401622852b"
+    },
+    {
+      "file": "accelerated-launch\\service\\clarification.cjs",
+      "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+    },
+    {
+      "file": "accelerated-launch\\service\\common-errors.cjs",
+      "sha256": "430a7a5b2a60a3ed0ec5f0f7f915c3e1e837a981f36b31d2695cc07bd765c5e1"
+    },
+    {
+      "file": "accelerated-launch\\service\\comparison.cjs",
+      "sha256": "23febdb75cc54236f2e7d22464e24a3f92dcbc14769259b1bc0900f789e39634"
+    },
+    {
+      "file": "accelerated-launch\\service\\content-assessments.cjs",
+      "sha256": "659e1fa06b0052a12d2ec3e919d4157b8ff199d04941db814680a9099b84e4bc"
+    },
+    {
+      "file": "accelerated-launch\\service\\coverage-matrix.cjs",
+      "sha256": "e72042fa3ff340812d63159fc7b439f632cd09b8296f879c8e733cb352750052"
+    },
+    {
+      "file": "accelerated-launch\\service\\demo.cjs",
+      "sha256": "4df8523d56517c331360e1b45ce79bd7750d3a7cb7f2c8aff4c2602d6e3f126d"
+    },
+    {
+      "file": "accelerated-launch\\service\\drafts.cjs",
+      "sha256": "8400dd521b36b99a1f5f4b33325aa6d0878b6b676c11c2aa4ee889050b8e8452"
+    },
+    {
+      "file": "accelerated-launch\\service\\entitlement.cjs",
+      "sha256": "8384a9b6d500cbd22c0f7a9429b5c38ad5ec2383d326f307493efaada8636589"
+    },
+    {
+      "file": "accelerated-launch\\service\\errors.cjs",
+      "sha256": "96d56cab7d5d59f7da343c73124313cc0009cd0e903ca3335bc5ce9548466b53"
+    },
+    {
+      "file": "accelerated-launch\\service\\evaluation.cjs",
+      "sha256": "9c4973470a391307b8dd7a0fd754428355a7015562a0506c10092979378befa5"
+    },
+    {
+      "file": "accelerated-launch\\service\\evidence-validator.cjs",
+      "sha256": "1a15afd477e8a4dd27370c3eab0959426284518c1ab975d236ca872d9315e05b"
+    },
+    {
+      "file": "accelerated-launch\\service\\factual-checks.cjs",
+      "sha256": "1064328982d1c6cc4144567affe905ea3bdaafc95221e15695072715f14426dd"
+    },
+    {
+      "file": "accelerated-launch\\service\\fdt-acceptance.cjs",
+      "sha256": "80e571c55f38764fe4fb3b0346fe5beaf70734d48fb7d8c9af7aeb12d1d86567"
+    },
+    {
+      "file": "accelerated-launch\\service\\fdt-benchmark.cjs",
+      "sha256": "b5782725ec2dfdff99ba1343a37876be5fea0efcb0cbde46d8f0e955b9f9efce"
+    },
+    {
+      "file": "accelerated-launch\\service\\fdt-recovery.cjs",
+      "sha256": "acbc8aa4f315875ac72a08cc427e17ccef2ea28b4903bac122ea7e0969889845"
+    },
+    {
+      "file": "accelerated-launch\\service\\finding-coverage.cjs",
+      "sha256": "34b9dba9ca96d7f74f6e1683542283c830c916b5b2df8b0d77a825c1f9ae08d2"
+    },
+    {
+      "file": "accelerated-launch\\service\\format-families\\au-equifax-consumer.cjs",
+      "sha256": "77e08f6dcc02c6b62bdd588fdfde8ac477ec0b6444af3af196940fe9e74c76ad"
+    },
+    {
+      "file": "accelerated-launch\\service\\format-families\\ca-consumer-format-scope.cjs",
+      "sha256": "7c005cb6c0a2ec428ed0292985a2f99d3be062739283ba347d952bd60e8ce1b1"
+    },
+    {
+      "file": "accelerated-launch\\service\\format-families\\gb-experian-consumer.cjs",
+      "sha256": "d6ed0e8072c4a6dc66dfd4c6957bdbf73bae6b7bcda88eb23253f3d4f92884e0"
+    },
+    {
+      "file": "accelerated-launch\\service\\format-families\\tu-ca-consumer.cjs",
+      "sha256": "12ab976fe501ea0b543dea97e16520cb0ca62a309839dc292b7421da722a2ee9"
+    },
+    {
+      "file": "accelerated-launch\\service\\format-families\\us-experian-consumer.cjs",
+      "sha256": "80fe7ea70eee01dc3bea4b223b05a92e2a8925f34f86bde8c5fa3460d8c67e8b"
+    },
+    {
+      "file": "accelerated-launch\\service\\formats.cjs",
+      "sha256": "6a1ca55cc3e0d1796d64a38bbaf6632c9541cf7a22e5d6f43cfa006479186122"
+    },
+    {
+      "file": "accelerated-launch\\service\\general-intake.cjs",
+      "sha256": "2d8068a07cc5bd05e20a3059071aa805ec4d694d855a783b24e15bf81a5dd5e5"
+    },
+    {
+      "file": "accelerated-launch\\service\\issues.cjs",
+      "sha256": "41c5e60a996477b452e4febe6c0cf94dcd3e8ea4d88086b4468e8fb0596dd05d"
+    },
+    {
+      "file": "accelerated-launch\\service\\journey.cjs",
+      "sha256": "acf98daf555a2cad77c0c309b533a93e02253fafb0f7fcc149be9bce88cc6779"
+    },
+    {
+      "file": "accelerated-launch\\service\\logger.cjs",
+      "sha256": "c16e6d0f584f4a0fc5eeda0ce81014a86268ef7075915daf12f2dc84ccfc154f"
+    },
+    {
+      "file": "accelerated-launch\\service\\multi-file-assembly.cjs",
+      "sha256": "3a9cc4b1ac91eeba8a38f7f004f019d554da33a9a241b2e900c5c6d9c7765db8"
+    },
+    {
+      "file": "accelerated-launch\\service\\ocr\\local-ocr.cjs",
+      "sha256": "1b4b4b62dcd965afd63a3b87d461f3389acb7106972c52c41c600d28c40353fe"
+    },
+    {
+      "file": "accelerated-launch\\service\\packets.cjs",
+      "sha256": "8bb804839e6a47cdb2d061bf5d251438a5f53ac257ea65d6dc531a5f71f0beb5"
+    },
+    {
+      "file": "accelerated-launch\\service\\payment-history-grid.cjs",
+      "sha256": "a55e14826866affec64a23dde7f3dc458ce3f22a8aece6302b9367d07924b912"
+    },
+    {
+      "file": "accelerated-launch\\service\\payment-provider.cjs",
+      "sha256": "4516a8ac623cf52f1dcefc139b876259275cc4ea008901f389fb17f6506a7548"
+    },
+    {
+      "file": "accelerated-launch\\service\\plan-catalog.cjs",
+      "sha256": "96905a04a2c66d7ba85bd1a1e5d0cededb80aaf90b622f8160dbecaabc1937e7"
+    },
+    {
+      "file": "accelerated-launch\\service\\privacy.cjs",
+      "sha256": "99b0c97df0ac49bd10658c8a343f40801408189c77c7dd1a182a2b4f6724d6be"
+    },
+    {
+      "file": "accelerated-launch\\service\\private-store.cjs",
+      "sha256": "003fda7f9cbe2481f5075253654b302e6bac4db99297c641003dec56116ce5c6"
+    },
+    {
+      "file": "accelerated-launch\\service\\release-check.cjs",
+      "sha256": "abe80c4b842feca13f3b154254787e37abef025755fae82ac5e211e92db11736"
+    },
+    {
+      "file": "accelerated-launch\\service\\release-scope.json",
+      "sha256": "3bbcb80e76f4c283bcf313b2ee905fec606413c3c51a29783b51e1c6f64a57fb"
+    },
+    {
+      "file": "accelerated-launch\\service\\report-use-policy.json",
+      "sha256": "9f219f763c5355240f7fe82780c0a34ef3d8fa658dfb57472877e38a3e493983"
+    },
+    {
+      "file": "accelerated-launch\\service\\results.cjs",
+      "sha256": "6c4d79f4e945fe863613d16f57b490ad37dece5e8da3ce2e1f9fd3ca98822d75"
+    },
+    {
+      "file": "accelerated-launch\\service\\retention.cjs",
+      "sha256": "631a92462b43638e99b114be8048508451ced89e2e3e09f1b2a746f1b8bf8c2f"
+    },
+    {
+      "file": "accelerated-launch\\service\\server.cjs",
+      "sha256": "090041331b4ab7daf33d570a7a7a24a4ba3353d5891023c2900b55aeecfad41c"
+    },
+    {
+      "file": "accelerated-launch\\service\\store-diagnostic.cjs",
+      "sha256": "b9a63f7a90d9c24adf9c2ee0cfbef5d7cdda0f29b9ad4d721b4ce0a7599bf18d"
+    },
+    {
+      "file": "accelerated-launch\\service\\stripe.cjs",
+      "sha256": "1604a3c783b4e7f2599e7ba3cccb6fcee9029b744196010db81c92ad133a89fc"
+    },
+    {
+      "file": "accelerated-launch\\service\\support.cjs",
+      "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\harness.cjs",
+      "sha256": "681080251bebaecb96a484cad4b3b3c641cbe6b586d7cac4b4f546deb1232ba6"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\run-tests.cjs",
+      "sha256": "0b2a9a6e7f995baee99fdbd58538dcccc6a4839d61b3f5def6e6c7083ddb3644"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\a-isolation.cjs",
+      "sha256": "8f6ed1ef223ec4a46519466cc6b79068f81e274b1023b8bb322f23b0350d368d"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ab-acceptance-statutory.cjs",
+      "sha256": "c4b88f94722ec77639fe42697ade2336c0091524cf52067bb978387a3b380f36"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ac-evidence-policy.cjs",
+      "sha256": "e6f2e1e3ad2cd47e5617a1229c89b2b88e443437aced4ee9416f1e6b00cd5ccf"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ad-legal-event-facts.cjs",
+      "sha256": "8c2aabb7b146bd8f0e6a1e2637bbd9b33ae50c9f42695f5e448eb991d79c5d3f"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ae-accept-003.cjs",
+      "sha256": "e813ca8a5c8c666c01ff29dd69a84ff57b95594b1e93548120ef71ed05bbec33"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\af-accept-004.cjs",
+      "sha256": "2dd260678b7dabfe92f583be8c5144e29b8a102a384ce2397e1289558cb753aa"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ag-accept-006.cjs",
+      "sha256": "08057c4773a5045d4ba4475e89598d336f7cd94578487b17123ec03218167876"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ah-multifile-assessment.cjs",
+      "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\aj-ingest-dates.cjs",
+      "sha256": "766a63879ead33257a4bc30bcca910d4909a1a959f30a1f39da7e864f37e32ba"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ak-ingest-008-009-010.cjs",
+      "sha256": "c527ea14506e922eb3dbeee97dfc342fb2fa46d49b9f70cf3f6447fcc010d5fd"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\al-common-errors.cjs",
+      "sha256": "13af59acb4b8b8762a2d7b1f45444370c6ce6e57a6610ec7fda3a47bea58c351"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\am-fdt-recovery.cjs",
+      "sha256": "073c52a95d7511a4fcffbdfae0b11d248103157efa6483102ff56f1810200114"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\an-payment-history-grid.cjs",
+      "sha256": "b30bca5f29ac9f49c54b8b014b0e57aac0be48fc0ab2e03c6bd883d5a6e884b3"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ao-ingest-008-mixed-page.cjs",
+      "sha256": "74ea9edd289fce706c52eaeb82d306e61810f95bc29c52ea915b64abf420eeac"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ap-accept-010-consistency.cjs",
+      "sha256": "f83bc98a3a8333afe6a1e915d16bf34d84af97f336eb3212e72d728b5c4a9260"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\aq-gap-finding-001.cjs",
+      "sha256": "1051dccbe94ac024b9fcacf03a56d2348652bbda878cb1840aebae6d6cbc124c"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ar-gap-finding-003.cjs",
+      "sha256": "7bda8c4307829ebb4cd76048d8571a0eececa0022ff121b9f75a7964d8201e6b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\as-gap-finding-004.cjs",
+      "sha256": "b99c6f79793bd76679569fb7e159b287f8a25c929a8a92026b3ca5f5d977b0bb"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\at-gap-finding-002.cjs",
+      "sha256": "79b849664af26656aa5d5ca3f73ca3baccf8d76f14e880756aea582920b5404a"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\au-closure-policy.cjs",
+      "sha256": "f6fe3e5fdbc17f0afe44882e24266f89680a492328f6eef2242ddcc560d2849b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\av-consumer-results.cjs",
+      "sha256": "28dd82d1d18b27d25bdb1e69011423baa5a3659b231e5e6ce6daccef730703be"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\aw-consumer-explanations.cjs",
+      "sha256": "c61e11b4a8824ed46ee337a7aac74a85edfe84fb4a456e63803ffecc697d6ca2"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ax-consumer-privacy.cjs",
+      "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ay-consumer-support.cjs",
+      "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\az-consumer-support-ui.cjs",
+      "sha256": "6cbea81b342000c5b6649b00dcd6aba476a63862166e19a5f8f0a953df7f631e"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\b-jurisdiction-and-refusals.cjs",
+      "sha256": "2974973da6141fc3f05e1a093e6957af816f70f0d65438e7ed79ce1123fba9cd"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\ba-consumer-billing.cjs",
+      "sha256": "3ab504e5826755b80e5c8a06ef0d383c0de384164867cce1e18dcf9833b6cb9d"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bb-gap-ingest-001.cjs",
+      "sha256": "e25b51d421c06ae5904405079d08cc624ddc0bdc826260322b062437f7621178"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bc-gap-ingest-002.cjs",
+      "sha256": "7ba31c33b88afd8a32dd6c97d83a00f3b2294aeb56122db6f0b5be99592dbca1"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bd-gap-ingest-004.cjs",
+      "sha256": "953e54f11b26d1745d8ea36b9ce653898568920ab581ed3ee0c1356f2eca0bb3"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\be-gap-ingest-005.cjs",
+      "sha256": "c55c1415eea9d29619a801664b4f7d721938d12b89ff662ad0f1bdab2173a76f"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bf-gap-ingest-006.cjs",
+      "sha256": "8efd99f60750ee4ff7c1346ddda6a1b5dd7a7534d36e43ac268fcb0f27ccf0ac"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bg-report-use.cjs",
+      "sha256": "79e6731f1b0555946cfa32db48a7bfcc6d4e260120c5408c98044784afe7d2d9"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bh-ns-dismissed-charge.cjs",
+      "sha256": "9596d0f79863c2fff5f882c673d51bbe18d3a259fadc9201a123e2c738c526b5"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bh-ns-judgment-content.cjs",
+      "sha256": "3bbbb13a15047eb81a083a32e26a8b4cfb9c22238cd48d976172db90d83e380c"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bi-us-ca-tax-lien.cjs",
+      "sha256": "af7f17dd2fd648ce0935b1e7fa121e951987da313fcee8aea1ea99e7419db97c"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bj-us-ca-collection.cjs",
+      "sha256": "c6c1ae83ab4eef5495a28ee2a62fcd0b957f8974560cc5db5a33ae6d7c429fc5"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bk-us-ca-adverse-rating.cjs",
+      "sha256": "0b56adafda5df4b21f723e7ebe70e020b44a566522b36595ed742b37f957658e"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bl-us-ca-correction-packet.cjs",
+      "sha256": "cfe505d2fee466a35ff76dcb151799cdf238f581431a06a4f3e8ddc0bfe1f911"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bm-prime-directive-batch1.cjs",
+      "sha256": "32724df88b486069478f83ddfb6b652a987fbc1dc13705b50dc28cf7957f04d3"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bn-prime-directive-ui.cjs",
+      "sha256": "77492e57509406e3738e089c0252c801e3e538b0c10224c98d40bed6a64eb6e3"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bo-prime-directive-interaction.cjs",
+      "sha256": "1b7a109b738b4797bf6047dbb5f943944a8f50a63c0abbd026658974fc8edd34"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bp-prime-directive-batch2.cjs",
+      "sha256": "11460838469f3ecfec04efbcc316a5b39abbff75fb3b6e858462c2ccd8fe85da"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bq-format-capability.cjs",
+      "sha256": "d8f7b24729e7c855d9dfee4c3f2690b2df20f36cbdcd3a22cb743d0dd1e25e6b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\br-qualified-assessment.cjs",
+      "sha256": "bd799b4354ff9845faaa732d0566e31e648f0d91bc52cc52b93f5cd83552b446"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bs-prime-directive-delivery.cjs",
+      "sha256": "decf0a68363b4e0bb499e348790f95be6b934bcc3225a7c29ae193a1c4d33d81"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bt-ordinary-field-coverage.cjs",
+      "sha256": "509f415910882a1ee931f5368e8fc3da2d649f5d1e66831520fd1f126c6bc613"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bu-gb-tu-ca-fields.cjs",
+      "sha256": "3b2980c8016beddcbd6c7a319c6a74d872ed828960b78ce118cb5f8672c77c49"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bv-admission-and-upload.cjs",
+      "sha256": "03368e84b06fa6b22c7d69d0be01558053f10e3b98f57faf2301f75f257ebadc"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bw-browser-wizzard.cjs",
+      "sha256": "924505857b1fb8b6967f91973920dca8589d2e579d667ce351e3fab27938994a"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bx-all82-factual-verification.cjs",
+      "sha256": "5614d68b7a903622fa86bc309749895679516ce88d19e9bb959d949ea793838e"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\by-packet-reconciliation.cjs",
+      "sha256": "b8228fbc5a28b5fe29c5dbfa00009936587a15888418b84bdd514ac3f7cef482"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\bz-report-history.cjs",
+      "sha256": "cfb504258649c490cd084b454a79234cf5d4fbe64aaca359de34659813946d39"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\c-extraction-not-absence.cjs",
+      "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\d-record-independence.cjs",
+      "sha256": "05c752b98c1d36d4668ad2e2d56be7a096eb395f4f5ec6b34e421d9560f25f0a"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\e-qualifications.cjs",
+      "sha256": "3c176c50f706890ce483141b3dd883766fa14b4d7a48d15bbdf135bf227309a2"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\f-signout-and-deletion.cjs",
+      "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\g-privacy.cjs",
+      "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\h-legacy-parity.cjs",
+      "sha256": "0f52f5ae59a988a1f20496b064d5ed93cc1ccbddd63fa4df28831c5d0723ff55"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\historical-gb-source.cjs",
+      "sha256": "0d59e5a95e3331576d6c8225379313f979672bfaa3851024be046984d3a0b17a"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\historical-legacy-source.cjs",
+      "sha256": "7965079fb953dd0e063bcab13610dd7728e8a4924509d904260907245a67e218"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\i-shared-regressions.cjs",
+      "sha256": "58ca869aee18fc6057f23609e4288b42f69aba407bcfe94a92b0ac04c3e18c28"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\j-specimen-journey.cjs",
+      "sha256": "223d2219aacca515db18cbe54b46369ac1b5c2b2f49cb17ea5c994f36de1dc00"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\k-ui-smoke.cjs",
+      "sha256": "5c501de5087b1a38046c21ed27561b7c6e78e10552462e2bfc978e75bcc8f339"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\l-au-format-family.cjs",
+      "sha256": "41e07bea1f658ace15193548d52767a67978bcc4fb4f76fc2ea03c72b7f1b157"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\m-au-journey.cjs",
+      "sha256": "6cc21d7668c37ffb607d1586f30a95847af6d0db773c3279025a17034e7eaf21"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\n-applicability-records.cjs",
+      "sha256": "223dcb7e9ebe73c2d154aea3228895fba529efbb9ab200102b6e772577345c04"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\o-all82-infrastructure.cjs",
+      "sha256": "d450160b2125cc5c2dc6bdc78af479cfd870def44e007257963950b28d87f3c1"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\p-us-consumer-format.cjs",
+      "sha256": "db48af0a1d0de19d0eb89eedd706d80e366221c86efd69f064b0f0867039e0c2"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\q-record-applicability.cjs",
+      "sha256": "d7f08556e67003a841b33d428e2575cc21d5bfda36c6d29a8c40969cf2549cca"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\r-ca-factual-assessment.cjs",
+      "sha256": "1ba28c9b5ffd08634d3c55962cd324096ebb34ea75be5c26907bddaa8d0bab96"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\s-gb-consumer-format.cjs",
+      "sha256": "9e036a41aef615bf2c4746420b2521820e17b7d5f14537392b947f3a83052fce"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\t-entitlement.cjs",
+      "sha256": "870de2a865cd22457826b75fcfa09e4b7676e524281c5f6a62edea6a3416d979"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\u-hardening.cjs",
+      "sha256": "0ac4549ac78529c496741413b44c17d3c3159654ebc2a66e4b3d220c001a74ae"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\v-presentation-and-release.cjs",
+      "sha256": "837d4cad8fcfc20b84ddd359c64006cdd28e2ad8924d63414604eb346cbf12f1"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\w-ca-second-bureau-format.cjs",
+      "sha256": "218081fb55de785d4218745188270d6b6ee157bb9d8342f976c9b175c7fed042"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\x-b4-pay-001.cjs",
+      "sha256": "bc7f639ddc57d5eb18092211edfbde14e9ecf89adee872dd2c10249b05a95d4b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\y-ingest-coverage-matrix.cjs",
+      "sha256": "5f7a8b0da46ca682ac4815380f7d6e13314f8956cdf48690173c784a0112822c"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\sections\\z-general-intake.cjs",
+      "sha256": "902879f578c88b9ac6eb8c5bc1113e28e81ca8dd522d8d1de91ac97cd8bec15b"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\test-matched-payment-evidence.cjs",
+      "sha256": "0b967aa0e85da5ef9cfed7b9cacbbb2cf750079a6492e3b290bca79ea8c20bad"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\test-store-diagnostic.cjs",
+      "sha256": "b905dc1285558e656477ba1ec16aa25173c44250ba15bf9ff0612bcfdba9951e"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\test-stripe-adapter.cjs",
+      "sha256": "d72546a1e356b8d522a2c808d5f5d61c485eb7f0ba5cb793e35685ec97fff5b3"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\test-upgrade-credit.cjs",
+      "sha256": "86dcf2d46c60b1f7ca5b80ade18d6ccd0ec0a163dcffc34ff10c1dc96340e7a1"
+    },
+    {
+      "file": "accelerated-launch\\service\\tests\\verification-lanes.cjs",
+      "sha256": "18de8437dbc538f7a07c03fa2490246f76e55b237490023344d04cbaf79089e4"
+    },
+    {
+      "file": "accelerated-launch\\service\\ui\\app.js",
+      "sha256": "d76c68ca136a6c7939e98c4e86178182ac845964b3bcb6126a72cf7fc81c325f"
+    },
+    {
+      "file": "accelerated-launch\\service\\ui\\index.html",
+      "sha256": "1bdabf62e56c66b85e0b4467eb0b6d175207115f10714ddff85e08c6ee6172cf"
+    },
+    {
+      "file": "accelerated-launch\\service\\ui\\style.css",
+      "sha256": "3fe285dfc2c71c2d57e71ded272bb0f25bec276040c5bc716f7c8558dc8f26b1"
+    },
+    {
+      "file": "accelerated-launch\\service\\upgrade-credit.cjs",
+      "sha256": "650d3c7b568e7bd9756b78c9bbd28c1f8bdd298f7433569414b680a26b7f35da"
+    },
+    {
+      "file": "accelerated-launch\\service\\uploads.cjs",
+      "sha256": "25904c79938706be6e1cb8ea340517f8a78a3e3ab1bfc5daea7a813463832405"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\adapter-configs.json",
+      "sha256": "25e4d69846359c5922f3bcc5f78f9f851c4a6949b46d3e2716ee8c2dfa6d0660"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\applicability-records.json",
+      "sha256": "6e45459c8caf0155f8d6c7aef10d60353515d1f772ee8e614477209f286df451"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\evaluation-primitives.cjs",
+      "sha256": "a943043c76150b523ab131507e04cad4219f433627f9a14e5325dac838cc5b95"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\report-use.cjs",
+      "sha256": "0797a7cbafc716e4e61fd10d0f77acbe6a8c74509fb7799ab22921336f333522"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\rule-adapter-catalog.json",
+      "sha256": "50c499dbac0ae9be6bec3def3635a4a87e283f7ace560df41e499f9b9df2b061"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\rule-adapters.cjs",
+      "sha256": "f911bf8940dbb8c63ebdfc7e504b2a193b3fe641014164878ed4ed6055cbb405"
+    },
+    {
+      "file": "accelerated-launch\\adapters\\test-adapters.cjs",
+      "sha256": "0236b14e856cdceb29ea13db37c098e4c4693f79695b7bdd812c6ee2a18a61d0"
+    }
+  ],
+  "source_drift": [],
+  "totals": {
+    "passed": 4376,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": [
+    {
+      "id": "a-isolation",
+      "title": "Account isolation on every case, file and result operation",
+      "file": "a-isolation.cjs",
+      "passed": 19,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "alice": {
+          "email": "alice-isolation@example.test",
+          "token": "tCHszMozsvVINTd2Z8y_LVY04l5wp2oRzmm_kuZ8ubw",
+          "account_id": "acc_908076662ff450b6ba7d9199",
+          "payment": {
+            "checkout_id": "chk_8a5447066bd85fcb67be8bf3",
+            "reference": "test_cs_57848929e3e66cca6580cea4",
+            "event": {
+              "id": "test_evt_093433f98563a419",
+              "type": "checkout.session.completed",
+              "account_reference": "acc_908076662ff450b6ba7d9199",
+              "plan_code": "report_once",
+              "session_reference": "test_cs_57848929e3e66cca6580cea4",
+              "amount_cents": 595,
+              "currency": "cad",
+              "occurred_at": "2026-10-05T18:07:29.183Z"
+            },
+            "response": {
+              "accepted": true,
+              "duplicate": false,
+              "event_id": "test_evt_093433f98563a419",
+              "type": "checkout.session.completed",
+              "effect": "ACTIVATE",
+              "applied_to": "ent_8111572ecbee3db073bc97bb",
+              "entitlement": {
+                "account_id": "acc_908076662ff450b6ba7d9199",
+                "state": "ACTIVE",
+                "entitled": true,
+                "can_use_paid_product": true,
+                "can_read_historical": true,
+                "access_via": "ONE_TIME_CREDIT",
+                "plan_code": "report_once",
+                "granted_at": "2026-10-05T18:07:29.188Z",
+                "expires_at": "2026-11-04T18:07:29.188Z",
+                "cancel_at_period_end": false,
+                "grace_until": null,
+                "reason": "AN_ENTITLED_PURCHASE_IS_RECORDED",
+                "source": "TEST_ADAPTER_NOT_A_PAYMENT",
+                "access_ended_because": null,
+                "is_a_working_payment": false,
+                "plain": "A purchase is recorded against this account, so paid work can start."
+              },
+              "plain": "A verified provider event granted this purchase, and the entitlement is now recorded against the account."
+            }
+          }
+        },
+        "bob": {
+          "email": "bob-isolation@example.test",
+          "token": "6qQJ37SHWE2rK8oAU4_McBjIeC38GXrO_CLAi9eZDCQ",
+          "account_id": "acc_cd0d6785cd7cdd590021bf8d",
+          "payment": {
+            "checkout_id": "chk_bef664eff7c50a0d956be25c",
+            "reference": "test_cs_ef264bea7b260dffd1b53fa1",
+            "event": {
+              "id": "test_evt_a61f40b286859a9e",
+              "type": "checkout.session.completed",
+              "account_reference": "acc_cd0d6785cd7cdd590021bf8d",
+              "plan_code": "report_once",
+              "session_reference": "test_cs_ef264bea7b260dffd1b53fa1",
+              "amount_cents": 595,
+              "currency": "cad",
+              "occurred_at": "2026-10-05T18:07:29.235Z"
+            },
+            "response": {
+              "accepted": true,
+              "duplicate": false,
+              "event_id": "test_evt_a61f40b286859a9e",
+              "type": "checkout.session.completed",
+              "effect": "ACTIVATE",
+              "applied_to": "ent_2f878a1d0dacd1257ccdbd26",
+              "entitlement": {
+                "account_id": "acc_cd0d6785cd7cdd590021bf8d",
+                "state": "ACTIVE",
+                "entitled": true,
+                "can_use_paid_product": true,
+                "can_read_historical": true,
+                "access_via": "ONE_TIME_CREDIT",
+                "plan_code": "report_once",
+                "granted_at": "2026-10-05T18:07:29.238Z",
+                "expires_at": "2026-11-04T18:07:29.239Z",
+                "cancel_at_period_end": false,
+                "grace_until": null,
+                "reason": "AN_ENTITLED_PURCHASE_IS_RECORDED",
+                "source": "TEST_ADAPTER_NOT_A_PAYMENT",
+                "access_ended_because": null,
+                "is_a_working_payment": false,
+                "plain": "A purchase is recorded against this account, so paid work can start."
+              },
+              "plain": "A verified provider event granted this purchase, and the entitlement is now recorded against the account."
+            }
+          }
+        },
+        "caseId": "case_f1af5140132e6cbc8574f66c"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 247
+    },
+    {
+      "id": "ax-consumer-privacy",
+      "title": "Account-owned privacy inventory, retention and controlled deletion",
+      "file": "ax-consumer-privacy.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "inventory": true,
+        "retention": true,
+        "deletion": true,
+        "isolation": true,
+        "backup_erasure_verified": false
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 3201
+    },
+    {
+      "id": "b-refusals",
+      "title": "Jurisdiction and upload refusals, including the lookalike PDF",
+      "file": "b-jurisdiction-and-refusals.cjs",
+      "passed": 224,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "caseId": "case_20c35af38fc1c152898ff478",
+        "structurally_similar_refused": 4
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 4975
+    },
+    {
+      "id": "c-extraction",
+      "title": "Extraction failure is never reported as field absence",
+      "file": "c-extraction-not-absence.cjs",
+      "passed": 36,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "scenarios": [
+          "DATE_LABEL_WITHOUT_VALUE",
+          "DATE_LABEL_ABSENT_FROM_ACCOUNT",
+          "NO_COLLECTION_ACCOUNTS",
+          "DATE_OUTSIDE_ANY_ACCOUNT",
+          "TWO_ACCOUNTS"
+        ]
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1199
+    },
+    {
+      "id": "d-records",
+      "title": "Records never borrow each other's dates or values",
+      "file": "d-record-independence.cjs",
+      "passed": 22,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "accounts": [
+          1,
+          2
+        ],
+        "records": 2
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 81
+    },
+    {
+      "id": "e-qualifications",
+      "title": "Qualifications, no comprehensive-check implication, a blocked check is not a performed check",
+      "file": "e-qualifications.cjs",
+      "passed": 48,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "qualifications": 8,
+        "usChecksPerformed": 0
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 216
+    },
+    {
+      "id": "f-deletion",
+      "title": "Sign-out and deletion stop subsequent access, and remove stored bytes",
+      "file": "f-signout-and-deletion.cjs",
+      "passed": 26,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "blobsAfterDeletion": 0
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 2231
+    },
+    {
+      "id": "g-privacy",
+      "title": "No private file or identifier in logs or public assets",
+      "file": "g-privacy.cjs",
+      "passed": 52,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "scanned_public_assets": 8,
+        "log_records": 6
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1045
+    },
+    {
+      "id": "h-legacy-parity",
+      "title": "Current upload and ownership contracts (historical parity separate)",
+      "file": "h-legacy-parity.cjs",
+      "passed": 11,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "lane": "CURRENT_PRODUCT",
+        "historical_parity": "separate historical-legacy-source section"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 6
+    },
+    {
+      "id": "i-shared-regressions",
+      "title": "The B1 all-82 routing and adapter suites still pass",
+      "file": "i-shared-regressions.cjs",
+      "passed": 7,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "router": {
+          "suite": "router",
+          "regions": 82,
+          "alias_refusals": true,
+          "failed": 0
+        },
+        "adapters": {
+          "suite": "adapters",
+          "passed": 34,
+          "failed": 0,
+          "adapters": [
+            "CA-NS-CRA-S10-3-C-LIMB-1",
+            "CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y",
+            "CA-NS-CRA-S10-3-D-JUDGMENT-CONTENT",
+            "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE",
+            "FCRA-605A-1-US-NATIONAL-10Y",
+            "FCRA-605A-2-US-NATIONAL-7Y",
+            "FCRA-605A-3-US-NATIONAL-7Y",
+            "FCRA-605A-4-US-NATIONAL-7Y",
+            "FCRA-605A-5-US-NATIONAL-7Y",
+            "US-NY-GBL-380J-F1-II-JUDGMENT-5Y",
+            "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+            "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+            "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+            "US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y",
+            "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+            "US-CA-CCRAA-1785-13-A-8-ADVERSE-7Y",
+            "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+            "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+            "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+          ]
+        },
+        "child_tests_are_not_parent_assertion_totals": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 134
+    },
+    {
+      "id": "j-specimen-journey",
+      "title": "The real journey on the evidenced specimen",
+      "file": "j-specimen-journey.cjs",
+      "passed": 42,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "checked_in": true,
+        "presentation_id": "PR-01",
+        "artifact_id": "LEG-CONSUMER-EQ-CA",
+        "observations": 6
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1241
+    },
+    {
+      "id": "k-ui-smoke",
+      "title": "The private consumer UI renders and drives the service",
+      "file": "k-ui-smoke.cjs",
+      "passed": 32,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "ui_calls": 21
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 126
+    },
+    {
+      "id": "l-au-format-family",
+      "title": "The AU consumer format family: real captured evidence, synthetic behaviour, refusals",
+      "file": "l-au-format-family.cjs",
+      "passed": 85,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "real_evidence": {
+          "skipped": false,
+          "digest": "3F6D5B3787CD15ECC8BC4A1A231D16B27968B195FE49D9EE667E25EC6648B00A",
+          "records": 9
+        },
+        "synthetic": {
+          "records": 2
+        },
+        "predicates": {
+          "predicate_refusals": 9
+        },
+        "refusals": {
+          "fixtures": 2
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1279
+    },
+    {
+      "id": "m-au-journey",
+      "title": "The complete Australian consumer journey on the captured public sample",
+      "file": "m-au-journey.cjs",
+      "passed": 103,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "skipped": false,
+        "presentation_id": "FAM-AU-EQX-CONSUMER",
+        "evidenced_artifact_id": "PUB-012",
+        "checks_performed_on_the_sample": 6,
+        "records_read": 9,
+        "regions": {
+          "AU-ACT": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-NSW": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-NT": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-QLD": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-SA": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-TAS": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-VIC": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          },
+          "AU-WA": {
+            "checks_performed": 6,
+            "check_ids": [
+              "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+              "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y"
+            ],
+            "anchors": [
+              "enquiry.date",
+              "overdue.originalListingDate"
+            ],
+            "unavailable": 0,
+            "unresolved": 0
+          }
+        },
+        "regions_with_a_working_assessment": [
+          "AU-ACT",
+          "AU-NSW",
+          "AU-NT",
+          "AU-QLD",
+          "AU-SA",
+          "AU-TAS",
+          "AU-VIC",
+          "AU-WA"
+        ]
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 976
+    },
+    {
+      "id": "n-applicability",
+      "title": "Explicit per-region applicability, tested for every region",
+      "file": "n-applicability-records.cjs",
+      "passed": 808,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "records": {
+          "canonical_regions": 82,
+          "relations": 4,
+          "region_rows": 82,
+          "regions_with_a_confirmed_relation": 65,
+          "regions_with_an_executable_relation": 65
+        },
+        "regions_with_a_confirmed_relation": 65,
+        "regions_with_an_executable_relation": [
+          "AU-ACT",
+          "AU-NSW",
+          "AU-NT",
+          "AU-QLD",
+          "AU-SA",
+          "AU-TAS",
+          "AU-VIC",
+          "AU-WA",
+          "US-AK",
+          "US-AL",
+          "US-AR",
+          "US-AS",
+          "US-AZ",
+          "US-CA",
+          "US-CO",
+          "US-CT",
+          "US-DC",
+          "US-DE",
+          "US-FL",
+          "US-GA",
+          "US-GU",
+          "US-HI",
+          "US-IA",
+          "US-ID",
+          "US-IL",
+          "US-IN",
+          "US-KS",
+          "US-KY",
+          "US-LA",
+          "US-MA",
+          "US-MD",
+          "US-ME",
+          "US-MI",
+          "US-MN",
+          "US-MO",
+          "US-MP",
+          "US-MS",
+          "US-MT",
+          "US-NC",
+          "US-ND",
+          "US-NE",
+          "US-NH",
+          "US-NJ",
+          "US-NM",
+          "US-NV",
+          "US-NY",
+          "US-OH",
+          "US-OK",
+          "US-OR",
+          "US-PA",
+          "US-PR",
+          "US-RI",
+          "US-SC",
+          "US-SD",
+          "US-TN",
+          "US-TX",
+          "US-UM",
+          "US-UT",
+          "US-VA",
+          "US-VI",
+          "US-VT",
+          "US-WA",
+          "US-WI",
+          "US-WV",
+          "US-WY"
+        ],
+        "surface_availability_counts": {
+          "SUPPORTED": 82
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 35
+    },
+    {
+      "id": "o-all82-infrastructure",
+      "title": "Shared account, case, upload, evaluation, status and deletion across all 82 selections",
+      "file": "o-all82-infrastructure.cjs",
+      "passed": 88,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "infrastructure_state": "EXERCISED_LOCALLY_ALL_82_NOT_LAUNCH_VALIDATED",
+        "regions_exercised": [
+          "AU-ACT",
+          "AU-NSW",
+          "AU-NT",
+          "AU-QLD",
+          "AU-SA",
+          "AU-TAS",
+          "AU-VIC",
+          "AU-WA",
+          "CA-AB",
+          "CA-BC",
+          "CA-MB",
+          "CA-NB",
+          "CA-NL",
+          "CA-NS",
+          "CA-NT",
+          "CA-NU",
+          "CA-ON",
+          "CA-PE",
+          "CA-QC",
+          "CA-SK",
+          "CA-YT",
+          "GB-ENG",
+          "GB-NIR",
+          "GB-SCT",
+          "GB-WLS",
+          "US-AK",
+          "US-AL",
+          "US-AR",
+          "US-AS",
+          "US-AZ",
+          "US-CA",
+          "US-CO",
+          "US-CT",
+          "US-DC",
+          "US-DE",
+          "US-FL",
+          "US-GA",
+          "US-GU",
+          "US-HI",
+          "US-IA",
+          "US-ID",
+          "US-IL",
+          "US-IN",
+          "US-KS",
+          "US-KY",
+          "US-LA",
+          "US-MA",
+          "US-MD",
+          "US-ME",
+          "US-MI",
+          "US-MN",
+          "US-MO",
+          "US-MP",
+          "US-MS",
+          "US-MT",
+          "US-NC",
+          "US-ND",
+          "US-NE",
+          "US-NH",
+          "US-NJ",
+          "US-NM",
+          "US-NV",
+          "US-NY",
+          "US-OH",
+          "US-OK",
+          "US-OR",
+          "US-PA",
+          "US-PR",
+          "US-RI",
+          "US-SC",
+          "US-SD",
+          "US-TN",
+          "US-TX",
+          "US-UM",
+          "US-UT",
+          "US-VA",
+          "US-VI",
+          "US-VT",
+          "US-WA",
+          "US-WI",
+          "US-WV",
+          "US-WY"
+        ],
+        "regions": {
+          "CA-AB": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-BC": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-MB": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-NB": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-NL": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-NS": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-NT": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-NU": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-ON": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-PE": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-QC": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-SK": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "CA-YT": {
+            "country": "CA",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "US-AK": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-AL": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-AR": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-AS": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-AZ": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-CA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-CO": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-CT": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-DC": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-DE": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-FL": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-GA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-GU": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-HI": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-IA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-ID": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-IL": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-IN": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-KS": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-KY": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-LA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MD": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-ME": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MI": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MN": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MO": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MP": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MS": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-MT": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NC": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-ND": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NE": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NH": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NJ": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NM": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NV": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-NY": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-OH": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-OK": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-OR": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-PA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-PR": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-RI": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-SC": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-SD": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-TN": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-TX": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-UM": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-UT": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-VA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-VI": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-VT": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-WA": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-WI": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-WV": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "US-WY": {
+            "country": "US",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "GB-ENG": {
+            "country": "GB",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "GB-NIR": {
+            "country": "GB",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "GB-SCT": {
+            "country": "GB",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "GB-WLS": {
+            "country": "GB",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "NO_CONFIRMED_RELATION",
+            "executable_checks_in_this_build": 0
+          },
+          "AU-ACT": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-NSW": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-NT": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-QLD": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-SA": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-TAS": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-VIC": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          },
+          "AU-WA": {
+            "country": "AU",
+            "behavioral_predicates": 25,
+            "behavioral_failures": [],
+            "case_opened": true,
+            "ownership_enforced": true,
+            "evaluate_without_a_report": "NO_ADMITTED_FILE",
+            "upload_path": "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE",
+            "upload_refusal_reason": "UNRELATED_DOCUMENT",
+            "blobs_removed_on_deletion": 1,
+            "applicability": "CONFIRMED_RELATION_RECORDED",
+            "executable_checks_in_this_build": 1
+          }
+        },
+        "upload_paths": {
+          "STORED_THEN_REFUSED_BY_THE_FORMAT_GATE": 82
+        },
+        "note": "This is infrastructure validation only. It says nothing about report support or about any rule, and it makes no region launch ready."
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 12735
+    },
+    {
+      "id": "p-us-consumer-format",
+      "title": "The United States consumer disclosure, read by authorized local OCR",
+      "file": "p-us-consumer-format.cjs",
+      "passed": 76,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "skipped": false,
+        "reason": null,
+        "real_evidence": {
+          "skipped": false,
+          "evidenced_artifact_id": "PUB-001",
+          "ocr_engine": "tesseract v5.4.0.20240606",
+          "ocr_lines": 264,
+          "ocr_trusted_lines": 258,
+          "reference_date": "2015-06-30",
+          "accounts_read": 3,
+          "inquiries_read": 1,
+          "public_record_absence_statement": "No Public Records appear on your report."
+        },
+        "local_ocr": {
+          "available": true,
+          "engine_path": "C:\\Users\\webbd\\AppData\\Local\\Programs\\Tesseract-OCR\\tesseract.exe"
+        },
+        "synthetic": {
+          "in_memory_refusal": "US_FAMILY_IN_MEMORY_MODEL_IS_NOT_A_FILE",
+          "structure_refusal": "US_FAMILY_IN_MEMORY_MODEL_IS_NOT_A_FILE",
+          "skeleton_refusal": "US_FAMILY_IN_MEMORY_MODEL_IS_NOT_A_FILE",
+          "image_only_refusal": "US_FAMILY_IMAGE_ONLY_AND_NO_LOCAL_OCR"
+        },
+        "other_channel_refusals": {
+          "PUB-021.pdf": {
+            "supported": true,
+            "refusal_reason": null,
+            "encrypted": false,
+            "copy_permitted": null
+          },
+          "PUB-003.pdf": {
+            "supported": true,
+            "refusal_reason": null,
+            "encrypted": false,
+            "copy_permitted": null
+          },
+          "PUB-004.pdf": {
+            "supported": false,
+            "refusal_reason": "UNREADABLE_DOCUMENT",
+            "encrypted": true,
+            "copy_permitted": false
+          },
+          "EXP-006.pdf": {
+            "supported": true,
+            "refusal_reason": null
+          }
+        },
+        "presentation_id": "US-CONSUMER-DISCLOSURE",
+        "evidenced_artifact_id": "PUB-001",
+        "executed_checks_per_region": 1,
+        "checks_performed_on_the_sample": 1,
+        "not_applicable_limbs_per_region": 0,
+        "applicability_unresolved_limbs_per_region": 5,
+        "regions_with_a_working_assessment": [
+          "US-AK",
+          "US-AL",
+          "US-AR",
+          "US-AS",
+          "US-AZ",
+          "US-CA",
+          "US-CO",
+          "US-CT",
+          "US-DC",
+          "US-DE",
+          "US-FL",
+          "US-GA",
+          "US-GU",
+          "US-HI",
+          "US-IA",
+          "US-ID",
+          "US-IL",
+          "US-IN",
+          "US-KS",
+          "US-KY",
+          "US-LA",
+          "US-MA",
+          "US-MD",
+          "US-ME",
+          "US-MI",
+          "US-MN",
+          "US-MO",
+          "US-MP",
+          "US-MS",
+          "US-MT",
+          "US-NC",
+          "US-ND",
+          "US-NE",
+          "US-NH",
+          "US-NJ",
+          "US-NM",
+          "US-NV",
+          "US-NY",
+          "US-OH",
+          "US-OK",
+          "US-OR",
+          "US-PA",
+          "US-PR",
+          "US-RI",
+          "US-SC",
+          "US-SD",
+          "US-TN",
+          "US-TX",
+          "US-UM",
+          "US-UT",
+          "US-VA",
+          "US-VI",
+          "US-VT",
+          "US-WA",
+          "US-WI",
+          "US-WV",
+          "US-WY"
+        ]
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 43190
+    },
+    {
+      "id": "q-record-applicability",
+      "title": "Per-record applicability: APPLICABLE / NOT_APPLICABLE / APPLICABILITY_UNRESOLVED",
+      "file": "q-record-applicability.cjs",
+      "passed": 49,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "states": {
+          "vocabulary": [
+            "APPLICABLE",
+            "NOT_APPLICABLE",
+            "APPLICABILITY_UNRESOLVED"
+          ],
+          "real_evidence": {
+            "au": {
+              "liability_records": 3,
+              "applicable": 0,
+              "not_applicable": 1,
+              "unresolved": 2,
+              "note": "the captured AU sample prints NO closed liability record, so its APPLICABLE count is zero here. The three cases above are synthetic and are counted separately."
+            },
+            "us": {
+              "executed_comparisons": 1,
+              "not_applicable": 0,
+              "applicability_unresolved": 5,
+              "summary": {
+                "APPLICABLE": 1,
+                "NOT_APPLICABLE": 0,
+                "APPLICABILITY_UNRESOLVED": 5,
+                "NO_RULE_DECLARED": 0
+              }
+            }
+          },
+          "synthetic_three_states": {
+            "applicable": 1,
+            "not_applicable": 1,
+            "unresolved": 1,
+            "omitted_label_unresolved": 1,
+            "note": "these three cases are SYNTHETIC. They exercise the state machine; they establish no real closed-account presentation evidence, and none is claimed."
+          }
+        },
+        "rule_ids": [
+          "ADVERSE_PAYMENT_RATING_ITEM_PRESENT",
+          "ADVERSE_RATING_ACTION_CONTEXT",
+          "COLLECTION_OR_CHARGE_OFF_PRESENT",
+          "COLLECTION_RECORD_PRESENT",
+          "CRIMINAL_CHARGE_PRESENT",
+          "JUDGMENT_PUBLIC_RECORD_PRESENT",
+          "LIABILITY_CLOSED_DATE_OR_EXPLICITLY_STATED_STATUS",
+          "PUBLIC_RECORD_ITEM_PRESENT_OR_EXPLICITLY_ABSENT",
+          "PUBLIC_RECORD_RECORD_PRESENT"
+        ],
+        "separation_of_fields": {
+          "extraction_unresolved_while_applicability_determinable": true,
+          "unknown_rule_is_unresolved": true,
+          "declared_rules": 15
+        },
+        "declared_by_adapters": [
+          {
+            "adapter_id": "CA-NS-CRA-S10-3-D-JUDGMENT-CONTENT",
+            "rule": "JUDGMENT_PUBLIC_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE",
+            "rule": "CRIMINAL_CHARGE_PRESENT"
+          },
+          {
+            "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "FCRA-605A-2-US-NATIONAL-7Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "FCRA-605A-3-US-NATIONAL-7Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "FCRA-605A-4-US-NATIONAL-7Y",
+            "rule": "COLLECTION_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "FCRA-605A-5-US-NATIONAL-7Y",
+            "rule": "ADVERSE_PAYMENT_RATING_ITEM_PRESENT"
+          },
+          {
+            "adapter_id": "US-NY-GBL-380J-F1-II-JUDGMENT-5Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y",
+            "rule": "PUBLIC_RECORD_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+            "rule": "COLLECTION_RECORD_PRESENT"
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-8-ADVERSE-7Y",
+            "rule": "ADVERSE_RATING_ACTION_CONTEXT"
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+            "rule": "LIABILITY_CLOSED_DATE_OR_EXPLICITLY_STATED_STATUS"
+          }
+        ]
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 13295
+    },
+    {
+      "id": "r-ca-factual-assessment",
+      "title": "Canadian factual assessment for all 13 Canadian selections, with CA-NS statutory evaluation kept separate",
+      "file": "r-ca-factual-assessment.cjs",
+      "passed": 236,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "skipped": false,
+        "presentation_id": "PR-01",
+        "real_evidence": {
+          "categories_compared": 9,
+          "collection_entries": 2,
+          "identity_groups": 1
+        },
+        "regions": {
+          "CA-AB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-BC": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-MB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-NB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-NL": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-NS": {
+            "statutory_checks_performed": 2,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 3,
+            "assessment_kinds": [
+              "STATUTORY_RULE_COMPARISON",
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-NT": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-NU": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-ON": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-PE": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-QC": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-SK": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          },
+          "CA-YT": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 4,
+            "factual_differences_found": 0,
+            "unsupported_by_this_build": 0,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY"
+            ]
+          }
+        },
+        "regions_with_a_working_assessment": [
+          "CA-AB",
+          "CA-BC",
+          "CA-MB",
+          "CA-NB",
+          "CA-NL",
+          "CA-NS",
+          "CA-NT",
+          "CA-NU",
+          "CA-ON",
+          "CA-PE",
+          "CA-QC",
+          "CA-SK",
+          "CA-YT"
+        ],
+        "regions_with_no_statutory_evaluation_but_a_real_factual_assessment": [
+          "CA-AB",
+          "CA-BC",
+          "CA-MB",
+          "CA-NB",
+          "CA-NL",
+          "CA-NT",
+          "CA-NU",
+          "CA-ON",
+          "CA-PE",
+          "CA-QC",
+          "CA-SK",
+          "CA-YT"
+        ],
+        "ca_ns_statutory_evaluation": {
+          "unchanged": true,
+          "adapter_ids": [
+            "CA-NS-CRA-S10-3-C-LIMB-1"
+          ]
+        },
+        "synthetic": {
+          "synthetic_structural_views_only": true,
+          "establishes_no_presentation_evidence": true,
+          "branches_exercised": [
+            "date_order",
+            "item_date_after_report_date",
+            "partial_dates",
+            "same_debt",
+            "same_debt_not_applicable",
+            "summary_count_mismatch",
+            "summary_count_not_applicable"
+          ]
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 3410
+    },
+    {
+      "id": "s-gb-consumer-format",
+      "title": "The United Kingdom consumer format, its factual checks and its explicitly labelled policy observations",
+      "file": "s-gb-consumer-format.cjs",
+      "passed": 119,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "skipped": false,
+        "presentation_id": "FAM-GB-EXP-CONSUMER",
+        "evidenced_artifact_id": "PUB-009",
+        "evidenced_sha256": "5e95f3d27c4102c7772b33d0e11f3f4e0f37d253b2147e635db54e9bd328aec4",
+        "admissions": {
+          "predicates": 9,
+          "refused_wrong_format_and_channel": {
+            "real_artifact_refusals": [
+              "PUB-012_AND_A_MARKER_MUTATED_MODEL"
+            ],
+            "note": "the mutations are in memory only"
+          }
+        },
+        "real_evidence": {
+          "records_read": 13,
+          "records_by_kind": {
+            "GB_PUBLIC_RECORD": 5,
+            "GB_CREDIT_ACCOUNT": 5,
+            "GB_PREVIOUS_SEARCH": 3
+          },
+          "printed_retention_statements": [
+            "GB-PRINTED-POLICY-SATISFIED-JUDGMENT-6Y",
+            "GB-PRINTED-POLICY-VOLUNTARY-ARRANGEMENT-COMPLETE-6Y",
+            "GB-PRINTED-POLICY-SETTLED-ACCOUNT-6Y",
+            "GB-PRINTED-POLICY-DEFAULTED-ACCOUNT-6Y"
+          ],
+          "differences_found": [
+            {
+              "check": "A date printed on an entry, against the date your report gives for itself",
+              "outcome": "A_PRINTED_ITEM_DATE_IS_LATER_THAN_THE_REPORT_DATE"
+            }
+          ],
+          "no_difference_found": 2,
+          "artifact_vintage": "1 June 2007 (the artifact prints its own report date); its currency for present-day GB consumer files is NOT established"
+        },
+        "regions": {
+          "GB-ENG": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 3,
+            "policy_observations": 1,
+            "differences_found": 1,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "PRINTED_POLICY_OBSERVATION",
+              "COMMON_ERROR"
+            ]
+          },
+          "GB-NIR": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 3,
+            "policy_observations": 1,
+            "differences_found": 1,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "PRINTED_POLICY_OBSERVATION",
+              "COMMON_ERROR"
+            ]
+          },
+          "GB-SCT": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 3,
+            "policy_observations": 1,
+            "differences_found": 1,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "PRINTED_POLICY_OBSERVATION",
+              "COMMON_ERROR"
+            ]
+          },
+          "GB-WLS": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 3,
+            "policy_observations": 1,
+            "differences_found": 1,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "PRINTED_POLICY_OBSERVATION",
+              "COMMON_ERROR"
+            ]
+          }
+        },
+        "regions_with_a_working_assessment": [
+          "GB-ENG",
+          "GB-NIR",
+          "GB-SCT",
+          "GB-WLS"
+        ],
+        "synthetic": {
+          "synthetic_structural_views_only": true,
+          "establishes_no_presentation_evidence": true,
+          "branches_exercised": [
+            "date_order",
+            "item_date_after_report_date",
+            "policy_beyond_period",
+            "policy_not_printed"
+          ]
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 3808
+    },
+    {
+      "id": "t-entitlement",
+      "title": "Paid entitlement: server-side enforcement, activation, expiry, cancellation, idempotency and failed verification",
+      "file": "t-entitlement.cjs",
+      "passed": 140,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "payment_provider_state": "TEST_ADAPTER",
+        "unpaid": {
+          "case_id": "case_a74f65dacc2677d4b0dd0ace",
+          "paid_routes_refused": 7
+        },
+        "activation": {
+          "checkout_id": "chk_8a02fcd572dc5d84988dea7b",
+          "entitled_after_event": true,
+          "duplicate_event_is_idempotent": true,
+          "client_confirmation_refused": true,
+          "redirect_grants_nothing": true
+        },
+        "failed_verification": {
+          "unsigned_refused": true,
+          "tampered_refused": true,
+          "stale_refused": true,
+          "unsupported_type_refused": true,
+          "unknown_account_ignored": true,
+          "unknown_checkout_ignored": true,
+          "plan_mismatch_ignored": true
+        },
+        "expiry_and_cancellation": {
+          "lapsed_period_is_expired_immediately": true,
+          "deletion_never_gated": true,
+          "grace_on_failed_payment": true,
+          "cancellation_at_period_end": true,
+          "refund_revokes_immediately": true,
+          "unpaid_checkout_cancels_at_once": true
+        },
+        "legacy_parity": {
+          "pricing_read": true,
+          "state_machine_read": true,
+          "owner_approved_prices_verified": 3,
+          "entitled_states": [
+            "ACTIVE",
+            "PAST_DUE",
+            "COMPLIMENTARY"
+          ],
+          "non_entitled_states": [
+            "NO_SUBSCRIPTION",
+            "PENDING",
+            "CANCELLED",
+            "EXPIRED"
+          ]
+        },
+        "log_records": 58,
+        "entitlement_refusal": {
+          "status_code": 402,
+          "code": "ENTITLEMENT_REQUIRED"
+        },
+        "paid_routes_covered": 5
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 694
+    },
+    {
+      "id": "u-hardening",
+      "title": "Service hardening: sessions, concurrency, upload limits, restart recovery, single writer, retention and deletion",
+      "file": "u-hardening.cjs",
+      "passed": 108,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "state_outside_the_repository": true,
+        "sessions": {
+          "idle_expiry_enforced": true,
+          "absolute_expiry_enforced": true,
+          "session_cap": 10,
+          "lockout_is_a_window": true
+        },
+        "concurrency": {
+          "concurrent_cases": 12,
+          "concurrent_uploads_to_one_case": 6,
+          "concurrent_evaluations": 4,
+          "orphan_blobs_cleared": 1,
+          "partial_blobs_cleared": 1,
+          "referenced_blobs_kept": 6
+        },
+        "upload_limits": {
+          "max_file_bytes": 10485760,
+          "max_case_files": 8,
+          "max_account_stored_bytes": 41943040,
+          "refused_before_any_write": true
+        },
+        "retry_idempotency": {
+          "same_file_id_reused": true,
+          "no_second_blob": true,
+          "tampered_key_refused": true
+        },
+        "restart_recovery": {
+          "recovered_from_backup": true,
+          "refuses_when_unreadable": true,
+          "state_version": 3,
+          "lapsed_sessions_swept_on_start": true,
+          "live_sessions_survive": true
+        },
+        "single_writer": {
+          "second_process_refused": true,
+          "stale_lock_taken_over": true,
+          "lock_file": "store.lock"
+        },
+        "retention": {
+          "policy_clauses": 9,
+          "account_deletion_cascades_to_entitlements": true,
+          "account_deletion_cascades_to_billing_events": true
+        },
+        "log_records": 94
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 17342
+    },
+    {
+      "id": "v-presentation-and-release",
+      "title": "Presentation gaps closed or bounded: Canadian family scope, GB currency, coverage messaging and the local release check",
+      "file": "v-presentation-and-release.cjs",
+      "passed": 110,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "canada": {
+          "presentations_registered": [
+            "FAM-TU-CA-CONSUMER",
+            "PR-01"
+          ],
+          "equifax_admission_path": "EXACT_SPECIMEN_DIGEST",
+          "equifax_family_admitted": false,
+          "country_family_admitted": true,
+          "families_admitted": [
+            "FAM-TU-CA-CONSUMER"
+          ],
+          "second_real_canadian_report_present": true,
+          "second_real_canadian_report_admitted_by_its_own_contract": true,
+          "second_real_canadian_report_still_refused_by_the_equifax_gate": true,
+          "equifax_gate_refusal": "DOCUMENT_ENCRYPTED"
+        },
+        "gb": {
+          "status": "HISTORICAL_DEMONSTRATION_EVIDENCE_ONLY",
+          "present_day_support_claimed": false,
+          "retrieval_attempts_recorded": 4,
+          "headings_validated": 0,
+          "fields_validated": 0,
+          "historical_measurement": "separate historical-gb-source section"
+        },
+        "messaging": {
+          "advertised_presentations": [
+            "FAM-AU-EQX-CONSUMER",
+            "FAM-GB-EXP-CONSUMER",
+            "FAM-TU-CA-CONSUMER",
+            "PR-01",
+            "US-CONSUMER-DISCLOSURE"
+          ],
+          "paid_actions_named": true,
+          "no_issue_found_meaning_published": true,
+          "ui_matches_the_registry": true
+        },
+        "draft_boundary": {
+          "draft_refused_after_review": true,
+          "demonstration_download_is_fictional": true
+        },
+        "release": {
+          "state": "NOT_LAUNCH_READY",
+          "launch_ready": false,
+          "launch_blocking_failures": [
+            "SUPPORT_REFERENCE_SECRET_IS_CONFIGURED",
+            "PAYMENT_PROVIDER_IS_CONFIGURED_FOR_BILLING",
+            "CURRENT_GB_SUPPORT_IS_ESTABLISHED",
+            "DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED",
+            "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+            "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+            "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+            "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+            "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+            "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+            "GAP-INGEST-004_DATE_FORMS",
+            "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+            "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+            "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+            "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+            "GAP-INGEST-009_BUREAU_SEGMENTATION",
+            "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+            "GAP-FINDING-001_EXCEPTION_EVALUATION",
+            "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+            "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+            "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+            "BLOCKER-RESULTS-001",
+            "BLOCKER-EXPLANATIONS-001",
+            "BLOCKER-BILLING-001",
+            "BLOCKER-PRIVACY-001",
+            "BLOCKER-SUPPORT-001",
+            "BLOCKER-CONSUMER-LANGUAGE-001",
+            "BLOCKER-CONSUMER-INCOMPLETE-001",
+            "BLOCKER-CLARIFY-MATERIALITY-002",
+            "BLOCKER-FINDING-COVERAGE-001",
+            "BLOCKER-ALL82-FACILITATION-001",
+            "BLOCKER-DISPUTE-PACKET-001",
+            "BLOCKER-SUBSCRIPTION-VALUE-001"
+          ],
+          "blockers_by_category": [
+            {
+              "category": "CLARIFICATION",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "COMMON_ERRORS",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "CONSUMER_EXPERIENCE",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-RESULTS-001",
+                "BLOCKER-EXPLANATIONS-001",
+                "BLOCKER-BILLING-001",
+                "BLOCKER-PRIVACY-001",
+                "BLOCKER-SUPPORT-001",
+                "BLOCKER-CONSUMER-LANGUAGE-001",
+                "BLOCKER-CONSUMER-INCOMPLETE-001",
+                "BLOCKER-CLARIFY-MATERIALITY-002"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "8 launch-blocking failure(s): BLOCKER-RESULTS-001, BLOCKER-EXPLANATIONS-001, BLOCKER-BILLING-001, BLOCKER-PRIVACY-001, BLOCKER-SUPPORT-001, BLOCKER-CONSUMER-LANGUAGE-001, BLOCKER-CONSUMER-INCOMPLETE-001, BLOCKER-CLARIFY-MATERIALITY-002; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "COVERAGE",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "DEPLOYMENT",
+              "launch_blocking_checks_failed": [
+                "SUPPORT_REFERENCE_SECRET_IS_CONFIGURED",
+                "DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "2 launch-blocking failure(s): SUPPORT_REFERENCE_SECRET_IS_CONFIGURED, DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "DISPUTE_PACKET",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-DISPUTE-PACKET-001"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-DISPUTE-PACKET-001; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "EVIDENCE",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "FAILURE_TO_DETECT_MITIGATION",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "FINDING",
+              "launch_blocking_checks_failed": [
+                "GAP-FINDING-001_EXCEPTION_EVALUATION",
+                "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+                "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+                "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "4 launch-blocking failure(s): GAP-FINDING-001_EXCEPTION_EVALUATION, GAP-FINDING-002_PROBABLE_VIOLATION_PATH, GAP-FINDING-003_RULE_IDENTITY_AND_VERSION, GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "FINDING_COVERAGE",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-FINDING-COVERAGE-001"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-FINDING-COVERAGE-001; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "FORMAT_SUPPORT",
+              "launch_blocking_checks_failed": [
+                "CURRENT_GB_SUPPORT_IS_ESTABLISHED"
+              ],
+              "affected_regions": [
+                "GB"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): CURRENT_GB_SUPPORT_IS_ESTABLISHED; affected regions: GB"
+            },
+            {
+              "category": "INGESTION",
+              "launch_blocking_checks_failed": [
+                "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+                "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+                "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+                "GAP-INGEST-004_DATE_FORMS",
+                "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+                "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+                "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+                "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+                "GAP-INGEST-009_BUREAU_SEGMENTATION",
+                "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "10 launch-blocking failure(s): GAP-INGEST-001_IMAGE_SET_COHERENCE, GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES, GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES, GAP-INGEST-004_DATE_FORMS, GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS, GAP-INGEST-006_PARTIAL_DATE_PRECISION, GAP-INGEST-007_REPORT_REFERENCE_DATE, GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY, GAP-INGEST-009_BUREAU_SEGMENTATION, GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "ISOLATION",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "JURISDICTION_FACILITATION",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-ALL82-FACILITATION-001"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-ALL82-FACILITATION-001; affected regions: AU, CA, GB, US"
+            },
+            {
+              "category": "PAYMENT",
+              "launch_blocking_checks_failed": [
+                "PAYMENT_PROVIDER_IS_CONFIGURED_FOR_BILLING"
+              ],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): PAYMENT_PROVIDER_IS_CONFIGURED_FOR_BILLING"
+            },
+            {
+              "category": "PORTABILITY",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "PRESENTATION",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "PRIVACY",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "SECRETS",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "SERVICE",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "STORAGE",
+              "launch_blocking_checks_failed": [],
+              "affected_regions": [],
+              "reaches_every_region": false,
+              "plain": "No launch-blocking failure in this category."
+            },
+            {
+              "category": "SUBSCRIPTION_VALUE",
+              "launch_blocking_checks_failed": [
+                "BLOCKER-SUBSCRIPTION-VALUE-001"
+              ],
+              "affected_regions": [
+                "AU",
+                "CA",
+                "GB",
+                "US"
+              ],
+              "reaches_every_region": false,
+              "plain": "1 launch-blocking failure(s): BLOCKER-SUBSCRIPTION-VALUE-001; affected regions: AU, CA, GB, US"
+            }
+          ],
+          "format_support_blocked": true,
+          "format_support_blocked_in_regions": [
+            "GB"
+          ],
+          "checks": 52,
+          "deployment_performed": false,
+          "network_calls_made": 0
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1009
+    },
+    {
+      "id": "w-ca-second-bureau-format",
+      "title": "The second Canadian consumer format, admitted by its own measured structural contract, with the Equifax admission and the Nova Scotia statutory unit untouched",
+      "file": "w-ca-second-bureau-format.cjs",
+      "passed": 227,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "note": "Genuine reports and synthetic variation are tested separately, and neither stands in for the other.",
+        "specimens_available": {
+          "equifax_ca_pr_01": true,
+          "transunion_ca": true,
+          "transunion_digest_verified": true
+        },
+        "admission_record": {
+          "path": "SOURCE_CAPTURES/B4-CA-CONSUMER-FAMILIES/tu-ca-family-admission.json",
+          "amendment_required": false,
+          "remeasured_against_the_document": true,
+          "family_id": "FAM-TU-CA-CONSUMER",
+          "evidence_sha256": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4"
+        },
+        "two_contracts": {
+          "canadian_presentations": [
+            "FAM-TU-CA-CONSUMER",
+            "PR-01"
+          ],
+          "canadian_families": [
+            "FAM-TU-CA-CONSUMER"
+          ],
+          "equifax_family_admitted": false,
+          "country_family_admitted": true,
+          "every_ca_ns_adapter_bound_to_pr01": true
+        },
+        "reading": {
+          "presentation_id": "FAM-TU-CA-CONSUMER",
+          "account_blocks": 4,
+          "enquiry_rows": 108,
+          "reference_date_status": "RESOLVED",
+          "report_text_retained": false,
+          "printed_but_not_read": [
+            "Account Type:",
+            "Terms:",
+            "Payment History"
+          ]
+        },
+        "regions": {
+          "CA-AB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-BC": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-MB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-NB": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-NL": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-NS": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-NT": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-NU": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-ON": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-PE": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-QC": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-SK": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          },
+          "CA-YT": {
+            "statutory_checks_performed": 0,
+            "factual_checks_performed": 2,
+            "assessment_kinds": [
+              "REPORT_FACT_CONSISTENCY",
+              "COMMON_ERROR"
+            ],
+            "presentation_id": "FAM-TU-CA-CONSUMER",
+            "dates_compared": 119
+          }
+        },
+        "factual_check_ids": {
+          "transunion": [
+            "CA-TU-FACT-ITEM-DATE-AFTER-REPORT-DATE",
+            "CA-TU-FACT-DATE-ORDER-WITHIN-TRADELINE"
+          ],
+          "equifax": [
+            "CA-FACT-SUMMARY-COUNT-VS-ITEMS",
+            "CA-FACT-ITEM-DATE-AFTER-REPORT-DATE",
+            "CA-FACT-DATE-ORDER-WITHIN-RECORD",
+            "CA-FACT-SAME-DEBT-PRINTED-VALUE-CONFLICT"
+          ]
+        },
+        "journey": {
+          "admitted": true,
+          "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
+          "accounts_read": 112,
+          "checks_performed": 3,
+          "report_consistency_checks": 2,
+          "deletions_removed_every_blob": true
+        },
+        "refusals": {
+          "synthetic_fixtures_named_after_the_bureau": "refused on the structural predicates this contract names",
+          "the_other_bureaus_presentation": "refused by both admissions paths, each naming its own predicate",
+          "in_memory_model": "refused because an in-memory model is not a file",
+          "wrong_channel": "refused on the printed wrong-channel marker",
+          "fixture_factory": "refused on the marker the document itself carries",
+          "encrypted_without_copy_permission": "refused on the permission predicate"
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 6580
+    },
+    {
+      "id": "x-b4-pay-001",
+      "title": "Once-only CAD upgrade credit (reserve/redeem/release/revoke) and the paid assessment-report download",
+      "file": "x-b4-pay-001.cjs",
+      "passed": 21,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "credits_exercised": 5,
+        "credit_final_states": [
+          "acc_b16d5df5cfcf5669fa179a55:REDEEMED",
+          "acc_ec6bafecc62d65b155e4318d:ELIGIBLE",
+          "acc_742c5a1e3222ecaa1afbbcba:REVOKED",
+          "acc_21145f0a8d531f3ec9bd8058:ELIGIBLE",
+          "acc_a69829840c84d1f83e8582e9:ELIGIBLE"
+        ],
+        "download_gate": {
+          "purchased_case_status": 409,
+          "second_case_status": 402
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 310
+    },
+    {
+      "id": "y-ingest-coverage-matrix",
+      "title": "The coverage matrix agrees with the registry and names the unsupported-bureau acquisition queue",
+      "file": "y-ingest-coverage-matrix.cjs",
+      "passed": 19,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "matrix": {
+          "markets": [
+            "CA",
+            "US",
+            "GB",
+            "AU"
+          ],
+          "queue_length": 9,
+          "supported": 5
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 5
+    },
+    {
+      "id": "z-general-intake",
+      "title": "General bureau-report intake: plausibility admission, usable extraction, unrelated vs unreadable refusals, partial assessment",
+      "file": "z-general-intake.cjs",
+      "passed": 75,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "general": {
+          "bureau": "Equifax",
+          "records": 1,
+          "reference_date": "2026-06-12"
+        },
+        "refusals": {
+          "unrelated": true,
+          "bureau_only": true
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 594
+    },
+    {
+      "id": "ab-acceptance-statutory",
+      "title": "Four connected statutory checks: exceeded, not-exceeded, missing-fact and equiv-layout, via the engine and the consumer journey",
+      "file": "ab-acceptance-statutory.cjs",
+      "passed": 17,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "engine": {
+          "checks": [
+            "FCRA-605A-5",
+            "AU-ITEM1-LIABILITY-2Y",
+            "AU-ITEM3-ENQUIRY-5Y",
+            "AU-ITEM4-DEFAULT-5Y"
+          ],
+          "cases": [
+            "exceeded",
+            "not-exceeded",
+            "missing",
+            "equiv-layout"
+          ]
+        },
+        "journey": {
+          "uploaded": true,
+          "statutory_comparisons": 1
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 170
+    },
+    {
+      "id": "ac-evidence-policy",
+      "title": "Reported-fact policy v1.0: immutable digest, enforced acceptance of a clearly labelled discharge date, and preserved exact-specimen restriction",
+      "file": "ac-evidence-policy.cjs",
+      "passed": 46,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "policy": {
+          "id": "OWNER-EVIDENCE-001",
+          "version": "1.0",
+          "digest": "d48e463375a2b7fb1497a3fa2f51cd9683863a3f2b37a11cf38e455811e8cb47"
+        },
+        "accepted": [
+          "2020-01-01"
+        ],
+        "withheld": {
+          "ambiguous": true,
+          "contradictory": true,
+          "mis_associated": true,
+          "trustee": true,
+          "filing_or_update": true
+        },
+        "adapter": {
+          "anchor_mode": "SINGLE_FIELD",
+          "anchor_field": [
+            "bankruptcy.dischargeDate"
+          ],
+          "presentation_required": "PR-01",
+          "max_conclusion": "observation"
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 11
+    },
+    {
+      "id": "ad-legal-event-facts",
+      "title": "Reassessed public-record legal-event facts: judgment entry, tax lien paid, and bankruptcy order for relief / adjudication",
+      "file": "ad-legal-event-facts.cjs",
+      "passed": 23,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "reassessed": [
+          "FCRA-605A-2-US-NATIONAL-7Y",
+          "FCRA-605A-3-US-NATIONAL-7Y",
+          "FCRA-605A-1-US-NATIONAL-10Y",
+          "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+          "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+          "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y"
+        ],
+        "still_withheld": [
+          "FCRA-605A-4-US-NATIONAL-7Y",
+          "US-NY-GBL-380J-F1-II-JUDGMENT-5Y"
+        ]
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 20
+    },
+    {
+      "id": "ae-accept-003",
+      "title": "ACCEPT-003 D1–D4: collection 180-day rule, satisfied-judgment condition, and per-rule classification",
+      "file": "ae-accept-003.cjs",
+      "passed": 17,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "d2": "collection 180-day rule",
+        "d3": "satisfied-judgment condition",
+        "d4": "per-rule classification"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 12
+    },
+    {
+      "id": "af-accept-004",
+      "title": "ACCEPT-004: classification is derived from a complete evaluation record and capped by the ceiling",
+      "file": "af-accept-004.cjs",
+      "passed": 47,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "classification": "derived-from-complete-record, capped-by-ceiling",
+        "federal_exception": "FCRA § 1681c(b) unresolved use exception blocks VIOLATION",
+        "ny_violation": "US-NY-14Y derives VIOLATION (no recorded exception)"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 20
+    },
+    {
+      "id": "ag-accept-006",
+      "title": "ACCEPT-007: detected report information is separate from legal predicate evaluation",
+      "file": "ag-accept-006.cjs",
+      "passed": 18,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "medical_proposition": "corrected consumer-versus-third-party medical proposition",
+        "source_evidence": "markers carry record/boilerplate context and page/line"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 7
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "title": "Coherent multi-file / image-set assessment: both pages reach the assessment, duplicates are not double-counted, bureaus stay separate",
+      "file": "ah-multifile-assessment.cjs",
+      "passed": 66,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "unit": {
+          "files_examined": 2,
+          "records": 2,
+          "duplicate_skipped": 1,
+          "bureau_groups": 2
+        },
+        "journey": {
+          "files_uploaded": 2,
+          "evaluated": 201,
+          "file_ids": [
+            "c1f7538b628e8ac5da863a930a51d562",
+            "6a6c4e4cfcd8355a420e521d66397884"
+          ],
+          "examined": 4
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 265
+    },
+    {
+      "id": "aj-ingest-dates",
+      "title": "GAP-INGEST-003..007: OCR-uncertainty through assessment; written/numeric/partial/reference dates",
+      "file": "aj-ingest-dates.cjs",
+      "passed": 37,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "interpretations": {
+          "agree": "PERIOD_NOT_EXCEEDED",
+          "disagree": "UNRESOLVED"
+        },
+        "conflicting_reference_date": {
+          "status": "EXTRACTION_UNRESOLVED",
+          "reason": "CONFLICTING_REPORT_REFERENCE_DATES"
+        },
+        "interval": {
+          "straddle": "UNRESOLVED",
+          "wholly_before": "PERIOD_EXCEEDED",
+          "wholly_within": "PERIOD_NOT_EXCEEDED"
+        },
+        "low_confidence_assessment": {
+          "performed_checks": 0,
+          "unresolved_checks": 1
+        },
+        "reference_date": {
+          "value": "2026-06-12",
+          "basis": "REPORT_HEADER"
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 9
+    },
+    {
+      "id": "ak-ingest-008-009-010",
+      "title": "GAP-INGEST-008/-009/-010: partial native-text recovery, bureau segmentation, upload limits",
+      "file": "ak-ingest-008-009-010.cjs",
+      "passed": 40,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "recovery": {
+          "merged_lines": 3,
+          "conflict_kept_both": 2
+        },
+        "segmentation": {
+          "records": 2,
+          "bureaus": [
+            "Experian",
+            "Equifax"
+          ]
+        },
+        "upload_limits": {
+          "max_file_bytes": 10485760,
+          "max_case_files": 8
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 10
+    },
+    {
+      "id": "al-common-errors",
+      "title": "BLOCKER-COMMON-ERRORS-001: data-consistency checks, never a legal finding",
+      "file": "al-common-errors.cjs",
+      "passed": 62,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "qualifying": {
+          "contradictory": "POTENTIAL_ISSUE",
+          "duplicate": "POTENTIAL_ISSUE",
+          "re_aging": "POTENTIAL_ISSUE",
+          "status_date": "POTENTIAL_ISSUE"
+        },
+        "lookalikes": {
+          "ok_dates": "NOT_DETECTED",
+          "not_duplicate": true,
+          "similar_only": "SIMILAR_ENTRIES_WORTH_REVIEWING",
+          "closed_with_balance": true
+        },
+        "legal_findings_emitted": 0
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 9
+    },
+    {
+      "id": "am-fdt-recovery",
+      "title": "BLOCKER-FDT-001: incomplete-reading detection, bounded recovery, consequential limitations, duplicate semantics, benchmark",
+      "file": "am-fdt-recovery.cjs",
+      "passed": 52,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "detection": {
+          "unreadable_pages": [
+            2
+          ],
+          "contradictory": 1
+        },
+        "recovery": {
+          "facts_added": 1,
+          "substitution_forbidden": true
+        },
+        "limitations": {
+          "incomplete": true,
+          "affected": [
+            "STATUTORY_RULE_COMPARISON",
+            "REPORT_FACT_CONSISTENCY",
+            "COMMON_ERROR"
+          ]
+        },
+        "duplicate": {
+          "similar_state": "SIMILAR_ENTRIES_WORTH_REVIEWING",
+          "duplicate_state": "POTENTIAL_ISSUE"
+        },
+        "benchmark": {
+          "passed": true,
+          "missed": 0
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 596
+    },
+    {
+      "id": "an-payment-history-grid",
+      "title": "OWNER-ACCEPT-009: geometry-aware payment-history grid assembly",
+      "file": "an-payment-history-grid.cjs",
+      "passed": 20,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "grid_verified": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 816
+    },
+    {
+      "id": "ao-ingest-008-mixed-page",
+      "title": "GAP-INGEST-008: single-page partial-text recovery (native text + image-only region)",
+      "file": "ao-ingest-008-mixed-page.cjs",
+      "passed": 27,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "recovery": {
+          "recovered_balance": 800,
+          "recovered_source": "LOCAL_OCR",
+          "mixed_pages": [
+            1
+          ],
+          "conflicting_values_preserved": [
+            100,
+            200
+          ],
+          "unread_image_regions": [
+            1
+          ],
+          "equivalent_layout_recovered": true
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 2310
+    },
+    {
+      "id": "ap-accept-010-consistency",
+      "title": "OWNER-ACCEPT-010: build consistency C1-C5",
+      "file": "ap-accept-010-consistency.cjs",
+      "passed": 74,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "c1_validator": true,
+        "c2_unique_cells": true,
+        "c3_confidence": true,
+        "c4_boundary": true,
+        "c5_clarification": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 364
+    },
+    {
+      "id": "aq-gap-finding-001",
+      "title": "GAP-FINDING-001: exceptions stay unresolved where the report cannot establish event identity or completeness",
+      "file": "aq-gap-finding-001.cjs",
+      "passed": 10,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "defect": "same bankruptcy across bureaus with different dates yields two distinct dates, but distinct dates do not establish distinct events",
+        "fix": "second-bankruptcy is recorded off-report and stays unresolved (event identity not extractable)",
+        "off_report": "FCRA § 1681c(b) use exceptions stay unresolved and block a finding"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 8
+    },
+    {
+      "id": "ar-gap-finding-003",
+      "title": "GAP-FINDING-003: evaluations and findings bind to the admitted rule identity and source version",
+      "file": "ar-gap-finding-003.cjs",
+      "passed": 11,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "version_retained": "the evaluation record and finding carry the admitted source version",
+        "absent_blocks": "a null source version blocks the finding",
+        "inconsistent_blocks": "a mismatched source version blocks the finding",
+        "deterministic": "the version is the admitted source artifact SHA-256 digest",
+        "historical_identity": "source_entry_id + source_version uniquely identifies the assessment"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 6
+    },
+    {
+      "id": "as-gap-finding-004",
+      "title": "GAP-FINDING-004: findings carry source-linked facts (raw value, location, normalization, uncertainty, policy) and refuse absent/misassociated evidence",
+      "file": "as-gap-finding-004.cjs",
+      "passed": 15,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "source_linked": "raw fact, page/line location, normalization, uncertainty and policy digest are retained in the finding evidence",
+        "absent_blocks": "a fact with no source blocks the finding",
+        "misassociated_blocks": "a fact whose source value does not match its evaluated value blocks the finding",
+        "no_cross_account_leakage": "each finding binds to its own record source, never another account"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 8
+    },
+    {
+      "id": "at-gap-finding-002",
+      "title": "GAP-FINDING-002: the scoped unverified order-for-relief candidate derives PROBABLE (and only that trigger)",
+      "file": "at-gap-finding-002.cjs",
+      "passed": 12,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "positive": "the scoped unverified-order-for-relief candidate derives PROBABLE with a source-linked, named decisive fact",
+        "negative": "in-period date, absent qualifier, generic disclaimer, cross-record qualifier, conflicting dates, low-confidence qualifier and arbitrary lists all fail to derive PROBABLE"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 12
+    },
+    {
+      "id": "au-closure-policy",
+      "title": "Implementation closure and staging verification are separate",
+      "file": "au-closure-policy.cjs",
+      "passed": 13,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "closure_policy": "OWNER-CLOSURE-001"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 15
+    },
+    {
+      "id": "av-consumer-results",
+      "title": "BLOCKER-RESULTS-001: prioritized action list (deterministic, plain-English, qualified, isolated)",
+      "file": "av-consumer-results.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "prioritization": "deterministic evidence-backed ordering; no arbitrary rank/score field",
+        "reasons": "plain-English headline/detail/qualification; findings (is_a_finding) distinguished from observations",
+        "uncertainty": "conflicting dates withhold the finding; unread content never equated with absence",
+        "isolation": "internal machine identifiers never reach consumer-visible result fields; no comprehensive-legal-check claim"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 8
+    },
+    {
+      "id": "aw-consumer-explanations",
+      "title": "BLOCKER-EXPLANATIONS-001: why-this-was-flagged cards (report_fact, rule_basis, uncertainty, consistency)",
+      "file": "aw-consumer-explanations.cjs",
+      "passed": 34,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "report_fact": "exact raw printed value, normalization and owning page/line location are surfaced",
+        "rule_basis": "the applicable citation and the admitted source-version digest are surfaced",
+        "uncertainty": "a probable finding names its unavailable decisive fact and never presents breach as established",
+        "consistency": "the downloaded assessment report agrees with the on-screen result on fact, rule and classification",
+        "missing_or_misassociated": "conflicting evidence withholds the finding and never claims an established violation"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 16
+    },
+    {
+      "id": "ay-consumer-support",
+      "title": "Privacy-safe account-owned diagnostic reference (reference, redaction, access, usefulness)",
+      "file": "ay-consumer-support.cjs",
+      "passed": 35,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "reference": true,
+        "redaction": true,
+        "access": true,
+        "usefulness": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1102
+    },
+    {
+      "id": "az-consumer-support-ui",
+      "title": "BLOCKER-SUPPORT-001: Support interface behavior and reference secret lifecycle",
+      "file": "az-consumer-support-ui.cjs",
+      "passed": 23,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "reference": true,
+        "redaction": true,
+        "access": true,
+        "usefulness": true,
+        "secret_lifecycle": true,
+        "ui_copy": true,
+        "ui_failure": true,
+        "ui_stale_clear": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 138
+    },
+    {
+      "id": "ba-consumer-billing",
+      "title": "BLOCKER-BILLING-001: billing consumer interface and server enforcement",
+      "file": "ba-consumer-billing.cjs",
+      "passed": 40,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "plan": true,
+        "renewal": true,
+        "cancellation": true,
+        "upgrade_credit": true,
+        "isolation": true,
+        "unpaid_states": true,
+        "failure_handling": true,
+        "stale_clear": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 399
+    },
+    {
+      "id": "bb-gap-ingest-001",
+      "title": "GAP-INGEST-001: ordered image-set / multi-page coherence",
+      "file": "bb-gap-ingest-001.cjs",
+      "passed": 39,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "upload_order_preserved": true,
+        "duplicate_handling": true,
+        "report_boundary": true,
+        "generated_report": true,
+        "reorder_preserves_facts": true,
+        "duplicate_no_duplicate_findings": true,
+        "account_isolation": true,
+        "http_view_path": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 340
+    },
+    {
+      "id": "bc-gap-ingest-002",
+      "title": "GAP-INGEST-002: multi-line account/collection/public-record boundaries",
+      "file": "bc-gap-ingest-002.cjs",
+      "passed": 24,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "multiline_boundaries": true,
+        "continuation_lines": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 222
+    },
+    {
+      "id": "bd-gap-ingest-004",
+      "title": "GAP-INGEST-004: unambiguous written date forms",
+      "file": "bd-gap-ingest-004.cjs",
+      "passed": 34,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "written_date_forms": true,
+        "unambiguous_parse": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 174
+    },
+    {
+      "id": "be-gap-ingest-005",
+      "title": "GAP-INGEST-005: numeric date conventions",
+      "file": "be-gap-ingest-005.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "numeric_date_conventions": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 202
+    },
+    {
+      "id": "bf-gap-ingest-006",
+      "title": "GAP-INGEST-006: month-only / partial-date precision",
+      "file": "bf-gap-ingest-006.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "partial_date_precision": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 189
+    },
+    {
+      "id": "bg-report-use",
+      "title": "OWNER-REPORT-USE-POLICY-001: report-use clarification is fail-closed and negation-only",
+      "file": "bg-report-use.cjs",
+      "passed": 73,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "combination": "multiple-use flags, conflicting amounts and mismatched-purpose amounts fail closed",
+        "negation_only": "a single-purpose statement resolves only the purpose it names and never unlocks a violation",
+        "materiality": "the report-use question is not surfaced: a single-purpose answer cannot change the finding, and a stored statement is retained without reassessment",
+        "context": "the question names the report (bureau + reference date) and the statement binds report identity, file ids and event server-side",
+        "storage": "the stored statement binds the originally assessed files, retains the reference date, ignores later uploads, and corrections supersede without dropping provenance",
+        "footer": "the legal-advice disclaimer is shown only on the main page and hidden on assessment/review steps"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1239
+    },
+    {
+      "id": "bh-ns-judgment-content",
+      "title": "OWNER-CANDIDATE-002: Nova Scotia judgment-content omission (extraction + evaluation complete, finding disabled)",
+      "file": "bh-ns-judgment-content.cjs",
+      "passed": 33,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rule": "verified-omission evaluation complete; finding disabled pending the assignment alternative and edition-currency legal gates"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 186
+    },
+    {
+      "id": "bh-ns-dismissed-charge",
+      "title": "OWNER-CANDIDATE-003: Nova Scotia dismissed-charge prohibition (enabled finding, corrected semantics)",
+      "file": "bh-ns-dismissed-charge.cjs",
+      "passed": 36,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rule": "s.10(3)(f) ENABLED (ceiling violation): charge identity + bound disposition + semantic classification + source value/record-identity agreement, tested through the classifier"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 183
+    },
+    {
+      "id": "bi-us-ca-tax-lien",
+      "title": "OWNER-CANDIDATE-005: California paid-tax-lien obsolescence (finding verified)",
+      "file": "bi-us-ca-tax-lien.cjs",
+      "passed": 17,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rule": "US-CA Civ. Code § 1785.13(a)(4) paid tax lien 7y: internal VIOLATION + consumer Reporting issue verified end-to-end with corrected source identity"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 172
+    },
+    {
+      "id": "bj-us-ca-collection",
+      "title": "OWNER-CANDIDATE-006: California collection-account obsolescence (finding verified)",
+      "file": "bj-us-ca-collection.cjs",
+      "passed": 27,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rule": "US-CA Civ. Code § 1785.13(a)(5)+(b) collection 7y: internal VIOLATION + consumer Reporting issue, with delinquency-anchor and account-identity guards"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 335
+    },
+    {
+      "id": "bk-us-ca-adverse-rating",
+      "title": "OWNER-CANDIDATE-007 (B): California adverse-information obsolescence (fail closed, tri-state context)",
+      "file": "bk-us-ca-adverse-rating.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rule": "US-CA Civ. Code § 1785.13(a)(8): FAIL CLOSED (no finding until an admitted event-date context or (b) delinquency-based timing is established); tri-state account/action context gate exercised"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 178
+    },
+    {
+      "id": "bl-us-ca-correction-packet",
+      "title": "OWNER-CA-CORRECTION-PACKET-001: bounded California correction packet (select/review/edit/approve/download)",
+      "file": "bl-us-ca-correction-packet.cjs",
+      "passed": 44,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "rules": "three California rules packet-eligible (VIOLATION-only); positive packet path and refusals verified"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 893
+    },
+    {
+      "id": "bm-prime-directive-batch1",
+      "title": "OWNER-POTENTIAL-ISSUE-001: complete common-issue consumer journey (potential discrepancy -> verification packet)",
+      "file": "bm-prime-directive-batch1.cjs",
+      "passed": 49,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "potential_issue": "a supported factual discrepancy reaches the consumer as a POTENTIAL verification issue, selectable and downloadable, never a definite finding",
+        "probable_issue": "a supported PROBABLE_VIOLATION reaches selection and download through the real upload path as a verification request, retaining its specific uncertainty"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 639
+    },
+    {
+      "id": "bn-prime-directive-ui",
+      "title": "OWNER-POTENTIAL-ISSUE-001: MOCKED UI render test — potential issue card and correction-packet block render (no service, no browser)",
+      "file": "bn-prime-directive-ui.cjs",
+      "passed": 13,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "potential_card_rendered": true,
+        "packet_flow_rendered": true
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 76
+    },
+    {
+      "id": "bo-prime-directive-interaction",
+      "title": "OWNER-POTENTIAL-ISSUE-001: Wizzard interaction against the real service (select/save/approve/download + unsaved edits)",
+      "file": "bo-prime-directive-interaction.cjs",
+      "passed": 16,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "interaction": "select -> save -> (unsaved edit) -> approve -> download against the real service"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 425
+    },
+    {
+      "id": "bp-prime-directive-batch2",
+      "title": "OWNER-POTENTIAL-ISSUE-001: ordinary-account batch (balance/past-due, potential duplicate, responsibility conflict)",
+      "file": "bp-prime-directive-batch2.cjs",
+      "passed": 42,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "balance_past_due": "past-due > balance is a supported verification issue; payment > balance is not promoted",
+        "duplicate": "corroborated potential duplicate uses qualified wording; without corroboration it is not promoted",
+        "responsibility": "same-snapshot corroborated responsibility conflict is a supported verification issue"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 941
+    },
+    {
+      "id": "bq-format-capability",
+      "title": "OWNER-POTENTIAL-ISSUE-001 Branch A: field-capability format coverage (AU/GB/TU-CA account-dates; named gaps)",
+      "file": "bq-format-capability.cjs",
+      "passed": 25,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "account_dates_au": "AU-Equifax liability dates map onto the account-dates issue; the AU repayment-status sentence is never a lifecycle status; duplicate, balance/past-due, responsibility and payment-history remain field gaps",
+        "account_dates_gb_tu_ca": "GB-Experian Started/Settled and TU-CA Opened/Closed Date now map onto the account-dates issue",
+        "field_gaps": {
+          "AU": {
+            "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY": {
+              "supported": true,
+              "missing_fields": []
+            },
+            "COMMON-ERROR-STATUS-DATE-CONTRADICTION": {
+              "supported": false,
+              "missing_fields": [
+                "account.status"
+              ]
+            },
+            "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.paymentHistoryCells"
+              ]
+            },
+            "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.balance",
+                "account.pastDueAmount"
+              ]
+            },
+            "COMMON-ERROR-DUPLICATE-REPORTING": {
+              "supported": false,
+              "missing_fields": [
+                "account.masked_identifier",
+                "account.reported_identity"
+              ]
+            },
+            "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.masked_identifier",
+                "account.reported_identity",
+                "account.responsibility"
+              ]
+            }
+          },
+          "US": {
+            "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY": {
+              "supported": false,
+              "missing_fields": [
+                "liability.openedDate",
+                "liability.closedDate"
+              ]
+            },
+            "COMMON-ERROR-STATUS-DATE-CONTRADICTION": {
+              "supported": false,
+              "missing_fields": [
+                "account.status",
+                "liability.closedDate"
+              ]
+            },
+            "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.paymentHistoryCells"
+              ]
+            },
+            "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.balance",
+                "account.pastDueAmount"
+              ]
+            },
+            "COMMON-ERROR-DUPLICATE-REPORTING": {
+              "supported": false,
+              "missing_fields": [
+                "account.masked_identifier",
+                "account.reported_identity"
+              ]
+            },
+            "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY": {
+              "supported": false,
+              "missing_fields": [
+                "account.masked_identifier",
+                "account.reported_identity",
+                "account.responsibility"
+              ]
+            }
+          }
+        },
+        "reader_capability": {
+          "GENERAL": {
+            "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY": true,
+            "COMMON-ERROR-STATUS-DATE-CONTRADICTION": true,
+            "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY": true,
+            "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY": true,
+            "COMMON-ERROR-DUPLICATE-REPORTING": true,
+            "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY": true
+          },
+          "AU": {
+            "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY": true,
+            "COMMON-ERROR-STATUS-DATE-CONTRADICTION": false,
+            "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY": false,
+            "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY": false,
+            "COMMON-ERROR-DUPLICATE-REPORTING": false,
+            "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY": false
+          }
+        }
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 7
+    },
+    {
+      "id": "br-qualified-assessment",
+      "title": "OWNER-POTENTIAL-ISSUE-001 Branch B: separate qualified assessment (unresolved exception -> PROBABLE)",
+      "file": "br-qualified-assessment.cjs",
+      "passed": 15,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "qualified": "period exceeded + unresolved exception -> PROBABLE verification request, never VIOLATION",
+        "definite_preserved": "the strict definite classifier is unchanged"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 9
+    },
+    {
+      "id": "bs-prime-directive-delivery",
+      "title": "OWNER-POTENTIAL-ISSUE-001 delivery: qualified retention + AU contradictory-date through the complete packet path",
+      "file": "bs-prime-directive-delivery.cjs",
+      "passed": 27,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "qualified_upload": "unresolved-exception qualified path reaches selection + entitled verification-packet download from a fictional upload",
+        "wording": "affirmative concern leads; exception uncertainty is plain and never asserts an absent exception"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1112
+    },
+    {
+      "id": "bt-ordinary-field-coverage",
+      "title": "OWNER-POTENTIAL-ISSUE-001 Branch A: lifecycle vs repayment status meaning",
+      "file": "bt-ordinary-field-coverage.cjs",
+      "passed": 12,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "au_repayment_status_benign": "the AU \"Current Repayment Status\" sentence beside a closure date is benign; the raw reading and location are preserved and the sentence is never mapped to the lifecycle status fact",
+        "lifecycle_open_positive": "a lifecycle-open status (Status: Open) beside a closure date remains a selectable verification issue through the upload path",
+        "repayment_current_benign": "a repayment-performance status (Status: Current) beside a closure date is never read as open"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 223
+    },
+    {
+      "id": "bu-gb-tu-ca-fields",
+      "title": "OWNER-POTENTIAL-ISSUE-001 Branch B: GB-Experian + TU-CA ordinary-account date fields",
+      "file": "bu-gb-tu-ca-fields.cjs",
+      "passed": 17,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "gb_account_dates": "GB-Experian Started/Settled map to liability.openedDate/closedDate -> account-dates verification issue (downstream)",
+        "tu_ca_account_dates": "TU-CA Opened/Closed Date map to liability.openedDate/closedDate -> account-dates verification issue (downstream)",
+        "constraint": "GB and TU-CA structural contracts admit only their real specimens; a synthetic PDF cannot pass admit, so these field paths are downstream (store-injected) evidence"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 158
+    },
+    {
+      "id": "bv-admission-and-upload",
+      "title": "OWNER-POTENTIAL-ISSUE-001: admission contracts, AU/GB upload fixtures, US balance/past-due",
+      "file": "bv-admission-and-upload.cjs",
+      "passed": 27,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "admission": {
+          "au_predicates": [
+            "INPUT_PRESENT_AND_READABLE",
+            "CONTAINER_IS_A_PDF",
+            "NOT_ENCRYPTED",
+            "NATIVE_TEXT_ON_EVERY_PAGE",
+            "NO_FIXTURE_OR_SYNTHETIC_MARKER",
+            "MODEL_IS_A_FILE_NOT_AN_IN_MEMORY_MODEL",
+            "NO_WRONG_CHANNEL_MARKER",
+            "BUREAU_IDENTITY_ON_EVERY_FOOTER_AFTER_THE_COVER",
+            "REQUIRED_STRUCTURE_HEADINGS_PRESENT",
+            "CONSUMER_SECTIONS_PRESENT"
+          ],
+          "gb_predicates": [
+            "INPUT_PRESENT_AND_READABLE",
+            "CONTAINER_IS_A_PDF",
+            "NOT_ENCRYPTED",
+            "NATIVE_TEXT_ON_EVERY_PAGE",
+            "NO_FIXTURE_OR_SYNTHETIC_MARKER",
+            "MODEL_IS_A_FILE_NOT_AN_IN_MEMORY_MODEL",
+            "NO_WRONG_CHANNEL_MARKER",
+            "CONSUMER_CHANNEL_MARKERS_PRESENT",
+            "REQUIRED_STRUCTURE_HEADINGS_PRESENT"
+          ],
+          "tu_ca_producer_check": true
+        },
+        "au_gb_upload": "AU and GB fictional, structurally faithful PDFs run the real upload path (not store injection) to the entitled packet",
+        "us_balance_payment": "US-Experian Recent balance / Past due amount map to account facts enabling BALANCE-PAYMENT-INCONSISTENCY (downstream synthetic record)",
+        "tu_ca_constraint": "TU-CA additionally refuses the synthetic factory producer, so its field paths remain downstream"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 1327
+    },
+    {
+      "id": "bw-browser-wizzard",
+      "title": "OWNER-POTENTIAL-ISSUE-001: real-browser Wizzard acceptance (potential/probable/partial-selection/edit-after-approval/benign)",
+      "file": "bw-browser-wizzard.cjs",
+      "passed": 31,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+        "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 10669
+    },
+    {
+      "id": "bx-all82-factual-verification",
+      "title": "OWNER-ALL82-001: the general-intake potential-issue journey (select/approve/download) across all 82 jurisdictions",
+      "file": "bx-all82-factual-verification.cjs",
+      "passed": 9,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "regions_tested": 82,
+        "presentations": [
+          "GENERAL-BUREAU-REPORT"
+        ],
+        "download_content_matched": 82,
+        "case_association_matched": 82,
+        "fixtures": "82 distinct fictional general reports with case-specific printed creditor evidence; no real consumer identifiers or private reports"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 15354
+    },
+    {
+      "id": "by-packet-reconciliation",
+      "title": "OWNER-POTENTIAL-ISSUE-001: reconcile every emitted finding with the unified Issue and packet path",
+      "file": "by-packet-reconciliation.cjs",
+      "passed": 68,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "reconciled_content_finding": "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE: CONTENT_FINDING, content evidence + template, eligible",
+        "reconciled_retention_findings": [
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "emitted_findings_reconciled": [
+          {
+            "adapter_id": "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "FCRA-605A-3-US-NATIONAL-7Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "FCRA-605A-4-US-NATIONAL-7Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "FCRA-605A-5-US-NATIONAL-7Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-NY-GBL-380J-F1-III-TAX-LIEN-PAID-7Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y",
+            "classification": "PROBABLE_VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+            "classification": "VIOLATION",
+            "issues": 1,
+            "eligible": true
+          }
+        ],
+        "packet_enabled_rules": [
+          "US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y",
+          "US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y",
+          "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+          "CA-NS-CRA-S10-3-F-DISMISSED-CHARGE",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+          "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y"
+        ],
+        "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 585
+    },
+    {
+      "id": "bz-report-history",
+      "title": "BLOCKER-SUBSCRIPTION-VALUE-001: owned report history and evidence-based comparison",
+      "file": "bz-report-history.cjs",
+      "passed": 51,
+      "failed": 0,
+      "skipped": [],
+      "failures": [],
+      "evidence": {
+        "outcomes": {
+          "unchanged": "STILL_OBSERVED",
+          "changed": "CHANGED",
+          "no_longer_observed": "NO_LONGER_OBSERVED",
+          "not_comparable": "NOT_COMPARABLE"
+        },
+        "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+        "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+      },
+      "completed": true,
+      "section_exception": null,
+      "duration_ms": 2694
+    }
+  ]
+}

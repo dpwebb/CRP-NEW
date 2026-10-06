@@ -1,0 +1,70 @@
+{
+  "artifact": "gate_5_1_requirement_reassessment.json",
+  "work_order": "PHASE5-001M",
+  "created_utc": "2026-09-30",
+  "purpose": "reassess every Gate 5.1 condition against the amended authority, after the PHASE5-001M amendment was recorded in the two governing documents",
+  "authority_after_amendment": {
+    "gate_text": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3, Gate 5.1 (line 55 of 156) - NOT amended by this order",
+    "count_requirement": "the same document, section 3 Phase 5.1 bullet 4 as amended, and section 6 as amended",
+    "contract_parallel": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md section 6 owner decision block as amended; section 9 Amendment History carries the PHASE5-001M row",
+    "note": "the gate wording was deliberately left unchanged; what changed is the instruction that states what the count requirement is - the requirement to reconcile the unavailable B20 membership against the persisted source-discovery records was replaced by a reproducible reconciliation of the complete source-ID register"
+  },
+  "gate_text_verbatim": "Gate 5.1: every source ID is accounted for once, all counts reconcile, duplicate links are explicit, and no unresolved item was silently excluded. If reports are only present in chat, first create the durable, schema-conforming rescreen register from the accepted reports, with provenance to each batch and correction.",
+  "arithmetic_verified_independently": [
+    {"check": "39 + 380 + 18", "result": 437, "meaning": "the historical aggregate is arithmetically complete for 437 source records; completeness is not attribution", "certified": false},
+    {"check": "GAP 18 + REFUSAL 3 + UNRESOLVED 416", "result": 437, "source": "recomputed by this order directly from SOURCE_CAPTURES/PHASE5-001K/rescreen_register.csv", "certified": "register-level, as recorded by 001K; not re-classed here"},
+    {"check": "rows 437; distinct source_entry_id 437; suffix range 0001-0437; missing 0; repeated 0; non-catalogue identifiers 0", "result": "437 accounted for once", "source": "recomputed from the 001K row file"},
+    {"check": "rows with no duplicate relationship 346 + rows inside a duplicate group 91", "result": 437, "source": "recomputed from SOURCE_CAPTURES/PHASE5-001L/duplicate_determinations.csv"},
+    {"check": "identical rows 22 + unresolved rows 15 + distinct rows 54", "result": 91, "source": "recomputed from the same file; removal_permitted = NO on all 437 rows"},
+    {"check": "relations 16 identical + 25 unresolved + 2,317 distinct", "result": 2358, "source": "SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json as recorded by 001L"},
+    {"check": "upper bookkeeping value 437 - 12", "result": 425, "certified": false},
+    {"check": "lower bookkeeping value 425 - 9", "result": 416, "certified": false, "coincidence_warning": "416 is numerically equal to the 416 UNRESOLVED rows in the 001K row file. The two quantities are unrelated and their equality is not agreement, corroboration or identity."},
+    {"check": "distinct legal_provision_key 429; 437 - 429 = 8", "result": "8 provisional and unreconciled", "source": "recomputed from the 001K row file"}
+  ],
+  "certification_status_of_these_numbers": "NOT CERTIFIED. Under the amended authority every current count must state the evidence it rests on, the meaning it carries and the limitations that remain unresolved. The only counts that reconcile against durable per-ID evidence are the register's own: 437 source records, one disposition each, and the register's disposition totals. 425, 416, the 12 and 9 duplicate-excess figures and the historical 39/380/18 aggregate are recorded-descriptor or historical indicators only. None is a legal-provision count, a candidate count, a coverage measure or a rule count, and none may be published or consumed as one.",
+  "prohibited_uses": [
+    "quoting 416, 425 or the 12 or 9 excess figures as certified corpus, coverage or rule counts",
+    "reading the numerical equality of 416 (lower bookkeeping value) and 416 (UNRESOLVED rows) as corroboration",
+    "attributing any of the 437 catalogue IDs to any B20 class",
+    "treating the preserved B20 aggregate as a starting count for any downstream step",
+    "reconstructing B20 membership from the 18 GAP records or from any candidate-shaped subset"
+  ],
+  "gate_5_1_condition_reassessment": [
+    {"condition": "every source ID is accounted for once", "state": "MET", "basis": "437 rows, 437 distinct source_entry_id values, suffix range 0001-0437 complete, 0 missing, 0 repeated, 0 non-catalogue identifiers - recomputed by this order from the 001K row file"},
+    {"condition": "all counts reconcile", "state": "MET FOR THE SOURCE-ID REGISTER; NOT MET FOR THE UNIQUE-LEGAL-PROVISION COUNT", "basis": "Under the amended authority the count requirement is the reproducible reconciliation of the complete source-ID register, which 001K built and 001L and this order reproduced: 437 IDs accounted for once, dispositions GAP 18 + REFUSAL 3 + UNRESOLVED 416 = 437, register counts internally consistent, and the historical B20 aggregate is no longer a carried-forward count but a preserved record whose per-ID basis and limitation are stated. The separate Phase 5.1 requirement to count unique legal provisions remains incomplete: 429 distinct legal_provision_key values are recorded provisionally, 22 rows sit in clusters demonstrably identical at recorded-descriptor level, and 15 rows sit in six clusters whose identity is undetermined, so up to 9 further identical rows may exist."},
+    {"condition": "duplicate links are explicit", "state": "MET AS EXPLICIT DETERMINATIONS; THE UNDERLYING IDENTITY IS NOT FINAL FOR SIX CLUSTERS", "basis": "001L determined all 2,358 duplicate relations (16 identical, 25 unresolved, 2,317 distinct as recorded) and gave every one of the 437 rows a determination plus a next action, so no link is implicit or inherited by adjacency. The six clusters 0315/0316/0317/0318/0320, 0149/0150, 0165/0166, 0409/0411, 0336/0349 and 0337/0351 are explicitly recorded as IDENTITY_UNRESOLVED and queued; removal_permitted = NO on all 437 rows."},
+    {"condition": "no unresolved item was silently excluded", "state": "MET", "basis": "The 416 UNRESOLVED rows are queued individually in the 001K row file with a named blocker; the 15 identity-unresolved rows are queued individually in duplicate_determinations.csv; the six B20 mapping IDs remain visible with their pending mapping; nothing was dropped, defaulted, inferred or merged by the amendment, which touched no catalogue row"},
+    {"condition": "if reports are only present in chat, first create the durable, schema-conforming rescreen register with provenance to each batch and correction", "state": "MET BY 001K, CUSTODY RE-VERIFIED BY THIS ORDER", "basis": "The 001K register and row file are durable and carry batch provenance; their hashes are unchanged from the pre-write baseline of this order (3/3 entries match)"}
+  ],
+  "phase_5_1_requirement_reassessment_after_amendment": [
+    {"requirement": "Preserve the 437-entry source catalogue as the authoritative baseline; do not rewrite its legal content in this step.", "state": "SATISFIED", "basis": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md is byte-identical to the pre-write state: 447,509 bytes, sha256 3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d, 437 entries. The only two files changed by this order are the two governing documents named in the amendment."},
+    {"requirement": "Reconcile every catalogue ID to exactly one current corrected-logic disposition from the plan's vocabulary.", "state": "SATISFIED AS RECORDED BY 001K - NOT ADVANCED BY THIS ORDER", "basis": "437 rows with one disposition each, reproduced independently by this order; no row was re-classed."},
+    {"requirement": "Record the unique legal-provision key and explicit canonical/duplicate links. Count source records separately from unique legal provisions; do not infer duplication from adjacent IDs.", "state": "PARTIALLY SATISFIED - PRESERVED, NOT CLOSED", "basis": "Explicit per-relation determinations exist for all 2,358 relations; the separate unique-provision count is not final because six clusters remain identity-unresolved. The amendment expressly preserves this requirement and the six clusters and resolves neither."},
+    {"requirement": "Carry forward the B20 ruling of 39 probable candidates, 380 excluded and 18 unresolved, including CRP-LSRC-0354 and 0422-0425 and 0427, and reconcile these totals against the persisted source-discovery records before treating them as final.", "state": "AMENDED BY PHASE5-001M - the reconciliation requirement is replaced; the B20 record is preserved as an unattributed historical record", "basis": "Amendments M1-A, M1-B and M2-A. The per-ID inventory behind the tally is absent from this workspace and the per-ID basis is MISSING_EVIDENCE. Under the amended text no catalogue ID is assigned to any B20 class, the tally is not a certified operational count and is not the register's certified starting count, and the count requirement is instead the reproducible reconciliation of the complete source-ID register, with every current count stating its evidence, its meaning and its unresolved limitations. The six named IDs remain visible with their pending exact report-field/event mapping; no mapping was performed."},
+    {"requirement": "Keep the wildcard and unspecified-jurisdiction gaps visible, and keep unknown family identifiers opaque unless an approved mapping is found.", "state": "SATISFIED", "basis": "Three entries carry a wildcard or unspecified marker, including CRP-LSRC-0435, whose GAP record is intact and expressly not closed. This order changed none of them."}
+  ],
+  "gate_5_1_result": {
+    "status": "NOT PASSED",
+    "status_previously": "NOT PASSED (PHASE5-001L), blocked on one owner decision about the B20 aggregate",
+    "blocking_item_now": "the separate duplicate-identity requirement of Phase 5.1 bullet 3: six clusters cannot be determined from the recorded descriptors, so the unique-legal-provision count is not final",
+    "blocking_item_removed": "the B20 aggregate is no longer a carried-forward count. It is preserved as an unattributed historical record with per-ID basis MISSING_EVIDENCE: recorded, not reconciled.",
+    "conditions_met": ["every source ID is accounted for once", "no unresolved item was silently excluded", "the durable rescreen register exists with batch provenance"],
+    "conditions_not_fully_met": ["all counts reconcile, as to the separately required unique-legal-provision count", "duplicate links are explicit, as to the identity of the six unresolved clusters"],
+    "what_the_amendment_does_not_do": [
+      "it does not certify legal dispositions",
+      "it does not admit a governed rule",
+      "it does not establish consumer-format support",
+      "it does not pass Gate 5.1",
+      "it does not move any of the 437 records into a candidate class or out of a recorded disposition"
+    ]
+  },
+  "next_remaining_prerequisite": {
+    "gate": "Gate 5.1",
+    "requirement": "the duplicate-identity determination of Phase 5.1 bullet 3 must be completed for the six clusters whose identity cannot be decided from the recorded descriptors",
+    "clusters": ["0315/0316/0317/0318/0320", "0149/0150", "0165/0166", "0409/0411", "0336/0349", "0337/0351"],
+    "next_bounded_action": "see next_bounded_action.json - one bounded retrieval or owner-ruling order over those six clusters; not performed by this order",
+    "separate_owner_question_unchanged": "whether any of the ten demonstrably identical clusters should one day be a single catalogue entry"
+  },
+  "boundaries": "Measurement and verification only. No source was retrieved, no identity was adjudicated, no cluster was collapsed or merged, no count was certified, no rule was admitted and no finding was created.",
+  "created_by": "PHASE5-001M"
+}

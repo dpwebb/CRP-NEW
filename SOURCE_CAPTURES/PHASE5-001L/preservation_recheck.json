@@ -1,0 +1,94 @@
+{
+  "artifact": "preservation_recheck.json",
+  "work_order": "PHASE5-001L",
+  "gate": "PHASE5 gate 5.1",
+  "created_utc": "2026-09-30",
+  "requirement": "Preserve the 437-entry source catalogue as the authoritative baseline and preserve every pre-existing workspace artifact byte for byte.",
+  "method": "Every pre-existing file was hashed before the first write of this order. At the close of the order the whole workspace was re-hashed with this order's own output directory excluded, and the two inventories were compared by digest, file count and byte total. No pre-existing file was opened for writing at any point; no command in this order had a write target outside SOURCE_CAPTURES\\PHASE5-001L.",
+  "baseline_and_recheck": {
+    "pre_write_files": 236,
+    "pre_write_bytes": 55191978,
+    "pre_write_digest": "482B93C8673C724CE30CE6FC6CEE024BA360C77C6F940878D62035DBD3E3C4BD",
+    "post_write_files": 236,
+    "post_write_bytes": 55191978,
+    "post_write_digest": "482B93C8673C724CE30CE6FC6CEE024BA360C77C6F940878D62035DBD3E3C4BD",
+    "digest_definition": "SHA-256 over the newline-joined lines 'UPPERCASE_SHA256<space>bytes<space>relative_path' for every pre-existing file, sorted by absolute path",
+    "result": "IDENTICAL. The same file count, the same byte total and the same digest were produced before and after this order, so no pre-existing workspace file was created, modified, moved or deleted by this order."
+  },
+  "workspace_totals_now": {
+    "all_files": 241,
+    "pre_existing_files": 236,
+    "new_files_created_by_this_order": 5,
+    "new_files": [
+      "SOURCE_CAPTURES\\PHASE5-001L\\input_inventory.json",
+      "SOURCE_CAPTURES\\PHASE5-001L\\duplicate_relations.json",
+      "SOURCE_CAPTURES\\PHASE5-001L\\duplicate_determinations.csv",
+      "SOURCE_CAPTURES\\PHASE5-001L\\duplicate_identity_analysis.json",
+      "SOURCE_CAPTURES\\PHASE5-001L\\b20_basis_search.json"
+    ],
+    "manifest_and_narrative": "file_custody_manifest.json and CRP_PHASE5_001L_DUPLICATE_AND_COUNT_RECONCILIATION.md are created after this record and are listed in the manifest."
+  },
+  "addendum_after_close": {
+    "note": "The five files above are the artifacts that existed when this preservation record was written. Three further artifacts of this order were created afterwards, all inside the same output directory: preservation_recheck.json, gate_5_1_requirement_reassessment.json and file_custody_manifest.json, together with the narrative deliverable CRP_PHASE5_001L_DUPLICATE_AND_COUNT_RECONCILIATION.md. Every pre-existing-file measurement in this record was taken with this order's own output directory excluded and is unaffected by those later files; the seven evidence artifacts plus the narrative are enumerated in file_custody_manifest.json.",
+    "pre_existing_file_measurements_unaffected": true
+  },
+  "close_of_order_verification": {
+    "method": "At the close of the order the 236 pre-existing files were verified two independent ways: (1) each file was re-hashed individually and compared with the size and sha256 recorded for it in input_inventory.json; (2) the composite inventory digest was recomputed from the recorded hash lines.",
+    "per_file_result": "236 of 236 entries present, 0 missing, 0 byte-count mismatches, 0 sha256 mismatches",
+    "composite_digest_result": "RECOMPUTED AND REPRODUCED: 482B93C8673C724CE30CE6FC6CEE024BA360C77C6F940878D62035DBD3E3C4BD",
+    "composite_digest_exact_format": "SHA-256 (UTF-8, no trailing newline) over the LF-joined lines 'UPPERCASE_SHA256<space>bytes<space>relative_path', where relative_path is the inventory path form beginning with a backslash, e.g. '\\consumer-wizard.tar.gz', ordered by path; the ordering is insensitive to path-vs-absolute-path sorting because both orders agree on this file set.",
+    "conclusion": "The pre-write and post-write states are identical, both per file and in aggregate. Nothing outside SOURCE_CAPTURES\\PHASE5-001L\\ and this order's narrative deliverable exists that did not exist before this order."
+  },
+  "unit_level_preservation": {
+    "catalogue_entries_before": 437,
+    "catalogue_entries_after": 437,
+    "catalogue_bytes": 447509,
+    "catalogue_sha256": "3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d",
+    "catalogue_custody_note": "The catalogue's current digest is the state 001K itself recorded as the after value of its own section 12.5 appendix (445,785 bytes / 5BCC3CDE...019D before, 447,509 bytes / 3ACB39A3...038D after, +1,724 bytes). The digest 5BCC3CDE...019D quoted by earlier documents is the pre-001K state. The catalogue was not touched by this order.",
+    "source_records_removed": 0,
+    "rows_rewritten": 0,
+    "dispositions_changed": 0,
+    "canonical_anchors_written_back": 0,
+    "rules_admitted": 0,
+    "coverage_or_findings_created": 0
+  },
+  "frozen_input_verification": {
+    "inputs_listed_in_001K_section_2": 14,
+    "verified_match": 14,
+    "mismatch": 0,
+    "notable": [
+      "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md: 447,509 bytes / 3acb39a3b6e80dd4db38689541ccc17542e941cefa4d6c0a355b9816f030038d - MATCH (the post-001K state)",
+      "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv: 616,237 bytes / dfb78dd20aad444a4fc5b03d0fdff11081ad67a454af80bbbb2cd4cb0c0f24bb - MATCH",
+      "SOURCE_CAPTURES\\PHASE5-001K\\file_custody_manifest.json: 541 bytes / 8ac36ed6212d2f3722f6a24b5dae0f78e0efb2b5110c60f37f131fe4c24400b6 - MATCH"
+    ]
+  },
+  "custody_manifest_001K_verification": {
+    "entries": 3,
+    "verified_match": 3,
+    "mismatch": 0,
+    "method": "each file named in the 001K manifest was re-hashed and re-measured on disk and compared with the manifest's recorded bytes and sha256"
+  },
+  "cross_check_against_001K_preservation": {
+    "001K_recorded_pre_write_baseline_files": 232,
+    "001K_new_files": 4,
+    "expected_pre_write_baseline_for_this_order": 236,
+    "measured_pre_write_baseline_for_this_order": 236,
+    "result": "CONSISTENT - this order's baseline is exactly 001K's baseline plus 001K's own four new files, so nothing entered or left the workspace between the two orders"
+  },
+  "unresolved_identity_rows_preserved": {
+    "rows": 15,
+    "preserved": 15,
+    "removed": 0,
+    "note": "The fifteen rows whose duplicate identity could not be determined are all still present in the catalogue and all carry a preserved disposition in the 001K register file; this order queued them in duplicate_determinations.csv instead of collapsing, merging or re-classing any of them."
+  },
+  "not_done": [
+    "no record was collapsed or merged",
+    "no disposition was inherited by any twin, anchor or canonical member",
+    "no row was re-classed from a duplicate finding",
+    "no candidate or unique-provision count was certified",
+    "no governing document was amended",
+    "no network call, consumer report or transmission was made"
+  ],
+  "result": "PRESERVATION HELD"
+}
+

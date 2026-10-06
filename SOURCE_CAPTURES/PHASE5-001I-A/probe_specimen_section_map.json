@@ -1,0 +1,245 @@
+{
+  "artifact": "probe_specimen_section_map.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "per-page structural map of the pinned presentation: heading presence and contract row-label occurrences, with no value and no report content recorded",
+  "specimen_artifact_id": "LEG-CONSUMER-EQ-CA",
+  "specimen_sha256_expected": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+  "specimen_sha256_measured": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+  "specimen_digest_matches_pin": true,
+  "extraction_method": "pdftotext (poppler) -f <page> -l <page> -layout <file> -",
+  "page_count": 22,
+  "row_labels": [
+    "Date Assigned",
+    "Member Name",
+    "Phone Number",
+    "Member Number",
+    "First Delinquency",
+    "Account Number",
+    "Amount",
+    "Status",
+    "Balance",
+    "Narrative",
+    "Date Paid/Settled",
+    "Date Verified",
+    "Last Payment Date"
+  ],
+  "pages": [
+    {
+      "page": 1,
+      "chars": 728,
+      "line_count": 31,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 2,
+      "chars": 2659,
+      "line_count": 66,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Phone Number": 1
+      },
+      "row_label_total": 1
+    },
+    {
+      "page": 3,
+      "chars": 241,
+      "line_count": 15,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 4,
+      "chars": 836,
+      "line_count": 29,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 5,
+      "chars": 1802,
+      "line_count": 63,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Amount": 3,
+        "Balance": 3
+      },
+      "row_label_total": 6
+    },
+    {
+      "page": 6,
+      "chars": 2575,
+      "line_count": 52,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Balance": 1
+      },
+      "row_label_total": 1
+    },
+    {
+      "page": 7,
+      "chars": 1856,
+      "line_count": 66,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Amount": 3,
+        "Balance": 3
+      },
+      "row_label_total": 6
+    },
+    {
+      "page": 8,
+      "chars": 2910,
+      "line_count": 60,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Balance": 1
+      },
+      "row_label_total": 1
+    },
+    {
+      "page": 9,
+      "chars": 679,
+      "line_count": 25,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 10,
+      "chars": 3444,
+      "line_count": 61,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 11,
+      "chars": 1533,
+      "line_count": 46,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 12,
+      "chars": 281,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 13,
+      "chars": 904,
+      "line_count": 30,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 14,
+      "chars": 248,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 15,
+      "chars": 266,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 16,
+      "chars": 990,
+      "line_count": 60,
+      "prints_collections_heading": true,
+      "row_label_occurrences": {
+        "Date Assigned": 2,
+        "Member Name": 2,
+        "Phone Number": 2,
+        "Member Number": 2,
+        "First Delinquency": 2,
+        "Account Number": 2,
+        "Amount": 2,
+        "Status": 2,
+        "Balance": 2,
+        "Narrative": 2,
+        "Date Paid/Settled": 2,
+        "Last Payment Date": 1
+      },
+      "row_label_total": 23
+    },
+    {
+      "page": 17,
+      "chars": 166,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {
+        "Last Payment Date": 1
+      },
+      "row_label_total": 1
+    },
+    {
+      "page": 18,
+      "chars": 254,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 19,
+      "chars": 238,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 20,
+      "chars": 257,
+      "line_count": 11,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 21,
+      "chars": 753,
+      "line_count": 26,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    },
+    {
+      "page": 22,
+      "chars": 793,
+      "line_count": 34,
+      "prints_collections_heading": false,
+      "row_label_occurrences": {},
+      "row_label_total": 0
+    }
+  ],
+  "pages_printing_the_collections_heading": [
+    16
+  ],
+  "pages_printing_any_contract_row_label": [
+    2,
+    5,
+    6,
+    7,
+    8,
+    16,
+    17
+  ],
+  "created_by": "PHASE5-001I-A"
+}

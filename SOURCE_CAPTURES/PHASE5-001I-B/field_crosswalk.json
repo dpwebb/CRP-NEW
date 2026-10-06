@@ -1,0 +1,166 @@
+{
+  "artifact": "field_crosswalk.json",
+  "work_order": "PHASE5-001I-B",
+  "created_utc": "2026-09-30",
+  "document_type": "DRAFT field crosswalk for the rule-record draft. Build plan section 4 item 2 is the report-representation and field-mapping register; this crosswalk is the rule-record draft's own reading of that register plus the measured PHASE5-001I-A extraction, and it creates no new register entry",
+  "purpose": "state, field by field, exactly which printed facts this rule unit reads, what each is mapped to, what each must never be used as, and which printed fields are deliberately not mapped - so that no reader can mistake a printed collection field for an admitted tradeline fact, or a report reference date for a statutory or event date",
+  "status_of_this_artifact": {
+    "admission_state": "NOT_ADMITTED_DRAFT_ONLY",
+    "creates_or_updates_a_register_entry": false,
+    "creates_an_admitted_fact_model": false,
+    "gate_credit": "NONE",
+    "consumer_visible": false
+  },
+  "evidence_the_mapping_is_read_from": [
+    "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json field_records FACT-02, FACT-03, FACT-04, FACT-05 and date_meanings, explicit_blanks, unresolved_mappings",
+    "SOURCE_CAPTURES\\PROD-003\\extraction_evidence.json (the named extraction method and its measured values)",
+    "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json (the measured run: admission predicates, section resolution, record binding, per-record values)",
+    "SOURCE_CAPTURES\\PHASE5-001I-A\\locators.cjs and presentation-contract.cjs (the implemented locators and admission predicates; internal, rank 8)",
+    "internal-validation\\ca-ns-last-payment-six-year\\constants.cjs (the status vocabulary and the printed date form)"
+  ],
+  "mapped_facts": [
+    {
+      "printed_field": "Last Payment Date",
+      "prints_in": "a contract debt record inside the Collections section",
+      "printed_form": "DDDD/DD/DD",
+      "observed_value": "2021/02/01",
+      "normalized_value": "2021-02-01",
+      "locators": [
+        "record 1: page 16, line 32 (record spans page 16 line 8 to page 16 line 38)",
+        "record 2: page 17, line 5 (record spans page 16 line 39 to page 17 line 11)"
+      ],
+      "drafted_fact_id": "collection.lastPaymentDate",
+      "drafted_fact_scope": "COLLECTION_RECORD_SPECIFIC",
+      "drafted_fact_definition": "the date the printed collection record states the last payment on that debt was made, bound to that record",
+      "date_meaning_as_recorded": "the date the printed record states the last payment was made; a report-stated historical event the report asserts, not proof that the payment occurred",
+      "role_in_the_rule": "the rule's first-limb clock start",
+      "required_field_of_the_admitted_rule_record": "tradeline.lastPaymentDate",
+      "seated_as_the_admitted_field": false,
+      "mapping_state": "DIVERGENCE_RECORDED_NOT_SEATED",
+      "divergence": "the admitted legacy rule record requires a tradeline field, while this presentation prints the field on a collection record. The legacy corpus's own record states that a collection carries no such field and that neither a collection's opened date nor its reported date answers either limb",
+      "resolution_required_at_admission": [
+        "an owner/corpus amendment seating the printed collection field as the representation of the required field, or",
+        "a determination that the printed field does not satisfy the admitted field requirement, in which case the first limb has no admitted representation on this presentation"
+      ],
+      "must_never_be_used_as": [
+        "a tradeline fact without an owner/corpus determination",
+        "proof that any payment was made",
+        "the default-in-payment date",
+        "a value borrowed from another record, section or page"
+      ],
+      "extraction_status_on_the_specimen": "RESOLVED (both records)",
+      "confidence_and_boundary": "demonstrated on one specimen; a second specimen is required before the locator is called reusable (D-2)"
+    },
+    {
+      "printed_field": "Request Date",
+      "prints_in": "the page header, line 1 of every page",
+      "printed_form": "DDDD/DD/DD",
+      "observed_value": "2026/05/05 (one identical value on all 22 pages)",
+      "normalized_value": "2026-05-05",
+      "locator": "page-header label on all 22 pages, line 1 of each page",
+      "drafted_fact_id": "report.requestDate",
+      "drafted_fact_scope": "REPORT_LEVEL_REFERENCE_DATE",
+      "drafted_fact_definition": "the date the consumer requested the report, as printed by the bureau in the page header",
+      "date_meaning_as_recorded": "the report's request date, printed by the bureau",
+      "role_in_the_rule": "the comparison reference date, and the only point in time this unit compares against",
+      "mapping_state": "MAPPED_AS_A_RECORDED_CONVENTION_PENDING_ADMISSION",
+      "convention_note": "the admitted text names no comparison date. Its use here is a modelling convention of the internal evaluation, recorded for admission, not a requirement of the accepted text",
+      "must_never_be_used_as": [
+        "a statutory effective date or a commencement date",
+        "the date of any underlying event, including the last payment or a default",
+        "a jurisdiction signal",
+        "evidence that anything is reportable or that any period has run for statutory purposes"
+      ],
+      "reading_rule": "read from the page header only, and only when the same value appears on every page; two different header values leave it unresolved and the comparison does not run",
+      "extraction_status_on_the_specimen": "RESOLVED"
+    }
+  ],
+
+  "printed_fields_deliberately_not_mapped": [
+    {
+      "printed_field": "First Delinquency",
+      "observed_value": "printed with a value inside the collection record",
+      "mapped_to": "nothing",
+      "why": "the admitted text does not read this field as the default-in-payment date, so it may not be substituted for FACT-05. The register records it as a located field whose meaning is NOT the meaning the rule requires"
+    },
+    {
+      "printed_field": "Date Assigned",
+      "observed_value": "printed inside the collection record",
+      "mapped_to": "the collection-record boundary label only",
+      "why": "it is the date the record states the debt was assigned to the collection agency; it is not a clock start for either limb"
+    },
+    {
+      "printed_field": "Date Paid/Settled",
+      "observed_value": "printed with no value on this specimen",
+      "mapped_to": "nothing",
+      "why": "no value is printed, and a blank is a resolved reading of THIS specimen's layout only. Even with a value it is not a field the admitted text reads"
+    },
+    {
+      "printed_field": "Date Verified",
+      "observed_value": "printed with no value on this specimen",
+      "mapped_to": "nothing",
+      "why": "same as Date Paid/Settled; also not read by the admitted text"
+    },
+    {
+      "printed_field": "Opened",
+      "observed_value": "printed inside account blocks",
+      "mapped_to": "nothing",
+      "why": "an account's opening date is neither a last-payment date nor a default date"
+    },
+    {
+      "printed_field": "Phone Number, Status, Narrative",
+      "observed_value": "printed with no value on this specimen (Collections)",
+      "mapped_to": "nothing",
+      "why": "explicit blanks recorded by the register; no rule reads them"
+    },
+    {
+      "printed_field": "Service Type Details, Date Reported, Compliance Date",
+      "observed_value": "labels printed in the multi-row alerts/disclosures table on page 21",
+      "mapped_to": "nothing",
+      "why": "the named extraction method paired no value with those labels on the same line, so no field from that table is claimed"
+    }
+  ],
+  "facts_required_by_the_admitted_text_that_are_not_seated": [
+    {
+      "fact": "whether any payment was made on the debt",
+      "recorded_as_required_by": "the legacy rule record's externalFactsRequired, first entry",
+      "seated_on_this_presentation": false,
+      "why": "no report field carries it, and no printed date proves or disproves it",
+      "effect": "the second limb cannot be evaluated on this presentation; nothing may be defaulted from another printed date"
+    },
+    {
+      "fact": "the date on which the default in payment occurred (register FACT-05)",
+      "recorded_as_required_by": "the admitted text's second limb, and the legacy rule record's externalFactsRequired, second entry",
+      "seated_on_this_presentation": false,
+      "why": "the record prints Date Assigned, First Delinquency, Date Paid/Settled, Date Verified and Last Payment Date, and none of them is that date as the admitted text reads that limb",
+      "effect": "the second limb stays UNSEATED. This is a statement about this specimen's row set, not a statement that no report states such a date"
+    }
+  ],
+  "status_and_outcome_are_separate_fields": {
+    "extraction_status_values": ["RESOLVED", "EXTRACTION_UNRESOLVED", "UNSUPPORTED_PRESENTATION", "NOT_A_DEBT_RECORD", "ABSENT_FROM_REPORT"],
+    "comparison_outcome_values": ["PERIOD_NOT_EXCEEDED", "PERIOD_EXCEEDED", "UNRESOLVED"],
+    "rule": "a status is never an outcome and an outcome is never a status; no comparison runs while either fact is unresolved; neither is a finding",
+    "absent_from_report_reachability": "exactly one path: the section is located and resolved and prints no contract debt record"
+  },
+  "what_this_crosswalk_refuses": [
+    "reading a label outside a contract debt record",
+    "borrowing a date from another record, section or page",
+    "treating a blank, missing or malformed label as ABSENT_FROM_REPORT",
+    "treating a non-debt region as a debt record",
+    "using a report's printed content to select a jurisdiction",
+    "mapping a printed collection field to the admitted tradeline field without an owner/corpus determination",
+    "claiming any field of the page-21 alerts/disclosures table"
+  ],
+  "unresolved_mapping_questions": [
+    "whether the printed collection Last Payment Date is the representation of the admitted required field tradeline.lastPaymentDate - OWNER_DECISION",
+    "whether the report's request date is the comparison reference date, or another point in time is required - PENDING_ADMISSION",
+    "whether the second limb ever gets a presentation - no field is located today; a later presentation must be separately evidenced (D-1)",
+    "whether a second specimen confirms the locator - D-2"
+  ],
+  "boundaries": [
+    "this crosswalk is a draft for the rule-record order. It adds no register entry, admits no fact model, creates no rule and is not gate evidence",
+    "it maps only printed positions that PHASE5-001I-A measured on the evidenced specimen, and it treats an unmapped field as unmapped rather than as absent",
+    "nothing here is consumer-visible"
+  ],
+  "created_by": "PHASE5-001I-B"
+}

@@ -1,0 +1,509 @@
+          Limitation of Actions Act
+          CHAPTER 35 OF THE ACTS OF 2014
+                          as amended by
+
+                            2015, c. 22
+
+
+
+
+© 2016 Her Majesty the Queen in right of the Province of Nova Scotia
+  Published by Authority of the Speaker of the House of Assembly
+                              Halifax
+This page is intentionally blank.
+                                  CHAPTER 35 OF THE ACTS OF 2014
+                                                            amended 2015, c. 22
+
+                                               An Act Respecting
+                                            the Limitation of Actions
+                                                                  Table of Contents
+
+                                            (The table of contents is not part of the statute)
+
+
+
+                                                                                                                                                         Section
+
+Short title...........................................................................................................................................       1
+Interpretation.....................................................................................................................................          2
+Application of Act.............................................................................................................................              3
+Aboriginal and treaty rights and equitable claims ............................................................................                               4
+Act binds Her Majesty ......................................................................................................................                 5
+Conflict with other enactments .........................................................................................................                     6
+Conflict of laws.................................................................................................................................            7
+
+                                                           General Limitation Periods
+
+General rules .....................................................................................................................................          8
+Burden of proof.................................................................................................................................             9
+
+                                                               Exceptions to the
+                                                           General Limitation Periods
+
+Proceedings by Her Majesty .............................................................................................................                    10
+Certain proceedings re trespass to the person, assault or battery......................................................                                     11
+Disallowance or invocation of limitation period...............................................................................                              12
+Recovery of personal property..........................................................................................................                     13
+
+                                                               Operation of the
+                                                           General Limitation Periods
+
+Demand obligations ..........................................................................................................................               14
+Contribution and indemnity ..............................................................................................................                   15
+Successors, principals and agents .....................................................................................................                     16
+Wilful concealment or wilfully misleading claimant........................................................................                                  17
+Minors ...............................................................................................................................................      18
+Incapacity ..........................................................................................................................................       19
+Acknowledgments.............................................................................................................................                20
+Agreements .......................................................................................................................................          21
+                                                             Claims Brought After
+                                                           Expiry of Limitation Period
+
+Claims added to proceedings ............................................................................................................                    22
+
+                                                   Transitional Provisions, Consequential
+                                                      Amendments and Effective Date
+
+Transitional ....................................................................................................................................... 23
+Land Registration Act amended........................................................................................................ 24
+Limitation of Actions Act amended.................................................................................................. 25-27
+Marketable Titles Act amended ........................................................................................................ 28
+Personal Property Security Act amended.......................................................................................... 29
+Sydney Steel Corporation Sale Act amended ................................................................................... 30
+Effective date .................................................................................................................................... 31
+
+                                                                    __________
+
+                                                                                                                                      SEPTEMBER 1, 2015
+2                                    limitation of actions                           2014, c. 35
+
+Short title
+       1       This Act may be cited as the Limitation of Actions Act or the Statute
+of Limitations. 2014, c. 35, s. 1.
+
+Interpretation
+      2      (1)           In this Act,
+                         (a)     “claim” means a claim to remedy the injury, loss or
+                    damage that occurred as a result of an act or omission;
+                          (b)     “claimant” means a person who has a claim, regardless
+                    of whether the claim has been brought;
+                            (c)    “defendant” means a person against whom a claimant
+                    has a claim, regardless of whether the claim has been brought.
+
+                    (2)    For the purpose of this Act, a claim is brought
+                          (a)      when a proceeding in respect of the claim is com-
+                    menced; or
+                            (b)    where the claim is added to an existing proceeding by a
+                    new or an amended pleading that is not an originating process, when
+                    that pleading is filed. 2014, c. 35, s. 2.
+
+Application of Act
+      3       Subject to Section 4, this Act applies to a claim pursued in a court
+proceeding, other than a claim
+                    (a)    to which the Real Property Limitations Act applies; or
+                    (b)    in a proceeding for judicial review. 2014, c. 35, s. 3.
+
+Aboriginal and treaty rights and equitable claims
+      4      (1)    This Act does not apply to
+                           (a)     a claim based on the existing aboriginal and treaty
+                    rights of the aboriginal peoples of Canada that are recognized and
+                    affirmed in section 35 of the Constitution Act, 1982; or
+                          (b)      an equitable claim by aboriginal peoples against Her
+                    Majesty.
+
+              (2)      A claim referred to in subsection (1) is governed by the law
+that would have been in force in respect of limitation of actions if this Act had not
+been enacted. 2014, c. 35, s. 4; 2015, c. 22, s. 1.
+
+Act binds Her Majesty
+       5    This Act binds Her Majesty. 2014, c. 35, s. 5; 2015, c. 22, s. 2.
+
+Conflict with other enactments
+       6       Where there is a conflict between this Act and any other enactment,
+the other enactment prevails. 2014, c. 35, s. 6.
+
+
+SEPTEMBER 1, 2015
+2014, c. 35                     limitation of actions                                  3
+
+Conflict of laws
+        7      For the purpose of applying the rules regarding conflict of laws, the
+limitations law of the Province and of any other jurisdiction is substantive law. 2014,
+c. 35, s. 7.
+
+
+                        GENERAL LIMITATION PERIODS
+
+General rules
+      8        (1)     Unless otherwise provided in this Act, a claim may not be
+brought after the earlier of
+                      (a)    two years from the day on which the claim is discov-
+               ered; and
+                     (b)     fifteen years from the day on which the act or omission
+               on which the claim is based occurred.
+
+             (2)    A claim is discovered on the day on which the claimant first
+knew or ought reasonably to have known
+                      (a)    that the injury, loss or damage had occurred;
+                       (b)    that the injury, loss or damage was caused by or con-
+               tributed to by an act or omission;
+                      (c)    that the act or omission was that of the defendant; and
+                     (d)     that the injury, loss or damage is sufficiently serious to
+               warrant a proceeding.
+
+              (3)    For the purpose of clause (1)(b), the day an act or omission on
+which a claim is based occurred is
+                      (a)    in the case of a continuous act or omission, the day on
+               which the act or omission ceases; and
+                       (b)    in the case of a series of acts or omissions concerning
+               the same obligation, the day on which the last act or omission in the
+               series occurs. 2014, c. 35, s. 8.
+
+Burden of proof
+       9       (1)    A claimant has the burden of proving that a claim was brought
+within the limitation period established by clause 8(1)(a).
+
+              (2)     A defendant has the burden of proving that a claim was not
+brought within the limitation period established by clause 8(1)(b). 2014, c. 35, s. 9.
+
+                            EXCEPTIONS TO THE
+                        GENERAL LIMITATION PERIODS
+
+Proceedings by Her Majesty
+      10     Section 8 does not apply to a proceeding
+               (a)    to recover money owing to Her Majesty in respect of
+                      (i)    fines, taxes or penalties, or
+
+
+                                                                        SEPTEMBER 1, 2015
+4                                          limitation of actions                2014, c. 35
+
+                            (ii)      interest on fines, taxes or penalties;
+               (b)     commenced by Her Majesty or an agent of Her Majesty in
+        respect of a claim relating to the administration of a social, health or eco-
+        nomic program; or
+               (c)  commenced by Her Majesty or an agent of Her Majesty to
+        recover money owing in respect of student loans, awards or grants. 2014,
+        c. 35, s. 10; 2015, c. 22, s. 3.
+
+
+Certain proceedings re trespass to the person, assault or battery
+        11     Section 8 does not apply to a proceeding in respect of a claim in rela-
+tion to trespass to the person, assault or battery if
+                    (a)     the claim is based on misconduct of a sexual nature; or
+                    (b)     at the time of the injury on which the claim is based
+                           (i)     one of the defendants was living with the claimant in
+                    an intimate relationship, or
+                            (ii)   the claimant was dependent, whether financially, emo-
+                    tionally or physically, on one of the defendants. 2014, c. 35, s. 11.
+
+Disallowance or invocation of limitation period
+       12      (1)    In this Section, “limitation period” means the limitation
+period established by
+                            (a)       clause 8(1)(a); or
+                            (b)       any enactment other than this Act.
+
+               (2)    This Section applies only to claims brought to recover dam-
+ages in respect of personal injuries.
+
+               (3)    Where a claim is brought without regard to the limitation
+period applicable to the claim, and an order has not been made under subsection (4),
+the court in which the claim is brought, upon application, may disallow a defence
+based on the limitation period and allow the claim to proceed if it appears to the
+court to be just having regard to the degree to which
+                           (a)    the limitation period creates a hardship to the claimant
+                    or any person whom the claimant represents; and
+                           (b)     any decision of the court under this Section would cre-
+                    ate a hardship to the defendant or any person whom the defendant
+                    represents, or any other person.
+
+              (4)     Where a limitation period has expired, a person who wishes to
+invoke the limitation period, upon giving at least 30 days’ notice to any person who
+may have a claim, may apply to the court for an order terminating the right of the
+person to whom such notice was given from commencing the claim and the court
+may issue such order or may authorize the commencement of the claim only if it is
+commenced on or before a day determined by the court.
+
+              (5)     In making a determination under subsection (3), the court
+shall have regard to all the circumstances of the case and, in particular, to
+
+
+SEPTEMBER 1, 2015
+2014, c. 35                        limitation of actions                                5
+
+                      (a)   the length of and the reasons for the delay on the part
+              of the claimant;
+                    (b)     any information or notice given by the defendant to the
+              claimant respecting the limitation period;
+                      (c)    the effect of the passage of time on
+                             (i)       the ability of the defendant to defend the claim,
+                      and
+                             (ii)   the cogency of any evidence adduced or likely
+                      to be adduced by the claimant or defendant;
+                     (d)    the conduct of the defendant after the claim was dis-
+              covered, including the extent, if any, to which the defendant
+              responded to requests reasonably made by the claimant for informa-
+              tion or inspection for the purpose of ascertaining facts that were or
+              might be relevant to the claim;
+                      (e)     the duration of any incapacity of the claimant arising
+              after the date on which the claim was discovered;
+                      (f)     the extent to which the claimant acted promptly and
+              reasonably once the claimant knew whether or not the act or omission
+              of the defendant, to which the injury was attributable, might be capa-
+              ble at that time of giving rise to a claim;
+                      (g)     the steps, if any, taken by the claimant to obtain medi-
+              cal, legal or other expert advice and the nature of any such advice the
+              claimant may have received;
+                      (h)    the strength of the claimant’s case; and
+                      (i)   any alternative remedy or compensation available to
+              the claimant.
+
+               (6)     A court may not exercise the jurisdiction conferred by this
+Section if the claim is brought more than two years after the expiry of the limitation
+period applicable to that claim.
+
+               (7)    This Section does not apply to a claim for which the limitation
+period is 10 years or more. 2014, c. 35, s. 12.
+
+Recovery of personal property
+        13    Notwithstanding Section 8, where personal property is converted and
+a defendant, acting in good faith, purchases the property for value, a claim to
+recover possession of property may not be brought against the defendant after two
+years from the day on which the property is converted. 2014, c. 35, s. 13.
+
+                           OPERATION OF THE
+                       GENERAL LIMITATION PERIODS
+
+Demand obligations
+       14      In the case of claim in relation to a default in performing a demand
+obligation, the first day on which there is a failure to perform the obligation, once a
+demand for performance has been made, is
+
+
+                                                                         SEPTEMBER 1, 2015
+6                                   limitation of actions                    2014, c. 35
+
+               (a)   for the purpose of clause 8(1)(b), the day on which the act or
+        omission on which the claim is based occurs; and
+                (b)  for the purpose of clause 8(2)(a), the day on which the injury,
+        loss or damage occurs. 2014, c. 35, s. 14.
+
+Contribution and indemnity
+         15     In the case of a claim by one alleged wrongdoer against another for
+contribution and indemnity, the day on which the first alleged wrongdoer is served
+with the claim in respect of which contribution and indemnity is sought, or incurs a
+liability through the settlement of the claim, is, for the purpose of clause 8(1)(b), the
+day on which the act or omission on which the claim for contribution and indemnity
+is based occurs. 2014, c. 35, s. 15.
+
+Successors, principals and agents
+       16     (1)   In the case of a proceeding commenced by a claimant claim-
+ing through a predecessor in right, title or interest, the claimant is deemed to have
+had knowledge of the matters referred to in subsection 8(2) on the earlier of
+                          (a)   the day on which the claimant first knew or ought to
+                    have known of those matters; and
+                          (b)   the day on which the predecessor first knew or ought to
+                    have known of those matters.
+
+                (2)    In the case of a proceeding commenced by a claimant who is
+the principal of an agent, the claimant is deemed to have had knowledge of the mat-
+ters referred to in subsection 8(2) on the earlier of
+                          (a)   the day on which the claimant first knew or ought to
+                    have known of those matters; and
+                          (b)    the day on which the agent first knew or ought to have
+                    known of those matters,
+if the agent had a duty to communicate knowledge of those matters to the claimant.
+
+               (3)      The day on which a predecessor or agent ought to have known
+of the matters referred to in subsection 8(2) is the day on which a reasonable person
+in the predecessor’s or agent’s circumstances and with the predecessor’s or agent’s
+abilities ought first to have known of the matters. 2014, c. 35, s. 16.
+
+Wilful concealment or wilfully misleading claimant
+       17     The limitation period established by clause 8(1)(b) does not run dur-
+ing any time in which the defendant
+               (a)    wilfully conceals from the claimant the fact that injury, loss or
+        damage has occurred, that it was caused by or contributed to by an act or
+        omission or that the act or omission was of the defendant; or
+             (b)      wilfully misleads the claimant as to whether the injury, loss or
+        damage is sufficiently serious to warrant a proceeding. 2014, c. 35, s. 17.
+
+
+
+
+SEPTEMBER 1, 2015
+2014, c. 35                     limitation of actions                                  7
+
+Minors
+      18       The limitation periods established by this Act do not run while a
+claimant is a minor. 2014, c. 35, s. 18.
+
+Incapacity
+        19     (1)    The limitation periods established by this Act do not run while
+a claimant is incapable of bringing a claim because of the claimant’s physical, men-
+tal or psychological condition.
+
+               (2)     Where the running of a limitation period is suspended under
+subsection (1) and the limitation period has less than six months to run as of the day
+on which the suspension ends, the limitation period is extended to include the day
+that is six months after the day on which the suspension ends. 2014, c. 35, s. 19.
+
+Acknowledgments
+        20    (1)     Where, before the expiry of the relevant limitation period
+established by this Act, a person acknowledges liability in respect of a claim for
+                      (a)    payment of a liquidated sum;
+                      (b)    the recovery of personal property;
+                      (c)    the enforcement of a charge on personal property; or
+                      (d)    relief from enforcement of a charge on personal prop-
+              erty,
+the limitation period begins again at the time of the acknowledgment.
+
+                (2)    An acknowledgment of liability in respect of a claim for inter-
+est is an acknowledgment of liability in respect of a claim for the principal and for
+interest falling due after the acknowledgment is made.
+
+               (3)    An acknowledgment of liability in respect of a claim to realize
+on or redeem collateral under a security agreement or to recover money in respect of
+the collateral is deemed to be an acknowledgment by any other person who later
+comes into possession of the collateral.
+
+               (4)     A debtor’s performance of an obligation in respect of a secu-
+rity agreement is an acknowledgment by the debtor of liability in respect of a claim
+by the creditor for realization on the collateral under agreement.
+
+                (5)     A creditor’s acceptance of a debtor’s payment or performance
+of an obligation in respect of a security agreement is an acknowledgment by the
+creditor of liability in respect of a claim by the debtor for redemption of the collat-
+eral under the agreement.
+
+              (6)   An acknowledgment by a trustee is an acknowledgment by
+any other person who is or who later becomes a trustee of the same trust.
+
+                (7)   An acknowledgment of liability in respect of a claim to
+recover or enforce an equitable interest in personal property by a person in posses-
+sion of it is an acknowledgment by any other person who later comes into posses-
+sion of it.
+
+
+                                                                        SEPTEMBER 1, 2015
+8                                    limitation of actions                      2014, c. 35
+
+               (8)   Subject to subsections (9) and (10), this Section applies to an
+acknowledgment of liability in respect of a claim for payment of a liquidated sum
+even if the person making the acknowledgment refuses or does not promise to pay
+the sum or the balance of the sum owing.
+
+                    (9)    This Section does not apply unless the acknowledgment is
+made to
+                           (a)    the claimant;
+                           (b)    the claimant’s agent; or
+                           (c)   an official receiver of or trustee for the claimant, acting
+                    under the Bankruptcy and Insolvency Act (Canada),
+before the expiry of the limitation period applicable to the claim.
+
+           (10) Subsections (1), (2), (3), (6) and (7) do not apply unless the
+acknowledgment is in writing and signed by the person making it or the person’s
+agent.
+
+             (11) In the case of a claim for payment of a liquidated sum, part
+payment of the sum by the defendant or the defendant’s agent has the same effect as
+an acknowledgment referred to in subsection (10). 2014, c. 35, s. 20.
+
+Agreements
+       21      (1)    A limitation period established by this Act may be extended,
+but not shortened, by agreement.
+
+              (2)     Subsection (1) does not affect an agreement made before the
+coming into force of this Act. 2014, c. 35, s. 21.
+
+                               CLAIMS BROUGHT AFTER
+                             EXPIRY OF LIMITATION PERIOD
+
+Claims added to proceedings
+       22      Notwithstanding the expiry of the relevant limitation period estab-
+lished by this Act, a claim may be added, through a new or amended pleading, to a
+proceeding previously commenced if the added claim is related to the conduct,
+transaction or events described in the original pleadings and if the added claim
+                (a)   is made by a party to the proceeding against another party to
+        the proceeding and does not change the capacity in which either party sues
+        or is sued;
+               (b)     adds or substitutes a defendant or changes the capacity in
+        which a defendant is sued, but the defendant has received, before or within
+        the limitation period applicable to the added claim plus the time provided by
+        law for the service of process, sufficient knowledge of the added claim that
+        the defendant will not be prejudiced in defending against the added claim on
+        the merits; or
+                (c)    adds or substitutes a claimant or changes the capacity in
+        which a claimant sues, but the defendant has received, before or within the
+        limitation period applicable to the added claim plus the time provided by law
+        for the service of process, sufficient knowledge of the added claim that the
+
+SEPTEMBER 1, 2015
+2014, c. 35                     limitation of actions                                   9
+
+       defendant will not be prejudiced in defending against the added claim on the
+       merits, and the addition of the claim is necessary or desirable to ensure the
+       effective determination or enforcement of the claims asserted or intended to
+       be asserted in the original pleadings. 2014, c. 35, s. 22.
+
+              TRANSITIONAL PROVISIONS, CONSEQUENTIAL
+                 AMENDMENTS AND EFFECTIVE DATE
+
+Transitional
+      23     (1)      In this Section,
+                     (a)     “effective date” means the day on which this Act
+               comes into force;
+                       (b)    “former limitation period” means, in respect of a
+               claim, the limitation period that applied to the claim before the effec-
+               tive date.
+
+                (2)   Subsection (3) applies to claims that are based on acts or
+omissions that took place before the effective date, other than claims referred to in
+Section 11, and in respect of which no proceeding has been commenced before the
+effective date.
+
+             (3)    Where a claim was discovered before the effective date, the
+claim may not be brought after the earlier of
+                      (a)     two years from the effective date; and
+                     (b)    the day on which the former limitation period expired
+               or would have expired.
+
+                (4)        A claimant may bring a claim referred to in Section 11 at any
+time, regardless of whether the former limitation period expired before the effective
+date. 2014, c. 35, s. 23; 2015, c. 22, s. 4.
+
+Land Registration Act amended
+     24     amendment
+
+Limitation of Actions Act amended
+      25 to 27      amendments
+
+Marketable Titles Act amended
+     28     amendment
+
+Personal Property Security Act amended
+      29    amendment
+
+Sydney Steel Corporation Sale Act amended
+      30     amendment
+
+
+
+                                                                         SEPTEMBER 1, 2015
+10                           limitation of actions                 2014, c. 35
+
+Effective date
+       31     This Act comes into force on such day as the Governor in Council
+orders and declares by proclamation. 2014, c. 35, s. 31.
+
+                          Proclaimed -      August 4, 2015
+                          In force   -   September 1, 2015
+
+
+                                 __________
+
+
+
+
+SEPTEMBER 1, 2015
+

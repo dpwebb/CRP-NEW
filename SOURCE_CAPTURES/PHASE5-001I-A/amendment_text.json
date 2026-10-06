@@ -1,0 +1,31 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "the exact text each PHASE5-001I-A amendment names, quotes and replaces, so the amendment record and the amended document cannot separate",
+  "governing_rule": "CRP_CORE_CONSTITUTION.md section 6.2 — an amendment must name the document and the clause, quote the text being replaced, and state the replacement text",
+  "restriction_being_relieved": [
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3: a later phase cannot begin before its stated gate passes",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 4 item 5: the deterministic fact/evaluator specification and implementation come only after rule units and report mappings are admitted",
+    "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md section 9.4 milestone M-1 requires Gate 5.3 to pass; PROD-003 records it reached for one candidate and passed for none, and Gate 5.4 has not started"
+  ],
+  "relief_is_internal_validation_only": true,
+  "gate_effects": "none — no gate is passed, waived, softened or advanced by this amendment; every admission condition stands unchanged",
+  "amendments": [
+    {
+      "id": "A-1",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "quoted_text_replaced": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "replacement_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.\n\n**Owner-authorized internal-validation carve-out (PHASE5-001I-A).** A bounded, owner-issued work order may\nbuild and run an *internal validation* of one candidate extractor and its deterministic comparison before\nthat candidate’s gates pass, and only where every one of the following holds. This carve-out passes no gate,\nadmits no rule, creates no coverage, produces no finding and changes no gate state:\n\n- the work order names one jurisdiction, one bureau presentation, one rule unit and one statutory limb, and it\n  names its own permitted files, its exclusions and its tests;\n- the artifacts are internal only: not admitted, not advertised, not reachable from any consumer surface, and\n  producing no consumer-visible output of any class;\n- the comparison outcomes are internal arithmetic results and are never `VIOLATION` or `PROBABLE_VIOLATION`,\n  and no `VIOLATION` or `PROBABLE_VIOLATION` class is created, emitted or implied;\n- unresolved states keep their recorded meaning: `EXTRACTION_UNRESOLVED` is never `ABSENT_FROM_REPORT`, and a\n  parser failure is never evidence;\n- a classification recorded for the candidate is preserved and is never overridden by this carve-out;\n- Gates 5.3 to 5.7, their acceptance evidence and every admission condition are untouched: the artefact is not\n  an admitted evaluator, it is not gate evidence for any gate, and it must be re-created and re-validated under\n  Gates 5.5 and 5.6 before any admission.\n\nNothing in this carve-out authorizes a second rule unit, jurisdiction, bureau or presentation, a consumer\nsurface, a deployment, or a finding."
+    },
+    {
+      "id": "A-2",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 4, item 5 (deterministic fact/evaluator specification and implementation)",
+      "quoted_text_replaced": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted.",
+      "replacement_text": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing."
+    }
+  ],
+  "history_row_appended": "| 2026-09-30 | PHASE5-001I-A | Valid owner amendment under Core Constitution section 6: section 3 gains the owner-authorized internal-validation carve-out and section 4 item 5 records that the carve-out is not the admitted specification or implementation. A bounded internal validation of one candidate extractor and its deterministic comparison — one jurisdiction, one presentation, one rule unit, one limb — may be built and run before its gates pass, with no admission, no coverage, no finding, no consumer-visible output, no gate credit and no override of a recorded classification, and it must be re-created and re-validated under Gates 5.5 and 5.6 before any admission. The gate sequence, all gates, the permanent exclusions, the finding boundary and every other acceptance condition are unchanged. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md. Admits no rule, passes no gate, creates no coverage and authorizes no finding. |"
+}

@@ -1,0 +1,339 @@
+'use strict';
+/**
+ * evaluation.cjs — applicable, observation-only evaluation through B1's rule adapters.
+ *
+ * OWNER-ALL82-001 / B2. This module owns three boundaries and invents no fourth:
+ *
+ *   1. APPLICABILITY IS NOT OPTIONAL. Only adapters whose recorded association is CONFIRMED may be selected.
+ *      A relation is resolved from the explicit per-region records, never from a pattern: a national check
+ *      reaches a region because the records file carries a named row for it, and for no other reason.
+ *   2. RECORDS DO NOT BORROW FROM EACH OTHER. A per-record check runs once per extracted record with that
+ *      record's OWN fact object (`factsForRecord`), so two collection records produce two independent
+ *      comparisons with their own anchors, anniversaries and day counts. A check that declares
+ *      `record_kinds` runs only on records of those kinds.
+ *   3. A CHECK THAT DID NOT RUN IS NOT A CHECK PERFORMED. A refused check is reported with the checks that
+ *      did not run, beside its reason, and never counted as a result.
+ *   4. THE CEILING IS OBSERVATION. Nothing here emits a finding; `emitFinding` is not reachable from this
+ *      module, and every result is stamped with its adapter's recorded ceiling.
+ */
+
+const adapters = require('../adapters/rule-adapters.cjs');
+const { RESULT_STATE } = require('../adapters/evaluation-primitives.cjs');
+const { factsForRecord, factSourcesForRecord, carriesReportEvidence, SUPPORT, EXTRACTION_ADAPTERS } = require('./formats.cjs');
+const { APPLICABILITY_STATE, resolveApplicability } = require('./applicability.cjs');
+const { runFactualChecks } = require('./factual-checks.cjs');
+const { runDetectedReportInformation, CHECK_CLASS } = require('./content-assessments.cjs');
+const { runCommonErrorChecks, CHECK_CLASS: COMMON_ERROR_CLASS } = require('./common-errors.cjs');
+
+const CASE_LEVEL_ANCHOR_MODES = Object.freeze(['NOT_REPORT_EVIDENCED']);
+const REGISTERED_PRESENTATIONS = new Set(EXTRACTION_ADAPTERS.map((a) => a.presentation_id).concat(['GENERAL-BUREAU-REPORT']));
+
+function adapterConfig(adapterId) {
+  return adapters.ADAPTERS.find((a) => a.adapter_id === adapterId) || null;
+}
+
+/**
+ * A check the runner REFUSED did not run. It is reported with the checks that did not run, beside its own
+ * reason, and it is NEVER counted as a performed check — otherwise a case with nothing readable would
+ * advertise a check count it never earned.
+ */
+function refusedCheckEntry(entry, config, descriptor, machine) {
+  const required = config.presentation_required || null;
+  const list = required ? (Array.isArray(required) ? required : [required]) : [];
+  const registered = list.length > 0 && list.some((p) => REGISTERED_PRESENTATIONS.has(p));
+  const out = Object.assign({}, descriptor, {
+    adapter_id: entry.adapter_id,
+    reason: machine.refusal_reason,
+    plain: registered
+      ? 'This check is written for a report format your uploaded file did not match, so it was not run.'
+      : 'This check is written for a report format this build cannot read yet, so it was not run. Nothing was inferred from your file in its place.'
+  });
+  if (required !== null && !registered) out.unadmitted_presentation_required = true;
+  return out;
+}
+
+/**
+ * Which adapters an explicit selection may actually run, and which are held back. `confirmed` comes from the
+ * adapter's own applicability evaluation, not from a guess in this module.
+ */
+function applicableAdapters(region) {
+  let entries;
+  try {
+    entries = adapters.adaptersForRegion(region);
+  } catch {
+    entries = [];
+  }
+  const confirmed = [];
+  const unconfirmed = [];
+  for (const entry of entries) {
+    if (entry.confirmed === true) confirmed.push(entry);
+    else unconfirmed.push(entry);
+  }
+  return { confirmed, unconfirmed };
+}
+
+function checkDescriptor(adapterId) {
+  const config = adapterConfig(adapterId);
+  if (!config) return null;
+  return {
+    adapter_id: config.adapter_id,
+    citation: config.citation,
+    limb: config.limb || null,
+    output_ceiling: (config.output_permission && config.output_permission.max_conclusion) || 'observation',
+    packet_eligible: Boolean(config.output_permission && config.output_permission.packet_eligible),
+    source_entry_id: config.source_entry_id || null,
+    source_version: config.source_version || null
+  };
+}
+
+function runOne(adapterId, context, facts, factSources) {
+  return adapters.runAdapter(adapterId, {
+    country: context.country,
+    region: context.region,
+    facts: facts || {},
+    fact_sources: factSources || null,
+    referenceDate: context.referenceDate,
+    presentation: context.presentation,
+    report: context.report || null,
+    consumer_statements: Array.isArray(context.consumer_statements) ? context.consumer_statements : null
+  });
+}
+
+/**
+ * GAP-FINDING-001: the DISTINCT bankruptcy discharge dates a report prints. A duplicate listing or a
+ * cross-bureau copy of the same bankruptcy prints the same discharge date and is ONE event, not two; only
+ * distinct discharge dates evidence distinct bankruptcy events. Nothing here is inferred from a balance,
+ * purpose, bureau or filename.
+ */
+function bankruptcyDischargeDates(records) {
+  return [...new Set(
+    (records || [])
+      .filter((r) => r && r.facts && typeof r.facts === 'object' && typeof r.facts['bankruptcy.dischargeDate'] === 'string' && r.facts['bankruptcy.dischargeDate'])
+      .map((r) => r.facts['bankruptcy.dischargeDate'])
+  )].sort();
+}
+
+/**
+ * Run the applicable checks for one case against one extraction record.
+ *
+ * Returns a result set whose rows each name the record they came from. A row with `record_index: null` is a
+ * case-level check that no single record anchors.
+ */
+function evaluateCase(context) {
+  const extraction = context.extraction || null;
+  const { confirmed, unconfirmed } = applicableAdapters(context.region);
+  const base = {
+    country: context.country,
+    region: context.region,
+    presentation: extraction ? extraction.presentation_id : null,
+    support: extraction ? extraction.support : SUPPORT.ACTUAL_REPORT_EVIDENCE,
+    results: [],
+    unavailable_checks: [],
+    unresolved_checks: [],
+    /* B3 continuation: the per-record applicability state, kept as its OWN bucket. A limb that does not reach
+       a record, and a limb whose applicability the report leaves open, are two different statements, and
+       neither of them is a performed check. */
+    not_applicable_checks: [],
+    unresolved_applicability: [],
+    applicability_summary: { APPLICABLE: 0, NOT_APPLICABLE: 0, APPLICABILITY_UNRESOLVED: 0, NO_RULE_DECLARED: 0 },
+    /* B3 continuation: the THIRD check class, kept in its own buckets. A factual check names no statute and
+       measures no legal clock; a policy observation compares the report's own printed statement with itself.
+       Neither is ever counted as a statutory check, and neither is ever absent from the count. */
+    factual_checks: null,
+    /* OWNER-ACCEPT-007: DETECTED REPORT INFORMATION (extraction-level), kept in its own bucket. Each entry is a
+       detected marker with source evidence and an off-report legal dependency — never a VIOLATION and never a
+       legal conclusion. */
+    detected_report_information: null,
+    /* BLOCKER-COMMON-ERRORS-001: common-error data-consistency checks, in their own bucket. Each is a potential
+       issue with source-linked evidence — never a VIOLATION and never a legal conclusion. */
+    common_errors: null,
+    eligibility: { draft_eligible: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH' }
+  };
+
+  for (const entry of unconfirmed) {
+    const descriptor = checkDescriptor(entry.adapter_id);
+    base.unavailable_checks.push({
+      adapter_id: entry.adapter_id,
+      citation: descriptor ? descriptor.citation : null,
+      reason: entry.unconfirmed_dependency || 'APPLICABILITY_RELATION_UNCONFIRMED',
+      plain:
+        'This national check is recorded for the country but its association with your specific region is ' +
+        'still unconfirmed, so it was not run.'
+    });
+  }
+
+  if (!extraction) {
+    base.unavailable_checks.push({ adapter_id: null, reason: 'NO_EXTRACTION_RECORDED', plain: 'No report has been read for this case yet.' });
+    return base;
+  }
+
+  if (!carriesReportEvidence(extraction) && extraction.support !== SUPPORT.DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT) {
+    base.unavailable_checks.push({
+      adapter_id: null,
+      reason: extraction.refusal ? extraction.refusal.reason : 'DOCUMENT_NOT_READ',
+      plain: 'Your file was not read, so no check was run against it. Nothing was inferred from the file.'
+    });
+    return base;
+  }
+
+  const referenceDate = extraction.reference_date ? extraction.reference_date.normalized_value : null;
+  const ctx = Object.assign({}, context, { referenceDate, presentation: extraction.presentation_id });
+  /* GAP-FINDING-001: report-level facts the exception evaluation may use. Only direct report facts are
+     collected here — never an unrelated balance, purpose, bureau or filename. Distinct discharge dates
+     (deduplicated) are collected because a duplicate listing or cross-bureau copy of the same bankruptcy
+     prints the same discharge date and is ONE event, not two. */
+  ctx.report = { bankruptcyDischargeDates: bankruptcyDischargeDates(extraction.records) };
+
+  /**
+   * Resolve one adapter's applicability and route it. Returns `true` when the caller must STOP: the limb does
+   * not reach this record, or its applicability is unresolved. Either way nothing has been performed, and the
+   * finding is filed in its own bucket so it can never be counted as a check.
+   */
+  const gateOnApplicability = (config, descriptor, record, recordLabel) => {
+    const resolved = resolveApplicability(config, extraction, record);
+    if (!resolved) return false;
+    base.applicability_summary[resolved.applicability] += 1;
+    if (resolved.applicability === APPLICABILITY_STATE.NOT_APPLICABLE) {
+      base.not_applicable_checks.push(Object.assign({}, descriptor, {
+        adapter_id: config.adapter_id,
+        record_index: record ? record.record_index : null,
+        applicability: resolved.applicability,
+        applicability_rule: resolved.rule_id,
+        reason: resolved.reason,
+        plain: resolved.plain,
+        evidence: resolved.evidence,
+        extraction_status: record ? record.status : null,
+        record_label: recordLabel || null
+      }));
+      return true;
+    }
+    if (resolved.applicability === APPLICABILITY_STATE.APPLICABILITY_UNRESOLVED) {
+      base.unresolved_applicability.push(Object.assign({}, descriptor, {
+        adapter_id: config.adapter_id,
+        record_index: record ? record.record_index : null,
+        applicability: resolved.applicability,
+        applicability_rule: resolved.rule_id,
+        reason: resolved.reason,
+        plain: resolved.plain,
+        evidence: resolved.evidence,
+        extraction_status: record ? record.status : null,
+        record_label: recordLabel || null
+      }));
+      return true;
+    }
+    return false;
+  };
+
+  for (const entry of confirmed) {
+    const config = adapterConfig(entry.adapter_id);
+    if (!config) continue;
+    const descriptor = checkDescriptor(entry.adapter_id);
+
+    if (CASE_LEVEL_ANCHOR_MODES.includes(config.anchor_mode)) {
+      if (gateOnApplicability(config, descriptor, null, null)) continue;
+      const machine = runOne(entry.adapter_id, ctx, {});
+      if (machine.state === RESULT_STATE.REFUSED) {
+        base.unavailable_checks.push(refusedCheckEntry(entry, config, descriptor, machine));
+        continue;
+      }
+      base.results.push({ record_index: null, check: descriptor, machine });
+      continue;
+    }
+
+    /* An adapter that declares the kinds of record it is written for runs ONLY on those records. A record of
+       another kind restricts that check and leaves the checks written for it untouched. */
+    const kinds = Array.isArray(config.record_kinds) ? config.record_kinds : null;
+    const candidates = kinds ? extraction.records.filter((r) => kinds.includes(r.kind)) : extraction.records;
+    if (!candidates.length) {
+      base.unavailable_checks.push(Object.assign({
+        adapter_id: entry.adapter_id,
+        reason: kinds ? 'NO_RECORD_OF_THE_KIND_THIS_CHECK_IS_WRITTEN_FOR' : 'NO_READABLE_RECORD_TO_ANCHOR',
+        plain: kinds
+          ? 'This check is written for a kind of entry your report does not carry, so it was not run. Nothing is implied about the entries your report does carry.'
+          : 'This check runs against an individual reported account, and no account could be read from your file.'
+      }, descriptor));
+      continue;
+    }
+
+    for (const record of candidates) {
+      /* Applicability is resolved BEFORE the extraction gate, because a record can print the value that
+         decides applicability while still being unreadable as a whole. Both readings are kept. */
+      if (gateOnApplicability(config, descriptor, record, record.kind_label)) continue;
+      if (record.status !== 'RESOLVED') {
+        base.unresolved_checks.push({
+          record_index: record.record_index,
+          adapter_id: entry.adapter_id,
+          citation: descriptor.citation,
+          reason: record.reason || 'EXTRACTION_UNRESOLVED',
+          plain:
+            'The date this check runs from could not be read from ' + (record.kind_label || 'account') + ' ' +
+            record.record_index + ', so the comparison was not made. A date that could not be read is not the ' +
+            'same as an absent date.'
+        });
+        continue;
+      }
+      const recordContext = record.report_segment_id ? Object.assign({}, ctx, {
+        referenceDate: record.report_reference_date && record.report_reference_date.status === 'RESOLVED' ? record.report_reference_date.normalized_value : null
+      }) : ctx;
+      const machine = runOne(entry.adapter_id, recordContext, factsForRecord(record), factSourcesForRecord(record));
+      if (machine.state === RESULT_STATE.REFUSED) {
+        base.unavailable_checks.push(refusedCheckEntry(entry, config, descriptor, machine));
+        continue;
+      }
+      base.results.push({ record_index: record.record_index, check: descriptor, machine });
+    }
+  }
+
+  /* B3 continuation — the third check class. It runs only on an admitted presentation whose own reader
+     produced a factual view, and only for the country that registered those checks. A refused file, a
+     demonstration model and every other country produce no factual surface at all, so this can never be
+     mistaken for a statutory check or for report support. */
+  base.factual_checks = carriesReportEvidence(extraction)
+    ? runFactualChecks({ country: context.country, region: context.region, extraction })
+    : null;
+  const factualPerformed = base.factual_checks ? base.factual_checks.performed : [];
+  base.detected_report_information = runDetectedReportInformation({ country: context.country, region: context.region, extraction });
+  const detectedPerformed = base.detected_report_information ? base.detected_report_information.performed : [];
+  base.common_errors = runCommonErrorChecks({ country: context.country, region: context.region, extraction });
+  const commonPerformed = base.common_errors ? base.common_errors.performed : [];
+  base.checks_performed_by_kind = {
+    STATUTORY_RULE_COMPARISON: base.results.length,
+    REPORT_FACT_CONSISTENCY: factualPerformed.filter((c) => c.check_class === 'REPORT_FACT_CONSISTENCY').length,
+    PRINTED_POLICY_OBSERVATION: factualPerformed.filter((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION').length,
+    DETECTED_REPORT_INFORMATION: detectedPerformed.length,
+    COMMON_ERROR: commonPerformed.length
+  };
+  base.checks_performed = base.results.length + factualPerformed.length + detectedPerformed.length + commonPerformed.length;
+  base.factual_summary = base.factual_checks ? base.factual_checks.summary : null;
+  base.detected_summary = base.detected_report_information ? base.detected_report_information.summary : null;
+  base.common_error_summary = base.common_errors ? base.common_errors.summary : null;
+  base.assessment_kinds = [
+    base.results.length ? 'STATUTORY_RULE_COMPARISON' : null,
+    factualPerformed.some((c) => c.check_class === 'REPORT_FACT_CONSISTENCY') ? 'REPORT_FACT_CONSISTENCY' : null,
+    factualPerformed.some((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION') ? 'PRINTED_POLICY_OBSERVATION' : null,
+    detectedPerformed.length ? CHECK_CLASS : null,
+    commonPerformed.length ? COMMON_ERROR_CLASS : null
+  ].filter(Boolean);
+
+  base.eligibility = draftEligibility(base.results);
+  return base;
+}
+
+/**
+ * Response-draft eligibility. The response draft (a letter addressed to a bureau) is not implemented in this
+ * build, so it never flips on the packet permission. The correction packet is a separate, entitlement-gated
+ * flow governed by unified Issue eligibility in `issues.cjs` and `packets.cjs`.
+ */
+function draftEligibility() {
+  return { draft_eligible: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH' };
+}
+
+module.exports = {
+  evaluateCase,
+  applicableAdapters,
+  checkDescriptor,
+  draftEligibility,
+  bankruptcyDischargeDates,
+  CASE_LEVEL_ANCHOR_MODES,
+  APPLICABILITY_STATE
+};

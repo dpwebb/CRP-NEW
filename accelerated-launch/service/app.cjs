@@ -1,0 +1,724 @@
+'use strict';
+/**
+ * app.cjs — the local HTTP service. Node built-ins only; no framework, and no build step.
+ *
+ * OWNER-ALL82-001 / B2. Stack choice and its reasoning are recorded once in `README.md`. The transport layer
+ * does exactly three things: authenticate, dispatch, and translate a typed refusal into a status code. It
+ * owns no product decision, so every consumer-visible statement is produced by the modules behind it.
+ *
+ * The consumer surface served from `ui/` is a SEPARATE, private asset tree from the static site in
+ * `consumer-wizard/dist`. Nothing here publishes a report, and `staticResponse` refuses every path that is
+ * not a known file inside `ui/`.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { ServiceError, toBody } = require('./errors.cjs');
+const { PrivateStore } = require('./private-store.cjs');
+const { Logger } = require('./logger.cjs');
+const accounts = require('./accounts.cjs');
+const cases = require('./cases.cjs');
+const uploads = require('./uploads.cjs');
+const formats = require('./formats.cjs');
+const journey = require('./journey.cjs');
+const packets = require('./packets.cjs');
+const comparison = require('./comparison.cjs');
+const evaluation = require('./evaluation.cjs');
+const entitlement = require('./entitlement.cjs');
+const retention = require('./retention.cjs');
+const payments = require('./payment-provider.cjs');
+
+const UI_DIR = path.join(__dirname, 'ui');
+const SESSION_COOKIE = 'crp_session';
+const BODY_LIMIT_BYTES = 20 * 1024 * 1024;
+const MATRIX_FILE = path.join(__dirname, '..', 'launch-matrix.json');
+
+/**
+ * B4: the response headers that cost nothing and close whole classes of defect. The CSP allows an inline
+ * `style` attribute because the private UI sets one bar width inline; it still forbids every remote load, every
+ * inline script and every frame, which is what matters for a page that renders a consumer's own report facts.
+ */
+const SECURITY_HEADERS = Object.freeze({
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'no-referrer',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  'Cross-Origin-Resource-Policy': 'same-origin',
+  'X-Permitted-Cross-Domain-Policies': 'none',
+  'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'"
+});
+
+/**
+ * B4 item 8: the three kinds of check, stated in one place, kept apart, and never merged into a single count.
+ * `no_issue_found_means` is the sentence the owner asked for: it says only what the performed checks found.
+ */
+const CHECK_CLASSES = Object.freeze({
+  statutory_rule_comparison: {
+    is_a_statutory_check: true,
+    plain: 'A recorded provision of law compared with a date your report prints. It reports whether the period it measures has elapsed. It is not a statement that anything was reported unlawfully.'
+  },
+  report_fact_consistency: {
+    is_a_statutory_check: false,
+    plain: 'A comparison of two things your report itself prints. A difference it reports is a difference, not a finding, and it names no law.'
+  },
+  printed_policy_observation: {
+    is_a_statutory_check: false,
+    label: 'PRINTED_POLICY_OBSERVATION_NOT_A_STATUTORY_FINDING',
+    plain: 'A comparison of a statement your report makes about itself with a date it prints. It names no statute and no finding.'
+  },
+  never_summed: 'A factual or policy observation is never added to a statutory comparison and never reported as one.',
+  no_issue_found_means: 'Only that the checks that ran found none of the things they look for. It does not mean the report is correct, and it does not mean every possible legal issue was checked.'
+});
+
+const STATIC_TYPES = Object.freeze({
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.svg': 'image/svg+xml'
+});
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg']);
+
+
+/**
+ * Read the request body ONCE, keeping the raw bytes.
+ *
+ * B4 needs the raw bytes because a provider signature is computed over the exact body text: re-serialising the
+ * parsed object would change the bytes and could never verify. The size limit applies before anything is kept.
+ */
+function readRequestBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size > BODY_LIMIT_BYTES) {
+        reject(new ServiceError('FILE_TOO_LARGE'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      const raw = Buffer.concat(chunks).toString('utf8');
+      const trimmed = raw.trim();
+      if (!trimmed) return resolve({ raw, json: {} });
+      try {
+        return resolve({ raw, json: JSON.parse(trimmed) });
+      } catch {
+        return reject(new ServiceError('INVALID_REQUEST', 'BODY_IS_NOT_JSON'));
+      }
+    });
+    req.on('error', () => reject(new ServiceError('INVALID_REQUEST', 'BODY_READ_FAILED')));
+  });
+}
+
+function bearerToken(req) {
+  const header = req.headers.authorization || '';
+  const match = /^Bearer\s+(.+)$/i.exec(header);
+  return match ? match[1].trim() : null;
+}
+
+function cookieValue(req, name) {
+  for (const part of String(req.headers.cookie || '').split(';')) {
+    const at = part.indexOf('=');
+    if (at === -1) continue;
+    if (part.slice(0, at).trim() === name) return decodeURIComponent(part.slice(at + 1).trim());
+  }
+  return null;
+}
+
+function sessionToken(req) {
+  return bearerToken(req) || cookieValue(req, SESSION_COOKIE);
+}
+
+
+/** Route table. `auth: true` means the dispatcher resolves the session BEFORE the handler runs. */
+const ROUTES = Object.freeze([
+  ['POST', '/api/accounts', false, 'createAccount'],
+  ['POST', '/api/sessions', false, 'signIn'],
+  ['DELETE', '/api/sessions/current', false, 'signOut'],
+  ['GET', '/api/session', true, 'sessionInfo'],
+  ['GET', '/api/privacy', true, 'privacyDashboard'],
+  ['GET', '/api/support', true, 'supportInfo'],
+  ['GET', '/api/support/references/:reference', true, 'supportLookup'],
+  ['DELETE', '/api/account', true, 'deleteAccount'],
+  ['GET', '/api/jurisdictions', false, 'jurisdictions'],
+  ['GET', '/api/health', false, 'health'],
+  ['GET', '/api/formats', false, 'supportedFormats'],
+  /* B4. `auth: false` on the two public reads and on the PROVIDER callback: the provider has no session, and
+     the event it sends is trusted only after its signature verifies. The billing routes are authenticated but
+     deliberately NOT entitlement-gated — they are how an account becomes entitled. */
+  ['GET', '/api/policy', false, 'policy'],
+  ['POST', '/api/billing/events', false, 'billingEvent'],
+  ['GET', '/api/billing/plans', true, 'billingPlans'],
+  ['POST', '/api/billing/checkout', true, 'openCheckout'],
+  ['POST', '/api/billing/confirm', true, 'confirmCheckout'],
+  ['GET', '/api/entitlement', true, 'entitlementView'],
+  ['POST', '/api/entitlement/cancel', true, 'cancelEntitlement'],
+  ['POST', '/api/cases', true, 'createCase'],
+  ['GET', '/api/cases', true, 'listCases'],
+  ['GET', '/api/cases/:caseId', true, 'getCase'],
+  ['PATCH', '/api/cases/:caseId/status', true, 'setCaseStatus'],
+  ['DELETE', '/api/cases/:caseId', true, 'deleteCase'],
+  ['POST', '/api/cases/:caseId/files', true, 'uploadFile'],
+  ['POST', '/api/cases/:caseId/evaluate', true, 'evaluateCase'],
+  ['GET', '/api/cases/:caseId/results', true, 'listResults'],
+  ['GET', '/api/cases/:caseId/results/:resultId', true, 'getResult'],
+  ['GET', '/api/cases/:caseId/results/:resultId/view', true, 'caseViewForResult'],
+  ['POST', '/api/cases/:caseId/results/:resultId/review', true, 'reviewResult'],
+  ['POST', '/api/cases/:caseId/review', true, 'reviewLatestResult'],
+  ['POST', '/api/cases/:caseId/results/:resultId/clarify', true, 'clarifyResult'],
+  ['GET', '/api/cases/:caseId/response-draft', true, 'responseDraft'],
+  ['GET', '/api/cases/:caseId/report-download', true, 'reportDownload'],
+  ['GET', '/api/cases/:caseId/demonstration-download', true, 'demonstrationDownload'],
+  ['POST', '/api/cases/:caseId/demonstration', true, 'demonstration'],
+  /* OWNER-CA-CORRECTION-PACKET-001 — the bounded California correction-packet consumer path. */
+  ['GET', '/api/cases/:caseId/packet', true, 'packetView'],
+  ['POST', '/api/cases/:caseId/packet/select', true, 'packetSelect'],
+  ['POST', '/api/cases/:caseId/packet/wording', true, 'packetWording'],
+  ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
+  ['POST', '/api/cases/:caseId/packet/approve', true, 'packetApprove'],
+  ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
+  /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
+  ['GET', '/api/history', true, 'historyView'],
+  ['GET', '/api/history/compare/:leftResultId/:rightResultId', true, 'comparisonView']
+]);
+
+function sessionCookie(token, maxAgeSeconds) {
+  const secure = process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : '';
+  return `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly${secure}; SameSite=Strict; Path=/; Max-Age=${maxAgeSeconds}`;
+}
+
+function loadJurisdictionSurface() {
+  const payment = payments.describeProvider(process.env);
+  const dataFile = path.join(__dirname, '..', '..', 'consumer-wizard', 'dist', 'jurisdiction-data.js');
+  const marker = 'window.CRP_JURISDICTION_DATA = ';
+  const raw = fs.readFileSync(dataFile, 'utf8');
+  const parsed = JSON.parse(raw.slice(raw.indexOf(marker) + marker.length).trim().replace(/;\s*$/, ''));
+  const matrix = JSON.parse(fs.readFileSync(MATRIX_FILE, 'utf8'));
+  const byRegion = new Map(matrix.regions.map((r) => [r.region, r]));
+  return {
+    countries: parsed.countries.map((c) => ({ value: c.code, label: c.display_name })),
+    regions: parsed.regions.map((r) => {
+      const row = byRegion.get(r.region_code) || {};
+      return {
+        value: r.region_code,
+        country: r.country_code,
+        label: r.display_name,
+        launch_ready: row.launch_ready === true,
+        /* Plan section 2: a regional check's limitations are visible BEFORE anything is uploaded or bought. */
+        supported_format_families: row.supported_format_families || [],
+        executable_checks: typeof row.executable_checks === 'number' ? row.executable_checks : 0,
+        factual_checks: typeof row.factual_checks === 'number' ? row.factual_checks : 0,
+        policy_observations: typeof row.policy_observations === 'number' ? row.policy_observations : 0,
+        assessment_kinds: row.assessment_kinds || [],
+        working_assessment: row.working_assessment === true,
+        applicability_state: row.applicability_state || null,
+        availability: availabilityFor(row)
+      };
+    }),
+    note: 'Selection is explicit. No jurisdiction is advertised as launch ready by this build, and what each region can actually read and check is reported before you upload anything.',
+    /* B4 item 7: the supported countries, bureaus, formats, checks and limitations, before payment and upload. */
+    presentations: formats.listSupportedFormats(),
+    presentation_scope: formats.presentationScope(),
+    check_classes: CHECK_CLASSES,
+    paid_actions: entitlement.PAID_ACTIONS.slice(),
+    entitlement: {
+      required_for: 'uploading a report, running an assessment, reviewing, the demonstration and the download',
+      never_required_for: ['reading what you already have', 'recording your own status', 'deleting your data'],
+      plain: payment.plain + ' The paid steps require a verified purchase recorded against your account.',
+      payment_mode: payment.key_mode || null
+    },
+    preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
+    retention_plain: retention.policyView().plain
+  };
+}
+
+/**
+ * One honest sentence per region, built from the region's own recorded state. B3 continuation: the sentence
+ * names each CLASS of check separately, because a region whose assessment is factual only must say so rather
+ * than reporting a statutory count it never earned.
+ */
+function availabilityFor(row) {
+  if (row.working_assessment === true) {
+    const families = (row.supported_format_families || []).join(', ') || 'a supported format';
+    const statutory = Number(row.executable_checks || 0);
+    const factual = Number(row.factual_checks || 0);
+    const policy = Number(row.policy_observations || 0);
+    const parts = [];
+    if (statutory) parts.push(`${statutory} recorded rule comparison${statutory === 1 ? '' : 's'}`);
+    if (factual) parts.push(`${factual} factual observation${factual === 1 ? '' : 's'} about what your report prints`);
+    if (policy) parts.push(`${policy} policy observation${policy === 1 ? '' : 's'} taken from a statement your report makes about itself`);
+    return {
+      state: 'SUPPORTED',
+      plain: `This build reads ${families} for this selection and runs ${parts.length ? parts.join(' and ') : 'no check'}.` +
+        (statutory ? '' : ' No statutory evaluation is recorded for this selection, so none was applied.')
+    };
+  }
+  if (row.format_path_for_the_market === 'REGISTERED_FOR_THE_MARKET') {
+    return {
+      state: 'FORMAT_AVAILABLE_NO_CHECK',
+      plain: 'A report format is registered for this country, but no check is ready for this selection, so nothing would be run.'
+    };
+  }
+  return {
+    state: 'NO_REPORT_FORMAT',
+    plain: 'No report format is supported for this country yet, so a report could not be read for this selection.'
+  };
+}
+
+/** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
+function buildHandlers(store, logger, surface) {
+  return {
+    /* ------------------------------------------------------------ accounts and sessions */
+
+    createAccount: ({ body, res }) => {
+      const created = accounts.createAccount(store, body);
+      logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
+      return {
+        status: 201,
+        json: { ok: true, account: created.account, signed_in: true },
+        headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
+      };
+    },
+
+    signIn: ({ body }) => {
+      const opened = accounts.signIn(store, body);
+      logger.log({ event: 'SIGN_IN', outcome: 'OK' });
+      return { status: 200, json: { ok: true, account: opened.account, signed_in: true }, headers: { 'Set-Cookie': sessionCookie(opened.token, 86400) } };
+    },
+
+    signOut: ({ req }) => {
+      const { signed_out } = accounts.signOut(store, sessionToken(req));
+      logger.log({ event: 'SIGN_OUT', outcome: signed_out ? 'OK' : 'NO_SESSION' });
+      return { status: 200, json: { ok: true, signed_out }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
+    },
+
+    sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true } }),
+
+    privacyDashboard: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./privacy.cjs').dashboard(store, actor) } }),
+    supportInfo: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').supportInfo(store, actor) } }),
+    supportLookup: ({ actor, params }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').lookup(store, actor, params.reference) } }),
+    deleteAccount: ({ actor }) => {
+      const result = cases.deleteAccount(store, actor);
+      logger.log({ event: 'ACCOUNT_DELETED', outcome: 'OK', count: result.blobs_removed });
+      return { status: 200, json: { ok: true, deleted: true, stored_files_removed: result.blobs_removed }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
+    },
+
+    /* ------------------------------------------------------------ jurisdiction and formats */
+
+    health: () => ({ status: 200, json: { ok: true, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: surface.entitlement.payment_mode, launch_ready: false } }),
+    jurisdictions: () => ({ status: 200, json: { ok: true, surface } }),
+
+    supportedFormats: () => ({
+      status: 200,
+      json: {
+        ok: true,
+        formats: formats.listSupportedFormats(),
+        presentation_scope: formats.presentationScope(),
+        upload_limits: uploads.uploadLimits(),
+        note: 'Five report presentations are supported, each with its own admission path and its own evidence. Two are Canadian and independent: the Equifax Canada specimen is admitted by its own pinned digest and by nothing else, and the TransUnion Canada consumer disclosure is admitted by a measured structural contract in a module of its own. A file that resembles a supported format but does not satisfy the contract it is measured against is refused, and the refusal names the predicate it failed. One of the five — the United Kingdom family — is evidenced from a 2007 example whose currency for present-day files is NOT established.'
+      }
+    })
+  };
+}
+
+/**
+ * B4 — entitlement, billing and policy handlers.
+ *
+ * The provider callback (`billingEvent`) is the one endpoint that can move money-derived state, and it is
+ * reachable WITHOUT a session because a provider has none. It is not therefore open: the raw body and the
+ * signature header go to `entitlement.recordEvent`, which verifies the signature against a configured secret
+ * before looking at anything the body says. Everything else here is actor-scoped and never entitlement-gated.
+ */
+function buildBillingHandlers(store, logger) {
+  const env = process.env;
+  return {
+    policy: () => ({ status: 200, json: { ok: true, ...retention.policyView(), check_classes: CHECK_CLASSES } }),
+
+    billingPlans: ({ actor }) => ({ status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env) } }),
+
+    openCheckout: async ({ body, actor }) => {
+      const opened = await entitlement.openCheckout(store, actor, body, env);
+      logger.log({ event: 'CHECKOUT_OPENED', outcome: 'OK' });
+      return { status: 201, json: { ok: true, checkout: opened } };
+    },
+
+    /** Server-side verification of a purchase. It cannot be satisfied by anything the client says. */
+    confirmCheckout: async ({ body, actor }) => ({
+      status: 200,
+      json: { ok: true, confirmation: await entitlement.confirmCheckout(store, actor, body, env) }
+    }),
+
+    billingEvent: async ({ rawBody, headers }) => {
+      const outcome = await entitlement.recordEvent(store, { rawBody, headers }, env);
+      logger.log({
+        event: 'BILLING_EVENT',
+        outcome: outcome.duplicate ? 'DUPLICATE' : (outcome.accepted ? 'APPLIED' : 'IGNORED')
+      });
+      return { status: 200, json: { ok: true, event: outcome } };
+    },
+
+    entitlementView: ({ actor }) => ({ status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } }),
+
+    cancelEntitlement: ({ body, actor }) => {
+      const cancellation = entitlement.cancelEntitlement(store, actor, body);
+      logger.log({ event: 'ENTITLEMENT_CANCELLED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, cancellation } };
+    }
+  };
+}
+
+/** Case, upload, evaluation, review and download handlers. */
+function buildCaseHandlers(store, logger) {
+  return {
+    createCase: ({ body, actor }) => {
+      const created = cases.createCase(store, actor, body);
+      logger.log({ event: 'CASE_CREATED', region: created.region, outcome: 'OK' });
+      return { status: 201, json: { ok: true, case: created } };
+    },
+
+    listCases: ({ actor }) => ({ status: 200, json: { ok: true, cases: cases.listCases(store, actor) } }),
+
+    getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId) } }),
+
+    setCaseStatus: ({ params, body, actor }) => ({
+      status: 200,
+      json: { ok: true, case: cases.setStatus(store, actor, params.caseId, body && body.status) }
+    }),
+
+    deleteCase: ({ params, actor }) => {
+      const removed = cases.deleteCase(store, actor, params.caseId);
+      logger.log({ event: 'CASE_DELETED', outcome: 'OK', count: removed.blobs_removed });
+      return { status: 200, json: { ok: true, ...removed } };
+    },
+
+    uploadFile: ({ params, body, actor }) => {
+      const caseRow = cases.requireOwnedCase(store, actor, params.caseId);
+      /* Ownership first (a 403 that leaks nothing), then the paid gate, then any work at all. */
+      entitlement.requirePaid(store, actor);
+      const receipt = uploads.receiveReport(store, actor, caseRow, body);
+      logger.log({
+        event: 'REPORT_UPLOADED',
+        region: caseRow.region,
+        outcome: receipt.format_detection.supported ? 'SUPPORTED_FORMAT' : 'REFUSED_BY_FORMAT_GATE'
+      });
+      return { status: 201, json: { ok: true, receipt } };
+    },
+
+    evaluateCase: ({ params, body, actor }) => {
+      const caseRow = cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      const outcome = journey.evaluateCase(store, actor, params.caseId, body || {});
+      logger.log({
+        event: 'CASE_EVALUATED',
+        region: caseRow.region,
+        outcome: outcome.result.checks_performed ? 'CHECKS_PERFORMED' : 'NO_APPLICABLE_CHECK',
+        count: outcome.result.checks_performed
+      });
+      return { status: 201, json: { ok: true, ...outcome } };
+    },
+
+    listResults: ({ params, actor }) => ({ status: 200, json: { ok: true, results: journey.listResults(store, actor, params.caseId) } }),
+
+    getResult: ({ params, actor }) => ({ status: 200, json: { ok: true, result: journey.getResult(store, actor, params.caseId, params.resultId) } }),
+
+    caseViewForResult: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseViewForResult(store, actor, params.caseId, params.resultId) } }),
+
+    reviewResult: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      return { status: 200, json: { ok: true, ...journey.markReviewed(store, actor, params.caseId, params.resultId) } };
+    },
+
+    reviewLatestResult: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      return { status: 200, json: { ok: true, ...journey.markReviewed(store, actor, params.caseId, null) } };
+    },
+
+    /** OWNER-ACCEPT-009 item 2: record optional clarification answers, stored separately from report facts. */
+    clarifyResult: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      return { status: 200, json: { ok: true, ...journey.recordClarification(store, actor, params.caseId, params.resultId, body ? body.answers : []) } };
+    },
+
+    /** Refuses, by design, in this batch. The refusal is the recorded output permission, not a defect. */
+    responseDraft: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      return { status: 200, json: { ok: true, draft: journey.requestResponseDraft(store, actor, params.caseId, null) } };
+    },
+
+    /** Paid assessment-report download: one purchased case download OR an active subscription, never both implied. */
+    reportDownload: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      const gate = entitlement.downloadEntitled(store, actor, params.caseId);
+      if (!gate.entitled) {
+        throw new ServiceError('DOWNLOAD_NOT_ENTITLED', { via: gate.via });
+      }
+      const file = journey.assessmentReport(store, actor, params.caseId);
+      logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: gate.via });
+      return {
+        status: 200,
+        text: file.body,
+        content_type: file.content_type,
+        headers: { 'Content-Disposition': `attachment; filename="${file.filename}"` }
+      };
+    },
+
+    demonstrationDownload: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      const file = journey.demonstrationDownload(store, actor, params.caseId);
+      logger.log({ event: 'DEMONSTRATION_DOWNLOAD_SERVED', outcome: 'FICTIONAL_CONTENT' });
+      return {
+        status: 200,
+        text: file.body,
+        content_type: file.content_type,
+        headers: { 'Content-Disposition': `attachment; filename="${file.filename}"` }
+      };
+    },
+
+    demonstration: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      const outcome = journey.runDemonstration(store, actor, params.caseId, body && body.scenario);
+      logger.log({ event: 'DEMONSTRATION_RUN', outcome: 'NOT_REPORT_SUPPORT', count: outcome.result.checks_performed });
+      return { status: 201, json: { ok: true, ...outcome } };
+    },
+
+    /* OWNER-CA-CORRECTION-PACKET-001: select -> review -> edit -> approve -> download. The download is the
+       entitlement-gated step (subscription or a one-time purchase bound to this case); the other steps follow
+       the same paid gate as review and clarify. */
+    packetView: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetSelect: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      packets.selectIssues(store, actor, params.caseId, body && body.issue_ids);
+      logger.log({ event: 'PACKET_SELECTED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetWording: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      packets.setWording(store, actor, params.caseId, body && body.wording);
+      logger.log({ event: 'PACKET_WORDING_RECORDED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    /* The consumer-entered correspondence details: stored on the packet, separately from the report facts, and bound
+       into the approval, so changing them after approval forces reapproval before the download is available again. */
+    packetCorrespondence: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      packets.setCorrespondence(store, actor, params.caseId, body && body.correspondence);
+      logger.log({ event: 'PACKET_CORRESPONDENCE_RECORDED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetApprove: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requirePaid(store, actor);
+      packets.approvePacket(store, actor, params.caseId);
+      logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetDownload: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      const gate = entitlement.downloadEntitled(store, actor, params.caseId);
+      if (!gate.entitled) {
+        throw new ServiceError('DOWNLOAD_NOT_ENTITLED', { via: gate.via });
+      }
+      const file = packets.packetDownload(store, actor, params.caseId);
+      logger.log({ event: 'PACKET_DOWNLOAD_SERVED', outcome: gate.via });
+      return {
+        status: 200,
+        text: file.body,
+        content_type: file.content_type,
+        headers: { 'Content-Disposition': `attachment; filename="${file.filename}"` }
+      };
+    },
+
+    /* BLOCKER-SUBSCRIPTION-VALUE-001: the owned report history and the evidence-based comparison. Reading the
+       consumer’s own history is always available; the comparison follows the same paid gate as review, clarify and
+       the correction packet, and it writes nothing. */
+    historyView: ({ actor }) => ({ status: 200, json: { ok: true, ...comparison.historyView(store, actor) } }),
+
+    comparisonView: ({ params, actor }) => {
+      entitlement.requirePaid(store, actor);
+      logger.log({ event: "REPORT_COMPARISON_VIEWED", outcome: "OK" });
+      return { status: 200, json: { ok: true, ...comparison.comparisonView(store, actor, params.leftResultId, params.rightResultId) } };
+    }
+  };
+}
+
+/**
+ * Serve one private UI asset. The allowlist is the whole path check: no request can name a file outside it,
+ * so neither a traversal nor a guess can reach the state directory.
+ */
+function staticResponse(req, urlPath) {
+  if (req.method !== 'GET' && req.method !== 'HEAD') return null;
+  if (!STATIC_ALLOWLIST.includes(urlPath)) return null;
+  const file = path.resolve(UI_DIR, urlPath === '/' ? 'index.html' : urlPath.slice(1));
+  if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
+  return {
+    status: 200,
+    text: fs.readFileSync(file, 'utf8'),
+    content_type: STATIC_TYPES[path.extname(file)] || 'application/octet-stream'
+  };
+}
+
+/** Build one isolated service instance: its own private store, its own logger, its own handler map. */
+function createService(options) {
+  const opts = options || {};
+  const store = new PrivateStore(opts.dataDir);
+  const logger = new Logger(opts.logSink);
+  const surface = loadJurisdictionSurface();
+  const handlers = Object.assign(
+    {},
+    buildHandlers(store, logger, surface),
+    buildCaseHandlers(store, logger),
+    buildBillingHandlers(store, logger)
+  );
+
+  /**
+   * Everything a restart must do before serving anyone: reconcile the state file, expire what has lapsed, and
+   * clear what a crash left behind. Reported rather than performed silently, so the operator can see it.
+   */
+  function startup() {
+    const recovery = retention.applyRetention(store, {});
+    const report = Object.assign({}, recovery, {
+      store_recovered_from_backup: store.recoveredFromBackup === true,
+      state: store.integrity(),
+      payment: payments.describeProvider(process.env),
+      plain: 'Lapsed sessions and purchases were expired, and bytes a crash left behind were cleared. No report was read, moved or transmitted.'
+    });
+    logger.log({ event: 'SERVICE_STARTUP_RECOVERY', outcome: 'OK', count: recovery.orphan_blobs_removed });
+    return report;
+  }
+
+  async function handle(req, res) {
+    const urlPath = new URL(req.url, 'http://127.0.0.1').pathname;
+    try {
+      if (!urlPath.startsWith('/api/')) {
+        const asset = staticResponse(req, urlPath);
+        if (!asset) {
+          sendJson(res, 404, { ok: false, error: { code: 'NOT_FOUND', message: 'That page does not exist.', detail: null } });
+          return;
+        }
+        if (req.method === 'HEAD') {
+          res.writeHead(asset.status, Object.assign({ 'Content-Type': asset.content_type }, SECURITY_HEADERS));
+          res.end();
+          return;
+        }
+        sendText(res, asset.status, asset.text, asset.content_type);
+        return;
+      }
+
+      let matched = null;
+      for (const [method, template, auth, name] of ROUTES) {
+        if (method !== req.method) continue;
+        const params = matchRoute(urlPath, template);
+        if (params) {
+          matched = { auth, name, params };
+          break;
+        }
+      }
+      if (!matched) {
+        sendJson(res, 404, { ok: false, error: { code: 'NOT_FOUND', message: 'That endpoint does not exist.', detail: null } });
+        return;
+      }
+
+      const actor = matched.auth ? accounts.resolveSession(store, sessionToken(req)) : null;
+      const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readRequestBody(req);
+      const outcome = await handlers[matched.name]({
+        req,
+        res,
+        params: matched.params,
+        body: body.json || {},
+        /* The RAW body and the headers go to the handler as well: a provider signature is over bytes. */
+        rawBody: body.raw || '',
+        headers: req.headers,
+        actor,
+        logger
+      });
+
+      if (outcome.text !== undefined) {
+        sendText(res, outcome.status, outcome.text, outcome.content_type, outcome.headers);
+        return;
+      }
+      sendJson(res, outcome.status, outcome.json, outcome.headers);
+    } catch (err) {
+      /* A store that cannot read its own state refuses the request; it never answers from an empty state. */
+      const serviceError = err instanceof ServiceError
+        ? err
+        : (err && err.code === 'SERVICE_STATE_UNAVAILABLE' ? new ServiceError('SERVICE_STATE_UNAVAILABLE') : null);
+      const refusal = serviceError ? toBody(serviceError) : toBody(err);
+      const status = serviceError ? serviceError.status : 500;
+      /* No path, no query, no body and no header value is ever passed to the log sink. */
+      logger.log({
+        event: 'REQUEST_REFUSED',
+        reason_code: refusal.error.code,
+        outcome: refusal.error.code,
+        http_status: status
+      });
+      sendJson(res, status, refusal);
+    }
+  }
+
+  return { store, logger, handle, surface, startup };
+}
+
+function sendJson(res, status, body, headers) {
+  const payload = Buffer.from(JSON.stringify(body), 'utf8');
+  res.writeHead(status, Object.assign({
+    'Content-Type': 'application/json; charset=utf-8',
+    'Content-Length': payload.length,
+    'Cache-Control': 'no-store'
+  }, SECURITY_HEADERS, headers || {}));
+  res.end(payload);
+}
+
+function sendText(res, status, text, contentType, headers) {
+  const payload = Buffer.from(text, 'utf8');
+  res.writeHead(status, Object.assign({
+    'Content-Type': contentType,
+    'Content-Length': payload.length,
+    'Cache-Control': 'no-store'
+  }, SECURITY_HEADERS, headers || {}));
+  res.end(payload);
+}
+
+/** Match a pathname against a `:param` template. Returns the parameters, or null. */
+function matchRoute(pathname, template) {
+  const actual = pathname.split('/').filter(Boolean);
+  const expected = template.split('/').filter(Boolean);
+  if (actual.length !== expected.length) return null;
+  const params = {};
+  for (let i = 0; i < expected.length; i += 1) {
+    if (expected[i].startsWith(':')) params[expected[i].slice(1)] = decodeURIComponent(actual[i]);
+    else if (expected[i] !== actual[i]) return null;
+  }
+  return params;
+}
+
+module.exports = {
+  createService,
+  ROUTES,
+  SESSION_COOKIE,
+  SECURITY_HEADERS,
+  CHECK_CLASSES,
+  matchRoute,
+  staticResponse,
+  loadJurisdictionSurface,
+  UI_DIR
+};
+

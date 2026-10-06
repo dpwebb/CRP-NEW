@@ -1,0 +1,387 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "purpose": "the checks this order ran over its own artifacts, its builders, its preservation, its custody, the artifacts it builds on and the read-only pointers outside the workspace",
+  "checks": [
+    {
+      "id": "V-R1",
+      "what": "no pre-existing file was changed by this order outside the one change it discloses",
+      "passed": true,
+      "detail": "changed: 1; declared and disclosed: 1; undeclared: 0"
+    },
+    {
+      "id": "V-R2",
+      "what": "no pre-existing file was deleted by this order",
+      "passed": true,
+      "detail": "missing: 0"
+    },
+    {
+      "id": "V-R20",
+      "what": "every disclosed change is exactly the change that was measured, so the disclosure cannot hide anything",
+      "passed": true,
+      "detail": "disclosed but not measured as changed: 0; disclosed entries with no measured digest: 0"
+    },
+    {
+      "id": "V-R3",
+      "what": "every JSON artifact of this order parses",
+      "passed": true,
+      "detail": "unparsable: "
+    },
+    {
+      "id": "V-R4",
+      "what": "no artifact of this order carries a byte-order mark",
+      "passed": true,
+      "detail": "with BOM: "
+    },
+    {
+      "id": "V-R5",
+      "what": "the narrative record exists",
+      "passed": true,
+      "detail": "CRP_PHASE5_001R_DETERMINISTIC_EVALUATION_SPECIFICATION_AND_GATE_5_5_VERDICT.md"
+    },
+    {
+      "id": "V-R6",
+      "what": "every builder re-runs cleanly and regenerates its artifact byte-for-byte, so no artifact was hand-edited",
+      "passed": true,
+      "detail": "builders with a difference or a non-zero exit: 0"
+    },
+    {
+      "id": "V-R7",
+      "what": "the fact model records two facts of two different kinds, each carrying the six parts the plan names",
+      "passed": true,
+      "detail": "facts: 2; kinds: EVALUATION_CONVENTION_INPUT/RULE_READ_FACT; carried parts: 6"
+    },
+    {
+      "id": "V-R8",
+      "what": "the status vocabulary is the gate's four, and every refusal state of the unit is named",
+      "passed": true,
+      "detail": "statuses: 4; identical to the gate line: True; refusal states: 6"
+    },
+    {
+      "id": "V-R9",
+      "what": "the specification carries the six recorded conventions as conventions, recomputes the record's arithmetic, and withholds the boundary day",
+      "passed": true,
+      "detail": "rules: 19; conventions: 6; all conventions non-requirements: True; arithmetic matches the record: True"
+    },
+    {
+      "id": "V-R10",
+      "what": "no finding class is available, both finding labels are forbidden, and no explanation template renders a finding label",
+      "passed": true,
+      "detail": "finding classes available: 0; forbidden labels: 8; templates: 5"
+    },
+    {
+      "id": "V-R11",
+      "what": "the internal determinism check passes every synthetic case, exercises the boundary and the clamp, and emits nothing",
+      "passed": true,
+      "detail": "cases: 27; failures: 0; emitted: 0; boundary+clamp cases: 7"
+    },
+    {
+      "id": "V-R12",
+      "what": "the comparison records the material differences, the boundary disagreement among them, and adopts none of them; the implementation is unchanged",
+      "passed": true,
+      "detail": "differences: 11; material not adopted: 4; boundary adopted: False; any implementation changed: 0"
+    },
+    {
+      "id": "V-R13",
+      "what": "the Gate 5.5 verdict states every criterion with its evidence, names what it cannot meet, withholds itself where a criterion is unmet, and claims no corpus-wide pass",
+      "passed": true,
+      "detail": "verdict: WITHHELD; criteria: 15; acceptance met: 6/7; acceptance named: 1; named items: 3; named as not met: 2; corpus-wide starts: NOT PASSED"
+    },
+    {
+      "id": "V-R14",
+      "what": "the next step is either an issued Gate 5.6 order for this scope, or the exact remaining blocker with the unissued order kept whole beside it",
+      "passed": true,
+      "detail": "order issued: False; statement: NO ORDER ISSUED — the remaining blocker is recorded, and the order that would issue once it is cleared is kept here, clearly marked as not issued and not begun; the draft order for Gate 5.6 is kept whole for whichever branch applies"
+    },
+    {
+      "id": "V-R22",
+      "what": "the two records agree on the outcome of Gate 5.5: a withheld verdict for this scope comes with no order issued, and a pass comes with one",
+      "passed": true,
+      "detail": "verdict withheld: True; order issued: False"
+    },
+    {
+      "id": "V-R15",
+      "what": "the governed rule record is still NOT ADMITTED, the counts are still zero, and the ceiling is still observation-class only",
+      "passed": true,
+      "detail": "state: NOT_ADMITTED; rules: 0; findings: 0; ceiling: OBSERVATION_CLASS_ONLY"
+    },
+    {
+      "id": "V-R16",
+      "what": "every artifact of the PHASE5-001Q package it builds on still measures to the digest that order recorded",
+      "passed": true,
+      "detail": "Q artifacts with a recorded digest, excluding that order's three superseded self-measurements: 14; matching: 14; superseded and reconciled: 3"
+    },
+    {
+      "id": "V-R17",
+      "what": "the internal comparator is at the digest the comparison cites, and no implementation file was changed",
+      "passed": true,
+      "detail": "implementation files measured: 18; with a recorded digest: 0; matching: 0; unexplained input differences: 0"
+    },
+    {
+      "id": "V-R21",
+      "what": "the implementation digests the comparison cites are the digests the input record measured, and the comparison states it did not re-run the writing suite",
+      "passed": true,
+      "detail": "digest disagreements between the comparison and the input record: 0; suite re-run by this order: False; disclosed changes: 1"
+    },
+    {
+      "id": "V-R18",
+      "what": "the three read-only pointers outside the workspace still measure to the digests the records pin",
+      "passed": true,
+      "detail": "mismatching pointers: 0; measured read-only, in place; nothing copied, moved, renamed, written or transmitted"
+    },
+    {
+      "id": "V-R19",
+      "what": "the custody manifest re-measures with no mismatch over the files it lists",
+      "passed": true,
+      "detail": "entries: 500; mismatching: 0. The three harness summary records are listed separately in the manifest and excluded from its files list, because a record cannot carry its own final digest"
+    }
+  ],
+  "check_count": 22,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001R CHECKS PASSED",
+  "checks_are_not_gate_evidence": "these checks verify this order's own artifacts and custody. They are not the scope's gate verdict, which is a separate record: scoped_gate_5_5_verdict.json.",
+  "disclosed_changes_by_this_order": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "before": "E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22",
+      "after": "6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511",
+      "cause": "this order re-ran the PHASE5-001I-A internal test suite to measure the comparison's \"its tests pass\" point. That suite's harness writes its results into its own package (tests/harness.cjs finish()).",
+      "content_measured": "the record is the same suite's results, regenerated: 41 tests, 0 failures, ALL PHASE5-001I-A TESTS PASSED. No evidence is lost; the byte-level identity of the file is.",
+      "unauthorised": true,
+      "authorised_by": "nothing. This order was authorised to change no pre-existing file.",
+      "recurring": "no: the run was removed from this order's builders, and the disclosure records the check that proves the file is now stable across builder runs."
+    }
+  ],
+  "disclosed_change_count": 1,
+  "undeclared_changes": [],
+  "preservation_reading": "one pre-existing file was changed, by this order, and it is disclosed: SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json. The cause was removed from this order's builders, and no other pre-existing file was changed or deleted.",
+  "artifacts_this_order_wrote": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_determinism_check.js",
+      "bytes": 26985,
+      "sha256": "F436A729FA409C99892455BBC3D224E1007FF49A12470000C101D3F0B52CA6C2"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_evaluator_spec.js",
+      "bytes": 18610,
+      "sha256": "B154B752382A2A2BA50141BA20B252F24596D85327BE56ECAD0A9802CEE1B327"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_fact_model.js",
+      "bytes": 13476,
+      "sha256": "36BA2092B655E31827026BA9F13EB24D8BF14A57A255D463B595DB1453365A97"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_gate55.js",
+      "bytes": 35432,
+      "sha256": "764DF04C99F44AA15D828E96DED677A7CF383D358325981C5F7363EE3C448D1B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_implementation_comparison.js",
+      "bytes": 20018,
+      "sha256": "FA8994C425F51629B6177B08469FC030DFFC1D5CED9F911F72DD438C14F0AF2B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_next_order.js",
+      "bytes": 15734,
+      "sha256": "4FE83D50FEEBE3F87E21368C9AF97EBABE2D507FADB4CBBDE07403C698082291"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_output_surface.js",
+      "bytes": 11334,
+      "sha256": "D631D751901586DEEC03E317B13E12888F5EE21999BC9115F1644420395505C8"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\build_001r_status_vocabulary.js",
+      "bytes": 11908,
+      "sha256": "4F58362A31C1114E20181509ED966C67262E5BCC8063F7D8324C348E860ECEB3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\capture_001r_baseline.ps1",
+      "bytes": 14921,
+      "sha256": "8C421D0DE9948B8E3D16AFA95EA4FE720C587A321D5CAAC3023E9A8418B7B893"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+      "bytes": 25602,
+      "sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+      "bytes": 23328,
+      "sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+      "bytes": 10911,
+      "sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json",
+      "bytes": 120762,
+      "sha256": "A2AB85EBD058656ED68136E7EAE5DE104FF0610EFF1BF6B7170C94DC8083A1A0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\implementation_comparison.json",
+      "bytes": 17981,
+      "sha256": "859FA96A236404903D4EC6DE3086DF91B2887479B68750F68EDEE3C3964A3FEA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json",
+      "bytes": 40073,
+      "sha256": "8E536DFF130C3FF9DAFB75C8572BFDD2A8834925C99B5EFBC41D129D1838479B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+      "bytes": 41919,
+      "sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\next_work_order.json",
+      "bytes": 17953,
+      "sha256": "12D1F99038EBD4D52EA8E0B5D46A176DE2A77734A7C89FA46A03E709A20CCA07"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+      "bytes": 13183,
+      "sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\preservation_and_change_record.json",
+      "bytes": 7563,
+      "sha256": "036335997B11E8805CC2655FE15191D3756D15C808AAF5D2AD843572A4C55143"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\preserved_files_before.json",
+      "bytes": 101234,
+      "sha256": "A0D527A15352FBAA734D27758C0D0E1099AB9A9CF0661FBFB8B669D24F7221F1"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+      "bytes": 17062,
+      "sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+      "bytes": 56499,
+      "sha256": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\verification_results.json",
+      "bytes": 18877,
+      "sha256": "2DED2B975C1E9CC9E85C99AE26DA0D6212C6899E9F544A4F9B584D25586BEF01"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\verify_and_manifest_001r.ps1",
+      "bytes": 32484,
+      "sha256": "FA48633A30AC29CD12517A82BA4E8E0AA6AE7F1D5D196209841038EA295806E3"
+    },
+    {
+      "relative_path": "CRP_PHASE5_001R_DETERMINISTIC_EVALUATION_SPECIFICATION_AND_GATE_5_5_VERDICT.md",
+      "bytes": 36468,
+      "sha256": "FCE92AF0292D08EF726C2D5400A638E703EABF8FDD93DC8F827FBCC961F6FCB4"
+    }
+  ],
+  "harness_summary_records": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\preservation_and_change_record.json",
+      "bytes": 7791,
+      "sha256": "C5F5C84C38863D3993B1CD54895FC887990DB5599FFEDEA754AD4945B5EE6910"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json",
+      "bytes": 121233,
+      "sha256": "73CF586FCE08BD29EDCD9BE6B3882A1A0DD0005780A70299AA40E49476B61252"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001R\\verification_results.json",
+      "note": "written last by this same harness; its own digest is measured from the file rather than self-recorded"
+    }
+  ],
+  "builders_and_their_artifacts": [
+    {
+      "builder": "build_001r_fact_model.js",
+      "exit_code": 0,
+      "artifact": "report_fact_model.json",
+      "sha256_before": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+      "sha256_after": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_status_vocabulary.js",
+      "exit_code": 0,
+      "artifact": "extraction_status_vocabulary.json",
+      "sha256_before": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+      "sha256_after": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_evaluator_spec.js",
+      "exit_code": 0,
+      "artifact": "deterministic_evaluator_specification.json",
+      "sha256_before": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+      "sha256_after": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_output_surface.js",
+      "exit_code": 0,
+      "artifact": "output_vocabulary_and_explanation_surface.json",
+      "sha256_before": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+      "sha256_after": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_determinism_check.js",
+      "exit_code": 0,
+      "artifact": "internal_determinism_check.json",
+      "sha256_before": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+      "sha256_after": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_implementation_comparison.js",
+      "exit_code": 0,
+      "artifact": "implementation_comparison.json",
+      "sha256_before": "859FA96A236404903D4EC6DE3086DF91B2887479B68750F68EDEE3C3964A3FEA",
+      "sha256_after": "859FA96A236404903D4EC6DE3086DF91B2887479B68750F68EDEE3C3964A3FEA",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_gate55.js",
+      "exit_code": 0,
+      "artifact": "scoped_gate_5_5_verdict.json",
+      "sha256_before": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+      "sha256_after": "B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705",
+      "byte_identical": true
+    },
+    {
+      "builder": "build_001r_next_order.js",
+      "exit_code": 0,
+      "artifact": "next_work_order.json",
+      "sha256_before": "12D1F99038EBD4D52EA8E0B5D46A176DE2A77734A7C89FA46A03E709A20CCA07",
+      "sha256_after": "12D1F99038EBD4D52EA8E0B5D46A176DE2A77734A7C89FA46A03E709A20CCA07",
+      "byte_identical": true
+    }
+  ],
+  "corpus_wide_status_kept_separate": {
+    "5.1": "MET with recorded administrative limitations; unchanged",
+    "5.2": "NOT PASSED corpus-wide; a scoped verdict is recorded separately",
+    "5.3": "NOT PASSED corpus-wide; a scoped verdict is recorded separately",
+    "5.4": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only, in SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json",
+    "5.5": "NOT PASSED corpus-wide; the scoped verdict for this scope is WITHHELD, with the unmet criterion named in SOURCE_CAPTURES\\PHASE5-001R\\scoped_gate_5_5_verdict.json",
+    "5.6": "NOT STARTED; no order issued — the remaining blocker is recorded in SOURCE_CAPTURES\\PHASE5-001R\\next_work_order.json, with the unissued Gate 5.6 order kept beside it",
+    "5.7": "NOT REACHED; 0 admitted governed rules, 0 permitted findings"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not independent legal review, and it is not Gate 5.6 or Gate 5.7 evidence",
+    "it does not pass Gate 5.5 corpus-wide, and it records no gate as passed for any scope other than the one named in scoped_gate_5_5_verdict.json",
+    "it does not admit a rule, create coverage or a candidate, or authorize a finding class",
+    "it does not convert any recorded limitation into a criterion satisfaction, and it does not treat missing work as GAP or REFUSAL",
+    "it does not present the one change it made to a pre-existing file as authorised, or as no change: the change is disclosed by measurement, with its cause, and the acceptance criterion it affects is named as unmet in scoped_gate_5_5_verdict.json",
+    "it does not retroactively authorize the custody discrepancies that earlier orders recorded"
+  ],
+  "created_by": "PHASE5-001R"
+}

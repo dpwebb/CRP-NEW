@@ -1,0 +1,1788 @@
+                       Queensland
+
+
+
+Limitation of Actions Act 1974
+
+
+Current as at 28 April 2026
+                            © State of Queensland 2026
+
+
+
+This work is licensed under a Creative Commons Attribution 4.0 International License.
+                                      Queensland
+
+
+Limitation of Actions Act 1974
+
+Contents
+
+                                                                                                               Page
+Part 1     Preliminary
+1          Short title . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      5
+2          Commencement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 5
+5          Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         5
+6          Application to Crown . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               8
+7          Saving of other limitations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                9
+8          Provisions as to actions already barred and pending actions . . .                                      9
+Part 2     Periods of limitation for different classes of actions
+9          Application . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       10
+10         Actions of contract and tort and certain other actions . . . . . . . . .                              10
+10AA       Defamation actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              11
+10AB       Defamation actions—single publication rule . . . . . . . . . . . . . . . .                            12
+10A        Actions to recover tax . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              13
+11         Actions in respect of personal injury . . . . . . . . . . . . . . . . . . . . . .                     14
+11A        No limitation period for actions for child abuse . . . . . . . . . . . . . .                          15
+12         Actions in cases of successive conversions and extinction of title of
+           owners of converted goods . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+13         Actions to recover land . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               16
+14         Accrual of right of action in cases of present interests in land . .                                  17
+15         Accrual of right of action in cases of future interests in land . . . .                               17
+16         Provisions in cases of land held in trust . . . . . . . . . . . . . . . . . . .                       18
+17         Accrual of right of action in cases of forfeiture or breach of condition 19
+Limitation of Actions Act 1974
+
+Contents
+
+18                 Accrual of right of action in cases of certain tenancies . . . . . . . .                            20
+19                 Right of action not to accrue or continue unless there is adverse
+                   possession . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        20
+20                 Redemption actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            21
+21                 Right of action not preserved by formal entry or continual claim .                                  21
+22                 Application of limitation as between joint owners . . . . . . . . . . . .                           22
+23                 Administration to date back to death . . . . . . . . . . . . . . . . . . . . . .                    22
+24                 Extinction of title after expiration of period of limitation . . . . . . . .                        22
+25                 Actions to recover rent . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             23
+26                 Actions to recover money secured by mortgage or charge or to recover
+                   proceeds of the sale of land . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+27                 Actions in respect of trust property . . . . . . . . . . . . . . . . . . . . . . .                  24
+28                 Actions claiming personal estate of a deceased person . . . . . . .                                 25
+Part 3             Extension of periods of limitation
+29                 Extension in cases of disability . . . . . . . . . . . . . . . . . . . . . . . . . .                25
+30                 Interpretation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      26
+31                 Ordinary actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          28
+32                 Surviving actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         28
+32A                Defamation actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            29
+33                 Prior bar ineffective . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         30
+34                 Practice . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    31
+35                 Fresh accrual of action on acknowledgment or part payment . . .                                     31
+36                 Formal provisions as to acknowledgment and part payment . . .                                       32
+37                 Effect of acknowledgment or part payment on a person other than the
+                   maker or recipient . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+38                 Postponement in cases of fraud or mistake . . . . . . . . . . . . . . . .                           34
+39                 Costs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   35
+40                 Contribution between tortfeasors . . . . . . . . . . . . . . . . . . . . . . . .                    35
+Part 4             General
+41                 Application to arbitrations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             36
+41A                Defamation actions—effect of limitation law concerning electronic
+                   publications on other laws . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              38
+42                 Provisions as to set-off or counterclaim . . . . . . . . . . . . . . . . . . .                      38
+43                 Acquiescence . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          38
+43A                Characterisation of limitation laws . . . . . . . . . . . . . . . . . . . . . . . .                 38
+Part 5             Transitional provisions
+44                 Transitional provision for Civil Liability (Dust Diseases) and Other
+
+Page 2
+                                                             Limitation of Actions Act 1974
+
+                                                                                         Contents
+
+     Legislation Amendment Act 2005 . . . . . . . . . . . . . . . . . . . . . . . .               39
+45   Transitional provision for Defamation Act 2005 . . . . . . . . . . . . . .                   39
+46   Transitional provision for Corrective Services and Other Legislation
+     Amendment Act 2008 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+47   Transitional provision for Civil Liability and Other Legislation Amendment
+     Act 2010 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+48   Transitional provision for Limitation of Actions (Child Sexual Abuse) and
+     Other Legislation Amendment Act 2016 . . . . . . . . . . . . . . . . . . . 41
+49   Transitional provision for Civil Liability and Other Legislation Amendment
+     Act 2019 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 43
+50   Transitional provision for Defamation (Model Provisions) and Other
+     Legislation Amendment Act 2021 . . . . . . . . . . . . . . . . . . . . . . . .               43
+51   Transitional provision for Property Law Act 2023 . . . . . . . . . . . .                     44
+
+
+
+
+                                                                                            Page 3
+                                                                   Limitation of Actions Act 1974
+                                                                               Part 1 Preliminary
+
+                                                                                            [s 1]
+
+
+Limitation of Actions Act 1974
+
+
+An Act to consolidate and amend the law relating to the
+limitation of actions
+
+
+
+
+Part 1                         Preliminary
+
+1        Short title
+               This Act may be cited as the Limitation of Actions Act 1974.
+
+
+2        Commencement
+               This Act shall commence on 1 July 1975.
+
+
+5        Interpretation
+         (1) In this Act—
+               action includes any proceeding in a court of law.
+               Crown includes not only the Crown in the right of the State
+               but also, so far as the legislative power of Parliament permits,
+               the Crown in all its other capacities.
+               damage includes loss of life and personal injury.
+               encumbrance means a charge on land created for the purpose
+               of securing the payment of an annuity or sum of money other
+               than a loan.
+               encumbrancee includes a person not being a mortgagee for
+               whose benefit an estate or interest in land is charged with an
+               annuity or sum of money other than a loan and also a person
+               entitled to the benefit of an encumbrance or to require
+               payment or discharge thereof.
+
+Current as at 28 April 2026                                                              Page 5
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 1 Preliminary
+
+[s 5]
+
+               land includes corporeal hereditaments, rentcharges and any
+               legal or equitable estate or interest therein, including an
+               interest in the proceeds of the sale of land held upon trust for
+               sale but, save as is provided in this definition, does not include
+               an incorporeal hereditament.
+               mortgage includes a charge or lien on property for securing
+               money or money’s worth but does not include a possessory
+               lien on goods nor a binding effect on the property arising
+               under a writ of execution against the property.
+               mortgagee includes a person claiming a mortgage through an
+               original mortgagee.
+               mortgagor includes a person claiming property subject to a
+               mortgage through an original mortgagor.
+               personal estate does not include chattels real.
+               personal injury includes a disease and an impairment of a
+               person’s physical or mental condition.
+               personal property does not include chattels real.
+               rent includes a rentcharge and a rentservice.
+               rentcharge means any annuity or periodical sum of money
+               charged upon or payable out of land save a rentservice or
+               interest on a mortgage on land.
+               ship includes every description of vessel used in navigation
+               not propelled by oars.
+               trust has the meaning given by the Trusts Act 2025, section 6.
+               trustee has the meaning given by the Trusts Act 2025,
+               section 7(1).
+               trust for sale means in relation to land an immediate binding
+               trust for sale, whether or not exercisable at the request or with
+               the consent of any person, and with or without a power at
+               discretion to postpone the sale.
+         (2) For the purposes of this Act, a person shall be taken to be
+             under a disability while the person is an infant or of unsound
+             mind.
+Page 6                                                                Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                               Part 1 Preliminary
+
+                                                                                            [s 5]
+
+         (3) For the purposes of subsection (2), but without prejudice to
+             the generality thereof, a person shall be presumed
+             conclusively to be of unsound mind—
+               (a)    while the person is an involuntary patient under the
+                      Mental Health Act 2016; or
+               (b)    while the person is a forensic disability client under the
+                      Forensic Disability Act 2011; or
+               (c)    while the person is detained in an authorised mental
+                      health service under an order of the court or in safe
+                      custody under an order given by the Governor in the
+                      name of Her Majesty, under section 647 of the Criminal
+                      Code.
+         (4) A person shall be taken to claim through another person if the
+             person became entitled by, through, under or by the act of that
+             other person to the right claimed, but a person becoming
+             entitled to an estate or interest by virtue of a special power of
+             appointment shall not be taken to claim through the appointor.
+         (5) A reference in this Act to a right of action to recover land
+             includes a reference to a right to enter into possession of the
+             land or, in the case of a rentcharge, to distrain for arrears of
+             rent and a reference to the bringing of such an action includes
+             a reference to the making of such an entry or distress.
+         (6) A reference in this Act, in the case of a rentcharge—
+               (a)    to the possession of land—shall be read and construed
+                      as a reference to receipt of the rent; or
+               (b)    to the date of dispossession or discontinuance of
+                      possession of land—shall be read and construed as a
+                      reference to the date the rent was last received.
+         (7) In part 3, a reference to a right of action includes a reference
+             to—
+               (a)    a cause of action; and
+               (b)    a right to receive money secured by a mortgage or
+                      charge on property or to recover proceeds of the sale of
+                      land; and
+Current as at 28 April 2026                                                              Page 7
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 1 Preliminary
+
+[s 6]
+
+               (c)    a right to receive a share or interest in the personal estate
+                      of a deceased person;
+               and a reference to the date of accrual of a right of action—
+               (d)    shall, in the case of an action for an account, be read and
+                      construed as a reference to the date on which the matter
+                      arose in respect of which the account is claimed; and
+               (e)    shall, in the case of an action upon a judgment, be read
+                      and construed as a reference to the date on which the
+                      judgment became enforceable; and
+               (f)    shall, in the case of an action to recover arrears of rent or
+                      interest or damages in respect thereof, be read and
+                      construed as a reference to the date on which the rent or
+                      interest became due.
+
+
+6        Application to Crown
+         (1) Subject to subsections (3) and (4), this Act binds the Crown
+             and the Crown has the benefit of this Act.
+         (2) For the purposes of this Act, an action by or against the Crown
+             includes an action by or against an officer of the Crown as
+             such or a person acting on behalf of the Crown.
+         (3) This Act does not apply to—
+               (a)    a prosecution by the Crown for an offence against any
+                      Act; or
+               (b)    an action by the Crown—
+                      (i)    for the recovery of a fee, tax, duty or other sum of
+                             money or interest on a fee, tax, duty or other sum
+                             of money; or
+                      (ii) in respect of the forfeiture of a ship.
+         (4) Notwithstanding any law or enactment now or heretofore in
+             force in the State, the right, title or interest of the Crown to or
+             in any land shall not be and shall be deemed not to have been
+             in any way affected by reason of any possession of such land
+             adverse to the Crown for any period whatever.
+Page 8                                                                Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                               Part 1 Preliminary
+
+                                                                                            [s 7]
+
+7        Saving of other limitations
+               Subject to sections 11(2) and 43A, this Act does not apply to
+               an action or arbitration for which a limitation period is fixed
+               by or under an enactment other than this Act.
+
+
+8        Provisions as to actions already barred and pending
+         actions
+         (1) Save as is provided in sections 31 and 32, nothing in this
+             Act—
+               (a)    enables an action to be brought that was barred before
+                      the commencement of this Act by an enactment
+                      repealed by this Act, save so far as the cause of action or
+                      right of action may be revived by an acknowledgment or
+                      part payment made in accordance with this Act; or
+               (b)    affects an action or arbitration commenced before the
+                      commencement of this Act or the title to property that is
+                      the subject of such an action or arbitration.
+         (2) The time for bringing proceedings in respect of a cause of
+             action that arose before the commencement of this Act shall,
+             if it has not then expired, expire at the time when it would
+             have expired—
+               (a)    apart from this Act; or
+               (b)    if this Act had at all material times been in force;
+               whichever is the later.
+         (3) Save as is provided in this section, nothing in this Act affects
+             an action if the cause of action upon which that action is
+             founded arose before the commencement of this Act.
+
+
+
+
+Current as at 28 April 2026                                                              Page 9
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 9]
+
+
+Part 2                          Periods of limitation for
+                                different classes of actions
+
+9         Application
+                This part applies subject to part 3.
+
+
+10        Actions of contract and tort and certain other actions
+          (1) The following actions shall not be brought after the expiration
+              of 6 years from the date on which the cause of action arose—
+                (a)     subject to section 10AA, an action founded on simple
+                        contract or quasi-contract or on tort where the damages
+                        claimed by the plaintiff do not consist of or include
+                        damages in respect of personal injury to any person;
+                (b)     an action to enforce a recognisance;
+                (c)     an action to enforce an award;
+                (d)     an action to recover a sum recoverable by virtue of any
+                        enactment, other than a penalty or forfeiture or sum by
+                        way of a penalty or forfeiture.
+          (2) An action for an account shall not be brought in respect of a
+              matter that arose more than 6 years before the commencement
+              of the action.
+          (3) An action upon a deed shall not be brought after the expiration
+              of 6 years from the date on which the cause of action accrued.
+        (3A) Subsection (3) does not affect an action in respect of which a
+             shorter period of limitation is prescribed by any other
+             provision of this Act.
+          (4) An action shall not be brought upon a judgment after the
+              expiration of 12 years from the date on which the judgment
+              becomes enforceable.
+        (4A) For the purposes of subsection (4), a judgment of a court of a
+             place outside the State becomes enforceable on the date on
+             which the judgment becomes enforceable in the place where
+             the judgment is given.
+Page 10                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                      [s 10AA]
+
+         (5) An action to recover a penalty or forfeiture or sum by way of a
+             penalty or forfeiture shall not be brought after the expiration
+             of 2 years from the date on which the cause of action accrued.
+       (5A) In subsection (5)—
+               penalty does not include a fine to which a person is liable on
+               conviction of a criminal offence.
+         (6) This section—
+               (a)    does not apply to a cause of action within the Admiralty
+                      jurisdiction of the court that is enforceable in rem; and
+               (b)    does not apply to a claim for specific performance of a
+                      contract or deed or for an injunction or other equitable
+                      relief, save so far as any provision thereof may be
+                      applied by the court by analogy in the same manner as
+                      the corresponding enactment repealed by this Act has
+                      heretofore applied.
+
+
+10AA Defamation actions
+         (1) An action on a cause of action for defamation must not be
+             brought after the end of a limitation period of 1 year running
+             from the date of the publication of the matter complained of.
+         (2) The 1-year limitation period referred to in subsection (1) is
+             taken to have been extended as provided by subsection (3) if a
+             concerns notice is given to the proposed defendant on a day
+             (the notice day) within the period of 56 days before the
+             limitation period expires.
+         (3) The limitation period is extended for an additional period of
+             56 days minus any days remaining after the notice day until
+             the 1-year limitation period expires.
+               Example—
+                  Assume a concerns notice is given 7 days before the limitation period
+                  expires. This means that there are 6 days left after the notice day before
+                  the period expires. Consequently, this subsection would operate to
+                  extend the limitation period by 56 minus 6 days, that is, 50 days.
+         (4) In this section—
+Current as at 28 April 2026                                                           Page 11
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 10AB]
+
+                concerns notice               see      the      Defamation          Act     2005,
+                section 12A(1).
+                date of the publication, in relation to the publication of matter
+                in electronic form, means the day on which the matter was
+                first uploaded for access or sent electronically to a recipient.
+
+
+10AB Defamation actions—single publication rule
+           (1) This section applies if—
+                (a)     a person (the first publisher) publishes matter to the
+                        public that is alleged to be defamatory (the first
+                        publication); and
+                (b)     the first publisher or an associate of the first publisher
+                        subsequently publishes (whether or not to the public)
+                        matter that is substantially the same.
+           (2) Any cause of action for defamation against the first publisher
+               or an associate of the first publisher in respect of the
+               subsequent publication is taken to have accrued on the date of
+               the first publication for the purposes of determining when—
+                (a)     the limitation period applicable under section 10AA
+                        begins; or
+                (b)     the 3-year period referred to in section 32A(2) begins.
+           (3) Subsection (2) does not apply in relation to the subsequent
+               publication if the manner of that publication is materially
+               different from the manner of the first publication.
+           (4) In determining whether the manner of a subsequent
+               publication is materially different from the manner of the first
+               publication, the considerations to which the court may have
+               regard include (but are not limited to)—
+                (a)     the level of prominence that a matter is given; and
+                (b)     the extent of the subsequent publication.
+           (5) This section does not limit the power of a court under
+               section 32A to extend the limitation period applicable under
+               section 10AA.
+Page 12                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                        [s 10A]
+
+         (6) In this section—
+               associate, of a first publisher, means—
+               (a)    an employee of the publisher; or
+               (b)    a person publishing matter as a contractor of the
+                      publisher; or
+               (c)    an associated entity, within the meaning of the
+                      Corporations Act, section 50AAA, of the publisher (or
+                      an employee or contractor of the associated entity).
+               date of the first publication, in relation to the publication of
+               matter in electronic form, means the day on which the matter
+               was first uploaded for access or sent electronically to a
+               recipient.
+               public includes a section of the public.
+
+
+10A      Actions to recover tax
+         (1) Despite section 10(1)(d) or (5), an action to recover an
+             amount paid as tax that is recoverable because of the
+             invalidity of an Act or a provision of an Act must be started
+             within 1 year after the day of payment.
+         (2) Subsection (1) does not apply to the recovery of an amount
+             that would, assuming the Act or provision had been valid,
+             have nevertheless represented an overpayment of tax.
+         (3) The period of limitation prescribed by subsection (1) can not
+             be extended and, if an action for the recovery of an amount is
+             not brought within the period, the right to recover the amount
+             ends.
+         (4) Despite section 7, if this section and another Act are
+             inconsistent, this section prevails over the other Act to the
+             extent of the inconsistency.
+         (5) In this section—
+               invalid Act or provision of an Act includes an Act or
+               provision of an Act that would be invalid apart from section 9
+
+
+Current as at 28 April 2026                                                           Page 13
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 11]
+
+                (Act to be interpreted not to exceed Parliament’s legislative
+                power) of the Acts Interpretation Act 1954.
+                pay a tax means pay the tax voluntarily or under compulsion
+                (whether or not the tax is paid under a mistake of law or fact),
+                and includes recover the tax by legal proceeding.
+                tax means—
+                (a)     a tax, fee, duty, levy, charge or other impost under, or
+                        purportedly under, an Act; or
+                (b)     a penalty in relation to a tax, fee, duty, levy, charge or
+                        other impost under, or purportedly under, an Act.
+
+
+11        Actions in respect of personal injury
+          (1) Notwithstanding any other Act or law or rule of law, an action
+              for damages for negligence, trespass, nuisance or breach of
+              duty (whether the duty exists by virtue of a contract or a
+              provision made by or under a statute or independently of a
+              contract or such provision) in which damages claimed by the
+              plaintiff consist of or include damages in respect of personal
+              injury to any person or damages in respect of injury resulting
+              from the death of any person shall not be brought after the
+              expiration of 3 years from the date on which the cause of
+              action arose.
+          (2) However, a right of action relating to personal injury resulting
+              from a dust-related condition is not subject to a limitation
+              period under an Act or law or rule of law.
+          (3) To remove any doubt, it is declared that personal injury
+              resulting from a dust-related condition does not include
+              personal injury resulting from smoking or other use of
+              tobacco products or exposure to tobacco smoke.
+          (4) In this section—
+                dust-related condition see the Civil Liability Act 2003,
+                schedule 2.
+
+
+
+
+Page 14                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                        [s 11A]
+
+11A      No limitation period for actions for child abuse
+         (1) An action for damages relating to the personal injury of a
+             person resulting from the abuse of the person when the person
+             was a child—
+               (a)    may be brought at any time; and
+               (b)    is not subject to a limitation period under an Act or law
+                      or rule of law.
+         (3) This section applies whether the claim for damages is brought
+             in tort, in contract, under statute, or otherwise.
+         (4) This section applies to an action for damages—
+               (a)    arising under the Civil Proceedings Act 2011,
+                      section 64; or
+               (b)    that has survived on the death of a person for the benefit
+                      of the person’s estate under the Succession Act 1981,
+                      section 66.
+         (5) This section does not limit—
+               (a)    any inherent, implied or statutory jurisdiction of a court;
+                      or
+               (b)    any other powers of a court under the common law or
+                      any other Act (including a Commonwealth Act), rule of
+                      court or practice direction.
+               Example—
+                  This section does not limit a court’s power to summarily dismiss or
+                  permanently stay proceedings if the lapse of time has a burdensome
+                  effect on the defendant that is so serious that a fair trial is not possible.
+         (6) In this section—
+               abuse, of a child, means—
+               (a)    sexual abuse or serious physical abuse of the child; or
+               (b)    psychological abuse of the child perpetrated in
+                      connection with sexual abuse or serious physical abuse
+                      of the child.
+
+
+
+Current as at 28 April 2026                                                           Page 15
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 12]
+
+12        Actions in cases of successive conversions and
+          extinction of title of owners of converted goods
+          (1) Where a cause of action in respect of the conversion or
+              wrongful detention of a chattel has accrued to any person and
+              before the person recovers possession of the chattel a further
+              conversion or wrongful detention takes place, an action shall
+              not be brought in respect of the further conversion or
+              detention after the expiration of 6 years from the accrual of
+              the cause of action in respect of the original conversion or
+              detention.
+          (2) Where a cause of action to which subsection (1) applies has
+              accrued to any person and the period prescribed for bringing
+              that action or any action in respect of which a further
+              conversion or wrongful detention referred to in subsection (1)
+              has expired and the person has not during that period
+              recovered possession of the chattel, the title of that person to
+              the chattel shall be extinguished as against a purchaser,
+              mortgagee or other person having a title to or an interest in the
+              chattel bona fide for value.
+          (3) Where, before the expiration of the period of limitation
+              prescribed by this Act for an action in respect of the further
+              conversion or wrongful detention of a chattel, such an action
+              is brought, the expiration of the period of limitation does not
+              affect the right or title of the plaintiff to the chattel—
+                (a)     for the purposes of the action; or
+                (b)     so far as the right or title is established in the action.
+
+
+13        Actions to recover land
+                An action shall not be brought by a person to recover land
+                after the expiration of 12 years from the date on which the
+                right of action accrued to the person or, if it first accrued to
+                some person through whom the person claims, to that person.
+
+
+
+
+Page 16                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                          [s 14]
+
+14       Accrual of right of action in cases of present interests in
+         land
+         (1) Where the person bringing an action to recover land or some
+             person through whom the person claims has been in
+             possession thereof and has, while entitled thereto, been
+             dispossessed or discontinued possession, the right of action
+             shall be deemed to have accrued on the date of the
+             dispossession or discontinuance.
+         (2) Where a person brings an action to recover land of a deceased
+             person, whether under a will or on intestacy and the deceased
+             person was on the date of death in possession of the land or, in
+             the case of a rentcharge created by will or taking effect upon
+             the person’s death, in possession of the land charged and was
+             the last person entitled to the land to be in possession thereof,
+             the right of action shall be deemed to have accrued on the date
+             of death.
+         (3) Where a person brings an action to recover land, being an
+             estate or interest in possession assured otherwise than by will
+             to the person or some person through whom the person claims
+             by a person who on the date when the assurance took effect
+             was in possession of the land or, in the case of a rentcharge
+             created by the assurance, in possession of the land charged
+             and no person has been in possession of the land by virtue of
+             the assurance, the right of action shall be deemed to have
+             accrued on the date when the assurance took effect.
+
+
+15       Accrual of right of action in cases of future interests in
+         land
+         (1) Subject to this section, the right of action to recover land in a
+             case where the estate or interest claimed was an estate or
+             interest in reversion or remainder or any other future estate or
+             interest and no person has taken possession of the land by
+             virtue of the estate or interest claimed shall be deemed to have
+             accrued on the date on which the estate or interest fell into
+             possession by the determination of the preceding estate or
+             interest.
+Current as at 28 April 2026                                                           Page 17
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 16]
+
+          (2) If the person entitled to the preceding estate or interest was
+              not in possession of the land on the date of the determination
+              thereof, action shall not be brought by the person entitled to
+              the succeeding estate or interest after the expiration of 12
+              years from the date on which the right of action accrued to the
+              person entitled to the preceding estate or interest or 6 years
+              from the date on which the right of action accrued to the
+              person entitled to the succeeding estate or interest whichever
+              period last expires.
+          (3) A person shall not bring an action to recover an estate or
+              interest in land under an assurance taking effect after the right
+              of action to recover the land had accrued to the person by
+              whom the assurance was made or some person through whom
+              the person claimed or some person entitled to a preceding
+              estate or interest unless the action is brought within the period
+              during which the person by whom the assurance was made
+              could have brought an action.
+          (4) Where a person is entitled to an estate or interest in land in
+              possession and, while so entitled, is also entitled to a future
+              estate or interest in that land and the person’s right to recover
+              the estate or interest in possession is barred under this Act,
+              action shall not be brought by that person or by a person
+              claiming through the person in respect of the future estate or
+              interest unless, in the meantime, possession of the land has
+              been recovered by a person entitled to an intermediate estate
+              or interest.
+
+
+16        Provisions in cases of land held in trust
+          (1) Subject to the provisions of section 27(1), this Act shall apply
+              to equitable interests in land including interests in the
+              proceeds of the sale of land held upon trust for sale in like
+              manner as they apply to legal estates and accordingly a right
+              of action to recover the land shall, for the purposes of this Act
+              but not otherwise, be deemed to accrue to a person entitled in
+              possession to an equitable interest in the like manner and
+              circumstances and on the same date as it would accrue if the
+              person’s interest were a legal estate in the land.
+Page 18                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                          [s 17]
+
+         (2) Where land is held by a trustee upon trust including a trust for
+             sale and the period prescribed by this Act for the bringing of
+             an action to recover the land by the trustee has expired, the
+             estate of the trustee shall not be extinguished if and so long as
+             the right of action to recover the land of any person entitled to
+             a beneficial interest in the land or in the proceeds of sale has
+             not accrued or has not been barred by this Act, but if and
+             when every such right has been so barred the estate of the
+             trustee shall be extinguished.
+         (3) Where land is held upon trust including a trust for sale, an
+             action to recover the land may be brought by the trustee on
+             behalf of any person entitled to a beneficial interest in
+             possession in the land or in the proceeds of sale whose right of
+             action has not been barred by this Act, notwithstanding that
+             the right of action of the trustee would, apart from this
+             provision, have been barred by this Act.
+         (4) Where land held upon trust for sale is in the possession of a
+             person entitled to a beneficial interest in the land or in the
+             proceeds of sale, not being a person solely and absolutely
+             entitled thereto, a right of action to recover the land shall be
+             deemed for the purposes of this Act not to accrue during such
+             possession to any person in whom the land is vested as trustee
+             or to any person entitled to a beneficial interest in the land or
+             in the proceeds of sale.
+
+
+17       Accrual of right of action in cases of forfeiture or breach
+         of condition
+               A right of action to recover land by virtue of a forfeiture or
+               breach of condition shall be deemed to have accrued on the
+               date on which the forfeiture was incurred or the condition
+               broken, but where such right has accrued to a person entitled
+               to an estate or interest in reversion or remainder and the land
+               was not recovered by virtue thereof, the right of action to
+               recover the land shall be deemed not to have accrued to that
+               person until the person’s estate or interest fell into possession
+               as if no forfeiture or breach of condition had occurred.
+Current as at 28 April 2026                                                           Page 19
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 18]
+
+18         Accrual of right of action in cases of certain tenancies
+          (1) A tenancy at will shall, for the purposes of this Act, be
+              deemed to be determined at the expiration of a period of 1
+              year from the commencement thereof unless it has previously
+              been determined and accordingly the right of action of the
+              person entitled to land subject to the tenancy shall be deemed
+              to have accrued on the date of its determination.
+          (2) A tenancy from year to year or other period without a lease in
+              writing shall, for the purposes of this Act, be deemed to be
+              determined at the expiration of the first year or other period
+              and accordingly the right of action of the person entitled to the
+              land subject to the tenancy shall be deemed to have accrued on
+              the date of its determination.
+         (2A) Where rent has subsequently been received in respect of a
+              tenancy to which subsection (2) applies, the right of action
+              shall be deemed to have accrued on the date the rent was last
+              received.
+          (3) Where a person is in possession of land by virtue of a lease in
+              writing by which a rent of not less than $2 per annum is
+              reserved and the rent is received by some person wrongfully
+              claiming to be entitled to the land in reversion immediately
+              expectant on the determination of the lease and no rent is
+              subsequently received by the person rightfully so entitled, the
+              right of action of the last named person to recover the land
+              shall be deemed to have accrued on the date when the rent was
+              first received by the person wrongfully claiming and not on
+              the date of the determination of the lease.
+
+
+19         Right of action not to accrue or continue unless there is
+           adverse possession
+          (1) A right of action to recover land shall be deemed not to accrue
+              unless the land is in the possession of some person in whose
+              favour the period of limitation can run (adverse possession)
+              and where under the provisions of this Act such right of action
+              is deemed to accrue on a certain date and no person is in
+              adverse possession on that date, the right of action shall be
+Page 20                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                          [s 20]
+
+               deemed not to accrue unless and until adverse possession is
+               taken of the land.
+         (2) Where a right of action to recover land has accrued and
+             thereafter, before the right is barred, the land ceases to be in
+             adverse possession, the right of action shall no longer be
+             deemed to accrue unless and until the land is again taken into
+             adverse possession.
+         (3) For the purpose of this section—
+               (a)    possession of land subject to a rentcharge by a person
+                      (other than the person entitled to the rentcharge) who
+                      does not pay the rent shall be deemed to be adverse
+                      possession of the rentcharge; and
+               (b)    receipt of rent, under a lease by a person wrongfully
+                      claiming in accordance with section 18(3) the land in
+                      reversion, shall be deemed to be adverse possession of
+                      the land.
+
+
+20       Redemption actions
+               Where a mortgagee of land has been in possession of any of
+               the mortgaged land for a period of 12 years, an action to
+               redeem the land of which the mortgagee has been in
+               possession shall not thereafter be brought by the mortgagor or
+               a person claiming through the mortgagor.
+
+
+21       Right of action not preserved by formal entry or continual
+         claim
+               For the purposes of this Act, a person shall be deemed not to
+               have been in possession of land by reason only of having
+               made a formal entry thereon, and a continual or other claim
+               upon or near land shall not preserve a right of action to
+               recover the land.
+
+
+
+
+Current as at 28 April 2026                                                           Page 21
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 22]
+
+22        Application of limitation as between joint owners
+                When 1 or more of several persons entitled to land or rent as
+                coparceners, joint tenants or tenants in common has or have
+                been in possession or receipt of the entirety or more than his,
+                her or their undivided share or shares of such land or of the
+                profits thereof or of such rent for his, her or their own benefit
+                or for the benefit of any person or persons other than the
+                person or persons entitled to the other share or shares of the
+                same land or rent, such possession or receipt shall be deemed
+                not to have been the possession or receipt of or by such last
+                mentioned person or persons or any of them.
+
+
+23        Administration to date back to death
+                For the purposes of the provisions of this Act with respect to
+                actions for the recovery of land, an administrator of the estate
+                of a deceased person shall be deemed to claim as if there had
+                been no interval of time between the death of the deceased
+                person and the grant of the letters of administration.
+
+
+24        Extinction of title after expiration of period of limitation
+          (1) Subject to section 17, subsection (2) of this section and the
+              Real Property Act 1861, where the period of limitation
+              prescribed by this Act within which a person may bring an
+              action to recover land (including a redemption action) has
+              expired, the title of that person to the land shall be
+              extinguished.
+          (2) Where an action to recover land is brought before the
+              expiration of the period of limitation prescribed by this Act,
+              the expiration of that period does not affect the right or title of
+              the plaintiff to the land—
+                (a)     for the purposes of the action; and
+                (b)     so far as the right or title is established in the action.
+
+
+
+
+Page 22                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                Limitation of Actions Act 1974
+                                   Part 2 Periods of limitation for different classes of actions
+
+                                                                                          [s 25]
+
+25       Actions to recover rent
+               An action shall not be brought nor a distress made to recover
+               arrears of rent or damages in respect thereof after the
+               expiration of 6 years from the date on which the arrears
+               became due.
+
+
+26       Actions to recover money secured by mortgage or
+         charge or to recover proceeds of the sale of land
+         (1) An action shall not be brought to recover a principal sum of
+             money secured by a mortgage or other charge on property
+             whether real or personal nor to recover proceeds of the sale of
+             land after the expiration of 12 years from the date on which
+             the right to receive the money accrued.
+         (2) A foreclosure action in respect of mortgaged personal
+             property shall not be brought after the expiration of 12 years
+             from the date on which the right to foreclose accrued, but if
+             after that date the mortgagee was in possession of the
+             mortgaged property, the right to foreclose on the property that
+             was in the mortgagee’s possession shall, for the purposes of
+             this subsection, be deemed not to have accrued until the date
+             on which the mortgagee’s possession discontinued.
+         (3) The right to receive a principal sum of money secured by the
+             mortgage or other charge and the right to foreclose on the
+             property subject to the mortgage or charge shall be deemed
+             not to accrue so long as that property comprises a future
+             interest or a life assurance policy that has not matured or been
+             determined.
+         (4) The provisions of this section do not apply to a foreclosure
+             action in respect of mortgaged land, but the provisions of this
+             Act with respect to an action to recover land apply to such an
+             action.
+         (5) An action to recover arrears of interest payable in respect of a
+             sum of money secured by a mortgage or other charge or
+             payable in respect of proceeds of the sale of land or to recover
+             damages in respect of such arrears shall not be brought after
+Current as at 28 April 2026                                                           Page 23
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 2 Periods of limitation for different classes of actions
+
+[s 27]
+
+                the expiration of 6 years from the date on which the interest
+                became due.
+         (5A) Notwithstanding subsection (5)—
+                (a)     where a prior mortgagee or encumbrancee has been in
+                        possession of the property charged and an action is
+                        brought within 1 year of the discontinuance of such
+                        possession by the subsequent encumbrancee—the
+                        subsequent encumbrancee may recover by that action all
+                        the arrears of interest that fell due during the period of
+                        possession by the prior encumbrancee or damages in
+                        respect thereof, although the period exceeded 6 years; or
+                (b)     where the property subject to the mortgage or charge
+                        comprises a future interest or life assurance policy and it
+                        is a term of the mortgage or charge that arrears of
+                        interest be treated as part of the principal sum of money
+                        secured by the mortgage or charge—interest shall be
+                        deemed not to become due before the right to receive the
+                        principal sum of money has accrued or is deemed to
+                        have accrued.
+          (6) This section does not apply to a mortgage or charge on a ship.
+
+
+27        Actions in respect of trust property
+          (1) A period of limitation prescribed by this Act shall not apply to
+              an action by a beneficiary under a trust, being an action—
+                (a)     in respect of a fraud or fraudulent breach of trust to
+                        which the trustee was a party or privy; or
+                (b)     to recover from the trustee trust property or the proceeds
+                        thereof in the possession of the trustee, or previously
+                        received by the trustee and converted to the trustee’s use.
+          (2) Subject to subsection (1), an action by a beneficiary to recover
+              trust property or in respect of a breach of trust, not being an
+              action for which a period of limitation is prescribed by any
+              other provision of this Act, shall not be brought after the
+              expiration of 6 years from the date on which the right of
+              action accrued.
+Page 24                                                                 Current as at 28 April 2026
+                              Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                           [s 28]
+
+       (2A) Notwithstanding subsection (2), the right of action shall be
+            deemed not to have accrued to a beneficiary entitled to a
+            future interest in the trust property until the interest fell into
+            possession.
+         (3) A beneficiary as against whom there would be a good defence
+             under this Act shall not derive any greater or other benefit
+             from a judgment or order obtained by any other beneficiary
+             than the beneficiary could have obtained if the beneficiary had
+             brought the action and this Act had been pleaded in defence.
+
+
+28       Actions claiming personal estate of a deceased person
+               Subject to section 27(1), an action in respect of a claim to the
+               personal estate of a deceased person or to a share or interest in
+               that estate, whether under a will or on intestacy, shall not be
+               brought after the expiration of 12 years from the date on
+               which the right to receive the share or interest accrued and an
+               action to recover arrears of interest in respect of a legacy or
+               damages in respect of such arrears shall not be brought after
+               the expiration of 6 years from the date on which the interest
+               became due.
+
+
+Part 3                         Extension of periods of
+                               limitation
+
+29       Extension in cases of disability
+         (1) If on the date on which a right of action accrued whether
+             before or after the commencement of this Act for which a
+             period of limitation is prescribed by this Act the person to
+             whom or for whose benefit it accrued was under a disability,
+             the action may be brought at any time before the expiration of
+             6 years from the date on which the person ceased to be under a
+             disability or died, whichever event first occurred,
+             notwithstanding that the period of limitation has expired.
+         (2) Notwithstanding subsection (1)—
+Current as at 28 April 2026                                                             Page 25
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 3 Extension of periods of limitation
+
+[s 30]
+
+                (a)    where a right of action that has accrued to a person
+                       under a disability accrues on the death of that person
+                       while still under a disability to another person under a
+                       disability—a further extension of time shall not be
+                       allowed by reason of the disability of the second person;
+                       and
+                (b)    an action to recover land or money charged on land shall
+                       not be brought by virtue of this section by a person after
+                       the expiration of 30 years from the date on which the
+                       right of action accrued to that person or a person
+                       through whom the person claims; and
+                (c)    an action to recover damages in respect of personal
+                       injury or damages in respect of injury resulting from the
+                       death of any person shall not be brought by a person
+                       after the expiration of 3 years from the date on which
+                       that person ceased to be under a disability or died,
+                       whichever event first occurred.
+          (3) This section does not apply—
+                (a)    in a case where the right of action first accrued to a
+                       person (not under a disability) through whom the person
+                       under a disability claims; or
+                (b)    to an action to recover a penalty or forfeiture or sum by
+                       way of a penalty or forfeiture by virtue of an enactment
+                       save where the action is brought by an aggrieved party.
+
+
+30        Interpretation
+          (1) For the purposes of this section and sections 31, 32, 33 and
+              34—
+                (a)    the material facts relating to a right of action include the
+                       following—
+                       (i)    the fact of the occurrence of negligence, trespass,
+                              nuisance or breach of duty on which the right of
+                              action is founded;
+                       (ii) the identity of the person against whom the right of
+                            action lies;
+Page 26                                                                Current as at 28 April 2026
+                             Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                           [s 30]
+
+                      (iii) the fact that the negligence, trespass, nuisance or
+                            breach of duty causes personal injury;
+                      (iv) the nature and extent of the personal injury so
+                           caused;
+                      (v) the extent to which the personal injury is caused by
+                          the negligence, trespass, nuisance or breach of
+                          duty;
+               (b)    material facts relating to a right of action are of a
+                      decisive character if but only if a reasonable person
+                      knowing those facts and having taken the appropriate
+                      advice on those facts, would regard those facts as
+                      showing—
+                      (i)     that an action on the right of action would (apart
+                              from the effect of the expiration of a period of
+                              limitation) have a reasonable prospect of success
+                              and of resulting in an award of damages sufficient
+                              to justify the bringing of an action on the right of
+                              action; and
+                      (ii) that the person whose means of knowledge is in
+                           question ought in the person’s own interests and
+                           taking the person’s circumstances into account to
+                           bring an action on the right of action;
+               (c)    a fact is not within the means of knowledge of a person
+                      at a particular time if, but only if—
+                      (i)     the person does not know the fact at that time; and
+                      (ii) as far as the fact is able to be found out by the
+                           person—the person has taken all reasonable steps
+                           to find out the fact before that time.
+         (2) In this section—
+               appropriate advice, in relation to facts, means the advice of
+               competent persons qualified in their respective fields to advise
+               on the medical, legal and other aspects of the facts.
+
+
+
+
+Current as at 28 April 2026                                                             Page 27
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 3 Extension of periods of limitation
+
+[s 31]
+
+31        Ordinary actions
+          (1) This section applies to actions for damages for negligence,
+              trespass, nuisance or breach of duty (whether the duty exists
+              by virtue of a contract or a provision made by or under a
+              statute or independently of a contract or such provision)
+              where the damages claimed by the plaintiff for the negligence,
+              trespass, nuisance or breach of duty consist of or include
+              damages in respect of personal injury to any person or
+              damages in respect of injury resulting from the death of any
+              person.
+          (2) Where on application to a court by a person claiming to have a
+              right of action to which this section applies, it appears to the
+              court—
+                (a)    that a material fact of a decisive character relating to the
+                       right of action was not within the means of knowledge
+                       of the applicant until a date after the commencement of
+                       the year last preceding the expiration of the period of
+                       limitation for the action; and
+                (b)    that there is evidence to establish the right of action
+                       apart from a defence founded on the expiration of a
+                       period of limitation;
+                the court may order that the period of limitation for the action
+                be extended so that it expires at the end of 1 year after that
+                date and thereupon, for the purposes of the action brought by
+                the applicant in that court, the period of limitation is extended
+                accordingly.
+          (3) This section applies to an action whether or not the period of
+              limitation for the action has expired—
+                (a)    before the commencement of this Act; or
+                (b)    before an application is made under this section in
+                       respect of the right of action.
+
+
+32        Surviving actions
+          (1) This section applies to actions founded on negligence,
+              trespass, nuisance or breach of duty, for damages for personal
+Page 28                                                                Current as at 28 April 2026
+                             Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                         [s 32A]
+
+               injury that have survived on the death of a person for the
+               benefit of the person’s estate under section 66 of the
+               Succession Act 1981.
+         (2) Where on application to a court by a person claiming to have a
+             right of action to an action to which this section applies, it
+             appears to the court—
+               (a)    that a material fact of a decisive character relating to the
+                      right of action was not within the means of knowledge
+                      of the deceased person or the applicant until a date after
+                      the commencement of the year last preceding the
+                      expiration of the period of limitation for the action; and
+               (b)    that there is evidence to establish the right of action,
+                      apart from a defence founded on the expiration of a
+                      period of limitation;
+               the court may order that the period of limitation for the action
+               be extended so that it expires at the end of 1 year after that
+               date and thereupon, for the purposes of the action brought by
+               the deceased or the applicant in that court, the period of
+               limitation is extended accordingly.
+         (3) For the purposes of this section, the material facts of a
+             decisive character do not include facts relating only to—
+               (a)    damages not recoverable by the applicant; or
+               (b)    funeral expenses of the deceased.
+         (4) This section applies to an action whether or not a period of
+             limitation for the action has expired—
+               (a)    before the commencement of this Act; or
+               (b)    before an application is made under this section in
+                      respect of the right of action.
+
+
+32A      Defamation actions
+         (1) A person claiming to have a cause of action for defamation
+             may apply to the court for an order extending the limitation
+             period for the cause of action.
+Current as at 28 April 2026                                                             Page 29
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 3 Extension of periods of limitation
+
+[s 33]
+
+          (2) The court may extend the limitation period to a period of up to
+              3 years running from the date of the alleged publication of the
+              matter if the plaintiff satisfies the court that it is just and
+              reasonable to allow an action to proceed.
+          (3) In determining whether to extend the limitation period, the
+              court is to have regard to all of the circumstances of the case
+              and in particular to—
+                (a)    the length of, and the reasons for, the plaintiff’s delay;
+                       and
+                (b)    if a reason for the delay was that some or all of the facts
+                       relevant to the cause of action became known to the
+                       plaintiff after the limitation period expired—
+                       (i)    the day on which the facts became known to the
+                              plaintiff; and
+                       (ii) the extent to which the plaintiff acted promptly and
+                            reasonably once the plaintiff knew whether or not
+                            the facts might be capable of giving rise to an
+                            action; and
+                (c)    the extent, having regard to the delay, to which relevant
+                       evidence is likely to be unavailable or less cogent than if
+                       the action had been brought within the limitation period.
+          (4) An order for the extension of a limitation period, and an
+              application for an order for the extension of a limitation
+              period, may be made under this section even though the
+              limitation period has already ended.
+
+
+33        Prior bar ineffective
+                Where after the expiration of a period of limitation to which
+                this part applies, the period of limitation is extended by order
+                under this part, the prior expiration of the period of limitation
+                has no effect for the purposes of this Act.
+
+
+
+
+Page 30                                                                Current as at 28 April 2026
+                             Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                           [s 34]
+
+34       Practice
+         (1) An application under this part may be made ex parte but the
+             court or a judge may require that notice of the application be
+             given to any person to whom it or the judge thinks it proper
+             that notice should be given.
+         (2) Where under this part a question arises as to the means of
+             knowledge of a deceased person, the court may have regard to
+             the conduct and statements oral or in writing of the deceased
+             person.
+
+
+35       Fresh accrual of action on acknowledgment or part
+         payment
+         (1) Where there has accrued a right of action (including a
+             foreclosure action) to recover land or a right of a mortgagee of
+             personal property to bring a foreclosure action in respect of
+             the property, and—
+               (a)    the person in possession of the land or personal property
+                      acknowledges the title of the person to whom the right
+                      of action has accrued; or
+               (b)    in the case of a foreclosure or other action by a
+                      mortgagee—the person in possession referred to in
+                      paragraph (a) or the person liable for the mortgage debt
+                      makes any payment in respect thereof, whether of
+                      principal or interest;
+               the right shall be deemed to have accrued on and not before
+               the date of the acknowledgment or payment.
+         (2) Where a mortgagee is, by virtue of the mortgage, in
+             possession of mortgaged land and receives a sum in respect of
+             the principal or interest of the mortgage debt or acknowledges
+             the title of the mortgagor or the mortgagor’s equity of
+             redemption, an action to redeem the land in the mortgagee’s
+             possession may be brought at any time before the expiration
+             of 12 years from the date of the payment or acknowledgment.
+         (3) Where a right of action has accrued to recover a debt or other
+             liquidated pecuniary claim, or a claim to the personal estate of
+Current as at 28 April 2026                                                             Page 31
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 3 Extension of periods of limitation
+
+[s 36]
+
+                a deceased person or to a share or interest therein and the
+                person liable or accountable therefor acknowledges the claim
+                or makes a payment in respect thereof, the right shall be
+                deemed to have accrued on and not before the date of the
+                acknowledgment or the last payment.
+          (4) Notwithstanding subsection (1), a payment of a part of the
+              rent or interest due at any time shall not extend the period for
+              claiming the remainder then due, but a payment of interest
+              shall be treated as a payment in respect of the principal debt.
+
+
+36        Formal provisions as to acknowledgment and part
+          payment
+          (1) Every acknowledgment referred to in section 35 shall be in
+              writing and signed by the person making the
+              acknowledgment.
+          (2) Any acknowledgment or payment may be made by the agent
+              of the person by whom it is required to be made under
+              section 35 and shall be made to the person or to an agent of
+              the person whose title or claim is being acknowledged or, as
+              the case may be, in respect of whose claim the payment is
+              being made.
+
+
+37        Effect of acknowledgment or part payment on a person
+          other than the maker or recipient
+          (1) An acknowledgment of the title to land or mortgaged
+              personalty by a person in possession thereof shall bind all
+              other persons in possession during the ensuing period of
+              limitation.
+          (2) A payment in respect of a mortgage debt by the mortgagor or
+              a person in possession of the mortgaged property shall, so far
+              as any right of the mortgagee to foreclose or otherwise to
+              recover the property is concerned, bind all other persons in
+              possession of the mortgaged property during the ensuing
+              period of limitation.
+          (3) Where 2 or more mortgagees are, by virtue of the mortgage, in
+              possession of the mortgaged land, an acknowledgment of the
+Page 32                                                                Current as at 28 April 2026
+                             Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                           [s 37]
+
+               mortgagor’s title or of the mortgagor’s equity of redemption
+               by 1 of the mortgagees shall bind the mortgagee and the
+               mortgagee’s successors only and shall not bind any other
+               mortgagee or the mortgagee’s successors and where the
+               mortgagee by whom the acknowledgment is given is entitled
+               to a part of the mortgaged land and not to an ascertained part
+               of the mortgage debt, the mortgagor shall be entitled to
+               redeem that part of the land on payment with interest of the
+               part of the mortgage debt that bears the same proportion to the
+               whole of the debt as the value of the part of the land bears to
+               the value of the whole of the mortgaged land.
+         (4) Where there are 2 or more mortgagors and the title or right to
+             redemption of 1 of the mortgagors is acknowledged, the
+             acknowledgment shall be deemed to have been made to all the
+             mortgagors.
+         (5) An acknowledgment of a debt or other liquidated pecuniary
+             claim shall bind the acknowledger and the acknowledger’s
+             successors but not any other person.
+       (5A) Notwithstanding subsection (5), an acknowledgment made
+            after the expiration of the period of limitation prescribed for
+            the bringing of an action to recover the debt or other claim
+            shall not bind a successor on whom the liability devolves on
+            the determination of a preceding estate or interest in property
+            under a settlement taking effect before the date of the
+            acknowledgment.
+         (6) A payment made in respect of a debt or other liquidated
+             pecuniary claim shall bind all persons liable in respect
+             thereof.
+       (6A) Notwithstanding subsection (6), a payment made after the
+            expiration of the period of limitation prescribed for the
+            bringing of an action to recover the debt or other claim shall
+            not bind a person other than the person making the payment
+            and the person’s successors and shall not bind a successor on
+            whom the liability devolves on the determination of the
+            preceding estate or interest in property under a settlement
+            taking effect before the date of payment.
+Current as at 28 April 2026                                                             Page 33
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 3 Extension of periods of limitation
+
+[s 38]
+
+          (7) An acknowledgment by 1 of the several personal
+              representatives of a claim to the personal estate of a deceased
+              person or to a share or interest therein or a payment by 1 of the
+              several personal representatives in respect of such claim shall
+              bind the estate of the deceased person.
+          (8) In this section—
+                successor in relation to a mortgagee or person liable in respect
+                of a debt or claim means the mortgagee’s or person’s personal
+                representatives and any other person on whom the rights
+                under the mortgage or, as the case may be, the liability in
+                respect of the debt or claim devolve, whether on death or
+                bankruptcy or the disposition of property or the determination
+                of a limited estate or interest in settled property or otherwise.
+
+
+38        Postponement in cases of fraud or mistake
+          (1) Where in an action for which a period of limitation is
+              prescribed by this Act—
+                (a)    the action is based upon the fraud of the defendant or the
+                       defendant’s agent or of a person through whom he or
+                       she claims or his or her agent; or
+                (b)    the right of action is concealed by the fraud of a person
+                       referred to in paragraph (a); or
+                (c)    the action is for relief from the consequences of mistake;
+                the period of limitation shall not begin to run until the plaintiff
+                has discovered the fraud or, as the case may be, mistake or
+                could with reasonable diligence have discovered it.
+          (2) Nothing in this section enables an action to be brought to
+              recover or enforce a charge against or set aside a transaction
+              affecting property that—
+                (a)    in the case of fraud—has been purchased for valuable
+                       consideration by a person who was not a party to the
+                       fraud and did not at the time of the purchase know or
+                       have reason to believe that a fraud had been committed;
+                       or
+Page 34                                                                Current as at 28 April 2026
+                             Authorised by the Parliamentary Counsel
+                                                                 Limitation of Actions Act 1974
+                                                        Part 3 Extension of periods of limitation
+
+                                                                                           [s 39]
+
+               (b)    in the case of mistake—has been purchased for valuable
+                      consideration subsequently to the transaction in which
+                      the mistake was made by a person who did not know or
+                      have reason to believe that the mistake had been made.
+
+
+39       Costs
+               In dealing with the costs of an action to which this part applies
+               and that is commenced after the expiration of the period of
+               limitation otherwise prescribed by this Act but before the
+               expiration of the period of limitation prescribed by section 29
+               the court shall, in every case where costs may be awarded to
+               the plaintiff, before awarding such costs, take into
+               consideration—
+               (a)    whether reasonable diligence has been shown in the
+                      circumstances in commencing the action; and
+               (b)    whether delay in commencing the action has prejudiced
+                      or may prejudice the defendant.
+
+
+40       Contribution between tortfeasors
+         (1) An action for contribution under the Law Reform Act 1995,
+             section 6(c) shall not be brought after the expiration of the
+             first of the following periods to expire—
+               (a)    a period of limitation of 2 years running from the date
+                      on which the right of action for contribution first accrues
+                      to the plaintiff or to a person through whom the plaintiff
+                      claims;
+               (b)    a period of limitation of 4 years running from the date of
+                      the expiration of the period of limitation for the
+                      principal action.
+         (2) For the purposes of subsection (1)(a), the date on which a
+             right of action for contribution first accrues is—
+               (a)    if the plaintiff in the action for contribution or a person
+                      through whom the plaintiff claims is liable in respect of
+                      the damage for which contribution is claimed by
+                      judgment in a civil action or by arbitral award—the date
+Current as at 28 April 2026                                                             Page 35
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 4 General
+
+[s 41]
+
+                      on which the judgment is given or the award made
+                      whether or not in the case of a judgment the judgment is
+                      afterwards varied as to quantum of damages; or
+               (b)    if, in a case to which paragraph (a) does not apply, the
+                      plaintiff in the action for contribution or a person
+                      through whom the plaintiff claims makes an agreement
+                      with a person having a right of action for the damage for
+                      which the right of action for contribution arises, which
+                      agreement fixes, as between the parties to the
+                      agreement, the amount of the liability in respect of that
+                      damage of the plaintiff in the action for contribution or a
+                      person through whom the plaintiff claims—the date on
+                      which the agreement is made.
+          (3) In subsection (1)(b)—
+               the period of limitation for the principal action means the
+               period of limitation prescribed by this Act or by any other
+               enactment (including an enactment repealed by this Act) for
+               the action for the liability in respect of which contribution is
+               sought.
+          (4) Nothing in this section affects the construction of the Law
+              Reform Act 1995, section 6.
+
+
+Part 4                           General
+
+41        Application to arbitrations
+          (1) This Act shall apply to arbitrations in the same manner as it
+              applies to actions.
+          (2) Notwithstanding any term in an agreement to arbitrate to the
+              effect that a cause of action shall not accrue in respect of a
+              matter required by the agreement to be referred until an award
+              is made under the agreement, the cause of action shall, for the
+              purposes of this Act (whether in its application to arbitrations
+              or to other proceedings), be deemed to have accrued in respect
+              of such matter at the time when it would have accrued but for
+              that term in the agreement.
+Page 36                                                               Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                                   Part 4 General
+
+                                                                                           [s 41]
+
+         (3) For the purposes of this Act, an arbitration shall be deemed to
+             commence when one party to the arbitration serves on the
+             other party or parties a notice requiring the other party or
+             parties to appoint an arbitrator or to agree to the appointment
+             of an arbitrator or, where the agreement to arbitrate provides
+             that the reference shall be to a person named or designated in
+             the agreement, requiring the party or parties to submit the
+             dispute to the person so named or designated.
+         (4) A notice pursuant to subsection (3) may be served in any of
+             the following ways—
+               (a)    by delivering it to the person to whom it is directed;
+               (b)    by leaving it at the usual or last known place of abode or
+                      business in the State of the person to whom it is
+                      directed;
+               (c)    by sending it by registered post to the person to whom it
+                      is directed at the person’s usual or last known place of
+                      abode or business in the State;
+               as well as in any other way specified in the agreement to
+               arbitrate.
+         (5) Where the court orders that an award be set aside, it may
+             further order that the period between the commencement of
+             the arbitration and the date of the order be excluded in
+             computing the time prescribed by this Act for the
+             commencement of proceedings (including an arbitration) with
+             respect to the dispute referred.
+         (6) This section applies to an arbitration under an Act or rules of
+             court as well as to an arbitration pursuant to an agreement to
+             arbitrate and subsections (3) and (4) have effect, in relation to
+             an arbitration under an Act, as if for the references to the
+             agreement to arbitrate there were substituted references to
+             such of the provisions of the Act or of any order, scheme,
+             rules, regulations or by-laws made thereunder as relate to the
+             arbitration.
+
+
+
+
+Current as at 28 April 2026                                                             Page 37
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 4 General
+
+[s 41A]
+
+41A       Defamation actions—effect of limitation law concerning
+          electronic publications on other laws
+          (1) This section applies in respect of any requirement under
+              section 10AA or 10AB for the date of publication of a matter
+              in electronic form to be determined by reference to the day on
+              which the matter was first uploaded for access or sent
+              electronically to a recipient.
+          (2) A requirement to which this section applies is relevant only
+              for the purpose of determining when a limitation period
+              begins and for no other purpose.
+          (3) Without limiting subsection (2), a requirement to which this
+              section applies is not relevant for—
+               (a)    establishing whether there is a cause of action for
+                      defamation; or
+               (b)    the choice of law to be applied for a cause of action for
+                      defamation.
+
+
+42        Provisions as to set-off or counterclaim
+               For the purposes of this Act, a claim by way of set-off or
+               counterclaim shall be deemed to be a separate action and to
+               have been commenced on the same date as the action in which
+               the set-off or counterclaim is pleaded.
+
+
+43        Acquiescence
+               Nothing in this Act affects the equitable jurisdiction of a court
+               to refuse relief on the ground of acquiescence or otherwise.
+
+
+43A       Characterisation of limitation laws
+          (1) In this section—
+               limitation law means a law (including, but not limited to, this
+               Act) that provides for the limitation or exclusion of any
+               liability or the barring of a right of action for a claim by
+               reference to the time when a proceeding on, or the arbitration
+               of, the claim is started.
+Page 38                                                               Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                    Part 5 Transitional provisions
+
+                                                                                            [s 44]
+
+         (2) A limitation law of the State is to be regarded as part of the
+             substantive law of the State.
+         (3) This section applies to a cause of action that arose before the
+             commencement of this section but does not apply to a
+             proceeding started before the commencement.
+
+
+Part 5                         Transitional provisions
+
+44       Transitional provision for Civil Liability (Dust Diseases)
+         and Other Legislation Amendment Act 2005
+               Section 30A, as inserted by the Civil Liability (Dust Diseases)
+               and Other Legislation Amendment Act 2005, applies in
+               relation to all actions whether the right of action accrued
+               before or after the commencement of this section unless—
+               (a)    judgment has been given in relation to the action; or
+               (b)    the action has settled or been discontinued; or
+               (c)    an application to extend the period of limitation for the
+                      action under this Act has been refused.
+
+
+45       Transitional provision for Defamation Act 2005
+         (1) The new limitation law applies to the publication of any
+             defamatory matter to which the Defamation Act 2005 applies.
+         (2) The existing limitation law continues to apply to any cause of
+             action to which the existing law of defamation continues to
+             apply under the Defamation Act 2005, section 49.
+         (3) In this section—
+               existing law of defamation has the same meaning as in the
+               Defamation Act 2005, section 49.
+               existing limitation law means the provisions of this Act that
+               applied in relation to the limitation period for defamation
+               actions immediately before the commencement of this
+               section.
+Current as at 28 April 2026                                                              Page 39
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 5 Transitional provisions
+
+[s 46]
+
+               new limitation law means sections 10AA and 32A as inserted
+               by the Defamation Act 2005.
+
+
+46        Transitional provision for Corrective Services and Other
+          Legislation Amendment Act 2008
+               The Corrective Services and Other Legislation Amendment
+               Act 2008, section 18 only applies in relation to a cause of
+               action arising after the commencement of this section.
+
+
+47        Transitional provision for Civil Liability and Other
+          Legislation Amendment Act 2010
+          (1) Section 11(2) applies to a right of action relating to personal
+              injury resulting from a dust-related condition whether the
+              right of action accrued before or after the commencement of
+              this section.
+          (2) However, subsection (1) does not apply if—
+               (a)    judgment has been given in the action; or
+               (b)    the action has been settled or discontinued; or
+               (c)    an application before the commencement of this section
+                      to extend the period of limitation applying to the action
+                      before the commencement was refused by a court.
+          (3) In this section—
+               court includes—
+               (a)    a court in a place outside Queensland, including outside
+                      Australia; and
+               (b)    the Dust Diseases Tribunal of New South Wales
+                      established under the Dust Diseases Tribunal Act 1989
+                      (NSW).
+
+
+
+
+Page 40                                                               Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                    Part 5 Transitional provisions
+
+                                                                                            [s 48]
+
+48       Transitional provision for Limitation of Actions (Child
+         Sexual Abuse) and Other Legislation Amendment Act
+         2016
+         (1) Section 11A applies to an action for damages whether the
+             right of action accrued before or after the commencement of
+             that section (the commencement).
+         (2) An action on a previously barred right of action may be
+             brought even if—
+               (a)    a limitation period previously applying to the right of
+                      action has expired; or
+               (b)    another action has been started in the right of action but
+                      not finalised before the commencement; or
+               (c)    another action was started in the right of action and
+                      discontinued before the commencement; or
+               (d)    a judgment was given in relation to the right of action on
+                      the ground that a limitation period applying to the right
+                      of action had expired; or
+               (e)    an action in the right of action was dismissed on the
+                      ground that a limitation period applying to the right of
+                      action had expired.
+         (3) If an action on a previously barred right of action is brought
+             after the commencement, the court hearing the action may, if
+             the court decides it is just and reasonable to do so, do either or
+             both of the following—
+               (a)    set aside a judgment given in relation to the right of
+                      action on the ground that a limitation period applying to
+                      the right of action had expired;
+               (b)    take into account any amounts paid or payable as
+                      damages or costs under the judgment.
+         (4) The Supreme Court may, on application, set aside a judgment
+             under this section even though the Supreme Court is not
+             hearing the action.
+         (5) However, a court, other than the Supreme Court, may not set
+             aside another court’s judgment under this section.
+Current as at 28 April 2026                                                              Page 41
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 5 Transitional provisions
+
+[s 48]
+
+         (5A) An action may be brought on a previously settled right of
+              action if a court, by order on application, sets aside the
+              agreement effecting the settlement on the grounds it is just
+              and reasonable to do so.
+         (5B) If a court makes an order under subsection (5A) for a
+              previously settled right of action—
+               (a)    each associated agreement is void despite any Act, law
+                      or rule of law; and
+               (b)    a party to an associated agreement voided under
+                      paragraph (a) may not seek to recover money paid by, or
+                      for, the party under the agreement.
+         (5C) However, a court hearing an action on a previously settled
+              right of action may—
+               (a)    when awarding damages in relation to the action—take
+                      into account any amounts paid or payable as
+                      consideration under an associated agreement voided
+                      under subsection (5B)(a); and
+               (b)    when awarding costs in relation to the action—take into
+                      account any amounts paid or payable as costs under an
+                      associated agreement voided under subsection (5B)(a).
+          (6) In this section—
+               associated agreement, for a previously settled right of action,
+               means—
+               (a)    the agreement effecting the settlement; or
+               (b)    any other agreement, other than a contract of insurance,
+                      related to the settlement.
+               previously barred right of action means a right of action for
+               an action to which section 11A applies that was not
+               maintainable immediately before the commencement because
+               a limitation period applying to the right of action had expired.
+               previously settled right of action means a right of action for
+               an action to which section 11A applies that was settled before
+               the commencement but after a limitation period applying to
+               the right of action had expired.
+Page 42                                                               Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+                                                                   Limitation of Actions Act 1974
+                                                                    Part 5 Transitional provisions
+
+                                                                                            [s 49]
+
+49       Transitional provision for Civil Liability and Other
+         Legislation Amendment Act 2019
+         (1) Section 48 applies as if—
+               (a)    a reference in the section to section 11A were a
+                      reference to section 11A as amended by the 2019
+                      amendment; and
+               (b)    a reference in the section to the commencement of
+                      section 11A were a reference to the commencement of
+                      the 2019 amendment.
+         (2) Subsection (1) does not limit the operation of section 48 apart
+             from this section.
+         (3) In this section—
+               2019 amendment means the Civil Liability and Other
+               Legislation Amendment Act 2019, section 11.
+
+
+50       Transitional provision for Defamation (Model Provisions)
+         and Other Legislation Amendment Act 2021
+         (1) The amendment made to section 10AA by the Defamation
+             (Model Provisions) and Other Legislation Amendment Act
+             2021 applies in relation to the publication of defamatory
+             matter after the commencement of the amendment.
+         (2) Section 10AB, as inserted by the Defamation (Model
+             Provisions) and Other Legislation Amendment Act 2021,
+             applies in relation to the publication of defamatory matter
+             after the commencement of the section, subject to
+             subsection (3).
+         (3) Section 10AB extends to a first publication before the
+             commencement of the section, but only in respect of
+             subsequent publications after the commencement.
+         (4) Section 32A, as amended by the Defamation (Model
+             Provisions) and Other Legislation Amendment Act 2021,
+             applies in relation to the publication of defamatory matter
+             after the commencement of the section.
+
+
+
+Current as at 28 April 2026                                                              Page 43
+                              Authorised by the Parliamentary Counsel
+Limitation of Actions Act 1974
+Part 5 Transitional provisions
+
+[s 51]
+
+51        Transitional provision for Property Law Act 2023
+               The amendments made to section 10(3) and (6)(b) by the
+               Property Law Act 2023 apply in relation to a deed only if the
+               deed is made after the commencement.
+
+
+
+
+Page 44                                                               Current as at 28 April 2026
+                            Authorised by the Parliamentary Counsel
+

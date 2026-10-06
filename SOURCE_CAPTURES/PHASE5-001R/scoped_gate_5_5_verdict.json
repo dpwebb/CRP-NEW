@@ -1,0 +1,692 @@
+{
+  "artifact": "scoped_gate_5_5_verdict.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "document_type": "SCOPED GATE VERDICT — Gate 5.5, one explicitly named scope only",
+  "purpose": "record, criterion by criterion, the state of Gate 5.5 for one scope: quote the gate's own text and the bullets it quantifies, state each criterion with its evidence for this scope, name the one item the scope cannot satisfy, and claim no corpus-wide pass",
+  "scope": {
+    "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+    "jurisdiction": "CA / CA-NS",
+    "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "limb": "the last-payment limb only — six years from the last payment made on the debt",
+    "presentation": "PR-01 at E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+    "evidence_references": [
+      "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json — the governed rule record, NOT ADMITTED",
+      "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record_decisions.json — the six decisions",
+      "SOURCE_CAPTURES\\PHASE5-001Q\\scoped_gate_5_4_verdict.json — the preceding scoped verdict that permits this phase to begin for this scope",
+      "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json — the demonstrated facts and their locators",
+      "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json, extraction_status_vocabulary.json, deterministic_evaluator_specification.json, output_vocabulary_and_explanation_surface.json, internal_determinism_check.json, implementation_comparison.json, evaluator_001r.cjs"
+    ],
+    "exclusions": [
+      "every jurisdiction other than CA / CA-NS",
+      "every rule unit other than CA-NS-CRA-S10-3-C-LIMB-1, and every other statutory limb of s. 10(3)(c)",
+      "every report presentation other than PR-01 at the recorded digest; a different print date, product, bureau, scan, photograph, mobile view, subscriber or screening document, generated fixture and encrypted or text-less document all remain UNSUPPORTED",
+      "consumer-upload availability and any report-family admission",
+      "the remaining corpus-wide Gate 5.2 queue: the 409 NO_DURABLE_RESCREEN_RECORD rows, the other five report-mapping IDs (CRP-LSRC-0422, 0423, 0424, 0425, 0427) and CRP-LSRC-0194",
+      "the effective-period and applicability-in-time question and its mandatory plain-English timing qualification",
+      "the direct-report contract section 4 retention exception (recorded, not relied on) and the s. 10(3)(c)/s. 10(ha) citation seam",
+      "the anniversary-boundary, month-end-clamp and day-count conventions (conventions the internal comparator implements, reserved to Gate 5.4)",
+      "every finding class: neither VIOLATION nor PROBABLE_VIOLATION is authorized, and the ceiling is observation only"
+    ]
+  },
+  "governing_text_quoted": {
+    "gate_5_5": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 138,
+      "text": "**Gate 5.5:** evaluator output is deterministic, fully traceable to report and source, and cannot emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping, or an unresolved affirmative element."
+    },
+    "phase_5_5_bullets": [
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 132,
+        "text": "- Define the report fact model from the certified rule units. Each fact records raw value/text, normalized value, source location, extraction status, event semantics, and transformation provenance."
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 133,
+        "text": "- Define exact statuses for `PRESENT`, `ABSENT_FROM_REPORT` (only after the relevant report section is reliably inspected), `CONTRADICTED`, and `EXTRACTION_UNRESOLVED`. Never conflate `ABSENT_FROM_REPORT` with missing parser fields or failed extraction."
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 134,
+        "text": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps."
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 135,
+        "text": "- Implement explicit outputs for `VIOLATION`, `PROBABLE_VIOLATION`, and no finding. The product surfaces only violations and probable violations to the consumer; internal unresolved/excluded states remain audit data, not consumer finding labels."
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 136,
+        "text": "- Explain each finding with the applicable statute/citation, report quotation/location, what requirement appears unmet, why the confidence class is limited, unresolved exception/timing/applicability qualifications, and the distinction between the report's assertion and independently verified truth."
+      }
+    ],
+    "scoped_progression_paragraph": [
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 47,
+        "text": "**Owner authority PHASE5-001P — scoped gate verdicts and incremental rule-unit progression.** This"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 50,
+        "text": "- **Corpus-wide gates stay corpus-wide.** Gate 5.1 to Gate 5.7 keep their text exactly as recorded and"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 53,
+        "text": "- **For progression purposes only, a gate may also be recorded as passed for one explicitly named"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 56,
+        "text": "- **A scoped verdict states, criterion by criterion,** the gate's own text, the state of each criterion"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 58,
+        "text": "- **A later phase may begin for a named scope only when every preceding gate carries a passing verdict"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 61,
+        "text": "- **The corpus-wide unfinished queue is preserved as recorded.** A scoped verdict resolves, promotes,"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 63,
+        "text": "  satisfy a criterion; where a criterion cannot be met within a scope, that scope's verdict names the"
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 64,
+        "text": "  unmet criterion instead of being issued."
+      },
+      {
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3",
+        "line": 65,
+        "text": "- **No scoped verdict admits a rule,** creates coverage or a candidate, authorizes a finding class, or"
+      }
+    ]
+  },
+  "verdict": "WITHHELD — ONE OR MORE CRITERIA CANNOT BE MET WITHIN THIS SCOPE",
+  "verdict_meaning": "build plan line 63 requires that where a criterion cannot be met within a scope, that scope's verdict names the unmet criterion instead of being issued. Acceptance criterion 7 cannot be met: this order changed one pre-existing file belonging to another package, and the change cannot be repaired from a digest. The verdict is therefore WITHHELD, and the criteria that are met are still stated with their evidence so that only the withheld item is outstanding.",
+  "criteria_met_and_withheld": {
+    "acceptance_criteria": [
+      {
+        "criterion": "the report fact model and the status vocabulary are recorded exactly, with each reachable path and each recorded non-conflation named, and with the rule-read fact kept distinct from the convention input",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "the evaluator is deterministic: every input maps to exactly one outcome or one named refusal, the withheld boundary day included, and no clock, locale, time zone, host or session state is read",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "the evaluator refuses on each condition the gate names, and it emits nothing for this unit while its rule record is unadmitted",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "no finding class is implemented, emitted or implied for this unit, and the explanation surface carries every qualification the rule record requires",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "the internal determinism check runs on synthetic inputs only and its results are recorded against the record's own test, including the boundary and clamp cases",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "the Gate 5.5 verdict record quotes the gate text, states each criterion for this scope with its evidence, and names any criterion it cannot meet instead of passing",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "the order's preservation and custody records show that no earlier artifact was changed outside its own package",
+        "state": "NAMED — NOT MET IN THIS SCOPE"
+      }
+    ],
+    "gate_criteria": [
+      {
+        "criterion": "evaluator output is deterministic",
+        "state": "MET within the scope, as a specification"
+      },
+      {
+        "criterion": "fully traceable to report and source",
+        "state": "MET within the scope, as a specification"
+      },
+      {
+        "criterion": "cannot emit on incomplete extraction",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "cannot emit on ... unapproved rules",
+        "state": "MET within the scope, as a refusal behaviour"
+      },
+      {
+        "criterion": "cannot emit on ... wrong jurisdiction",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "cannot emit on ... wrong event-date mapping",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "cannot emit on ... an unresolved affirmative element",
+        "state": "MET within the scope"
+      },
+      {
+        "criterion": "evaluators that take only the uploaded report's resolved facts plus ADMITTED RULE RECORDS",
+        "state": "NAMED — NOT MET IN THIS SCOPE, AND NOT CONVERTED INTO A PASS"
+      }
+    ],
+    "named_not_passed": [
+      {
+        "item": "an evaluator whose inputs include admitted rule records, and whose emission path is therefore exercised",
+        "state": "NAMED — NOT MET IN THIS SCOPE"
+      },
+      {
+        "item": "the alternative owner reading of the same bullet, recorded so that it cannot be missed",
+        "state": "NAMED — NOT SETTLED BY THIS ORDER"
+      },
+      {
+        "item": "acceptance criterion 7 — no earlier artifact was changed outside its own package",
+        "state": "NAMED — NOT MET IN THIS SCOPE"
+      }
+    ]
+  },
+  "progression_effect": "Gate 5.6 may NOT begin for this scope: a later phase may begin only when every preceding gate carries a passing verdict for the same scope, and this scoped Gate 5.5 verdict is withheld. No Gate 5.6 order is issued by this order.",
+  "exact_remaining_blocker": "one unauthorised change to a pre-existing file, caused by this order and disclosed: SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json was regenerated by re-running the PHASE5-001I-A internal test suite, whose harness writes its results into its own package. The previous bytes cannot be reconstructed from a digest, so the change cannot be repaired here. Clearing it requires an owner instrument: either accept the regenerated record as a recorded, unauthorised preservation exception, or direct a re-baseline. A separate, independent item is also outstanding for the phase bullet: no governed rule is admitted, so an evaluator's emission path on an admitted rule record is unexercised.",
+  "acceptance_criteria": [
+    {
+      "criterion_verbatim": "the report fact model and the status vocabulary are recorded exactly, with each reachable path and each recorded non-conflation named, and with the rule-read fact kept distinct from the convention input",
+      "where_it_sits": "the acceptance criteria of PHASE5-001R, criterion 1, read with build plan line 132 and line 133",
+      "scoped_reading": "the model and the vocabulary exist for this scope, are derived from the governed rule record rather than retyped, and keep the two fact kinds apart",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json: two entries, kinds RULE_READ_FACT and EVALUATION_CONVENTION_INPUT, each carrying the six parts the plan names (raw value/text, normalized value, source location, extraction status, event semantics, transformation provenance), each with its locator, its register field, its raw and normalized value and its transformation provenance",
+        "the six carried parts are parsed out of the plan's own sentence, and the builder refuses to write if the sentence does not name six",
+        "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json: the four statuses are parsed out of the gate's line and matched to the four the specification defines; the earlier artifact carries five \"fact statuses\" and the vocabulary record states where each of the two extra ones now lives",
+        "each reachable path is named per fact and per status, and the recorded non-conflations are carried verbatim: 5 of them",
+        "the two entries are kept distinct in every status, comparison and explanation, and the record's own refinement note is carried as the reason"
+      ],
+      "unresolved_within_this_scope": [
+        "the second limb stays unseated and out of scope: the model defines no fact for it and the evaluator refuses an input that would need it"
+      ]
+    },
+    {
+      "criterion_verbatim": "the evaluator is deterministic: every input maps to exactly one outcome or one named refusal, the withheld boundary day included, and no clock, locale, time zone, host or session state is read",
+      "where_it_sits": "acceptance criterion 2, read with build plan line 134 and the gate sentence at line 138",
+      "scoped_reading": "one outcome or one named refusal per input, with the boundary day withheld by an exact equality and no ambient state read",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json: 19 decision rules in a fixed precedence order, stopping at the first that applies, with the boundary rule evaluated before the greater-than rule",
+        "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json: 27 synthetic cases, 0 failures, every case compared against what the specification declares",
+        "cases D-02, D-03, D-04 and D-05 exercise the boundary day from both sides and on a leap-day start; the boundary case returns UNRESOLVED with the boundary case named and no outcome",
+        "case D-25 re-runs the same inputs and compares the results; case D-26 scans the executable form for clock, locale, time-zone, environment, random and file-system reads and finds none",
+        "the executable form holds no module-level mutable state: every function is a pure function of its arguments"
+      ],
+      "unresolved_within_this_scope": [
+        "the compliance of any OTHER implementation with this determinism is not claimed: the specification governs this unit's own executable form, and the internal comparator's differences stand recorded in implementation_comparison.json"
+      ]
+    },
+    {
+      "criterion_verbatim": "the evaluator refuses on each condition the gate names, and it emits nothing for this unit while its rule record is unadmitted",
+      "where_it_sits": "acceptance criterion 3, read with the gate sentence at line 138",
+      "scoped_reading": "a named refusal for each of the gate's five emission conditions, and no emission while the rule record is unadmitted",
+      "state": "MET within the scope",
+      "evidence": [
+        "six named refusal states, one per gate, all recorded in SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json refusal_states",
+        "each gate condition is answered by a named refusal: incomplete extraction by the fact statuses and the not-run comparison, unapproved rules by REFUSED_RULE_RECORD_NOT_ADMITTED, wrong jurisdiction by two named refusals, wrong event-date mapping by REFUSED_WRONG_EVENT_DATE_MAPPING, and an unresolved affirmative element by REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "cases D-16 to D-22 show each refusal being produced and show that the fact layer does not run behind a refused or mis-mapped document, so a refused document can never be reported as an empty report",
+        "the emission tally: 0 cases emitted a result, out of 27"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an ADMITTED rule record is unexercised: the rule record is NOT ADMITTED, so the refusal is the operative behaviour and the emission path is named rather than demonstrated — see the named item below"
+      ]
+    },
+    {
+      "criterion_verbatim": "no finding class is implemented, emitted or implied for this unit, and the explanation surface carries every qualification the rule record requires",
+      "where_it_sits": "acceptance criterion 4, read with build plan line 135 and line 136",
+      "scoped_reading": "the output vocabulary is observation-class only, and the explanation surface carries the mandatory qualifications verbatim",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json: the permitted values on each axis, and a forbidden-label list that names both finding classes and the clearance renderings",
+        "the ceiling is carried from the record: OBSERVATION_CLASS_ONLY, an empty finding-class list, packet eligibility false, consumer-visible output NONE",
+        "the four mandatory qualification texts are read out of the governed rule record rather than retyped, so none can be dropped or softened: timing, classification, boundary, specimen, effect",
+        "the explanation surface is specified to render no finding label in any state, and one template per reachable state exists, including the withheld boundary state",
+        "the five concepts the order requires to stay separate are recorded as five separate axes: presentation eligibility, extraction status, date-comparison outcome, rule applicability and qualifications, and observation eligibility"
+      ],
+      "unresolved_within_this_scope": [
+        "no template is reachable today: the rule record is unadmitted, so nothing is emitted and nothing could be shown to anyone"
+      ]
+    },
+    {
+      "criterion_verbatim": "the internal determinism check runs on synthetic inputs only and its results are recorded against the record's own test, including the boundary and clamp cases",
+      "where_it_sits": "acceptance criterion 5, read with build plan line 136",
+      "scoped_reading": "a synthetic-only check whose cases state what the rule record itself requires, boundary and clamp included",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json: 27 cases, 0 failures, all synthetic and in memory, with no report opened and no specimen read",
+        "every case carries against_the_rule_records_own_test: 27 of them state which rule-record requirement the case answers",
+        "case D-01 reproduces the record's own measured arithmetic; case D-02 is the withheld boundary; cases D-05 to D-07 are the 29 February clamp on both sides of the clamped day",
+        "the boundary and clamp cases are listed explicitly in the record as boundary_and_clamp_cases"
+      ],
+      "unresolved_within_this_scope": [
+        "the legally reviewed fixture suite and the independent replay sample are Gate 5.6 work and are expressly excluded from this order; no fixture here is legally reviewed"
+      ]
+    },
+    {
+      "criterion_verbatim": "the Gate 5.5 verdict record quotes the gate text, states each criterion for this scope with its evidence, and names any criterion it cannot meet instead of passing",
+      "where_it_sits": "acceptance criterion 6",
+      "scoped_reading": "this record",
+      "state": "MET within the scope",
+      "evidence": [
+        "the gate's own sentence is quoted at line 138, and the five Phase 5.5 bullets at lines 132, 133, 134, 135, 136 are quoted with it",
+        "every criterion of the order and of the gate is stated for this scope with its evidence",
+        "one item is NAMED rather than passed, exactly once, and the smallest action that would settle it is recorded with it"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "the order's preservation and custody records show that no earlier artifact was changed outside its own package",
+      "where_it_sits": "acceptance criterion 7",
+      "scoped_reading": "preservation is proved by measurement against a baseline taken before anything was written",
+      "state": "NAMED — NOT MET IN THIS SCOPE",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\preserved_files_before.json: the byte-level baseline, taken before this order wrote any artifact, 478 files",
+        "measured by this verdict itself: files changed 1, files missing 0, undeclared changes 0",
+        "one pre-existing file differs from the baseline: SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json (E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22 -> 6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511). This order caused that change, it is disclosed with its cause, and it is not authorised by this order.",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json: 100 inputs re-measured, with the difference the earlier authorised amendment explains, 0 unexplained differences, 0 missing files, and the three read-only pointers outside the workspace still matching their recorded pins",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json: every file this order read or wrote, with its digest"
+      ],
+      "unresolved_within_this_scope": [
+        "the criterion is not met: this order changed a pre-existing artifact belonging to another package (SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json)",
+        "the cause was removed: the PHASE5-001I-A test suite writes its results into its own package when it is run, and the run was taken out of this order's builders, so the change cannot recur",
+        "the file's previous bytes are not reconstructible from a digest, so this order cannot repair it; it states the change instead of hiding it",
+        "smallest action to clear it: an owner instrument that either accepts the regenerated record as a recorded, unauthorised preservation exception — as earlier custody discrepancies were recorded and not authorised — or directs a re-baseline that takes the file as it now stands"
+      ]
+    }
+  ],
+  "acceptance_criterion_count": 7,
+  "gate_criteria": [
+    {
+      "criterion_verbatim": "evaluator output is deterministic",
+      "where_it_sits": "the Gate 5.5 sentence, build plan line 138, first clause",
+      "state": "MET within the scope, as a specification",
+      "evidence": [
+        "the decision rules are ordered with a fixed precedence and stop at the first that applies: 19 rules, one result each",
+        "27 synthetic cases, 0 failures, and case D-25 shows the same inputs returning identical records",
+        "case D-26 shows no clock, locale, time-zone, host, session, environment or random source is read, and the executable form reads no file system at all"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "fully traceable to report and source",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, second clause",
+      "state": "MET within the scope, as a specification",
+      "evidence": [
+        "every fact carries its locator, its register field, its raw and normalized value and its transformation provenance: report_fact_model.json",
+        "the source side is the accepted pin at its recorded digest, and the citation is carried as the record records it, on the explanation surface of every template",
+        "the arithmetic is recomputed independently and matched to the record's own measured numbers: anniversary 2027-02-01, span 2191 days, elapsed 1919 days, outcome PERIOD_NOT_EXCEEDED",
+        "no emission path exists to be traceable today, and the record says so rather than implying otherwise"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on incomplete extraction",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, first emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "the comparison layer runs only when both facts are PRESENT; otherwise the comparison is not run and no outcome is produced",
+        "cases D-09 to D-15 exercise the missing label, the doubled label, the blank value, a foreign printed form, the single absence path, the contradictory header and the missing page",
+        "a refused or mis-mapped document does not reach the fact layer at all, so a refused document can never be reported as an empty report (cases D-16 to D-20)"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... unapproved rules",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, second emission condition",
+      "state": "MET within the scope, as a refusal behaviour",
+      "evidence": [
+        "gate G6 refuses with REFUSED_RULE_RECORD_NOT_ADMITTED and produces no outcome",
+        "this is the operative state of the scope: the rule record is NOT ADMITTED, and case D-22 shows the refusal on a fully eligible input",
+        "the gate condition is a prohibition, and a prohibition is satisfied by a refusal; the presupposition in the phase bullet is a different matter and is named below"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an admitted rule record cannot be exercised while the record is NOT ADMITTED, and no credit is claimed for it"
+      ]
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... wrong jurisdiction",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, third emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "two named refusals: REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED and REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "cases D-18 and D-19 exercise both, and jurisdiction is never inferred from the report in either the specification or the fact model"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... wrong event-date mapping",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, fourth emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "gate G4 refuses with REFUSED_WRONG_EVENT_DATE_MAPPING unless the caller declares exactly the recorded mapping for both event roles",
+        "case D-20 declares the last-payment role against a different printed field, and the evaluator refuses before the fact layer runs"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... an unresolved affirmative element",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, fifth emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "gate G5 refuses with REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT when an input resolves to the excluded second limb or carries another unresolved affirmative element",
+        "case D-21 exercises it, and the second limb stays unseated and is neither inferred nor defaulted",
+        "the effective period is a temporal qualification rather than an affirmative element, exactly as the scoped Gate 5.4 verdict recorded, and it is carried into every explanation template"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "evaluators that take only the uploaded report's resolved facts plus ADMITTED RULE RECORDS",
+      "where_it_sits": "the Phase 5.5 bullet at build plan line 134 — the one item this scope cannot satisfy",
+      "state": "NAMED — NOT MET IN THIS SCOPE, AND NOT CONVERTED INTO A PASS",
+      "evidence": [
+        "the scope has 0 admitted governed rules and 0 permitted findings, and the rule record carries admission_form RESERVED_TO_GATE_5_7",
+        "the specification therefore implements and tests the refusal half of the condition — which is the half the gate itself prohibits emission on — and states that the emission half is unexercised",
+        "the determinism check demonstrates the emission closure twice: refusing on the unadmitted record (D-22), and showing that even a fully admitted synthetic copy emits nothing for this unit (D-23), because the ceiling authorizes no finding class and no consumer surface exists"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an admitted rule record is not exercised, not demonstrated and not claimed",
+        "the smallest action that would settle it: an owner instrument admitting this unit's rule record at Gate 5.7, which cannot happen before Gates 5.5 and 5.6 pass for this scope"
+      ]
+    }
+  ],
+  "gate_criterion_count": 8,
+  "criteria": [
+    {
+      "criterion_verbatim": "the report fact model and the status vocabulary are recorded exactly, with each reachable path and each recorded non-conflation named, and with the rule-read fact kept distinct from the convention input",
+      "where_it_sits": "the acceptance criteria of PHASE5-001R, criterion 1, read with build plan line 132 and line 133",
+      "scoped_reading": "the model and the vocabulary exist for this scope, are derived from the governed rule record rather than retyped, and keep the two fact kinds apart",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json: two entries, kinds RULE_READ_FACT and EVALUATION_CONVENTION_INPUT, each carrying the six parts the plan names (raw value/text, normalized value, source location, extraction status, event semantics, transformation provenance), each with its locator, its register field, its raw and normalized value and its transformation provenance",
+        "the six carried parts are parsed out of the plan's own sentence, and the builder refuses to write if the sentence does not name six",
+        "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json: the four statuses are parsed out of the gate's line and matched to the four the specification defines; the earlier artifact carries five \"fact statuses\" and the vocabulary record states where each of the two extra ones now lives",
+        "each reachable path is named per fact and per status, and the recorded non-conflations are carried verbatim: 5 of them",
+        "the two entries are kept distinct in every status, comparison and explanation, and the record's own refinement note is carried as the reason"
+      ],
+      "unresolved_within_this_scope": [
+        "the second limb stays unseated and out of scope: the model defines no fact for it and the evaluator refuses an input that would need it"
+      ]
+    },
+    {
+      "criterion_verbatim": "the evaluator is deterministic: every input maps to exactly one outcome or one named refusal, the withheld boundary day included, and no clock, locale, time zone, host or session state is read",
+      "where_it_sits": "acceptance criterion 2, read with build plan line 134 and the gate sentence at line 138",
+      "scoped_reading": "one outcome or one named refusal per input, with the boundary day withheld by an exact equality and no ambient state read",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json: 19 decision rules in a fixed precedence order, stopping at the first that applies, with the boundary rule evaluated before the greater-than rule",
+        "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json: 27 synthetic cases, 0 failures, every case compared against what the specification declares",
+        "cases D-02, D-03, D-04 and D-05 exercise the boundary day from both sides and on a leap-day start; the boundary case returns UNRESOLVED with the boundary case named and no outcome",
+        "case D-25 re-runs the same inputs and compares the results; case D-26 scans the executable form for clock, locale, time-zone, environment, random and file-system reads and finds none",
+        "the executable form holds no module-level mutable state: every function is a pure function of its arguments"
+      ],
+      "unresolved_within_this_scope": [
+        "the compliance of any OTHER implementation with this determinism is not claimed: the specification governs this unit's own executable form, and the internal comparator's differences stand recorded in implementation_comparison.json"
+      ]
+    },
+    {
+      "criterion_verbatim": "the evaluator refuses on each condition the gate names, and it emits nothing for this unit while its rule record is unadmitted",
+      "where_it_sits": "acceptance criterion 3, read with the gate sentence at line 138",
+      "scoped_reading": "a named refusal for each of the gate's five emission conditions, and no emission while the rule record is unadmitted",
+      "state": "MET within the scope",
+      "evidence": [
+        "six named refusal states, one per gate, all recorded in SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json refusal_states",
+        "each gate condition is answered by a named refusal: incomplete extraction by the fact statuses and the not-run comparison, unapproved rules by REFUSED_RULE_RECORD_NOT_ADMITTED, wrong jurisdiction by two named refusals, wrong event-date mapping by REFUSED_WRONG_EVENT_DATE_MAPPING, and an unresolved affirmative element by REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+        "cases D-16 to D-22 show each refusal being produced and show that the fact layer does not run behind a refused or mis-mapped document, so a refused document can never be reported as an empty report",
+        "the emission tally: 0 cases emitted a result, out of 27"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an ADMITTED rule record is unexercised: the rule record is NOT ADMITTED, so the refusal is the operative behaviour and the emission path is named rather than demonstrated — see the named item below"
+      ]
+    },
+    {
+      "criterion_verbatim": "no finding class is implemented, emitted or implied for this unit, and the explanation surface carries every qualification the rule record requires",
+      "where_it_sits": "acceptance criterion 4, read with build plan line 135 and line 136",
+      "scoped_reading": "the output vocabulary is observation-class only, and the explanation surface carries the mandatory qualifications verbatim",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json: the permitted values on each axis, and a forbidden-label list that names both finding classes and the clearance renderings",
+        "the ceiling is carried from the record: OBSERVATION_CLASS_ONLY, an empty finding-class list, packet eligibility false, consumer-visible output NONE",
+        "the four mandatory qualification texts are read out of the governed rule record rather than retyped, so none can be dropped or softened: timing, classification, boundary, specimen, effect",
+        "the explanation surface is specified to render no finding label in any state, and one template per reachable state exists, including the withheld boundary state",
+        "the five concepts the order requires to stay separate are recorded as five separate axes: presentation eligibility, extraction status, date-comparison outcome, rule applicability and qualifications, and observation eligibility"
+      ],
+      "unresolved_within_this_scope": [
+        "no template is reachable today: the rule record is unadmitted, so nothing is emitted and nothing could be shown to anyone"
+      ]
+    },
+    {
+      "criterion_verbatim": "the internal determinism check runs on synthetic inputs only and its results are recorded against the record's own test, including the boundary and clamp cases",
+      "where_it_sits": "acceptance criterion 5, read with build plan line 136",
+      "scoped_reading": "a synthetic-only check whose cases state what the rule record itself requires, boundary and clamp included",
+      "state": "MET within the scope",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json: 27 cases, 0 failures, all synthetic and in memory, with no report opened and no specimen read",
+        "every case carries against_the_rule_records_own_test: 27 of them state which rule-record requirement the case answers",
+        "case D-01 reproduces the record's own measured arithmetic; case D-02 is the withheld boundary; cases D-05 to D-07 are the 29 February clamp on both sides of the clamped day",
+        "the boundary and clamp cases are listed explicitly in the record as boundary_and_clamp_cases"
+      ],
+      "unresolved_within_this_scope": [
+        "the legally reviewed fixture suite and the independent replay sample are Gate 5.6 work and are expressly excluded from this order; no fixture here is legally reviewed"
+      ]
+    },
+    {
+      "criterion_verbatim": "the Gate 5.5 verdict record quotes the gate text, states each criterion for this scope with its evidence, and names any criterion it cannot meet instead of passing",
+      "where_it_sits": "acceptance criterion 6",
+      "scoped_reading": "this record",
+      "state": "MET within the scope",
+      "evidence": [
+        "the gate's own sentence is quoted at line 138, and the five Phase 5.5 bullets at lines 132, 133, 134, 135, 136 are quoted with it",
+        "every criterion of the order and of the gate is stated for this scope with its evidence",
+        "one item is NAMED rather than passed, exactly once, and the smallest action that would settle it is recorded with it"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "the order's preservation and custody records show that no earlier artifact was changed outside its own package",
+      "where_it_sits": "acceptance criterion 7",
+      "scoped_reading": "preservation is proved by measurement against a baseline taken before anything was written",
+      "state": "NAMED — NOT MET IN THIS SCOPE",
+      "evidence": [
+        "SOURCE_CAPTURES\\PHASE5-001R\\preserved_files_before.json: the byte-level baseline, taken before this order wrote any artifact, 478 files",
+        "measured by this verdict itself: files changed 1, files missing 0, undeclared changes 0",
+        "one pre-existing file differs from the baseline: SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json (E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22 -> 6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511). This order caused that change, it is disclosed with its cause, and it is not authorised by this order.",
+        "SOURCE_CAPTURES\\PHASE5-001R\\input_verification.json: 100 inputs re-measured, with the difference the earlier authorised amendment explains, 0 unexplained differences, 0 missing files, and the three read-only pointers outside the workspace still matching their recorded pins",
+        "SOURCE_CAPTURES\\PHASE5-001R\\file_custody_manifest.json: every file this order read or wrote, with its digest"
+      ],
+      "unresolved_within_this_scope": [
+        "the criterion is not met: this order changed a pre-existing artifact belonging to another package (SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json)",
+        "the cause was removed: the PHASE5-001I-A test suite writes its results into its own package when it is run, and the run was taken out of this order's builders, so the change cannot recur",
+        "the file's previous bytes are not reconstructible from a digest, so this order cannot repair it; it states the change instead of hiding it",
+        "smallest action to clear it: an owner instrument that either accepts the regenerated record as a recorded, unauthorised preservation exception — as earlier custody discrepancies were recorded and not authorised — or directs a re-baseline that takes the file as it now stands"
+      ]
+    },
+    {
+      "criterion_verbatim": "evaluator output is deterministic",
+      "where_it_sits": "the Gate 5.5 sentence, build plan line 138, first clause",
+      "state": "MET within the scope, as a specification",
+      "evidence": [
+        "the decision rules are ordered with a fixed precedence and stop at the first that applies: 19 rules, one result each",
+        "27 synthetic cases, 0 failures, and case D-25 shows the same inputs returning identical records",
+        "case D-26 shows no clock, locale, time-zone, host, session, environment or random source is read, and the executable form reads no file system at all"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "fully traceable to report and source",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, second clause",
+      "state": "MET within the scope, as a specification",
+      "evidence": [
+        "every fact carries its locator, its register field, its raw and normalized value and its transformation provenance: report_fact_model.json",
+        "the source side is the accepted pin at its recorded digest, and the citation is carried as the record records it, on the explanation surface of every template",
+        "the arithmetic is recomputed independently and matched to the record's own measured numbers: anniversary 2027-02-01, span 2191 days, elapsed 1919 days, outcome PERIOD_NOT_EXCEEDED",
+        "no emission path exists to be traceable today, and the record says so rather than implying otherwise"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on incomplete extraction",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, first emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "the comparison layer runs only when both facts are PRESENT; otherwise the comparison is not run and no outcome is produced",
+        "cases D-09 to D-15 exercise the missing label, the doubled label, the blank value, a foreign printed form, the single absence path, the contradictory header and the missing page",
+        "a refused or mis-mapped document does not reach the fact layer at all, so a refused document can never be reported as an empty report (cases D-16 to D-20)"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... unapproved rules",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, second emission condition",
+      "state": "MET within the scope, as a refusal behaviour",
+      "evidence": [
+        "gate G6 refuses with REFUSED_RULE_RECORD_NOT_ADMITTED and produces no outcome",
+        "this is the operative state of the scope: the rule record is NOT ADMITTED, and case D-22 shows the refusal on a fully eligible input",
+        "the gate condition is a prohibition, and a prohibition is satisfied by a refusal; the presupposition in the phase bullet is a different matter and is named below"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an admitted rule record cannot be exercised while the record is NOT ADMITTED, and no credit is claimed for it"
+      ]
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... wrong jurisdiction",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, third emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "two named refusals: REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED and REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+        "cases D-18 and D-19 exercise both, and jurisdiction is never inferred from the report in either the specification or the fact model"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... wrong event-date mapping",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, fourth emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "gate G4 refuses with REFUSED_WRONG_EVENT_DATE_MAPPING unless the caller declares exactly the recorded mapping for both event roles",
+        "case D-20 declares the last-payment role against a different printed field, and the evaluator refuses before the fact layer runs"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "cannot emit on ... an unresolved affirmative element",
+      "where_it_sits": "the Gate 5.5 sentence, line 138, fifth emission condition",
+      "state": "MET within the scope",
+      "evidence": [
+        "gate G5 refuses with REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT when an input resolves to the excluded second limb or carries another unresolved affirmative element",
+        "case D-21 exercises it, and the second limb stays unseated and is neither inferred nor defaulted",
+        "the effective period is a temporal qualification rather than an affirmative element, exactly as the scoped Gate 5.4 verdict recorded, and it is carried into every explanation template"
+      ],
+      "unresolved_within_this_scope": []
+    },
+    {
+      "criterion_verbatim": "evaluators that take only the uploaded report's resolved facts plus ADMITTED RULE RECORDS",
+      "where_it_sits": "the Phase 5.5 bullet at build plan line 134 — the one item this scope cannot satisfy",
+      "state": "NAMED — NOT MET IN THIS SCOPE, AND NOT CONVERTED INTO A PASS",
+      "evidence": [
+        "the scope has 0 admitted governed rules and 0 permitted findings, and the rule record carries admission_form RESERVED_TO_GATE_5_7",
+        "the specification therefore implements and tests the refusal half of the condition — which is the half the gate itself prohibits emission on — and states that the emission half is unexercised",
+        "the determinism check demonstrates the emission closure twice: refusing on the unadmitted record (D-22), and showing that even a fully admitted synthetic copy emits nothing for this unit (D-23), because the ceiling authorizes no finding class and no consumer surface exists"
+      ],
+      "unresolved_within_this_scope": [
+        "the emission path on an admitted rule record is not exercised, not demonstrated and not claimed",
+        "the smallest action that would settle it: an owner instrument admitting this unit's rule record at Gate 5.7, which cannot happen before Gates 5.5 and 5.6 pass for this scope"
+      ]
+    }
+  ],
+  "criterion_count": 15,
+  "acceptance_criteria_met": 6,
+  "gate_criteria_met": 7,
+  "named_not_passed": [
+    {
+      "item": "an evaluator whose inputs include admitted rule records, and whose emission path is therefore exercised",
+      "where_it_sits": "the Phase 5.5 bullet at build plan line 134",
+      "state": "NAMED — NOT MET IN THIS SCOPE",
+      "why_it_cannot_be_met_here": "no governed rule is admitted for this unit, so no admitted rule record exists for an evaluator to take, and this order may not admit one",
+      "what_was_done_instead": "the refusal behaviour the gate requires — that output cannot emit on an unapproved rule — was specified, implemented and tested, and this item is named instead of being converted into a criterion satisfaction",
+      "smallest_action": "an owner instrument admitting this unit's rule record at Gate 5.7, or an owner reading that settles whether Gate 5.5 requires an admitted rule record as a precondition",
+      "effect_on_this_verdict": "it names one phase-bullet item rather than passing it, which is what build plan line 63 requires where a criterion cannot be met within a scope"
+    },
+    {
+      "item": "the alternative owner reading of the same bullet, recorded so that it cannot be missed",
+      "where_it_sits": "the same phase bullet, read as a precondition rather than as a description of inputs",
+      "state": "NAMED — NOT SETTLED BY THIS ORDER",
+      "what_it_would_mean": "if the owner reads the bullet as requiring an admitted rule record before Gate 5.5 can be recorded at all, then the criterion in question is unmet in this scope and this verdict must be read as withheld rather than passed",
+      "what_this_order_did": "it executed the primary reading the order it was issued under sets out: build the evaluator so that it refuses to emit while the record is unadmitted, produce a named refusal and no outcome, and record that state criterion by criterion",
+      "smallest_action": "an owner reading of Gate 5.5 that says which half governs"
+    },
+    {
+      "item": "acceptance criterion 7 — no earlier artifact was changed outside its own package",
+      "where_it_sits": "the acceptance criteria of PHASE5-001R, criterion 7",
+      "state": "NAMED — NOT MET IN THIS SCOPE",
+      "why_it_cannot_be_met_here": "this order changed one pre-existing file, SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json (E492041115C32857EE471389BE15B3A812D9219D655342DD64B4AAF4A8B99B22 -> 6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511), by re-running the PHASE5-001I-A internal test suite before it was established that the suite writes its results into its own package. The previous bytes are not reconstructible from a digest, so the change cannot be repaired by this order.",
+      "what_was_done_instead": "the change is disclosed by measurement with its cause, the run was removed from every builder of this order so it cannot recur, and the criterion is named instead of being passed",
+      "smallest_action": "an owner instrument that accepts the regenerated record as a recorded, unauthorised preservation exception — as earlier custody discrepancies were recorded and not authorised — or directs a re-baseline that takes the file as it now stands",
+      "effect_on_this_verdict": "this is the criterion that withholds the verdict: build plan line 63 requires a scope's verdict to name a criterion it cannot meet instead of being issued"
+    }
+  ],
+  "named_not_passed_count": 3,
+  "unmet_criteria_named": "NAMED — NOT MET IN THIS SCOPE: an evaluator whose inputs include admitted rule records, and whose emission path is therefore exercised | NAMED — NOT SETTLED BY THIS ORDER: the alternative owner reading of the same bullet, recorded so that it cannot be missed | NAMED — NOT MET IN THIS SCOPE: acceptance criterion 7 — no earlier artifact was changed outside its own package",
+  "excluded_and_unresolved_items": [
+    "the second limb stays unseated and out of scope: the model defines no fact for it and the evaluator refuses an input that would need it",
+    "the compliance of any OTHER implementation with this determinism is not claimed: the specification governs this unit's own executable form, and the internal comparator's differences stand recorded in implementation_comparison.json",
+    "the emission path on an ADMITTED rule record is unexercised: the rule record is NOT ADMITTED, so the refusal is the operative behaviour and the emission path is named rather than demonstrated — see the named item below",
+    "no template is reachable today: the rule record is unadmitted, so nothing is emitted and nothing could be shown to anyone",
+    "the legally reviewed fixture suite and the independent replay sample are Gate 5.6 work and are expressly excluded from this order; no fixture here is legally reviewed",
+    "the criterion is not met: this order changed a pre-existing artifact belonging to another package (SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json)",
+    "the cause was removed: the PHASE5-001I-A test suite writes its results into its own package when it is run, and the run was taken out of this order's builders, so the change cannot recur",
+    "the file's previous bytes are not reconstructible from a digest, so this order cannot repair it; it states the change instead of hiding it",
+    "smallest action to clear it: an owner instrument that either accepts the regenerated record as a recorded, unauthorised preservation exception — as earlier custody discrepancies were recorded and not authorised — or directs a re-baseline that takes the file as it now stands",
+    "the emission path on an admitted rule record cannot be exercised while the record is NOT ADMITTED, and no credit is claimed for it",
+    "the emission path on an admitted rule record is not exercised, not demonstrated and not claimed",
+    "the smallest action that would settle it: an owner instrument admitting this unit's rule record at Gate 5.7, which cannot happen before Gates 5.5 and 5.6 pass for this scope"
+  ],
+  "implementation_comparison_summary": {
+    "artifact": "SOURCE_CAPTURES\\PHASE5-001R\\implementation_comparison.json",
+    "difference_count": 11,
+    "material_differences_not_adopted": [
+      "CMP-1",
+      "CMP-2",
+      "CMP-3",
+      "CMP-6"
+    ],
+    "its_own_suite": "not measured",
+    "the_boundary_difference": "its comparator returns PERIOD_NOT_EXCEEDED on the exact sixth-anniversary day and this specification withholds it; the difference is recorded, not adopted and not repaired",
+    "nothing_adopted_because_the_suite_passes": true
+  },
+  "corpus_wide_verdict": "NOT PASSED AND UNCHANGED — Gate 5.5 remains unpassed for the corpus. This verdict covers one jurisdiction, one rule unit, one statutory limb and one byte-pinned presentation, and the demo specimen it was defined against exists in the workspace only as a digest pointer. It states no corpus-wide pass, gives no Gate 5.6 or Gate 5.7 credit, and leaves 0 governed rules admitted and 0 findings permitted.",
+  "what_this_verdict_does_not_do": [
+    "it does not admit a rule, create coverage or a candidate, or authorize a finding class, in any circumstance, for any input",
+    "it does not decide the effective period, the exception, the anniversary-boundary reading or any calculation convention: each restricts output exactly as the rule record left it",
+    "it does not change, conform or adopt the PHASE5-001I-A internal comparator, and it does not rely on that comparator's boundary treatment",
+    "it does not turn the missing work of this scope into GAP or REFUSAL: the one item that cannot be satisfied is named, with the smallest action that would settle it",
+    "it produces no consumer-visible output of any class and changes no application behaviour: report checking remains \"not yet available\"",
+    "it does not retroactively authorize the custody discrepancies earlier orders recorded, and it edits no register, ledger, crosswalk, catalogue or manifest"
+  ],
+  "created_by": "PHASE5-001R"
+}

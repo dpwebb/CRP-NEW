@@ -1,0 +1,441 @@
+{
+  "artifact": "deterministic_evaluator_specification.json",
+  "work_order": "PHASE5-001R",
+  "created_utc": "2026-09-30",
+  "document_type": "DETERMINISTIC EVALUATOR SPECIFICATION — one scope only. NOT ADMITTED, not wired to any application surface, no emission",
+  "purpose": "specify, for this unit only, an evaluator whose every input maps to exactly one outcome or one named refusal, which carries the six recorded conventions including the withheld anniversary day, which refuses on each condition the gate names, and which emits nothing while its rule record is unadmitted",
+  "governing_text_read": {
+    "phase_5_5_bullet_deterministic_evaluators": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 134,
+      "text": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps."
+    },
+    "gate_5_5": {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "section": "section 3",
+      "line": 138,
+      "text": "**Gate 5.5:** evaluator output is deterministic, fully traceable to report and source, and cannot emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping, or an unresolved affirmative element."
+    }
+  },
+  "scope": {
+    "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+    "rule_unit": "CA-NS-CRA-S10-3-C-LIMB-1",
+    "limb_in_scope": "the last-payment limb only — six years from the last payment made on the debt",
+    "presentation": "PR-01",
+    "presentation_sha256": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+    "exclusions": [
+      "every jurisdiction other than CA / CA-NS",
+      "every rule unit other than CA-NS-CRA-S10-3-C-LIMB-1, and every other statutory limb of s. 10(3)(c)",
+      "every report presentation other than PR-01 at the recorded digest; a different print date, product, bureau, scan, photograph, mobile view, subscriber or screening document, generated fixture and encrypted or text-less document all remain UNSUPPORTED",
+      "consumer-upload availability and any report-family admission",
+      "the remaining corpus-wide Gate 5.2 queue: the 409 NO_DURABLE_RESCREEN_RECORD rows, the other five report-mapping IDs (CRP-LSRC-0422, 0423, 0424, 0425, 0427) and CRP-LSRC-0194",
+      "the effective-period and applicability-in-time question and its mandatory plain-English timing qualification",
+      "the direct-report contract section 4 retention exception (recorded, not relied on) and the s. 10(3)(c)/s. 10(ha) citation seam",
+      "the anniversary-boundary, month-end-clamp and day-count conventions (conventions the internal comparator implements, reserved to Gate 5.4)",
+      "every finding class: neither VIOLATION nor PROBABLE_VIOLATION is authorized, and the ceiling is observation only"
+    ]
+  },
+  "inputs_and_nothing_else": {
+    "the_four_inputs": [
+      "the caller's explicit country/region selection, supplied before the upload and never inferred from the report",
+      "the uploaded report's resolved facts and the recorded observations they rest on, in the shape SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json defines",
+      "the caller's declared event-date mapping for the two roles",
+      "the governed rule record for this unit at its recorded state — read as data, never as an admission"
+    ],
+    "nothing_else_is_read": [
+      "report.referenceDate (convention input)",
+      "collection.lastPaymentDate (rule-read fact)",
+      "the admitted rule record (this record), and nothing else"
+    ],
+    "what_is_explicitly_absent": "3 inputs only: no clock, no locale, no time zone, no host, no session state, no network, no file outside the package, no legal research, no parsing, no candidate classification",
+    "separately_auditable_steps": "the specification keeps status resolution, comparison, qualification and the gate chain as four separable functions, as the phase bullet requires"
+  },
+  "layers": [
+    {
+      "layer": "F1",
+      "name": "resolveFactStatus",
+      "does": "maps recorded observations to one of the gate's four statuses; decides nothing legally and compares nothing",
+      "record": [
+        "RESOLVED",
+        "EXTRACTION_UNRESOLVED",
+        "UNSUPPORTED_PRESENTATION",
+        "NOT_A_DEBT_RECORD",
+        "ABSENT_FROM_REPORT"
+      ]
+    },
+    {
+      "layer": "F2",
+      "name": "compare",
+      "does": "the six-calendar-year comparison on two resolved dates, carrying conventions c1 to c6",
+      "record": [
+        "read the printed Last Payment Date of each contract debt record, bound to its own record boundary; a missing, blank, twice-printed or differently-labelled value is EXTRACTION_UNRESOLVED",
+        "read the page header Request Date; it must be identical on every page, otherwise the reference date is unresolved",
+        "no comparison runs unless both the clock start and the reference date are RESOLVED",
+        "anniversary = clock start plus six calendar years by calendar addition (convention c1)",
+        "span_in_days = whole days from the clock start to the anniversary (derived, never hard-coded) (convention c3)",
+        "elapsed_days = whole days from the clock start to the reference date (convention c4)",
+        "comparison: elapsed_days > span_in_days (convention c5)"
+      ]
+    },
+    {
+      "layer": "F3",
+      "name": "qualify",
+      "does": "carries the applicability state and every mandatory qualification, read out of the governed rule record",
+      "record": {
+        "timing": {
+          "mandatory": true,
+          "text": "The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing."
+        },
+        "classification": {
+          "mandatory": true,
+          "text": "The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result."
+        },
+        "boundary": {
+          "mandatory_when_reached": true,
+          "text": "The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day."
+        },
+        "specimen": {
+          "mandatory": true,
+          "text": "This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format."
+        },
+        "effect_of_every_qualification": "each qualification narrows what may be said; none widens it. All are output restrictions, not findings and not admissions."
+      }
+    },
+    {
+      "layer": "F4",
+      "name": "evaluate",
+      "does": "the fixed gate chain, composing F1 to F3, and the emission decision",
+      "record": [
+        {
+          "step": 1,
+          "gate": "jurisdiction",
+          "requirement": "an explicit CA/CA-NS selection supplied by the caller",
+          "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED / REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT — no evaluation runs"
+        },
+        {
+          "step": 2,
+          "gate": "presentation",
+          "requirement": "the exact byte-pinned specimen, SHA-256 E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+          "refusal": "UNSUPPORTED_PRESENTATION (NOT_THE_EVIDENCED_SPECIMEN) — structural similarity alone admits nothing"
+        },
+        {
+          "step": 3,
+          "gate": "section",
+          "requirement": "the Collections section located and resolved by the recorded method",
+          "refusal": "EXTRACTION_UNRESOLVED unless the resolved section prints no contract debt record, which is the single ABSENT_FROM_REPORT path"
+        }
+      ]
+    }
+  ],
+  "gate_order_is_fixed": {
+    "order": [
+      "G1_JURISDICTION_SELECTION_SUPPLIED",
+      "G2_JURISDICTION_AUTHORIZED_FOR_THIS_UNIT",
+      "G3_PRESENTATION_ELIGIBILITY",
+      "G4_EVENT_DATE_MAPPING",
+      "G5_NO_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+      "G6_RULE_RECORD_ADMITTED"
+    ],
+    "rule": "every gate is evaluated and recorded; the refusal is the FIRST failing gate in this order, so the refusal never depends on which failure happened to be noticed first",
+    "why_this_order": "the unit-fit gates come first (selection, jurisdiction, presentation, event-date mapping, then the affirmative-element gate), because they decide whether this unit may read the input at all; the admission gate comes last, because it bounds EMISSION rather than reading. Ordering it this way keeps a deeper refusal observable instead of masking every input behind the one condition that currently holds for every input.",
+    "gates": [
+      {
+        "step": 1,
+        "gate": "jurisdiction",
+        "requirement": "an explicit CA/CA-NS selection supplied by the caller",
+        "refusal": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED / REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT — no evaluation runs"
+      },
+      {
+        "step": 2,
+        "gate": "presentation",
+        "requirement": "the exact byte-pinned specimen, SHA-256 E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+        "refusal": "UNSUPPORTED_PRESENTATION (NOT_THE_EVIDENCED_SPECIMEN) — structural similarity alone admits nothing"
+      },
+      {
+        "step": 3,
+        "gate": "section",
+        "requirement": "the Collections section located and resolved by the recorded method",
+        "refusal": "EXTRACTION_UNRESOLVED unless the resolved section prints no contract debt record, which is the single ABSENT_FROM_REPORT path"
+      },
+      {
+        "step": 4,
+        "gate": "event-date mapping",
+        "requirement": "the caller declares exactly the recorded mapping for both roles",
+        "refusal": "REFUSED_WRONG_EVENT_DATE_MAPPING"
+      },
+      {
+        "step": 5,
+        "gate": "affirmative elements",
+        "requirement": "no input resolves to the excluded second limb and no unresolved affirmative element is supplied",
+        "refusal": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT"
+      },
+      {
+        "step": 6,
+        "gate": "rule record admission",
+        "requirement": "the governed rule record is admitted",
+        "refusal": "REFUSED_RULE_RECORD_NOT_ADMITTED"
+      }
+    ]
+  },
+  "conventions": [
+    {
+      "id": "c1",
+      "convention": "the anniversary is the clock start plus six calendar years, by calendar addition",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as the arithmetic the comparison is specified to perform, never as a statement about the statutory text",
+      "adopted_because": "recorded in the governed rule record and decided in Q-D3"
+    },
+    {
+      "id": "c2",
+      "convention": "a 29 February start clamps to 28 February in a non-leap sixth year",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as the arithmetic the comparison is specified to perform, never as a statement about the statutory text",
+      "adopted_because": "recorded in the governed rule record and decided in Q-D3"
+    },
+    {
+      "id": "c3",
+      "convention": "the six-year span in days is derived from the two dates and never hard-coded",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as the arithmetic the comparison is specified to perform, never as a statement about the statutory text",
+      "adopted_because": "recorded in the governed rule record and decided in Q-D3"
+    },
+    {
+      "id": "c4",
+      "convention": "elapsed time is measured in whole days from the clock start to the reference date",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as the arithmetic the comparison is specified to perform, never as a statement about the statutory text",
+      "adopted_because": "recorded in the governed rule record and decided in Q-D3"
+    },
+    {
+      "id": "c5",
+      "convention": "the period is exceeded when elapsed days exceed the span in days",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as the arithmetic the comparison is specified to perform, never as a statement about the statutory text",
+      "adopted_because": "recorded in the governed rule record and decided in Q-D3"
+    },
+    {
+      "id": "c6",
+      "convention": "the exact sixth-anniversary day carries NO outcome: the comparison reports BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY with comparison_outcome UNRESOLVED, because the text does not settle whether that day is inside or outside the period",
+      "is_a_requirement_of_the_text": false,
+      "how_the_specification_carries_it": "as a withholding rule evaluated BEFORE the comparison branch: the boundary case is reported and no outcome is produced",
+      "adopted_because": "owner decision PHASE5-001Q — operational uncertainty must remain explicit and restrict output rather than be filled with an invented fact"
+    }
+  ],
+  "boundary_withheld": {
+    "rule": "when the reference date equals the sixth anniversary exactly, the outcome is WITHHELD. Neither reading of \"more than six years after\" is adopted by this record.",
+    "effect": "the unit produces no PERIOD_EXCEEDED and no PERIOD_NOT_EXCEEDED on that one day; the case is reported as a boundary case",
+    "the_internal_comparator_is_not_adopted": "the existing internal comparator treats that day as inside the period. That convention is NOT adopted by this record, and no result resting on it at the boundary may be relied on. Conforming an evaluator to this record is Gate 5.5 work.",
+    "how_the_withholding_is_made_deterministic": "the boundary is an exact date equality on two resolved dates and is evaluated before the greater-than branch, so the withheld day cannot fall into PERIOD_NOT_EXCEEDED by accident of ordering"
+  },
+  "arithmetic_recomputed": {
+    "method": "proleptic Gregorian integer day arithmetic; no clock, locale, time zone, host or session state is read",
+    "clock_start": "2021-02-01",
+    "reference_date": "2026-05-05",
+    "anniversary": "2027-02-01",
+    "span_in_days": 2191,
+    "elapsed_days": 1919,
+    "comparison_outcome": "PERIOD_NOT_EXCEEDED",
+    "matches_the_record": true,
+    "clamp_exercised_as_arithmetic": true,
+    "note": "these are the record's own measured numbers, recomputed by this specification's arithmetic. They tie the specification to the rule record and to the register's demonstration of the same specimen."
+  },
+  "decision_rules": [
+    {
+      "id": "R1",
+      "precedence": 1,
+      "applies_when": "no country/region selection was supplied",
+      "result": "REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED",
+      "layer": "gate chain, G1",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "R2",
+      "precedence": 2,
+      "applies_when": "a selection was supplied and it is not CA / CA-NS",
+      "result": "REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT",
+      "layer": "gate chain, G2",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "R3",
+      "precedence": 3,
+      "applies_when": "the document is not the exact byte-pinned specimen, or carries a named document-level refusal cause",
+      "result": "REFUSED_UNSUPPORTED_PRESENTATION",
+      "layer": "gate chain, G3",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "R4",
+      "precedence": 4,
+      "applies_when": "the caller declares an event-date mapping other than the recorded one for either role",
+      "result": "REFUSED_WRONG_EVENT_DATE_MAPPING",
+      "layer": "gate chain, G4",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "R5",
+      "precedence": 5,
+      "applies_when": "the governed rule record is not admitted (the operative state of this scope)",
+      "result": "REFUSED_RULE_RECORD_NOT_ADMITTED",
+      "layer": "gate chain, G5",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "R6",
+      "precedence": 6,
+      "applies_when": "an input resolving to the excluded second limb, or another unresolved affirmative element, is supplied",
+      "result": "REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+      "layer": "gate chain, G6",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S1",
+      "precedence": 7,
+      "applies_when": "referenceDate: the header label is not found, or is not on every page",
+      "result": "EXTRACTION_UNRESOLVED",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S2",
+      "precedence": 8,
+      "applies_when": "referenceDate: the label is on every page and the printed values are not all identical",
+      "result": "CONTRADICTED",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S3",
+      "precedence": 9,
+      "applies_when": "referenceDate: one identical value on every page, well formed and a possible calendar date",
+      "result": "PRESENT",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S4",
+      "precedence": 10,
+      "applies_when": "lastPaymentDate: the Collections section was not located or not resolved",
+      "result": "EXTRACTION_UNRESOLVED",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S5",
+      "precedence": 11,
+      "applies_when": "lastPaymentDate: the section is resolved and prints no contract debt record",
+      "result": "ABSENT_FROM_REPORT",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S5b",
+      "precedence": 12,
+      "applies_when": "lastPaymentDate: the section is resolved, prints no contract debt record, and prints the label outside any contract debt record",
+      "result": "EXTRACTION_UNRESOLVED (FIELD_LABEL_OUTSIDE_ANY_RECORD) — a value is never read outside a record, so the section's clean absence reading is not available",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S6",
+      "precedence": 13,
+      "applies_when": "lastPaymentDate: a contract debt record prints the label zero times, more than once, or without a value, or with an impossible or malformed value",
+      "result": "EXTRACTION_UNRESOLVED",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "S7",
+      "precedence": 14,
+      "applies_when": "lastPaymentDate: a contract debt record prints the label exactly once with a well-formed possible printed date",
+      "result": "PRESENT",
+      "layer": "status resolution",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "C1",
+      "precedence": 15,
+      "applies_when": "either fact required by the comparison is not PRESENT",
+      "result": "the comparison does not run: UNRESOLVED, with a reason naming the fact and its status",
+      "layer": "comparison",
+      "carries_an_outcome": true
+    },
+    {
+      "id": "C2",
+      "precedence": 16,
+      "applies_when": "the reference date precedes the stated last-payment date",
+      "result": "UNRESOLVED, reason REFERENCE_DATE_PRECEDES_THE_STATED_LAST_PAYMENT",
+      "layer": "comparison",
+      "carries_an_outcome": true
+    },
+    {
+      "id": "C3",
+      "precedence": 17,
+      "applies_when": "elapsed days EQUAL the derived six-year span (the exact sixth-anniversary day)",
+      "result": "UNRESOLVED with boundary case BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY; the outcome is WITHHELD",
+      "layer": "comparison, convention c6",
+      "carries_an_outcome": false
+    },
+    {
+      "id": "C4",
+      "precedence": 18,
+      "applies_when": "elapsed days exceed the derived six-year span",
+      "result": "PERIOD_EXCEEDED — an arithmetic result, not a finding",
+      "layer": "comparison, convention c5",
+      "carries_an_outcome": true
+    },
+    {
+      "id": "C5",
+      "precedence": 19,
+      "applies_when": "elapsed days are less than the derived six-year span",
+      "result": "PERIOD_NOT_EXCEEDED — an arithmetic result, never a clearance and never a compliance statement",
+      "layer": "comparison, convention c5",
+      "carries_an_outcome": true
+    }
+  ],
+  "precedence_rules": {
+    "the_rule": "the rules are applied in the recorded precedence order and stop at the first that applies, so every input maps to exactly one result",
+    "boundary_before_greater_than": "C3 is evaluated before C4 and C5, so the exact sixth-anniversary day can never produce an outcome",
+    "status_before_comparison": "no comparison rule is reached unless both facts are PRESENT, so a status can never be read as an outcome",
+    "no_rule_is_expressible_as_a_finding": "no rule above returns VIOLATION, PROBABLE_VIOLATION or any other finding class, and none is implemented, emitted or implied for this unit"
+  },
+  "emission_rules": {
+    "today": "for every input, the evaluator returns a named refusal and NO outcome, because G5 fails: the governed rule record is NOT ADMITTED. This is the operative state of this scope and the specification says so rather than treating a refusal as an emission.",
+    "after_any_admission": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED: the ceiling is OBSERVATION_CLASS_ONLY, no finding class is available to this unit, packet eligibility is false and no consumer surface exists, so even a fully admitted input produces an internal observation record only",
+    "what_may_ever_be_shown": "nothing. No output of any class may be shown, hosted, transmitted or implied; report checking remains \"not yet available\"."
+  },
+  "the_recorded_tension_stated_not_resolved": {
+    "what_the_gate_condition_is": "the gate's own condition is a prohibition — output \"cannot emit on ... unapproved rules\" — and a prohibition is satisfied by a refusal behaviour that is specified, implemented and tested",
+    "what_the_phase_bullet_presupposes": "the phase bullet says evaluators take the report's resolved facts \"plus admitted rule records\". This scope has no admitted rule record: 0 governed rules are admitted and 0 findings are permitted.",
+    "how_this_specification_treats_it": "it specifies and tests the refusal behaviour (a named refusal, no outcome) and it records that the emission path on an admitted rule record is not exercised, not demonstrated and not claimed in this scope",
+    "the_alternative_owner_reading_and_its_smallest_action": "if the owner reads the phase bullet as requiring an admitted rule record as a precondition for Gate 5.5, then the criterion in question is unmet in this scope and the Gate 5.5 verdict must name it instead of passing it. The smallest action is an owner instrument admitting this unit's rule record (Gate 5.7) or an owner reading that settles the question. This specification does not decide it."
+  },
+  "forbidden_implementations": [
+    "no finding class: neither VIOLATION nor PROBABLE_VIOLATION is implemented, emitted, implied or promised, in any circumstance, for any input",
+    "no off-report fact: no request, notice, recipient, use, fee, procedure or actor action is read or asked for",
+    "no second-limb evaluation: an input resolving to the second limb is refused, never defaulted and never evaluated",
+    "no cross-record borrowing: a value is never taken from another record, section or page",
+    "no convention promoted to a requirement of the text",
+    "no clock, locale, time zone, host or session state is read anywhere in the evaluator"
+  ],
+  "determinism_properties": {
+    "pure_functions_only": true,
+    "module_level_mutable_state": false,
+    "fixed_gate_order": true,
+    "fixed_status_precedence": true,
+    "fixed_comparison_precedence": true,
+    "same_inputs_same_output": "required, and measured by the internal determinism check on synthetic inputs",
+    "clock_independence": "required, and checked by scanning the executable form for clock, locale, time-zone, environment and random-source reads",
+    "executable_form": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs (rank 8, internal, not admitted, not wired to any application surface)",
+    "evidence_of_this_specification_being_run": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json (deliverable 5), synthetic inputs only"
+  },
+  "what_this_specification_does_not_do": [
+    "it does not admit a rule, create coverage or a candidate, or authorize a finding class",
+    "it does not resolve the effective period, the exception, the anniversary-boundary reading or the convention set; each restricts output exactly as the rule record left it",
+    "it does not read a report, retrieve a source, paraphrase a source or re-interpret the accepted authority",
+    "it does not conform, modify or adopt the internal comparator of PHASE5-001I-A, and in particular it does not adopt that comparator's treatment of the exact sixth-anniversary day",
+    "it produces no consumer-visible output and changes no application behaviour"
+  ],
+  "created_by": "PHASE5-001R"
+}

@@ -1,0 +1,367 @@
+{
+  "artifact": "amendment_authority_analysis.json",
+  "work_order": "PHASE5-001S",
+  "created_utc": "2026-09-30",
+  "document_type": "AUTHORITY ANALYSIS — the exact governing clauses that create the circular prerequisite",
+  "purpose": "identify, quote and locate every governing clause that makes an admission prerequisite of Gates 5.5 and 5.6, and record every authority that was inspected and deliberately not amended with the reason, so that the amendment of this order is the minimum the two owner decisions require",
+  "the_question_this_record_answers": "which exact governing clauses, quoted, require a rule to be admitted before Gates 5.5 and 5.6 can pass, when admission is Gate 5.7 and Gate 5.7 follows Gate 5.6",
+  "document_under_analysis": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+  "document_digest_at_analysis": "12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C",
+  "state_of_the_document_when_read": "PRE_AMENDMENT — reconstructed in memory by inverting the amendment recorded in amendment_text.json; the reconstruction hashes to 12DE8BAD745297BEA64FAF200783D8D9768E5355AA94F62BD9A84DACD48DD56C, the digest_before the amendment procedure recorded",
+  "amendment_procedure": {
+    "document": "CRP_CORE_CONSTITUTION.md",
+    "authority": "CRP_CORE_CONSTITUTION.md section 6.1 — amended only by an explicit, owner-issued work order",
+    "form_required_by_6_2": "name the document and the clause it changes, quote the text being replaced, and state the replacement text; implied amendments are void",
+    "record_required_by_6_5": "the amendment history is recorded in the amended document itself, so the governing text and its change record cannot separate",
+    "clauses_quoted": [
+      {
+        "clause": "6.1",
+        "line_start": 209,
+        "line_end": 210,
+        "text": "**6.1** This constitution and every other rank 1–3 document are amended only by an explicit,\r\nowner-issued work order. No amendment occurs by implementation, refactor, test change, comment,\r"
+      },
+      {
+        "clause": "6.2",
+        "line_start": 213,
+        "line_end": 214,
+        "text": "**6.2** An amendment must name the document and the clause it changes, quote the text being replaced,\r\nand state the replacement text. Implied amendments are void.\r"
+      },
+      {
+        "clause": "6.3",
+        "line_start": 216,
+        "line_end": 219,
+        "text": "**6.3** Nothing in this repository may be changed by \"making the code match reality\". Where code and\r\na rank 1–3 document disagree, either the code is wrong, or the disagreement is a conflict to be\r\nreported under Section 3. There is no third possibility in which the document quietly becomes\r\nadvisory.\r"
+      },
+      {
+        "clause": "6.4",
+        "line_start": 221,
+        "line_end": 222,
+        "text": "**6.4** Deletion of a rank 1–3 document, or removal of a requirement from one, is an amendment and\r\nrequires the same authorization as an amendment.\r"
+      },
+      {
+        "clause": "6.5",
+        "line_start": 224,
+        "line_end": 226,
+        "text": "**6.5** Amendment history is recorded in the amended document itself, so that the governing text and\r\nits change record cannot separate. A rank 1–3 document with no amendment history has never been\r\namended.\r"
+      }
+    ],
+    "note": "section 6.4 matters here: removing a requirement from a document is itself an amendment needing the same authorisation. Every replacement of this order is an extension in which the replaced text survives verbatim, so no requirement is removed by any of them."
+  },
+  "the_circular_prerequisite": {
+    "statement": "Gates 5.5 and 5.6 are made to wait on an admitted rule record, and admission is made to wait on Gates 5.5 and 5.6. Neither can be completed, and the blocking requirement is not a missing fact, a missing source or a missing legal decision.",
+    "cycle": [
+      "Gate 5.5 may not be recorded without an admitted rule record (CIR-1).",
+      "A rule may not be admitted before Gate 5.6 passes (ADM-1, ADM-2).",
+      "Gate 5.6 may not begin before Gate 5.5 passes for the same scope (SEQ-1, SEQ-3).",
+      "Therefore neither gate can be completed and Gate 5.7 is unreachable: the circle closes on itself, and nothing in it is a missing fact, a missing source or a missing legal decision."
+    ],
+    "clauses": [
+      {
+        "id": "CIR-1",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "rank": 5,
+        "section": "section 3, Phase 5.5 — Specify deterministic report evaluation, bullet 3",
+        "line": 134,
+        "quoted_text": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps.",
+        "presupposition": "the evaluator the gate validates must take admitted rule records",
+        "why_it_is_circular": "The bullet makes an admitted rule record an input of the thing Gate 5.5 specifies and validates. Admission is Gate 5.7: Phase 5.7 bullet 1 requires a rule-corpus amendment containing only rules that passed Gates 5.1-5.6, and Gate 5.7 requires a formally admitted rule unit whose evaluator passes the validation suite. Reading the bullet as a precondition therefore requires an admitted rule before Gate 5.5 and Gate 5.6, and it requires Gates 5.5 and 5.6 to pass before the rule may be admitted.",
+        "read_alone_it_blocks": [
+          "recording a Gate 5.5 scoped verdict, because the emission path the bullet presupposes cannot exist yet",
+          "recording a Gate 5.6 scoped verdict, which Gate 5.7 in turn waits on"
+        ]
+      },
+      {
+        "id": "CIR-2",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "rank": 5,
+        "section": "section 4, Durable artifacts to create, item 5",
+        "line": 165,
+        "quoted_text": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+        "presupposition": "the deterministic fact/evaluator specification may be created only after rule units are admitted",
+        "why_it_is_circular": "This is the same prerequisite stated a second time, in the deliverable list rather than in the gate sequence: the artifact Gate 5.5 produces is deferred until the admission that Gate 5.7 performs after Gate 5.5 and Gate 5.6 pass.",
+        "read_alone_it_blocks": [
+          "producing the Gate 5.5 specification and implementation at all"
+        ]
+      },
+      {
+        "id": "CIR-3",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "rank": 5,
+        "section": "section 3, Gate 5.6",
+        "line": 147,
+        "quoted_text": "**Gate 5.6:** every test passes; independent replay reproduces each sampled result; no known false positive/negative category remains unexplained; rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions.",
+        "presupposition": "the rule corpus must share one immutable version with the crosswalk, the tests and the explanation templates",
+        "why_it_is_circular": "An immutable version is what Gate 5.7 assigns when it admits the rule (Phase 5.7 bullet 1: a rule-corpus amendment with immutable IDs/versions). Gate 5.6 cannot satisfy a condition whose value only the later gate creates, and it may not invent one.",
+        "read_alone_it_blocks": [
+          "recording the version-sharing criterion of a scoped Gate 5.6 verdict"
+        ]
+      }
+    ],
+    "sequencing_clauses_that_make_it_binding": [
+      {
+        "id": "SEQ-1",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, the ordering sentence that opens the gate sequence",
+        "line": 45,
+        "quoted_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+        "effect": "a later phase cannot begin before its stated gate passes"
+      },
+      {
+        "id": "SEQ-2",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, owner authority PHASE5-001P (scoped gate verdicts and incremental rule-unit progression)",
+        "line_start": 47,
+        "line_end": 48,
+        "quoted_text": "**Owner authority PHASE5-001P — scoped gate verdicts and incremental rule-unit progression.** This\nparagraph adds a scope to the sequencing sentence above. It weakens no gate's own conditions.",
+        "effect": "scoped verdicts are the mechanism by which one named scope may progress while the corpus-wide queue stays unfinished"
+      },
+      {
+        "id": "SEQ-3",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, the PHASE5-001P paragraph, the progression bullet",
+        "line_start": 58,
+        "line_end": 60,
+        "quoted_text": "- **A later phase may begin for a named scope only when every preceding gate carries a passing verdict\n  for that same scope.** A verdict does not transfer to another scope, and one passing verdict implies no\n  other.",
+        "effect": "the gate that must pass first, for this scope, is Gate 5.5 — the gate CIR-1 blocks"
+      },
+      {
+        "id": "SEQ-4",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, the PHASE5-001P paragraph, the unmet-criterion bullet",
+        "line_start": 61,
+        "line_end": 64,
+        "quoted_text": "- **The corpus-wide unfinished queue is preserved as recorded.** A scoped verdict resolves, promotes,\n  re-classifies and closes no row. Missing work may not be converted into `GAP` or `REFUSAL` in order to\n  satisfy a criterion; where a criterion cannot be met within a scope, that scope's verdict names the\n  unmet criterion instead of being issued.",
+        "effect": "a criterion that cannot be met within a scope is named and not converted; that is why PHASE5-001R withheld its verdict instead of passing it"
+      }
+    ],
+    "the_admission_step_that_is_presupposed": [
+      {
+        "id": "ADM-1",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, Phase 5.7 — Formal owner admission and finding authorization, bullet 1",
+        "line": 151,
+        "quoted_text": "- Prepare a rule-corpus amendment containing only rules that passed Gates 5.1–5.6, with immutable IDs/versions and full provenance.",
+        "effect": "admission follows a successful Gate 5.6, and it is the step that assigns immutable IDs and versions"
+      },
+      {
+        "id": "ADM-2",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "section": "section 3, Gate 5.7 / segment exit",
+        "line": 157,
+        "quoted_text": "**Gate 5.7 / segment exit:** at least one complete rule unit has been formally admitted and its evaluator passes the validation suite, or the segment reports a clear blocker that requires an owner/legal decision. Once all in-scope rules are admitted or explicitly dispositioned, this segment is complete and work may move to the next product section.",
+        "effect": "the admission gate stands after the validation gate, so nothing can be admitted in order to satisfy Gate 5.5 or Gate 5.6"
+      }
+    ],
+    "it_is_not_a_gap": "nothing here is missing work, an unresolved source or an unmade legal decision. The clauses are in genuine conflict with the sequencing of the same document, so no scoped verdict may be manufactured out of them, and none was: PHASE5-001R withheld its Gate 5.5 verdict and named the unmet criterion instead.",
+    "what_it_is_not": "it is not a conflict with a rank 1-4 document, and it is not a silence or an ambiguity, so the Core Constitution's section 5 default does not apply to it and no default reading is taken."
+  },
+  "clauses_requiring_the_circular_prerequisite": [
+    {
+      "id": "CIR-1",
+      "clause": "section 3, Phase 5.5 — Specify deterministic report evaluation, bullet 3",
+      "clause_verbatim": "- Implement deterministic rule evaluators that take only the uploaded report's resolved facts plus admitted rule records. Keep legal research, parsing, candidate classification, and finding evaluation as separately auditable steps.",
+      "line": 134,
+      "presupposition": "the evaluator the gate validates must take admitted rule records"
+    },
+    {
+      "id": "CIR-2",
+      "clause": "section 4, Durable artifacts to create, item 5",
+      "clause_verbatim": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+      "line": 165,
+      "presupposition": "the deterministic fact/evaluator specification may be created only after rule units are admitted"
+    },
+    {
+      "id": "CIR-3",
+      "clause": "section 3, Gate 5.6",
+      "clause_verbatim": "**Gate 5.6:** every test passes; independent replay reproduces each sampled result; no known false positive/negative category remains unexplained; rule corpus, source crosswalk, tests, and explanation templates share the same immutable versions.",
+      "line": 147,
+      "presupposition": "the rule corpus must share one immutable version with the crosswalk, the tests and the explanation templates"
+    }
+  ],
+  "clauses_requiring_the_circular_prerequisite_count": 3,
+  "sequencing_clauses_recorded": 4,
+  "amendments_required": [
+    {
+      "amendment_id": "A-1",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, the final bullet of the PHASE5-001P scoped-progression paragraph (the clause that closes the ordering authority)",
+      "closes": "records the authority that CIR-1 to CIR-3 rely on",
+      "form": "quoted replacement under Core Constitution section 6.2, extension only, applied once"
+    },
+    {
+      "amendment_id": "A-2",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.5, bullet 3 (the evaluator's inputs)",
+      "closes": "CIR-1",
+      "form": "quoted replacement under Core Constitution section 6.2, extension only, applied once"
+    },
+    {
+      "amendment_id": "A-3",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 4, Durable artifacts to create, item 5 (the deterministic fact/evaluator specification)",
+      "closes": "CIR-2",
+      "form": "quoted replacement under Core Constitution section 6.2, extension only, applied once"
+    },
+    {
+      "amendment_id": "A-4",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Gate 5.6 (the immutable-version sharing condition)",
+      "closes": "CIR-3",
+      "form": "quoted replacement under Core Constitution section 6.2, extension only, applied once"
+    },
+    {
+      "amendment_id": "A-5",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 8, Amendment History, appended row",
+      "closes": "the section 6.5 amendment-history requirement",
+      "form": "appended row under Core Constitution section 6.5"
+    }
+  ],
+  "amendments_required_count": 5,
+  "authorities_inspected_and_not_amended": [
+    {
+      "document": "CRP_CORE_CONSTITUTION.md",
+      "rank": 1,
+      "clause": "section 6, Amendment and Change Control (6.1 to 6.5)",
+      "quoted_text": "**6.1** This constitution and every other rank 1–3 document are amended only by an explicit,\r\nowner-issued work order. No amendment occurs by implementation, refactor, test change, comment,\r\n\n**6.2** An amendment must name the document and the clause it changes, quote the text being replaced,\r\nand state the replacement text. Implied amendments are void.\r\n\n**6.3** Nothing in this repository may be changed by \"making the code match reality\". Where code and\r\na rank 1–3 document disagree, either the code is wrong, or the disagreement is a conflict to be\r\nreported under Section 3. There is no third possibility in which the document quietly becomes\r\nadvisory.\r\n\n**6.4** Deletion of a rank 1–3 document, or removal of a requirement from one, is an amendment and\r\nrequires the same authorization as an amendment.\r\n\n**6.5** Amendment history is recorded in the amended document itself, so that the governing text and\r\nits change record cannot separate. A rank 1–3 document with no amendment history has never been\r\namended.\r",
+      "why_not_amended": "this is the procedure this amendment is carried out under, not a clause that creates the circular prerequisite. It is quoted in full above and used as recorded; it is not edited."
+    },
+    {
+      "document": "CRP_CORE_CONSTITUTION.md",
+      "rank": 1,
+      "clause": "section 5, Default Direction of Ambiguity",
+      "quoted_text": "When governing text is silent, incomplete, ambiguous, or unresolved — and no conflict exists — the answer defaults to refusal, in this direction and no other",
+      "why_not_amended": "the circular prerequisite is not an ambiguity and not an absence of authority; it is a conflict between clauses of one rank-5 document, reported and resolved by owner amendment rather than by a default. Section 5 is unchanged."
+    },
+    {
+      "document": "CRP_CORE_CONSTITUTION.md",
+      "rank": 1,
+      "clause": "section 4, Standing Prohibitions",
+      "quoted_text": "A factual anomaly is never, by itself, a violation.",
+      "why_not_amended": "unchanged and untouched: nothing in this order concerns anomaly detection, and the pre-admission sequence creates no path to a finding."
+    },
+    {
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "rank": 4,
+      "clause": "section 1, Purpose and Boundary",
+      "quoted_text": "A governed legal rule is eligible for analysis only when it is admitted in a later approved legal-rule corpus that conforms to this contract.",
+      "why_not_amended": "this contract governs when a rule becomes a governable, analysable rule, and this order does not make the pre-admission record one: it stays NOT_ADMITTED, is not eligible for analysis, cannot emit and is not a governed legal rule. The contract's condition is met by the sequence rather than changed by it."
+    },
+    {
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "rank": 4,
+      "clause": "section 6, Admission and Change Control",
+      "quoted_text": "No rule or source evidence is admitted by this contract's existence. A rule becomes governed only when a later explicit owner work order creates or amends an approved legal-rule corpus using the complete required fields in this contract.",
+      "why_not_amended": "the admission step is unchanged and remains with Gate 5.7. This order creates no approved legal-rule corpus, admits nothing and amends nothing in this contract; the required fields and the RULE_VERSION condition stay as recorded."
+    },
+    {
+      "document": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "rank": 4,
+      "clause": "section 1, Admission Boundary",
+      "quoted_text": "The admission excludes the legacy repository at large and permanently excludes violation determination,",
+      "why_not_amended": "the permanent exclusions and the digest-bound admission boundary are untouched; this order reads the admitted source at its recorded digest and adopts nothing from the legacy system."
+    },
+    {
+      "document": "CRP_LEGAL_INVARIANT.md",
+      "rank": 2,
+      "clause": "the invariant that no finding is produced without governed authority",
+      "quoted_text": "finding. There is no weighting, no scoring, no confidence threshold, and no partial credit that can",
+      "why_not_amended": "the invariant's prohibition is reinforced rather than relaxed: an unadmitted rule must refuse to emit, and no gate may produce a finding class, coverage or consumer-visible output. Nothing in this order needs the invariant to change, and it does not change it."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Gate 5.5 (the gate sentence itself)",
+      "line": 138,
+      "quoted_text": "**Gate 5.5:** evaluator output is deterministic, fully traceable to report and source, and cannot emit on incomplete extraction, unapproved rules, wrong jurisdiction, wrong event-date mapping, or an unresolved affirmative element.",
+      "why_not_amended": "this is the prohibition the pre-admission sequence relies on: it forbids emission on an unapproved rule, which is exactly what makes it safe to specify and validate an evaluator before admission. Amending it would weaken the gate, and no reading of it is unclear, so it is left exactly as recorded. The circular prerequisite came from the PHASE 5.5 bullet, not from the gate sentence."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Gate 5.4",
+      "line": 128,
+      "quoted_text": "**Gate 5.4:** each proposed rule has a complete field-by-field trace to the owner-approved source, exact jurisdiction/limb, no unresolved affirmative element, and a deterministic test. Independent validation verifies faithful transcription and mapping to the accepted legal record; it does not repeat the owner's legal/source certification. A concrete contradiction or change indicator is held for owner/legal direction rather than guessed.",
+      "why_not_amended": "Gate 5.4 finalises a rule record and does not require admission; the PHASE5-001Q scoped verdict already reads it that way and passes for this scope with the version reserved. Nothing here needs to change, and changing it would re-open a passed gate."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Phase 5.4 bullet 3 (the governed fields, including immutable rule ID/version)",
+      "line": 120,
+      "quoted_text": "For every selected unit record the required governed fields: immutable rule ID/version, exact jurisdiction, source ID and pin, formal edition status, effective dates/status, exact legal text/proposition, applicability, report-required facts, decisive facts, exceptions, deterministic breach test, consumer citation, and consumer-facing qualifications.",
+      "why_not_amended": "the version tension is resolved without editing this bullet: the PHASE5-001S paragraph assigns a content-derived pre-admission version identity, immutable from the moment the record is finalised, while the production version string stays reserved to Gate 5.7. The field is populated in a way that keeps the reservation explicit, and no field is removed or weakened."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Phase 5.6 bullet 3 (independent replay before rule approval)",
+      "line": 144,
+      "quoted_text": "- Use an independent reviewer to reproduce a sample of each result from the source pin and report excerpt without seeing the evaluator output first. Reconcile any disagreement before rule approval.",
+      "why_not_amended": "considered as a possible fourth instance and found not to be one: it orders validation work before approval, which is the sequence this order records rather than a prerequisite of approval. It creates no circularity and needs no change."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Phase 5.5 bullets 1, 2, 4 and 5, and Phase 5.6 bullets 1, 2 and 4",
+      "line": 133,
+      "quoted_text": "the fact model, the status vocabulary, the explicit outputs and the explanation surface; the fixtures, the negative tests and the consumer-language validation",
+      "why_not_amended": "none of these clauses presupposes an admitted rule record. They are unchanged, and the PHASE5-001R specification already satisfies them for this scope as a specification."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, Gates 5.1, 5.2 and 5.3",
+      "line": 126,
+      "quoted_text": "Gate 5.1 to Gate 5.3 as recorded, including Gate 5.2's corpus-wide sentence added by PHASE5-001P",
+      "why_not_amended": "these gates are earlier in the sequence, already recorded, and unaffected by the admission ordering. They are preserved verbatim."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 2 (the certification and finding model, 2.1 and 2.2), and section 3 Phase 5.7 with Gate 5.7",
+      "line": 22,
+      "quoted_text": "Authorize a `VIOLATION` only where all of the following are true:",
+      "why_not_amended": "the finding model and the admission gate are the boundary this order protects. They are left exactly as recorded, and no rule is admitted, so nothing in them is exercised or altered."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 5, Stop conditions requiring direction",
+      "line": 171,
+      "quoted_text": "Pause only the affected rule/cohort and record the blocker when:",
+      "why_not_amended": "no stop condition is added, removed or reordered. The conflict this order resolves was reported and carried by PHASE5-001R as a withheld verdict rather than as a stop condition, and the amended sequence leaves every stop condition in force."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 7, Scope boundary",
+      "line_start": 225,
+      "line_end": 227,
+      "quoted_text": "## 7. Scope boundary\n\nThis plan authorizes plan-level sequencing only. It does not itself admit a statute, change a finding, add consumer evidence, certify the whole catalogue, approve a runtime implementation, or deploy the application. Those outcomes require passing the gates and their explicit corpus amendment. It does not amend the old application or its detector.",
+      "why_not_amended": "this order admits no statute, changes no finding, adds no consumer evidence, certifies no coverage, approves no runtime implementation and deploys nothing; the scope boundary stands and is not edited."
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 8, Amendment History",
+      "line": 231,
+      "quoted_text": "## 8. Amendment History",
+      "why_not_amended": "not replaced: one row is appended to it under Core Constitution section 6.5, and every earlier row is preserved verbatim."
+    }
+  ],
+  "authorities_inspected_and_not_amended_count": 17,
+  "what_the_amendment_does_not_do": [
+    "it does not admit a rule, create a candidate, create coverage or create a finding class; the admitted governed rule count stays 0 and the permitted finding count stays 0",
+    "it does not weaken any gate: every requirement of every gate survives verbatim inside its replacement, and Gate 5.5's own prohibition is not touched at all",
+    "it does not move Gate 5.7: admission stays after a successful Gate 5.6, and no rule may be admitted early to satisfy a gate",
+    "it does not remove the prohibition on emission: an unadmitted rule must still refuse to emit and can produce no consumer result",
+    "it does not settle the version question by inventing a production version; the production admission identity and version stay reserved to Gate 5.7",
+    "it does not create a corpus-wide pass, clear any register row or change the application, which still reports report checking as not yet available",
+    "it does not amend any rank 1-4 document, and the list above records why each authority was left alone"
+  ],
+  "verdict": "CIRCULAR PREREQUISITE IDENTIFIED IN THREE CLAUSES OF THE RANK-5 BUILD PLAN — the amendment of this order is confined to those three clauses plus the ordering paragraph that records the new sequence, and every other authority is preserved verbatim",
+  "problems": [],
+  "created_by": "PHASE5-001S"
+}

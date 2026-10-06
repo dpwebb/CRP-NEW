@@ -1,0 +1,876 @@
+{
+  "artifact": "duplicate_identity_analysis.json",
+  "work_order": "PHASE5-001L",
+  "created_utc": "2026-09-30T15:30:59Z",
+  "sources": [
+    "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md (JSON block, 437 entries)",
+    "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+    "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json",
+    "duplicate_relations.json (this order)",
+    "duplicate_determinations.csv (this order)"
+  ],
+  "determination_vocabulary": [
+    "IDENTICAL_ARTIFACT_AND_CITATION (relationship basis as recorded by PHASE5-001K)",
+    "REPEATED_CITATION_ONLY (relationship basis as recorded by PHASE5-001K)",
+    "IDENTICAL_PROVISION_AND_VERSION (recorded-descriptor identity)",
+    "DISTINCT_PROVISION_OR_VERSION (recorded-descriptor difference)",
+    "IDENTITY_UNRESOLVED (recorded descriptors neither identical nor distinct)"
+  ],
+  "identity_rule": "A pairwise relationship is IDENTICAL only where the two rows agree on every recorded identity field (instrument title, provision descriptor, official locator, jurisdiction reference, record type) and record no conflicting value for any shared effective-information key; DISTINCT where the recorded instrument, provision descriptor or authority differs; otherwise UNRESOLVED. Citation-string equality alone never yields IDENTICAL. No file hash, adjacency or anchor is used as identity evidence.",
+  "file_hash_role": "source_artifact_sha256 is recorded for context only and was deliberately excluded from the identity rule; file identity is not provision identity",
+  "group_count": 23,
+  "pair_groups": 14,
+  "citation_only_groups": 9,
+  "relation_counts": {
+    "identical": 16,
+    "unresolved": 25,
+    "distinct": 2317,
+    "total": 2358
+  },
+  "row_determination_counts": {
+    "identical": 22,
+    "unresolved": 15,
+    "distinct": 54,
+    "no_duplicate_relationship": 346
+  },
+  "identical_clusters": [
+    {
+      "members": [
+        "CRP-LSRC-0003",
+        "CRP-LSRC-0018"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0010",
+        "CRP-LSRC-0053",
+        "CRP-LSRC-0054"
+      ],
+      "rows": 3,
+      "excess_rows": 2,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "ALL_RECORDED_FIELDS_IDENTICAL | SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0399",
+        "CRP-LSRC-0400"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_JURISDICTION_TOKEN_DIFFERS_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0005",
+        "CRP-LSRC-0015"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0006",
+        "CRP-LSRC-0016"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0007",
+        "CRP-LSRC-0017"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0004",
+        "CRP-LSRC-0014"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0401",
+        "CRP-LSRC-0402"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_JURISDICTION_TOKEN_DIFFERS_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0011",
+        "CRP-LSRC-0044"
+      ],
+      "rows": 2,
+      "excess_rows": 1,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0013",
+        "CRP-LSRC-0041",
+        "CRP-LSRC-0042"
+      ],
+      "rows": 3,
+      "excess_rows": 2,
+      "determination": "IDENTICAL_PROVISION_AND_VERSION",
+      "evidence": "ALL_RECORDED_FIELDS_IDENTICAL | SAME_RECORDED_PROVISION_AND_LOCATOR_INSTRUMENT_TITLE_VARIANT_ONLY"
+    }
+  ],
+  "unresolved_clusters": [
+    {
+      "members": [
+        "CRP-LSRC-0315",
+        "CRP-LSRC-0316",
+        "CRP-LSRC-0317",
+        "CRP-LSRC-0318",
+        "CRP-LSRC-0320"
+      ],
+      "rows": 5,
+      "max_excess_if_one_provision": 4,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "PIPEDA",
+      "evidence": "SAME_RECORDED_INSTRUMENT_PROVISION_ABSENT_IN_BOTH",
+      "recorded_content": "years=3; start=`the date of the enquiry` || years=6; start=`the date of discharge` || years=3; start=`3 years after all debts in the proposal are paid, or 6 years after signing — whichever comes…` (recorded) || years=2; start=`the date the plan's debts are paid off` || years=6; start=`the date of the judgment`"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0149",
+        "CRP-LSRC-0150"
+      ],
+      "rows": 2,
+      "max_excess_if_one_provision": 1,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "W. Va. Code",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_YEARS",
+      "recorded_content": "years=5 || years=10"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0165",
+        "CRP-LSRC-0166"
+      ],
+      "rows": 2,
+      "max_excess_if_one_provision": 1,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "Fair Credit Reporting Act (New York), Gen. Bus. Law art. 25",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_START",
+      "recorded_content": "start=`the date the judgment was entered (judgment satisfied within 5 years of entry)` || start=`the date of entry, or the end of the governing statute of limitations, whichever is longer`"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0409",
+        "CRP-LSRC-0411"
+      ],
+      "rows": 2,
+      "max_excess_if_one_provision": 1,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "Credit Reference Agency Information Notice (CRAIN) retention table",
+      "evidence": "SAME_RECORDED_PROVISION_AND_LOCATOR_CONFLICTING_RECORDED_CONTENT_START",
+      "recorded_content": "years=6; start=`the date the account is settled or closed` || years=6; start=`the date the arrears were recorded`"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0336",
+        "CRP-LSRC-0349"
+      ],
+      "rows": 2,
+      "max_excess_if_one_provision": 1,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93",
+      "evidence": "SAME_RECORDED_INSTRUMENT_PROVISION_ABSENT_IN_BOTH",
+      "recorded_content": "NOT RECORDED || NOT RECORDED"
+    },
+    {
+      "members": [
+        "CRP-LSRC-0337",
+        "CRP-LSRC-0351"
+      ],
+      "rows": 2,
+      "max_excess_if_one_provision": 1,
+      "determination": "IDENTITY_UNRESOLVED",
+      "recorded_instrument": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33",
+      "evidence": "SAME_RECORDED_INSTRUMENT_PROVISION_ABSENT_IN_BOTH",
+      "recorded_content": "NOT RECORDED || NOT RECORDED"
+    }
+  ],
+  "count_sensitivity": {
+    "rows_with_a_duplicate_relationship": 91,
+    "rows_demonstrably_identical_at_recorded_descriptor_level": 22.0,
+    "demonstrable_excess_rows": 12.0,
+    "unresolved_rows": 15.0,
+    "unresolved_cluster_count": 6,
+    "max_further_excess_if_every_unresolved_cluster_is_one_provision": 9.0,
+    "caveat": "These are bookkeeping indicators over recorded descriptors. They are not a legal-provision count, not a candidate count, and must not be published as either; no record was collapsed, no disposition was inherited and no rule was admitted."
+  },
+  "measured_count_indicators": {
+    "distinct_full_record_keys": 435,
+    "rows": 437,
+    "excess_full_record_rows": 2,
+    "distinct_instrument_provision_version_locator_keys": 433,
+    "distinct_instrument_provision_keys": 424,
+    "distinct_001K_legal_provision_keys": 429,
+    "note": "Labels are measured key counts, not certified unique-provision counts."
+  },
+  "reproduction_of_001K": [
+    {
+      "claim": "437 rows, 437 distinct IDs",
+      "measured": "437 rows, 437 distinct IDs",
+      "result": "MATCH"
+    },
+    {
+      "claim": "14 pair groups / 76 rows / 62 excess",
+      "measured": "14 groups / 76 rows / 62 excess",
+      "result": "MATCH"
+    },
+    {
+      "claim": "9 citation groups / 79 rows / 15 carrying the group as primary link",
+      "measured": "9 groups / 79 rows / 15 primary",
+      "result": "MATCH"
+    },
+    {
+      "claim": "duplicate_link_basis 76 / 15 / 346",
+      "measured": "76 / 15 / 346",
+      "result": "MATCH"
+    },
+    {
+      "claim": "68 rows linked to a canonical entry other than themselves; 369 own anchors",
+      "measured": "68 / 369",
+      "result": "MATCH"
+    },
+    {
+      "claim": "429 distinct legal_provision_key",
+      "measured": 429,
+      "result": "MATCH"
+    },
+    {
+      "claim": "64 rows name a citation group inside duplicate_evidence",
+      "measured": 64,
+      "result": "MATCH"
+    },
+    {
+      "claim": "dispositions GAP 18 / REFUSAL 3 / UNRESOLVED 416; states RECORDED_DURABLE 21 / BLOCKED_MISSING_EVIDENCE 416",
+      "measured": "18 / 3 / 416; 21 / 416",
+      "result": "MATCH"
+    },
+    {
+      "claim": "group ids and canonical anchors in the 001K row file equal the catalogue-derived groups",
+      "measured": "group mismatches 0, anchor mismatches 0",
+      "result": "MATCH"
+    }
+  ],
+  "group_registry": [
+    {
+      "group": "DUP-PAIR-001",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0041",
+      "member_ids": [
+        "CRP-LSRC-0041",
+        "CRP-LSRC-0042"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 1,
+      "provision_or_citation_recorded": "§ 607(b) — 15 U.S.C. § 1681e(b)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-002",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0053",
+      "member_ids": [
+        "CRP-LSRC-0053",
+        "CRP-LSRC-0054"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 1,
+      "provision_or_citation_recorded": "§ 623(a)(5)(A) — 15 U.S.C. § 1681s-2(a)(5)(A)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-003",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 22,
+      "excess_rows": 21,
+      "anchor": "CRP-LSRC-0078",
+      "member_ids": [
+        "CRP-LSRC-0078",
+        "CRP-LSRC-0325",
+        "CRP-LSRC-0326",
+        "CRP-LSRC-0327",
+        "CRP-LSRC-0328",
+        "CRP-LSRC-0329",
+        "CRP-LSRC-0330",
+        "CRP-LSRC-0331",
+        "CRP-LSRC-0332",
+        "CRP-LSRC-0333",
+        "CRP-LSRC-0334",
+        "CRP-LSRC-0335",
+        "CRP-LSRC-0412",
+        "CRP-LSRC-0414",
+        "CRP-LSRC-0415",
+        "CRP-LSRC-0416",
+        "CRP-LSRC-0417",
+        "CRP-LSRC-0418",
+        "CRP-LSRC-0419",
+        "CRP-LSRC-0420",
+        "CRP-LSRC-0421",
+        "CRP-LSRC-0435"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 231,
+      "distinct_recorded_instruments": 22,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 4,
+      "distinct_recorded_locators": 14,
+      "distinct_full_record_keys": 22,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-004",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0149",
+      "member_ids": [
+        "CRP-LSRC-0149",
+        "CRP-LSRC-0150"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 1,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 55-2-6",
+      "group_determination": "CONTAINS_UNRESOLVED_IDENTITY_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-005",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0165",
+      "member_ids": [
+        "CRP-LSRC-0165",
+        "CRP-LSRC-0166"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 1,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 380-j(f)(1)(ii)",
+      "group_determination": "CONTAINS_UNRESOLVED_IDENTITY_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-006",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 5,
+      "excess_rows": 4,
+      "anchor": "CRP-LSRC-0300",
+      "member_ids": [
+        "CRP-LSRC-0300",
+        "CRP-LSRC-0301",
+        "CRP-LSRC-0302",
+        "CRP-LSRC-0303",
+        "CRP-LSRC-0310"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 10,
+      "distinct_recorded_instruments": 5,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 3,
+      "distinct_full_record_keys": 5,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-007",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 5,
+      "excess_rows": 4,
+      "anchor": "CRP-LSRC-0304",
+      "member_ids": [
+        "CRP-LSRC-0304",
+        "CRP-LSRC-0305",
+        "CRP-LSRC-0306",
+        "CRP-LSRC-0307",
+        "CRP-LSRC-0311"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 10,
+      "distinct_recorded_instruments": 5,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 5,
+      "distinct_full_record_keys": 5,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-008",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0308",
+      "member_ids": [
+        "CRP-LSRC-0308",
+        "CRP-LSRC-0312"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 1,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 2,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-009",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0314",
+      "member_ids": [
+        "CRP-LSRC-0314",
+        "CRP-LSRC-0410"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 1,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 2,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "NOT RECORDED (`section: null`)",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-010",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 23,
+      "excess_rows": 22,
+      "anchor": "CRP-LSRC-0315",
+      "member_ids": [
+        "CRP-LSRC-0315",
+        "CRP-LSRC-0316",
+        "CRP-LSRC-0317",
+        "CRP-LSRC-0318",
+        "CRP-LSRC-0320",
+        "CRP-LSRC-0321",
+        "CRP-LSRC-0322",
+        "CRP-LSRC-0323",
+        "CRP-LSRC-0324",
+        "CRP-LSRC-0336",
+        "CRP-LSRC-0337",
+        "CRP-LSRC-0338",
+        "CRP-LSRC-0339",
+        "CRP-LSRC-0340",
+        "CRP-LSRC-0341",
+        "CRP-LSRC-0342",
+        "CRP-LSRC-0343",
+        "CRP-LSRC-0344",
+        "CRP-LSRC-0345",
+        "CRP-LSRC-0346",
+        "CRP-LSRC-0347",
+        "CRP-LSRC-0348",
+        "CRP-LSRC-0413"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 10,
+      "relations_distinct": 243,
+      "distinct_recorded_instruments": 19,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 6,
+      "distinct_recorded_locators": 15,
+      "distinct_full_record_keys": 23,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "CONTAINS_UNRESOLVED_IDENTITY_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-011",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 3,
+      "excess_rows": 2,
+      "anchor": "CRP-LSRC-0349",
+      "member_ids": [
+        "CRP-LSRC-0349",
+        "CRP-LSRC-0350",
+        "CRP-LSRC-0351"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 0,
+      "relations_distinct": 3,
+      "distinct_recorded_instruments": 3,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 1,
+      "distinct_recorded_locators": 3,
+      "distinct_full_record_keys": 3,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "ALL_RELATIONS_DISTINCT_AS_RECORDED"
+    },
+    {
+      "group": "DUP-PAIR-012",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0399",
+      "member_ids": [
+        "CRP-LSRC-0399",
+        "CRP-LSRC-0400"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "s. 5 (time limit for actions founded on simple contract)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-013",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0401",
+      "member_ids": [
+        "CRP-LSRC-0401",
+        "CRP-LSRC-0402"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "s. 24(1) (time limit for actions to enforce judgments)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-PAIR-014",
+      "basis": "IDENTICAL_ARTIFACT_AND_CITATION",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0409",
+      "member_ids": [
+        "CRP-LSRC-0409",
+        "CRP-LSRC-0411"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 1,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 1,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "`Credit account performance data — 6 years for live decision-making from the date the accoun…` (recorded label)",
+      "group_determination": "CONTAINS_UNRESOLVED_IDENTITY_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-001",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0003",
+      "member_ids": [
+        "CRP-LSRC-0003",
+        "CRP-LSRC-0018"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 605(a)(5) — 15 U.S.C. § 1681c(a)(5)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-002",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0004",
+      "member_ids": [
+        "CRP-LSRC-0004",
+        "CRP-LSRC-0014"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-003",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0005",
+      "member_ids": [
+        "CRP-LSRC-0005",
+        "CRP-LSRC-0015"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 605(a)(2) — 15 U.S.C. § 1681c(a)(2)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-004",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0006",
+      "member_ids": [
+        "CRP-LSRC-0006",
+        "CRP-LSRC-0016"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 605(a)(3) — 15 U.S.C. § 1681c(a)(3)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-005",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0007",
+      "member_ids": [
+        "CRP-LSRC-0007",
+        "CRP-LSRC-0017"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 605(a)(4) — 15 U.S.C. § 1681c(a)(4)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-006",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 3,
+      "excess_rows": 2,
+      "anchor": "CRP-LSRC-0010",
+      "member_ids": [
+        "CRP-LSRC-0010",
+        "CRP-LSRC-0053",
+        "CRP-LSRC-0054"
+      ],
+      "relations_identical": 3,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 623(a)(5)(A) — 15 U.S.C. § 1681s-2(a)(5)(A)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-007",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 2,
+      "excess_rows": 1,
+      "anchor": "CRP-LSRC-0011",
+      "member_ids": [
+        "CRP-LSRC-0011",
+        "CRP-LSRC-0044"
+      ],
+      "relations_identical": 1,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 609(a)(1) — 15 U.S.C. § 1681g(a)(1)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-008",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 3,
+      "excess_rows": 2,
+      "anchor": "CRP-LSRC-0013",
+      "member_ids": [
+        "CRP-LSRC-0013",
+        "CRP-LSRC-0041",
+        "CRP-LSRC-0042"
+      ],
+      "relations_identical": 3,
+      "relations_unresolved": 0,
+      "relations_distinct": 0,
+      "distinct_recorded_instruments": 2,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 2,
+      "distinct_recorded_locators": 1,
+      "distinct_full_record_keys": 2,
+      "provision_or_citation_recorded": "§ 607(b) — 15 U.S.C. § 1681e(b)",
+      "group_determination": "CONTAINS_IDENTICAL_PROVISION_RELATIONS"
+    },
+    {
+      "group": "DUP-CITE-009",
+      "basis": "REPEATED_CITATION_ONLY",
+      "rows": 61,
+      "excess_rows": 60,
+      "anchor": "CRP-LSRC-0075",
+      "member_ids": [
+        "CRP-LSRC-0075",
+        "CRP-LSRC-0078",
+        "CRP-LSRC-0300",
+        "CRP-LSRC-0301",
+        "CRP-LSRC-0302",
+        "CRP-LSRC-0303",
+        "CRP-LSRC-0304",
+        "CRP-LSRC-0305",
+        "CRP-LSRC-0306",
+        "CRP-LSRC-0307",
+        "CRP-LSRC-0308",
+        "CRP-LSRC-0310",
+        "CRP-LSRC-0311",
+        "CRP-LSRC-0312",
+        "CRP-LSRC-0315",
+        "CRP-LSRC-0316",
+        "CRP-LSRC-0317",
+        "CRP-LSRC-0318",
+        "CRP-LSRC-0320",
+        "CRP-LSRC-0321",
+        "CRP-LSRC-0322",
+        "CRP-LSRC-0323",
+        "CRP-LSRC-0324",
+        "CRP-LSRC-0325",
+        "CRP-LSRC-0326",
+        "CRP-LSRC-0327",
+        "CRP-LSRC-0328",
+        "CRP-LSRC-0329",
+        "CRP-LSRC-0330",
+        "CRP-LSRC-0331",
+        "CRP-LSRC-0332",
+        "CRP-LSRC-0333",
+        "CRP-LSRC-0334",
+        "CRP-LSRC-0335",
+        "CRP-LSRC-0336",
+        "CRP-LSRC-0337",
+        "CRP-LSRC-0338",
+        "CRP-LSRC-0339",
+        "CRP-LSRC-0340",
+        "CRP-LSRC-0341",
+        "CRP-LSRC-0342",
+        "CRP-LSRC-0343",
+        "CRP-LSRC-0344",
+        "CRP-LSRC-0345",
+        "CRP-LSRC-0346",
+        "CRP-LSRC-0347",
+        "CRP-LSRC-0348",
+        "CRP-LSRC-0349",
+        "CRP-LSRC-0350",
+        "CRP-LSRC-0351",
+        "CRP-LSRC-0412",
+        "CRP-LSRC-0413",
+        "CRP-LSRC-0414",
+        "CRP-LSRC-0415",
+        "CRP-LSRC-0416",
+        "CRP-LSRC-0417",
+        "CRP-LSRC-0418",
+        "CRP-LSRC-0419",
+        "CRP-LSRC-0420",
+        "CRP-LSRC-0421",
+        "CRP-LSRC-0435"
+      ],
+      "relations_identical": 0,
+      "relations_unresolved": 12,
+      "relations_distinct": 1818,
+      "distinct_recorded_instruments": 55,
+      "distinct_recorded_provisions": 1,
+      "distinct_recorded_effective_values": 9,
+      "distinct_recorded_locators": 36,
+      "distinct_full_record_keys": 61,
+      "provision_or_citation_recorded": "NOT RECORDED",
+      "group_determination": "CONTAINS_UNRESOLVED_IDENTITY_RELATIONS"
+    }
+  ]
+}

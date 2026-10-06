@@ -1,0 +1,84 @@
+{
+  "artifact": "classification_record.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "record, from the files themselves, the classification this unit carries, the legacy determination it preserves, the field-name divergence it records, and the ceiling that therefore governs any output of this order",
+  "owner_decision": {
+    "text": "Preserve the legacy D3/observation classification. Do not override it with PROBABLE_VIOLATION during this order. The stated ceiling is not authorization to emit that finding. Timing and classification dependencies remain explicit.",
+    "effect": "the PROD-003 section 7.4 PROBABLE_VIOLATION ceiling is not emitted, not implied and not relied on anywhere in this unit"
+  },
+  "preserved_classification": {
+    "state": "PRESERVED_LEGACY_CLASSIFICATION_NOT_OVERRIDDEN",
+    "legacy_rule_id": "ca-ns.cra.s10_3_c.debt_retention_6y",
+    "legacy_determinability_level": "D3",
+    "legacy_classification": "REPORT_RELEVANT_BUT_NOT_DETECTABLE",
+    "legacy_permitted_conclusion": "observation",
+    "legacy_packet_eligible": false,
+    "effective_ceiling_for_this_unit": "OBSERVATION_CLASS_ONLY_UNTIL_THE_OWNER_DECIDES_AT_GATE_5_4",
+    "plus_never_authorized": "VIOLATION is unavailable to this unit in all circumstances"
+  },
+  "legacy_evidence_read_here": {
+    "admitted_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts",
+    "admitted_artifact_sha256": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+    "admitted_artifact_is_admitted": true,
+    "admission_source": "SOURCE_CAPTURES\\PHASE5-001O\\admitted_artifacts.json",
+    "classification_block": "CANADA_RULE_CLASSIFICATION_RECORDS",
+    "block_starts_at_line": 2440,
+    "rule_entry_at_line": 2442,
+    "quoted_fragments": {
+      "classification": {
+        "line": 2443,
+        "quoted_text": "classification: \"REPORT_RELEVANT_BUT_NOT_DETECTABLE\","
+      },
+      "determinability": {
+        "line": 2448,
+        "quoted_text": "`be established from an authorized report. The row stands at D3, ` +"
+      },
+      "permitted_conclusion": {
+        "line": 2449,
+        "quoted_text": "`permittedConclusion \"observation\", packet-ineligible, and its ledger entry STILL records ` +"
+      },
+      "packet_eligibility": {
+        "line": 2449,
+        "quoted_text": "`permittedConclusion \"observation\", packet-ineligible, and its ledger entry STILL records ` +"
+      }
+    },
+    "legacy_binding_rule": {
+      "instrument": "CRP_CANADA_GOVERNING_BUILD_CONTRACT.md",
+      "rank_in_this_repository": 10,
+      "level_definition": {
+        "line": 130,
+        "text": "| **D3** | the text states a report-detectable obligation, but establishing it needs an essential fact from outside the report, so the report alone is not sufficient |\r"
+      },
+      "binding": {
+        "line": 144,
+        "text": "**3.4** **The only binding between level and conclusion** is: D0–D3 → `observation`, D4 →\r"
+      }
+    }
+  },
+  "recorded_field_name_divergence": {
+    "printed_field_the_unit_reads": "Last Payment Date inside a Collections collection record",
+    "legacy_required_report_field": "tradeline.lastPaymentDate",
+    "state": "RECORDED_NOT_RESOLVED",
+    "note": "the admitted legacy rule record names a tradeline field while the evidenced presentation prints the field on a collection record; this divergence is one recorded basis of the preserved classification and is an owner/admission question"
+  },
+  "second_limb_and_timing": {
+    "second_limb": "the default-date limb is excluded from this unit: FACT-05 is unseated on this presentation",
+    "effective_period": "unresolved in the admitted record (PROD-003 dependency D-4), so a plain-language timing qualification is carried on every result",
+    "legacy_d3_versus_direct_report_exception": "the recorded legacy D3 / observation classification diverges from the direct-report contract section 4 retention exception (PROD-003 dependency D-5); only the owner settles which governs, and this order preserves the legacy classification and does not override it"
+  },
+  "direct_report_contract_position": {
+    "instrument": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+    "rank": 4,
+    "retention_exception_quoted": {
+      "line": 92,
+      "text": "  external event, unless the only unresolved fact is that underlying historical event and the rule\r"
+    },
+    "probable_route_quoted": {
+      "line": 328,
+      "text": "The report-assertion route in `CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md` Section 5 applies only after a\r"
+    },
+    "status": "RECORDED, NOT RELIED ON — the route requires an admitted governed rule and a recorded exception determination, neither of which exists"
+  },
+  "created_by": "PHASE5-001I-A"
+}

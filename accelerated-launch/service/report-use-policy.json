@@ -1,0 +1,10 @@
+{
+  "policy_id": "OWNER-REPORT-USE-POLICY-001",
+  "version": "1.0",
+  "title": "Report-use consumer statements (evidence-policy amendment)",
+  "text": "A consumer's recorded statement about the use of a particular credit report may inform the evaluation of a report-use exception (15 U.S.C. § 1681c(b); N.Y. Gen. Bus. Law § 380-j(f)(2)) for the specific report and reporting event the statement names. The statement is stored separately as CONSUMER_STATEMENT, never treated as a bureau-reported fact, never reused automatically for unrelated reports or later events, and never resolves an exception beyond what the approved evidence supports. Unknown, incomplete, contradictory, multiple-use or irrelevant answers remain unresolved and never become false. This amendment authorizes only the report-use exception evaluations named here.",
+  "issued": "2026-10-04",
+  "authority": "Owner/architect authorization recorded in CRP_OWNER_REPORT_USE_POLICY_001.md",
+  "amendment_rule": "Changes require an explicit owner-authorized amendment and a new version; released versions are preserved and never overwritten.",
+  "released_versions": ["1.0"]
+}

@@ -1,0 +1,154 @@
+{
+  "artifact": "inherited_chain_readings.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "record, read-only, what this order's single governing amendment does to the inherited PROD-002 and PROD-003 chains, and prove that the one difference is the amendment rather than drift",
+  "prod002_recorded_inputs": [
+    {
+      "relative_path": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md",
+      "prod002_recorded": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "measured_now": "3ACB39A3B6E80DD4DB38689541CCC17542E941CEFA4D6C0A355B9816F030038D",
+      "unchanged": true
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "prod002_recorded": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "measured_now": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "unchanged": true
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001N\\relation_determinations.json",
+      "prod002_recorded": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "measured_now": "76173EAEF2CA4537506C58BB7DCF063F0ECA7AD06AF8F047663AE76430B37583",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_JURISDICTION_ENUMERATION.md",
+      "prod002_recorded": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "measured_now": "D5EC34A52C1B14466CA601DD2BE49F74206856A9C7722B623468D84B9169EE93",
+      "unchanged": true
+    },
+    {
+      "relative_path": "JURISDICTION_CONTRACT.md",
+      "prod002_recorded": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "measured_now": "5B286EDAFEA35058CB09839565B156C996F94F362A19A72438CB1A2DBC855DFB",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_CORE_CONSTITUTION.md",
+      "prod002_recorded": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "measured_now": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "prod002_recorded": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "measured_now": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "prod002_recorded": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "measured_now": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "prod002_recorded": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "measured_now": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "prod002_recorded": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "measured_now": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C",
+      "unchanged": true
+    },
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "prod002_recorded": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "measured_now": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "unchanged": false
+    },
+    {
+      "relative_path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "prod002_recorded": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "measured_now": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "unchanged": true
+    },
+    {
+      "relative_path": "consumer-wizard\\dist\\app.js",
+      "prod002_recorded": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "measured_now": "BDCD9DDB997BF5BE58F5729033ACC4047AD0D68BDEF3C39EA11FF86B8222ADD7",
+      "unchanged": true
+    }
+  ],
+  "changed_inputs": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "prod002_recorded": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "measured_now": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "unchanged": false
+    }
+  ],
+  "prod003_input_verification_reading": {
+    "failures": [
+      "PHASE5-001O inputs stable since PROD-002: 12 of 13 unchanged"
+    ],
+    "verdict": "INPUT VERIFICATION FAILED — see failures"
+  },
+  "expected_reading": "PROD-002 recorded the build plan as an input at digest C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD; this order changed it to 54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0 by the owner-authorized amendment recorded in the document's own Amendment History. PROD-003's step 1 therefore reports one expected difference. PROD-002's verdict record and PROD-003's verdict record are the records of their own dates; neither is re-claimed here, and neither is rewritten.",
+  "checks": [
+    {
+      "id": "R-01",
+      "claim": "every PROD-002 recorded input is unchanged except one",
+      "passed": true,
+      "detail": "12 of 13 unchanged"
+    },
+    {
+      "id": "R-02",
+      "claim": "the one changed input is the build plan this order amended",
+      "passed": true,
+      "detail": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md"
+    },
+    {
+      "id": "R-03",
+      "claim": "the change is exactly the recorded owner amendment, not drift",
+      "passed": true,
+      "detail": "C80183314C04 -> 54FCECE0A19F"
+    },
+    {
+      "id": "R-04",
+      "claim": "PROD-003 recorded its own chain green before this order changed anything",
+      "passed": true,
+      "detail": "ALL PROD-003 VALIDATION PASSED"
+    },
+    {
+      "id": "R-05",
+      "claim": "PROD-003 input verification reports exactly the one expected difference",
+      "passed": true,
+      "detail": "[\"PHASE5-001O inputs stable since PROD-002: 12 of 13 unchanged\"]"
+    },
+    {
+      "id": "R-06",
+      "claim": "PROD-002 build check still passes on the unchanged application data",
+      "passed": true,
+      "detail": "BUILD CHECK PASSED — generated data matches the authoritative enumeration and the coverage ledger"
+    },
+    {
+      "id": "R-07",
+      "claim": "PROD-002 preservation record still holds",
+      "passed": true,
+      "detail": "PRESERVATION HELD — only the four consumer application files changed, every other pre-existing file is byte-identical, and the legacy corpus is untouched"
+    },
+    {
+      "id": "R-08",
+      "claim": "the consumer surface still reports report checking as unavailable",
+      "passed": true,
+      "detail": "no region claims report checking"
+    }
+  ],
+  "check_count": 8,
+  "failures": [],
+  "verdict": "INHERITED CHAINS READ — the only difference is this order's recorded owner amendment"
+}

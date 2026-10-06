@@ -1,0 +1,503 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "purpose": "the checks this order ran over its own artifacts, the amendment it applied, the admission it recorded, the counts and the register it read, the scoped Gate 5.6 successor, the scoped Gate 5.7 verdict, the next step, its preservation and custody, and the historical records it must not have touched",
+  "checks": [
+    {
+      "id": "V-U01",
+      "what": "exactly one pre-existing file changed, it is the governing plan, and its before and after digests are the ones the amendment recorded",
+      "passed": true,
+      "detail": "changed: 1; the authorised one: 1 (1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50 -> 969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24)"
+    },
+    {
+      "id": "V-U02",
+      "what": "no pre-existing file changed outside the one authorised amendment, and no earlier artifact was touched",
+      "passed": true,
+      "detail": "unauthorised changes: 0"
+    },
+    {
+      "id": "V-U03",
+      "what": "no pre-existing file was deleted or is missing",
+      "passed": true,
+      "detail": "missing: 0"
+    },
+    {
+      "id": "V-U04",
+      "what": "every JSON artifact of this order parses",
+      "passed": true,
+      "detail": "unparseable: 0"
+    },
+    {
+      "id": "V-U05",
+      "what": "no artifact of this order carries a byte-order mark",
+      "passed": true,
+      "detail": "with BOM: 0"
+    },
+    {
+      "id": "V-U06",
+      "what": "the completion narrative exists and is not an empty file",
+      "passed": true,
+      "detail": "exists: True; bytes: 17264"
+    },
+    {
+      "id": "V-U08",
+      "what": "every pinned input still matches the pin measured after everything this order wrote, except the one file this order was authorised to amend, which measures exactly at the recorded after digest",
+      "passed": true,
+      "detail": "pins: 37; mismatching: 1: CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md (pinned 1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50, measured 969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24)"
+    },
+    {
+      "id": "V-U09",
+      "what": "the number of pinned inputs, the number absent by design and the number of input conflicts are the ones the input verification recorded",
+      "passed": true,
+      "detail": "inputs: 37 recorded / 37 measured; absent: 1 recorded / 1 measured; own-pin conflicts: 0"
+    },
+    {
+      "id": "V-U10",
+      "what": "every read-only pointer outside the workspace still matches its recorded pin, and this order wrote or deleted nothing there",
+      "passed": true,
+      "detail": "pointers: 3; mismatching: 0"
+    },
+    {
+      "id": "V-U07",
+      "what": "every file this order added is inside its own package or is its narrative, and no file that other work added to the workspace after the baseline is a pinned input, a historical record this order must not touch, or the register",
+      "passed": true,
+      "detail": "added by this order: 31 (package or narrative); added to the workspace by other work after the baseline: 8 — .clinerules\\parallel-research.md; accelerated-launch\\build_launch_matrix.py; accelerated-launch\\jurisdiction-router.cjs; accelerated-launch\\launch-matrix.csv; accelerated-launch\\launch-matrix.json; accelerated-launch\\test-router.cjs; CRP_ACCELERATED_ALL_82_IMPLEMENTATION_PROGRAM.md; CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md; of those, pinned inputs: 0; historical records: 0"
+    },
+    {
+      "id": "V-U11",
+      "what": "the plan is at the digest the amendment recorded after the change, and its own re-read agrees",
+      "passed": true,
+      "detail": "plan now: 969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24; recorded before: 1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50; recorded after: 969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24"
+    },
+    {
+      "id": "V-U12",
+      "what": "the amendment was applied exactly once: one quoted replacement and one appended amendment-history row, in one run",
+      "passed": true,
+      "detail": "replacements: 1; rows appended: 1; entries recorded: 2 (A-U-1, A-U-2)"
+    },
+    {
+      "id": "V-U13",
+      "what": "the replacement is an extension: the replaced sentence survives verbatim inside it, the replacement occurs exactly once in the plan now, and no requirement was removed",
+      "passed": true,
+      "detail": "replacement occurrences in the plan: 1; replaced sentence occurrences: 1; extension-only: True"
+    },
+    {
+      "id": "V-U14",
+      "what": "the amendment-history row this order records is present in the amended document",
+      "passed": true,
+      "detail": "rows found: 1; row bytes: 1598"
+    },
+    {
+      "id": "V-U15",
+      "what": "the amendment applier was NOT re-run, and it carries the guards that make a second application impossible",
+      "passed": true,
+      "detail": "pinned-digest guard present: True; already-present guard present: True; document already past the pinned digest: True"
+    },
+    {
+      "id": "V-U16",
+      "what": "the verdict quotes the Gate 5.7 / segment-exit line of the amended document verbatim, at the line the amendment left it on",
+      "passed": true,
+      "detail": "equal to the document line: True; line: 180; digest bound: True"
+    },
+    {
+      "id": "V-U17",
+      "what": "the withheld PHASE5-001R Gate 5.5 verdict is preserved unchanged at its recorded digest",
+      "passed": true,
+      "detail": "measured: B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705"
+    },
+    {
+      "id": "V-U18",
+      "what": "the retained PHASE5-001I-A artifact is unchanged at the digest Owner Decision 1 accepted",
+      "passed": true,
+      "detail": "measured: 6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511"
+    },
+    {
+      "id": "V-U19",
+      "what": "the inherited internal-validation suite is unchanged and was not run: its harness still carries the digest the input verification recorded",
+      "passed": true,
+      "detail": "measured: 573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787"
+    },
+    {
+      "id": "V-U20",
+      "what": "the governed rule record is not edited: it stands at its pinned digest, still reads NOT_ADMITTED, and still carries the reservation the admission resolved by reference",
+      "passed": true,
+      "detail": "digest: C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023; state: NOT_ADMITTED; production-identity occurrences: 0; reservation occurrences: 3"
+    },
+    {
+      "id": "V-U21",
+      "what": "the scoped Gate 5.6 successor records all four clauses met on its own re-measurement, and names none as unmet",
+      "passed": true,
+      "detail": "clauses: 4; met: 4; not met: 0"
+    },
+    {
+      "id": "V-U22",
+      "what": "the predecessor Gate 5.6 verdict of PHASE5-001T is preserved unchanged at its digest and named as superseded rather than edited",
+      "passed": true,
+      "detail": "recorded digest: 86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C; measured: 86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C"
+    },
+    {
+      "id": "V-U23",
+      "what": "exactly one governed rule is admitted, at the production identity and version the amendment record names",
+      "passed": true,
+      "detail": "rule: CA-NS-CRA-S10-3-C-LIMB-1; identity: CA-NS-CRA-S10-3-C-LIMB-1@ADMITTED-v1.0.0-C24CA3FD3AA3; version: CA-NS-CRA-S10-3-C-LIMB-1/v1.0.0"
+    },
+    {
+      "id": "V-U24",
+      "what": "the rule-corpus amendment carries exactly one admitted rule, and the pre-admission identity it supersedes is named",
+      "passed": true,
+      "detail": "admitted rules: 1; supersedes: CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3"
+    },
+    {
+      "id": "V-U25",
+      "what": "the post-assignment verification re-measures the binding to the same package digest the admission recorded, with no row moved",
+      "passed": true,
+      "detail": "digest: UNCHANGED; rows: 22; moved: 0"
+    },
+    {
+      "id": "V-U26",
+      "what": "the four counts the plan names are recorded separately, each marked uncertified, and nothing unresolved is presented as certified",
+      "passed": true,
+      "detail": "excluded 0; unresolved 416; gap 18; refusal 3"
+    },
+    {
+      "id": "V-U27",
+      "what": "the register is unchanged at its digest, still holds 437 rows, and still carries the same disposition distribution",
+      "passed": true,
+      "detail": "digest unchanged: True; rows: 437; unresolved 416 / gap 18 / refusal 3"
+    },
+    {
+      "id": "V-U28",
+      "what": "the register row the admitted unit was derived from is unchanged: this order dispositioned, cleared and moved no row",
+      "passed": true,
+      "detail": "row CRP-LSRC-0354: UNRESOLVED; dispositioned 0; cleared 0; moved 0"
+    },
+    {
+      "id": "V-U29",
+      "what": "the governed counts move only by the admission: one governed rule, one coverage entry, and no permitted finding",
+      "passed": true,
+      "detail": "rules 1; coverage 1; permitted findings 0; authorised classes 0"
+    },
+    {
+      "id": "V-U30",
+      "what": "the owner withholds the finding-class decision, and no finding class is authorised or emitted anywhere in this order",
+      "passed": true,
+      "detail": "owner decision: WITHHELD — NO FINDING CLASS IS AUTHORISED; ceiling: OBSERVATION_CLASS_ONLY"
+    },
+    {
+      "id": "V-U31",
+      "what": "the crosswalk proposal of PROBABLE_VIOLATION stays unadopted, and the ceiling is read from the pinned rule record rather than chosen here",
+      "passed": true,
+      "detail": "proposal recorded: True; limitation recorded: True"
+    },
+    {
+      "id": "V-U32",
+      "what": "the verdict states every branch and every completion condition of the gate sentence, meets two for this scope, relies on one, and names the one it cannot meet",
+      "passed": true,
+      "detail": "criteria: 4; met for this scope: 2; not relied on: 1; not met and named: 1"
+    },
+    {
+      "id": "V-U33",
+      "what": "the criterion it cannot meet is the segment-completion sentence, quoted out of the gate sentence the verdict reads at runtime, and the verdict names it instead of passing it or omitting it",
+      "passed": true,
+      "detail": "criterion 4 is quoted from the gate sentence: True; missing: the remaining in-scope rules of this segment, admitted or explicitly dispositioned"
+    },
+    {
+      "id": "V-U34",
+      "what": "the verdict passes the gate for this one scope and states no corpus-wide gate as satisfied",
+      "passed": true,
+      "detail": "verdict: PASSED FOR THIS ONE SCOPE ON THE FIRST B; 5.7 corpus-wide: NOT PASSED corpus-wide; PASSED FOR THIS ONE SCOPE on the first branch of the gate sentence, with the segment-completion sentence recorded as not met — 1 admitted governed rule, 1 governed coverage entry, 0 permitted findings, 0 authorised finding classes"
+    },
+    {
+      "id": "V-U35",
+      "what": "the verdict states every acceptance criterion of this order and marks none of them not met",
+      "passed": true,
+      "detail": "acceptance criteria: 6; met: 6; not met: 0"
+    },
+    {
+      "id": "V-U36",
+      "what": "the pin table is reported as it was measured: one expected non-match (the authorised plan change), nothing absent, and every other pin matching",
+      "passed": true,
+      "detail": "pins 36: matching 35; not matching 1; absent 0; the non-match is the authorised change: True"
+    },
+    {
+      "id": "V-U37",
+      "what": "the verdict records the defects found while executing this order and records no behavioural defect in the evaluator",
+      "passed": true,
+      "detail": "defects recorded: 4; evaluator defects: 0"
+    },
+    {
+      "id": "V-U38",
+      "what": "the next order is issued, is not begun, and is issued for this one scope only",
+      "passed": true,
+      "detail": "issued: True; id: PHASE5-001V; begun: False; scope: SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT"
+    },
+    {
+      "id": "V-U39",
+      "what": "the queue the next order is issued against is the preserved register, with no row changed by this order",
+      "passed": true,
+      "detail": "rows: 437; open: 416; changed: 0"
+    },
+    {
+      "id": "V-U40",
+      "what": "the next order names the one outstanding owner decision, forbids choosing it on the owner's behalf, and carries the same stop condition this order honoured",
+      "passed": true,
+      "detail": "outstanding decision: the exact finding classes authorised for this unit, named one by one; stop conditions: 7"
+    },
+    {
+      "id": "V-U41",
+      "what": "every builder of this order that is safe to re-run was re-run, every one of its outputs is byte-for-byte identical, and the re-run left the governed plan untouched",
+      "passed": true,
+      "detail": "builders re-run: 5; artifacts compared: 9; unstable: 0; plan unchanged by the re-run: True"
+    },
+    {
+      "id": "V-U42",
+      "what": "no input conflicts with the order's own pin, none was missing, and no input difference requires an explanation",
+      "passed": true,
+      "detail": "inputs: 37; own-pin matches: 36; conflicts: 0; differences requiring an explanation: 0; absent: 1"
+    },
+    {
+      "id": "V-U43",
+      "what": "every read-only pointer outside the workspace matched its recorded pin when the input verification was taken",
+      "passed": true,
+      "detail": "pointers: 3; mismatching at capture: 0"
+    },
+    {
+      "id": "V-U44",
+      "what": "the custody manifest re-measures clean: every file it lists is still at the digest it recorded, and it does not list itself",
+      "passed": true,
+      "detail": "files: 591; mismatching: 0"
+    },
+    {
+      "id": "V-U45",
+      "what": "the preservation record states the authorised change as one change and reports no unauthorised change",
+      "passed": true,
+      "detail": "changed: 1; authorised: 1; unauthorised: 0; governed documents amended: 1"
+    }
+  ],
+  "check_count": 45,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001U CHECKS PASSED",
+  "checks_are_not_gate_evidence": "these checks verify this order's own artifacts, its amendment, its admission and its custody. They are not the scope's gate verdict, which is scoped_gate_5_7_verdict.json, and they are evidence for no other gate or scope.",
+  "preservation_reading": {
+    "baseline_files": 552,
+    "files_unchanged": 551,
+    "files_changed": 1,
+    "files_missing": 0,
+    "files_added_by_this_order": 31,
+    "files_added_to_the_workspace_by_other_work_after_the_baseline": 8,
+    "authorised_change": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "earlier_baselines_overwritten": 0,
+    "earlier_manifests_edited": 0
+  },
+  "artifacts_this_order_wrote": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_build_admission_stdout.txt",
+      "bytes": 2886,
+      "sha256": "8A5A2B1B988A0976E619F0CF4F86FB398D0E6FE99D329041C9D37EEF7DA640D4"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_probe_corpus_out.json",
+      "bytes": 3567,
+      "sha256": "CB84AB9F578D5298662B858260FABDDC2FB7FC173533A08D3BF392BAEC8A0463"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\_probe_measure_stdout.txt",
+      "bytes": 4302,
+      "sha256": "44015C96BE2DA3B3718BE542E30B7C9635330CC8A6A2D64B464C9474D4EA063B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\admission_record_001u.json",
+      "bytes": 24120,
+      "sha256": "8CCD23C3E974F51D6893C0D831D67E95CF039BAB62A5DB24FDDEBAD845590800"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_001u.cjs",
+      "bytes": 6183,
+      "sha256": "1BB07112C6972185D7B7EAD4E49C7606CED724BAB88964B7839C9EBEF481CD4E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_application_result.json",
+      "bytes": 2511,
+      "sha256": "85254FD53190BDE1C09C5AF4769328A8EA39F839F81E224450C5D8FB5F7D715F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_text.json",
+      "bytes": 8092,
+      "sha256": "1253FE9647E1E63B2E5B216998495F7E91571B242A918802BF1DB57CC3E6840C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\apply_amendment_001u.cjs",
+      "bytes": 9641,
+      "sha256": "16DE46041929E0276A66A9BE8CEF1B4DC074EDFEA1AB55CFF46C49D0E89FEF69"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_admission.cjs",
+      "bytes": 40794,
+      "sha256": "CECDAC200A5EB9CBDE47AB569C6365B2842307EB4A99C14210193F135C1A6015"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_next_order.cjs",
+      "bytes": 15272,
+      "sha256": "DFCAA387B9371A37CE6230B6E50DE56FA28E2FAF3AE3906529BDD13C4251CD94"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_owner_records.cjs",
+      "bytes": 24691,
+      "sha256": "71D46813B2126C673ADB5E6CEACBE1AF923AC96A5FBD12A98EFE0A7281CB3B6D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_successor_verdict.cjs",
+      "bytes": 9795,
+      "sha256": "402D27AF641A389B546C2513A5809BF38DDE2122EBB3814037A05A2F8B7812A3"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\build_001u_verdict.cjs",
+      "bytes": 26607,
+      "sha256": "4D1BBA02DB230A9855D13501EC424839805AF5EAF80DD08381E77593ED02698E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\capture_001u_baseline.ps1",
+      "bytes": 19413,
+      "sha256": "99DD667E00F5D652D68AC778D5BDE05941A87933877BC8D4230BBCBEC2BA8DB0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\counts_001u.json",
+      "bytes": 8763,
+      "sha256": "D5D79B13357E0D09D449D8439DAACC1262CBA9DDA84139E7A5B832D3198F7ADD"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\file_custody_manifest.json",
+      "bytes": 144393,
+      "sha256": "CC008AC79E2B8FAC009DF6B70E8A09D39E600B97318E6CFCEF766CD638C39268"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\gate56_001u.cjs",
+      "bytes": 27807,
+      "sha256": "67BF21507CBC188CC25EC00032B7BD88CE2BCB8F1D5F67836C22F03FE29C8D81"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\gate57_001u.cjs",
+      "bytes": 24093,
+      "sha256": "A1F363987AAC89016DF2A682C679257C346BC72C42CC5815D7CFDF841DE7249C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\input_verification.json",
+      "bytes": 36658,
+      "sha256": "6EDA67FF58D04D2C56DAD303F7C755669577ACE6B2F31332504D6755A62C5714"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\lib_001u.cjs",
+      "bytes": 18636,
+      "sha256": "D5E8BF8CF4530E6917CD153429615B0BB8FAC03E51A7FD5A0950212A6736DA7C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\next_work_order.json",
+      "bytes": 15293,
+      "sha256": "3493F61C088F3283FD8D8AF50A632886D257D6BB71D7F2433B642EAF56FA4DAF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\owner_decision_record.json",
+      "bytes": 12242,
+      "sha256": "BC0DD7C6C63CE13A90919C3FF3442B200BBE8FCA5D7FC8087D5EED0AE57CD79D"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\post_assignment_binding_verification_001u.json",
+      "bytes": 30710,
+      "sha256": "DE4320DEC1D3F8BCA7EF542B1B450DB574443D796FF6E6F31CE26F55B2125637"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\preservation_and_change_record.json",
+      "bytes": 12702,
+      "sha256": "3FD4FF07B549EA491666731519D82C77C29117EB3CE4F57EF7973D283DFAE27C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\preserved_files_before.json",
+      "bytes": 117086,
+      "sha256": "3294070D5EEC77EFBAA89931C2CB7987A468322FDFBD1BCE52A34867F78AF7AB"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\probe_corpus_001u.cjs",
+      "bytes": 3654,
+      "sha256": "94B90F7161D45655E6105CB54C4F5713A1AF60A714D800A15C7AEB74EF2E91B0"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\probe_measure_001u.cjs",
+      "bytes": 1065,
+      "sha256": "894E9D0C5544F79DDCDD2765E71C6DEA95F88AF75E7EFDAD6F4A7D4D4C2B0104"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\rule_corpus_amendment_001u.json",
+      "bytes": 21661,
+      "sha256": "C2AD41D86D04A44C62367B2C7936E47049D64092E30CE8FA01A8F23C74EFFCE6"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_6_verdict_successor.json",
+      "bytes": 25814,
+      "sha256": "A855EB2C2C954987AD11DC985F0C3527CECF56E2575A8E67CAF87E239410A07F"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_7_verdict.json",
+      "bytes": 27670,
+      "sha256": "B2F7E711F8EDE1B10D04A8A1917437375643E493448B00D2F5ECA847A26E4A07"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\verify_and_manifest_001u.ps1",
+      "bytes": 52831,
+      "sha256": "5F4B3A99951A1B56101BAA36C5A7D6FCC36FF367E953F9357EB4ABF1C3CC0411"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\version_conflict_resolution_record.json",
+      "bytes": 13021,
+      "sha256": "B1360ADEEED8873B8D631C0F90256585AC69602780F93B3D20F6C04289F476B5"
+    }
+  ],
+  "harness_summary_records": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\preservation_and_change_record.json",
+      "sha256": "3FD4FF07B549EA491666731519D82C77C29117EB3CE4F57EF7973D283DFAE27C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\file_custody_manifest.json",
+      "sha256": "CC008AC79E2B8FAC009DF6B70E8A09D39E600B97318E6CFCEF766CD638C39268"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001U\\verification_results.json",
+      "note": "written last by this same harness; its own digest is measured from the file rather than self-recorded"
+    }
+  ],
+  "the_scope_verdict_this_order_reached": {
+    "record": "SOURCE_CAPTURES\\PHASE5-001U\\scoped_gate_5_7_verdict.json",
+    "sha256": "B2F7E711F8EDE1B10D04A8A1917437375643E493448B00D2F5ECA847A26E4A07",
+    "gate_criteria_met_for_this_scope": 2,
+    "gate_criteria_not_relied_on": 1,
+    "gate_criteria_not_met_and_named": 1,
+    "admission_condition_met": true,
+    "segment_completion_condition_met": false,
+    "verdict": "PASSED FOR THIS ONE SCOPE ON THE FIRST BRANCH OF GATE 5.7 — one complete rule unit (CA-NS-CRA-S10-3-C-LIMB-1) is formally admitted at CA-NS-CRA-S10-3-C-LIMB-1@ADMITTED-v1.0.0-C24CA3FD3AA3 and its evaluator passes the validation suite — WITH THE SEGMENT-COMPLETION SENTENCE RECORDED AS NOT MET AND NAMED, THE CORPUS-WIDE QUEUE PRESERVED UNCHANGED, AND NO FINDING CLASS AUTHORISED"
+  },
+  "observations_recorded_while_verifying": [
+    "the amendment record numbers the quoted replacement A-U-1 and the appended amendment-history row A-U-2, while the rule-corpus amendment record numbers the corpus addition A-U-2 as well. The two A-U-2 identifiers live in different namespaces — the plan amendment history and the rule-corpus amendment — and each is explained in its own record. Nothing measured by this order depends on either identifier. It is recorded here rather than harmonised, because harmonising it would mean changing two already-issued records to suit a naming preference."
+  ],
+  "corpus_wide_status_kept_separate": {
+    "5.1": "MET with recorded administrative limitations; unchanged",
+    "5.2": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.3": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.4": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.5": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.6": "NOT PASSED corpus-wide; MET IN FULL FOR THIS SCOPE on the successor re-measurement",
+    "5.7": "NOT PASSED corpus-wide; PASSED FOR THIS ONE SCOPE on the first branch of the gate sentence, with the segment-completion sentence recorded as not met — 1 admitted governed rule, 1 governed coverage entry, 0 permitted findings, 0 authorised finding classes"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not the scope's gate verdict and it passes no gate",
+    "it does not admit a rule, create coverage or a candidate, or authorise a finding class",
+    "it does not produce consumer-visible output of any class: report checking remains \"not yet available\"",
+    "it does not run, re-run or invoke the PHASE5-001I-A internal suite, and it treats no passing test of that suite as evidence",
+    "it does not run the amendment applier a second time, and it treats the single recorded application as the whole of that change",
+    "it does not clear, move or re-classify any register row, including the row of the source entry the admitted unit was derived from",
+    "it does not repair or deny the historical preservation failure of PHASE5-001R, which is reported separately from this order's own preservation result",
+    "it does not begin the next order it reports, and it decides nothing that order is issued to decide"
+  ],
+  "created_by": "PHASE5-001U"
+}

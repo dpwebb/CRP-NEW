@@ -1,0 +1,428 @@
+{
+  "artifact": "scope_and_custody_reconciliation.json",
+  "work_order": "PHASE5-001I-B",
+  "created_utc": "2026-09-30",
+  "purpose": "reconcile the four pre-existing file changes PHASE5-001I-A reported against the whitelist that order actually carried, identify the authority for the PROD-003 narrative repair and the refreshed PROD-003 outputs, record every scope or custody discrepancy honestly, and record this order's own validation, custody and preservation readings",
+  "draft_validation": {
+    "checks": [
+      {
+        "id": "V-01",
+        "what": "every PHASE5-001I-B artifact parses as JSON and loads in one pass",
+        "passed": true
+      },
+      {
+        "id": "V-02",
+        "what": "the draft carries no gate credit and no admission",
+        "passed": true
+      },
+      {
+        "id": "V-03",
+        "what": "the exact accepted statute, source entry and legacy rule id are recorded",
+        "passed": true
+      },
+      {
+        "id": "V-04",
+        "what": "the accepted source digest equals the implementation literal",
+        "passed": true
+      },
+      {
+        "id": "V-05",
+        "what": "the statutory text as drafted is the text the implementation carries",
+        "passed": true
+      },
+      {
+        "id": "V-06",
+        "what": "the unit id and limb scope equal the implementation",
+        "passed": true
+      },
+      {
+        "id": "V-07",
+        "what": "the second limb is excluded and no default date is drafted",
+        "passed": true
+      },
+      {
+        "id": "V-08",
+        "what": "the jurisdiction equals the implementation and the selection is mandatory",
+        "passed": true
+      },
+      {
+        "id": "V-09",
+        "what": "the printed collection field is NOT seated as the admitted tradeline field",
+        "passed": true
+      },
+      {
+        "id": "V-10",
+        "what": "the crosswalk records the divergence rather than hiding it",
+        "passed": true
+      },
+      {
+        "id": "V-11",
+        "what": "the reference date is the evidenced printed value and is a convention pending admission",
+        "passed": true
+      },
+      {
+        "id": "V-12",
+        "what": "the register field records agree with the drafted mappings",
+        "passed": true
+      },
+      {
+        "id": "V-13",
+        "what": "the register date meanings the draft relies on are the register date meanings",
+        "passed": true
+      },
+      {
+        "id": "V-14",
+        "what": "the status vocabulary equals the implementation vocabulary",
+        "passed": true
+      },
+      {
+        "id": "V-15",
+        "what": "the outcome vocabulary equals the implementation vocabulary",
+        "passed": true
+      },
+      {
+        "id": "V-16",
+        "what": "the two vocabularies are disjoint and neither is a finding",
+        "passed": true
+      },
+      {
+        "id": "V-17",
+        "what": "the period years in the draft equal the implementation constant",
+        "passed": true
+      },
+      {
+        "id": "V-18",
+        "what": "the leap-day clamp and the anniversary boundary are drafted as conventions, not requirements",
+        "passed": true
+      },
+      {
+        "id": "V-19",
+        "what": "the comparator reproduces the arithmetic the draft states",
+        "passed": true
+      },
+      {
+        "id": "V-20",
+        "what": "the leap-day clamp claim in the draft is the implemented behaviour",
+        "passed": true
+      },
+      {
+        "id": "V-21",
+        "what": "the effective period is missing evidence, with a mandatory qualification and a prohibited unqualified conclusion",
+        "passed": true
+      },
+      {
+        "id": "V-22",
+        "what": "the direct-report exception is quoted and NOT relied on",
+        "passed": true
+      },
+      {
+        "id": "V-23",
+        "what": "the legacy D3 classification is retained with its recorded conclusion",
+        "passed": true
+      },
+      {
+        "id": "V-24",
+        "what": "the ceiling is observation-only and no finding class is available",
+        "passed": true
+      },
+      {
+        "id": "V-25",
+        "what": "the exact-specimen boundary carries the evidenced digest and the refusal rule",
+        "passed": true
+      },
+      {
+        "id": "V-26",
+        "what": "the presentation contract the draft relies on is the implemented contract",
+        "passed": true
+      },
+      {
+        "id": "V-27",
+        "what": "Gate 5.3 completability is answered for the exact-specimen boundary with three conditions",
+        "passed": true
+      },
+      {
+        "id": "V-28",
+        "what": "the measured gate state is unchanged: 5.3 not passed, 5.4 NOT_STARTED, zero admitted rules",
+        "passed": true
+      },
+      {
+        "id": "V-29",
+        "what": "the draft supplies no gate evidence for any gate",
+        "passed": true
+      },
+      {
+        "id": "V-30",
+        "what": "the draft does not adopt the comparator and does not reuse the internal tests",
+        "passed": true
+      },
+      {
+        "id": "V-31",
+        "what": "the input-hash verification passes with no unexplained mismatch",
+        "passed": true
+      },
+      {
+        "id": "V-32",
+        "what": "the draft narrative carries every required section",
+        "passed": true
+      },
+      {
+        "id": "V-33",
+        "what": "the narrative discloses the reconciliation and the unapproved change honestly",
+        "passed": true
+      },
+      {
+        "id": "V-34",
+        "what": "the narrative states the ceiling, the classification and the specimen boundary",
+        "passed": true
+      },
+      {
+        "id": "V-35",
+        "what": "the narrative contains no forbidden claim",
+        "passed": true
+      }
+    ],
+    "check_count": 35,
+    "failure_count": 0,
+    "failed": [],
+    "verdict": "ALL PHASE5-001I-B DRAFT CHECKS PASSED",
+    "re_run": "re-run against the finished artifacts, so every recorded check result is one the package as written produces",
+    "scope_note": "these checks compare the draft with the governing instruments and the implemented vocabulary. They are not the independent validation Gate 5.4 requires and they are not Gate 5.6 evidence"
+  },
+  "measurements": {
+    "phase5_001i_b_preservation": {
+      "baseline_files": 417,
+      "baseline_excludes": [
+        "SOURCE_CAPTURES\\PHASE5-001I-B\\** (this order's own output)",
+        "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md"
+      ],
+      "unchanged": 417,
+      "changed": [],
+      "added_by_this_order": [
+        {
+          "relative_path": "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md",
+          "sha256": "44CF09714F6CD2E795EAA64C34B6A96BC738BFCF13514DB41BA0C4114628B79E"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\field_crosswalk.json",
+          "sha256": "77C3A0B5E98ECA3B4143C922F8732F57A246C04C962B7AFBB04272ABD1294C08"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\input_hash_verification.json",
+          "sha256": "A93907F743C3E4956D22CA2FA76A9012C383F45ED5CE2CB517B3D52C828912A3"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\prerequisite_assessment.json",
+          "sha256": "2FACE2DFD373C570CDBFE669D86F38CC9064D057394940088ADAC0B50EE6B8D2"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\preserved_files_before.json",
+          "sha256": "7D04087CBEE3DB670FA51BDE1678EB7A35F5F16AADA14AD3A4CD61FFC1DF7AED"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\rule_record_draft.json",
+          "sha256": "B97241A12E76F520DB884A7C012B6DE286BB3DC1EC75C699B12A5BCF4822FE47"
+        },
+        {
+          "relative_path": "SOURCE_CAPTURES\\PHASE5-001I-B\\scope_and_custody_reconciliation.json",
+          "sha256": "F902DFD77D12C5A8517F043591E0596C462A72F736D1CF441C6E72B6A5DED995"
+        }
+      ],
+      "added_outside_this_order": [],
+      "missing": [],
+      "verdict": "PRESERVATION HELD - this order added only its own package and its narrative, changed no pre-existing file and removed nothing",
+      "re_measured_after_the_custody_manifest_existed": {
+        "unchanged": 417,
+        "changed": 0,
+        "added_by_this_order": 8,
+        "added_outside_this_order": 0,
+        "missing": 0,
+        "note": "the readings elsewhere in this record were taken before the custody manifest existed, so they count seven of this order's files rather than eight. The manifest is the eighth. The discrepancy is the manifest itself and nothing else"
+      }
+    },
+    "phase5_001i_a_custody_manifest_recheck": {
+      "entries": 51,
+      "differing": 0,
+      "differing_paths": [],
+      "note": "the manifest does not include itself or PHASE5-001I-A's own preserved_files_before.json, by construction"
+    },
+    "prod003_baseline_re_measured_not_re_run": {
+      "baseline_files": 342,
+      "recorded_by_prod003_unchanged": 341,
+      "measured_now": {
+        "unchanged": 340,
+        "changed": [
+          {
+            "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+            "recorded_by_prod003": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+            "measured_now": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0"
+          },
+          {
+            "relative_path": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+            "recorded_by_prod003": "B4CBF5010B86750EB087FDB2CE2F8DACFE576C6F85CEA7BB44A38A1FED580312",
+            "measured_now": "4AC3700B1906D77B4D050C42FFC9365B2FAA33DEF3806557A79958FEF25A9C71"
+          }
+        ],
+        "added": 82,
+        "missing": []
+      },
+      "reading": "REVIEW REQUIRED at PROD-003's custody step, by design: a later order added its own files and two documents changed after PROD-003's date. PROD-003's own verifier was not re-run, so its record of its own date is intact",
+      "additions_breakdown": {
+        "total_files_present_now": 424,
+        "prod003_baseline_files": 342,
+        "total_additions_against_that_baseline": 82,
+        "recorded_by_prod003s_own_custody_manifest": 22,
+        "recorded_by_phase5_001i_a_custody_manifest": 47,
+        "written_by_this_order": 7,
+        "recorded_by_neither_manifest": 6,
+        "recorded_by_neither_manifest_paths": [
+          "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+          "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+          "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+          "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json",
+          "SOURCE_CAPTURES\\PROD-003\\preserved_files_before.json",
+          "SOURCE_CAPTURES\\PROD-003\\validation_results.json"
+        ],
+        "reconfirmation_of_001i_a_s_recorded_50": "47 (recorded in PHASE5-001I-A's custody manifest) plus 3 (its own manifest, its own baseline and its own validation_results.json, which no manifest can list) equals the 50 additions PHASE5-001I-A recorded. The reading is therefore reconciled exactly rather than contradicted",
+        "note": "PROD-003's baseline excludes its own package and its own narrative by construction, so its 22 own artifacts appear as additions against its own baseline. No addition is unattributed: 22 + 47 + 7 + 6 = 82"
+      },
+      "final_reading_after_the_manifest": {
+        "total_additions_against_prod003_baseline": 83,
+        "written_by_this_order": 8
+      }
+    },
+    "legacy_corpus_and_specimens": {
+      "admitted_artifacts_expected": 34,
+      "admitted_artifacts_matching": 34,
+      "admitted_artifact_mismatches": [],
+      "corpus_pdf_files": 461,
+      "corpus_pdf_bytes": 23627410,
+      "corpus_recorded_reading": "461 files, 23627410 bytes - the measure PHASE5-001I-A's verifier computes with Get-ChildItem -Recurse -File -Filter *.pdf",
+      "non_pdf_files_in_the_corpus_directory": [
+        {
+          "name": "MANIFEST.json",
+          "bytes": 11771
+        }
+      ],
+      "note": "a naive recursive count returns one file more (462) and 11,771 bytes more: the corpus directory also holds MANIFEST.json, last written 2026-09-26, before any CRP order, which the recorded measure excludes. The 461 PDFs match the recorded 23,627,410 bytes exactly",
+      "consumer_specimens": [
+        {
+          "presentation_id": "PR-01",
+          "artifact_id": "LEG-CONSUMER-EQ-CA",
+          "recorded": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+          "measured": "E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F",
+          "matches": true
+        },
+        {
+          "presentation_id": "PR-02",
+          "artifact_id": "LEG-CONSUMER-TU-CA",
+          "recorded": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+          "measured": "244D58080254D9879468A43D56DA02BC952A20579E1BE9A51F83B7378439EFB4",
+          "matches": true
+        }
+      ],
+      "specimen_mismatches": 0
+    }
+  },
+  "verdict": "ALL PHASE5-001I-B DRAFT CHECKS PASSED AND PRESERVATION HELD",
+  "the_whitelist_that_was_actually_carried": {
+    "status": "THE ORDER'S OWN WHITELIST ARTIFACT DOES NOT EXIST",
+    "owner_issued_boundary": {
+      "instrument": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md section 11 - the work order it wrote and did not execute for PHASE5-001I-A",
+      "permitted_files_quoted": "a new directory for the evaluator and its tests, plus evidence records in that order's own SOURCE_CAPTURES package; nothing else",
+      "explicitly_out_of_scope_quoted": "any consumer-visible output of any class; any second rule unit, jurisdiction or bureau; any second presentation; any change to the coverage ledger, the enumeration, the catalogue or the admitted corpus; any legal re-reading; any deployment, upload, hosting, billing, authentication or external report processing; any use of a subscriber, screening, training or generated artifact as a report"
+    },
+    "order_self_declared_file_boundary": {
+      "source": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs - the intended content of permitted_files.json, which was never written because the statements that would write it are unreachable",
+      "permitted_prefixes": [
+        "internal-validation\\ca-ns-last-payment-six-year\\",
+        "SOURCE_CAPTURES\\PHASE5-001I-A\\"
+      ],
+      "permitted_root_files": [
+        "CRP_PHASE5_001I_A_LAST_PAYMENT_EXTRACTOR_AND_SIX_YEAR_EVALUATOR.md"
+      ],
+      "pre_existing_files_this_order_changes": [
+        "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md - the owner-authorized internal-validation carve-out",
+        "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md - a recorded assembly repair"
+      ],
+      "pre_existing_files_named": 2,
+      "forbidden_operations_it_claims": "no ledger, enumeration, catalogue or admitted-corpus edit"
+    },
+    "executed_verifier_expectation": {
+      "source": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_custody.ps1, $expectedChanged",
+      "entries": [
+        "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+        "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+        "SOURCE_CAPTURES\\PROD-003\\input_verification.json"
+      ]
+    },
+    "the_discrepancy": "the executed expectation set (4 files) is wider than the boundary the same order wrote for itself (2 files) by exactly the two PROD-003 outputs, and the artifact that was to record the whitelist was never written. The verdict PRESERVATION HELD therefore rests on a self-declared expectation rather than on an independent boundary"
+  },
+  "reconciliation_of_the_four_changes": [
+    {
+      "relative_path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+      "after": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "current_state_matches_the_recorded_after": true,
+      "inside_the_owner_issued_boundary": false,
+      "inside_the_order_self_declared_boundary": true,
+      "recorded_as": "the owner-authorized internal-validation carve-out",
+      "authorization": "an owner amendment recorded in the CRP_CORE_CONSTITUTION section 6.2 form: document and clause named, replaced text quoted, replacement text stated (amendment_text.json), an application record carrying the before/after digests (amendment_application_result.json), and a section 8 Amendment History row",
+      "reconciliation": "AUTHORIZED - the only one of the four with an owner instrument behind it. The originating owner instruction itself is not preserved as a verbatim artifact in this workspace; the amendment is recorded durably and in the required form, which is what the build plan section 3 requires"
+    },
+    {
+      "relative_path": "CRP_PROD_003_FIRST_REPORT_REPRESENTATION_AND_RULE_CROSSWALK.md",
+      "before": "A6F0FE4383AA815B6CF136AC79DD21A2F29B34A73621366C28499A4D16254295",
+      "after": "1F5567791C6C33EA1A20AEA7052C0291D53321FDDFE1F6816CA3DB738936EAA9",
+      "current_state_matches_the_recorded_after": true,
+      "inside_the_owner_issued_boundary": false,
+      "inside_the_order_self_declared_boundary": true,
+      "recorded_as": "a recorded assembly repair: the displaced section 10 gate row and claim sentence and the displaced closing fragment returned to their own sections, no claim added, removed or changed",
+      "authorization": "NONE OUTSIDE PHASE5-001I-A'S OWN RECORDS. No owner instrument in this workspace authorizes editing another order's completion record, and the owner-issued boundary says nothing else. The only durable statements are PHASE5-001I-A's narrative section 10, its preservation_and_change_record.json and its custody verifier",
+      "reconciliation": "RECORDED BUT UNAUTHORIZED BY ANY OWNER INSTRUMENT. The repaired document's own checks passed at PROD-003's date and still pass, so no recorded acceptance criterion required the repair; finding a defect does not itself confer authority. PROD-003's own file_custody_manifest.json still records the pre-repair digest A6F0FE43 at 49,453 bytes while the document measures 1F556779 at 49,451 bytes - recorded here and deliberately left in place"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "before": "BC1B3FE81167F7BE4942FAE491886B35F5810914E977FACF242C37FCC5DD61E6",
+      "after": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "current_state_matches_the_recorded_after": true,
+      "inside_the_owner_issued_boundary": false,
+      "inside_the_order_self_declared_boundary": false,
+      "recorded_as": "PROD-003's own narrative checker, refreshed by re-running PROD-003's own step as a regression check",
+      "authorization": "NONE RECORDED, AND OUTSIDE THE BOUNDARY THE ORDER WROTE FOR ITSELF",
+      "reconciliation": "OUTSIDE THE ORDER'S OWN AUTHORED WHITELIST. The refresh is a side effect of running another order's step, and the file is PROD-003's artifact. Its verdict is still NARRATIVE CHECKS PASSED (32 checks), so this refresh left a passing record in a changed state"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "before": "A34943997AD061E345E811FF20BCB15817EDC8BEB493B9CB83420F0E9EE48B9D",
+      "after": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "current_state_matches_the_recorded_after": true,
+      "inside_the_owner_issued_boundary": false,
+      "inside_the_order_self_declared_boundary": false,
+      "recorded_as": "PROD-003's own input verification, re-run once as a regression check",
+      "authorization": "NONE RECORDED, AND OUTSIDE THE BOUNDARY THE ORDER WROTE FOR ITSELF",
+      "reconciliation": "OUTSIDE THE ORDER'S OWN AUTHORED WHITELIST. Its current content reports INPUT VERIFICATION FAILED - see failures (17 checks, 1 failure: 12 of 13 unchanged, the build plan), a durable and currently-visible consequence of the amendment sitting inside another order's artifact. Recorded, not repaired"
+    }
+  ],
+  "authority_findings": [
+    "the build plan change is the only one of the four with an owner instrument: the carve-out amendment, recorded in the required quoted-replacement form with before/after digests and an Amendment History row",
+    "the PROD-003 narrative repair has no authority outside PHASE5-001I-A's own records. Its justification (a real displaced-block defect) is not an authorization, and neither PROD-003's narrative checks nor its structural tests required it",
+    "the two refreshed PROD-003 outputs have no authority record at all, were not named in the whitelist the order wrote for itself, and were expected by the same order that produced them - a self-declared expectation, not an independent boundary",
+    "PROD-002's recorded digest of the build plan is stale in exactly the same way, as PHASE5-001I-A recorded; this order records that fact and re-claims no earlier verdict",
+    "no claim in this reconciliation retroactively authorizes any change, and nothing was overwritten to make the record tidier"
+  ],
+  "further_discrepancies_recorded_not_repaired": [
+    "permitted_files.json and implementation_manifest.json are asserted by PHASE5-001I-A's narrative section 5 and its run table but absent from the artifact set; the builder that would write them is inert because its inventory() body is displaced, and the chain's step 4 passes on exit code alone. Recorded, not repaired",
+    "PHASE5-001I-A's narrative records 39 files scanned while identifier_scan.json records 50, with 0 findings; the narrative checker verifies the finding count but never the file count. Recorded, not corrected",
+    "one inspection execution of the inert builder by this order rewrote the three records that script can still reach; all 51 digests in PHASE5-001I-A's custody manifest were re-measured afterwards and 0 differ, so no content changed",
+    "a naive recursive count of the legacy fixture corpus returns 462 files / 23,639,181 bytes against the recorded 461 / 23,627,410: the difference is the corpus directory's own MANIFEST.json (11,771 bytes, 2026-09-26), which the recorded measure excludes. The 461 PDFs match the recorded bytes exactly"
+  ],
+  "what_this_order_did_not_do": [
+    "it did not repair, rewrite, re-run or tidy the four changed files, the inert builder, the stale count or any inherited manifest",
+    "it did not overwrite a historical manifest or re-claim another order's verdict",
+    "it did not treat any unapproved change as authorized, and it states the opposite in every place the change appears",
+    "it did not modify the extractor, the evaluator, the application, the corpus, any register or any governing document",
+    "it did not deploy, transmit consumer data, produce consumer-visible output, or claim any gate state"
+  ],
+  "reconciliation_verdict": "SCOPE AND CUSTODY RECONCILED: one of the four pre-existing changes is authorized by an owner instrument (the build plan amendment); one is recorded but unauthorized by any owner instrument (the PROD-003 narrative repair); two are outside the order's own authored whitelist (PROD-003's refreshed outputs, one of which now reports a failing check). Four further discrepancies are recorded and left in place, the whitelist artifact the reconciliation was asked to use does not exist, and every count reconciles exactly"
+}

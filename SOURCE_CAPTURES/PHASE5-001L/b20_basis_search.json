@@ -1,0 +1,117 @@
+{
+  "artifact": "b20_basis_search.json",
+  "work_order": "PHASE5-001L",
+  "gate": "PHASE5 gate 5.1",
+  "created_utc": "2026-09-30",
+  "question": "Does any workspace record hold the per-ID basis behind the historical PHASE4-002I-B20 aggregate of 39 probable candidates / 380 excluded / 18 unresolved (437 total)?",
+  "search_scope": "Every pre-existing file in the workspace enumerated in input_inventory.json (236 files, recursive, including hidden, every extension). Text-decodable files were read as raw text; PDF and PNG captures were scanned as raw bytes. The files created by this order were excluded from the search.",
+  "search_method": "Literal and regex token counting per file for B20, PHASE4-002I-B20-OWNER-DECISIONS, 39 PROBABLE, 380 EXCLUDED, 18 UNRESOLVED, 'reconciled to durable records', 'persisted source-discovery records', PROBABLE_CANDIDATE and EXCLUDED; structural probes counting CRP-LSRC- identifiers and class-word co-occurrence; and byte-level extraction of a context window around every hit in a non-text file.",
+  "token_hits_B20": [
+    {"file": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md", "hits": 26, "classification": "SEMANTIC - governing register references the aggregate", "context_sample": "carried forward and reconcile these totals against the persisted source-discovery records"},
+    {"file": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md", "hits": 21, "classification": "SEMANTIC - reconciliation document analyses the aggregate", "context_sample": "the tally appears once, as an aggregate"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json", "hits": 7, "classification": "SEMANTIC - 001K records the tally as RECORDED_AND_UNRECONCILED", "context_sample": "tally_as_recorded: 39 PROBABLE_CANDIDATE / 380 EXCLUDED / 18 UNRESOLVED (437 total)"},
+    {"file": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "hits": 4, "classification": "SEMANTIC - origin of record for the tally", "context_sample": "section 6 owner-decision block"},
+    {"file": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "hits": 4, "classification": "SEMANTIC - governing instruction to reconcile the tally", "context_sample": "it must be reconciled to durable records before becoming the register's certified starting count"},
+    {"file": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md", "hits": 2, "classification": "SEMANTIC - the catalogue itself records the aggregate as unreconciled", "context_sample": "The B20 aggregate 39/380/18 is recorded as unreconciled and no per-ID attribution was derived from it"},
+    {"file": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md", "hits": 1, "classification": "SEMANTIC - contract names the owner-decision row", "context_sample": "PHASE4-002I-B20-OWNER-DECISIONS"},
+    {"file": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md", "hits": 1, "classification": "NON_SEMANTIC - single embedded token inside a non-semantic string; no disposition content"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001G\\CA-1995-96-billlist.html", "hits": 156, "classification": "NON_SEMANTIC - California bill identifiers of the form AB200", "context_sample": "billNavClient.xhtml?bill_id=199519960AB200 - AB-200 ; version value=19950AB20091CHP"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001G\\CA-CIV-1785.16.html", "hits": 1, "classification": "NON_SEMANTIC - substring inside a base64 payload", "context_sample": "mo+wDlB20D3Sz8KzB4WfzNYIHp3D1w6ovGOoL5GdIDAU8cTzfaoZCDhQ"},
+    {"file": "SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-007.pdf", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run", "context_sample": "?m?=?B20j???u???r??9"},
+    {"file": "SOURCE_CAPTURES\\ALTERNATE_US_CONSUMER_FORMAT_INVESTIGATION\\ALT-008.pdf", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run", "context_sample": "?m?=?B20j???u???r??9"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001H\\NS-royal-gazette-partI-2015-index.pdf", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001H\\ROUTE-REPIN-NS-RG1-2015-Index-20260930.pdf", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run"},
+    {"file": "SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-004.pdf", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run"},
+    {"file": "SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-005.txt", "hits": 1, "classification": "NON_SEMANTIC - ordinary text run in an OCR capture", "context_sample": "949891 B7B2030D0C0000 000[1D5a]"},
+    {"file": "SOURCE_CAPTURES\\REPORT_FORMAT_BASELINE_2026-09-30\\PUB-021-page-2.png", "hits": 1, "classification": "NON_SEMANTIC - binary payload byte-run", "context_sample": "?IDAT!?B200???W?????F????????"}
+  ],
+  "token_hits_PROBABLE_CANDIDATE": [
+    {"file": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "hits": 18, "classification": "SEMANTIC - the tally sentence and the owner-decision block", "context_sample": "The resulting B20 source-record totals are 39 `PROBABLE_CANDIDATE`, 380 `EXCLUDED`, and 18 `UNRESOLVED` (437 total)"},
+    {"file": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md", "hits": 11, "classification": "SEMANTIC - analysis of the aggregate and its ceiling rule", "context_sample": "\"may support only a `PROBABLE_CANDIDATE`, never a `CONFIRMED_CANDIDATE` or `VIOLATION`\""},
+    {"file": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md", "hits": 9, "classification": "SEMANTIC - register records the tally as RECORDED_AND_UNRECONCILED"},
+    {"file": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md", "hits": 6, "classification": "SEMANTIC - unit-level qualification for the single US-NY candidate; no list of 39", "context_sample": "To be created: exactly one rule unit from one source record - CRP-LSRC-0194 -> N.Y. Gen. Bus. Law 380-j(a)(3); currently `PROBABLE_CANDIDATE` only"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json", "hits": 4, "classification": "SEMANTIC - 001K quotation of the tally", "context_sample": "tally_as_recorded: 39 PROBABLE_CANDIDATE / 380 EXCLUDED / 18 UNRESOLVED (437 total)"},
+    {"file": "CRP-DISC-002C-NY-0194.md", "hits": 3, "classification": "SEMANTIC - the only durable per-ID candidate record in the workspace", "context_sample": "SOURCE_STATUS | PROBABLE_CANDIDATE ; ceiling is `PROBABLE_CANDIDATE`"},
+    {"file": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "hits": 2, "classification": "SEMANTIC - governing instruction; states the tally must be reconciled to durable records"},
+    {"file": "CRP_EXPERIAN_US_CONSUMER_FORMAT_INVESTIGATION.md", "hits": 1, "classification": "SEMANTIC - the one candidate is to be kept at PROBABLE_CANDIDATE with representation UNRESOLVED", "context_sample": "keep the `US-NY` candidate at `PROBABLE_CANDIDATE` with its report representation explicitly `UNRESOLVED`"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv", "rows": 1, "classification": "SEMANTIC - row CRP-LSRC-0194 records the unit-level qualification in its disposition basis", "context_sample": "the unit-level qualification PROBABLE_CANDIDATE recorded at readiness plan 6.4 / 9.4 and in the discovery record is preserved and is not re-decided here"},
+    {"file": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md", "hits": 0, "classification": "ABSENT - the catalogue assigns no candidate class to any of its 437 records"}
+  ],
+  "token_hits_EXCLUDED": [
+    {"file": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md", "hits": 5, "classification": "SEMANTIC - quotation of the tally and of the admission-states vocabulary"},
+    {"file": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md", "hits": 5, "classification": "SEMANTIC - quotation of the tally"},
+    {"file": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "hits": 4, "classification": "SEMANTIC - origin of the tally"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json", "hits": 3, "classification": "SEMANTIC - 001K quotation of the tally"},
+    {"file": "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md", "hits": 1, "classification": "NON_SEMANTIC - the token appears only inside the schema instruction to use the value WITHHELD_EXCLUDED_TEXT", "context_sample": "Use `WITHHELD_EXCLUDED_TEXT` only where the sole value is excluded text"},
+    {"file": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "hits": 1, "classification": "SEMANTIC - quotation of the tally"},
+    {"file": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv", "rows": 409, "classification": "SEMANTIC-BUT-DIFFERENT-SENSE - the token occurs inside recorded basis strings (for example \"this workspace to assign EXCLUDED, GAP or REFUSAL\") and never as a B20 class value for a row"}
+  ],
+  "tally_sentence_provenance": {
+    "occurrences_of_the_sentence_39_380_18": 4,
+    "origin_of_record": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md section 6 owner-decision block (single origin)",
+    "quotations": [
+      "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md section 11.1 (quoted and marked RECORDED_AND_UNRECONCILED)",
+      "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md section 5.3 (quoted with the finding that no per-ID list exists)",
+      "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json key b20.tally_as_recorded"
+    ],
+    "governing_instruction_references": [
+      "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3 Phase 5.1 bullet 4 and section 6 line 142",
+      "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md carries the same instruction forward"
+    ],
+    "finding": "The tally exists exactly once as a recorded owner statement and is thereafter quoted. No quotation adds any per-ID content."
+  },
+  "structural_probes": [
+    {"probe": "files containing 30 or more CRP-LSRC- identifiers together with any disposition class word", "result": "five files only: CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md, CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md, CRP_PHASE5_NEXT_GATE_RECONCILIATION.md, SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json and SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv. None of them holds a per-ID B20 class."},
+    {"probe": "catalogue entries carrying a B20 class in any recorded field", "result": "none. All 437 entries carry catalogue_status ADMITTED_SOURCE_ONLY, and no entry's verification_state_as_recorded contains the token PROBABLE or EXCLUD. The catalogue therefore cannot supply the per-ID basis."},
+    {"probe": "catalogue record types and stored statuses", "result": "record_type counts AUTHORITY_RECORD 27, CITATION_RECORD 23, CONTENT_RULE 255, GAP 18, LIMITATION_RECORD 111, REFUSAL 3; the 18 GAP records are the only unresolved-shaped set, and no artifact asserts they are the tally's 18 UNRESOLVED."},
+    {"probe": "the artifact the plan names as the reconciliation target ('the persisted source-discovery records')", "result": "no such artifact exists in the workspace. Exactly one discovery record exists in the whole workspace: CRP-DISC-002C-NY-0194.md, covering the single ID CRP-LSRC-0194. The build plan postpones any permanent discovery registry (line 125) and the readiness plan records the report-representation artifact as absent."},
+    {"probe": "the six B20 unresolved mappings named at build plan line 142", "result": "CRP-LSRC-0354, CRP-LSRC-0422, CRP-LSRC-0423, CRP-LSRC-0424, CRP-LSRC-0425 and CRP-LSRC-0427 are named as report-representation mappings. Each is a CONTENT_RULE entry recorded verified=true in the catalogue, and no file records which B20 class any of them holds."}
+  ],
+  "attribution_measurement": {
+    "claimed_probable_candidates": 39,
+    "probable_candidates_attributable_to_a_durable_per_id_record": 1,
+    "attributed_record": "CRP-LSRC-0194, via CRP-DISC-002C-NY-0194.md (SOURCE_STATUS PROBABLE_CANDIDATE) and readiness plan 6.4 / 9.4",
+    "probable_candidates_unattributed": 38,
+    "claimed_excluded": 380,
+    "excluded_attributable_to_a_per_id_record": 0,
+    "claimed_unresolved": 18,
+    "unresolved_attributable_to_a_per_id_record": 0,
+    "note_on_the_eighteen": "The catalogue holds 18 GAP records and the tally counts 18 UNRESOLVED, but no artifact states the two sets are the same; the identity is neither asserted nor inferable.",
+    "catalogue_records_carrying_any_b20_class": 0,
+    "durable_source_discovery_records_in_the_workspace": 1
+  },
+  "outcome": {
+    "per_id_basis_found": false,
+    "classification": "MISSING_EVIDENCE",
+    "statement": "The aggregate 39 / 380 / 18 exists once as a recorded owner statement and is thereafter quoted. No workspace artifact of any kind holds a per-ID list, a per-ID class, or the source-discovery record set behind it. It cannot be reconciled from the evidence in this workspace, and further documentation cannot produce the missing basis.",
+    "effect_on_gate_5_1": "The aggregate cannot be carried forward as the register's certified starting count on the evidence available. This is an unresolved item requiring an owner decision, not a failure of the duplicate reconciliation itself."
+  },
+  "cannot_be_reconciled": [
+    "which 39 of the 437 source records the historical tally called probable candidates",
+    "which 380 it called excluded",
+    "which 18 it called unresolved, and whether those 18 are the catalogue's 18 GAP records",
+    "whether any specific record, including CRP-LSRC-0018 and CRP-LSRC-0194, is inside or outside any of the three classes",
+    "the identity of the persisted source-discovery records the plan names as the reconciliation target, which do not exist in this workspace"
+  ],
+  "prohibited_reconstructions": [
+    "guessing membership from current counts or from the 18 GAP records",
+    "mapping the tally onto the register's disposition classes",
+    "treating the tally as a per-ID record",
+    "deriving the 39 from the FCRA quadruple or any other candidate-shaped subset"
+  ],
+  "proposed_owner_disposition": {
+    "status": "PROPOSED ONLY - NOT ENACTED, AND NOT RECORDED IN ANY GOVERNING DOCUMENT BY THIS ORDER",
+    "proposal": "Record the historical PHASE4-002I-B20 aggregate as an unattributed historical aggregate rather than a starting count: 39 probable candidates / 380 excluded / 18 unresolved (437 total), source CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md section 6, per-ID basis MISSING_EVIDENCE, never to be pushed down onto rows.",
+    "governing_amendment_required": "Two recorded instructions must be amended before the aggregate can stop gating gate 5.1: (1) CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md section 3 Phase 5.1 bullet 4 and section 6 line 142; (2) the parallel sentence in the expansion contract section 6 owner-decision block.",
+    "draft_replacement_text": "The historical PHASE4-002I-B20 tally (39 probable candidates / 380 excluded / 18 unresolved of 437) is recorded as an unattributed historical aggregate whose per-ID inventory is absent from this workspace. It is not carried forward as the register's certified starting count and must not be attributed to any catalogue ID. The gate 5.1 count condition is satisfied by the register's own per-ID record dispositions, which are built from durable evidence; the tally is retained only as a recorded historical statement.",
+    "alternative_owner_route": "The owner supplies the per-ID inventory behind the tally, or authorises its reconstruction from the legacy system, in which case the existing plan text stands unchanged and the tally is reconciled ID by ID.",
+    "not_done_here": [
+      "no governing document was amended",
+      "no aggregate was replaced or restated",
+      "no ID was assigned to any class",
+      "no disposition was inherited"
+    ]
+  },
+  "boundaries": "Documentation and search evidence only. No internet research, no new legal interpretation, no rule admission, no catalogue change, no consumer report and no transmission was performed.",
+  "created_by": "PHASE5-001L"
+}

@@ -1,0 +1,10 @@
+{
+  "policy_id": "OWNER-EVIDENCE-001",
+  "version": "1.0",
+  "title": "Immutable Reported-Fact Policy",
+  "text": "A clearly labelled fact printed on an admitted credit report is accepted as the bureau's reported fact for assessment, unless its reading, record association or meaning is materially ambiguous or contradictory. External corroboration is not required merely because the fact describes a legal event.",
+  "issued": "2026-10-01",
+  "authority": "Owner-authorized evidence policy, issued within the acceptance work",
+  "amendment_rule": "Changes require an explicit owner-authorized amendment and a new version; released versions are preserved and never overwritten.",
+  "released_versions": ["1.0"]
+}

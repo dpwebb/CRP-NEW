@@ -1,0 +1,2693 @@
+Privacy (Credit Reporting) Code 2024
+I, Carly Kind, Privacy Commissioner, make the following legislative instrument.
+
+Dated          30 September 2024
+
+
+
+
+[Signed]
+Carly Kind
+Privacy Commissioner
+Contents
+Part 1—Preliminary                                                                                                                                      1
+             1 Name...................................................................................................................................... 1
+             2 Commencement ..................................................................................................................... 1
+             3 Authority ................................................................................................................................ 1
+             4 This CR Code ........................................................................................................................ 1
+             5 Definitions ............................................................................................................................. 1
+             6 Schedules ............................................................................................................................... 6
+
+Schedule 1—Repeals                                                                                                                                      7
+       Privacy (Credit Reporting) Code 2014 (Version 2.3)                                                                                               7
+Schedule 2—The CR Code                                                                                                                                  8
+   Division 1—Preliminary                                                                                                                               8
+             1 Application of this CR Code .................................................................................................. 8
+             1A Obligations to destroy information ..................................................................................... 8
+   Division 2—Credit reporting agreements and arrangements                                                                                              9
+             2 Credit reporting system arrangements.................................................................................... 9
+             3 Open and transparent management of credit reporting information ....................................... 9
+   Division 3—Collection of information                                                                                                               10
+             4 Credit providers’ information collection procedures.............................................................10
+             5 Practices, procedures and systems ........................................................................................11
+   Division 4—Credit information                                                                                                                      14
+             6 Consumer credit liability information ...................................................................................14
+             7 Information requests .............................................................................................................16
+             8 Repayment history information ............................................................................................16
+             8A Financial hardship information ..........................................................................................18
+             9 Default information...............................................................................................................23
+             10 Payment information ...........................................................................................................24
+             11 Publicly available information ............................................................................................25
+             12 Serious credit infringements ...............................................................................................25
+   Division 5—Dealing with credit information                                                                                                         27
+             13 Transfer of rights of credit provider ....................................................................................27
+             14 Permitted CRB disclosures .................................................................................................28
+             15 Security of credit reporting information..............................................................................29
+             16 Use and disclosure of credit-related personal information by CPs and affected
+                    information recipients...................................................................................................29
+             17 Protections for victims of fraud ..........................................................................................31
+             18 Credit reporting body use of credit reporting information to facilitate a credit
+                    provider’s direct marketing ..........................................................................................34
+   Division 6—Access to, and correction of, credit information                                                                                        35
+             19 Access .................................................................................................................................35
+             20 Correction of information ...................................................................................................39
+   Division 7—Miscellaneous                                                                                                                           45
+             21 Complaints ..........................................................................................................................45
+             22 Record keeping ...................................................................................................................46
+             23 Credit reporting system integrity ........................................................................................47
+             24 Information Commissioner’s role .......................................................................................55
+
+
+
+
+                                                  Privacy (Credit Reporting) Code 2024                                                                  i
+Part 1—Preliminary
+1 Name
+           This instrument is the Privacy (Credit Reporting) Code 2024.
+
+2 Commencement
+       (1) This instrument commences on the day it is registered on the Federal Register of
+           Legislation, with the exception of the provisions set out below:
+                (a) Section 5, day on which the consumer credit is entered into (a)
+                (b) Section 5, day on which the consumer credit is terminated or otherwise
+                    ceases to be in force (a)
+                (c) Section 5, maximum amount of credit available under the consumer
+                    credit (e) and
+                (d) Schedule 2, paragraph 17(2).
+
+3 Authority
+       (1) This instrument is a CR Code described in section 26N of the Act.
+       (2) This instrument is included on the Codes Register under paragraph 26T(5)(b) of
+           the Act.
+           Note: This instrument is the Registered CR Code described in section 26M of the Act.
+
+
+4 This CR Code
+           The operative provisions of this CR Code are set out in Schedule 2 to this
+           instrument.
+
+5 Definitions
+           Note:      A number of expressions used in this instrument are defined in Divisions 1 and 2 of
+                      Part II of the Act, including (but not limited to) the following:
+                      (a) consumer credit liability information;
+                      (b) CP derived information;
+                      (c) CRB derived information;
+                      (d) credit;
+                      (e) credit eligibility information;
+                      (f) credit information;
+                      (g) credit provider
+                      (h) credit reporting body;
+                      (i) credit reporting information
+                      (j) default information;
+                      (k) financial hardship arrangement;
+                      (l) financial hardship information;
+                      (m) information request;
+                      (n) payment information;
+
+
+                                       Privacy (Credit Reporting) Code 2024
+              (o) regulated information;
+              (p) repayment history information
+              (q) serious credit infringement.
+
+    In this instrument:
+    Act means the Privacy Act 1988.
+    ban notification service means a free of charge service offered by a credit
+    reporting body where the body will notify an individual of requests from a credit
+    provider, mortgage insurer or trade insurer for credit reporting information
+    relating to that individual when a ban period is in effect.
+    ban period has the meaning given in subsection 20K(3) of the Act.
+    capacity information means information as to whether the relevant individual is:
+    (a)     solely liable for the credit;
+    (b)     jointly liable for the credit;
+    (c)     the guarantor in respect of the credit; or
+    correction period, in the context of a correct request, means a period of 30 days
+    from the date on which the correction request is made.
+    correction request means a request by an individual to correct information about
+    the individual under sections 20T or 21V of the Act.
+    credit ID information means any of the following numbers (for accounts other
+    than credit card and debit card accounts) or the first six and last four digits of any
+    of the following numbers (for credit card and debit cards accounts):
+    (a)      the number allocated by the credit provider for the consumer credit
+             provided to the relevant individual;
+    (b)      any previous number allocated by the credit provider for the consumer
+             credit provided to the relevant individual; and
+    (c)      where a transfer event has occurred – the number allocated by the
+             previous credit provider for that consumer credit.
+    credit-related personal information means each of the following (as applicable
+    in the relevant context):
+    (a)      credit information;
+    (b)      credit reporting information;
+    (c)      credit eligibility information; or
+    (d)      regulated information.
+    day on which the consumer credit is entered into means
+    (a)    in the case of credit provided with a telecommunications or utility
+           service, for consumer credit liability information disclosed 6 months
+           after commencement, the day that a service is first provided, where the
+           credit provider has generated one or more active accounts within its
+           systems; and
+    (b)    in all other cases:
+
+
+
+2                Privacy (Credit Reporting) Code 2024
+        (i)     for consumer credit liability information disclosed up to and
+                including 14 February 2021, the day that, under the terms and
+                conditions of the consumer credit, the credit is made available to
+                the individual; or
+        (ii)    for consumer credit liability information disclosed from 14
+                February 2020, the day that, the consumer credit is
+                unconditionally approved by the credit provider, and the credit
+                provider has generated the consumer credit account within its
+                credit management system.
+day on which the consumer credit is terminated or otherwise ceases to be in
+force means
+(a)    in the case of credit provided with a telecommunications or utility
+       service, for consumer credit liability information disclosed 6 months
+       after commencement, the day that service provision ceases and on which
+       there is no right to have a service reconnected under an existing contract;
+       and
+(b)    in all other cases, the earliest of:
+       (i)      the day that the debt owed under the credit is repaid and there is
+                no ability to defer payment of further debt under the credit;
+       (ii)     the day that either the credit provider determines or the
+                individual and the provider agree that all outstanding payment
+                obligations arising under the credit have been waived or
+                otherwise discharged and the provider cannot undertake further
+                enforcement action in respect to any outstanding debt owed by
+                the individual under the credit;
+       (iii)    the day that the provider charges off the full balance of the credit
+                after deciding that the outstanding balance is a loss due to the
+                likelihood that the amount may not be recoverable, although the
+                provider maintains the legal ability to take enforcement action in
+                respect to any outstanding debt owed by the individual under the
+                credit; and
+       (iv)     the day that a Court awards a judgment for the amount owing
+                under the credit.
+destroy, in the context of an obligation on a credit reporting body or credit
+provider to destroy information, has a meaning affected by section 1A of
+Schedule 2 to this CR Code.
+hardship request means a financial hardship or payment difficulties notification
+or request that is regulated under legislation or an industry code. This does not
+include a once-off, short term payment extension that is not so regulated.
+maximum amount of credit available under the consumer credit means:
+(a)   where no credit limit applies to revolving credit, a charge card contract
+      or the sale of goods or supply of services where credit is provided – no
+      fixed limit;
+(b)   in the case of revolving credit with a credit limit – the credit limit that
+      applies at the time the consumer credit liability information is disclosed
+      to a credit reporting body;
+
+
+                        Privacy (Credit Reporting) Code 2024
+    (c)     in the case of credit where the principal amount is not repayable until a
+            fixed date and, until that time, payments of interest only are required to
+            be made – the principal amount of the credit;
+    (d)     in the case of credit where payments of the principal amount must be
+            made throughout the term of the credit – the amortised maximum
+            principal amount of the credit, calculated on the basis that the individual
+            makes the minimum only principal repayments throughout the term of
+            the credit;
+    (e)     for consumer credit liability information disclosed on or after the date 6
+            months after commencement and in the case of a reverse mortgage, the
+            principal amount of credit, whether fully drawn down or not, even where
+            this may differ from the amount owing under the credit
+    (f)     for consumer credit liability information disclosed up to and including
+            30 June 2019:
+            (i)      in the case of credit provided for the purposes of the acquisition
+                     of particular goods or services, the applicable credit limit;
+            (ii)     in the case of credit provided by a supplier of goods or services
+                     where the contract specifies the amount of the credit or the credit
+                     limit – that amount; and
+    month means a period:
+    (a)   starting at the start of any day (the start day) of one of the calendar
+          months; and
+    (b)   ending on any of the following days, as determined by the credit
+          provider:
+          (i)      immediately before the start of the corresponding day of the next
+                   calendar month; or
+          (ii)     where the day before the corresponding day of the next calendar
+                   month is a non-business day, the end of the next business day
+                   following that day; or
+          (iii)    if there is no such day – at the end of the next calendar month; or
+          (iv)     the end of a day that is between 27 and 30 days after the start
+                   day; or
+          (v)      where the day before the start day is a non-business day, the end
+                   of a day that is 25 or 26 days after the start day.
+    non-participating credit provider has the meaning given in the Act, but does not
+    include a credit provider that:
+    (a) has represented to an individual who they have provided with credit that
+         they may disclose credit reporting information or credit eligibility
+         information about the individual to a credit reporting body (unless the
+         provider has subsequently advised the individual in writing that they will not
+         make the disclosures and has, in fact, not made any such disclosures); or
+    (b) acquires the rights of another credit provider in relation to the repayment of
+         an amount of credit, unless that second provider was a non-participating
+         credit provider.
+    Note:    Credit providers described in paragraphs (a) and (b) are bound by this CR Code: see
+             section 1 of Schedule 2 to this instrument.
+
+
+
+4                Privacy (Credit Reporting) Code 2024
+ordinary monthly payment means the payment that becomes due and payable in
+relation to the consumer credit in a month (but does not include any payments
+that are overdue from previous months).
+overdue payment arrangement means an arrangement, which is not a variation
+FHA, that is put in place in relation to payments owed by the individual that are
+or will become overdue.
+Note: An overdue payment arrangement may also be a temporary FHA in the circumstances set out
+           in subsection 8A(10) of Schedule 2 to this instrument.
+
+Regulations means the Privacy Regulation 2013.
+reverse mortgage has the meaning given in the National Consumer Credit
+Protection Act 2009.
+section 21D(3) notice means a written notice of the kind described in paragraph
+21D(3)(d) of the Act stating that the credit provider intends to disclose default
+information to a credit reporting body.
+Note 1: A section 21D(3) notice must be given before default information can be disclosed to a
+     credit reporting body: see section 21D of the Act and section 9 of Schedule 2 to this
+     instrument.
+Note 2: A section 21D(3) notice may include information about the availability of, or how to
+     request, assistance on the grounds of financial hardship.
+
+section 6Q notice means a written notice of the kind described in paragraph
+6Q(1)(b) of the Act informing the individual of the overdue payment and
+requesting that the individual pay the amount of the overdue payment.
+Note: In order for information to be default information, a section 6Q notice must be given: see
+      section 6Q of the Act and section 9 of Schedule 2 to this instrument.
+
+temporary FHA means an agreed financial hardship arrangement which involves
+temporary relief from or deferral of the individual’s obligations in relation to
+consumer credit (as described in subparagraph 6QA(1)(d)(ii) of the Act).
+Note: During a temporary FHA, payments will typically continue to accrue under the terms of the
+      consumer credit, however repayment history information will reflect the terms of the
+      temporary FHA (as set out in paragraph 8(2)(b) and subsection 8(5) of Schedule 2 to this
+      instrument, rather than the contractual obligation under the consumer credit. At the end of the
+      arrangement, the individual will need to pay the payments that have accrued under the terms
+      of the consumer credit or agree with the credit provider to another financial hardship
+      arrangement that deals with those overdue payments. If they do not, repayment history
+      information will show those payments as missed.
+
+transfer event means an event whereby the rights of a credit provider in relation
+to the repayment of an amount of consumer credit are acquired by an acquirer.
+variation FHA means an agreed financial hardship arrangement which:
+(a)     involves a permanent variation to the terms of the consumer credit (as
+        described in subparagraph 6QA(1)(d)(i) of the Act); and
+(b)     meets the requirements of subsection 8A(11) of Schedule 2 to this
+        instrument.
+Note: A variation FHA is a change to the terms of the consumer credit which may involve an
+      ‘ongoing’ change (e.g. for the remaining term) or a change for a defined period (i.e. not the
+      remaining term of the consumer credit). Both of these changes are considered to be
+      ‘permanent’ variations because the consumer credit is changed, but the length and application
+
+
+                             Privacy (Credit Reporting) Code 2024
+              of these changes can differ. Repayment history information will be based on the terms of the
+              consumer credit, as varied by the variation FHA: see paragraph 8(2)(a) and subsection 8(4) of
+              Schedule 2 to this instrument. No arrears will accrue if the individual makes all the payments
+              required under the varied contract.
+
+
+6 Schedules
+         Each instrument that is specified in a Schedule to this instrument is amended or
+         repealed as set out in the applicable items in the Schedule concerned, and any
+         other item in a Schedule to this instrument has effect according to its terms.
+
+
+
+
+6                       Privacy (Credit Reporting) Code 2024
+Schedule 1—Repeals
+Privacy (Credit Reporting) Code 2014 (Version 2.3)
+1 The whole of the instrument
+     Repeal the instrument.
+     Note:    The Privacy (Credit Reporting) Code 2014 (Version 2.3) was included on the Codes Register
+              under subsection 26T(5)(b) of the Act on 1 July 2022.
+
+
+
+
+                                    Privacy (Credit Reporting) Code 2024
+Schedule 2—The CR Code
+Division 1—Preliminary
+
+1 Application of this CR Code
+       (1) This section is made for the purposes of subsection 26N(2) of the Act.
+           Note: Subsection 26N(2) of the Act provides that the CR Code must:
+           (a) bind all credit reporting bodies;
+           (b) specify which credit providers are bound by the code; and
+           (c) specify any other entities subject to Part IIIA of the Act that are bound by the code.
+
+       (2) This CR Code binds:
+            (a) all credit reporting bodies;
+            (b) all credit providers other than non-participating credit providers; and
+            (c) all affected information recipients.
+
+1A Obligations to destroy information
+
+           Obligations on credit reporting bodies
+       (1) Subject to subsection (2), an obligation on a credit reporting body to destroy
+           credit information or credit reporting information requires the body to ensure it
+           irretrievably destroys the information.
+       (2) Where it is not possible for a credit reporting body to irretrievably destroy credit-
+           related personal information held in electronic format, the body must take steps
+           to put the information beyond use.
+       (3) For the purposes of subsection (2), information is beyond use if the credit
+           reporting body:
+             (a) irretrievably omits the relevant information from the databases that it
+                 utilises for the purposes of making disclosures permitted under Part IIIA of
+                 the Act; and
+             (b) is not able to use, and will not attempt to use, the information, including for
+                 the purposes of deriving CRB derived information; and
+             (c) is not able to disclose, and will not attempt to disclose, the information; and
+             (d) surrounds the information with appropriate technical and organisational
+                 security; and
+             (e) commits to irretrievably destroy the information if, or when, this becomes
+                 possible.
+
+           Obligations on credit providers
+       (4) Subject to subsection (5), an obligation on a credit provider to destroy credit
+           reporting information or credit eligibility information requires the provider to
+           take reasonable steps to ensure it irretrievably destroys the information.
+
+ 8                         Privacy (Credit Reporting) Code 2024
+      (5) Where it is not possible for a credit provider to irretrievably destroy credit-
+          related personal information held in electronic format, the provider must take
+          steps to put the information beyond use.
+      (6) For the purposes of subsection (5), information is beyond use if the credit
+          provider:
+            (a) is not able to use, and will not attempt to use, the information, including for
+                the purposes of deriving CP derived information; and
+           (b) is not able to disclose, and will not attempt to disclose, the information; and
+            (c) surrounds the information with appropriate technical and organisational
+                security; and
+           (d) commits to irretrievably destroy the information if, or when, this becomes
+                possible.
+
+Division 2—Credit reporting agreements and arrangements
+
+2 Credit reporting system arrangements
+      (1) This section is made for the purposes of subsection 20N(3), subsection 20Q(2),
+          section 21Q and section 21S of the Act.
+
+          Agreements between credit reporting bodies and credit providers
+      (2) An agreement entered into by a credit reporting body with a credit provider to
+          meet the requirements of subsection 20N(3) and subsection 20Q(2) of the Act
+          must oblige both parties to comply, to the extent applicable from time to time,
+          with Part IIIA of the Act, the Regulations and the registered CR Code.
+          Note:     As part of their obligations in connection with the quality and security of credit
+                    reporting information, credit reporting bodies must enter into agreements with credit
+                    providers that meet the requirements of subsection 20N(3) and 20Q(2) of the Act.
+
+          Training of employees
+      (3) Credit reporting bodies, credit providers, mortgage insurers and trade insurers
+          must take reasonable steps:
+           (a) to inform employees who handle credit reporting information or credit
+               eligibility information of the requirements of Part IIIA of the Act, the
+               Regulations and this CR Code that relate to information of these types; and
+           (b) to train employees who handle credit reporting information or credit
+               eligibility information in the practices, procedures and systems that are
+               designed to achieve compliance with those requirements.
+
+3 Open and transparent management of credit reporting information
+      (1) This section is made for the purposes of section 20B of the Act.
+          Note:     Among other things, section 20B of the Act requires credit reporting bodies to have a
+                    clearly expressed and up‑to‑date policy about its management of credit reporting
+                    information.
+
+
+
+
+                                     Privacy (Credit Reporting) Code 2024
+           Availability of credit reporting information management policy
+       (2) A credit reporting body must publish its policy about the management of credit
+           reporting information on its website.
+
+Division 3—Collection of information
+
+4 Credit providers’ information collection procedures
+       (1) This section is made for the purposes of subsection 21C(1) of the Act.
+           Note:     Subsection 21C(1) of the Act requires credit providers, at or before they collect
+                     personal information about an individual that they likely to disclose to a credit
+                     reporting body, to
+                     (a) notify the individual of the name and contact details of the credit reporting body, as
+                     well as any other matters specified in the registered CR code, or
+                     (b) otherwise ensure that the individual is aware of those matters.
+
+           Notification does not require consent
+       (2) For the avoidance of doubt, a credit provider’s obligation under subsection
+           21C(1) of the Act to notify an individual of certain matters does not require the
+           provider to obtain the individual’s consent to the disclosure of information to a
+           credit reporting body.
+
+           Matters that credit providers must notify or otherwise make individuals aware of
+       (3) At or before the time a credit provider collects personal information about an
+           individual that the provider is likely to disclose to a credit reporting body, the
+           provider must notify or otherwise ensure that the individual is made aware of the
+           following matters:
+             (a) if the likely disclosure is an information request:
+                   (i) that the individual’s consent to the disclosure being made is not
+                       required;
+                  (ii) that a record of the information request may be used and, as relevant,
+                       disclosed for the purposes of the credit reporting body or a credit
+                       provider assessing the individual's credit worthiness, including
+                       calculation of a credit score or credit rating (subject to any other use
+                       or disclosure limitations under the Act, the Regulations or this CR
+                       Code); and
+                 (iii) in general terms, how the information request may affect a credit
+                       score or credit rating calculated by a credit reporting body in relation
+                       to the individual;
+             (b) the credit reporting body may include the information in reports provided
+                 to credit providers to assist them to assess the individual’s credit
+                 worthiness;
+             (c) that if the individual fails to meet their payment obligations in relation to
+                 consumer credit or commits a serious credit infringement, the credit
+                 provider may be entitled to disclose this to the credit reporting body;
+             (d) how the individual may obtain:
+
+
+
+ 10                      Privacy (Credit Reporting) Code 2024
+                   (i) the credit provider’s policy about the management of credit-related
+                       personal information required by section 21B of the Act; and
+                  (ii) the credit reporting body’s policy about the management of credit-
+                       related personal information required by section 20B of the Act; and
+             (e) the individual’s rights to:
+                   (i) access the information from the credit provider; and
+                  (ii) request the credit provider to correct the information; and
+                 (iii) make a complaint to the credit provider.
+             (f) the individual’s rights to request the credit reporting body:
+                   (i) not to use their credit reporting information for the purposes of pre-
+                       screening of direct marketing by a provider; and
+                  (ii) not to use or disclose credit reporting information about the
+                       individual, if the individual believes on reasonable grounds that the
+                       individual has been, or is likely to be, a victim of fraud.
+
+
+
+           How credit providers may notify individuals
+       (4) A credit provider may comply with its obligations under subsection 21C(1) of
+           the Act and this section to notify or ensure an individual is aware of specified
+           matters (the notifiable matters) by:
+             (b) publishing a clearly expressed statement of the notifiable matters on its
+                 website; and
+             (c) at or before the time of collection of the personal information from the
+                 individual, notifying the individual or otherwise making the individual
+                 aware of the following:
+                   (i) that the credit provider’s website includes information about credit
+                       reporting, including the credit reporting bodies to which the provider
+                       is likely to disclose the individual’s credit information; and
+                  (ii) a brief description of the key issues contained in the statement of
+                       notifiable matters; and
+             (d) providing details of the credit provider’s website and ensuring that the
+                 notifiable matters are prominently displayed on the website; and
+             (e) making it clear to the individual that they can request to have the statement
+                 of notifiable matters provided in an alternative form – such as a hard copy.
+
+5 Practices, procedures and systems
+
+           Restrictions on the collection, use and disclosure of personal information
+       (1) A credit reporting body must not:
+            (a) collect personal information about an individual’s activities in relation to
+                consumer credit that is not credit information;
+            (b) use personal information about an individual’s activities in relation to
+                consumer credit that is not credit information to derive CRB derived
+                information; or
+
+
+
+                                   Privacy (Credit Reporting) Code 2024
+           (c) disclose personal information about an individual’s activities in relation to
+               consumer credit that is not credit information or credit reporting
+               information
+         unless subsections (3) or (4) apply to the information.
+     (2) A credit provider must not disclose to a credit reporting body or another provider
+         personal information about an individual’s activities in relation to consumer
+         credit that:
+           (a) was disclosed to the provider by a credit reporting body and that is not
+               credit reporting information; or
+           (b) was derived (wholly or in part) from personal information about an
+               individual’s activities in relation to consumer credit that was disclosed to
+               the provider by a credit reporting body and that is not credit reporting
+               information
+         unless subsection (4) applies to the information.
+         Note:     A credit provider includes an organisation or small business operators that is acting as
+                   an agent of a credit provider in some circumstances: see section 6H of the Act.
+
+     (3) This subsection applies to personal information that:
+          (a) is either credit ID information or capacity information; and
+          (b) is collected at the same time as the credit information or credit reporting
+               information.
+     (4) This subsection applies to personal information that:
+          (a) is either credit ID information or capacity information; and
+          (b) is disclosed at the same time as the credit information or credit reporting
+               information.
+
+         Restrictions on standardisation of consumer credit numbering conventions
+     (5) A credit reporting body and a credit provider must not agree or implement
+         procedures to standardise the provider’s numbering conventions for consumer
+         credit.
+
+         Practices, procedures and systems of credit providers
+     (6) A credit provider must have reasonable practices, procedures and systems, given
+         the size and complexity of its business, that are designed to cover obligations
+         under Part IIIA of the Act, the Regulations and this CR code.
+     (7) The practices, procedures and systems described in subsection (6) must require
+         the credit provider to:
+           (a) ensure it does not disclose information to a credit reporting body that it is
+               prohibited from disclosing;
+           (b) advise the relevant credit reporting body as soon as practicable if the
+               provider becomes aware that it has disclosed information to the body that it
+               is prohibited from disclosing;
+           (c) ensure that it only discloses credit information that is accurate, up-to-date
+               and complete;
+
+
+12                     Privacy (Credit Reporting) Code 2024
+      (d) if it identifies that credit information that it has disclosed to a credit
+          reporting body is not accurate, up-to-date and complete:
+            (i) advise the body of this as soon as is practicable; and
+           (ii) take reasonable steps to address the disclosure;
+      (e) if it becomes aware that credit reporting information disclosed to it by a
+          credit reporting body is not accurate, up-to-date, complete and relevant
+          having regard to the purpose of the disclosure, advise the body of that fact
+          as soon as practicable;
+      (f) where requested by a credit reporting body:
+            (i) take reasonable steps to review its credit-related personal information
+                 management practices, procedures and systems to assess whether
+                 credit information it has disclosed to credit reporting bodies is
+                 accurate, up-to-date and complete;
+           (ii) take reasonable steps to rectify any issues that are identified; and
+          (iii) advise the body of the results of the review and the action taken to
+                 rectify issues.
+      (g) take reasonable steps to assist a credit reporting body to ensure that its
+          credit reporting information is accurate, up-to-date, complete and relevant,
+          having regard to the purposes for which it is used or disclosed, and to
+          rectify any issues that are detected.
+
+    Practices, procedures and systems of credit reporting bodies
+(8) A credit reporting body must have reasonable practices, procedures and systems
+    that are designed to cover obligations under Part IIIA of the Act, the Regulations
+    and this CR Code.
+(9) The practices, procedures and systems described in subsection (8) must require
+    the credit reporting body to:
+      (a) use the information disclosed by credit providers in relation to individuals’
+          dates of birth to identify any information disclosed by a provider that:
+            (i) relates to an act, omission, matter or thing that occurred or existed
+                before the relevant individual turned 18; and
+           (ii) that the provider is prohibited from disclosing.
+      (b) identify, as soon as practicable, whether collected information includes
+          information that the body is prohibited from collecting and, if so, to destroy
+          the prohibited information;
+      (c) where the body destroys information on the basis that its collection was
+          prohibited, notify the relevant credit provider of the destruction as soon as
+          practicable;
+      (d) undertake regular testing of the credit information and credit reporting
+          information that the body uses and discloses to ensure that it is accurate,
+          up-to-date, complete and relevant, having regard to the purpose for which it
+          is used or disclosed;
+      (e) take reasonable steps to initiate, as soon as practicable, targeted testing of
+          its credit reporting information, where the body is informed, or identifies,
+          that credit reporting information in relation to an individual is not accurate,
+
+
+
+                             Privacy (Credit Reporting) Code 2024
+                up-to-date, complete and relevant, having regard to the purpose for which it
+                is used or disclosed;
+            (f) where the body identifies that credit reporting information in relation to an
+                individual is not accurate, up-to-date, complete and relevant, having regard
+                to the purpose for which the information is used or disclosed, rectify the
+                situation, including by destroying any information in accordance with its
+                obligations;
+            (g) where the body identifies credit information that is not accurate, up-to-date
+                and complete, raise this, where reasonable, with the credit provider that
+                disclosed the information and request that provider:
+                  (i) take reasonable steps to review its credit information management
+                      practices, procedures and systems;
+                 (ii) rectify any issues that are identified; and
+                (iii) advise the body of the results of the review; and
+            (h) report about its testing, undertaken in accordance with paragraph (d), and
+                any material findings or material changes to procedures, to credit providers
+                with which it has an agreement of the kind referred to in subsections
+                20N(3) or 20Q(2) of the Act.
+
+Division 4—Credit information
+
+6 Consumer credit liability information
+       (1) This section is made for the purposes of subsection 6(1) and section 21D of the
+           Act.
+           Note 1:   Consumer credit liability information is defined in subsection 6(1) of the Act, and
+                     includes:
+                     (a) the name of the credit provider;
+                     (b) whether the provider is a licensee;
+                     (c) the type of consumer credit;
+                     (d) the day on which the consumer credit is entered into;
+                     (e) the terms or conditions of the consumer credit that relate to repayment of the
+                         amount of the credit; and that are prescribed by the Regulations;
+                     (f)   the maximum amount of credit available under the consumer credit;
+                     (g) the day on which the consumer credit is terminated or otherwise ceases to be in
+                         force.
+           Note 2:   Section 21D of the Act outlines when a credit provider may disclose credit information
+                     (including consumer credit liability information) to a credit reporting body.
+
+           Type of consumer credit
+       (2) A credit reporting body must, in conjunction with other credit reporting bodies
+           and credit providers, contribute to the development and maintenance of common
+           descriptors of the types of consumer credit.
+       (3) A credit provider must use the descriptors referred to in subsection (2) when
+           disclosing information to a credit reporting body about the type of consumer
+           credit that they have provided to individuals.
+
+
+ 14                        Privacy (Credit Reporting) Code 2024
+    Meaning of other kinds of consumer credit liability information
+(4) When collecting, using or disclosing information under the Part IIIA of the Act,
+    the Regulations and this CR Code, the following types of consumer credit
+    liability information have the meaning given in this instrument:
+      (a) the day on which the consumer credit is entered into;
+      (b) the maximum amount of credit available under the consumer credit; and
+      (c) the day on which the consumer credit is terminated or otherwise ceases to
+           be in force.
+(5) When credit is terminated or otherwise ceases to be in force in the manner
+    described in subparagraph (b)(iii) of the definition of that term, and the date on
+    which that occurred is disclosed to a credit reporting body, the individual is no
+    longer able to incur further debt (other than that arising from interest, fees or
+    other charges in respect to the debt) under the credit.
+
+    Credit provider disclosures of consumer credit liability information
+(6) Subject to subsection (7), where a credit provider chooses to disclose consumer
+    credit liability information about an individual to a credit reporting body, the
+    provider must do one of the following:
+      (a) in a single disclosure, disclose:
+            (i) the name of the provider; and
+              Note: This is information contemplated by paragraph (a) of the definition of consumer
+                  credit liability information in the Act.
+           (ii) whether the provider is a licensee; and
+              Note: This is information contemplated by paragraph (b) of the definition of consumer
+                  credit liability information in the Act.
+          (iii) all of the information contemplated by paragraphs (c) to (f) of the
+                definition of consumer credit liability information in the Act, except
+                information that is not then reasonably available;
+      (b) in a single disclosure, disclose
+            (i) its name; and
+              Note: This is information contemplated by paragraph (a) of the definition of consumer
+                  credit liability information in the Act.
+           (ii) the day the consumer credit is entered into (unless that information is
+                not then reasonably available).
+              Note: This is information contemplated by paragraph (d) of the definition of consumer
+                  credit liability information in the Act.
+
+(7) Where:
+     (a) a credit provider chooses to disclose consumer credit liability information
+         about an individual to a credit reporting body; and
+     (b) the consumer credit to which the information relates is terminated or
+         otherwise ceases to be in force:
+    the provider must disclose the day on which the credit is terminated or ceases to
+    be in force to the body within 45 days of that day.
+
+
+
+
+                               Privacy (Credit Reporting) Code 2024
+7 Information requests
+      (1) This section is made for the purposes of subsections 6N(d) and 6N(e) of the Act.
+          Note 1:   Subsection 6N(d) of the Act provides that credit information includes “a statement that
+                    an information request has been made in relation to the individual by a credit provider,
+                    mortgage insurer or trade insurer;”.
+          Note 2:   Subsection 6N(e) of the Act provides that credit information includes “the type of
+                    consumer credit or commercial credit, and the amount of credit, sought in an
+                    application:
+                            (i) that has been made by the individual to a credit provider; and
+                            (ii) in connection with which the provider has made an information request in
+                                  relation to the individual;”.
+
+      (2) Where:
+           (a) a credit provider makes an information request to a credit reporting body in
+               connection with an application for consumer credit; and
+           (b) the amount of credit sought is unknown or incapable of being specified
+          the credit information that the credit reporting body may collect and disclose
+          may include that an unspecified amount of consumer credit is being sought from
+          the credit provider.
+
+8 Repayment history information
+      (1) This section is made for the purposes of sections 6V and 21D of the Act.
+          Note:     Credit information about an individual includes ‘repayment history information’ about
+                    that individual. Under section 6V of the Act, repayment history information is
+                    information about:
+                    (a)        whether or not an individual has met an obligation to make a monthly
+                               payment that is due and payable in relation to the consumer credit (including
+                               if that obligation is being determined by reference to a financial hardship
+                               arrangement);
+                    (b)        the day on which the monthly payment is due and payable;
+                    (c)        if the individual makes the monthly payment after the day on which the
+                               payment is due and payable – the day on which the individual makes that
+                               payment.
+                    The Act contains additional restrictions about when repayment history information can
+                    be collected and disclosed.
+
+      (2) For the purposes of disclosing repayment history information and the definition
+          of repayment history information in section 6V of the Act:
+            (a) if the payment obligation for that month is not being determined by
+                reference to a temporary FHA:
+                  (i) consumer credit is overdue if, after any payments made during that
+                      month are taken into account, on the last day of the month to which
+                      the repayment history information relates, there remained at least one
+                      overdue payment in relation to which the grace period has expired as
+                      determined by reference to the terms of the consumer credit; and
+                 (ii) the grace period allowed by the credit provider for an overdue
+                      payment under subparagraph (i) must be at least 14 days, beginning
+
+
+
+16                        Privacy (Credit Reporting) Code 2024
+               on the date that the provider’s systems first classified the payment as
+               being in arrears; or
+     (b) if the payment obligation for that month is being determined by reference
+         to a temporary FHA – the individual will have met their obligations under
+         the temporary FHA if, after any payments made during that month are
+         taken into account, on the last day of the month to which the repayment
+         history information relates, there are no overdue payments as determined
+         by reference to the financial hardship arrangement.
+
+    Requirements relating to disclosure of repayment history information
+(3) Where a credit provider discloses repayment history information about consumer
+    credit provided to an individual, the provider must take reasonable steps to
+    ensure that:
+      (a) it does not disclose repayment history information about that credit more
+          frequently than once each month; and
+      (b) for each month, after any payments made during that month are taken into
+          account, it only discloses whichever of the following is applicable:
+            (i) that the consumer credit was not overdue for that month or, if the
+                payment obligation for that month is being determined by reference to
+                a temporary FHA, the individual has met their obligations under the
+                temporary FHA for that month; or
+           (ii) that there was an amount overdue in relation to the consumer credit
+                for that month or, if the payment obligation for that month is being
+                determined by reference to a temporary FHA, the individual has not
+                met their obligations under the temporary FHA for that month; and
+      (c) the disclosure is expressed in the manner set out in subsection (4) and (5).
+
+    Repayment history information – no temporary FHA
+(4) If the payment obligation for that month is not being determined by reference to
+    a temporary FHA, the disclosure of repayment history information is to be
+    expressed as a code representing the following (as determined by reference to the
+    terms of the consumer credit):
+      (a) where the consumer credit is not overdue – “Current up to and including
+           the grace period”; or
+      (b) where there is an amount overdue in relation to the consumer credit, the
+           age of the oldest outstanding payment, expressed as a code as follows:
+             (i) “1” – 15-29 days overdue
+            (ii) “2” – 30-59 days overdue
+           (iii) “3” – 60-89 days overdue
+           (iv) “4” – 90-119 days overdue
+            (v) “5” – 120-149 days overdue
+           (vi) “6” – 150-179 days overdue
+          (vii) “X” – 180 or more days overdue.
+
+
+
+
+                            Privacy (Credit Reporting) Code 2024
+          Repayment history information – temporary FHA
+      (5) If the payment obligation for that month is being determined by reference to a
+          temporary FHA, the disclosure of repayment history information is to be
+          expressed in the following manner:
+            (a) where the individual has met their obligations under the temporary FHA –
+                 the same code set out in paragraph 8(4)(a) (meaning, in this case,
+                 “Current”); or
+            (b) where the individual has not met their obligations under the temporary
+                 FHA – the same code set out in subparagraph 8(4)(b)(i) (“1”, meaning, in
+                 this case, the payment is one or more days overdue).
+                    Note: While subsection 8(5) requires the use of the some of the same codes as in
+                        subsection 8(4), the meaning of those codes when used under subsection 8(5) is
+                        not the same.
+
+
+8A Financial hardship information
+      (1) This section is made for the purposes of sections 6QA and 21EA of the Act.
+          Note 1:   Section 6QA of the Act sets out the definition of financial hardship arrangement and
+                    financial hardship information. A financial hardship arrangement exists where a credit
+                    provider and an individual (who is or will be unable to meet their obligations under the
+                    credit received from the provider) make an arrangement affecting the individual’s
+                    monthly payment obligations. These arrangements can be either a permanent variation
+                    to the terms of the credit (a variation FHA) or temporary relief or deferral of the
+                    individual’s obligations (a temporary FHA). Repayment history information is
+                    calculated by reference to the affected payment obligations. When repayment history
+                    information is calculated in this way, financial hardship information may also exist.
+          Note 2:   Section 21EA of the Act provides that if a credit provider discloses repayment history
+                    information about an individual in relation to a monthly payment and financial
+                    hardship information exists in relation to that payment, the financial hardship
+                    information must also be disclosed.
+
+          Disclosing financial hardship information
+      (2) Financial hardship information may be disclosed in relation to consumer credit if
+          the individual’s payment obligation for a month under that consumer credit is
+          affected by a financial hardship arrangement.
+      (3) For the purposes of subsection (2), an individual’s payment obligation for a
+          month is affected by a financial hardship arrangement if the financial hardship
+          arrangement is active on the later of:
+            (a) last day of the month to which the repayment history information that
+                could be disclosed for that month relates; and
+                    Note: See section 8 for further information about disclosing repayment history
+                        information.
+           (b) if a grace period applies for that month, the last day of the grace period
+               allowed by the credit provider (the assessment day).
+      (4) For the purposes of subsection (3), a financial hardship arrangement will be
+          active where:
+           (a) if the arrangement is a variation FHA: a payment due in that month (as
+                determined by reference to the terms of the consumer credit) was affected
+
+
+
+18                      Privacy (Credit Reporting) Code 2024
+          by the financial hardship arrangement and that payment was the first
+          payment affected by the arrangement; and
+      (b) if the arrangement is a temporary FHA: a payment due in that month (as
+          determined by reference to the terms of the consumer credit) was affected
+          by the financial hardship arrangement and no other payments (as
+          determined by reference to the terms of the consumer credit) that are
+          unaffected by the arrangement have subsequently fallen due in that month
+          (whether or not those subsequent payments have been paid).
+(5) If two or more financial hardship arrangements are active on the assessment day,
+    the financial hardship information and repayment history information that may
+    be disclosed is to be determined by reference to the financial hardship
+    arrangement that requires the lowest payment obligation for that month.
+    Note: It is possible for more than one financial hardship arrangement to be ‘active’ for a month.
+                 However, a credit provider can only disclose repayment history information and,
+                 therefore, financial hardship information in relation to one of those arrangements: see
+                 paragraph 8(3)(a).
+
+(6) If the consumer credit is held jointly by two or more individuals and a financial
+    hardship arrangement is made between any of those individuals and the CP,
+    financial hardship information may be disclosed in relation to all individuals who
+    hold the consumer credit.
+    Note: If a credit provider complies with the conditions associated with making a financial hardship
+                 arrangement with one individual who holds the consumer credit, the need not e.g.
+                 obtain the agreement or consent to the financial hardship arrangement of other
+                 individuals who jointly hold the consumer credit. The provider may need to consider
+                 whether it would be appropriate to notify those other individuals.
+
+(7) Subject to subsections (14) and (15), if a credit provider discloses financial
+    hardship information in a month in relation to consumer credit, the provider must
+    also disclose repayment history information in relation to that consumer credit
+    for that month.
+(8) An individual will satisfy the conditions of paragraph 6QA(5)(b) of the Act if the
+    individual pays their ordinary monthly payment in the month plus all amounts
+    overdue from previous months, and that payment is made by the last day of the
+    month.
+    Note: Information about a temporary FHA is not financial hardship information where the
+               conditions of subsection 6QA(5) of the Act are met, including that was equal to, or
+               greater than, the amount the individual would have been obliged to pay apart from the
+               arrangement.
+
+    Timing of commencement of financial hardship arrangements
+(9) For the avoidance of doubt, a financial hardship arrangement is made when the
+    individual and a credit provider agree to the arrangement and not when a
+    hardship request is made. However, the commencement date of a financial
+    hardship arrangement may be backdated:
+      (a) to no earlier than the day the hardship request was made by the individual:
+            (i) if the credit provider has unreasonably or unnecessarily delayed
+                agreeing to the arrangement, having regard to the time that the
+                provider acting reasonably would have taken and any conduct of the
+                individual that contributed to the delay; or
+
+                                  Privacy (Credit Reporting) Code 2024
+                 (ii) otherwise, where the credit provider considers that the backdated
+                      commencement date more accurately reflects the date the arrangement
+                      ought to have commenced, having regard to all the circumstances; or
+            (b) if:
+                  (i) the individual requests a credit provider to backdate the
+                      commencement date of the financial hardship arrangement on the
+                      basis that the individual was not able to make a hardship request at an
+                      earlier time because of the unavoidable consequences of
+                      circumstances beyond the individual’s control, such as illness or
+                      natural disaster; and
+                 (ii) the credit provider is satisfied that this is the case.
+
+          Temporary FHAs
+     (10) For the purposes of the definition of temporary FHA:
+           (a) an overdue payment arrangement is presumed to be a temporary FHA if the
+                individual will not pay at least their ordinary monthly payments within the
+                next month. This presumption does not apply if:
+                  (i) the credit provider reasonably believes that the individual’s inability
+                      to meet their obligations in relation to the consumer credit is the result
+                      of a mismanagement of funds in the short term; or
+                 (ii) the individual has not provided the information that the credit
+                      provider reasonably requested to assess the reason for the individual’s
+                      inability to meet their obligations in relation to the consumer credit; or
+                (iii) the individual explicitly states that they do not want to make a
+                      hardship request.
+           (b) an overdue payment arrangement is presumed not to be a temporary FHA
+                if the individual is to pay at least their ordinary monthly payments (without
+                immediately paying all amounts that are currently overdue) within the next
+                month. This presumption does not apply if:
+                  (i) the arrangement directly follows, and is in response to, an earlier
+                      temporary FHA; or
+                     Note: This will apply to arrangements that are commonly called ‘payment test periods’
+                         (or ‘serviceability periods’) or ‘catch-up periods’ that follow an earlier temporary
+                         FHA, and which relate to the overdue payments (as determined by the terms of the
+                         consumer credit) that have accrued during that temporary FHA.
+                 (ii) even if the individual makes those payments, the consumer credit is
+                      likely to still be overdue after 7 months; or
+                (iii) the individual has made a hardship request and the individual and
+                      credit provider have explicitly agreed to a temporary FHA.
+            (c) if a credit provider does not agree to a hardship request, an overdue
+                payment arrangement directly following that refusal is presumed to be a
+                temporary FHA unless the provider tells the individual that the
+                arrangement is not a financial hardship arrangement.
+          Note: This subsection relates to the arrangements that are put in place between the individual and
+                      the credit provider for the purposes of the credit reporting system. A provider must
+                      separately consider whether the individual has given a ‘hardship notice’ under the
+                      National Credit Code. If an individual gives a hardship notice, the provider would have
+                      obligations under sections 72 or 177B of the National Credit Code. If the individual
+                      gives a ‘hardship notice’, the provider is not required to agree to a temporary FHA.
+
+
+
+20                       Privacy (Credit Reporting) Code 2024
+     Variation FHAs
+(11) For the purpose of the definition of variation FHA, an agreement between the
+     individual and a credit provider to vary the terms of the consumer credit is a
+     variation FHA if:
+       (a) the agreement is made:
+              (i) following and in response to a temporary FHA; or
+             (ii) in response to a hardship request; and
+       (b) one or more of the following types of variations has been agreed:
+              (i) reducing the monthly payment obligations that are to fall due under
+                  the consumer credit (whether for the remainder of the term of the
+                  credit or a shorter period) so that if the individual satisfies those
+                  obligations (and not the previous obligations) the credit provider
+                  would treat the consumer credit as not being overdue (as determined
+                  by reference to the terms of the consumer credit); and
+             (ii) treating payments that are already overdue in relation to the consumer
+                  credit as being no longer overdue (as determined by reference to the
+                  terms of the consumer credit) without the individual paying those
+                  overdue amounts;
+           (iii) extending the term of the consumer credit;
+            (iv) waiving debt under the consumer credit (whether that debt is made up
+                  of principal, interest, fees or other charges), including where the CP
+                  agrees to permanently cease efforts to collect the debt;
+             (v) reducing the interest rate, fees or other charges payable in relation to
+                  the consumer credit (unless this is done as an incidental part of an
+                  overdue payment arrangement); or
+            (vi) changing the repayment terms in relation to the consumer credit from
+                  principal and interest to interest only or extending a current interest
+                  only period (whether for the remainder of the term of the credit or a
+                  shorter period).
+
+     Providing information about RHI and FHI to be disclosed
+(12) If an overdue payment arrangement or variation FHA is put in place, a credit
+     provider must take reasonable steps to provide the individual with information
+     that describes the repayment history information and, if relevant, the financial
+     hardship information that may be disclosed to a credit reporting body as a result
+     of the arrangement. This information:
+       (a) must relate to the specific type of arrangement that is put in place (i.e.
+           temporary FHA, variation FHA or other type of arrangement that is not a
+           financial hardship arrangement);
+       (b) is not otherwise required to be tailored to the specific circumstances of the
+           individual;
+       (c) may be given verbally or in writing;
+       (d) if given in writing, may be given by provision of an electronic link to a
+           website that includes the information that relates to the specific type of
+           arrangement that is put in place;
+
+
+
+                              Privacy (Credit Reporting) Code 2024
+            (e) must be given at the time the arrangement is put in place or as soon as
+                practicable afterwards;
+            (f) if the arrangement is an overdue payment arrangement, is not required to
+                be given if the payment or payments subject to the arrangement are due to
+                be made within the grace period that applies to the overdue payments under
+                subsection (3); and
+            (g) if the arrangement is a variation FHA and is to be the last step to finalise
+                the individual’s hardship arrangements following an earlier temporary
+                FHA, may be provided when that temporary FHA was made (and in
+                conjunction with the information given about that temporary FHA).
+
+          Expression of financial hardship information
+     (13) Where a credit provider discloses financial hardship information about consumer
+          credit provided to an individual, the provider must take reasonable steps to
+          ensure that the disclosure is expressed using one of the following codes:
+            (a) “V” — representing financial hardship information relating to a variation
+                FHA; or
+            (b) “A” — representing financial hardship information relating to a temporary
+                FHA.
+
+          Transitional matters
+     (14) If an arrangement is made on or after 1 July 2022 in response to a hardship
+          request made before that date (and where the arrangement would otherwise be a
+          financial hardship arrangement), the credit provider may treat that arrangement
+          as not being a financial hardship arrangement;
+     (15) If an individual and a credit provider have prior to 1 July 2022 agreed to an
+          arrangement affecting the monthly payment obligations of the individual which
+          is a temporary relief or deferral of the individual’s obligations in relation to
+          consumer credit and, on or after 1 July 2022 the individual and the provider
+          agree to:
+            (a) an extension of that temporary relief or deferral – the credit provider may
+                 treat that further period as not being a financial hardship arrangement;
+            (b) a variation FHA that directly follows and relates to that earlier arrangement
+                 – the credit provider is not required to disclose financial hardship
+                 information in relation to that variation FHA even if the provider discloses
+                 repayment history information in the month that the arrangement is made.
+
+          Restrictions on requesting financial hardship information
+     (16) A credit provider or mortgage insurer must take reasonable steps to ensure that it
+          does not seek the disclosure of financial hardship information from a credit
+          reporting body in circumstances in that the body is not permitted to disclose that
+          information to the provider or insurer.
+          Note: Subsection 20E(4A) of the Act prohibits credit reporting bodies from disclosing financial
+                     hardship information to a credit provider for the purpose of collecting payments that
+                     are overdue in relation to consumer credit or commercial credit and for certain other
+                     purposes. Credit reporting bodies are also prohibited from disclosing financial hardship
+                     information to a mortgage insurer in some circumstances.
+
+
+22                       Privacy (Credit Reporting) Code 2024
+9 Default information
+
+           Restrictions on disclosing default information
+       (1) Subject to subsection (2), a credit provider must not disclose an overdue payment
+           in relation to consumer credit to a credit reporting body as default information if:
+             (a) the individual has made a hardship request (whether via a variation of the
+                  terms and conditions of the consumer credit or new consumer credit); and
+             (b) either:
+                    (i) the credit provider is in the process of deciding the individual’s
+                        hardship request, including if the provider is waiting upon information
+                        from the individual for the purposes of making that decision; or
+                   (ii) if the credit provider decides to refuse the individual’s hardship
+                        request – until at least 14 days after the provider has notified the
+                        individual of this decision.
+       (2) Subsection (1) does not apply if:
+            (a) the hardship request referred to in that subsection is made on a basis that
+                the credit provider reasonably believes is materially the same as the basis
+                on which a previous hardship request was made; and
+            (b) the previous request was made during the previous 4 months.
+
+           Timing and content of notices relating to default information
+       (3) The following requirements must be met before a credit provider discloses
+           default information about an individual to a credit reporting body:
+            (a) the credit provider must give the consumer the section 6Q notice and a
+                section 21D(3) notice separately;
+            (b) the credit provider must give the section 6Q notice before the section
+                21D(3) notice;
+            (c) the credit provider must not give the section 21D(3) notice less than 30
+                days after the giving of the section 6Q notice;
+            (d) the credit provider must not give the section 21D(3) notice with other
+                correspondence that a reasonable person would conclude materially
+                reduces the prominence of the messages in the notice;
+            (e) the credit provider must give the section 6Q notice and section 21D(3)
+                notice by sending them to the individual’s last known address at the time of
+                despatch. The section 6Q notice and section 21D(3) notice may be sent by
+                electronic communication.
+           Note 1: Under the Act, information is not default information unless a section 6Q notice is
+                      provided. Default information may not be disclosed unless a section 21D(3) notice is
+                      given.
+           Note 2: Electronic disclosure should comply with other related legal obligations, including under
+                      the Electronic Transactions Act 1999.
+           Note 3: Either a section 6Q notice or a section 21D(3) notice may be combined with a notice given
+                       for the purposes of section 88 of the National Credit Code (Schedule 1 to the National
+                       Consumer Credit Protection Act 2009). Where a credit provider combines a notice
+                       under the Act with a notice under section 88 of the National Credit Code, all of the
+                       requirements set out in the National Credit Code apply to that combined notice.
+
+
+
+
+                                        Privacy (Credit Reporting) Code 2024
+          Default information – timing of disclosure
+      (4) A credit provider must only disclose default information to a credit reporting
+          body:
+           (a) at least 14 days after the date on which the section 21D(3) notice was given
+                by the credit provider to the individual; and
+           (b) no later than 3 months after that date.
+
+          Default information – amount that is disclosed as overdue
+      (5) Where a credit provider discloses default information to a credit reporting body,
+          the amount that is disclosed as the amount that is overdue must:
+            (a) not exceed the amount specified in the section 21D(3) notice:
+                  (i) plus an additional amount to reflect interest, fees and other amounts
+                      that are owing as a result of the overdue payment, other than the
+                      acceleration of the entire liability for the consumer credit, which have
+                      accrued by the time of the disclosure; and
+                 (ii) less any part payments received in cleared funds prior to the date of
+                      disclosure by the provider to the body; and
+            (b) have been overdue for at least 60 days, except the component of the
+                amount referred to in subparagraph (i) above; and
+            (c) subject to subsection (6), not include an amount of an overdue payment
+                that was previously disclosed as default information in relation to that
+                consumer credit.
+      (6) Where a credit provider discloses default information to a credit reporting body:
+           (a) the amount specified as overdue may be subsequently updated to reflect the
+               accrual of interest, fees and other amounts that are owing as a result of the
+               overdue payment, other than the acceleration of the entire liability for the
+               consumer credit;
+           (b) where the amount of an overdue payment is the result of the acceleration of
+               the entire liability for the consumer credit and includes an amount
+               previously disclosed as default information, the credit provider must
+               request the credit reporting body destroy the previously disclosed default
+               information;
+           (c) where a credit reporting body is requested under (b) to destroy default
+               information, the body must destroy the default information
+           (d) where an amount is updated under paragraph (a), the original date of
+               disclosure of default information remains the date from which the relevant
+               retention period runs.
+
+10 Payment information
+      (1) For the purposes of the definition of payment information in Section 6T of the
+          Act, the amount of the overdue payment to which the information relates is taken
+          to be paid when one of the following occurs:
+            (a) payment is received in cleared funds of the full amount of the overdue
+                payment, including all interest, fees and other amounts that are included in
+                the amount specified as overdue in the default information;
+
+
+24                     Privacy (Credit Reporting) Code 2024
+            (b) payment is received in cleared funds of part of the amount of the overdue
+                payment and the credit provider accepts this amount in full settlement of
+                the overdue payment; or
+            (c) the credit provider waives the payment.
+           Note: Payment information is a statement that an overdue payment that has previously been
+                     disclosed as default information has now been paid: see section 6T of the Act.
+
+       (2) Where a credit provider has an obligation to disclose to a credit reporting body
+           payment information relating to an individual and the individual asks the
+           provider to disclose this information, the provider must take reasonable steps to
+           disclose the payment information within 3 business days of the later of:
+             (a) the individual’s request; and
+             (b) the date when the overdue payment is taken to be made in accordance with
+                 subsection (1)
+           unless the provider has reasonable grounds for requiring a longer period of time
+           to disclose the information.
+
+11 Publicly available information
+       (1) This section is made for the purposes of subsection 6N(k) and section 20C of the
+           Act.
+           Note: Certain types of publicly available information are credit information and therefore may be
+                      collected, disclosed and used subject to the restrictions in the Act.
+
+       (2) For the avoidance of doubt, publicly available information does not include:
+            (a) originating process issued by a Court or Tribunal; or
+            (b) any judgment or proceedings where the individual’s rights have been
+                 subrogated to an insurer; or
+            (c) any judgment or proceedings that is otherwise unrelated to credit;
+           because that information does not relate to the individual’s credit worthiness.
+       (3) A credit reporting body must only collect publicly available information about an
+           individual where each of the following is satisfied:
+             (a) the information is collected from an agency or a state or territory authority;
+             (b) the content of the information is generally available to members of the
+                 public;
+                      Note: The content of the information is generally available even where:
+                      (a) it is available in a different form from that provided to a credit reporting body, or
+                      (b) a fee must be paid to obtain the information.
+            (c) the information relates to activities conducted within Australia or its
+                external Territories; and
+            (d) the information relates to the individual’s creditworthiness.
+
+12 Serious credit infringements
+       (1) This section is made for the purposes of subsection 6N(l) and section 21D of the
+           Act.
+
+
+
+                                        Privacy (Credit Reporting) Code 2024
+         Note 1: A credit provider’s opinion that an individual has committed a serious credit infringement
+                    is credit information and may be collected, disclosed and used subject to the
+                    restrictions in the Act.
+         Note 2: A serious credit infringement is defined in the Act as:
+                    (a) an act done by an individual that involves fraudulently obtaining consumer credit,
+                         or attempting fraudulently to obtain consumer credit; or
+                    (b) an act done by an individual that involves fraudulently evading the individual’s
+                         obligations in relation to consumer credit, or attempting fraudulently to evade
+                         those obligations; or
+                    (c) an act done by an individual if:
+                          (i) a reasonable person would consider that the act indicates an intention, on
+                                 the part of the individual, to no longer comply with the individual’s
+                                 obligations in relation to consumer credit provided by a credit provider; and
+                          (ii) the provider has, after taking such steps as are reasonable in the
+                                 circumstances, been unable to contact the individual about the act; and
+                          (iii) at least 6 months have passed since the provider last had contact with the
+                                 individual.
+
+         Disclosure of serious credit infringements: fraudulently obtaining credit
+     (2) Where a credit provider discloses to a credit reporting body that, in the
+         provider’s opinion, an individual has committed a serious credit infringement as
+         described in paragraph (a) of the definition of that term in the Act, the provider
+         must be able to reasonably establish that:
+           (a) when obtaining or attempting to obtain consumer credit, the individual
+               made, or arranged for someone else to make, a material false statement to
+               the credit provider or knowingly allowed the provider to rely upon a
+               material false statement or premise; and
+          (b) the individual did this knowing that the statement or premise was untrue
+               and, with intent to deceive the credit provider, aware that the false
+               statement or premise was likely to materially affect the provider’s decision
+               about whether or not to provide credit to the individual.
+
+         Disclosure of serious credit infringements: fraudulently evading obligations
+         under credit
+     (3) Where a credit provider discloses to a credit reporting body that, in the
+         provider’s opinion, an individual has committed a serious credit infringement as
+         described in paragraph (b) of the definition of that term in the Act, the provider
+         must be able to reasonably establish that:
+           (a) the individual made, or arranged for someone else to make, a material false
+               statement to the credit provider or knowingly allowed the provider to rely
+               upon a material false statement or premise; and
+          (b) the individual did this knowing that the statement or premise was untrue
+               and with intent to evade the individual’s obligations in relation to consumer
+               credit by deceiving the credit provider as to a material fact.
+
+         Disclosure of serious credit infringements: intention to no longer comply by an
+         individual who cannot be contacted
+     (4) Before a credit provider discloses to a credit reporting body that, in the
+         provider’s opinion, an individual has committed a serious credit infringement as
+         described in paragraph (c) of the definition of that term in the Act, the provider
+
+26                       Privacy (Credit Reporting) Code 2024
+           must have disclosed an overdue payment to which the serious credit infringement
+           relates to the body as default information.
+       (5) In order to establish that reasonable steps have been taken to contact an
+           individual for the purposes of subparagraph (c)(ii) of the definition of serious
+           credit infringement in the Act, the credit provider must:
+             (a) attempt to make contact with the individual where possible by phone, email
+                 and mail;
+             (b) if the contact attempts described in paragraph (a) suggest that any of the
+                 individual’s contact details are no longer current, take reasonable steps to
+                 ascertain new contact details and, where new contact details are
+                 ascertained, repeat the previous contact attempts using the new contact
+                 details;
+             (c) in phone messages (where these can be left with an automatic answering
+                 service or with an adult) and emails, take reasonable steps to provide its
+                 contact details and ask the individual to contact the provider as a matter of
+                 urgency;
+             (d) in mailed letters:
+                   (i) give particulars of the default; and
+                  (ii) state that if a period of 6 months elapses without contact with the
+                       individual about the default the credit provider intends to disclose the
+                       default to a credit reporting body as a serious credit infringement and
+                       explain the effect of that disclosure; and
+             (e) retain such evidence of attempts to contact the individual as is reasonable
+                 in the circumstances.
+       (6) If an individual makes contact with the credit provider at any time during the 6
+           month period beginning on the later of:
+             (a) the date of the section 6Q notice; or
+             (b) the date of last contact with the individual;
+           the 6 months period referred to in paragraph (c)(iii) of the definition of serious
+           credit infringement recommences.
+           Note: In this situation, the credit provider will then be unable to disclose its opinion that a serious
+                       credit infringement has been committed until a new period of 6 months has passed
+                       without contact with the individual.
+
+       (7) If a credit provider discloses payment information or new arrangement
+           information to a credit reporting body that relates to an overdue amount that is
+           the subject of a serious credit infringement disclosure (based on paragraph (c) of
+           the definition of that term in the Act), the body must destroy the information
+           relating to the serious credit infringement.
+
+Division 5—Dealing with credit information
+
+13 Transfer of rights of credit provider
+       (1) This section is made for the purposes of subsection 6K and section 21D of the
+           Act.
+
+
+
+                                          Privacy (Credit Reporting) Code 2024
+          Note: Section 6K of the Act sets out when an organisation or small business operator who acquires
+                      rights in respect of credit is treated as a credit provider.
+
+      (2) Subsection (3) applies if:
+           (a) an acquirer acquires the rights of a credit provider (the original credit
+               provider) in relation to the repayment of an amount of consumer credit;
+               and
+           (b) the original credit provider notifies the individual to whom that consumer
+               credit was provided of the transfer event; and
+           (c) prior to the transfer event, the original credit provider had disclosed to a
+               consumer credit liability information or default information about the
+               consumer credit to a credit reporting body.
+      (3) The original credit provider and acquirer must ensure that disclosure is made to
+          the credit reporting body of:
+            (a) the transfer event within 45 days of its occurrence including the name of
+                the acquirer; and
+            (b) any information that is thereafter required to be disclosed under Part IIIA
+                of the Act, the Regulations or this CR Code.
+      (4) For the purposes of the disclosure of information described in paragraph (3)(b),
+          the acquirer is taken to have made any disclosures by the original credit provider
+          in relation to that credit that were made prior to the transfer event.
+
+14 Permitted CRB disclosures
+      (1) This section is made for the purposes of sections 20E, 20F and 21G of the Act.
+          Note: Section 20E of the Act contains restrictions about when a credit reporting body may disclose
+                      credit reporting information. Bodies may disclose credit reporting information to credit
+                      providers, mortgage insurers and/or trade insurers in the circumstances set out in
+                      section 20F of the Act, many of which relate to the provider or insurer requesting the
+                      information for specific purposes. Section 21G of the Act puts in place a similar
+                      framework restriction how providers may disclose credit eligibility information
+
+      (2) Before a credit reporting body discloses credit reporting information to a credit
+          provider, mortgage insurer or trade insurer, the body must have taken reasonable
+          steps to ensure that the provider or insurer has been notified of the requirements
+          of Part IIIA of the Act, the Regulations and this CR Code about limitations on
+          use and disclosure of credit reporting information.
+      (3) Subsections (4) and (5) apply where:
+           (a) in response to a request:
+                 (i) a credit reporting body discloses credit reporting information to a
+                     credit provider, mortgage insurer or trade insurer; or
+                (ii) a credit provider discloses credit eligibility information to an entity to
+                     which a permitted CP disclosure may be made; and
+           (b) the credit reporting body, credit provider, mortgage insurer or trade insurer
+               (as applicable) subsequently becomes aware that the credit reporting
+               information or credit eligibility information was about an individual other
+               than the individual that was the subject of the request.
+      (4) The recipient of the information described in subsection (3) must:
+
+28                        Privacy (Credit Reporting) Code 2024
+             (a) advise the disclosing credit reporting body or credit provider of the mistake
+                 as to identity, unless it was the disclosing body or provider that identified
+                 the mistake);
+             (b) destroy the disclosed information; and
+                       Note: Section 1A has information about obligations to destroy information
+             (c) take reasonable steps to ensure that any derived information that is based
+                 on the disclosed information is not disclosed or used for the purpose of
+                 assessing the credit worthiness of the individual to whom the information
+                 relates
+       (5) The credit reporting body or credit provider that disclosed the information
+           described in subsection (3) must:
+            (a) advise the recipient of the information of the mistake as to identity (unless
+                 it was the recipient of the information that identified the mistake); and
+            (b) take reasonable steps to review its disclosure practices, procedures and
+                 systems so that similar mistakes are minimised in the future.
+                       Note: Section 5 sets out requirements about practices, procedures and systems of credit
+                           reporting bodies and credit providers.
+
+
+15 Security of credit reporting information
+       (1) This section is made for the purposes of section 20Q of the Act.
+           Note: Section 20Q of the Act requires credit reporting bodies to take reasonable steps to protect
+                       credit reporting information from misuse, interference and loss, unauthorised access,
+                       modification or disclosure. Bodies must also enter into agreements with credit
+                       providers requiring them to protect information in this way.
+
+           Information security obligations
+       (2) A credit reporting body and a credit provider must maintain reasonable practices,
+           procedures and systems to ensure the security of electronic transmission and
+           storage of credit reporting information and credit eligibility information.
+
+16 Use and disclosure of credit-related personal information by CPs and
+          affected information recipients
+       (1) This section is made for the purposes of Subdivision D of Division 3 of Part IIIA
+           of the Act.
+           Note: Subdivision D of Division 3 of Part IIIA of the Act contains a framework restricting the use
+                      and disclosure of credit eligibility information. Within that subdivision, section 21H
+                      sets out permitted uses of credit eligibility information by credit providers in relation to
+                      individuals. Sections 21J to 21N set out permitted disclosures of credit eligibility
+                      information to different parties.
+
+           Purposes for which credit eligibility information and regulated information must
+           not be disclosed or used
+       (2) A credit provider or an affected information recipient must not use or disclose
+           credit eligibility information or regulated information for the purposes of:
+             (a) assessing the likelihood that the individual to which the information relates
+                 may accept an invitation to apply for, or an offer of, any of the following:
+                   (i) credit;
+
+                                         Privacy (Credit Reporting) Code 2024
+                (ii) a variation of the amount of, or terms on which, credit is provided;
+               (iii) insurance in relation to mortgage credit or commercial credit; or
+               (iv) a variation of amount of, or terms on which, insurance in relation to
+                     mortgage credit or commercial credit is provided;
+           (b) targeting or inviting an individual to apply for, or accept an offer of, any of
+               the following:
+                 (i) credit;
+                (ii) a variation of the amount of, or terms on which, credit is provided;
+               (iii) insurance in relation to mortgage credit or commercial credit; or
+               (iv) a variation of amount of, or terms on which, insurance in relation to
+                     mortgage credit or commercial credit is provided;
+           (c) direct marketing.
+     (3) Subsection (2) applies despite anything else in this CR Code except subsection
+         (4).
+     (4) Subsection (2) does not apply to the following uses of credit eligibility
+         information or regulated information by a credit provider or affected information
+         recipient:
+           (a) using the information to assess an application for credit or insurance in
+               relation to mortgage credit or commercial credit;
+           (b) where an application for credit or insurance in relation to mortgage credit
+               or commercial credit is received, using the information to assess the
+               application, and offer or invite the applicant to apply for a different product
+               where the original product is unsuitable;
+           (c) using the information to exclude an individual from receiving a direct
+               marketing communication on the basis that the individual is at significant
+               risk of defaulting in relation to credit into which the individual has entered.
+
+         Restrictions on the disclosure of credit reporting information to assist
+         individuals to avoid default
+     (5) A credit reporting body must only disclose credit reporting information to a
+         credit provider, for the purposes of enabling the provider to assist the individual
+         to avoid defaulting on his or her obligations in relation to consumer credit
+         provided by the provider to the individual where either:
+           (a) the credit provider confirms to the credit reporting body that it is aware of
+               circumstances that reasonably indicate that the individual may be at
+               significant risk of defaulting in relation to those obligations; or
+           (b) the credit reporting body is aware that an event has occurred in relation to
+               the individual that is an event of the kind that the credit provider has
+               identified could, if it were to occur, reasonably indicate that the individual
+               may be at significant risk of defaulting in relation to those obligations.
+         Note: Section 21H of the Act permits credit providers to use credit eligibility information about an
+                     individual (that is disclosed by a credit reporting body) to assist that individual to avoid
+                     defaulting on their obligations under credit provided by that provider.
+
+
+
+
+30                       Privacy (Credit Reporting) Code 2024
+           Disclosures to individuals where credit reporting information is used to assess
+           an application for credit
+       (6) Where a credit provider obtains credit reporting information about an individual
+           from a credit reporting body and, within 90 days of obtaining that information,
+           refuses an application for consumer credit made by the individual (whether alone
+           or jointly with other applicants), the provider must provide a written notice of
+           refusal that:
+             (a) meets the requirements of subsection 21P(2) of the Act;
+             (b) explains the individual’s right to access their credit reporting information
+                 without charge during the 90 days following the date of the credit
+                 provider’s notice of refusal and how to request the relevant credit reporting
+                 body to provide access to that information;
+             (c) contains a statement to the effect that it is important for individuals to be
+                 proactive in checking the accuracy of the credit reporting information that
+                 credit reporting bodies hold about them;
+             (d) states that the credit provider relies upon information from a number of
+                 sources when deciding whether to refuse consumer credit including
+                 information provided by the individual and credit reporting information
+                 disclosed by one or more credit reporting bodies;
+             (e) provides information about factors that are often taken into account when
+                 refusing credit, which may include:
+                    (i) the adequacy of the applicant’s level of income and other resources to
+                        meet repayments of credit;
+                   (ii) the extent of the applicant’s indebtedness and other commitments;
+                 (iii) the security of the applicant’s employment; and
+                  (iv) the applicant’s credit history including previous bankruptcy, defaults,
+                        serious credit infringements, high number of credit applications and
+                        unsatisfactory repayment history; and
+             (f) refers to the credit provider’s processes for:
+                    (i) accessing and correcting credit eligibility information; and
+                   (ii) making complaints.
+           Note: Section 21P of the Act permits requires credit providers who refuse applications for
+                       consumer credit wholly or partially on the basis of credit eligibility information to
+                       provide the relevant individual(s) with a written notice.
+
+       (7) The written notice referred to in subsection (6) and section 21P of the Act must
+           be given to the individual either at the time the credit provider notifies the
+           individual of the refusal decision or within 10 business days of that date.
+
+17 Protections for victims of fraud
+       (1) This section is made for the purposes of section 20K of the Act.
+           Note:       Section 20K of the Act allows individuals to request a ‘ban period’ if they believe on
+                       reasonable grounds that they have been, or are likely to be, a victim of fraud. Credit
+                       reporting information relating to an individual may not generally be used or disclosed
+                       when a ban period is in effect. A credit ban may be extended where the credit reporting
+                       body has reasonable grounds to believe that the relevant individual has been, or is
+                       likely to be, a victim of fraud.
+
+
+
+
+                                         Privacy (Credit Reporting) Code 2024
+         Ban notification services
+     (2) On or after the date 12 months from commencement, a credit reporting body:
+          (a) must operate a ban notification service for individuals in relation to whose
+              credit reporting information a ban period is in effect;
+          (b) may require an individual, before they can receive notifications as part of
+              the ban notification service, to expressly consent in writing to the use of
+              their credit reporting information for the provision of notifications; and
+         Note: If a credit ban is in place, a credit reporting body may not use or disclose the individual’s
+                      credit reporting information without the individual’s express written consent (or unless
+                      required by or under an Australian law or court/tribunal order): see subsections 20K(1)
+                      and (2) of the Privacy Act.
+           (c) may:
+                (i) collect contact information from individuals to facilitate the provision
+                    of notifications as part of the ban notification service; and
+               (ii) provide, with the individual’s consent, those contact details to another
+                    body in the circumstances described in subparagraph (3)(b)(iv) below
+                    for the purpose of that body operating a ban notification service.
+
+         Steps credit reporting bodies must take when a consumer requests a ban period
+     (3) Where an individual believes on reasonable grounds that they have been, or are
+         likely to be, a victim of fraud and the individual requests a credit reporting body
+         not to use or disclose their credit reporting information, the body must
+         immediately:
+           (a) include on the credit reporting information held in relation to the individual
+               a notation about the individual’s request and retain the notation for the
+               duration of the ban period; and
+           (b) explain to the individual:
+                  (i) the effect and duration of the ban period, including that the individual
+                      may not be able to access credit during the ban period; and
+                 (ii) that they may request a ban notification service (if such a service is
+                      offered by the body); and
+               (iii) that they may request a ban period with other credit reporting bodies;
+                      and
+                (iv) that the individual can consent to the credit reporting body (the first
+                      body) notifying the credit reporting bodies nominated by the
+                      individual (each a notified body) that the individual has requested that
+                      the notified bodies not use or disclose the individual’s credit reporting
+                      information (an additional ban period request) and, if relevant,
+                      provide a ban notification service.
+     (4) Where an individual makes an additional ban period request as described in
+         subsection (3):
+           (a) the first body must, as soon as reasonably practicable, provide each notified
+               body with the individual’s additional ban period request;
+           (b) a notified body must treat the additional ban period request provided by the
+               first body as if it had been provided directly by the individual (with the
+               exception of complying with sub-paragraphs (3)(b)(iii) and (iv) above).
+
+
+32                       Privacy (Credit Reporting) Code 2024
+     Notifying other entities of a ban period
+ (5) Where a credit reporting body receives a request from a credit provider,
+     mortgage insurer or trade insurer for credit reporting information about an
+     individual in relation to whose credit reporting information a ban period is in
+     effect, the body must inform the provider or insurer of the ban period and its
+     effect.
+
+     Ban notification service – notifying an individual of a request to access for credit
+     reporting information
+ (6) If a credit reporting body informs a credit provider, mortgage insurer or trade
+     insurer of a ban period under subsection (5), and the individual has requested a
+     ban notification service, the body must notify the individual of the request for
+     credit reporting information using the contact details provided.
+
+     Extending ban periods – additional obligations on credit reporting bodies
+ (7) Where there is a ban period in relation to credit reporting information about an
+     individual with a credit reporting body, the body must notify the individual not
+     less than 5 business days before the end of the ban period:
+       (a) of the date the ban period is due to finish;
+       (b) about the individual’s rights to extend the ban period; and
+       (c) what, if any, information the credit reporting body requires to support the
+            individual’s allegation of fraud.
+     Note: The evidence the credit reporting body may require is affected by subsection (10).
+
+ (8) Where an individual seeks to extend a ban period with a credit reporting body,
+     the individual can consent to that body (the first body) notifying the bodies it
+     previously notified under subsection (4) (each a notified body) of the request to
+     extend to the ban period.
+ (9) Where an individual makes a request to extend a ban period as described in
+     subsection (8):
+       (a) the first body must, as soon as reasonably practicable, provide each notified
+           body with the ban period extension request and any supporting material
+           provided by the individual; and
+       (b) a notified body must treat the ban period extension request provided by the
+           first body as if it had been provided directly by the individual.
+(10) In the context of a ban extension request, when forming a view about whether
+     there are reasonable grounds that an individual has been, or is likely to be, a
+     victim of fraud, a credit reporting body:
+       (a) may ask the individual:
+             (i) why they believe they have been, or are likely to be, a victim of fraud;
+                 and
+            (ii) why they have requested the ban period be extended; and
+       (b) may only request additional information from the individual if their
+           responses to the matters described in paragraph (a), or the circumstances of
+
+
+
+                                  Privacy (Credit Reporting) Code 2024
+                  the individual’s request, indicate that there are reasonable grounds to
+                  believe the individual has not been, or is not likely to be, a victim of fraud.
+
+18 Credit reporting body use of credit reporting information to facilitate a credit
+          provider’s direct marketing
+       (1) This section is made for the purposes of section 20G of the Act.
+           Note: Section 20G of the Act deals with the use or disclosure of credit reporting information for the
+                       purposes of direct marketing.
+
+           Restrictions on the use of credit reporting information
+       (2) A credit reporting body must not use credit reporting information for the
+           purposes of developing any tool or service for provision to a credit provider or
+           affected information recipient for the purposes of assisting them to:
+             (a) assess the likelihood that an individual may accept an invitation to apply
+                 for, or an offer of, any of the following:
+                   (i) credit;
+                  (ii) a variation of the amount of, or terms on which, credit is provided;
+                 (iii) insurance in relation to mortgage credit or commercial credit; or
+                 (iv) a variation of amount of, or terms on which, insurance in relation to
+                       mortgage credit or commercial credit is provided;
+             (b) target or invite an individual to apply for, or accept an offer of, any of the
+                 following:
+                   (i) credit;
+                  (ii) a variation of the amount of, or terms on which, credit is provided;
+                 (iii) insurance in relation to mortgage credit or commercial credit; or
+                 (iv) a variation of amount of, or terms on which, insurance in relation to
+                       mortgage credit or commercial credit is provided;
+       (3) A credit reporting body must not provide a tool or service of the kind described
+           in subsection (2) to a credit provider or affected information recipient.
+
+           Restrictions on eligibility criteria for use of credit reporting information in the
+           context of direct marketing
+       (4) A credit provider must not nominate eligibility requirements to be used by a
+           credit reporting body to assess, in accordance with section 20G of the Act,
+           whether or not an individual is eligible to receive the direct marketing
+           communications of the provider, that indicate that the individual is experiencing,
+           or may in the future experience, difficulty in meeting repayments under their
+           existing credit unless it is to exclude such individuals from the direct market
+           communication.
+           Note: Subsection 20G(2) of the Act permits credit reporting bodies to use credit reporting
+                      information for the purposes of direct marking by, or on behalf of, a credit provider in
+                      certain circumstances. For this subsection to apply, the body must use the information
+                      to assess whether the individual is eligible to receive the direct marking
+                      communications, having regard to eligibility requirements nominated by the provider:
+                      see subsection 20G(3) of the Act.
+
+
+
+
+ 34                        Privacy (Credit Reporting) Code 2024
+            Requests to opt out of use of credit reporting information for direct marketing
+      (5) A credit reporting body must give effect, as soon as practicable, to a request by
+          an individual not to use their credit information for the purposes of direct
+          marketing.
+            Note 1: An individual may request that a credit reporting body not use credit information about
+                       them for the purposes of direct marketing by, or on behalf of, a credit provider: see
+                       subsections 20G(2) and 20G(5) of the Act.
+            Note 2: Requests to credit reporting bodies may be made through the body’s website facility (if
+                       any), by telephone, mail, email or other means.
+
+      (6) A credit reporting body must keep a confidential register of individuals who have
+          made a request of the kind referred to in subsection (5).
+
+Division 6—Access to, and correction of, credit information
+
+19 Access
+      (1) This section is made for the purposes of sections 20R and 21T of the Act.
+            Note 1: Section 20R of the Act sets out a regime for access seekers and individuals to access credit
+                       reporting information relating to the individual. Individuals and access seekers may
+                       request access; credit reporting bodies must respond within 10 working days. Access
+                       must be free if a request of that nature has not been made in the previous 3 months.
+            Note 2: Section 21T of the Act sets out a similar regime for credit eligibility information held by
+                       credit providers. Providers must give access to this information without charge on
+                       request.
+
+            Evidence requirements for access to credit information
+      (2) Where a person requests a credit reporting body or credit provider to provide
+          them with access to credit reporting information or credit eligibility information,
+          the body or provider must not provide access without first obtaining such
+          evidence as is reasonable in the circumstances to satisfy itself of:
+            (a) the identity of the person making the request; and
+            (b) that person’s entitlement to access the information.
+
+            Other requirements for services to access credit reporting information
+      (3) When a credit reporting body provides a service through which an individual
+          (whether personally or through another access seeker) may obtain their credit
+          reporting information, the body must:
+            (a) provide information about how the individual may obtain their credit
+                reporting information from other credit reporting bodies; and
+            (b) provide a means of requesting the credit reporting information other than
+                through the body’s website.
+                        Note: A credit reporting body may also provide the service through their website.
+
+            Free access for individuals who have had an application for consumer credit
+            declined
+      (4) Where an individual requests a credit reporting body to provide access to the
+          individual’s credit reporting information, the body must not charge a fee for
+
+                                          Privacy (Credit Reporting) Code 2024
+         giving access to the information if the individual provides the body with
+         evidence that, not more than 90 days previously, a credit provider refused a
+         consumer credit application made by the individual.
+     (5) Subsection (4) applies:
+          (a) even where the request for access is made through another access seeker;
+              and:
+          (b) regardless of whether the credit reporting body has provided the individual
+              with access to credit reporting information free of charge at any time in the
+              previous 3 months.
+                   Note: Subsections 20R(5) and (6) of the Act generally provide that a credit reporting
+                       body may charge an access seeker where a request for access has been made in the
+                       previous 3 months.
+
+         Requirements for free access services offered by credit reporting bodies
+     (6) Where a credit reporting body provides credit reporting information to an access
+         seeker free of charge as required by the Act, the Regulations or this CR Code:
+           (a) the body must provide the access seeker with access to:
+                 (i) all credit information in relation to the individual currently held in the
+                     databases that the body utilises for the purposes of making disclosures
+                     permitted under Part IIIA of the Act;
+                (ii) all current CRB derived information about the individual that is
+                     available; and
+               (iii) the individual’s credit rating as set out in this section;
+           (b) the body must present the information clearly and accessibly and provide
+               reasonable explanation and summaries of the information to assist the
+               access seeker to understand the impact of the information on the
+               individual’s credit worthiness;
+
+           (c) the body may only provide the access seeker with a direct marketing
+               communication where the access seeker has provided his or her consent to
+               receipt of this communication by opting in to providing this consent; a pre-
+               ticked consent box does not constitute opting in; and
+           (d) if the access seeker has requested a physical copy of the information, the
+               body must provide the information in that form.
+
+         Requirements for fee-based services offered by credit reporting bodies
+     (7) If a credit reporting body has a service whereby an individual (whether
+         personally or through another access seeker) may for a fee obtain their credit
+         reporting information (a fee-based service):
+           (a) the information made available by the credit reporting body about the fee-
+                based service must prominently state that individuals have a right to obtain
+                their credit reporting information, including their credit rating, free of
+                charge in the following circumstances:
+                  (i) if the access request relates to a credit provider’s decision to refuse
+                      the individual’s consumer credit application; and
+
+
+
+
+36                     Privacy (Credit Reporting) Code 2024
+            (ii) if the access request relates to a decision by a body or provider to
+                 correct credit reporting information or credit eligibility information
+                 about the individual; and
+           (iii) in addition to the access described in subparagraphs (i) and (ii), once
+                 every 3 months; and
+       (b) the credit reporting body must take reasonable steps to ensure that its
+           service through which individuals may obtain their credit reporting
+           information free of charge is as available and easy to identify and access as
+           its fee-based service; and
+       (c) if the individual (either personally or through another access seeker)
+           requests a physical copy of the information through the fee-based service,
+           the credit reporting body must provide the information in that form.
+
+     Access to credit eligibility information
+ (8) For the purposes of section 21T of the Act, a credit provider:
+      (a) must take reasonable steps to provide an accessible means for an individual
+           to obtain access to credit eligibility information about them; and
+      (b) should, unless unusual circumstances apply, provide access to the
+           individual within 30 days of the request; and
+      (c) must present the information clearly and accessibly and provide reasonable
+           explanations and summaries of the information to assist the access seeker
+           to understand the impact of the information on the individual’s credit
+           worthiness; and
+      (d) must advise the individual:
+             (i) that, in order to ensure that they have access to the most up-to-date
+                 information, they should additionally request access to the credit
+                 reporting information held by credit reporting bodies about them; and
+            (ii) how they may obtain their credit reporting information from credit
+                 reporting bodies.
+
+     Provision of derived information
+ (9) Where a credit reporting body provides an access seeker with CRB derived
+     information about the individual or a credit provider provides an access seeker
+     with CP derived information about the individual, the information may be
+     provided in a way that preserves the confidentiality of the methodology, data
+     analysis methods, computer programs or other information that is used to
+     produce the derived information.
+
+     Credit ratings
+(10) If the business of a credit reporting body involves deriving more than one form
+     of credit rating or credit score for individuals:
+     Note 1: Section 20R of the Act generally requires credit reporting bodies to provide access to credit
+                ratings upon request by an access seeker.
+     Note 2: An example of multiple forms of credit ratings or credit scores is where different ratings or
+                scores are derived using calculations based on different sets of credit information.
+       (a) the credit rating required to be given under Section 20R of the Act is the
+           rating derived from the calculation that is used to provide credit ratings or
+
+                                  Privacy (Credit Reporting) Code 2024
+                credit scores to credit providers using the broadest range of information
+                available to the body and, if there is more than one such calculation, the
+                one that is most accurate, relevant and up to date; and
+            (b) if the body imposes a charge for giving a credit rating derived using a
+                different calculation to that described in paragraph (a) to access seekers,
+                the body must give the individual (whether directly or through an agent)
+                the option to receive that rating for free once every 3 months.
+     (11) If a credit reporting body refers access seekers to a service under which a third
+          party offers to give the access seeker the individual’s credit score or credit rating
+          (on a more regular basis than quarterly), the body must:
+            (a) prominently state when referring to the third party service that the
+                 individual has a right to receive their credit rating free of charge under
+                 section 20R of the Act; and
+            (b) take reasonable steps to ensure that the free service is as available and easy
+                 to identify and access as the referral to that other service.
+     (12) If a credit reporting is unable to derive a credit rating for an individual because
+          the body holds insufficient credit information about the individual, the body must
+          explain that to the access seeker and give the access seeker an explanation of the
+          credit information that the body needs to hold to be able to derive a credit rating.
+          This explanation may be given by reference to another document that is
+          reasonably accessible.
+     (13) When giving a credit rating to an access seeker, the credit reporting body must:
+           (a) explain the nature and purpose of a credit score and how the credit rating
+               provided under this section relates to that score;
+           (b) categorise the total scale into no less than five bands;
+           (c) describe those bands, including the credit score ranges they represent, and
+               use appropriate descriptors for those bands that relate to the credit
+               worthiness of individuals within each band;
+           (d) state which band the credit score for the individual sits within; and
+                    Note: This can, but does not have to, involve the body providing a precise credit score
+                        for the individual.
+            (e) give an explanation statement of the kind described in subsection (14).
+     (14) For the purposes of this section and subsection 20R(1A) of the Act, the statement
+          referred to in subsection (13) must include:
+            (a) an explanation of the types of credit information held by a credit reporting
+                body and the general impact of that information on an individual’s credit
+                score—this explanation may be given by reference to another document
+                that is reasonably accessible; and
+            (b) in relation to the band in which the individual’s credit rating sits, a
+                description of the particular types of credit information that the credit
+                reporting body reasonably believes are the most important for people who
+                sit within that band and why that information may be important (which
+                may include a description of the importance of the absence of the particular
+                type of credit information to a credit score within that band). For the
+                purposes of this paragraph, the boy would ordinarily describe 3 – 5 types of
+
+
+
+38                      Privacy (Credit Reporting) Code 2024
+                 credit information which typically have the biggest impact on the credit
+                 score of individuals within that credit rating band
+             (c) other than for the highest band, and based on the relative importance of the
+                 types of credit information, a statement about the common things that
+                 individuals within the band can do to improve their credit rating; and
+             (d) an explanation of how credit providers may, and may not, access and use a
+                 credit rating or credit score in the assessment or management of credit,
+                 including how the credit rating or credit score relates to other elements of
+                 credit assessment or management (such as responsible lending
+                 assessments)—this explanation may be given by reference to another
+                 document that is reasonably accessible.
+      (15) A credit reporting body must review the assumptions used in developing the
+           explanation statement described in subsection (14) no less than every 12 months,
+           or otherwise when the body makes a significant change to the calculations used
+           to derive credit ratings.
+      (16) Where a credit reporting body provides access to credit reporting information to
+           an access seeker and that information includes repayment history information or
+           financial hardship information:
+             (a) the information must not be given to the access seeker using codes other
+                 than those disclosed to the credit reporting body by the relevant credit
+                 provider, except for:
+                   (i) repayment history information disclosed under section 8, which may
+                       be represented in a graphical form; and
+                  (ii) codes or other information that the body reasonably believes will
+                       assist the access seeker to better understand the individual’s credit
+                       history; and
+             (b) the body must include the following statement in relation to the particular
+                 type of financial hardship information that is provided to the access seeker:
+                   (i) where financial hardship information relating to a variation FHA is
+                       provided in relation to a particular month: “This loan was varied in
+                       this month and repayment history reflects the new payments
+                       required”; and
+                  (ii) where financial hardship information relating to a temporary FHA is
+                       provided in relation to a particular month: “There was an arrangement
+                       for this loan in this month and the repayment history reflects that
+                       arrangement”.
+                     Note: Subsection 8A(13) requires credit provider to take reasonable steps to ensure that
+                         financial hardship information relating to a variation FHA is expressed as “V”,
+                         and financial hardship information relating to a temporary FHA is expressed as
+                         “A”.
+
+      (17) If a credit reporting body gives a credit score or credit rating to an access seeker,
+           and the credit reporting information held by the body includes financial hardship
+           information, the body must explain that the financial hardship information was
+           not included in the calculation of that credit score or credit rating.
+
+20 Correction of information
+       (1) This section is made for the purposes of sections 20T and 21V of the Act.
+
+                                      Privacy (Credit Reporting) Code 2024
+         Note 1: Section 20T of the Act sets out a regime for individuals to seek correction of information
+                    relating to them from credit reporting bodies. A credit reporting body must correct the
+                    information if it is inaccurate, out‑of‑date, incomplete, irrelevant or misleading for a
+                    purpose for which it is held. The body may consult in order to form a view about these
+                    matters. Correction requests, and correcting information as a result, must be free for the
+                    individual.
+         Note 2: Section 21V of the Act sets out a substantially similar regime for correction requests to
+                    credit providers.
+
+         Correction requests to credit providers that do not participate in the credit
+         reporting system
+     (2) Where:
+          (a) a credit provider received a correction request from an individual; and
+          (b) that provider does not:
+                (i) disclose credit information to a credit reporting body; or
+               (ii) request a body to disclose information to it; and
+          (c) the correction request relates to information that the provider does not hold;
+         the provider is able to comply with subsections 21V(3) and 21W(3) of the Act by
+         taking the steps outlined in subsection (3).
+     (3) For the purposes of subsection (2), the credit provider may, within 30 days of the
+         individual’s correction request:
+           (a) consult with other credit reporting bodies or providers to identify an entity
+               that holds the relevant information; and
+           (b) give the individual a written notice:
+                 (i) explaining that it does not hold the relevant information and does not
+                     participate in the credit reporting system and so the correction has not
+                     been made; and
+                (ii) informing the individual of an entity that holds the information to
+                     which the correction request relates and providing contact details for
+                     that entity; and
+               (iii) stating that if the individual is not satisfied with the response to the
+                     request the individual may access a recognised external dispute
+                     resolution scheme of which the provider is a member or to which it is
+                     subject, or make a complaint to the Commissioner.
+
+         Consulting on correction requests – necessary steps
+     (4) When a credit reporting body or credit provider (the first responder) consults
+         another body or provider (the consulted entity) in the context of a correction
+         request:
+           (a) the first responder must take reasonable steps to provide the consultation
+               request to the consulted entity within five business days of the correction
+               request being made; and
+           (b) the first responder must, when making the consultation request, notify the
+               consulted entity of the date on which the correction period ends; and
+           (c) the consulted entity must take reasonable steps to respond to the
+               consultation request as soon as practicable, and not less than five business
+               days before the end of the correction period (unless the consultation request
+
+40                       Privacy (Credit Reporting) Code 2024
+          is made less than five business days before the end of correction period, in
+          which case the response must be provided as soon as practicable); and
+      (d) where the consulted entity will be unable to respond to the consultation
+          request by the end of the correction period:
+            (i) it must advise the first responder of the delay, the reasons for the
+                delay and the timeframe within which it expects to respond to the
+                consultation request; and
+           (ii) the advice in sub-paragraph (i) must be provided at least five business
+                days before the end of the correction period, unless the correction
+                request is made after this time, in which case the advice must be
+                provided as soon as practicable; and
+          (iii) the expected timeframe nominated under sub-paragraph (i) must be
+                reasonable.
+
+    Requesting extensions to correction periods
+(5) If a credit reporting body or credit provider forms the view that it will not be able
+    to resolve an individual’s correction request within the correction period, the
+    body or provider must as soon as practicable:
+      (a) notify the individual of the delay, the reasons for the delay and the
+           timeframe within which it expects to respond to the consultation request;
+           and
+      (b) seek the individual’s agreement to an extension for a period that is
+           reasonable in the circumstances; and
+                Note: Under the Act, a credit reporting body or a credit provider must correct
+                    information within a period of 30 days that starts on the day on which the
+                    individual requests correction, or such longer period the individual has agreed to
+                    in writing: see subsections 20T(2) and 21V(2) of the Act.
+      (c) advise that the individual may complain to:
+            (i) a recognised external dispute resolution scheme of which the body or
+                provider is a member or to which it is subject – and provide the
+                contact details for that scheme; or
+           (ii) in the case of a provider that is not a member of, or subject to, such a
+                scheme, to the Commissioner; and
+      (d) if the individual has not agreed to the requested extension, provide a
+          response to the correction request within the timeframe sought for
+          extension.
+
+    Correcting credit-related personal information - general
+(6) A correction request may relate to a single piece of credit-related personal
+    information, or multiple pieces of credit-related personal information.
+    Note 1: A credit provider or credit reporting body may need to consult with more than one other
+               provider or body if the correction request relates to multiple pieces of information: see
+               subsection (4) and subsections 20T(3) and 21V(3) of the Act.
+    Note 2: There are further requirements for certain correction requests relating to multiple pieces of
+               information: see subsections (9), (10) and (11).
+
+
+
+
+                                  Privacy (Credit Reporting) Code 2024
+      (7) If a credit reporting body or credit provider receives a correction request, they
+          must determine whether the credit-related personal information needs to be
+          corrected as soon as practicable.
+      (8) If a credit reporting body or credit provider is satisfied that credit-related
+          personal information needs to be corrected (whether in response to a correction
+          request, or under sections 20S or 21U of the Act), the relevant obligation to take
+          reasonable steps to correct the information will be satisfied where the body,
+          provider, or body or provider consulted in relation to the correction request (as
+          applicable):
+            (a) corrects the credit information, where this correction is in response to a
+                 correction request, within five business days of determining the correction
+                 should occur and otherwise as soon as practicable; and
+            (b) takes reasonable steps to ensure that any future derived information is
+                 based on the corrected credit information; and
+            (c) takes reasonable steps to ensure that any derived information based on the
+                 uncorrected credit information is not disclosed or used for the purpose of
+                 assessing the credit worthiness of the individual to whom the information
+                 relates.
+
+          Correcting credit information – corrections about multiple enquiries
+      (9) Subsections (10) and (11) apply to correction requests where:
+           (a) the request relates to one or more statements that an information request
+               has been made in relation to the individual, where credit was not approved
+               by the credit provider following the information request(s); and
+           (b) the individual states:
+                 (i) which piece or pieces of credit-related personal information are the
+                     subject of the correction request; and
+                (ii) that the relevant information requests referred to in paragraph (a) were
+                     caused by fraud (including identity fraud).
+     (10) When a credit provider or credit reporting body receives a correction request of
+          the kind described in subsection (9), the provider or body must, in considering
+          what evidence to ask for to determine whether the information should be
+          corrected, have regard to:
+            (a) the burden on the individual of providing the evidence;
+            (b) the availability of other information which could be used to determine
+                whether the information needs to be corrected; and
+            (c) information which is likely to be needed for consultation with other
+                providers and bodies under subsection (4).
+     (11) When a credit provider or credit reporting body is consulted on a correction
+          request of the kind described in subsection (9), the provider or body must, before
+          seeking additional evidence to determine whether one or more pieces of
+          information should be corrected, have regard to:
+            (a) the information the individual who made the request provided along with
+                that request;
+            (b) the burden on the individual of providing any additional evidence;
+
+
+42                     Privacy (Credit Reporting) Code 2024
+       (c) the availability of other information which could be used to determine
+           whether any credit-related personal information needs to be corrected; and
+       (d) views (if any) formed by the provider or body who received the request
+           about whether a fraud (including identity fraud) event has occurred.
+
+     Correcting credit information – information that exists due to circumstances
+     beyond the individual’s control
+(12) If an individual makes a correction request on the basis that credit information of
+     the kind specified in subsection (13) only exists because of unavoidable
+     consequences of circumstances beyond the individual’s control, such as natural
+     disaster, domestic abuse, or bank error in processing a direct debit or fraud, the
+     credit provider or credit reporting body that receives that request must:
+       (a) consider whether the relevant information is inaccurate, out-of-date,
+            incomplete, irrelevant or misleading, having regard to the purpose for
+            which the information is held; and
+       (b) if the correction request is made to a credit reporting body or a credit
+            provider other than the provider that disclosed the information to a body,
+            consult with the provider that disclosed the information for the purposes of
+            the considerations in paragraph (a); and
+       (c) if the body or provider is satisfied that the information is inaccurate, out-of-
+            date, incomplete, irrelevant or misleading, having regard to the purpose for
+            which the information is held, agree to correct the information.
+(13) For the purposes of subsection (12), individuals may request correction of the
+     following kinds of information on the basis that the information only exists due
+     to unavoidable consequences of circumstances beyond the individual’s control:
+       (a) default information;
+       (b) payment information;
+       (c) new arrangement information of the kind described in subsection 6S(1) of
+           the Act;
+       (d) repayment history information, where the monthly payment obligations
+           that gave rise to the repayment history information have been complied
+           with or varied; and
+       (e) financial hardship information.
+
+     Corrections of default information for statute-barred debts
+(14) On request by an individual, a credit reporting body must correct the credit
+     reporting information it holds in relation to the individual by destroying any
+     default information that relates to a payment that the individual is overdue in
+     making to a credit provider if, at the time of the correction request, the provider
+     is prevented by a statute of limitations from recovering the amount of the
+     overdue payment.
+
+     Notifying individuals of decisions to correct credit information
+(15) A credit reporting body or credit provider must notify an individual of a decision
+     about a correction request made by the individual under section 20T or section
+
+
+
+                              Privacy (Credit Reporting) Code 2024
+          21V of the Act within 5 business days of the decision. Where the decision is to
+          correct the information, the notice must:
+            (a) include all relevant credit reporting information or credit eligibility
+                information (as applicable) held by the body or provider (as applicable) so
+                that the individual can check that the information has been appropriately
+                corrected; and
+           (b) explain:
+                  (i) that the individual has a right to obtain their credit reporting
+                      information from a credit reporting body free of charge if the access
+                      request relates to a decision by a body or a provider to correct
+                      information about the individual; and
+                 (ii) how that right may be exercised; and
+            (c) if the body or provider (as applicable) is proposing to rely upon subsection
+                (17):
+                  (i) explain who the body or provider is intending to notify to fulfil its
+                      notification obligations under Part IIIA of the Act, the Regulations
+                      and this CR Code; and
+                 (ii) ask the individual if there is any other provider or affected
+                      information recipient that the individual would like the notified of the
+                      correction.
+     (16) Where a credit reporting body or credit provider corrects credit-related personal
+          information by updating identification information about an individual, the body
+          or provider (as applicable) is not obliged to notify any previous recipient of the
+          information about the updating of that information, unless requested by the
+          individual.
+     (17) Where a credit reporting body or credit provider corrects credit-related personal
+          information and this gives rise to an obligation under Part IIIA of the Act to give
+          notice to a body, provider or affected information recipient, unless it is
+          impracticable or illegal to give that notice, the notification obligation is taken to
+          be met where:
+            (a) the correcting body or provider gives notice of the correction to:
+                  (i) all bodies to which it disclosed the pre-corrected information; and
+                 (ii) all providers and affected information recipients to which it disclosed
+                      the pre-corrected information within the previous 3 months; and
+                (iii) any other provider or affected information recipient that has been
+                      nominated by the individual and to which it disclosed the pre-
+                      corrected information more than 3 months previously; and
+            (b) if notice is given in accordance with paragraph (a) to a credit provider or
+                affected information recipient that previously received CRB derived
+                information or CP derived information that is no longer correct by reason
+                of the correction, the notice includes revised CRB derived information or
+                CP derived information (as applicable) that has been derived using the
+                corrected information and such identification information or credit ID
+                information necessary to identify the individual and their consumer credit
+                to the provider; and
+            (c) the notice is given within 7 business days of the correction.
+
+
+44                      Privacy (Credit Reporting) Code 2024
+          Non-application of complaint handling provisions
+     (18) Where an individual makes a correction request, the complaint handling
+          provisions in the Act will not apply to that request, even if the correction request
+          includes an expression of dissatisfaction by the individual about an act or
+          practice by the credit reporting body or credit provider.
+          Note: Division 5 of Part IIIA of the Act and section 21 contain requirements relating to the
+                     handling of complaints.
+
+
+Division 7—Complaints, record keeping, system integrity and
+          administration
+
+21 Complaints
+      (1) This section is made for the purposes of Division 5 of Part IIIA of the Act.
+          Note: Division 5 of Part IIIA of the Act contains requirements relating to the handling of
+                     complaints.
+
+      (2) Where a credit reporting body or credit provider is required by Australian law, a
+          condition of a licence issued by a regulatory authority or an enforceable Industry
+          Code requirement to meet complaints handling requirements, the body or
+          provider must comply with those requirements for the purposes of a complaint
+          under Part IIIA of the Act.
+      (3) If subsection (2) does not apply to a credit reporting body or credit provider, that
+          body or provider (as applicable) must comply with the following sections of ISO
+          10002:2018(E) Quality management - Customer satisfaction - Guidelines for
+          complaints handling in organisations for the purposes of a complaint under Part
+          IIIA:
+            (a) Section 4 Guiding Principles;
+            (b) Section 5.2 Leadership and Commitment;
+            (c) Section 6.4 Resources;
+            (d) Section 8.1 Collection of information; and
+            (e) Section 8.2 Analysis and evaluation of complaints.
+      (4) A credit reporting body must be a member of, or be subject to, a recognised
+          external dispute resolution scheme.
+          Note: The Commissioner may recognise an external dispute resolution scheme under section 35A
+                     of the Act.
+
+      (5) A credit reporting body or credit provider that is consulted by another body or
+          provider about a complaint must take reasonable steps to respond to the
+          consultation request as soon as practicable.
+          Note: If the recipient considers it necessary to consult with a credit reporting body or credit
+                      provider, subsection 23B(2) of the Act requires them to consult with that body.
+
+      (6) If a credit reporting body or credit provider forms the view that it will not be able
+          to resolve a complaint within the 30 day period required by Part IIIA of the Act,
+          the body or provider (as applicable) must:
+
+
+
+                                        Privacy (Credit Reporting) Code 2024
+            (a) inform the individual of the delay before the end of the 30 day period and
+                provide the reason for the delay, the expected timeframe to resolve the
+                complaint and seek their agreement to an extension for a period that is
+                reasonable in the circumstances; and
+            (b) advise that the person may complain to the recognised external dispute
+                resolution scheme of which the body or provider (as applicable) is a
+                member, or to which it is subject – and provide the contact details for that
+                scheme - or, in the case of a provider that is not a member of, or subject to,
+                such a scheme, to the Commissioner.
+
+          Notifications of complaints
+      (7) Where a credit reporting body has an obligation under subsection 23C(2) of the
+          Act to give notice to a credit provider about a complaint relating to a body’s act
+          or practice that may breach section 20S of the Act, this obligation is taken to be
+          met if the body gives notice as soon as practicable to:
+            (a) if the complaint relates to credit information that was disclosed to the body
+                by a provider – that provider; and
+           (b) any provider to which the body disclosed the credit information to which
+                the complaint relates in the previous 3 months; and
+            (c) any other provider that has been nominated by the individual for this
+                purpose.
+          Note: A credit reporting body’s obligation under subsection 23C(2) of the Act does not apply
+                     where it is impractical to give the notification, or the giving of the notification is
+                     prevented by law: see subsection 23C(6) of the Act.
+
+      (8) Where a credit provider has an obligation under subsection 23C(3) of the Act to
+          give notice to a credit reporting body or provider about a complaint relating to a
+          body’s act or practice that may breach section 21U of the Act, this obligation is
+          taken to be met if the provider gives notice as soon as practicable to:
+            (a) if the complaint relates to credit information that was disclosed to the
+                provider by a body or another provider – that body or other provider; and
+            (b) any body or provider to which the body disclosed the credit information to
+                which the complaint relates in the previous 3 months; and
+            (c) any other provider that has been nominated by the individual for this
+                purpose.
+          Note: A credit provider’s obligation under subsection 23C(3) of the Act does not apply where it is
+                     impractical to give the notification, or the giving of the notification is prevented by
+                     law: see subsection 23C(6) of the Act.
+
+
+22 Record keeping
+
+          Requirements to maintain records
+      (1) A credit reporting body and a credit provider must maintain adequate records
+          that evidence their compliance with Part IIIA of the Act, the Regulations and this
+          CR Code.
+      (2) Without limiting subsection (1), a credit reporting body and a credit provider
+          must maintain records of:
+
+
+46                        Privacy (Credit Reporting) Code 2024
+             (a) where credit-related personal information is destroyed to meet obligations
+                 under Part IIIA of the Act, the Regulations and this CR Code (but only if
+                 this is possible);
+             (b) in the case of a credit provider that receives credit eligibility information
+                 disclosed to it by another provider:
+                   (i) the date on which that information was disclosed;
+                  (ii) the provider who disclosed the information;
+                 (iii) a brief description of the type of information disclosed; and
+                 (iv) the evidence relied upon that the consent requirements have been met;
+             (c) for each disclosure that a body or provider makes of credit reporting
+                 information or credit eligibility information (as applicable):
+                   (i) the date of the disclosure;
+                  (ii) a brief description of the type of information disclosed;
+                 (iii) the provider, affected information recipient or other person to whom
+                       the disclosure was made; and
+                 (iv) evidence that the disclosure was permitted under Part IIIA of the Act,
+                       the Regulations or this CR Code;
+             (d) any consent provided by an individual for the purposes of Part IIIA of the
+                 Act, the Regulations or this CR Code;
+             (e) in the case of a credit provider, any written notice given to an individual
+                 stating that a consumer credit application has been refused within 90 days
+                 of disclosure of credit reporting information in relation to that individual by
+                 a credit reporting body to the provider; and
+             (f) correspondence and actions taken in relation to:
+                   (i) requests to establish or extend a ban period;
+                  (ii) requests for, or notifications of, corrections;
+                 (iii) complaints;
+                 (iv) pre-screening requests by a credit provider; and
+                  (v) monitoring and auditing of credit providers in accordance with Part
+                       IIIA of the Act, the Regulations and this CR Code.
+
+           Retention of records
+       (3) Subject to subsection (4), a credit reporting body and a credit provider must
+           retain records for a minimum period of 5 years from the date on which the record
+           is made.
+       (4) If a credit reporting body makes a record that includes information that the body
+           is required to destroy at the end of the applicable retention period by Part IIIA of
+           the Act, the Regulations or this CR Code, the record must be retained for the
+           duration of that retention period only.
+
+23 Credit reporting system integrity
+       (1) This section is made for the purposes of sections 20N and 20Q of the Act.
+           Note 1: Section 20N of the Act requires credit reporting bodies to take reasonable steps to ensure
+                      the information they collect is accurate, up‑to‑date and complete, and that the
+                      information they use and disclose accurate, up‑to‑date, complete and relevant (having
+
+
+
+                                        Privacy (Credit Reporting) Code 2024
+                     regard to the purpose of the use or disclosure). Bodies must also enter into agreements
+                     with credit providers requiring them to ensure the information they disclose is accurate,
+                     up-to-date and complete, and also to obtain independent audits to determine whether
+                     those agreements are being complied with.
+         Note 2: Section 20Q of the Act requires credit reporting bodies to take reasonable steps to protect
+                    credit reporting information from misuse, interference and loss, unauthorised access,
+                    modification or disclosure. Bodies must also enter into agreements with credit
+                    providers requiring them to protect information in this way, and also to obtain
+                    independent audits to determine whether those agreements are being complied with.
+
+         Programs for monitoring credit providers’ compliance with the Act
+     (2) To ensure that credit reporting bodies tailor the frequency and extent of the
+         audits required by sections 20N and 20Q of the Act to the credit providers that
+         present the greatest risk of non-compliance, a body must establish a documented,
+         risk-based program to monitor providers’ compliance with their obligations
+         under Part IIIA of the Act (incorporated in their agreements with the body) to
+         ensure:
+           (a) that credit information that the provider discloses to the body is accurate,
+               up-to-date and complete; and
+           (b) that credit reporting information that the body discloses to the provider is
+               protected by the provider from misuse, interference and loss and from
+               unauthorised access, modification or disclosure; and
+           (c) that the provider takes the steps in relation to requests to correct credit-
+               related personal information required by Part IIIA of the Act, the
+               Regulations and this CR Code.
+     (3) The program established by a credit reporting body under subsection (2) must:
+          (a) identify and evaluate indicators of risk of non-compliance by credit
+              providers with the obligations referred to in subsection (2); and
+          (b) assess the risk posed by providers of significant non-compliance with those
+              obligations using those risk indicators and the information available to the
+              body including correction requests and complaints; and
+          (c) use a reasonable range of monitoring techniques to validate and update
+              those risk assessments from time to time; and
+          (d) include a program for auditing providers to assess compliance with the
+              obligations referred to in subsection (2).
+         Note: Credit reporting bodies have obligations to ensure that audits of credit providers are
+                    conducted in relation to the quality and security of credit reporting information: see
+                    subsections 20N(3)(b) and 20Q(2)(b) of the Act.
+
+         Requirements for auditors of credit providers
+     (4) Subject to subsections (5) and (6), any of the following may be used in audits as
+         part of a credit reporting body’s auditing program for the purposes of paragraph
+         (3)(d) above:
+           (a) a body’s compliance or auditing team;
+           (b) consultants engaged by the body;
+           (c) consultants engaged by the credit provider, where the body is satisfied of
+               the consultant’s independence and expertise; or
+
+
+
+48                       Privacy (Credit Reporting) Code 2024
+       (d) an industry funded organisation where the body is satisfied as to that
+           organisation's independence and expertise.
+ (5) For the purposes of the Act, an auditor is independent of a credit provider (and
+     therefore eligible to conduct audits of that provider under Part IIIA of the Act
+     and programs described in this section) if:
+       (a) the auditor is not a director or employee of the provider and does not have
+           a significant financial interest in the provider; and
+       (b) the auditor has not at any time during the previous 12 months had a
+           relationship or interest described in paragraph (a); and
+       (c) where the auditor is an employee of a credit reporting body – the body’s
+           organisational structure and supervision arrangements achieve functional
+           independence for the auditor; and
+       (d) where the auditor is an employee of an industry-funded organisation – the
+           organisation’s governance and supervision arrangements achieve
+           functional independence for the auditor; and
+       (e) the auditor does not have any other association that would impair the
+           perception of the auditor’s independence; and
+       (f) the auditor has not at any time during the previous 12 months had an
+           association described in paragraph (e).
+ (6) A credit reporting body must take reasonable steps to ensure that a person who
+     conducts an audit of a credit provider as part of the body’s auditing program
+     referred to in subsection (3) has sufficient expertise for the role including:
+       (a) knowledge of the requirements of Part IIIA of the Act, the Regulations and
+           this CR Code; and
+       (b) knowledge of audit methodology and previous experience in conducting
+           audits; and
+       (c) credit reporting system experience.
+ (7) A credit reporting body must take reasonable steps to ensure that its audit
+     oversight, including reporting arrangements, is sufficient to enable the body to
+     form a view as to whether the credit provider is complying with the obligations
+     referred to in subsection (2).
+ (8) A credit provider must permit a person who conducts an audit of the provider as
+     part of a credit reporting body’s auditing program referred to in subsection (3), to
+     have reasonable access to records for the purposes of carrying out the audit.
+ (9) A credit provider must take reasonable steps to rectify issues identified through
+     an audit undertaken as part of a credit reporting body’s auditing program referred
+     to in subsection (3).
+(10) A credit reporting body must:
+      (a) provide to the Commissioner by 31 August each year, a list of the credit
+          providers audited as part of the body’s audit program referred to in
+          subsection (3); and
+      (b) on request by the Commissioner, provide the Commissioner with the
+          auditor’s report produced as part of the body’s auditing program referred to
+          in subsection (3).
+
+
+                              Privacy (Credit Reporting) Code 2024
+          Obligations on credit reporting body to take action where credit providers have
+          not met their obligations
+     (11) A credit reporting body must take action as is reasonable in the circumstances
+          (which may include termination of the agreement) where a credit provider fails
+          to meet its contractual obligations to the body to comply with Part IIIA of the
+          Act, the Regulations and this CR Code and in particular fails to:
+            (a) ensure that the credit information that the provider discloses to the body is
+                accurate, up-to-date and complete; or
+            (b) protect credit reporting information disclosed to the provider by the body
+                from misuse, interference or loss, or unauthorised access, modification or
+                disclosure.
+     (12) A credit reporting body may only terminate an agreement with a credit provider
+          under subsection (11) if the body gives the provider:
+           (a) reasonable notice of its intention to terminate the agreement; and
+           (b) and an opportunity to trigger the dispute resolution procedures in
+               subsection (13).
+     (13) Where disputes arise between two or more credit reporting bodies, credit
+          providers and affected information recipients in relation to actions undertaken or
+          required to fulfil their obligations under Part IIIA of the Act, the Regulations or
+          this CR Code, the parties to the dispute must endeavour to resolve the dispute in
+          a fair and efficient way.
+
+          Obligations on credit reporting bodies to publish information about audit
+          program
+     (14) A credit reporting body must publish on its website, by 31 August each year, a
+          report for the financial year ending on 30 June of the same year about its audit
+          program, including:
+            (a) how the body identifies and evaluates indicators of risk of non-compliance
+                by credit providers with the obligations referred to in subsection (2); and
+            (b) what types of risk indicators and information are used to assess the risk
+                posed by providers of significant non-compliance with those obligations;
+                and
+            (c) a description of:
+                  (i) the role which the audit program plays in managing the risks
+                      mentioned above; and
+                 (ii) the basis on which the body determined the number, type and manner
+                      of audits that was conducted during the relevant financial year (with
+                      reference to the other material in the report); and
+            (d) de-identified information about the number of audits conducted, and
+                significant findings and measures taken in response by either the body or
+                the relevant provider.
+
+
+
+
+50                      Privacy (Credit Reporting) Code 2024
+     Obligations on credit reporting bodies to publish annual report on specified
+     matters
+(15) A credit reporting body must publish on its website, by 31 August each year, a
+     report for the financial year ending on 30 June of the same year that includes
+     information about the following:
+       (a) individuals given access to their credit information without charge,
+           including a percentage calculated using the formula:
+
+                                    𝐴𝐼 𝑊𝐶
+                                          × 100%
+                                      𝐼𝑁𝐷
+
+           where:
+
+           AI(WC) is the number individuals given access to their credit reporting
+           information (without charge) by the body during the reporting period.
+
+          IND is the number of individuals about whom the body holds credit
+          information at the end of the reporting period.
+      (b) individuals given access to their credit information through a fee-based
+          service, including a percentage calculated using the formula:
+
+                                    𝐴𝐼 𝐶
+                                         × 100%
+                                     𝐼𝑁𝐷
+
+           where:
+
+           AI(C) is the number of individuals given access to their credit reporting
+           information by the body during the reporting period where the individual
+           used a fee-based service.
+
+           IND is the number of individuals about whom the body holds credit
+           information at the end of the reporting period.
+       (c) correction requests received by the body, including a percentage calculated
+           using the formula:
+
+                                        𝐶𝑅
+                                           × 100%
+                                       𝐼𝑁𝐷
+
+           where:
+
+           CR is the number of correction requests received by the body during the
+           reporting period.
+
+          IND is the number of individuals about whom the body holds credit
+          information at the end of the reporting period.
+      (d) successful correction requests, being requests received by the body where
+          the body is satisfied that a correction should be made, including a
+          percentage calculated using the formula:
+
+
+
+                             Privacy (Credit Reporting) Code 2024
+                                      𝐶𝑅(𝑆)
+                                            × 100%
+                                       𝐶𝑅
+
+         where:
+
+         CR is the number of correction requests received by the body during the
+         reporting period.
+
+         CR(S) the number of correction requests received by the body during the
+         reporting period where the body was satisfied that a correction should be
+         made.
+
+     (e) the mean number of days taken to finalise a correction calculated using the
+         formula:
+
+                                      𝐷(𝐶𝑅)
+                                       𝑇𝐶
+
+         where:
+
+         D(CR) is the total number of calendar days taken from receipt to
+         finalisation for all correction requests finalised by the body during the
+         reporting period.
+
+         TC is the total number of corrections finalised by the body during the
+         reporting period.
+
+     (f) other corrections made, including a percentage calculated using the
+         formula:
+
+                                    𝐶𝑅(𝑂)
+                                          × 100%
+                                     𝐼𝑁𝐷
+
+         where:
+
+         CR(O) is the number of corrections made by the body during the reporting
+         period that were not made in response to a correction request from the
+         relevant individual.
+
+         IND is the number of individuals about whom the body holds credit
+         information at the end of the reporting period.
+     (g) the types of corrections made, including:
+           (i) the types of correction requests received and corrections made during
+               the reporting period (including a percentage figure for each correction
+               type against all types); and
+          (ii) the industry sectors from which the information that was corrected
+               originated from;
+
+
+
+
+52                Privacy (Credit Reporting) Code 2024
+(h) complaints received, including a percentage calculated using the formula:
+
+                               𝐶
+                                  × 100%
+                              𝐼𝑁𝐷
+
+    where:
+
+    C is the number of complaints received by the body during the reporting
+    period.
+
+     IND is the number of individuals about whom the body holds credit
+     information at the end of the reporting period.
+ (i) the types of complaints that were received by the body during the reporting
+     period (including a % figure for each complaint type against all types);
+ (j) complaints finalised, including a percentage calculated using the formula:
+
+                              𝐹
+                                 × 100%
+                             𝐼𝑁𝐷
+
+    where:
+
+    F is the number of complaints finalised by the body during the reporting
+    period.
+
+    IND is the number of individuals about whom the body holds credit
+    information at the end of the reporting period.
+(k) the mean number of days taken to finalise a complaint calculated using the
+    formula:
+                               𝐷(𝐶)
+                               𝑇𝐶𝑃
+    where:
+
+    D(C) is the total number of calendar days taken from receipt to finalisation
+    for all complaints finalised by the body during the reporting period.
+
+     TCP is the total number of complaints finalised by the body during the
+     reporting period.
+ (l) the outcomes of the complaints finalised during the reporting period
+     (including a % figure for each outcome type against all outcomes);
+(m) serious credit infringements disclosed, including a percentage calculated
+     using the formula:
+
+                                𝑆𝐶𝐼
+                                    × 100%
+                                𝐼𝑁𝐷
+
+    where:
+
+    SCI is the total number of times during the reporting period that a provider
+    disclosed an opinion to the body that an individual committed a serious
+    credit infringement.
+
+
+                       Privacy (Credit Reporting) Code 2024
+         IND is the number of individuals about whom the body holds credit
+         information at the end of the reporting period.
+     (n) serious credit infringements disclosed by sector, including, for each sector,
+         a percentage calculated using the formula:
+
+                                      𝑆𝐶𝐼(𝑆)
+                                             × 100%
+                                       𝑆𝐶𝐼
+
+         where:
+
+         SCI is the total number of times during the reporting period that a provider
+         disclosed an opinion to the body that an individual committed a serious
+         credit infringement.
+
+         SCI(S) is the total number of times during the reporting period that a
+         provider from the relevant sector disclosed an opinion to the body that an
+         individual committed a serious credit infringement.
+     (o) disclosure of consumer credit liability information, including a percentage
+         calculated using the formula:
+
+                                      𝐶𝐶𝐿𝐼
+                                           × 100%
+                                       𝐶𝑃
+
+         where:
+
+         CCLI is the number of providers that disclosed consumer credit liability
+         information to the body during the reporting period.
+
+         CP is the total number of providers that disclosed any credit information to
+         the body during the reporting period.
+     (p) disclosure of repayment history information, including a percentage
+         calculated using the formula:
+
+                                      𝑅𝐻𝐼
+                                          × 100%
+                                      𝐶𝑃
+
+         where:
+
+         RHI is the number of providers that disclosed repayment history
+         information to the body during the reporting period.
+
+         CP is the total number of providers that disclosed any credit information to
+         the body during the reporting period.
+     (q) any other information requested by the Commissioner from time to time.
+
+
+
+
+54                Privacy (Credit Reporting) Code 2024
+24 Information Commissioner’s role
+
+          Power to vary timeframes
+      (1) The Commissioner may, at the request of a credit reporting body, credit provider
+          or affected information recipient, agree to vary time limits imposed by the CR
+          Code where the body, provider or affected information recipient (as applicable)
+          is unable to comply with the specified time limit due to circumstances such as
+          technological failure or other practical or unforeseen difficulties.
+
+          Credit reporting body compliance reviews
+      (2) Every 3 years, or more frequently if the Commissioner requests, a credit
+          reporting body must commission an independent review of its operations and
+          processes to assess the body’s compliance with its obligations under the Act.
+      (3) In respect of reviews commissioned under subsection (2), a credit reporting body
+          must:
+            (a) consult with the Commissioner as to the choice of reviewer and scope of
+                the review; and
+            (b) ensure the review report and the body’s response to the review report are
+                provided to the Commissioner and made publicly available.
+      (4) The Commissioner will initiate an independent review of the operation of this
+          CR Code every 4 years (following commencement of each independent review).
+          Note: The most recent independent review commenced in 2021.
+
+
+
+
+                                     Privacy (Credit Reporting) Code 2024
+

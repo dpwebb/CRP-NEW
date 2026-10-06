@@ -1,0 +1,472 @@
+{
+  "artifact": "consumer_language_validation_001t.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "document_type": "CONSUMER-LANGUAGE VALIDATION RECORD — one scope only. The templates are rendered into this record and nowhere else. NOT ADMITTED, no emission, no consumer-visible output",
+  "purpose": "validate the consumer language of every explanation template at its pinned digest, with realistic examples, so that the explanation is useful and does not overstate a legal conclusion",
+  "the_governing_text_read": {
+    "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "clause": "section 3, Phase 5.6 bullet 4 (consumer language)",
+    "line": 168,
+    "text": "- Validate consumer language with realistic examples so the explanation is useful and does not overstate a legal conclusion."
+  },
+  "templates_read_from": {
+    "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+    "sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+    "template_count": 5,
+    "template_states": [
+      "PERIOD_EXCEEDED",
+      "PERIOD_NOT_EXCEEDED",
+      "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+      "UNRESOLVED",
+      "THE_NAMED_REFUSALS"
+    ],
+    "every_template_exercised": true,
+    "the_withheld_boundary_template": "exercised by FX-03, and its rendered text is the withheld-boundary qualification verbatim"
+  },
+  "the_report_excerpt_used": "the register's recorded locations and values for the two printed fields. No report is opened and no consumer document is quoted from anywhere else.",
+  "rulings_this_validation_makes": {
+    "useful": "every template carries the citation, the printed location and value it rests on, what the arithmetic returns, why the confidence class is limited, the unresolved qualifications, and the distinction between the report's assertion and verified truth",
+    "not_overstated": "no rendered text carries a finding label, and no sentence asserts an overstatement affirmatively: every occurrence of an overstatement token is either absent or sits inside a prohibition, and each occurrence is recorded with its classification",
+    "no_surface_created": "the templates are rendered into this record only. Report checking remains \"not yet available\", the packet stays ineligible and no consumer-visible output of any class is produced."
+  },
+  "template_count": 5,
+  "failure_count": 0,
+  "failed_templates": [],
+  "pin_verification": {
+    "pins": [
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "pinned_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "measured_sha256": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "bytes": 37993,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+        "pinned_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "measured_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+        "bytes": 9618,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+        "pinned_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "measured_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+        "bytes": 22891,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\report_fact_model.json",
+        "pinned_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "measured_sha256": "4967DD57966DCC9D02D565FDDF717C924759F3CD04F6206798C1ACDA8702D6D9",
+        "bytes": 17062,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\extraction_status_vocabulary.json",
+        "pinned_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "measured_sha256": "FBD1EDFE8BA7B2CDD00174771D1B99615371FF414B42C941AF537D167AE273A7",
+        "bytes": 10911,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\deterministic_evaluator_specification.json",
+        "pinned_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "measured_sha256": "6D92F4296EAE573D78B567BA0E482ABDA5708DD87C913F58BBA378C678D20755",
+        "bytes": 25602,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\evaluator_001r.cjs",
+        "pinned_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "measured_sha256": "4D1EBEFBE8524523A20E22BAF0E0FCAA48A7CB8F109E49D61890410D96C07F7E",
+        "bytes": 23328,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\internal_determinism_check.json",
+        "pinned_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "measured_sha256": "BB5490B392000644C84D2BF67089A3A5824D4BF51CCB2ED172A1AA521C8119C3",
+        "bytes": 41919,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001R\\output_vocabulary_and_explanation_surface.json",
+        "pinned_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "measured_sha256": "6807E384CFEAADD8CED1CCA7018F04B71EB9F492AC050EED69D4D58C5EBB4ADD",
+        "bytes": 13183,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "pinned_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "measured_sha256": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "bytes": 38651,
+        "state": "MATCHES_THE_PIN"
+      },
+      {
+        "path": "SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+        "pinned_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "measured_sha256": "1B764B4DB13AD9C532E4FBF1547E78376B5EFA297F8443E6B05D622345C47169",
+        "bytes": 35071,
+        "state": "MATCHES_THE_PIN"
+      }
+    ],
+    "all_match": true,
+    "mismatches": []
+  },
+  "templates": [
+    {
+      "template_state": "PERIOD_EXCEEDED",
+      "template_when_it_applies": "both facts are PRESENT and the elapsed days exceed the derived six-year span",
+      "template_declares_no_finding_label": true,
+      "exercised_by_fixture": "FX-01",
+      "the_fixture_is": "a record whose arithmetic exceeds the six-year span",
+      "the_fixture_reaches_this_state": true,
+      "rendered_explanation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c). the printed label, its pages and its value, quoted from the presentation as the fact model records them: the field the register records as \"Last Payment Date of the debt record\" printed at row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17), and the field recorded as \"Report reference date\" printed at label \"Request Date\" in the page header, with the same value on all 22 pages. the report prints a last payment date, and the arithmetic measured from that date to the report's own reference date exceeds the six-calendar-year span computed from the same date. that is an arithmetic result only. Whether the provision applied to this debt, whether the printed date is true, and whether the agency did anything the law forbids are all separate questions this unit does not answer. the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.. the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full. The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing. The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format. the extraction does not prove that the payment occurred and no statement may say it did.",
+      "rendered_into": "this validation record only: no consumer surface exists, none is created and nothing may be shown",
+      "carries_all_four_qualifications": true,
+      "if_not": null,
+      "qualifications_carried_verbatim": [
+        "timing",
+        "classification",
+        "boundary",
+        "specimen"
+      ],
+      "required_parts_present": {
+        "applicable_statute_or_citation": true,
+        "report_quotation_and_location": true,
+        "what_requirement_appears_unmet": true,
+        "why_the_confidence_class_is_limited": true,
+        "unresolved_qualifications": true,
+        "assertion_versus_verified_truth": true
+      },
+      "finding_labels_in_the_rendered_text": [],
+      "overstatement_scan": {
+        "occurrences": [
+          {
+            "sentence": "Whether the provision applied to this debt, whether the printed date is true, and whether the agency did anything the law forbids are all separate questions this unit does not answer.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "Whether the provision applied to this debt, whether the printed date is true, and whether the agency did anything the law forbids are all separate questions this unit does not answer.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "probable violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "the extraction does not prove that the payment occurred and no statement may say it did.",
+            "token": "the payment occurred",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          }
+        ],
+        "affirmative_overstatements": [],
+        "how_a_prohibition_is_told_from_an_overstatement": "the rendered text is split into sentences; a sentence that carries an overstatement token AND a negation marker is classified as a prohibition (the text forbidding the statement), and only a sentence that carries the token without a negation marker counts as an affirmative overstatement. Every occurrence is recorded with its classification."
+      },
+      "emission_state_of_the_case": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+      "packet_eligible": false,
+      "passed": true
+    },
+    {
+      "template_state": "PERIOD_NOT_EXCEEDED",
+      "template_when_it_applies": "both facts are PRESENT and the elapsed days are less than the derived six-year span",
+      "template_declares_no_finding_label": true,
+      "exercised_by_fixture": "FX-02",
+      "the_fixture_is": "a record whose arithmetic does not exceed the span",
+      "the_fixture_reaches_this_state": true,
+      "rendered_explanation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c). the printed label, its pages and its value, quoted from the presentation as the fact model records them: the field the register records as \"Last Payment Date of the debt record\" printed at row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17), and the field recorded as \"Report reference date\" printed at label \"Request Date\" in the page header, with the same value on all 22 pages. the arithmetic measured from the printed date to the report's own reference date does not exceed the six-calendar-year span computed from the same date. this is not a clearance and not a statement of compliance: it says nothing about the provision's applicability, about any other date, or about any other report. the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.. the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full. The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing. The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format. the extraction does not prove that the payment occurred and no statement may say it did.",
+      "rendered_into": "this validation record only: no consumer surface exists, none is created and nothing may be shown",
+      "carries_all_four_qualifications": true,
+      "if_not": null,
+      "qualifications_carried_verbatim": [
+        "timing",
+        "classification",
+        "boundary",
+        "specimen"
+      ],
+      "required_parts_present": {
+        "applicable_statute_or_citation": true,
+        "report_quotation_and_location": true,
+        "what_requirement_appears_unmet": true,
+        "why_the_confidence_class_is_limited": true,
+        "unresolved_qualifications": true,
+        "assertion_versus_verified_truth": true
+      },
+      "finding_labels_in_the_rendered_text": [],
+      "overstatement_scan": {
+        "occurrences": [
+          {
+            "sentence": "No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "probable violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "the extraction does not prove that the payment occurred and no statement may say it did.",
+            "token": "the payment occurred",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          }
+        ],
+        "affirmative_overstatements": [],
+        "how_a_prohibition_is_told_from_an_overstatement": "the rendered text is split into sentences; a sentence that carries an overstatement token AND a negation marker is classified as a prohibition (the text forbidding the statement), and only a sentence that carries the token without a negation marker counts as an affirmative overstatement. Every occurrence is recorded with its classification."
+      },
+      "emission_state_of_the_case": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+      "packet_eligible": false,
+      "passed": true
+    },
+    {
+      "template_state": "BOUNDARY_CASE_EXACTLY_AT_SIX_YEAR_ANNIVERSARY",
+      "template_when_it_applies": "both facts are PRESENT and the reference date is exactly the sixth anniversary of the printed date",
+      "template_declares_no_finding_label": true,
+      "exercised_by_fixture": "FX-03",
+      "the_fixture_is": "a record whose request date is exactly the sixth anniversary",
+      "the_fixture_reaches_this_state": true,
+      "rendered_explanation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c). the printed label, its pages and its value, quoted from the presentation as the fact model records them: the field the register records as \"Last Payment Date of the debt record\" printed at row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17), and the field recorded as \"Report reference date\" printed at label \"Request Date\" in the page header, with the same value on all 22 pages. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.. the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full. The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing. The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format. the extraction does not prove that the payment occurred and no statement may say it did.",
+      "rendered_into": "this validation record only: no consumer surface exists, none is created and nothing may be shown",
+      "carries_all_four_qualifications": true,
+      "if_not": null,
+      "qualifications_carried_verbatim": [
+        "timing",
+        "classification",
+        "boundary",
+        "specimen"
+      ],
+      "required_parts_present": {
+        "applicable_statute_or_citation": true,
+        "report_quotation_and_location": true,
+        "what_requirement_appears_unmet": true,
+        "why_the_confidence_class_is_limited": true,
+        "unresolved_qualifications": true,
+        "assertion_versus_verified_truth": true
+      },
+      "finding_labels_in_the_rendered_text": [],
+      "overstatement_scan": {
+        "occurrences": [
+          {
+            "sentence": "No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "probable violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "the extraction does not prove that the payment occurred and no statement may say it did.",
+            "token": "the payment occurred",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          }
+        ],
+        "affirmative_overstatements": [],
+        "how_a_prohibition_is_told_from_an_overstatement": "the rendered text is split into sentences; a sentence that carries an overstatement token AND a negation marker is classified as a prohibition (the text forbidding the statement), and only a sentence that carries the token without a negation marker counts as an affirmative overstatement. Every occurrence is recorded with its classification."
+      },
+      "emission_state_of_the_case": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+      "packet_eligible": false,
+      "passed": true
+    },
+    {
+      "template_state": "UNRESOLVED",
+      "template_when_it_applies": "a fact the comparison needs is not PRESENT, or the reference date precedes the printed date, or the boundary case was reached",
+      "template_declares_no_finding_label": true,
+      "exercised_by_fixture": "FX-09",
+      "the_fixture_is": "a record whose printed label carries no value",
+      "the_fixture_reaches_this_state": true,
+      "rendered_explanation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c). the printed label, its pages and its value, quoted from the presentation as the fact model records them: the field the register records as \"Last Payment Date of the debt record\" printed at row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17), and the field recorded as \"Report reference date\" printed at label \"Request Date\" in the page header, with the same value on all 22 pages. no comparison was made and no result is given. The reason is named in the record: the fact status and its reason, or the comparison reason. no comparison was made and no result is given. The reason is named in the record: the fact status and its reason, or the comparison reason. the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.. the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full. The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing. The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format. the extraction does not prove that the payment occurred and no statement may say it did.",
+      "rendered_into": "this validation record only: no consumer surface exists, none is created and nothing may be shown",
+      "carries_all_four_qualifications": true,
+      "if_not": null,
+      "qualifications_carried_verbatim": [
+        "timing",
+        "classification",
+        "boundary",
+        "specimen"
+      ],
+      "required_parts_present": {
+        "applicable_statute_or_citation": true,
+        "report_quotation_and_location": true,
+        "what_requirement_appears_unmet": true,
+        "why_the_confidence_class_is_limited": true,
+        "unresolved_qualifications": true,
+        "assertion_versus_verified_truth": true
+      },
+      "finding_labels_in_the_rendered_text": [],
+      "overstatement_scan": {
+        "occurrences": [
+          {
+            "sentence": "No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "probable violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "the extraction does not prove that the payment occurred and no statement may say it did.",
+            "token": "the payment occurred",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          }
+        ],
+        "affirmative_overstatements": [],
+        "how_a_prohibition_is_told_from_an_overstatement": "the rendered text is split into sentences; a sentence that carries an overstatement token AND a negation marker is classified as a prohibition (the text forbidding the statement), and only a sentence that carries the token without a negation marker counts as an affirmative overstatement. Every occurrence is recorded with its classification."
+      },
+      "emission_state_of_the_case": "NOT_EMITTED_NO_CONSUMER_SURFACE_AND_NO_FINDING_CLASS_AUTHORIZED",
+      "packet_eligible": false,
+      "passed": true
+    },
+    {
+      "template_state": "THE_NAMED_REFUSALS",
+      "template_when_it_applies": "any gate fails: REFUSED_NO_JURISDICTION_SELECTION_SUPPLIED, REFUSED_JURISDICTION_NOT_AUTHORIZED_FOR_THIS_UNIT, REFUSED_UNSUPPORTED_PRESENTATION, REFUSED_WRONG_EVENT_DATE_MAPPING, REFUSED_RULE_RECORD_NOT_ADMITTED, REFUSED_UNRESOLVED_AFFIRMATIVE_ELEMENT",
+      "template_declares_no_finding_label": true,
+      "exercised_by_fixture": "FX-29",
+      "the_fixture_is": "a fully eligible document against the record as it stands, which refuses at the admission gate",
+      "the_fixture_reaches_this_state": true,
+      "rendered_explanation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c). the printed label, its pages and its value, quoted from the presentation as the fact model records them: the field the register records as \"Last Payment Date of the debt record\" printed at row label \"Last Payment Date\" inside a collection record, PDF page 16 (and the continued record on PDF page 17), and the field recorded as \"Report reference date\" printed at label \"Request Date\" in the page header, with the same value on all 22 pages. the evaluation did not run or produced no outcome, the refusal is named, and nothing whatever is asserted about the report, the debt or any person. the evaluation did not run or produced no outcome, the refusal is named, and nothing whatever is asserted about the report, the debt or any person. the recorded classification limits this unit to observation; no finding class is available to it and the packet is ineligible.. the exception, timing and applicability qualifications the rule record requires, carried verbatim and in full. The recorded legal source states the provision as in force but records no commencement date for it. No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time. This statement therefore reports what the report prints and what the arithmetic returns; it does not state that the provision applied to the debt, and it makes no claim about statutory timing. The recorded classification for this provision is observation-only and packet-ineligible. No violation and no probable violation may be asserted or implied from this result. The reference date is exactly six years after the stated last payment date. The recorded legal text does not state whether that day falls inside or outside the period, so no result is given for this day. This result rests on one byte-pinned consumer disclosure and on two printed fields within it. It is not a statement about any other report, product, bureau, print date or format. the extraction does not prove that the payment occurred and no statement may say it did.",
+      "rendered_into": "this validation record only: no consumer surface exists, none is created and nothing may be shown",
+      "carries_all_four_qualifications": false,
+      "if_not": "a refusal carries the reason and the boundary of the refusal only: no qualification, no outcome and no observation is produced",
+      "qualifications_carried_verbatim": [],
+      "required_parts_present": {
+        "applicable_statute_or_citation": true,
+        "report_quotation_and_location": true,
+        "what_requirement_appears_unmet": true,
+        "why_the_confidence_class_is_limited": true,
+        "unresolved_qualifications": true,
+        "assertion_versus_verified_truth": true
+      },
+      "finding_labels_in_the_rendered_text": [],
+      "overstatement_scan": {
+        "occurrences": [
+          {
+            "sentence": "No record in this workspace establishes when this six-year retention provision took effect, or that it applied to this debt at the relevant time.",
+            "token": "applied to this debt",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "it does not state that the provision applied to the debt, and it makes no claim about statutory timing.",
+            "token": "the provision applied",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "No violation and no probable violation may be asserted or implied from this result.",
+            "token": "probable violation",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          },
+          {
+            "sentence": "the extraction does not prove that the payment occurred and no statement may say it did.",
+            "token": "the payment occurred",
+            "negated": true,
+            "classification": "PROHIBITION_NOT_AN_OVERSTATEMENT"
+          }
+        ],
+        "affirmative_overstatements": [],
+        "how_a_prohibition_is_told_from_an_overstatement": "the rendered text is split into sentences; a sentence that carries an overstatement token AND a negation marker is classified as a prohibition (the text forbidding the statement), and only a sentence that carries the token without a negation marker counts as an affirmative overstatement. Every occurrence is recorded with its classification."
+      },
+      "emission_state_of_the_case": "NOT_EMITTED",
+      "packet_eligible": false,
+      "passed": true
+    }
+  ],
+  "what_may_be_shown_today": {
+    "consumer_visible_output": "NONE",
+    "packet": "ineligible",
+    "application": "unchanged; report checking remains \"not yet available\"",
+    "note": "the templates above specify how a lawful observation-class explanation would have to read if a surface ever existed. They are not a surface, they are not reachable, and they authorize nothing."
+  },
+  "verdict": "EVERY TEMPLATE VALIDATED — 5 templates exercised, no finding label, no affirmative overstatement, no surface created",
+  "what_this_record_does_not_do": [
+    "it creates no consumer surface, publishes nothing, transmits nothing and changes no application behaviour",
+    "it does not admit a rule, create coverage or authorise a finding class",
+    "it does not soften a template to make it pass: the templates are read at their pinned digest and the checks are measured against the pinned text",
+    "it does not decide the effective period, the exception or the anniversary-boundary question"
+  ],
+  "created_by": "PHASE5-001T"
+}

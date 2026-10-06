@@ -1,0 +1,73 @@
+{
+  "artifact": "scoped_gate_5_3_verdict.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "scope_id": "SCOPE-CA-NS-CRA-S10-3-C-LIMB-1-PR01-LASTPAYMENT",
+  "gate": "Gate 5.3 — Resolve report-schema and representation questions",
+  "gate_text_quoted_verbatim": [
+    "**Gate 5.3:** each proposed candidate has a verifiable report representation and exact location, or remains explicitly unresolved/excluded with a source-grounded reason. No rule enters certification merely because a field seems likely to exist.",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md, section 3, Gate 5.3, now at line 118 (line 96 before the amendments; the gate's own text is unchanged and is per-candidate, so no amendment was needed to read it for a scope)"
+  ],
+  "authority_for_this_scoped_verdict": "amendment A-1 read with amendment A-3, which gives Phase 5.3 bullet 1 its scoped reading.",
+  "verdict": "PASSED_FOR_THIS_SCOPE",
+  "corpus_wide_verdict": "NOT PASSED — no corpus-wide intended-format inventory exists, no other candidate has a verifiable representation or an evidenced unresolved status, and the gate stays reached for one candidate on one presentation and passed for none corpus-wide. This verdict does not convert the one-candidate state into a whole-gate pass.",
+  "intended_format_inventory": {
+    "for_this_scope": "PR-01 only — the exact byte-pinned Equifax Canada consumer specimen, artifact LEG-CONSUMER-EQ-CA, SHA-256 E439A4BB1E43AF640DFE7867473BE0EF8EC13B2B8654F41C31138D86A107AE5F, 96,393 bytes, 22 pages, A4, native text on every page",
+    "recorded_by": "amendment A-3 (build plan section 3, Phase 5.3 bullet 1) plus scope_definition.json presentation block",
+    "every_other_format": "recorded as UNSUPPORTED and not inventoried; a different print date, product, bureau, scan, photograph, mobile view, subscriber or screening document, generated fixture and encrypted or text-less document are all outside the inventory",
+    "corpus_wide_inventory": "ABSENT, and not created or implied by this verdict. PHASE5-001I-C recorded this criterion as UNMET; that corpus-wide statement stands, and the amendment does not read it away for anything outside this scope"
+  },
+  "criteria": [
+    {
+      "criterion_verbatim": "Inventory the actual consumer-report formats/fields that the future application is intended to support. Do not use the old detector's field limitations as the new product boundary.",
+      "state": "MET within the scope",
+      "evidence": [
+        "the intended format for this scope is inventoried explicitly as PR-01 and nothing else; the record is scope_definition.json (presentation block) with the amended bullet as its authority",
+        "the old detector's field limitations were not used as the boundary: the demonstrated fields are read from the printed report text through a stated extraction command, not from a legacy parser schema",
+        "corpus-wide: UNMET, unchanged. No record in this workspace enumerates the formats the application is intended to support, and this verdict does not claim one"
+      ]
+    },
+    {
+      "criterion_verbatim": "For each candidate, inspect representative report layouts or authoritative report-format documentation already within scope and map the exact displayed statement/date to the exact legal event. The legal source stays authoritative for law; report examples/documentation establish only representation and field mapping.",
+      "state": "MET for the first limb of this candidate; the second limb remains explicitly unresolved with a source-grounded reason",
+      "evidence": [
+        "the printed Last Payment Date row inside a Collections contract debt record maps to the report-stated last-payment event on the debt, read as the collection-scoped fact collection.lastPaymentDate (owner decision D-2), located at PDF page 16 line 32 inside the record that begins at page 16 line 8 and ends at page 16 line 38, and at PDF page 17 line 5 inside the record that begins at page 16 line 39",
+        "the printed value is 2021/02/01 in the report's own DDDD/DD/DD form, normalized to 2021-02-01, identical on both collection records; the raw value is preserved beside the normalized value",
+        "the printed Request Date page header (line 1 of all 22 pages, value 2026/05/05) is accepted as the specimen's reference date (owner decision D-3)",
+        "the default-in-payment date has no located field on this presentation: PROD-003 field_records FACT-05 records EXTRACTION_UNRESOLVED with its basis, and FACT-02's second_limb_note records the limb as UNSEATED rather than defaulted from First Delinquency. The gate's own text permits exactly this: 'or remains explicitly unresolved/excluded with a source-grounded reason'",
+        "the legal source was not used to establish the representation and the report example was not used to establish the law"
+      ]
+    },
+    {
+      "criterion_verbatim": "Establish whether the uploaded report can expose inquiry/request dates, bureau collection dates, last-payment dates, default dates, medical-debt labels, source/court labels, and other decisive report facts. A canonical parser field is not required if explicit report text can be deterministically mapped; unresolved OCR or ambiguous labels remain unresolved rather than inferred.",
+      "state": "MET within what the gate allows for this scope",
+      "evidence": [
+        "established for this specimen: the last-payment date and the reference date are exposed as printed text and are deterministically mapped",
+        "established as not exposed on this specimen: the date the default in payment occurred; the alerts/disclosures table on page 21 pairs no value with its labels, so no field from that table is claimed",
+        "not claimed here: every other decisive fact belongs to other candidates and to other jurisdictions; no OCR was run and no page image was inspected"
+      ]
+    },
+    {
+      "criterion_verbatim": "Define a report-location locator that survives extraction (page, section, tradeline/inquiry block, source span or bounding box, and exact text/value). Preserve the raw extracted value and normalized value with a traceable normalization record.",
+      "state": "MET for this candidate on this specimen",
+      "evidence": [
+        "the locator records page, printed section path (Collections), the individual record block by its own printed row labels, the line within the block, and the exact printed value",
+        "the extraction method is recorded as reproducible: pdftotext -f <page> -l <page> -layout <file> - with native text on all 22 pages",
+        "raw and normalized values are preserved side by side in two independent records (PROD-003's register and PHASE5-001I-A's re-measurement), and the normalization rule (ISO 8601 derived from the printed DDDD/DD/DD form) is stated"
+      ]
+    }
+  ],
+  "excluded_and_unresolved_items": [
+    "the no-payment/default-date alternative and the second limb of s. 10(3)(c): EXCLUDED from this scope and recorded unresolved, with the source-grounded reason that this presentation prints no field the admitted text reads as that date",
+    "the reusable-locator question: the locator is demonstrated once and is not called reusable; PROD-003's unresolved_mappings item 'a second independently authorized Equifax Canada specimen is required before the locator is called reusable' stands, and owner decision D-6 keeps the single-specimen boundary",
+    "PR-02: corroborates only the existence and the label of the Last Payment Date field across two Canadian consumer disclosures; not admitted as the format for any rule unit and not evaluable with PR-01's locator",
+    "the effective-period and applicability-in-time question, the mandatory timing qualification, the direct-report section 4 retention exception and the ceiling: recorded limitations carried to Gate 5.4, none of them representation questions this gate decides"
+  ],
+  "what_this_verdict_does_not_do": [
+    "it does not create or imply a corpus-wide intended-format inventory, and it does not pass Gate 5.3 corpus-wide",
+    "it does not admit a report family or any availability for consumer upload; the application still reports report checking as not yet available",
+    "it does not manufacture a mapping for the second limb or default the field from another date",
+    "it does not admit a rule, certify legal content, create coverage or a candidate, or authorize a finding class",
+    "it is not Gate 5.4, Gate 5.5 or Gate 5.6 evidence and it produces no result for any person"
+  ]
+}

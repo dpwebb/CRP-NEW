@@ -1,0 +1,77 @@
+{
+  "artifact": "amendment_authority_analysis.json",
+  "work_order": "PHASE5-001M",
+  "step": "step 1 - establish the actual amendment procedure and document precedence, before any write",
+  "documents_read_and_re_hashed_before_writing": [
+    "CRP_CORE_CONSTITUTION.md (rank 1)",
+    "CRP_LEGAL_INVARIANT.md (rank 2)",
+    "JURISDICTION_CONTRACT.md (rank 3)",
+    "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md (rank 4 Corpus Contract; amendment target 2)",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md (rank 5 Approved Build Plan; amendment target 1)",
+    "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md (001K register)",
+    "SOURCE_CAPTURES/PHASE5-001K/{rescreen_register.csv,rescreen_provenance.json,file_custody_manifest.json}",
+    "CRP_PHASE5_001L_DUPLICATE_AND_COUNT_RECONCILIATION.md and the seven PHASE5-001L evidence artifacts, including section 9.4"
+  ],
+  "document_precedence": {
+    "source": "CRP_CORE_CONSTITUTION.md section 2, Authority Order",
+    "hierarchy_verbatim": "1. Core Constitution  2. Legal Invariant  3. Jurisdiction Contract  4. Corpus Contract  5. Approved Build Plan  6. Active Work Order  7. Approved Tests  8. Implementation  9. Comments  10. Legacy Material",
+    "clause_2_1_verbatim": "Authority is determined by rank alone. It is never determined by recency, document length, specificity, the number of artifacts that agree, passing test results, reviewer preference, or implementation convenience.",
+    "clause_2_2_verbatim": "A lower-ranked artifact never overrides a higher-ranked artifact.",
+    "rank_of_the_two_targets": {
+      "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md": 4,
+      "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md": 5
+    },
+    "consequence_established": "A new document does not supersede either target by existing. This work order's narrative is a rank-6 order record, not governing text: it ranks below both targets and below the rank-4 contract. Rank 4 outranks rank 5, so where the contract and the plan speak to the same subject the contract governs; that is why both had to be amended together and consistently rather than one being treated as implied by the other. Nothing is superseded until the instrument the governing procedure names amends the text in place."
+  },
+  "amendment_procedure": {
+    "source": "CRP_CORE_CONSTITUTION.md section 6 (Amendment and Change Control), read with section 3.2 step 3",
+    "clauses_quoted": [
+      "6.1 This constitution and every other rank 1-3 document are amended only by an explicit, owner-issued work order. No amendment occurs by implementation, refactor, test change, comment, migration, or documentation drift.",
+      "6.2 An amendment must name the document and the clause it changes, quote the text being replaced, and state the replacement text. Implied amendments are void.",
+      "6.4 Deletion of a rank 1-3 document, or removal of a requirement from one, is an amendment and requires the same authorization as an amendment.",
+      "6.5 Amendment history is recorded in the amended document itself, so that the governing text and its change record cannot separate. A rank 1-3 document with no amendment history has never been amended.",
+      "3.2 step 3 ... amending a governing document is an owner amendment under Section 6 (an Active Work Order, rank 6), not a repair performed during implementation."
+    ],
+    "procedure_derived": [
+      "P1. Owner issuance. The only recognized instrument of amendment is an explicit owner-issued work order. Implied amendments are void (6.2). This order, PHASE5-001M, is that instrument: the owner's message both authorizes the order and fixes the disposition to be recorded.",
+      "P2. Form. The amendment must name the document, name the clause, quote the text being replaced verbatim, and state the replacement text (6.2). Recorded item by item in amendment_text.json.",
+      "P3. Removal counts. Removing a requirement from a governing document is itself an amendment requiring the same authorization (6.4). The B20 reconciliation instruction is a requirement, so it is replaced by a stated replacement requirement rather than deleted, and no replacement-by-silence was used.",
+      "P4. In-document history. The change record is recorded in the amended document itself so that governing text and change record cannot separate (6.5)."
+    ],
+    "rank_scope_note": "6.1's express owner-issued-work-order requirement is written for ranks 1-3. The two targets here are rank 4 (Corpus Contract) and rank 5 (Approved Build Plan). That does not weaken or widen the procedure: the owner used the same and only amendatory instrument - an explicit owner-issued work order - for both, so the requirement is satisfied a fortiori. 3.2 step 3 is the clause that makes an owner work order the correct instrument for amending a governing document at all, because it takes a genuine amendment outside the ordinary rank-precedence prohibition of 2.2, which otherwise bars a rank-6 act from changing rank-5 text.",
+    "amendment_history_requirement_applied": "6.5 requires the change record to live inside the amended document. The expansion contract already carried a section 9 Amendment History, so one row was appended there. The approved build plan carried no amendment history at all, so its section 8 Amendment History was created by this order; that creation is required by 6.5, not discretionary, and it is the minimum structural change that satisfies the clause.",
+    "what_the_procedure_forbids_here": [
+      "amending anything by implication (6.2)",
+      "letting a lower-ranked artifact repair a higher-ranked one during implementation (3.2 step 3)",
+      "substituting a new document for the governing text because it is newer (2.1)",
+      "silently rewording, narrowing or widening the replaced text (3.2 step 3)"
+    ]
+  },
+  "authority_check": {
+    "question": "Does the established procedure require authority beyond the owner's delegated authority?",
+    "answer": "NO - no stop condition was reached, and no act was performed that the owner had not authorized.",
+    "basis": [
+      "The amendatory act is the owner's: the owner issued PHASE5-001M, fixed the B20 disposition and authorized the amendment, the supporting custody and verification records, and the minimal in-document amendment-history entries.",
+      "The procedure requires an explicit owner-issued work order; that is what exists, so the highest form the procedure names has been used and no lesser authority was relied on.",
+      "Both targets are ranks 4 and 5, below the ranks for which 6.1 states the requirement expressly, and nothing in section 6 reserves rank-4 or rank-5 amendment to a separate or higher instrument.",
+      "Nothing was amended outside the two files and two amendment-history entries identified before editing; no rank 1-3 document was touched; no gate was passed, no rule admitted, no count certified and no finding created."
+    ],
+    "if_a_stop_had_been_required": "not reached; no requirement of the procedure exceeded the owner's authority"
+  },
+  "targets_identified_before_editing": [
+    {"document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "clause": "section 3, Phase 5.1, bullet 4 (the B20 carry-forward and reconciliation instruction)", "locus_before": "line 52 of 148", "amendment_id": "M1-A"},
+    {"document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "clause": "section 6 first paragraph, the sentence recording the B20 tally and requiring its reconciliation before it becomes the certified starting count", "locus_before": "line 142 of 148", "amendment_id": "M1-B"},
+    {"document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md", "clause": "new section 8 Amendment History, created under Core Constitution 6.5 (the section did not exist before this amendment)", "locus_before": "absent", "amendment_id": "M1-C"},
+    {"document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "clause": "section 6 owner decision block, the aggregate tally sentences", "locus_before": "lines 229 to 230 of 332", "amendment_id": "M2-A"},
+    {"document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md", "clause": "section 9 Amendment History, one appended row", "locus_before": "row table ending at line 332", "amendment_id": "M2-B"}
+  ],
+  "files_deliberately_not_edited": [
+    "CRP_CORE_CONSTITUTION.md - rank 1; nothing in the procedure required a rank 1-3 amendment",
+    "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md and the SOURCE_CAPTURES/PHASE5-001K evidence - records of what was recorded at their time; their quotations of the tally are preserved as historical text, and re-writing a record so that it no longer records what was recorded is the alteration the procedure forbids",
+    "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md and the SOURCE_CAPTURES/PHASE5-001L evidence, including b20_basis_search.json and its unenacted draft disposition - preserved byte for byte; section 9.4 remains a proposal that this order enacts in the two governing documents and in no other",
+    "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md - 437 entries, untouched; the catalogue assigns no B20 class to any entry and needed no change",
+    "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md - records the plan's size and the phase rows; not a target of this amendment"
+  ],
+  "boundaries": "Document and verification writing only. No new research, no legal interpretation, no source retrieval or removal, no rescreen reclassification, no parser, evaluator, application, deployment or Git operation, no Gate 5.2 work and no PHASE5-001I issue.",
+  "created_by": "PHASE5-001M"
+}

@@ -1,0 +1,296 @@
+{
+  "artifact": "input_verification.json",
+  "work_order": "PHASE5-001P",
+  "created_utc": "2026-09-30",
+  "purpose": "verify, by re-measurement before any amendment, the exact inputs this order relies on, and reconcile each against the digest the inherited record (PHASE5-001I-C) recorded for the same file",
+  "method": "SHA-256 re-measured read-only immediately before the amendments; a file with no previously recorded digest is measured and marked NOT_PREVIOUSLY_RECORDED rather than treated as agreement or disagreement",
+  "input_count": 35,
+  "matches_recorded_digest": 26,
+  "differs_from_recorded_digest": 0,
+  "missing": 0,
+  "measured_without_a_prior_recorded_digest": 9,
+  "rows": [
+    {
+      "path": "consumer-wizard\\dist\\jurisdiction-data.js",
+      "exists": true,
+      "bytes": 39560,
+      "sha256": "C6A6CBCCA2E0DB81E189F9FE5D7E7BBB2DE0DDAD4C5C1616A53AC0A024A49906",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "CRP_CORE_CONSTITUTION.md",
+      "exists": true,
+      "bytes": 14820,
+      "sha256": "64027E2A0CC14EF302C73B3830CADCA3D6B867A8DEC843235A48E5C6B6387C3D",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "CRP_CORRECTED_LOGIC_RESCREEN_REGISTER.md",
+      "exists": true,
+      "bytes": 57342,
+      "sha256": "B7A973C3DE5D0C34212F1ACC548B830E1617165A83797A3843AC036C3987AD55",
+      "recorded_sha256": "B7A973C3DE5D0C34212F1ACC548B830E1617165A83797A3843AC036C3987AD55",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "exists": true,
+      "bytes": 35843,
+      "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "recorded_sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "exists": true,
+      "bytes": 21587,
+      "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "CRP_PHASE5_001I_B_INTERNAL_RULE_RECORD_DRAFT.md",
+      "exists": true,
+      "bytes": 38888,
+      "sha256": "D15540598B3E32D235BA10F4B0064D07CBED52AA716A860346D211D1F2CDAFE5",
+      "recorded_sha256": "D15540598B3E32D235BA10F4B0064D07CBED52AA716A860346D211D1F2CDAFE5",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "CRP_PHASE5_001I_C_OWNER_REPRESENTATION_DECISIONS.md",
+      "exists": true,
+      "bytes": 36455,
+      "sha256": "B77530DD454C84893317FAE586A5D2FC70706AC8F1AEC7C16655FEF0F262D202",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md",
+      "exists": true,
+      "bytes": 70041,
+      "sha256": "18312EE8853BBF36BD2F5B9CE46201DC60457382F0C646C74CF5FAC34AD6E817",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "exists": true,
+      "bytes": 29858,
+      "sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "recorded_sha256": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\build_001i_a_governance_records.cjs",
+      "exists": true,
+      "bytes": 18548,
+      "sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473",
+      "recorded_sha256": "332574721973E5D866E515BA76FC7F821E188CF3FF85D0AE6F6E9CB908F2F473",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\classification_record.json",
+      "exists": true,
+      "bytes": 4799,
+      "sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672",
+      "recorded_sha256": "A0BEF5A55B991630140066A3B530C0532CB2F40E39F7D017E5B9769F6DF75672",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\extraction_results.json",
+      "exists": true,
+      "bytes": 11375,
+      "sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE",
+      "recorded_sha256": "00387E43C8A8D232ACACED993CA520CDD4A136FB2A44F1248FA89BB1D95E3FFE",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "exists": true,
+      "bytes": 12849,
+      "sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+      "recorded_sha256": "D2F00C8419D1A4CF29C2AAFEC9CE0E0DB568A2A170A4D84E4A4B348784410DE9",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\gate_sequence_assessment.json",
+      "exists": true,
+      "bytes": 5156,
+      "sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50",
+      "recorded_sha256": "D2AEC14102D8997C3128F228D725BB772269F3961228D548F539817D27AC3A50",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "exists": true,
+      "bytes": 77796,
+      "sha256": "2055CFD0CFF6473302F16097F9691C642C9E5B60E0127CB882ACE88D6E9FC104",
+      "recorded_sha256": "2055CFD0CFF6473302F16097F9691C642C9E5B60E0127CB882ACE88D6E9FC104",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+      "exists": true,
+      "bytes": 27877,
+      "sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF",
+      "recorded_sha256": "85A67B72FF61E7EC898EBFDDF5BF57E8CFA51D0FB23FC02B94633BD9871F25FF",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\verify_001i_a_custody.ps1",
+      "exists": true,
+      "bytes": 13197,
+      "sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D",
+      "recorded_sha256": "5C3560F8965E5CA3033C32711E1BE4447595DD0E94F754D18419796223D5774D",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-B\\rule_record_draft.json",
+      "exists": true,
+      "bytes": 50987,
+      "sha256": "B97241A12E76F520DB884A7C012B6DE286BB3DC1EC75C699B12A5BCF4822FE47",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-C\\owner_representation_decisions.json",
+      "exists": true,
+      "bytes": 31946,
+      "sha256": "DCB251E0A967B8A125F552A1DB0CF7C69116DC29716A0472FBD2850001AC956F",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-C\\proposed_register_update.json",
+      "exists": true,
+      "bytes": 14773,
+      "sha256": "2A4B1BA4B00245487CBFE0A499157E9C841129E50A36A791857E64CEE7205E9A",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\file_custody_manifest.json",
+      "exists": true,
+      "bytes": 541,
+      "sha256": "8AC36ED6212D2F3722F6A24B5DAE0F78E0EFB2B5110C60F37F131FE4C24400B6",
+      "recorded_sha256": null,
+      "state": "NOT_PREVIOUSLY_RECORDED"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_provenance.json",
+      "exists": true,
+      "bytes": 374808,
+      "sha256": "D3D4E3DAA1BB37DF01037814139AE21022746E1730D897A5D6E6F6A4325364C3",
+      "recorded_sha256": "D3D4E3DAA1BB37DF01037814139AE21022746E1730D897A5D6E6F6A4325364C3",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001K\\rescreen_register.csv",
+      "exists": true,
+      "bytes": 616237,
+      "sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "recorded_sha256": "DFB78DD20AAD444A4FC5B03D0FDFF11081AD67A454AF80BBBB2CD4CB0C0F24BB",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json",
+      "exists": true,
+      "bytes": 9819,
+      "sha256": "E5FF906A3CB375EA8DDAC7D54C980F67C8B172B8C952A9A6D4129844EDB5A63F",
+      "recorded_sha256": "E5FF906A3CB375EA8DDAC7D54C980F67C8B172B8C952A9A6D4129844EDB5A63F",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.csv",
+      "exists": true,
+      "bytes": 408839,
+      "sha256": "C6819EBA26352E66540764066552CA801EC8AA41B657977F44CBDA4F705597D7",
+      "recorded_sha256": "C6819EBA26352E66540764066552CA801EC8AA41B657977F44CBDA4F705597D7",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001O\\source_id_coverage_ledger.json",
+      "exists": true,
+      "bytes": 2475693,
+      "sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+      "recorded_sha256": "99D6E37F3620C77B296488287F9F03C97B428F6D623A0F1D3CB53A691AFEC07D",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\candidate_rule_units.json",
+      "exists": true,
+      "bytes": 64142,
+      "sha256": "FCDFCE1E1B2E82ED3648889F387816944B9337A6436BB58066B4B2E3451DDFA4",
+      "recorded_sha256": "FCDFCE1E1B2E82ED3648889F387816944B9337A6436BB58066B4B2E3451DDFA4",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\crosswalk.json",
+      "exists": true,
+      "bytes": 9618,
+      "sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+      "recorded_sha256": "51BFCDB73371D3A1F5DACDB35DC9BC465D8548C8D6B6283FE0371AAAB6C20E13",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\file_custody_manifest.json",
+      "exists": true,
+      "bytes": 6300,
+      "sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1",
+      "recorded_sha256": "A53BA0D79BB01D3DCE636BF9B0262852FD20080811136C0F9D8ABCC87FE59AA1",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\gate_prerequisites.json",
+      "exists": true,
+      "bytes": 3975,
+      "sha256": "7C39152FAABE36C3BFC6D76564F19449D8E867D600A5EDD0CAD71AF9A5B38258",
+      "recorded_sha256": "7C39152FAABE36C3BFC6D76564F19449D8E867D600A5EDD0CAD71AF9A5B38258",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\input_verification.json",
+      "exists": true,
+      "bytes": 8833,
+      "sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "recorded_sha256": "115D5F9A68B21D33962F1C5FBABF4552CEDC50CF0A027939943CEA18709996A3",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\narrative_check.json",
+      "exists": true,
+      "bytes": 4216,
+      "sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "recorded_sha256": "51B53C87B0253D0A229E5D0B7221B6CA7D2A0BC1D68F310737DA9D7C8C857C1C",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\preserved_files_before.json",
+      "exists": true,
+      "bytes": 72708,
+      "sha256": "24605499EB12F7A94F447C6D7BE2D338CE508856D3B15883E1596CE155553C2D",
+      "recorded_sha256": "24605499EB12F7A94F447C6D7BE2D338CE508856D3B15883E1596CE155553C2D",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\report_representation_register.json",
+      "exists": true,
+      "bytes": 22891,
+      "sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+      "recorded_sha256": "2F03DBC807EB1475F97B2FE974E8A4CF752A09475D6B7F371AB62F1BC190036A",
+      "state": "MATCHES_RECORDED_DIGEST"
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PROD-003\\validation_results.json",
+      "exists": true,
+      "bytes": 11154,
+      "sha256": "361B9ACB2D1154B113E83648E439B8AD773D32141DF4C62A8C831E67A03BB248",
+      "recorded_sha256": "361B9ACB2D1154B113E83648E439B8AD773D32141DF4C62A8C831E67A03BB248",
+      "state": "MATCHES_RECORDED_DIGEST"
+    }
+  ],
+  "boundary": "A digest match proves the file is byte-identical to the file the inherited record measured. It is not a re-review of any legal content, and it decides no legal question.",
+  "created_by": "PHASE5-001P"
+}

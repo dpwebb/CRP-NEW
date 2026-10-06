@@ -1,0 +1,1394 @@
+                                             MANITOBA
+
+
+
+             THE LIMITATIONS ACT                                         LOI SUR LES DÉLAIS DE
+                                                                             PRESCRIPTION
+                      C.C.S.M. c. L150                                         c. L150 de la C.P.L.M.
+
+
+
+
+Minister responsible:                                           Ministre responsable :
+
+Minister of Justice                                             Ministre de la Justice
+
+
+
+
+As of 30 Sept. 2026, this is the most current version           Le texte figurant ci-dessous constitue la codification la plus
+available. It is current for the period set out in the footer   récente en date du 30 sept. 2026. Son contenu était à jour
+below.                                                          pendant la période indiquée en bas de page.
+
+
+
+
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                     Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                          À jour du 30 mai 2023 au 28 sept. 2026
+LEGISLATIVE HISTORY / HISTORIQUE                                             C.C.S.M. c. L150 / c. L150 de la C.P.L.M.
+
+
+                                            LEGISLATIVE HISTORY
+
+The Limitations Act, C.C.S.M. c. L150
+    Enacted by                                 Proclamation status (for provisions in force by proclamation)
+     SM 2021, c. 44                            whole Act: in force on 30 Sep 2022 (proclamation published: 29 Oct 2021)
+    Amended by
+     SM 2023, c. 19, s. 98
+     SM 2023, c. 22, Part 1
+
+
+
+
+                                                  HISTORIQUE
+
+Loi sur les délais de prescription, c. L150 de la C.P.L.M.
+    Édictée par                                État des dispositions qui entrent en vigueur par proclamation
+     L.M. 2021, c. 44                          l'ensemble de la Loi : en vigueur le 30 sept. 2022 (proclamation publiée :
+                                                  29 oct. 2021)
+    Modifiée par
+     L.M. 2023, c. 19, art. 98
+     L.M. 2023, c. 22, partie 1
+
+
+
+
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                   Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                        À jour du 30 mai 2023 au 28 sept. 2026
+                   CHAPTER L150                                                 CHAPITRE L150
+
+             THE LIMITATIONS ACT                            LOI SUR LES DÉLAIS DE PRESCRIPTION
+
+
+
+               TABLE OF CONTENTS                                            TABLE DES MATIÈRES
+
+Section                                                   Article
+
+           INTRODUCTORY PROVISIONS                                      DISPOSITIONS INTRODUCTIVES
+
+       1    Overview                                                1    Objet général
+       2    Definitions                                             2    Définitions
+       3    Application of this Act                                 3    Application de la présente loi
+       4    Relationship to other Acts                              4    Lien avec les autres lois
+       5    Act binds the Crown                                     5    Couronne liée
+
+            BASIC LIMITATION PERIOD                             DÉLAI DE PRESCRIPTION DE BASE
+
+       6 Basic limitation — 2 years from discovery                  6 Délai de prescription de base — deux ans à
+       7 When is a claim discovered?                                  compter de la découverte des faits
+       8 Date of injury, loss or damage — specific                  7 Date de la découverte des faits
+         cases                                                      8 Date de la survenance du préjudice, de la
+       9 Burden of proof                                              perte ou des dommages — cas particuliers
+                                                                    9 Fardeau de la preuve
+
+           ULTIMATE LIMITATION PERIOD                           DÉLAI DE PRESCRIPTION MAXIMAL
+
+      10 Ultimate limitation                                   10 Délai de prescription maximal
+      11 Date of act or omission — specific cases              11 Date de l'acte ou de l'omission — cas
+      12 Burden of proof                                          particuliers
+                                                               12 Fardeau de la preuve
+
+    SUSPENSION OF LIMITATION PERIODS                                         SUSPENSION DES
+                                                                          DÉLAIS DE PRESCRIPTION
+      13 Minors
+      14 Persons under a disability                            13 Mineurs
+      15 Notice to proceed re minor or person under            14 Personnes ayant une incapacité
+         a disability                                          15 Avis d'introduction d'une instance —
+      16 Role of Public Guardian and Trustee re                   mineurs et personnes ayant une incapacité
+         notice to proceed                                     16 Rôle du tuteur et curateur public — avis
+      17 Wilful concealment, etc.                                 d'introduction d'une instance
+                                                               17 Dissimulation volontaire, etc.
+
+              NO LIMITATION PERIOD                            ABSENCE DE DÉLAI DE PRESCRIPTION
+
+      18 Claims with no limitation period                      18 Absence de délai de prescription à l'égard
+                                                                  de certaines réclamations
+
+
+
+
+                                                      i
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                  Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                       À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                             Délais de prescription, c. L150 de la C.P.L.M.
+Table of Contents                                         Table des matières
+
+
+
+    RULES FOR SPECIFIC CIRCUMSTANCES                                    RÈGLES EN CAS DE
+                                                                  CIRCONSTANCES PARTICULIÈRES
+      19 Recovery of land
+      20 Acknowledgement of liability extends                   19 Recouvrement de biens-fonds
+         limitation                                             20 Reconnaissance de responsabilité —
+      21 Claim of successor or principal                           prolongation du délai de prescription
+      22 Amending pleadings to add party, etc.                  21 Réclamations des ayants droit
+      23 Non-judicial remedies                                  22 Modification des actes de procédure
+      24 Agreement to extend limitation                         23 Recours extrajudiciaires
+      25 Limitation during bankruptcy, etc.                     24 Prolongation des délais de prescription
+      26 Rules of equity re acquiescence and undue              25 Délais de prescription pendant une faillite,
+         delay not affected                                        etc.
+      27 Conflict of laws                                       26 Règles d'equity — acquiescement et
+                                                                   retards indus non touchés
+                                                                27 Conflit de lois
+
+                     TRANSITIONAL                                    DISPOSITIONS TRANSITOIRES
+
+28-31.3 Transitional                                      28-31.3 Dispositions transitoires
+
+        CONSEQUENTIAL AMENDMENTS                                   MODIFICATIONS CORRÉLATIVES
+
+  32-52 Consequential amendments                             32-52 Modifications corrélatives
+
+       REPEAL, C.C.S.M. REFERENCE AND                      ABROGATION, CODIFICATION PERMANENTE
+            COMING INTO FORCE                                     ET ENTRÉE EN VIGUEUR
+
+      53 Repeal                                                 53 Abrogation
+      54 C.C.S.M. reference                                     54 Codification permanente
+      55 Coming into force                                      55 Entrée en vigueur
+
+
+
+
+                                                     ii
+Accessed: 30 Sept. 2026 at 5:50 am CDT                               Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                    À jour du 30 mai 2023 au 28 sept. 2026
+                  CHAPTER L150                                                      CHAPITRE L150
+
+              THE LIMITATIONS ACT                                  LOI SUR LES DÉLAIS DE PRESCRIPTION
+
+
+
+
+(Assented to May 20, 2021)                                       (Date de sanction : 20 mai 2021)
+
+HER MAJESTY, by and with the advice and consent of               SA MAJESTÉ, sur l'avis et avec le consentement de
+the Legislative Assembly of Manitoba, enacts as                  l'Assemblée législative du Manitoba, édicte :
+follows:
+
+
+         INTRODUCTORY PROVISIONS                                         DISPOSITIONS INTRODUCTIVES
+
+Overview                                                         Objet général
+1          This Act sets out limitation periods for civil        1          La présente loi fixe les délais de prescription
+claims. A person with a claim must start a court                 à l'égard des réclamations en matière civile. Quiconque
+proceeding within the limitation period or lose their            a une réclamation et n'introduit pas l'instance judiciaire
+right to do so. For most claims, the Act                         y afférente avant l'expiration du délai de prescription
+                                                                 qui s'y rapporte perd le droit de l'introduire. À l'égard de
+   (a) establishes a basic limitation period of two years,       la plupart des réclamations, la présente loi :
+   which begins to run on the day the claim is
+   discovered;                                                      a) fixe un délai de prescription de base de deux ans
+                                                                    qui court à compter du jour où les faits sont
+   (b) establishes a maximum limitation period                      découverts;
+   of 15 years (beyond which the basic limitation
+   period cannot extend), which begins to run on the                b) fixe un délai de prescription maximal de 15 ans
+   day the event giving rise to the claim takes place;              (au-delà duquel le délai de base ne peut être
+                                                                    prorogé) qui court à compter du jour où l'événement
+   (c) does not apply if another Act contains a specific            donnant lieu à la réclamation se produit;
+   limitation period that applies to the claim or
+   otherwise conflicts with this Act.                               c) ne s'applique pas si une autre loi est incompatible
+                                                                    avec elle ou prévoit un délai de prescription
+                                                                    applicable à la réclamation.
+
+
+
+
+                                                             1
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                     Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                          À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                  Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Definitions                                                    Définitions
+2         The following definitions apply in this Act.         2         Les définitions qui suivent s'appliquent à la
+                                                               présente loi.
+   "basic limitation period" means the limitation
+   period that applies to a claim under section 6.                 « contrat de sûreté » Contrat qui crée ou prévoit
+   (« délai de prescription de base »)                             un intérêt dans un bien grevé afin de garantir un
+                                                                   paiement ou l'exécution d'une obligation. ("security
+   "claim" means a civil claim to remedy an injury,                agreement")
+   loss or damage that occurred as a result of an act or
+   omission. (« réclamation »)                                     « défendeur » Personne contre laquelle un
+                                                                   requérant a une réclamation, qu'une instance ait été
+   "claimant" means a person who has a claim,                      introduite ou non à cet égard. ("defendant")
+   whether or not a proceeding has been commenced.
+   (« requérant »)                                                 « délai de prescription de base » Délai de
+                                                                   prescription qui s'applique aux réclamations visées
+   "defendant" means a person against whom a                       à l'article 6. ("basic limitation period")
+   claimant has a claim, whether or not a proceeding
+   has been commenced. (« défendeur »)                             « délai de prescription maximal » Délai de
+                                                                   prescription qui s'applique aux réclamations visées
+   "person under a disability" means an adult person               à l'article 10. ("ultimate limitation period")
+   who is incapable of commencing a proceeding in
+   relation to a claim because of a physical, mental or            « personne ayant une incapacité » Adulte qui est
+   psychological condition. (« personne ayant une                  incapable d'introduire une instance relativement à
+   incapacité »)                                                   une réclamation en raison de son état physique,
+                                                                   mental ou psychologique. ("person under a
+   "security agreement" means an agreement that                    disability")
+   creates or provides for an interest in collateral in
+   order to secure payment or performance of an                    « réclamation » Réclamation en matière civile
+   obligation. (« contrat de sûreté »)                             visant à obtenir réparation d'un préjudice, d'une
+                                                                   perte ou de dommages survenus en conséquence
+   "ultimate limitation period" means the limitation               d'un acte ou d'une omission. ("claim")
+   period that applies to a claim under section 10.
+   (« délai de prescription maximal »)                             « requérant » Personne qui a une réclamation,
+                                                                   qu'une instance ait été introduite ou non à cet égard.
+                                                                   ("claimant")
+
+Application of this Act                                        Application de la présente loi
+3(1)     This Act applies to a claim pursued in a court        3(1)       La présente loi s'applique aux réclamations
+proceeding, but does not apply to                              donnant lieu à l'introduction d'une instance devant un
+                                                               tribunal, mais ne s'applique pas :
+   (a) an appeal;
+                                                                   a) aux appels;
+   (b) a proceeding for judicial review;
+                                                                   b) aux instances introduites à des fins de révision
+   (c) a proceeding for a declaration            if   no           judiciaire;
+   consequential relief is sought; or
+                                                                   c) si aucune mesure de redressement accessoire n'est
+                                                                   demandée, aux instances introduites à des fins
+                                                                   d'obtention de jugement déclaratoire;
+
+
+
+                                                           2
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                    Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                         À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                      Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+    (d) a proceeding to enforce an order of a Manitoba                 d) aux instances introduites à des fins d'exécution
+    court, or any other order, including a certificate                 d'une ordonnance rendue par un tribunal
+    evidencing an amount owing, that may be enforced                   du Manitoba ou de toute autre ordonnance
+    in the same way as an order of a Manitoba court.                   exécutoire au même titre qu'une ordonnance rendue
+                                                                       par un tribunal du Manitoba, y compris un certificat
+                                                                       attestant une somme exigible.
+
+Orders made on or after October 1, 2012                            Ordonnances rendues le 1er octobre 2012 ou par la
+3(2)      For certainty, no limitation period applies to           suite
+a proceeding to enforce an order referred to in                    3(2)       Il demeure entendu qu'aucun délai de
+clause (1)(d) made on or after October 1, 2012.                    prescription ne s'applique aux instances visées à
+                                                                   l'alinéa (1)d) qui sont introduites à des fins d'exécution
+S.M. 2023, c. 22, s. 2.
+                                                                   d'une ordonnance rendue le 1er octobre 2012 ou par la
+                                                                   suite.
+                                                                   L.M. 2023, c. 22, art. 2.
+
+
+Relationship to other Acts                                         Lien avec les autres lois
+4(1)     This Act does not apply to a claim                        4(1)      La présente loi ne s'applique pas à une
+                                                                   réclamation dans les cas suivants :
+    (a) that is subject to a limitation provision in another
+    Act, except in the circumstance mentioned in                       a) la réclamation est assujettie à une disposition en
+    section 13 and subsection 14(1) (suspension of                     matière de prescription qui est prévue par une autre
+    limitation periods); or                                            loi, sauf dans les cas prévus par l'article 13 ou le
+                                                                       paragraphe 14(1);
+    (b) if another enactment states that no limitation
+    period applies to the claim.                                       b) un autre texte stipule qu'aucun délai de
+                                                                       prescription ne s'y applique.
+
+Conflict with another Act                                          Incompatibilité
+4(2)      If a provision of this Act is inconsistent or in         4(2)       Les dispositions de toute autre loi l'emportent
+conflict with a provision of another Act, the provision            sur les dispositions incompatibles de la présente loi.
+of the other Act prevails.
+
+Act binds the Crown                                                Couronne liée
+5        This Act binds the Crown.                                 5      La présente loi lie la Couronne.
+
+
+
+
+              BASIC LIMITATION PERIOD                                      DÉLAI DE PRESCRIPTION DE BASE
+
+Basic limitation period — 2 years from discovery                   Délai de prescription de base — deux ans à compter
+6        Unless this Act provides otherwise, a                     de la découverte des faits
+proceeding respecting a claim must not be commenced                6          Sauf disposition contraire de la présente loi,
+more than two years after the day the claim is                     les instances à l'égard d'une réclamation se prescrivent
+discovered.                                                        par deux ans à compter du jour de la découverte des
+                                                                   faits.
+
+
+
+                                                               3
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                          Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                               À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                  Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+When is a claim discovered?                                    Date de la découverte des faits
+7          A claim is discovered under this Act on the         7          Sous le régime de la présente loi, les faits sont
+day the claimant first knew or ought to have known all         découverts le jour où le requérant prend connaissance
+of the following:                                              ou aurait dû prendre connaissance de tous les éléments
+                                                               suivants :
+   (a) that injury, loss or damage has occurred;
+                                                                   a) le préjudice, la perte ou les dommages sont
+   (b) that the injury, loss or damage was caused by or            survenus;
+   contributed to by an act or omission;
+                                                                   b) le préjudice, la perte ou les dommages ont été
+   (c) that the act or omission was that of a person               causés en tout ou en partie par un acte ou une
+   against whom the claim is or may be made;                       omission;
+
+   (d) that, given the nature and circumstances of the             c) l'acte ou l'omission ont été commis par la
+   injury, loss or damage, a proceeding would be an                personne contre laquelle la réclamation est faite ou
+   appropriate means to seek to remedy it.                         pourrait l'être;
+
+                                                                   d) étant donné la nature et les circonstances du
+                                                                   préjudice, de la perte ou des dommages,
+                                                                   l'introduction d'une instance serait un moyen
+                                                                   approprié de tenter d'en obtenir réparation.
+
+Date of injury, loss or damage — specific cases                Date de la survenance du préjudice, de la perte ou
+8          For the purpose of clause 7(a), the day an          des dommages — cas particuliers
+injury, loss or damage occurs is as follows:                   8         Pour l'application de l'alinéa 7a), le jour où le
+                                                               préjudice, la perte ou les dommages surviennent
+   (a) in the case of a continuous act or omission, the        correspond :
+   day the act or omission ceases;
+                                                                   a) dans le cas d'un acte ou d'une omission continus,
+   (b) in the case of a series of acts or omissions                au jour où cessent l'acte ou l'omission;
+   respecting the same obligation, the day the last act
+   or omission in the series occurs;                               b) dans le cas d'une série d'actes ou d'omissions qui
+                                                                   se rapportent à une même obligation, au jour où a
+   (c) in the case of a claim to realize on collateral             lieu le dernier acte ou la dernière omission de la
+   under a security agreement, the day the default first           série;
+   occurs;
+                                                                   c) dans le cas d'une réclamation visant la réalisation
+   (d) in the case of a claim to redeem collateral under           d'un bien grevé aux termes d'un contrat de sûreté, au
+   a security agreement, the day the creditor takes                premier jour où survient le défaut;
+   possession of the collateral;
+                                                                   d) dans le cas d'une réclamation visant le rachat d'un
+   (e) in the case of a default in performing a demand             bien grevé aux termes d'un contrat de sûreté, au jour
+   obligation, the day the default occurs, once a                  où le créancier prend possession du bien;
+   demand for performance is made;
+                                                                   e) dans le cas du défaut d'exécution d'un
+                                                                   engagement à vue, au premier jour où le défaut
+                                                                   survient, une fois qu'une demande d'exécution est
+                                                                   présentée;
+
+
+
+
+                                                           4
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                    Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                         À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                   Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   (f) in the case of a claim for contribution or                   f) dans le cas d'une réclamation pour contribution ou
+   indemnity by one alleged wrongdoer against                       indemnité faite par un des prétendus transgresseurs
+   another, the day the liability of the claimant, in               contre un autre, au jour où, relativement à l'affaire
+   relation to the matter for which contribution or                 pour laquelle une contribution ou une indemnité est
+   indemnity is sought, is confirmed by a court                     demandée, la responsabilité du requérant est
+   judgment, arbitration award or settlement                        confirmée par un jugement du tribunal, une sentence
+   agreement.                                                       arbitrale ou un règlement à l'amiable.
+
+Burden of proof                                                 Fardeau de la preuve
+9          The claimant has the burden of proving that          9         Il incombe au requérant de prouver qu'une
+a proceeding has been commenced within the basic                instance a été introduite avant l'expiration du délai de
+limitation period.                                              prescription de base.
+
+
+
+
+         ULTIMATE LIMITATION PERIOD                                   DÉLAI DE PRESCRIPTION MAXIMAL
+
+Ultimate limitation period — 15 years                           Délai de prescription maximal — 15 ans
+10(1)     Even if the basic limitation period for a claim       10(1)     Même si le délai de prescription de base n'a
+has not expired, a proceeding must not be commenced             pas expiré à l'égard de la réclamation visée, les
+more than 15 years after the day the act or omission on         instances se prescrivent par 15 ans à compter du jour où
+which the claim is based took place.                            se sont produits l'acte ou l'omission ayant donné lieu à
+                                                                une réclamation.
+
+Exception for Aboriginal claims — 30 years                      Exception à l'égard des réclamations des
+10(2)    As an exception to subsection (1), a                   Autochtones — 30 ans
+proceeding respecting                                           10(2)     Par dérogation au paragraphe (1), les
+                                                                instances concernant ce qui suit se prescrivent
+   (a) existing Aboriginal and treaty rights that are           par 30 ans à compter du jour où se sont produits l'acte
+   recognized and affirmed in the Constitution                  ou l'omission ayant donné lieu à la réclamation :
+   Act, 1982; or
+                                                                    a) les droits existants — ancestraux ou issus de
+   (b) an equitable claim by an Aboriginal people                   traités — des Autochtones que reconnaît et que
+   against the Crown;                                               confirme la Loi constitutionnelle de 1982;
+
+must not be commenced more than 30 years after the                  b) les réclamations en equity faites par un peuple
+day the act or omission on which the claim is based took            autochtone contre la Couronne.
+place.
+
+
+
+
+                                                            5
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                     Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                          À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Exception re purchasers for value — 2 years                      Exception à l'égard des acquéreurs à titre
+10(3)      As a further exception to subsection (1), a           onéreux — deux ans
+claim arising out of the conversion or wrongful                  10(3)      Par dérogation au paragraphe (1), les
+detention of personal property must not be                       instances découlant du détournement ou de la détention
+commenced — where the defendant is a purchaser for               illégale d'un bien personnel alors que le défendeur en
+value in good faith — more than two years after the day          est l'acquéreur de bonne foi à titre onéreux se
+the defendant purchased the property. If the claimant            prescrivent par deux ans à compter du jour où il achète
+has not recovered possession of the property on the              le bien. Si le requérant n'est pas rentré en possession du
+expiry of the two-year period, the claimant's title to the       bien à l'expiration du délai de deux ans, son titre de
+property is extinguished.                                        propriété s'éteint à l'égard de celui-ci.
+
+Date of act or omission — specific cases                         Date de l'acte ou de l'omission — cas particuliers
+11(1)    For the purpose of section 10, an act or                11(1)     Pour l'application de l'article 10, le jour où a
+omission on which a claim is based takes place as                lieu un acte ou une omission sur lequel est fondée une
+follows:                                                         réclamation correspond :
+
+   (a) in the case of a continuous act or omission, the              a) dans le cas d'un acte ou d'une omission continus,
+   day the act or omission ceases;                                   au jour où cessent l'acte ou l'omission;
+
+   (b) in the case of a series of acts or omission                   b) dans le cas d'une série d'actes ou d'omissions qui
+   respecting the same obligation, the day the last act              se rapportent à une même obligation, au jour où a
+   or omission in the series occurs;                                 lieu le dernier acte ou la dernière omission de la
+                                                                     série;
+   (c) in the case of a claim to realize on collateral
+   under a security agreement, the day the default first             c) dans le cas d'une réclamation visant la réalisation
+   occurs;                                                           d'un bien grevé aux termes d'un contrat de sûreté, au
+                                                                     premier jour où survient le défaut;
+   (d) in the case of a claim to redeem collateral under
+   a security agreement, the day the creditor takes                  d) dans le cas d'une réclamation visant le rachat d'un
+   possession of the collateral;                                     bien grevé aux termes d'un contrat de sûreté, au jour
+                                                                     où le créancier prend possession du bien;
+   (e) in the case of a default in performing a demand
+   obligation, the day the default occurs, once a                    e) dans le cas du défaut d'exécution d'un
+   demand for performance is made;                                   engagement à vue, au premier jour où le défaut
+                                                                     survient, une fois qu'une demande d'exécution est
+   (f) in the case of a claim for contribution or                    présentée;
+   indemnity by one alleged wrongdoer against
+   another, the day the claimant, in relation to the                 f) dans le cas d'une réclamation pour contribution ou
+   matter for which contribution or indemnity is                     indemnité faite par un des prétendus transgresseurs
+   sought,                                                           contre un autre, au jour où le requérant, relativement
+                                                                     à l'affaire pour laquelle une contribution ou une
+       (i) is served with a claim or with a notice that              indemnité est demandée :
+       commences an arbitration, or
+                                                                         (i) soit reçoit signification d'une réclamation ou
+       (ii) incurs a liability through a settlement                      d'un avis introductif d'une procédure d'arbitrage,
+       agreement;
+                                                                         (ii) soit s'engage en concluant un règlement à
+                                                                         l'amiable;
+
+
+
+
+                                                             6
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                      Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                           À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   (g) in the case of a claim arising out of the                     g) dans le cas d'une réclamation découlant du
+   conversion or wrongful detention of personal                      détournement ou de la détention illégale d'un bien
+   property, the day the property was first converted or             personnel, au premier jour où le bien a été détourné
+   wrongfully detained by any person.                                ou détenu illégalement par quiconque.
+
+Contribution and indemnity rule                                  Règle en matière de contributions et d'indemnités
+11(2)     Clause (1)(f) applies whether the right to             11(2)     L'alinéa (1)f) s'applique, que le droit à la
+contribution and indemnity arises in relation to a tort or       contribution ou à l'indemnité découle ou non d'un délit
+otherwise.                                                       civil.
+
+Burden of proof                                                  Fardeau de la preuve
+12         The defendant has the burden of proving that          12         Il incombe au défendeur de prouver qu'une
+a proceeding has not been commenced within the                   instance n'a pas été introduite avant l'expiration du délai
+ultimate limitation period.                                      de prescription maximal.
+
+
+
+
+    SUSPENSION OF LIMITATION PERIODS                                             SUSPENSION DES
+                                                                              DÉLAIS DE PRESCRIPTION
+
+Minors                                                           Mineurs
+13        A limitation period established under this or          13         Sous réserve de l'article 15, le délai de
+any other enactment does not run during the time the             prescription fixé sous le régime de la présente loi ou de
+claimant is a minor, subject to section 15 (notice to            tout autre texte ne court pas pendant que le requérant est
+proceed).                                                        mineur.
+
+Persons under a disability                                       Personnes ayant une incapacité
+14(1)     A limitation period established under this or          14(1)       Sous réserve de l'article 15, le délai de
+any other enactment does not run during any time the             prescription fixé sous le régime de la présente loi ou de
+claimant is a person under a disability, subject to              tout autre texte ne court pas pendant que le requérant est
+section 15 (notice to proceed).                                  une personne ayant une incapacité.
+
+Presumption of no disability                                     Présomption de capacité
+14(2)     At all times, a person is presumed to be               14(2)     Jusqu'à preuve du contraire, toute personne
+capable of commencing a proceeding in relation to a              est présumée capable d'introduire une instance relative
+claim unless the contrary is proved.                             à une réclamation.
+
+Six months' extension                                            Prolongation de six mois
+14(3)      If the running of a limitation period is              14(3)      Lorsqu'un délai de prescription est suspendu
+suspended under this section and the limitation period           en application du présent article et qu'il reste moins
+has less than six months to run when the suspension              de six mois à courir à ce délai au moment où la
+ends, the limitation period is extended to include the           suspension prend fin, celui-ci est prolongé de manière
+day that is six months after the day the suspension ends.        à inclure le jour qui tombe six mois après le jour où la
+                                                                 suspension prend fin.
+
+
+
+
+                                                             7
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                      Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                           À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                  Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Notice to proceed — definition                                 Définition de « défendeur éventuel »
+15(1)     In this section, "potential defendant" means         15(1)      Pour l'application du présent article,
+a person against whom a minor or person under a                « défendeur éventuel » s'entend d'une personne contre
+disability may have a claim but against whom a                 laquelle un mineur ou une personne ayant une
+proceeding has not been commenced.                             incapacité peuvent avoir une réclamation, mais contre
+                                                               laquelle ils n'ont pas introduit d'instance.
+
+Notice to proceed re minor or person under a                   Avis d'introduction d'une instance — mineurs et
+disability                                                     personnes ayant une incapacité
+15(2)      If the running of a limitation period is            15(2)     En cas de suspension d'un délai de
+suspended under section 13 (minor) or section 14               prescription en application de l'article 13 ou 14, le
+(person under a disability), a potential defendant may         défendeur éventuel peut mettre fin à la suspension en
+end the running of the suspension by giving a notice to        remettant un avis d'introduction d'une instance en
+proceed in accordance with this section.                       conformité avec le présent article.
+
+To whom notice is given                                        Destinataire de l'avis
+15(3)  A notice to proceed must be given as follows:           15(3)    L'avis d'introduction d'une instance est remis
+                                                               aux personnes suivantes, selon le cas :
+   (a) if the claimant is a minor, to the minor's parent
+   or guardian;                                                    a) si le requérant est mineur, à son parent ou tuteur;
+
+   (b) if the claimant is a person under a disability,             b) si le requérant est une personne ayant une
+   to a committee appointed for the person under                   incapacité, à un curateur nommé à son égard sous le
+   The Mental Health Act or a substitute decision                  régime de la Loi sur la santé mentale ou à un
+   maker appointed for the person under The Adults                 subrogé nommé à son égard sous le régime de la Loi
+   Living with an Intellectual Disability Act, if the              sur les adultes ayant une déficience intellectuelle,
+   committee or substitute decision maker has the                  pour autant que le curateur ou le subrogé ait le
+   power to act in relation to the claim.                          pouvoir d'agir relativement à la réclamation.
+
+Notice to Public Guardian and Trustee                          Avis au tuteur et curateur public
+15(4)     A notice to proceed must also be given to            15(4)    L'avis d'introduction d'une instance doit
+the Public Guardian and Trustee.                               également être remis au tuteur et curateur public.
+
+Requirements for notice                                        Exigences en matière d'avis
+15(5)    A notice to proceed must meet the following           15(5)      L'avis d'introduction d'une instance doit
+requirements:                                                  satisfaire aux exigences suivantes :
+
+  1. It must name the minor or person under a                    1. indiquer le nom du mineur ou de la personne
+     disability and the potential defendant.                        ayant une incapacité ainsi que du défendeur
+                                                                    éventuel;
+  2. It must be in writing and signed by the potential
+     defendant and by their lawyer.                              2. être donné par écrit et signé par le défendeur
+                                                                    éventuel ainsi que par son avocat;
+  3. It must include a clear and concise statement of
+     the facts on which the claim may arise, with
+     enough information as is necessary to enable the
+     person given the notice to investigate whether the
+     minor or person under a disability has a claim.
+
+
+                                                           8
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                    Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                         À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                      Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+  4. It must include a warning that, because of the                  3. indiquer de façon claire et concise les faits
+     giving of the notice, the limitation period begins                 pouvant donner lieu à la réclamation, de façon
+     to run on the date the notice is given.                            suffisamment détaillée pour permettre au
+                                                                        destinataire de l'avis d'établir si le mineur ou la
+                                                                        personne ayant une incapacité a une réclamation;
+
+                                                                     4. préciser que le délai de prescription court à
+                                                                        compter de la date de remise de l'avis.
+
+How notice is given                                                Mode de remise de l'avis
+15(6)     A notice to proceed must be given personally             15(6)     L'avis d'introduction d'une instance est remis
+or be mailed or delivered to the person using a mail or            en personne ou posté ou livré au destinataire par
+delivery service that provides the person giving the               l'entremise d'un service de poste ou de livraison qui
+notice with an acknowledgment of receipt.                          fournit un accusé de réception à l'expéditeur.
+
+Notice benefits only the potential defendant                       Entrée en vigueur en faveur du défendeur éventuel
+15(7)      A notice to proceed is effective only for the           15(7)     L'avis d'introduction d'une instance n'entre en
+benefit of the potential defendant giving the notice and           vigueur qu'en faveur du défendeur éventuel qui le
+only in relation to a claim arising out of the facts stated        remet, et ce, uniquement à l'égard d'une réclamation
+in it.                                                             découlant des faits qui y sont énoncés.
+
+No admission of liability                                          Aucun aveu de responsabilité
+15(8)      A notice to proceed is not an admission of              15(8)     L'avis d'introduction d'une instance ne
+liability on the part of the potential defendant and is not        constitue pas un aveu de responsabilité de la part du
+confirmation of any of the facts stated in it.                     défendeur éventuel ni une corroboration des faits qui y
+                                                                   sont allégués.
+
+No application to certain claims                                   Non-application à certaines réclamations
+15(9)     This section does not apply to a claim that a            15(9)     Le présent article ne s'applique pas aux
+minor or a person under a disability may have against              réclamations qu'un mineur ou qu'une personne ayant
+their parent, guardian, committee, substitute decision             une incapacité peut avoir contre son parent, tuteur,
+maker or the Public Guardian and Trustee.                          curateur ou subrogé ou contre le tuteur et curateur
+S.M. 2023, c. 19, s. 98.
+                                                                   public.
+                                                                   L.M. 2023, c. 19, art. 98.
+
+
+Role of Public Guardian and Trustee re notice to                   Rôle du tuteur et curateur public — avis
+proceed                                                            d'introduction d'une instance
+16          After receiving a notice to proceed under              16         Dans le cas où il reçoit un avis d'introduction
+section 15, if the Public Guardian and Trustee believes            d'une instance au titre de l'article 15 et croit qu'une autre
+that any other person who has been given the notice is             personne ayant reçu l'avis soit ne prend pas de mesures
+failing to take reasonable steps to protect the interests of       raisonnables pour protéger les intérêts du mineur ou de
+the minor or person under a disability, or is otherwise            la personne ayant une incapacité, soit agit de manière à
+acting to prejudice them, the Public Guardian and                  leur porter préjudice, le tuteur et curateur public :
+Trustee
+                                                                       a) enquête sur les faits exposés dans l'avis;
+    (a) must investigate the facts stated in the notice to
+    proceed; and
+
+
+                                                               9
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                          Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                               À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                       Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   (b) may commence a proceeding for the benefit of                     b) peut introduire une instance dans l'intérêt du
+   the minor or person under a disability.                              mineur ou de la personne ayant une incapacité.
+
+Wilful concealment, etc.                                            Dissimulation volontaire, etc.
+17         The ultimate limitation period and the                   17        Le délai de prescription maximal et le délai de
+limitation period in section 19 do not run during any               prescription prévu à l'article 19 ne courent pas pendant
+time that a defendant                                               qu'un défendeur :
+
+   (a) wilfully conceals from the claimant the fact that                a) soit dissimule sciemment au requérant le fait
+   an injury, loss or damage has occurred, that it was                  qu'un préjudice, qu'une perte ou que des dommages
+   caused by or contributed to by an act or omission, or                se sont produits, qu'ils ont été causés en tout ou en
+   that the act or omission was that of the defendant; or               partie par un acte ou une omission ou que l'acte ou
+                                                                        l'omission ont été commis par le défendeur;
+   (b) wilfully misleads the claimant as to the
+   appropriateness of a proceeding as a means of                        b) soit induit sciemment en erreur le requérant quant
+   remedying the injury, loss or damage.                                au bien-fondé d'une instance comme moyen
+                                                                        d'obtenir réparation du préjudice, de la perte ou des
+                                                                        dommages subis.
+
+
+
+
+              NO LIMITATION PERIOD                                      ABSENCE DE DÉLAI DE PRESCRIPTION
+
+Claims with no limitation period                                    Absence de délai de prescription à l'égard de
+18(1)   No limitation period applies to the following               certaines réclamations
+claims:                                                             18(1)     Aucun délai de prescription ne s'applique aux
+                                                                    réclamations suivantes :
+   (a) a claim relating to an assault of a sexual nature;
+                                                                        a) les réclamations qui se rapportent à des
+   (b) a claim relating to an assault if, at the time of the            agressions sexuelles;
+   assault, the claimant
+                                                                        b) les réclamations qui se rapportent à des voies de
+       (i) had an intimate relationship with the person                 fait si, au moment de leur perpétration, le requérant :
+       alleged to have committed the assault, or
+                                                                            (i) soit entretenait une relation intime avec le
+       (ii) was financially, emotionally, physically or                     présumé auteur des voies de fait,
+       otherwise dependent on the person alleged to
+       have committed the assault;                                          (ii) soit dépendait de lui, notamment sur le plan
+                                                                            financier, affectif ou physique;
+   (c) a claim to recover possession of land, except as
+   provided in section 19;                                              c) les réclamations en recouvrement d'un
+                                                                        bien-fonds, sauf dans les cas prévus à l'article 19;
+   (d) a claim by a debtor in possession of collateral
+   that is personal property to redeem it;                              d) les réclamations faites par des débiteurs dans le
+                                                                        but de racheter des biens personnels grevés qui sont
+   (e) a claim by a creditor in possession of collateral                en leur possession;
+   that is personal property to realize on it;
+
+
+
+
+                                                               10
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                         Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                              À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                     Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   (f) a claim to recover money owing to the Crown                    e) les réclamations faites par des créanciers dans le
+   respecting taxes, fines or penalties, or interest on               but de réaliser des biens personnels grevés qui sont
+   any of them;                                                       en leur possession;
+
+   (g) a claim brought by the Crown relating to                       f) les réclamations en recouvrement des créances de
+                                                                      la Couronne à l'égard d'impôts, de taxes, d'amendes
+       (i) the administration of social,          health,             ou de pénalités ou à l'égard des intérêts y afférents;
+       educational or economic programs, or
+                                                                      g) les réclamations de la Couronne à l'égard :
+       (ii) the provision of direct or indirect support to
+       members of the public in connection with social,                   (i) soit de l'administration des programmes
+       health, educational or economic policy.                            sociaux, éducatifs, économiques ou de santé,
+
+                                                                          (ii) soit de la fourniture d'un soutien direct ou
+                                                                          indirect à des membres du public relativement à
+                                                                          des politiques sociales, éducatives, économiques
+                                                                          ou de santé.
+
+Sexual assault, etc.                                              Voies de fait
+18(2)     Clauses (1)(a) and (b) apply to a claim                 18(2)     Les alinéas (1)a) et b) s'appliquent aux
+respecting an act that occurred before or after the               réclamations qui concernent les actes ayant eu lieu
+coming into force of this section and regardless of the           avant ou après l'entrée en vigueur du présent article,
+expiry of any previous limitation period that applied.            sans égard à l'expiration de tout délai de prescription
+                                                                  antérieurement applicable.
+
+Revival of right to claim re sexual assault, etc.                 Renaissance du droit d'introduire une instance —
+18(3)     Clauses (1)(a) and (b) operate to revive a              voies de fait
+claimant's right to commence a proceeding if a                    18(3)      Les alinéas (1)a) et b) font renaître le droit
+proceeding brought by the claimant before this Act                d'introduire une instance de tout requérant dont
+came into force was dismissed for the sole reason that            l'instance introduite avant l'entrée en vigueur de la
+a limitation period that had previously applied had               présente loi avait été rejetée pour le seul motif qu'était
+expired.                                                          expiré un délai de prescription antérieurement
+                                                                  applicable.
+
+Limitation period in Trustee Act applies                          Application d'un délai de prescription prévu par la
+18(4)     Clauses (1)(a) and (b) are subject to                   Loi sur les fiduciaires
+subsection 53(2) of The Trustee Act (two-year limit on            18(4)     Les alinéas (1)a) et b) sont assujettis au
+action against personal representative).                          paragraphe 53(2) de la Loi sur les fiduciaires.
+
+Definition of "assault"                                           Définition de « voies de fait »
+18(5)      In this section, "assault" includes battery or         18(5)     Pour l'application du présent article, « voies
+other trespass to the person.                                     de fait » s'entend d'une atteinte directe à la personne,
+                                                                  notamment un acte de violence ou une agression
+                                                                  sexuelle.
+
+
+
+
+                                                             11
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                       Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                            À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+   RULES FOR SPECIFIC CIRCUMSTANCES                                           RÈGLES EN CAS DE
+                                                                        CIRCONSTANCES PARTICULIÈRES
+
+
+                    Recovery of Land                                         Recouvrement de biens-fonds
+
+Definitions                                                      Définitions
+19(1)     The following definitions apply in this                19(1)     Les définitions qui suivent s'appliquent au
+section.                                                         présent article.
+
+   "land" means land subject to The Registry Act,                    « bien-fonds » Bien-fonds assujetti à la Loi sur
+   other than Crown lands. (« bien-fonds »)                          l'enregistrement foncier, à l'exception des terres
+                                                                     domaniales. ("land")
+   "predecessor", in relation to a claimant or a
+   defendant, means a person from whom or through                    « intérêt actuel » Domaine ou intérêt à l'égard
+   whom the claimant or defendant has obtained                       duquel un futur domaine ou intérêt est en
+   possession of land or derives the right of possession.            expectative. ("present interest")
+   (« prédécesseur »)
+                                                                     « prédécesseur » La personne auprès de qui ou du
+   "present interest" means an estate or interest on                 chef de qui un requérant ou un défendeur a obtenu la
+   which a future estate or interest is expectant.                   possession d'un bien-fonds ou acquis le droit à sa
+   (« intérêt actuel »)                                              possession. ("predecessor")
+
+Purpose                                                          Objet
+19(2)     The purpose of this section is to preserve the         19(2)     Le présent article a pour objet de préserver le
+right to acquire an interest in land based on adverse            droit d'acquérir un intérêt foncier fondé sur la
+possession.                                                      possession adversative.
+
+Limitation on right to recovery                                  Restriction à l'égard du droit de recouvrement
+19(3)    A proceeding respecting a claim to recover              19(3)     Le requérant ne peut introduire une instance
+possession of land must not be commenced after the               relative à une réclamation en recouvrement d'un
+defendant and any of the defendant's predecessors have           bien-fonds une fois que le défendeur ou l'un quelconque
+dispossessed the claimant and any of the claimant's              des prédécesseurs de ce dernier l'a dépossédé, lui ou l'un
+predecessors for a continuous period of 15 years.                quelconque de ses propres prédécesseurs, pendant une
+                                                                 période ininterrompue de 15 ans.
+
+Land subject to present interest                                 Bien-fonds grevé d'un intérêt actuel
+19(4)      If a period of dispossession begins while land        19(4)     Si la période de dépossession commence à
+is subject to a present interest and continues after the         courir alors que le bien-fonds est grevé d'un intérêt
+present interest terminates, a claim to recover                  actuel et se poursuit après la fin de cet intérêt, la
+possession of the land must not be commenced after the           réclamation en recouvrement du bien-fonds se prescrit
+later of                                                         par 15 ans à compter de la dépossession ou, si cette
+                                                                 période se termine ultérieurement, par cinq ans à
+   (a) the end of the 15-year period; and                        compter de l'expiration de l'intérêt actuel.
+
+   (b) five years after the present interest terminates.
+
+
+
+
+                                                            12
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                      Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                           À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                      Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Lease for fixed term                                               Bail à terme fixe
+19(5)     If a period of dispossession begins during a             19(5)      Si la période de dépossession commence à
+fixed-term lease, a claim by the landlord to recover               courir durant un bail à terme fixe, la réclamation en
+possession of the land must not be commenced after the             recouvrement du bien-fonds faite par son propriétaire se
+later of                                                           prescrit par 15 ans à compter de la dépossession ou, si
+                                                                   cette période se termine ultérieurement, par cinq ans à
+   (a) the end of the 15-year period; and                          compter de la fin du terme fixe.
+
+   (b) five years after the fixed term ends.
+
+Dispossession by a tenant                                          Dépossession par un locataire
+19(6)     For the purpose of this section, if rent is              19(6)     Pour l'application du présent article, la
+payable under a lease, a period of dispossession of a              période de dépossession du propriétaire par le locataire
+landlord by a tenant begins when the tenant stops                  commence à courir quand ce dernier cesse de payer le
+paying rent.                                                       loyer exigible aux termes du bail.
+
+Expiry of limitation terminates title                              Extinction du titre
+19(7)     On the expiry of a limitation period under this          19(7)      L'expiration d'un délai de prescription prévu
+section, the claimant's right or title to the land is              au présent article emporte extinction du droit foncier ou
+extinguished.                                                      du titre du requérant sur le bien-fonds.
+
+Basic limitation does not apply                                    Non-application du délai de prescription de base
+19(8)      A claim to recover possession of land is not            19(8)     Les réclamations en recouvrement d'un
+subject to the basic limitation period.                            bien-fonds ne sont pas assujetties au délai de
+                                                                   prescription de base.
+
+
+             Acknowledgment of Liability                                    Reconnaissance de responsabilité
+
+Acknowledgment of liability extends limitation                     Reconnaissance de responsabilité — prolongation du
+20(1)      If, before the expiry of the relevant limitation        délai de prescription
+period that applies to a claim under this Act, a                   20(1)      La reconnaissance par le défendeur, avant
+defendant acknowledges the right, title, liability or              l'expiration du délai de prescription applicable à une
+obligation to which the claim relates, the operation of            réclamation sous le régime de la présente loi, du droit,
+the limitation period begins to run afresh from the time           du titre, de la responsabilité ou de l'obligation faisant
+of the acknowledgment.                                             l'objet de la réclamation fait recommencer du début, à
+                                                                   compter du moment de la reconnaissance, le délai de
+                                                                   prescription.
+
+Requirements for acknowledgment                                    Exigences en matière de reconnaissance
+20(2)   For the purpose of subsection (1), an                      20(2)    Pour l'application du paragraphe (1), la
+acknowledgment must meet the following requirements:               reconnaissance doit satisfaire aux exigences suivantes :
+
+  1. It must be made to the claimant, the claimant's                 1. s'adresser au requérant, à son mandataire ou à un
+     agent or an official receiver or trustee acting                    séquestre officiel ou syndic agissant en vertu de la
+     under the Bankruptcy and Insolvency Act                            Loi sur la faillite et l'insolvabilité (Canada);
+     (Canada).
+
+
+                                                              13
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                        Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                             À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+  2. It must be in writing and signed by the defendant             2. être écrite et porter la signature du défendeur ou
+     making it or the defendant's agent, unless the                   de son mandataire, sauf s'il s'agit d'un type de
+     acknowledgment is of a kind described in                         reconnaissance visé au paragraphe (3) ou au
+     subsection (3) or rule 2 or 3 of subsection (6).                 point 2 ou 3 du paragraphe (6);
+
+  3. It must be made before the limitation period that             3. être effectuée avant l'expiration du délai de
+     applies to the claim expires.                                    prescription qui s'applique à la réclamation.
+
+Partial payment of debt                                          Remboursement partiel d'une dette
+20(3)     In the case of a claim for payment of a debt,          20(3)      Dans le cas d'une réclamation visant le
+part payment of the debt by the defendant or the                 remboursement d'une dette, un remboursement partiel
+defendant's agent has the same effect as an                      de celle-ci effectué par le défendeur ou par son
+acknowledgment under subsection (1).                             mandataire a le même effet qu'une reconnaissance au
+                                                                 titre du paragraphe (1).
+
+Payment of debt — promise to pay not required                    Application malgré l'absence d'une promesse de
+20(4)      Subsection (1) applies to an acknowledgment           paiement
+of liability respecting a claim for payment of a debt            20(4)     Le paragraphe (1) s'applique à toute
+even though the defendant making the acknowledgment              reconnaissance de responsabilité à l'égard d'une
+refuses or does not promise to pay the debt or the               réclamation en remboursement de dette, et ce, même si
+balance still owing.                                             le défendeur qui reconnaît sa responsabilité refuse ou ne
+                                                                 promet pas de payer la dette ou le solde dû.
+
+Claim for interest                                               Réclamation en paiement d'intérêts
+20(5)      An acknowledgment of liability respecting a           20(5)    Toute reconnaissance de responsabilité à
+claim for interest is also an acknowledgment of liability        l'égard d'une réclamation en paiement d'intérêts
+respecting a claim for                                           constitue également une reconnaissance de
+                                                                 responsabilité à l'égard d'une réclamation en paiement :
+   (a) the outstanding principal, if any; and
+                                                                     a) du capital impayé, le cas échéant;
+   (b) any interest that becomes due after the
+   acknowledgment is made.                                           b) de tout intérêt arrivant à échéance après la
+                                                                     reconnaissance.
+
+Security agreements and collateral                               Contrats de sûreté et biens grevés
+20(6)    The following rules apply to an                         20(6)    Les règles qui suivent s'appliquent aux
+acknowledgement made in relation to a security                   reconnaissances qui se rapportent à des contrats de
+agreement:                                                       sûreté :
+
+  1. An acknowledgment of liability respecting a                   1. toute reconnaissance de responsabilité de la part
+     claim to realize on or redeem collateral under a                 d'une personne en possession d'un bien grevé à
+     security agreement (or to recover money in                       l'égard d'une réclamation en vue de la réalisation
+     relation to the collateral), if made by a person in              ou du rachat de ce bien aux termes d'un contrat de
+     possession of the collateral, is an                              sûreté (ou du recouvrement d'une somme à l'égard
+     acknowledgment of liability respecting the claim                 de ce bien) constitue une telle reconnaissance de
+     by any other person who later comes into                         la part de toute autre personne qui en prend
+     possession of the collateral.                                    possession par la suite;
+
+
+
+                                                            14
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                      Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                           À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+  2. A debtor's payment or performance of an                       2. un paiement par un débiteur ou son exécution
+     obligation under a security agreement is an                      d'une obligation aux termes d'un contrat de sûreté
+     acknowledgment by the debtor of liability                        constitue une reconnaissance de responsabilité de
+     respecting a claim by the creditor to realize on the             sa part à l'égard de toute réclamation du créancier
+     collateral under the agreement.                                  en vue de la réalisation du bien grevé aux termes
+                                                                      du contrat;
+  3. A creditor's acceptance of a debtor's payment or
+     performance of an obligation under a security                 3. l'acceptation par un créancier d'un paiement ou de
+     agreement is an acknowledgment by the creditor                   l'exécution d'une obligation par un débiteur aux
+     of liability respecting a claim by the debtor to                 termes d'un contrat de sûreté constitue une
+     redeem the collateral under the agreement.                       reconnaissance de responsabilité de la part du
+                                                                      créancier à l'égard d'une réclamation du débiteur
+                                                                      en vue du rachat du bien grevé aux termes du
+                                                                      contrat.
+
+Trustee                                                          Fiduciaires
+20(7)     An acknowledgment of liability by a trustee            20(7)      Toute reconnaissance de responsabilité de la
+is an acknowledgment by any other person who is or               part d'un fiduciaire constitue une telle reconnaissance
+who later becomes a trustee of the same trust.                   de la part de toute autre personne qui est ou devient
+                                                                 fiduciaire de la même fiducie.
+
+Personal property                                                Biens personnels
+20(8)     An acknowledgment of liability respecting a            20(8)     Toute reconnaissance de responsabilité de la
+claim to recover or enforce an equitable interest in             part d'une personne qui est en possession d'un bien
+personal property, if made by a person in possession of          personnel à l'égard d'une réclamation en recouvrement
+the property, is an acknowledgment by any other person           ou en exécution d'un intérêt en equity sur ce bien
+who later comes into possession of the property.                 constitue une telle reconnaissance de la part de toute
+                                                                 autre personne qui en prend possession par la suite.
+
+
+         Successors, Principals and Agents                             Ayants droit, mandants et mandataires
+
+Claim of a successor                                             Réclamations des ayants droit
+21(1)      When a proceeding is commenced by a                   21(1)     L'ayant droit qui introduit une instance et qui
+person claiming through a predecessor in right, title or         fonde sa réclamation sur le droit, le titre ou l'intérêt d'un
+interest, the claimant is deemed to have known of the            prédécesseur est réputé avoir pris connaissance des faits
+matters referred to in clauses 7(a) to (d) (discovery of         visés aux alinéas 7a) à d) à la première des dates
+claim) on the earlier of the following:                          suivantes :
+
+   (a) the day the predecessor first knew or ought to                a) le jour où le prédécesseur en a pris connaissance
+   have known of those matters;                                      ou aurait dû en prendre connaissance;
+
+   (b) the day the claimant first knew or ought to have              b) le jour où il en a lui-même pris connaissance ou
+   known of them.                                                    aurait dû en prendre connaissance.
+
+
+
+
+                                                            15
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                      Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                           À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                     Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Claim of a principal                                              Réclamation des mandants
+21(2)       When a proceeding is commenced by a                   21(2)     Le mandant qui introduit une instance alors
+principal, if the principal's agent had a duty to                 que son mandataire avait l'obligation de lui
+communicate knowledge of the matters referred to in               communiquer les faits visés aux alinéas 7a) à d) est
+clauses 7(a) to (d) (discovery of claim) to the principal,        réputé avoir pris connaissance de ces faits à la première
+the principal is deemed to have known of them on the              des dates suivantes :
+earlier of the following:
+                                                                      a) le jour où le mandataire en a pris connaissance ou
+   (a) the day the agent first knew or ought to have                  aurait dû en prendre connaissance;
+   known of those matters;
+                                                                      b) le jour où il en a lui-même pris connaissance ou
+   (b) the day the principal first knew or ought to have              aurait dû en prendre connaissance.
+   known of them.
+
+
+                  Amending Pleadings                                      Modification des actes de procédure
+
+Amending pleadings                                                Modification des actes de procédure
+22         Despite the expiry of a limitation period after        22          Malgré l'expiration d'un délai de prescription
+a proceeding is commenced, a judge may allow the                  après l'introduction d'une instance et seulement si les
+pleadings to be amended to add a new claim or to add or           conditions qui suivent sont satisfaites, le juge peut
+substitute a party, but only if                                   autoriser la modification des actes de procédure en vue
+                                                                  de l'ajout d'une nouvelle réclamation ou de l'ajout ou de
+   (a) the claim added by the amendment, or the claim             la substitution d'une partie :
+   by or against the new party, arises out of the same
+   transaction or occurrence as the original claim; and               a) la réclamation ainsi ajoutée, ou la réclamation
+                                                                      faite par ou contre la nouvelle partie, découle de la
+   (b) the judge is satisfied that no party will suffer               même opération ou du même événement que la
+   actual prejudice as a result of the amendment that                 réclamation initiale;
+   cannot be compensated for by costs or an
+   adjournment.                                                       b) le juge est convaincu qu'aucune partie ne subira,
+                                                                      en conséquence de la modification, un réel préjudice
+                                                                      qui ne saurait être compensé par l'octroi de dépens
+                                                                      ou d'un ajournement.
+
+
+                      Miscellaneous                                                 Dispositions diverses
+
+Definition of "non-judicial remedy"                               Définition de « recours extrajudiciaire »
+23(1)      In this section, "non-judicial remedy"                 23(1)     Pour l'application du présent article,
+means a remedy that a person is entitled, by law or by            « recours extrajudiciaire » s'entend d'un recours
+contract, to exercise respecting a claim without court            qu'une personne a le droit, au titre de la loi ou aux
+proceedings.                                                      termes d'un contrat, d'exercer à l'égard d'une
+                                                                  réclamation sans introduire d'instance.
+
+
+
+
+                                                             16
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                       Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                            À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                     Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Non-judicial remedy limited                                       Recours extrajudiciaires limités
+23(2)      A limitation period under this Act that applies        23(2)       Le délai de prescription prévu par la présente
+to a court proceeding in relation to a claim also applies         loi qui s'applique à une instance judiciaire relative à une
+to any non-judicial remedy that a claimant is entitled to         réclamation s'applique également à tout recours
+exercise against the defendant in relation to the claim.          extrajudiciaire que le requérant a le droit d'exercer
+                                                                  contre le défendeur relativement à la réclamation.
+
+Agreement to extend limitation                                    Prolongation des délais de prescription
+24(1)     A limitation period may be extended — but               24(1)      Il est permis de prolonger — mais pas de
+not shortened — in writing, after this Act comes into             raccourcir — un délai de prescription par écrit après
+force.                                                            l'entrée en vigueur de la présente loi.
+
+Exception re ultimate limitation period                           Exception — délai de prescription maximal
+24(2)    Despite subsection (1), the ultimate limitation          24(2)     Malgré le paragraphe (1), le délai de
+period may not be extended by agreement.                          prescription maximal ne peut être prolongé au moyen
+                                                                  d'un accord.
+
+Limitation during stay of proceedings re                          Délais de prescription pendant une suspension de
+bankruptcy, etc.                                                  l'instance
+25       A limitation period does not run during any              25        Les délais de prescription cessent de courir
+time a stay of proceedings is in effect under the                 pendant toute suspension d'une instance en vertu de la
+Bankruptcy and Insolvency Act (Canada), the                       Loi sur la faillite et l'insolvabilité (Canada), de la Loi
+Companies' Creditors Arrangement Act (Canada) or the              sur les arrangements avec les créanciers des
+Farm Debt Mediation Act (Canada).                                 compagnies (Canada) ou de la Loi sur la médiation en
+                                                                  matière d'endettement agricole (Canada).
+
+Rules of equity re acquiescence and undue delay not               Règles d'equity — acquiescement et retards indus
+affected                                                          non touchés
+26        Nothing in this Act precludes a court from              26         Les dispositions de la présente loi n'ont pas
+granting a defendant immunity from liability under the            pour effet d'empêcher le tribunal d'accorder l'immunité
+equitable doctrines of acquiescence or laches.                    à un défendeur aux termes des doctrines en equity de
+                                                                  l'acquiescement et du manque de diligence.
+
+Conflict of laws                                                  Conflit de lois
+27        For the purpose of applying the rules                   27        Pour l'application des règles relatives au
+regarding conflict of laws, the limitations law of                conflit de lois, les lois du Manitoba ou de toute autre
+Manitoba or any other jurisdiction is substantive law.            autorité législative en matière de prescription
+                                                                  constituent des règles juridiques de fond.
+
+
+
+
+                                                             17
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                       Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                            À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+                          TRANSITIONAL                                      DISPOSITIONS TRANSITOIRES
+
+
+        Claims under the Former Limitation of                        Réclamations faites sous le régime de la loi
+                    Actions Act                                         antérieure, la Loi sur la prescription
+
+Definitions                                                      Définitions
+28        The following definitions apply in this section        28        Les définitions qui suivent s'appliquent au
+and in sections 29 to 31.                                        présent article et aux articles 29 à 31.
+
+    "claim" means a claim in respect of which there                  « loi antérieure » La Loi sur la prescription.
+    was a limitation period under the former Act.                    ("former Act")
+    (« réclamation »)
+                                                                     « réclamation » Réclamation à l'égard de laquelle
+    "former Act" means The Limitation of Actions                     un délai de prescription existait sous le régime de la
+    Act. (« loi antérieure »)                                        loi antérieure. ("claim")
+S.M. 2023, c. 22, s. 3.                                          L.M. 2023, c. 22, art. 3.
+
+
+
+
+Proceeding commenced under former Act                            Instances introduites sous le régime de la loi antérieure
+29        Despite its repeal, the former Act continues to        29        Malgré son abrogation, la loi antérieure
+apply to a proceeding that was commenced under that              continue de s'appliquer aux instances qui ont été
+Act.                                                             introduites sous son régime.
+
+
+Expiry of former limitation                                      Expiration du délai de prescription antérieur
+30         No proceeding shall be commenced under                30         La présente loi n'a pas pour effet de permettre
+this Act respecting a claim if the limitation period that        l'introduction d'instances relatives à des réclamations
+applied under the former Act expired before the coming           dont le délai de prescription applicable sous le régime
+into force of this Act.                                          de la loi antérieure a expiré avant l'entrée en vigueur
+                                                                 de la présente loi.
+
+
+Claims to which this section applies                             Réclamations auxquelles le présent article s'applique
+31(1)     Subject to section 30, this section applies to         31(1)     Sous réserve de l'article 30, le présent article
+claims based on acts or omissions that occurred before           s'applique aux réclamations fondées sur des actes ou
+the coming into force of this Act and in respect of which        omissions qui se sont produits avant l'entrée en vigueur
+no proceeding was commenced under the former Act.                de la présente loi et à l'égard desquelles aucune
+                                                                 instance n'a été introduite sous le régime de la loi
+                                                                 antérieure.
+
+
+
+
+                                                            18
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                        Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                             À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                     Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Exception                                                         Exception
+31(2)      This section does not apply to claims referred         31(2)     Le présent article ne s'applique pas aux
+to in clause 18(1)(a) or (b) (sexual assault or assault in        réclamations visées aux alinéas 18(1)a) ou b).
+an intimate or dependent relationship).
+
+
+Claim discovered under former Act                                 Découverte des faits sous le régime de la loi antérieure
+31(3)      In the case of a claim discovered before the           31(3)      Sous le régime de la présente loi,
+coming into force of this Act, a proceeding may be                les instances dont les faits ont été découverts avant
+commenced under this Act if it is commenced before the            l'entrée en vigueur de la présente loi se prescrivent
+earlier of                                                        par deux ans à compter de cette entrée en vigueur;
+                                                                  toutefois, si le délai de prescription prévu par la loi
+   (a) two years after the coming into force of this Act;         antérieure expire plus tôt, celui-ci s'applique.
+   and
+
+   (b) the day the limitation period under the former
+   Act expires or would expire.
+
+
+Claim discovered under this Act                                   Découverte des faits sous le régime de la présente loi
+31(4)     In the case of a claim discovered after the             31(4)      La présente loi s'applique aux instances dont
+coming into force of this Act, this Act applies as if the         les faits ont été découverts après son entrée en vigueur
+act or omission on which the claim is based occurred              comme si les actes ou les omissions sur lesquels les
+on the day this Act came into force.                              réclamations sont fondées s'étaient produits le jour de
+                                                                  cette entrée en vigueur.
+
+
+No former limitation period                                       Aucun délai de prescription antérieur
+31(5)     If there was no limitation period respecting a          31(5)     S'il n'y avait aucun délai de prescription à
+claim under the former Act but this Act establishes a             l'égard d'une réclamation sous le régime de la loi
+limitation period,                                                antérieure, mais que la présente loi en prévoie un :
+
+   (a) in the case of a claim discovered before the                   a) dans le cas où les faits ont été découverts avant
+   coming into force of this Act, there is no limitation              l'entrée en vigueur de la présente loi, il n'y a aucun
+   period; and                                                        délai de prescription applicable;
+
+   (b) in the case of a claim discovered after the                    b) dans le cas où les faits sont découverts après
+   coming into force of this Act, this Act applies as if              l'entrée en vigueur de la présente loi, celle-ci
+   the act or omission took place on the day this Act                 s'applique comme si l'acte ou l'omission s'étaient
+   comes into force.                                                  produits le jour de son entrée en vigueur.
+
+
+
+
+                                                             19
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                       Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                            À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                      Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+      Claims under Public Officers Act and                         Réclamations faites sous le régime de la Loi sur
+    Limitations Repealed by Sections 32 to 50                        les officiers publics et délais de prescription
+                                                                            abrogés par les articles 32 à 50
+
+Definitions                                                        Définitions
+31.1      The following definitions apply in this section          31.1      Les définitions qui suivent s'appliquent au
+and in sections 31.2 and 31.3.                                     présent article ainsi qu'aux articles 31.2 et 31.3.
+
+   "claim" means a claim to which a former limitation                  « date de prescription prorogée » Relativement à
+   period applied. (« réclamation »)                                   une réclamation, la première des dates suivantes :
+
+   "extension date", in relation to a claim, means the                     a) la dernière date du délai de prescription
+   earlier of                                                              maximal applicable à l'égard de la réclamation
+                                                                           sous le régime de la présente loi;
+       (a) the last date of the ultimate limitation period
+       for that claim under this Act; and                                  b) celle des dates qui suivent qui s'applique :
+
+       (b) the following date, whichever applies:                              (i) dans le cas d'une réclamation à l'égard de
+                                                                               laquelle le délai de prescription antérieur
+           (i) in the case of a claim to which the former                      prévu par la Loi sur les officiers publics
+           limitation period under The Public Officers                         s'appliquait et où les faits ont été découverts :
+           Act applied and which was discovered after
+           September 30, 2021,                                                     (A) après le 30 septembre 2021 mais
+                                                                                   avant le 30 septembre 2022, la date qui
+               (A) if      discovered          before                              est postérieure à la date de transition du
+               September 30, 2022, the transition date                             nombre de jours qui séparent, d'une part,
+               plus the number of days from the end of                             la fin du délai de prescription antérieur
+               the claim's former limitation period or                             ou, si cette date est postérieure,
+               September 30, 2022, whichever is later, to                          le 30 septembre 2022 et, d'autre part, le
+               the day that is one year after the claim                            jour qui tombe un an après la découverte,
+               was discovered, or
+                                                                                   (B) le 30 septembre 2022 ou par la suite,
+               (B) if discovered on or after                                       la date qui est postérieure à la découverte
+               September 30, 2022, the day that is one                             d'un an plus le nombre de jours qui
+               year after the claim was discovered plus                            séparent la découverte et la date de
+               the number of days from the discovery                               transition,
+               date to the transition date, or
+                                                                               (ii) dans les autres cas, la date qui est
+           (ii) in any other case, the day that is one year                    postérieure à l'entrée en vigueur de la
+           after this definition came into force minus the                     présente définition d'un an moins le nombre
+           number of days from the discovery date to the                       de jours qui séparent la date de la découverte
+           transition date. (« date de prescription                            des faits et la date de transition. ("extension
+           prorogée »)                                                         date")
+
+   "former limitation period" means a limitation                       « date de transition » Date de l'abrogation du délai
+   period under subsection 21(1) of The Public                         de prescription antérieur applicable à une
+   Officers Act or a limitation period repealed by any                 réclamation. ("transition date")
+   of sections 32 to 50. (« délai de prescription
+   antérieur »)
+
+
+
+                                                              20
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                        Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                             À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+    "transition date", in relation to a claim, means the             « délai de prescription antérieur » Délai de
+    day on which its former limitation period was                    prescription prévu par le paragraphe 21(1) de la
+    repealed. (« date de transition »)                               Loi sur les officiers publics ou délai de prescription
+S.M. 2023, c. 22, s. 4.
+                                                                     abrogé par un des articles 32 à 50. ("former
+                                                                     limitation period")
+
+                                                                     « réclamation » Réclamation à l'égard de laquelle
+                                                                     s'applique un délai de prescription antérieur.
+                                                                     ("claim")
+                                                                 L.M. 2023, c. 22, art. 4.
+
+
+
+
+Expiry of former limitation period                               Expiration du délai de prescription antérieur
+31.2      No proceeding may be commenced under this              31.2       La présente loi n'a pas pour effet de permettre
+Act respecting a claim discovered before                         l'introduction d'instances relatives à une réclamation
+September 30, 2021, if its former limitation period              dont le délai de prescription antérieur a expiré avant la
+expired before the claim's transition date.                      date de transition et dont les faits ont été découverts
+                                                                 avant le 30 septembre 2021.
+S.M. 2023, c. 22, s. 4.
+                                                                 L.M. 2023, c. 22, art. 4.
+
+
+
+
+Claims to which this section applies                             Réclamations auxquelles le présent article s'applique
+31.3(1) Subject to section 31.2, this section applies to         31.3(1) Sous réserve de l'article 31.2, le présent
+claims based on acts or omissions that occurred before           article s'applique aux réclamations fondées sur des
+the repeal of the former limitation period and in respect        actes ou omissions qui se sont produits avant
+of which no proceeding was commenced before the                  l'abrogation du délai de prescription antérieur et à
+applicable transition date.                                      l'égard desquelles aucune instance n'a été introduite
+                                                                 avant la date de transition applicable.
+
+
+Claim discovered before transition date                          Découverte des faits survenue avant la date de
+31.3(2) In the case of a claim discovered before its             transition
+transition date, a proceeding may be commenced under             31.3(2) Sous le régime de la présente loi, les
+this Act, whether or not the former limitation period            instances relatives à une réclamation dont les faits ont
+that applied to the claim has expired, if the proceeding         été découverts avant la date de transition se
+is commenced before the earlier of                               prescrivent, que le délai de prescription antérieur ait
+                                                                 expiré ou non, par la première des dates suivantes :
+    (a) two years after the transition date; and
+                                                                     a) celle qui tombe deux ans après la date de
+    (b) the day on which the former limitation period                transition;
+    expired or would, but for its repeal, have expired or
+    the claim's extension date, whichever is later.                  b) celle où le délai de prescription antérieur
+                                                                     a expiré — ou aurait expiré n'eût été son
+                                                                     abrogation — ou, si cette date est postérieure, la
+                                                                     date de prescription prorogée.
+
+
+
+
+                                                            21
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                        Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                             À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                    Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Claim discovered on or after transition date                     Découverte des faits survenue à la date de transition ou
+31.3(3) In the case of a claim discovered on or after            par la suite
+its transition date, this Act applies, whether or not the        31.3(3) La présente loi s'applique, que le délai de
+former limitation period that applied has expired, as if         prescription antérieur ait expiré ou non, aux instances
+the act or omission on which the claim is based                  relatives à une réclamation dont les faits ont été
+occurred on the transition date.                                 découverts à la date de transition ou par la suite comme
+S.M. 2023, c. 22, s. 4.
+                                                                 si les actes ou omissions sur lesquels la réclamation est
+                                                                 fondée s'étaient produits à la date de transition.
+                                                                 L.M. 2023, c. 22, art. 4.
+
+
+NOTE: Sections 32 to 50 are published in the chapter             NOTE : Les articles 32 à 50 figurent dans le chapitre
+      version of this Act (S.M. 2021, c. 44).                           original de la présente loi (chapitre 44 des
+                                                                        L.M. 2021).
+
+
+
+
+         CONSEQUENTIAL AMENDMENTS                                          MODIFICATIONS CORRÉLATIVES
+
+32 to 52       NOTE: These sections contained                    32 à 52         NOTE : Les modifications corrélatives que
+               consequential amendments to other Acts                            contenaient les articles 32 à 52 ont été
+               that are now included in those Acts.                              intégrées aux lois auxquelles elles
+                                                                                 s'appliquaient.
+
+
+
+
+       REPEAL, C.C.S.M. REFERENCE AND                            ABROGATION, CODIFICATION PERMANENTE
+            COMING INTO FORCE                                           ET ENTRÉE EN VIGUEUR
+
+Repeal                                                           Abrogation
+53         The Limitation of Actions Act, R.S.M. 1987,           53       La Loi sur la prescription, c. L150 des
+c. L150, is repealed.                                            L.R.M. 1987, est abrogée.
+
+C.C.S.M. reference                                               Codification permanente
+54       This Act may be referred to as chapter L150             54        La présente loi constitue le chapitre L150 de
+of the Continuing Consolidation of the Statutes of               la Codification permanente des lois du Manitoba.
+Manitoba.
+
+
+
+
+                                                            22
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                        Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                             À jour du 30 mai 2023 au 28 sept. 2026
+Limitations, C.C.S.M. c. L150                                  Délais de prescription, c. L150 de la C.P.L.M.
+
+
+
+Coming into force                                              Entrée en vigueur
+55       This Act comes into force on a day to be fixed        55        La présente loi entre en vigueur à la date fixée
+by proclamation.                                               par proclamation.
+
+
+NOTE: S.M. 2021, c. 44 came into force by                      NOTE : Le chapitre 44 des L.M. 2021 est entré en
+      proclamation on September 30, 2022.                             vigueur par proclamation
+                                                                      le 30 septembre 2022.
+
+
+
+
+                                                          23
+Accessed: 30 Sept. 2026 at 5:50 am CDT                                    Date de consultation : le 30 sept. 2026 à 05 h 50
+Current from 30 May 2023 to 28 Sept. 2026                                         À jour du 30 mai 2023 au 28 sept. 2026
+

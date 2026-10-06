@@ -1,0 +1,76 @@
+{
+  "artifact": "gate_sequence_assessment.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "record the exact prerequisites the approved gate sequence imposes on this implementation, name the restriction, and record the smallest owner-authorized amendment that permits internal validation only while leaving every production admission gate intact",
+  "prerequisite_the_sequence_requires": [
+    {
+      "id": "P-1",
+      "requirement": "the approved build plan orders the work so that a later phase cannot begin before its stated gate passes",
+      "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "located_at_line": 45,
+      "quoted_text": "Work proceeds in the following order. A later phase cannot begin before its stated gate passes. Record completed and blocked items in durable artifacts; do not rely on conversation-only decisions as certification records.",
+      "satisfies_this_order": false
+    },
+    {
+      "id": "P-2",
+      "requirement": "the deterministic fact/evaluator specification and implementation come only after rule units and report mappings are admitted",
+      "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "rank": 5,
+      "clause": "section 4, item 5",
+      "located_at_line": 143,
+      "quoted_text": "5. Deterministic fact/evaluator specification and implementation, only after rule units and report mappings are admitted; the section 3 internal-validation carve-out is not that specification or implementation, is not gate evidence, and admits nothing.",
+      "satisfies_this_order": false
+    },
+    {
+      "id": "P-3",
+      "requirement": "milestone M-1 requires Gate 5.3 to pass for the single selected unit before Phase 5.4 may begin",
+      "instrument": "CRP_PROD_001_READINESS_AND_IMPLEMENTATION_PLAN.md",
+      "rank": 6,
+      "clause": "section 9.4, Next milestone",
+      "located_at_line": 552,
+      "quoted_text": "**Milestone M-1 — Gate 5.3 passes for the single selected unit** (owner decision PROD-003: the unit is no longer required to be `US-NY`). It is reached when the report-representation\r",
+      "satisfies_this_order": false
+    }
+  ],
+  "measured_gate_state": {
+    "source": "SOURCE_CAPTURES\\PHASE5-001O\\gate_reassessment_001o.json and SOURCE_CAPTURES\\PROD-003\\gate_prerequisites.json",
+    "gate_5_1": "MET_WITH_RECORDED_ADMINISTRATIVE_LIMITATIONS",
+    "gate_5_2": "ADVANCEABLE_FROM_THE_ACCEPTED_CORPUS",
+    "gate_5_3": "STILL_EVIDENCE_GATED",
+    "gate_5_3_claim_recorded_by_prod003": "for exactly one candidate on exactly one presentation the representation and its location are now verified and measured; every other candidate keeps a source-grounded unresolved status. Phase 5.4 may therefore begin for this one unit only.",
+    "gate_5_4": "NOT_STARTED",
+    "gate_5_5": "NOT_STARTED",
+    "admitted_governed_legal_rules": 0,
+    "permitted_legal_findings": 0,
+    "gate_5_3_is_recorded_as_passed": false
+  },
+  "conclusion": {
+    "restriction_applies": true,
+    "statement": "Gate 5.3 is reached for one candidate on one presentation and is passed for none. Gate 5.4 has not started, no rule unit is admitted and no admitted evaluator exists. The approved build plan therefore does not presently permit a deterministic evaluator implementation inside the certified path, and a rank-6 work order cannot override a rank-5 plan (CRP_CORE_CONSTITUTION.md sections 2.1 and 2.2).",
+    "hidden_or_waived": false
+  },
+  "relief": {
+    "instrument": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "clause": "section 3, the owner-authorized internal-validation carve-out, with section 4 item 5 qualified to exclude it",
+    "form": "owner amendment under CRP_CORE_CONSTITUTION.md section 6.2 — document and clause named, replaced text quoted, replacement text stated",
+    "records": [
+      "amendment_text.json",
+      "amendment_application_result.json"
+    ],
+    "scope": "internal validation only: one jurisdiction, one presentation, one rule unit, one limb; no admission, no coverage, no finding, no consumer-visible output, no gate credit, no override of a recorded classification, and re-validation under Gates 5.5 and 5.6 before any admission",
+    "gate_effects": "none"
+  },
+  "what_this_order_does_not_do": [
+    "it does not pass, advance, soften or waive any gate",
+    "it does not admit a rule, create coverage or create a finding class",
+    "it does not build or advertise a consumer-visible evaluator",
+    "it does not override the recorded legacy D3 / observation classification",
+    "it does not resolve the second limb, the effective period, the single-specimen boundary or the field-name divergence",
+    "it reports no result to any consumer, and report checking remains unavailable for every region"
+  ],
+  "gate_claims_made_by_this_order": "none — this order claims no gate state at all, and it records every gate state it measured as unchanged",
+  "created_by": "PHASE5-001I-A"
+}

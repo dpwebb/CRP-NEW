@@ -1,0 +1,64 @@
+{
+  "artifact": "crp-lsrc-0362-report-evidence-reliability-rescreen-disposition.json",
+  "work_order": "OWNER-CA-ORDINARY-REPORT-001",
+  "created_utc": "2026-10-04",
+  "purpose": "Record, per source ID, the durable corrected-logic rescreen disposition that the PHASE5-001O ledger names as CRP-LSRC-0362's only outstanding implementation dependency (register_state.blocker_type NO_DURABLE_RESCREEN_RECORD), so this provision can be implemented without reopening anything the ledger already settled and without assuming that dependency away.",
+  "authority_basis": [
+    "SOURCE_CAPTURES/PHASE5-001O/source_id_coverage_ledger.json, row CRP-LSRC-0362, whose register_state.clearing_authority reads: 'WORK - record a durable per-ID rescreen disposition in an authorised batch; where the disposition turns on report-field or event-date mapping it additionally requires an AUTHORISED_EVIDENCE_ROUTE'",
+    "The owner instruction for this batch: investigate the already-recorded Canadian candidates once, implement the strongest supported ordinary-report compliance issue on existing extracted facts, and record any genuine unresolved prerequisite precisely rather than assuming it away."
+  ],
+  "source_entry_id": "CRP-LSRC-0362",
+  "recorded_row": {
+    "record_type": "CONTENT_RULE",
+    "legal_family": "F4",
+    "source_family_label": "REPORT_ACCURACY_OR_COMPLETENESS",
+    "legacy_jurisdiction_reference": "CA-ON",
+    "canonical_jurisdiction_status": "EXACT",
+    "canonical_country_code": "CA",
+    "canonical_region_code": "CA-ON",
+    "instrument_title": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33 (`ca-on.cra`)",
+    "provision_or_citation": "s. 9(3)(a)",
+    "legacy_atomic_rule_id": "ca-on.cra.s9_3_a.best_evidence_basis",
+    "owner_acceptance_state": "OWNER_ACCEPTED_LEGAL_AUTHORITY",
+    "instrument_class_screen": "STATUTE_OR_REGULATION",
+    "instrument_class_confirmation_required": false,
+    "existing_operational_mapping": { "state": "ESTABLISHED", "basis": "LEGACY_RULE_PROVISION_EXACT" }
+  },
+  "rescreen_disposition": {
+    "disposition": "RESCREENED_AND_IMPLEMENTED_AS_A_REPORT_EVIDENCE_RELIABILITY_RULE",
+    "adapter_id": "CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS",
+    "turns_on_report_field_mapping": true,
+    "report_field_mapping_used": {
+      "fields": ["liability.openedDate", "liability.closedDate"],
+      "status": "ALREADY_ESTABLISHED_AND_EVIDENCED",
+      "basis": "The ordinary-account opened and closed readings are already extracted, normalized and source-located by the admitted general bureau-report intake, which the regional journey tests already drive for every canonical region. This disposition introduces no new field, no event-date mapping and no new extraction path, so no additional AUTHORISED_EVIDENCE_ROUTE is required by the ledger's own condition.",
+      "additional_authorised_evidence_route_required": false
+    },
+    "trigger": "the report's own two printed values for ONE ordinary account cannot both be right (the printed opened date is later than the printed closed date), both readings resolved on that same record",
+    "maximum_conclusion": "probable_violation",
+    "never": [
+      "violation",
+      "a categorical allegation that either printed value is false",
+      "an inference from a reading that could not be made",
+      "an inference from an absent or unprinted value"
+    ],
+    "packet_eligible": false,
+    "packet_eligibility_basis": "A PROBABLE content finding is eligible by its confidence under the unified issue gate, so no per-rule packet permission is widened to make it reachable."
+  },
+  "retained_limitations": {
+    "administrative_limitations_retained": [
+      "LOCATOR_OR_EFFECTIVE_INFORMATION_NOT_RECORDED",
+      "PRIOR_REVIEW_RECORD_NOT_HELD_IN_THIS_WORKSPACE",
+      "FORMAL_EDITION_OR_HISTORICAL_VERSION_NOT_RECORDED"
+    ],
+    "provision_wording": "RECORDED (2026-10-04, corrected basis). The provision was located and its wording is now recorded in SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json: Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a) — 'any credit information based on evidence that is not the best evidence reasonably available' (within '9(3) A consumer reporting agency shall not include in a consumer report,'). The subsection structure (9(2) 'Information included in consumer report'; 9(3) 'Idem') and the companion paragraph (b) were verified from the authoritative consolidated index; paragraph (a)'s wording was located from a published rendering corroborated by that index and by the admitted legacy rule id, and the authoritative full-page render remains unavailable in this environment. The provision's own words — not the legacy rule id and not an earlier gloss — are what the rule now records, and no quoted text was invented.",
+    "provision_wording_earlier_recording_defect": "The rule's recorded subject previously read 'information that is not based on the most reliable evidence reasonably available'. That is not this provision's wording; it was a gloss on a phrase used by a different Canadian instrument. It has been replaced by the provision's own words in the adapter limb, the exceptions basis, the finding gate, the runtime comments and the consumer wording. The adapter id and the legacy rule id are internal keys and are unchanged.",
+    "commencement": "NOT RECORDED, AND NOT TREATED AS IRRELEVANT (corrected 2026-10-04). An earlier statement here said that no effective date was needed because the rule counts no period and performs no arithmetic against a reference date. That conflated two different questions. Temporal applicability is a condition of legal ATTRIBUTION for every rule, content rules included: the provision must be in force, and the version applied must govern the report's period, before the provision may be named against a report. Retention arithmetic — counting a period, applying a day offset or aging an entry against a reference date — is a separate matter, and it is only the second that this rule does not perform. What is recorded: the applicable edition is the consolidation in force (consolidation period from July 1, 2026 to the e-Laws currency date; last amendment 2025, c. 24, Sched. 6, which amends section 12(3) and not section 9), and the provision's commencement date is NOT RECORDED here. The rule claims no commencement date and states no retention period; the absence is a retained limitation, not assumed away.",
+    "other_outstanding_items_on_this_id": [],
+    "provision_retrieval_record": "SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json",
+    "note": "This disposition closes only the durable-rescreen item the ledger names for CRP-LSRC-0362, and (2026-10-04) corrects the recorded legal basis it was implemented on. It does not reopen legal validity, does not claim independent retrieval beyond the route recorded in the provision-retrieval record, and does not resolve the same-region IDs CRP-LSRC-0363 to CRP-LSRC-0372, whose instrument-class screen remains SCREEN_INCONCLUSIVE and which stay unimplemented."
+  },
+  "evidence_routes_used": [
+    "accelerated-launch/service/tests/sections/cc-ca-on-ordinary-report.cjs - the upload -> Issue -> Wizzard -> selected correspondence -> approval -> entitled download journey, with positive and benign controls, measured on the actual downloaded document"
+  ]
+}

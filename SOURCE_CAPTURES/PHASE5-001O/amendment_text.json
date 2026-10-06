@@ -1,0 +1,455 @@
+{
+  "artifact": "amendment_text.json",
+  "work_order": "PHASE5-001O",
+  "created_utc": "2026-09-30",
+  "purpose": "the exact replaced and replacement text of every amendment this order made to a governing document, with the before and after state of each amended file, so Core Constitution section 6.2 is satisfied on the record rather than in prose",
+  "authority": "CRP_CORE_CONSTITUTION.md sections 6.1 to 6.5",
+  "amendment_count": 19,
+  "documents_amended": [
+    "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+    "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+    "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+    "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md"
+  ],
+  "file_state_change": [
+    {
+      "document": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "before": {
+        "bytes": 11092,
+        "sha256": "10B890F929D23ED8EAE5375AD689476829FE61754483AEB1B3D065998D97F811"
+      },
+      "after": {
+        "bytes": 14123,
+        "sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454"
+      },
+      "changed": true
+    },
+    {
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "before": {
+        "bytes": 32294,
+        "sha256": "B21952A5C11998B06ADB4E19B80E97B959A6B36C346FAA2E2B18931A75766043"
+      },
+      "after": {
+        "bytes": 35843,
+        "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1"
+      },
+      "changed": true
+    },
+    {
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "before": {
+        "bytes": 21997,
+        "sha256": "4EFFB76C6B89DBA7BC3C342104384F325E30B5DC59A9B88FEF0133CB83A99BB0"
+      },
+      "after": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      },
+      "changed": true
+    },
+    {
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "before": {
+        "bytes": 18608,
+        "sha256": "FC510647207386E6CB5D5A41EAC4B7CBE88622366829253F39A2841F903315C5"
+      },
+      "after": {
+        "bytes": 21587,
+        "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+      },
+      "changed": true
+    },
+    {
+      "document": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "before": {
+        "bytes": 21241,
+        "sha256": "716825AF9C4566717B49C6F07EBC813B3F8C8DB2398281025500186793284D7A"
+      },
+      "after": {
+        "bytes": 22445,
+        "sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C"
+      },
+      "changed": true
+    }
+  ],
+  "inversion_note": "Unlike PHASE5-001M this order did not hold byte-identical pre-amendment copies of the amended documents, so no inversion reconstruction is claimed. Instead every replacement is checked mechanically against the amended file: the replacement text must be present and the replaced text must be gone. Every inserted block is quoted from the amended file itself, between the two markers recorded here.",
+  "mechanical_check_result": {
+    "problems": [],
+    "clean": true
+  },
+  "amendments": [
+    {
+      "id": "A-2",
+      "document": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "clause": "section 4, Current Legal-Coverage State, the state block",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "ADMITTED LEGACY SOURCE ARTIFACTS: 34\nRE-EXPRESSED GOVERNED LEGAL RULES: 0",
+      "replaced_chars": 73,
+      "replacement_text": "ADMITTED LEGACY SOURCE ARTIFACTS: 34\nLEGACY LEGAL CONTENT ACCEPTED BY THE OWNER: OWNER_ACCEPTED_LEGAL_AUTHORITY\nRE-EXPRESSED GOVERNED LEGAL RULES: 0",
+      "replacement_chars": 148,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": false
+      },
+      "after_file": {
+        "bytes": 14123,
+        "sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454"
+      }
+    },
+    {
+      "id": "B-1",
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "clause": "section 3, Eligible Source Scope, condition 5",
+      "type": "REPLACE_AND_EXTEND_REQUIREMENT",
+      "replaced_text": "5. Its legal effect and temporal applicability can be pinned to an identifiable source version.",
+      "replaced_chars": 95,
+      "replacement_text": "5. Its legal effect and temporal applicability can be pinned to an identifiable source version. A digest-bound certified-baseline record admitted under `CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md` satisfies this condition as the source pin even when the formal statutory publication or historical version is not recorded: an unrecorded formal edition is recorded as an administrative limitation and is not, by itself, a ground to exclude the source.",
+      "replacement_chars": 452,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": true
+      },
+      "after_file": {
+        "bytes": 35843,
+        "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1"
+      }
+    },
+    {
+      "id": "D-1",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.1, bullet 3",
+      "type": "REPLACE_AND_EXTEND_REQUIREMENT",
+      "replaced_text": "- Record the unique legal-provision key and explicit canonical/duplicate links. Count source records separately from unique legal provisions; do not infer duplication from adjacent IDs.",
+      "replaced_chars": 185,
+      "replacement_text": "- Record the unique legal-provision key and explicit canonical/duplicate links. Count source records separately from unique legal provisions; do not infer duplication from adjacent IDs. Under owner directive PHASE5-001O these counts and links are administrative bookkeeping: an unresolved duplicate identity or an uncertified unique-legal-provision count is recorded as an administrative limitation and does not block acceptance of the accepted legacy statutes or coverage planning.",
+      "replacement_chars": 482,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": true
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "D-2",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Phase 5.1, bullet 5, final clause",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "so those clusters remain open and queued, neither collapsed, merged nor re-classed, and no unique-legal-provision count may be certified while they stand unresolved.",
+      "replaced_chars": 165,
+      "replacement_text": "so those clusters remain open and queued, neither collapsed, merged nor re-classed. Under owner directive PHASE5-001O the uncertified unique-legal-provision count and the open duplicate bookkeeping are administrative limitations that are recorded rather than treated as blocking: they do not prevent the remaining phases of this plan, coverage planning, or the next implementation work order, and no count is published as certified.",
+      "replacement_chars": 432,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": false
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "D-3",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 3, Gate 5.1, first sentence",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "**Gate 5.1:** every source ID is accounted for once, all counts reconcile, duplicate links are explicit, and no unresolved item was silently excluded.",
+      "replaced_chars": 150,
+      "replacement_text": "**Gate 5.1:** every source ID is accounted for once, all counts reconcile to the extent the recorded evidence permits, duplicate links are explicit, and no unresolved item was silently excluded. Under owner directive PHASE5-001O a count or duplicate identity that cannot be reconciled is recorded as an explicit administrative limitation with the evidence it rests on, and that recording satisfies this condition: the limitation does not block the remaining phases, coverage planning, or the next implementation work order.",
+      "replacement_chars": 523,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": false
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "D-4",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 5, stop conditions, final bullet",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "- counts, duplicate identity, or source provenance cannot be reconciled.",
+      "replaced_chars": 72,
+      "replacement_text": "- a count, a duplicate identity, or a source-provenance question cannot be reconciled after a genuine attempt: under owner directive PHASE5-001O it is recorded as an explicit administrative limitation with the evidence it rests on and the work does not stop for it. Only a concrete source conflict, an amendment/repeal/supersession indicator, or an identified record inconsistency that changes legal content is a stop condition.",
+      "replacement_chars": 428,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": false
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "D-5",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 2.1, item 1",
+      "type": "REPLACE_REQUIREMENT",
+      "replaced_text": "1. The exact legal text is pinned to an official source or an admitted digest-bound certified legacy baseline; citation, jurisdiction, and source provenance are recorded.",
+      "replaced_chars": 170,
+      "replacement_text": "1. The exact legal text is pinned to an official source or an admitted digest-bound certified legacy baseline; citation, jurisdiction, and source provenance are recorded where the accepted corpus records them. Under owner directive PHASE5-001O a source whose formal edition, historical version or prior-review record is not recorded is not rejected for that reason: the digest-bound accepted source is the pin, and the missing record is an administrative limitation stated with the finding. The report-side requirements of this section are unchanged.",
+      "replacement_chars": 550,
+      "mechanical_check": {
+        "comparison_basis": "whitespace-normalised",
+        "replacement_text_present_in_amended_file": true,
+        "replaced_text_still_present_in_amended_file": false,
+        "replacement_extends_the_replaced_text": false
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "A-1",
+      "document": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "clause": "section 3, new subsection 3.1",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "remain permanently excluded.",
+      "replacement_text": "### 3.1 Owner acceptance of the designated legal content (PHASE5-001O)\r\n\r\nThe owner states that the relevant statutes currently in the legacy system have survived rigorous legal\r\nreview and are accepted as legal truth. The recorded legal content of the artifacts designated in §2 is\r\ntherefore **`OWNER_ACCEPTED_LEGAL_AUTHORITY`** for this build.\r\n\r\nAcceptance under this subsection is owner-directed. It is not an independent verification performed by\r\nany work order, and no work order may describe it as one. Missing provenance, a missing historical\r\nversion, and the absence of a prior-review record are **not** prerequisites for accepting the recorded\r\nlegal content, and their absence is recorded as an administrative limitation rather than as a bar to\r\nacceptance or to coverage planning. The legal validity of an accepted statute is not independently\r\nreopened by this subsection.\r\n\r\nBroadly relevant statutory provisions are included. A single accepted provision may support more than\r\none rule, jurisdiction, or report condition where the legacy corpus establishes that relationship; the\r\nrelationship must be recorded as the corpus records it, and it may not be inferred, broadened, or\r\nextended to a jurisdiction, rule family, report type, or time period the corpus does not record.\r\n\r\nThis subsection distinguishes statutes from other material. The owner's acceptance of statutes does not\r\nby itself convert guidance, policy summaries, industry codes, notices, or extracted propositions into\r\nstatutes; such material is recorded as recorded material and needs its own classification before it is\r\ntreated as a statutory source.\r\n\r\nDuplicate bookkeeping and an exact corpus-wide unique-provision count are administrative matters under\r\nthis subsection. An unresolved duplicate identity or an uncertified count is recorded as an\r\nadministrative limitation and must not block acceptance of a statute or coverage planning.\r\n\r\nThis subsection does not itself admit a governed rule, create legal coverage, authorise a finding, or\r\npermit any behavior excluded by §1.",
+      "replacement_chars": 2073,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 14123,
+        "sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454"
+      }
+    },
+    {
+      "id": "B-2",
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "clause": "section 6, new owner-direction subsection",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "This rule classifies a source-discovery candidate only.",
+      "replacement_text": "### Owner direction: acceptance, duplicate bookkeeping and coverage planning (PHASE5-001O)\r\n\r\nUnder the owner directive recorded by PHASE5-001O:\r\n\r\n1. The relevant statutes currently in the legacy system have survived rigorous legal review and are\r\n   accepted as legal truth. The recorded legal content of a digest-bound certified-baseline record is\r\n   `OWNER_ACCEPTED_LEGAL_AUTHORITY`.\r\n2. Missing provenance, a missing historical version and the absence of a prior-review record are not\r\n   prerequisites for accepting a statute, for including it as section 3 eligible source scope, or for\r\n   coverage planning. They are recorded as administrative limitations.\r\n3. Broadly relevant statutory provisions are included. Where the legacy corpus establishes that one\r\n   provision supports more than one rule, jurisdiction or report condition, that recorded relationship\r\n   is used; no relationship the corpus does not record may be inferred or broadened.\r\n4. Guidance, policy summaries, industry notices and extracted propositions are not converted into\r\n   statutes by the owner's acceptance of statutes. They remain recorded material and need their own\r\n   classification before they are treated as statutory sources.\r\n5. Duplicate bookkeeping and an exact corpus-wide unique-provision count are administrative. An\r\n   unresolved duplicate identity or an uncertified count is recorded as an administrative limitation\r\n   and must not block acceptance, `SOURCE_STATUS` planning or coverage planning.\r\n6. Acceptance is owner-directed and is recorded as such. It is not independent verification performed\r\n   by this or any other work order.\r\n7. Nothing in this subsection changes section 2, the permanent exclusions of section 4, the required\r\n   fields of section 5, the candidate conditions of section 6, or the finding boundary: no rule,\r\n   candidate, coverage or finding is created by it.",
+      "replacement_chars": 1895,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 35843,
+        "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1"
+      }
+    },
+    {
+      "id": "C-1",
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "clause": "preamble, new owner directive paragraph after the PHASE5-001A ruling",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "report-only evaluation gates pass.",
+      "replacement_text": "**Owner directive PHASE5-001O:** the relevant statutes currently in the legacy system have survived\r\nrigorous legal review and are accepted as legal truth; their recorded legal content is\r\n`OWNER_ACCEPTED_LEGAL_AUTHORITY`. Acceptance is owner-directed and is not independent verification\r\nperformed by any work order. Missing provenance, a missing historical version and the absence of a\r\nprior-review record are not prerequisites for accepting a statute, for re-expressing it, or for coverage\r\nplanning, and are recorded as administrative limitations. Broadly relevant statutory provisions are\r\nincluded, and one accepted provision may support more than one rule, jurisdiction or report condition\r\nwhere the legacy corpus establishes that relationship as recorded. Guidance, policy summaries, industry\r\ncodes, notices and extracted propositions are not converted into statutes by that acceptance. Duplicate\r\nbookkeeping and an exact corpus-wide unique-provision count are administrative limitations that do not\r\nblock re-expression, admission work or coverage planning. This directive does not admit a governed rule,\r\ncreate legal coverage, or authorise a finding.",
+      "replacement_chars": 1165,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 21587,
+        "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+      }
+    },
+    {
+      "id": "C-2",
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "clause": "section 5, counting sentence",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "Source-record counts and unique legal-rule counts must be reported",
+      "replacement_text": "Source-record counts and unique legal-rule counts are administrative bookkeeping. Under owner directive\r\nPHASE5-001O an unresolved duplicate identity or an uncertified unique-legal-provision count is recorded\r\nas an administrative limitation; it does not block re-expression of an accepted provision, rule-record\r\nconstruction, admission work, or coverage planning, and it is not a reason to reject an accepted statute.",
+      "replacement_chars": 419,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 21587,
+        "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+      }
+    },
+    {
+      "id": "C-3",
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "clause": "section 3, certified-baseline acceptance",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "may no longer represent applicable law.",
+      "replacement_text": "For a certified-baseline record, acceptance is governed by `CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md`\r\n§3.1 (owner directive PHASE5-001O): the recorded legal content is `OWNER_ACCEPTED_LEGAL_AUTHORITY`, and\r\nmissing provenance, a missing historical version or the absence of a prior-review record is recorded as\r\nan administrative limitation rather than treated as a source-evidence failure. The remaining source\r\nfields are recorded as the baseline records them; a field the baseline does not carry is recorded\r\n`NOT RECORDED`, not invented.",
+      "replacement_chars": 547,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 21587,
+        "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+      }
+    },
+    {
+      "id": "E-1",
+      "document": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "clause": "section 5, after the unresolved-provenance table",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "unfit for governed-rule construction. |",
+      "replacement_text": "Under owner directive PHASE5-001O these two items are implementation dependencies, not acceptance bars.\r\nA statute whose text is accepted is not rejected because an attribution or a source entry is incomplete;\r\nthe incompleteness is recorded as an administrative limitation, and the missing attribution is work to be\r\ncompleted rather than a reason to exclude the provision from coverage planning. No attribution may be\r\ninvented to close either item, and this paragraph changes no normalization result in §3 and no row's\r\nlegacy-source state.",
+      "replacement_chars": 543,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 22445,
+        "sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C"
+      }
+    },
+    {
+      "id": "D-6",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 6, gate-sequence reassessment and next work order",
+      "type": "INSERT_AFTER_ANCHOR",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "anchor_text": "pausing only for a material owner/legal decision.",
+      "replacement_text": "**Owner directive PHASE5-001O — gate-sequence reassessment.** The sequence in §3 is reassessed under the\namended authority by separating four layers that were previously interleaved:\n\n```text\n1. LEGAL AUTHORITY ACCEPTED BY THE OWNER\n   The relevant legacy statutes are accepted as legal truth (OWNER_ACCEPTED_LEGAL_AUTHORITY).\n   No provenance, historical-version or prior-review proof is required, and their legal validity is not\n   independently reopened.\n2. ADMINISTRATIVE RECONCILIATION\n   Register dispositions, duplicate bookkeeping, citation/section verification flags and the\n   unique-legal-provision count. These are administrative: they are recorded with their limitations and\n   do not block layers 1, 3 or 4.\n3. REPORT-FORMAT AND APPLICATION DEPENDENCIES\n   Report representation and exact field/event/location mapping, the consumer-selection jurisdiction\n   surface, the consumer-application data path, and the mapping of accepted provisions to report\n   conditions. These need product work, not further legal research.\n4. READINESS FOR DETERMINISTIC EVALUATION\n   Rule-record construction for accepted provisions, deterministic evaluators, the validation suite, and\n   formal admission. This remains gated on layer 3 evidence for any rule that depends on a report\n   representation, and is not gated on layer 2.\n\nGATE 5.1 is recorded as met with the administrative limitations stated in this plan; Gate 5.2's\nreport-only dispositions proceed from the accepted corpus. Gate 5.3 and later remain evidence-gated on\nreport representation, exactly as before. Legal-provenance research and further duplicate-count\ninvestigation are not the default next step.\n```\n\n**Next work order (PHASE5-001O recommendation).** The next work order is the smallest concrete\nimplementation order that advances the consumer application on the accepted corpus, not another research\norder: drive the consumer application's selectable jurisdiction list from `CRP-JURISDICTION-ENUM-1` and\npublish, per selectable region, the coverage the accepted corpus records. Nothing in this plan authorises\napplication changes, deployment, consumer-data transmission or a finding; that order must carry its own\nauthorisation and its own scope.",
+      "replacement_chars": 2219,
+      "mechanical_check": {
+        "inserted_block_located_between_markers": true,
+        "anchor_text_present_in_amended_file": true
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    },
+    {
+      "id": "A-3",
+      "document": "CRP_LEGACY_LEGAL_CORPUS_ADMISSION_CONTRACT.md",
+      "clause": "section 5, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001O | Valid owner amendment: added §3.1, recording the owner directive that the relevant legacy statutes are `OWNER_ACCEPTED_LEGAL_AUTHORITY`, that missing provenance, historical versions and prior-review records are not acceptance prerequisites, that broadly relevant provisions are included and may support more than one rule, jurisdiction or report condition where the legacy corpus establishes that relationship, that guidance, policy summaries and extracted propositions are not converted into statutes by that acceptance, and that duplicate bookkeeping and an uncertified unique-provision count are administrative limitations that do not block acceptance or coverage planning. Added the acceptance line to §4. Acceptance is recorded as owner-directed, not as independent verification. No governed rule, legal coverage or finding was created. |",
+      "replacement_chars": 872,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 14123,
+        "sha256": "BF86D2ABB10CE8155F2B6D2B084227823D8B3E9EBF16078A67AA2539126EB454"
+      }
+    },
+    {
+      "id": "B-3",
+      "document": "CRP_DIRECT_REPORT_CONTENT_SOURCE_EXPANSION_CONTRACT.md",
+      "clause": "section 9, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001O | Valid owner amendment: section 3 condition 5 now records that a digest-bound certified-baseline record satisfies the source-pin condition and that an unrecorded formal edition is an administrative limitation, and section 6 gains the owner direction that the relevant legacy statutes are `OWNER_ACCEPTED_LEGAL_AUTHORITY`, that missing provenance, historical versions and prior-review records are not acceptance prerequisites, that a recorded provision may support more than one rule, jurisdiction or report condition where the legacy corpus establishes it, that guidance, policy summaries and extracted propositions are not thereby converted into statutes, and that duplicate bookkeeping and an uncertified unique-provision count are administrative limitations that do not block acceptance or coverage planning. Acceptance is recorded as owner-directed, not as independent verification. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001O_LEGACY_CORPUS_ACCEPTANCE_AND_COVERAGE_RECONCILIATION.md. No rule, coverage, source discovery, finding, candidate or count was created or certified, and no gate is passed by this amendment. |",
+      "replacement_chars": 1198,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 35843,
+        "sha256": "2E0BBDF1943478352F012E98BC21BC25D702F7AC714CB7C84A9CBF924EA486F1"
+      }
+    },
+    {
+      "id": "C-4",
+      "document": "CRP_GOVERNED_LEGAL_CORPUS_CONTRACT.md",
+      "clause": "section 8, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001O | Valid owner amendment: added the owner directive paragraph recording `OWNER_ACCEPTED_LEGAL_AUTHORITY` for the relevant legacy statutes, the non-prerequisite status of missing provenance/historical versions/prior-review records, broad inclusion of statutory provisions with recorded multi-rule/multi-jurisdiction use, the non-conversion of guidance and policy material into statutes, and the administrative (non-blocking) status of duplicate bookkeeping and the unique-provision count; added the corresponding sentence in §5 and the acceptance clause in §3. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001O_LEGACY_CORPUS_ACCEPTANCE_AND_COVERAGE_RECONCILIATION.md. No legal rule, coverage, or finding was created. |",
+      "replacement_chars": 786,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 21587,
+        "sha256": "4D14AB932319A263C6F0DBB7E26E07055611A38FDFAA55F71CCDEF8AD213F1CB"
+      }
+    },
+    {
+      "id": "E-2",
+      "document": "CRP_LEGACY_JURISDICTION_SOURCE_NORMALIZATION_CONTRACT.md",
+      "clause": "section 7, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001O | Valid owner amendment: section 5 now records that the unresolved source-provenance items R6 and R8 are implementation dependencies rather than acceptance bars, that an incomplete attribution does not exclude an accepted statute from coverage planning, and that no attribution may be invented to close either item. The 82-row normalization table, the source-family labels and every normalization result are unchanged. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001O_LEGACY_CORPUS_ACCEPTANCE_AND_COVERAGE_RECONCILIATION.md. No rule, coverage, mapping or finding was created. |",
+      "replacement_chars": 648,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 22445,
+        "sha256": "E6365129A2E57403DE852F2BFC85951B8C481661CF7DBAB711858C1B360D3C0C"
+      }
+    },
+    {
+      "id": "D-7",
+      "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+      "clause": "section 8, Amendment History, appended row",
+      "type": "APPEND_AMENDMENT_HISTORY",
+      "replaced_text": "",
+      "replaced_chars": 0,
+      "replacement_text": "| 2026-09-30 | PHASE5-001O | Valid owner amendment under Core Constitution section 6: section 2.1 item 1 now records that the digest-bound accepted source is the pin and that an unrecorded formal edition, historical version or prior-review record is an administrative limitation rather than a ground to reject the source; section 3 Phase 5.1 bullets 3 and 5 and Gate 5.1 now record that duplicate bookkeeping and an uncertified unique-legal-provision count are administrative limitations that are recorded and do not block the remaining phases, coverage planning or the next implementation work order; section 5's stop condition for unreconcilable counts, duplicate identity and source provenance is replaced by a record-and-continue rule; section 6 gains the four-layer gate reassessment and the next-work-order recommendation. The report-side requirements, the permanent exclusions, the finding boundary and every other gate are unchanged. Both replaced text and replacement text are quoted in the amending narrative CRP_PHASE5_001O_LEGACY_CORPUS_ACCEPTANCE_AND_COVERAGE_RECONCILIATION.md. No rule, coverage, finding or certified count was created, and no gate is passed by this amendment alone. |",
+      "replacement_chars": 1199,
+      "mechanical_check": {
+        "appended_row_present": true
+      },
+      "after_file": {
+        "bytes": 27096,
+        "sha256": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD"
+      }
+    }
+  ],
+  "boundaries": {
+    "documents_deliberately_not_amended": [
+      "CRP_CORE_CONSTITUTION.md, CRP_LEGAL_INVARIANT.md, JURISDICTION_CONTRACT.md and CRP_JURISDICTION_ENUMERATION.md: no clause conflicts with the owner directive. Section 2.3's bar on applying a legacy rule or jurisdiction mapping outside its recorded scope permits exactly the recorded relationships the directive relies on, and nothing in the directive authorises an unrecorded relationship.",
+      "CRP_GLOBAL_LEGAL_SOURCE_CATALOGUE.md: it already records that its entries are authoritative for their recorded legal content; the acceptance state is recorded in the admission contract whose boundary it uses.",
+      "CRP_PHASE5_NEXT_GATE_RECONCILIATION.md: a rank-6 analysis artifact. Its prerequisite rows P-4 and P-8 are read subject to the amended rank-4 and rank-5 text, which this order's narrative records; amending an analysis artifact is not required to change the governing meaning."
+    ],
+    "what_this_did_not_do": [
+      "No rule, coverage, candidate, finding or certified count was created.",
+      "No legal content in the catalogue or the legacy corpus was rewritten.",
+      "No gate is passed by the amendments themselves."
+    ]
+  },
+  "created_by": "PHASE5-001O"
+}

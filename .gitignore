@@ -1,0 +1,62 @@
+# Dependencies and generated working files
+node_modules/
+__pycache__/
+*.pyc
+out/
+dist/
+coverage/
+playwright-report/
+test-results/
+.cache/
+*.log
+*.tmp
+*.bak
+*.tar.gz
+*.zip
+*.7z
+*.epub
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Secrets and private runtime/consumer data
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+.private/
+private-data/
+runtime-data/
+.crp-local-service/
+uploads/
+*.sqlite
+*.sqlite3
+*.db
+
+# Historical report captures/bundles stay local. Keep maintained legal-source records.
+/SOURCE_CAPTURES/*
+!/SOURCE_CAPTURES/PHASE5-*/
+!/SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/
+!/SOURCE_CAPTURES/CA-REMAINING-COVERAGE/
+!/SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/
+bundle/
+/_bt.cjs
+# Local capture pages containing token-like strings; retained on disk, outside baseline
+/SOURCE_CAPTURES/PHASE5-001G/CA-1995-96-search-credit-reporting.html
+/SOURCE_CAPTURES/PHASE5-001G/CA-CIV-1785.13.html
+# Historical execution traces and temporary source probes
+/AUDIT_PRIME_DIRECTIVE_ASSERTIONS/*.jsonl
+/SOURCE_CAPTURES/**/probe*_out.txt
+/SOURCE_CAPTURES/**/*_stdout.txt
+/SOURCE_CAPTURES/**/build*_out.txt
+# Existing independently versioned UI repository: preserve its own history
+/consumer-wizard/
+/SOURCE_CAPTURES/PHASE5-001N/retrieved/R01-CA-FCA-credit-report-information.html

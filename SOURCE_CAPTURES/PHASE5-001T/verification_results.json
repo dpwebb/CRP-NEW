@@ -1,0 +1,498 @@
+{
+  "artifact": "verification_results.json",
+  "work_order": "PHASE5-001T",
+  "created_utc": "2026-09-30",
+  "purpose": "the checks this order ran over its own artifacts, the fixtures, the negative tests, the independent replay, the consumer language, the scoped verdict, the next step, its preservation and custody, the pins it proceeds on and the historical records it must not have touched",
+  "checks": [
+    {
+      "id": "V-T01",
+      "what": "no pre-existing file changed: this order amends no governing document and edits no earlier artifact",
+      "passed": true,
+      "detail": "changed: 0"
+    },
+    {
+      "id": "V-T02",
+      "what": "no pre-existing file was deleted or is missing",
+      "passed": true,
+      "detail": "missing: 0"
+    },
+    {
+      "id": "V-T03",
+      "what": "every JSON artifact of this order parses",
+      "passed": true,
+      "detail": "unparseable: 0"
+    },
+    {
+      "id": "V-T04",
+      "what": "no artifact of this order carries a byte-order mark",
+      "passed": true,
+      "detail": "with BOM: 0"
+    },
+    {
+      "id": "V-T05",
+      "what": "the completion narrative exists and is not an empty file",
+      "passed": true,
+      "detail": "exists: True; bytes: 29334"
+    },
+    {
+      "id": "V-T06",
+      "what": "every file added by this order is inside its own package or is its narrative",
+      "passed": true,
+      "detail": "added: 25; outside the package: 0"
+    },
+    {
+      "id": "V-T07",
+      "what": "all eleven pins still match, after this order wrote everything it wrote",
+      "passed": true,
+      "detail": "pins: 11; mismatching: 0"
+    },
+    {
+      "id": "V-T08",
+      "what": "the verdict quotes the Gate 5.6 line of the amended document verbatim",
+      "passed": true,
+      "detail": "equal to the document line: True; starts with the gate heading: True"
+    },
+    {
+      "id": "V-T09",
+      "what": "the withheld PHASE5-001R Gate 5.5 verdict is preserved unchanged at its recorded digest",
+      "passed": true,
+      "detail": "measured: B3A019E65EA056C65BE2956C641D04F8D0E26E989AD2F836ABC4955A9C8A6705"
+    },
+    {
+      "id": "V-T10",
+      "what": "the retained PHASE5-001I-A artifact is unchanged at the digest Owner Decision 1 accepted",
+      "passed": true,
+      "detail": "measured: 6D8E84E06C2C28172711A18831F7DC6A5A3FF152F527428AFD305CE7BB134511"
+    },
+    {
+      "id": "V-T11",
+      "what": "the inherited internal-validation suite is unchanged and was not run: its harness still carries the digest the input verification recorded",
+      "passed": true,
+      "detail": "measured: 573C330590D856B61BCA6CFC30DDA020F5F4D316149E7D43C4B0DB981E900787"
+    },
+    {
+      "id": "V-T12",
+      "what": "no rule was admitted: the governed rule record still reads NOT_ADMITTED at its pinned digest",
+      "passed": true,
+      "detail": "state: NOT_ADMITTED; admitted rules: 0"
+    },
+    {
+      "id": "V-T13",
+      "what": "the fixture suite covers every category the phase bullet names",
+      "passed": true,
+      "detail": "categories: 15 of 15"
+    },
+    {
+      "id": "V-T14",
+      "what": "every fixture reached the state it must reach",
+      "passed": true,
+      "detail": "fixtures: 33; failures: 0"
+    },
+    {
+      "id": "V-T15",
+      "what": "every fixture is labelled synthetic and none is counted as consumer-report presentation evidence",
+      "passed": true,
+      "detail": "unlabelled or miscounted: 0; counted as evidence: 0"
+    },
+    {
+      "id": "V-T16",
+      "what": "every fixture states the state it must reach",
+      "passed": true,
+      "detail": "without a stated state: 0"
+    },
+    {
+      "id": "V-T17",
+      "what": "no fixture emitted a finding class and none carried a forbidden label",
+      "passed": true,
+      "detail": "emitted: 0; forbidden labels: 0"
+    },
+    {
+      "id": "V-T18",
+      "what": "the exact-boundary fixtures reached the withheld outcome and neither of the two other outcomes",
+      "passed": true,
+      "detail": "withheld boundary fixtures: 2 of 2"
+    },
+    {
+      "id": "V-T19",
+      "what": "the leap-day convention holds as a property over every 29 February start in 1900..2100",
+      "passed": true,
+      "detail": "starts checked: 49; counterexamples: 0"
+    },
+    {
+      "id": "V-T20",
+      "what": "the duplicate catalogue source produced byte-identical records, so it cannot fork the evaluation",
+      "passed": true,
+      "detail": "cases checked: 1; not identical: 0"
+    },
+    {
+      "id": "V-T21",
+      "what": "every negative test passed",
+      "passed": true,
+      "detail": "tests: 8; failures: 0"
+    },
+    {
+      "id": "V-T22",
+      "what": "every negative test names the prohibited behaviour it forbids and records what it demonstrates here",
+      "passed": true,
+      "detail": "tests missing a clause: 0"
+    },
+    {
+      "id": "V-T23",
+      "what": "the off-report-fact test found no access route and no off-report fact used as a decisive fact",
+      "passed": true,
+      "detail": "forbidden reads: 0; off-report keys: 0"
+    },
+    {
+      "id": "V-T24",
+      "what": "a parser failure never became an absence reading in any swept case",
+      "passed": true,
+      "detail": "swept cases: 4"
+    },
+    {
+      "id": "V-T25",
+      "what": "an unknown exception suppressed nothing and this unit has no probable path to suppress",
+      "passed": true,
+      "detail": "all variants identical: True; a probable path is reachable: False"
+    },
+    {
+      "id": "V-T26",
+      "what": "no returned record carried a finding label and no output axis permits one",
+      "passed": true,
+      "detail": "cases with a label: 0; axes permitting one: 0"
+    },
+    {
+      "id": "V-T27",
+      "what": "an unadmitted rule record produced no outcome for any input",
+      "passed": true,
+      "detail": "cases with an outcome on the unadmitted record: 0 of 9"
+    },
+    {
+      "id": "V-T28",
+      "what": "the refusal is the first failing gate in the fixed order in every case",
+      "passed": true,
+      "detail": "cases: 33; disagreements: 0; multi-gate cases: 8"
+    },
+    {
+      "id": "V-T29",
+      "what": "the four axes were read separately and no case authorised a finding or became packet-eligible",
+      "passed": true,
+      "detail": "applicability stable: True; packet-eligible cases: 0"
+    },
+    {
+      "id": "V-T30",
+      "what": "the frozen expectations are unchanged since the comparison ran, and the replay record carries that digest",
+      "passed": true,
+      "detail": "frozen digest now: DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA; recorded: DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA"
+    },
+    {
+      "id": "V-T31",
+      "what": "every sampled result was reproduced by the independent reviewer",
+      "passed": true,
+      "detail": "samples: 17; reproduced: 17; disagreements: 0; unresolved: 0"
+    },
+    {
+      "id": "V-T32",
+      "what": "the reviewer's executable code loads no project file and names neither the evaluator nor this order's fixtures and results",
+      "passed": true,
+      "detail": "loads no project file: True; names the evaluator in code: False; names the fixture kit in code: False; reads a result: False"
+    },
+    {
+      "id": "V-T33",
+      "what": "the provision was reproduced from the accepted source pin itself and matches the record exactly",
+      "passed": true,
+      "detail": "exact match: True; pin digest: 90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF"
+    },
+    {
+      "id": "V-T34",
+      "what": "the reviewer's numbers tie to the register's own demonstration of the specimen",
+      "passed": true,
+      "detail": "ties to the register: True"
+    },
+    {
+      "id": "V-T35",
+      "what": "the reviewer's independence is recorded with its limits rather than claimed as a second reviewer",
+      "passed": true,
+      "detail": "recorded limits: 3"
+    },
+    {
+      "id": "V-T36",
+      "what": "every explanation template at the pinned digest was exercised",
+      "passed": true,
+      "detail": "templates: 5; failures: 0; every template exercised: True"
+    },
+    {
+      "id": "V-T37",
+      "what": "the withheld-boundary template was exercised and rendered its qualification verbatim",
+      "passed": true,
+      "detail": "qualifications carried verbatim: 4"
+    },
+    {
+      "id": "V-T38",
+      "what": "no rendered text carried a finding label and no sentence overstated affirmatively",
+      "passed": true,
+      "detail": "finding labels: 0; affirmative overstatements: 0"
+    },
+    {
+      "id": "V-T39",
+      "what": "the consumer-language validation created no surface and changed what may be shown today",
+      "passed": true,
+      "detail": "consumer-visible output: NONE; packet: ineligible"
+    },
+    {
+      "id": "V-T40",
+      "what": "the verdict states every clause of the gate sentence and names the one it cannot meet",
+      "passed": true,
+      "detail": "clauses: 4; met: 3; reserved and named: 1"
+    },
+    {
+      "id": "V-T41",
+      "what": "the verdict names the version-sharing reservation and does not claim the production identity",
+      "passed": true,
+      "detail": "production identity: RESERVED_TO_GATE_5_7 — not assigned, not invented, and named as a reservation rather than passed"
+    },
+    {
+      "id": "V-T42",
+      "what": "the verdict states each acceptance criterion of this order and marks none of them not met",
+      "passed": true,
+      "detail": "acceptance criteria: 8; not met: 0"
+    },
+    {
+      "id": "V-T43",
+      "what": "the verdict records the defects found while executing this order, and records no behavioural defect in the evaluator",
+      "passed": true,
+      "detail": "defects recorded: 4; evaluator defects: 0"
+    },
+    {
+      "id": "V-T44",
+      "what": "the verdict keeps the corpus-wide state separate and claims no corpus-wide pass",
+      "passed": true,
+      "detail": "5.6: NOT MET IN FULL FOR THIS SCOPE — three clauses met, the version-sharing clause reserved and named; unpassed corpus-wide; 5.7: NOT REACHED; 0 admitted governed rules, 0 permitted findings"
+    },
+    {
+      "id": "V-T45",
+      "what": "the order issues no next order, and keeps the Gate 5.7 draft clearly marked not issued and not begun",
+      "passed": true,
+      "detail": "order issued: False; draft issued: False; draft begun: False"
+    },
+    {
+      "id": "V-T46",
+      "what": "the recorded blocker is the same blocker the verdict names",
+      "passed": true,
+      "detail": "blocker: a production admission identity and a production version string for the governed rule record"
+    },
+    {
+      "id": "V-T47",
+      "what": "the record does not ask the owner to assign a production version in order to satisfy the criterion",
+      "passed": true,
+      "detail": "ask-avoidance recorded: 3"
+    },
+    {
+      "id": "V-T48",
+      "what": "the superseded Gate 5.6 draft of PHASE5-001R is recorded as superseded, not hidden",
+      "passed": true,
+      "detail": "state: SUPERSEDED AND RECORDED, NOT HIDDEN — that draft reserved the identifier PHASE5-001S for the Gate 5.6 order; the owner used PHASE5-001S for the blocker-resolution order instead, so this order issues as PHASE5-001T and the draft it replaces is preserved unedited"
+    },
+    {
+      "id": "V-T49",
+      "what": "every builder of this order was re-run and its output is byte-for-byte identical",
+      "passed": true,
+      "detail": "builders re-run: 6; artifacts compared: 7; unstable: 0"
+    },
+    {
+      "id": "V-T50",
+      "what": "no input conflicts with the order's own pin, and none is missing",
+      "passed": true,
+      "detail": "inputs: 52; own-pin matches: 11; conflicts: 0; missing: 0"
+    },
+    {
+      "id": "V-T51",
+      "what": "the difference count between recorded and measured digests is zero, or every difference is a known recorded change",
+      "passed": true,
+      "detail": "differences from a recorded digest: 0"
+    },
+    {
+      "id": "V-T52",
+      "what": "every read-only pointer outside the workspace still matches its recorded pin",
+      "passed": true,
+      "detail": "pointers: 3; mismatching: 0"
+    },
+    {
+      "id": "V-T53",
+      "what": "the custody manifest re-measures clean: every file it lists is still at the digest it recorded, and it does not list itself",
+      "passed": true,
+      "detail": "files: 549; mismatching: 0"
+    }
+  ],
+  "check_count": 53,
+  "failure_count": 0,
+  "failed": [],
+  "verdict": "ALL PHASE5-001T CHECKS PASSED",
+  "checks_are_not_gate_evidence": "these checks verify this order's own artifacts, its tests and its custody. They are not the scope's gate verdict, which is scoped_gate_5_6_verdict.json, and they are evidence for no other gate.",
+  "preservation_reading": {
+    "baseline_files": 527,
+    "files_unchanged": 527,
+    "files_changed": 0,
+    "files_missing": 0,
+    "files_added_by_this_order": 25,
+    "earlier_baselines_overwritten": 0,
+    "earlier_manifests_edited": 0
+  },
+  "artifacts_this_order_wrote": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_consumer_language.cjs",
+      "bytes": 11742,
+      "sha256": "85AE1D085B9F0E34C462CDF9060350FB7053964EBD51F1193A72C145A9D73950"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_fixture_suite.cjs",
+      "bytes": 11951,
+      "sha256": "D25C6634FD8BB7851B22A95D8BCA3D672C5A345F717DF1ACB947FB715F9D6595"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_independent_replay.cjs",
+      "bytes": 20628,
+      "sha256": "DAD32006616CEE05D31DE0925E71137E1076943871DC8890D5230D9C83912501"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_negative_tests.cjs",
+      "bytes": 27269,
+      "sha256": "C6ED8D90843FA8EC7D4A2148F9611F3BFEF7BEA91A578584037B10049E97568A"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_next_order.cjs",
+      "bytes": 8866,
+      "sha256": "313D9C6BD9CA96E58F9C6C1943A676C4BDDBCD52CB34CBF7C27E855574745357"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\build_001t_verdict.cjs",
+      "bytes": 31644,
+      "sha256": "E4CFBB4C434AB9A4DF9D2C218F7AF47B47D16F3AE773AD99B503AE72A51BCD98"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\capture_001t_baseline.ps1",
+      "bytes": 16027,
+      "sha256": "D4ABF850560E18B7D813206E6283584113A7C954424C54C00D0AF8FEB6D0ED91"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\consumer_language_validation_001t.json",
+      "bytes": 35667,
+      "sha256": "8344C641ED6318BA741136F7EEC289A9658E81CDFD2DB6FB2BFD76D6C6B446A6"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+      "bytes": 132232,
+      "sha256": "D0EC65F5FD8DAEF9B4697F1FC436B2ED53D70631FBDD0DD591D9A52918FB61E9"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_catalogue_001t.cjs",
+      "bytes": 49316,
+      "sha256": "366539C5B9D9C38FA4BAB6D39782E99CBDCD0F303CB762E2D0ADF464F8F7BFF1"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixture_suite_001t.json",
+      "bytes": 152419,
+      "sha256": "13DF5E54C144FDB657D9A51BA0B63C44366B1FAAAB07D7208E58DF4856ACDA17"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\fixtures_001t.cjs",
+      "bytes": 5709,
+      "sha256": "54745A1BB214C997062033C0C1D60BA1B1CF4221CAC754CB73463AACD0928DCF"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\independent_replay_001t.json",
+      "bytes": 52073,
+      "sha256": "473176F21866F8EA883979D77C463E306E56AC472B88C8B86DC99A848064C32E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\input_verification.json",
+      "bytes": 29101,
+      "sha256": "14F5512A2222BD9407D49121083583C1CF69B8E074D08B229922FDC7DED0DD76"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\inputs_001t.cjs",
+      "bytes": 6957,
+      "sha256": "BEC1202DC6C26573369B349EA7C13FBECC10408BDA165AAAD242849463ADCCD8"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\negative_tests_001t.json",
+      "bytes": 30136,
+      "sha256": "B75655D633A010BE1AE324FFD883AD79490CA01A156A55AF051A220181DB811E"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\next_work_order.json",
+      "bytes": 11538,
+      "sha256": "A0FFBAA0D86FBD360669E2321653025849F18091C91C348DBFCF56FAB2DACA5B"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\preservation_and_change_record.json",
+      "bytes": 7235,
+      "sha256": "284243DBD35A6B53028187A2EBA82B2C198B1F32F9E9E14A61974A101EC50A62"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\preserved_files_before.json",
+      "bytes": 111780,
+      "sha256": "6AD26B6140F89A914FE264DC359B23F0CF78C20C469E356EEA06CEB7217AD900"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\replay_expectations_frozen.json",
+      "bytes": 49310,
+      "sha256": "DDA0CE253C6BA14CFE166599043405FD2B51B52F376D0C7B2C479A2727A250AA"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\reviewer_001t.cjs",
+      "bytes": 21125,
+      "sha256": "C3268B1E6E41A43838020C771E98CD2EE93A169938C10008C7915F49A962908C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\scoped_gate_5_6_verdict.json",
+      "bytes": 39460,
+      "sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\verify_and_manifest_001t.ps1",
+      "bytes": 41967,
+      "sha256": "B9CAACB604A67453D11DE6D9931C5DA46DA5E0AB32CB627BC117DD89B9CE2F0F"
+    }
+  ],
+  "harness_summary_records": [
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\preservation_and_change_record.json",
+      "sha256": "284243DBD35A6B53028187A2EBA82B2C198B1F32F9E9E14A61974A101EC50A62"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\file_custody_manifest.json",
+      "sha256": "D0EC65F5FD8DAEF9B4697F1FC436B2ED53D70631FBDD0DD591D9A52918FB61E9"
+    },
+    {
+      "relative_path": "SOURCE_CAPTURES\\PHASE5-001T\\verification_results.json",
+      "note": "written last by this same harness; its own digest is measured from the file rather than self-recorded"
+    }
+  ],
+  "the_scope_verdict_this_order_reached": {
+    "record": "SOURCE_CAPTURES\\PHASE5-001T\\scoped_gate_5_6_verdict.json",
+    "sha256": "86886EDBDCF6F13A29B1E10A031339FEB1A6C766D11D599DE0505B03DE4AC94C",
+    "gate_criteria_met": 3,
+    "gate_criteria_reserved_and_named": 1,
+    "verdict": "PASSED_FOR_THIS_SCOPE ON THE THREE CRITERIA THIS SCOPE CAN MEET — WITH THE VERSION-SHARING CRITERION RESERVED AND NAMED AS NOT SATISFIED: GATE 5.6 IS NOT MET IN FULL FOR THIS SCOPE, AND PROGRESSION TO GATE 5.7 IS NOT PERMITTED BY THE PLAN UNTIL THE NAMED RESERVATION IS RESOLVED"
+  },
+  "corpus_wide_status_kept_separate": {
+    "5.1": "MET with recorded administrative limitations; unchanged",
+    "5.2": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.3": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.4": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only",
+    "5.5": "NOT PASSED corpus-wide; PASSED_FOR_THIS_SCOPE only, in SOURCE_CAPTURES\\PHASE5-001S\\scoped_gate_5_5_verdict_successor.json",
+    "5.6": "NOT MET IN FULL FOR THIS SCOPE — three clauses met, the version-sharing clause reserved and named; unpassed corpus-wide",
+    "5.7": "NOT REACHED; 0 admitted governed rules, 0 permitted findings"
+  },
+  "what_this_record_does_not_claim": [
+    "it is not the scope's gate verdict and it passes no gate",
+    "it does not admit a rule, create coverage or a candidate, or authorise a finding class",
+    "it does not produce consumer-visible output of any class: report checking remains \"not yet available\"",
+    "it does not run, re-run or invoke the PHASE5-001I-A internal suite, and it treats no passing test of that suite as evidence",
+    "it does not conform, modify or adopt the internal comparator of PHASE5-001I-A",
+    "it does not repair or deny the historical preservation failure of PHASE5-001R, which is reported separately from this order's own preservation result",
+    "it does not decide the effective period, the exception or the anniversary-boundary question",
+    "it does not assign the production rule version, and it does not ask the owner to assign it in order to satisfy a gate criterion"
+  ],
+  "created_by": "PHASE5-001T"
+}

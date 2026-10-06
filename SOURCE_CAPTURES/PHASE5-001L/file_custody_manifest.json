@@ -1,0 +1,42 @@
+[
+  {
+    "file": "CRP_PHASE5_001L_DUPLICATE_AND_COUNT_RECONCILIATION.md",
+    "bytes": 30181,
+    "sha256": "36549fb3b9b5c723039e657dcf17e3b4b2f25b3d8ff1b3781c56d265d309937a"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/input_inventory.json",
+    "bytes": 56579,
+    "sha256": "13301e6d545fce322d770237a31be01b84ca675dbdd579645835c2a6c0e204e5"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/duplicate_relations.json",
+    "bytes": 1199309,
+    "sha256": "e14596b04f97f3525069722681ef414dcbd2db8f6b7e63ded5abe9d8b9c04896"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/duplicate_determinations.csv",
+    "bytes": 182971,
+    "sha256": "91c044289c8bf1fd73bdfb45159234d4889fa1d7aa7f2647c45a7b2a5af4b267"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/duplicate_identity_analysis.json",
+    "bytes": 29816,
+    "sha256": "30e3c215b8639143c3ab933574cefe20c460de0a101858d2192e620a5e575bf7"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/b20_basis_search.json",
+    "bytes": 16022,
+    "sha256": "6ef747c7f71feb30f711a65f073bebb45ab2ee50029471c1de83873aba1d081c"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/preservation_recheck.json",
+    "bytes": 6985,
+    "sha256": "8e2b861d2b334c11b32595c070815b1b23143394718725d34e645af878df19af"
+  },
+  {
+    "file": "SOURCE_CAPTURES/PHASE5-001L/gate_5_1_requirement_reassessment.json",
+    "bytes": 8027,
+    "sha256": "2efc68d53d5265e894a35291aac88e0e391d5a27a027f895eba506b579e70c7e"
+  }
+]

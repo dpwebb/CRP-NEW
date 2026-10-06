@@ -1,0 +1,60 @@
+{
+  "artifact": "scoped_count_recomputation.json",
+  "work_order": "PHASE5-001N",
+  "step": "step 8 - recompute the scoped relation and cluster totals and explain their limited effect on the provisional corpus count",
+  "created_utc": "2026-09-30",
+  "scope_of_this_recomputation": "the twenty-five unresolved relation records, the fifteen member rows and the six clusters only. It is not a corpus-wide count, and no final unique-legal-provision count is claimed or inferred from it.",
+  "inputs_and_their_recorded_values": {
+    "relation_records_total": 2358,
+    "identical_before": 16,
+    "distinct_before": 2317,
+    "unresolved_before": 25,
+    "rows_in_the_register": 437,
+    "rows_before": {"identical": 22, "unresolved": 15, "distinct": 54, "no_duplicate_relationship": 346},
+    "demonstrable_excess_rows_recorded_by_001l": 12,
+    "prior_max_further_excess_if_every_unresolved_cluster_were_one_provision": 9
+  },
+  "scoped_outcome": {
+    "relation_records": {"identical": 2, "distinct": 22, "unresolved": 1, "total": 25},
+    "pairs": {"total": 15, "identical_instrument_level": 2, "distinct": 12, "unresolved": 1, "pairs_that_were_unresolved_and_are_now_determined": 14},
+    "clusters": [
+      {"cluster": "0315/0316/0317/0318/0320", "rows": 5, "pairs": 10, "outcome": "all ten pairs DISTINCT - five different FCAC retention items, not one provision", "prior_max_excess": 4, "excess_now": 0},
+      {"cluster": "0149/0150", "rows": 2, "pairs": 1, "outcome": "DISTINCT - two limbs of W. Va. Code section 55-2-6", "prior_max_excess": 1, "excess_now": 0},
+      {"cluster": "0165/0166", "rows": 2, "pairs": 1, "outcome": "DISTINCT - two limbs of N.Y. Gen. Bus. Law section 380-j(f)(1)(ii)", "prior_max_excess": 1, "excess_now": 0},
+      {"cluster": "0409/0411", "rows": 2, "pairs": 1, "outcome": "IDENTITY_UNRESOLVED - exact missing fact named", "prior_max_excess": 1, "excess_now": "up to 1, unproven"},
+      {"cluster": "0336/0349", "rows": 2, "pairs": 1, "outcome": "IDENTICAL at instrument level; neither row records a provision", "prior_max_excess": 1, "excess_now": "0 at provision level; 1 instrument reference if instrument references were counted, which this order does not do"},
+      {"cluster": "0337/0351", "rows": 2, "pairs": 1, "outcome": "IDENTICAL at instrument level; neither row records a provision", "prior_max_excess": 1, "excess_now": "0 at provision level; 1 instrument reference if instrument references were counted, which this order does not do"}
+    ],
+    "excess_reconciliation": "of the nine rows previously carried as possible further excess, six are now determined distinct so they are not excess at all, two are instrument-level pairs with no provision-level excess, and one remains unresolved as up to one provision."
+  },
+  "corpus_wide_arithmetic_carried_forward": {
+    "status": "BOOKKEEPING ONLY - NOT A CERTIFIED COUNT",
+    "relation_records_after_this_order": {"identical": 18, "distinct": 2339, "unresolved": 1, "total": 2358, "sum_check": "18 + 2339 + 1 = 2358 - MATCH"},
+    "row_classification_after_this_order": {"identical": 26, "unresolved": 2, "distinct": 63, "no_duplicate_relationship": 346, "sum_check": "26 + 2 + 63 + 346 = 437 - MATCH", "note": "the thirteen rows whose unresolved relations are now all determined move as follows: four to identical (0336, 0349, 0337, 0351 at instrument level) and nine to distinct (0315, 0316, 0317, 0318, 0320, 0149, 0150, 0165, 0166); 0409 and 0411 stay unresolved"},
+    "bookkeeping_bounds": {
+      "upper": "437 - 12 = 425, unchanged",
+      "lower_variant_a": "425 - 1 = 424, if the CRAIN pair is one provision and the two instrument-level pairs contribute no provision",
+      "lower_variant_b": "425 - 1 - 1 - 1 = 422, if the CRAIN pair and each instrument-level pair were each one provision",
+      "meaning": "two unproven lower variants, not a single value; neither is a certified count and neither may be published"
+    },
+    "coincidence_warnings": [
+      "the value 424 is numerically equal to the recorded-descriptor measure 'distinct_instrument_provision_keys 424' recorded by PHASE5-001L. The two quantities are unrelated and their equality is a coincidence of arithmetic, not agreement, corroboration or identity.",
+      "the earlier value 416 is no longer produced by any bookkeeping variant in this order, so the warning attached to 416 in PHASE5-001L and PHASE5-001M does not transfer to 424 or 422. The register's own 416 UNRESOLVED rows are unchanged and remain a register count, unrelated to any figure here."
+    ]
+  },
+  "what_this_recomputation_does_not_do": [
+    "it does not produce the corpus-wide unique-legal-provision count required separately by the amended Phase 5.1 bullet 3 and the Corpus Contract section 6 - that count needs its own pass over all 437 rows, including the ten demonstrably identical clusters (12 excess rows) and the 346 rows with no duplicate relationship",
+    "it does not revisit the 2317 relations that PHASE5-001L determined distinct, which are carried forward as recorded",
+    "it does not resolve whether the two instrument-level pairs contribute anything to a legal-provision count, because neither row records a provision",
+    "it does not measure or certify the corpus candidate count, coverage or findings, and it changes no disposition"
+  ],
+  "measured_count_indicators_unchanged": {
+    "distinct_full_record_keys": 435,
+    "distinct_instrument_provision_version_locator_keys": 433,
+    "distinct_instrument_provision_keys": 424,
+    "distinct_001K_legal_provision_keys": 429,
+    "note": "recorded-descriptor measures as recorded by PHASE5-001L; this order changes none of them and certifies none of them"
+  },
+  "provisional_unique_provision_statement": "after this order the only cluster that still prevents a scoped count from closing is the CRAIN pair. That does not make a corpus count possible: the step that would produce it is named as the single next bounded prerequisite in the narrative and in gate_5_1_assessment.json.",
+  "created_by": "PHASE5-001N"
+}

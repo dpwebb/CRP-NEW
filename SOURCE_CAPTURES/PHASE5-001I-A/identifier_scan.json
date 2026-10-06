@@ -1,0 +1,869 @@
+{
+  "artifact": "identifier_scan.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "purpose": "prove by measurement that this order copied no report content and no consumer identifier into this repository, and that the scan itself stores none",
+  "derivation": {
+    "specimen_name_source": "read at run time from the PROD-003 register presentation record",
+    "bureau_vocabulary_size": 6,
+    "consumer_name_candidate_count": 2,
+    "consumer_name_candidate_sha256s": [
+      "07D046D5FAC12B3F82DAF5035B9AAE86DB5ADC8275EBFBF05EC83005A4A8BA3E",
+      "A64C4CD79A1846EEB16F81040393EB36271577B03F4D996E5A5E741D565E840E"
+    ],
+    "note": "the bureau vocabulary is subtracted so a bureau name is not reported as a consumer name; nothing else is subtracted"
+  },
+  "patterns": [
+    "EMAIL_ADDRESS",
+    "PHONE_NUMBER",
+    "POSTAL_CODE_CA",
+    "LONG_DIGIT_RUN"
+  ],
+  "structural_exemptions": [
+    "SHA256_DIGEST_RECORD",
+    "PDF_XREF_TABLE",
+    "PDF_OBJECT_TABLE",
+    "TEST_CLOCK_STUB",
+    "INVENTORY_BYTE_COUNT"
+  ],
+  "files_scanned": 50,
+  "classified_non_findings": [
+    {
+      "path": "internal-validation\\ca-ns-last-payment-six-year\\synthetic\\make-synthetic-pdf.cjs",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "PDF_XREF_TABLE",
+      "matched_digits": 10
+    },
+    {
+      "path": "internal-validation\\ca-ns-last-payment-six-year\\tests\\sections\\a-pinned.cjs",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "TEST_CLOCK_STUB",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\file_custody_manifest.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\inherited_chain_readings.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preservation_and_change_record.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 14
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 14
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 14
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 14
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 16
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 15
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 14
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 17
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\preserved_files_before.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 10
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\scan_001i_a_identifiers.cjs",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "TEST_CLOCK_STUB",
+      "matched_digits": 13
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 12
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\test_results_001i_a.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 11
+    },
+    {
+      "path": "SOURCE_CAPTURES\\PHASE5-001I-A\\validation_results.json",
+      "rule": "LONG_DIGIT_RUN",
+      "classification": "SHA256_DIGEST_RECORD",
+      "matched_digits": 9
+    }
+  ],
+  "findings": [],
+  "finding_count": 0,
+  "verdict": "NO REPORT CONTENT AND NO CONSUMER IDENTIFIER FOUND IN ANY FILE THIS ORDER WROTE"
+}

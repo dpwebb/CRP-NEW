@@ -1,0 +1,32 @@
+{
+  "artifact": "amendment_application_result.json",
+  "work_order": "PHASE5-001I-A",
+  "created_utc": "2026-09-30",
+  "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+  "digest_before": "C80183314C04DF9176CDAB4562A7F81D49D7E624ABD58B4239648CB32E2E9CAD",
+  "digest_after": "54FCECE0A19F9B3D2D8BF6D2981A074DA84C2500294E56E047B3C218697F3FC0",
+  "document_changed": true,
+  "document_changed_in_this_run": true,
+  "line_endings": "LF preserved",
+  "document_state": "OWNER_AUTHORIZED_INTERNAL_VALIDATION_CARVE_OUT_RECORDED_IN_THE_DOCUMENT",
+  "results": [
+    {
+      "id": "A-1",
+      "clause": "section 3, the ordering sentence that opens the gate sequence",
+      "action": "APPLIED",
+      "occurrences_found": 1
+    },
+    {
+      "id": "A-2",
+      "clause": "section 4, item 5 (deterministic fact/evaluator specification and implementation)",
+      "action": "APPLIED",
+      "occurrences_found": 1
+    },
+    {
+      "id": "A-3",
+      "clause": "section 8, Amendment History, appended row",
+      "action": "APPLIED"
+    }
+  ],
+  "verdict": "AMENDMENTS APPLIED — the owner-authorized internal-validation carve-out is recorded by the amendment procedure, and no gate is changed"
+}

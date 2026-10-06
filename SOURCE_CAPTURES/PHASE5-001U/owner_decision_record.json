@@ -1,0 +1,123 @@
+{
+  "artifact": "owner_decision_record.json",
+  "work_order": "PHASE5-001U",
+  "created_utc": "2026-10-01",
+  "document_type": "OWNER DECISION RECORD — the owner instrument this order carries, quoted, with the two decisions read from it and the exact limits of each",
+  "purpose": "record the authority this order acts under verbatim, so that the amendment it applied and the admission it executes can be read against the instrument that authorised them, and so that neither can be read past its limits",
+  "the_instrument_this_order_carries": {
+    "owner_instrument_verbatim": "Complete PHASE5-001U: run and confirm the authored Gate 5.6 remeasurement harness passes all four scoped criteria, then stage the successor scoped verdict and, if all four pass, the reserved Gate 5.7 admission of rule unit CA-NS-CRA-S10-3-C-LIMB-1.",
+    "what_it_authorises": [
+      "the re-measurement of the four scoped Gate 5.6 criteria from the live artifacts, at their measured digests",
+      "the staging of the successor scoped Gate 5.6 verdict, for this one scope only",
+      "the reserved Gate 5.7 admission of the rule unit CA-NS-CRA-S10-3-C-LIMB-1, if and only if all four scoped Gate 5.6 criteria pass"
+    ],
+    "the_amendment_authority_it_carries": "the owner-authorised amendment of the Gate 5.6 pre-admission sharing sentence, recorded in amendment_text.json and amendment_application_result.json, whose replacement text is applied under owner authority PHASE5-001U",
+    "what_it_does_not_authorise": [
+      "it names no finding class for the admitted unit",
+      "it does not authorise consumer-visible output of any class, an application change, a deployment or an external transmission",
+      "it does not authorise the admission of any other rule unit, jurisdiction, limb or presentation",
+      "it does not authorise a change to statutory text or the conversion of a probable result into a violation"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "OWNER-DECISION-1",
+      "title": "THE VERSION-SHARING READING",
+      "the_conflict_it_settles": "the sequencing reservation PHASE5-001T recorded: Gate 5.6 criterion 4 requires the rule corpus, the crosswalk, the tests and the explanation templates to share the same immutable versions, the governed rule record carries rule_version RESERVED_TO_GATE_5_7, and Gate 5.7 is the only step that assigns a production identity and a production version string — so the criterion could not be satisfied before the step it gates",
+      "the_decision_recorded": "for a scope whose governed rule record Gate 5.7 has not yet admitted, the sharing condition is measured against the shared, verified, immutable pre-admission version identity of the artifacts the scope reads and writes, each at an immutable digest; that condition is met or not met before any production identity exists, and the production identity and version remain a Gate 5.7 assignment",
+      "where_the_decision_lives": {
+        "instrument": "the PHASE5-001U instruction quoted above, whose amendment authority is stated in the applied clause itself",
+        "amendment_applied": "A-U-1",
+        "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+        "document_rank": "5 — Approved Build Plan",
+        "digest_before_this_order": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+        "digest_after_the_amendment": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+        "digest_measured_now": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+        "digest_now_equals_digest_after": true,
+        "application_result": "SOURCE_CAPTURES\\PHASE5-001U\\amendment_application_result.json at 85254FD53190BDE1C09C5AF4769328A8EA39F839F81E224450C5D8FB5F7D715F"
+      },
+      "what_it_authorises": [
+        "the measurement of Gate 5.6 criterion 4 for this scope against the shared pre-admission version identity together with the immutable digests of the rule record, the crosswalk, the tests and the explanation templates",
+        "a scoped Gate 5.6 verdict that records the sharing condition against that identity and names the production reservation beside it"
+      ],
+      "what_it_expressly_does_not_do": [
+        "it does not assign a production identity or a production version string: Gate 5.7 remains the only step that does, and this order executes that step only because all four scoped Gate 5.6 criteria pass on the measurement",
+        "it does not treat the reservation, the existence of the amended clause, or the prospect of a later assignment as evidence that sharing holds",
+        "it does not remove any requirement from the Gate 5.6 sentence, from any other gate, or from any other clause of the plan: the amendment is a quoted extension whose replaced text survives verbatim",
+        "it does not pass Gate 5.6 by itself: the clause records which measurement satisfies the sharing condition, and the criteria are measured separately in scoped_gate_5_6_verdict_successor.json"
+      ],
+      "measured_under_it_in_this_order": [
+        "the four clauses were re-measured from the live artifacts: 4 of 4 met, 0 not met, 0 problems found in the re-measurement",
+        "the sharing condition was measured against CA-NS-CRA-S10-3-C-LIMB-1@PRE-ADMISSION-C24CA3FD3AA3 with the rule record at C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+        "production identity strings found in the measured artifacts before the Gate 5.7 assignment: 0"
+      ]
+    },
+    {
+      "id": "OWNER-DECISION-2",
+      "title": "THE SCOPE ADMISSION AND THE FINDING-CLASS CEILING",
+      "the_instrument": "the PHASE5-001U instruction quoted above: the reserved Gate 5.7 admission of rule unit CA-NS-CRA-S10-3-C-LIMB-1, conditional on all four scoped Gate 5.6 criteria passing",
+      "the_condition_it_was_given": "all four scoped Gate 5.6 criteria pass",
+      "the_condition_measured_now": "SATISFIED — all 4 criteria are met on this re-measurement, with no problem reported, so the admission proceeds",
+      "what_it_authorises": [
+        "the rule-corpus amendment this order records, containing this one rule at its immutable ID, its assigned version and its full provenance",
+        "the formal admission of this one rule unit, for this one scope only, in this order's admission record",
+        "the assignment of the production admission identity and the production version string to that one rule record, which is the reservation Gate 5.6 named"
+      ],
+      "the_finding_class_decision": {
+        "state": "WITHHELD — NO FINDING CLASS IS AUTHORISED",
+        "why_this_is_read_rather_than_chosen": "the instrument this order carries authorises the admission and names no finding class. The reserved draft order this admission executes carries the stop condition \"if the owner withholds the finding-class decision, the rule record is admitted at the observation ceiling and the limitation is recorded rather than filled\". The condition is met as the draft order requires; it is not filled.",
+        "the_ceiling_therefore_recorded": "OBSERVATION_CLASS_ONLY — the ceiling the governed rule record itself retains, unchanged, at SOURCE_CAPTURES\\PHASE5-001Q\\rule_record.json",
+        "what_it_does_not_do": [
+          "it does not authorise VIOLATION in any circumstance",
+          "it does not authorise PROBABLE_VIOLATION in any circumstance",
+          "it does not adopt the PROD-003 crosswalk proposal of PROBABLE_VIOLATION, which the rule record itself records as proposed and not adopted"
+        ]
+      },
+      "what_it_expressly_does_not_do": [
+        "it does not change statutory text and does not turn a probable result into a violation",
+        "it does not authorise the emission of any finding class, and it authorises no consumer-visible output of any class",
+        "it does not integrate anything into the application, deploy anything or transmit anything: release remains a separate product and deployment decision",
+        "it does not decide the effective period, the direct-report contract section 4 retention exception, the anniversary-boundary question, the comparison reference date or the printed-field question: each stays carried in the admitted record at its own recorded state",
+        "it does not clear the register disposition of the admitted source entry: that row's clearing authority is an authorised evidence route for the report representation together with owner direction",
+        "it admits no rule for any other scope, jurisdiction, limb or presentation, and it does not advance the corpus-wide queue"
+      ],
+      "measured_under_it_in_this_order": [
+        "the amendment records 1 quoted replacement and 1 amendment-history row, and it is extension-only: requirement removed = false",
+        "the finding classes authorised recorded by this order: none, and the observation-class ceiling is recorded in counts_001u.json and in scoped_gate_5_7_verdict.json"
+      ]
+    }
+  ],
+  "decision_count": 2,
+  "clause_as_the_document_now_stands": {
+    "document": "CRP_PHASE5_STATUTE_CERTIFICATION_AND_FINDING_AUTHORIZATION_BUILD_PLAN.md",
+    "document_rank": "5 — Approved Build Plan (authority order: CRP_CORE_CONSTITUTION.md section 2)",
+    "clause": "section 3, Gate 5.6 (the pre-admission immutable-version sharing sentence, as extended by PHASE5-001S A-4)",
+    "line": 171,
+    "text_now_verbatim": "",
+    "replacement_text_quoted_by_this_record": "the production admission identity and version remain reserved to Gate 5.7, and a scoped Gate 5.6 verdict must name that reservation rather than treat the condition as satisfied by it. The reservation is a Gate 5.7 assignment, not a Gate 5.6 measurement. Under owner authority PHASE5-001U, the sharing condition for such a scope is the condition that the governed rule record the scope reads, the source crosswalk, the tests and the explanation templates it reads and writes are each pinned to one shared, verified, immutable pre-admission version identity, each at an immutable digest; that condition is measurable, and is met or not met, before Gate 5.7 has assigned any production identity. A scoped Gate 5.6 verdict therefore records the sharing condition against that shared pre-admission version identity and names the production reservation beside it, and it may not treat the reservation, the existence of this clause, or the prospect of a later assignment as evidence that sharing holds. Gate 5.7 remains the only step that assigns a production identity and a production version string, the requirement to name the reservation is unchanged, and no gate is passed by this clause alone.",
+    "replaced_text_quoted_by_this_record": "the production admission identity and version remain reserved to Gate 5.7, and a scoped Gate 5.6 verdict must name that reservation rather than treat the condition as satisfied by it.",
+    "replacement_text_occurrences_in_the_document_now": 1,
+    "replaced_text_occurrences_in_the_document_now": 1,
+    "requirement_removed": false,
+    "extension_only": true,
+    "amendment_history_rows_this_order_appended": 1
+  },
+  "what_neither_decision_does": [
+    "neither decision creates coverage in the application, a candidate or a finding class",
+    "neither decision produces consumer-visible output of any class: report checking remains \"not yet available\"",
+    "neither decision amends any document other than the one plan the amendment names",
+    "neither decision changes an earlier verdict, manifest, baseline, register row or the governed rule record itself"
+  ],
+  "fixed_state_read_at_run_time": {
+    "plan_digest_before_this_order": "1A7E7EA015FCF270496B915B940F8C96C4D7905CAAD22615BBD29965D040CA50",
+    "plan_digest_now": "969585C83A67FF4724DA4B202148C5218FE9CE07ECE6ED7794FA46D839519A24",
+    "plan_bytes_before": 38651,
+    "plan_bytes_now": 41267,
+    "plan_amended_by_this_order": true,
+    "plan_amendments_recorded": 2,
+    "rule_record_digest": "C24CA3FD3AA38FC7C789BD29D91EAC36DCA989DE5AAD923CF88D2AEAC401F023",
+    "rule_record_admission_form_at_read_time": "RESERVED_TO_GATE_5_7",
+    "crosswalk_entry_this_scope_is_bound_to": "PROD-003-SELECTED-1"
+  },
+  "created_by": "PHASE5-001U"
+}
