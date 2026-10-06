@@ -55,19 +55,19 @@ const SECURITY_HEADERS = Object.freeze({
 const CHECK_CLASSES = Object.freeze({
   statutory_rule_comparison: {
     is_a_statutory_check: true,
-    plain: 'A recorded provision of law compared with a date your report prints. It reports whether the period it measures has elapsed. It is not a statement that anything was reported unlawfully.'
+    plain: 'A rule for where you live, compared with a date your report prints. It shows whether the time the rule measures has passed. It does not say that anything in your report was reported unlawfully.'
   },
   report_fact_consistency: {
     is_a_statutory_check: false,
-    plain: 'A comparison of two things your report itself prints. A difference it reports is a difference, not a finding, and it names no law.'
+    plain: 'A comparison of two things your own report prints. If they differ, we show you the difference. It is not a finding, and it names no law.'
   },
   printed_policy_observation: {
     is_a_statutory_check: false,
     label: 'PRINTED_POLICY_OBSERVATION_NOT_A_STATUTORY_FINDING',
-    plain: 'A comparison of a statement your report makes about itself with a date it prints. It names no statute and no finding.'
+    plain: 'A comparison of something your report says about itself with a date it prints. It names no law and is not a finding.'
   },
-  never_summed: 'A factual or policy observation is never added to a statutory comparison and never reported as one.',
-  no_issue_found_means: 'Only that the checks that ran found none of the things they look for. It does not mean the report is correct, and it does not mean every possible legal issue was checked.'
+  never_summed: 'Rule checks and factual checks are always counted and shown separately. A factual check is never counted as a rule check.',
+  no_issue_found_means: 'We did not find a reporting issue in the information we could review. That does not mean your whole report is correct, and it does not mean we checked every possible rule.'
 });
 
 const STATIC_TYPES = Object.freeze({
@@ -225,7 +225,7 @@ function loadJurisdictionSurface() {
         availability: availabilityFor(currentRow)
       };
     }),
-    note: 'Selection is explicit. No jurisdiction is advertised as launch ready by this build, and what each region can actually read and check is reported before you upload anything.',
+    note: 'You choose the place your report is assessed for. We tell you what we can read and check for that place before you upload anything.',
     /* B4 item 7: the supported countries, bureaus, formats, checks and limitations, before payment and upload. */
     presentations: formats.listSupportedFormats(),
     presentation_scope: formats.presentationScope(),
@@ -249,30 +249,29 @@ function loadJurisdictionSurface() {
  */
 function availabilityFor(row) {
   if (row.working_assessment === true) {
-    const families = (row.supported_format_families || []).join(', ') || 'a supported format';
     const statutory = Number(row.executable_checks || 0);
     const factual = Number(row.factual_checks || 0);
     const policy = Number(row.policy_observations || 0);
     const parts = [];
-    if (statutory) parts.push(`${statutory} recorded rule comparison${statutory === 1 ? '' : 's'}`);
-    if (factual) parts.push(`${factual} factual observation${factual === 1 ? '' : 's'} about what your report prints`);
-    if (policy) parts.push(`${policy} policy observation${policy === 1 ? '' : 's'} taken from a statement your report makes about itself`);
+    if (statutory) parts.push(`${statutory} rule check${statutory === 1 ? '' : 's'}`);
+    if (factual) parts.push(`${factual} factual check${factual === 1 ? '' : 's'} about what your report prints`);
+    if (policy) parts.push(`${policy} check${policy === 1 ? '' : 's'} on what your report says about itself`);
     return {
       state: 'SUPPORTED',
-      plain: statutory
-        ? 'Relevant reporting requirements are available for this selection. We apply the checks supported by the readable information in your report.'
+      plain: parts.length
+        ? `For where you live we can run ${parts.join(', ')}.`
         : 'We review the readable information in your report for supported reporting errors.'
     };
   }
   if (row.format_path_for_the_market === 'REGISTERED_FOR_THE_MARKET') {
     return {
       state: 'FORMAT_AVAILABLE_NO_CHECK',
-      plain: 'A report format is registered for this country, but no check is ready for this selection, so nothing would be run.'
+      plain: 'We can read reports in this layout, but no check is ready for the place you picked yet. Pick another place, or contact support and we will tell you when it is ready.'
     };
   }
   return {
     state: 'NO_REPORT_FORMAT',
-    plain: 'No report format is supported for this country yet, so a report could not be read for this selection.'
+    plain: 'We cannot read reports from this country yet, so we cannot check one here. Nothing is charged, and you can pick another place.'
   };
 }
 

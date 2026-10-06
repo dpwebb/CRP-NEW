@@ -282,9 +282,8 @@ function renderJurisdiction(panel) {
     <button class="primary" id="open">Open a case for this selection</button>
     <button class="secondary" id="refresh">Reload my cases</button>
     ${coverage(options.find((r) => r.value === (el('region') ? el('region').value : '')))}
-    <div class="note">No region is advertised as launch ready here. A case can be opened for any of the 82
-    canonical regions, and what this build can actually read and check for the region you pick is stated above,
-    before you upload anything.</div>
+    <div class="note">You can open a case for any of the 82 regions. What we can read and check for the one you
+    pick is shown above, before you upload anything.</div>
     <h2>Your cases</h2>
     ${state.cases.length
       ? `<ul class="plain">${state.cases.map((c) => `<li><code>${esc(c.region)}</code> · ${esc(regionLabel(c.country, c.region))} · status ${esc(c.status)} <button class="secondary" data-open="${esc(c.case_id)}">Open</button></li>`).join('')}</ul>`
@@ -484,11 +483,11 @@ function resultBlock(result, demo) {
       <p class="evidence">${esc(o.qualification)}</p>
     </div>`).join('');
 
-  /* What the report prints, set against itself. Its own group, its own label: a factual observation is never
-     shown as a rule comparison, and a policy observation is never shown as a statutory finding. */
+  /* What the report prints, set against itself. Its own group and its own label: a report-against-report
+     comparison is never shown as a rule check, and never as a finding. */
   const factual = (result.report_consistency_checks || []).map((c) => `
     <div class="obs">
-      <span class="pill">${c.check_class === 'PRINTED_POLICY_OBSERVATION' ? 'POLICY OBSERVATION — YOUR REPORT\'S OWN STATEMENT, NOT A STATUTORY FINDING' : 'REPORT CONSISTENCY — NOT A LEGAL FINDING'}</span>
+      <span class="pill">${c.check_class === 'PRINTED_POLICY_OBSERVATION' ? 'WHAT YOUR REPORT SAYS ABOUT ITSELF — NOT A FINDING' : 'REPORT CONSISTENCY — NOT A FINDING'}</span>
       <h3>${esc(c.headline)}</h3>
       ${c.detail ? `<p>${esc(c.detail)}</p>` : ''}
       <p class="evidence">Check: <b>${esc(c.check_name || 'not named')}</b> · output level: <b>${esc(c.output_level || 'none')}</b>

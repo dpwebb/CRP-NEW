@@ -135,7 +135,7 @@ function assertFactualSurface(check, result, label, expectStatutory) {
   check.ok(result.report_consistency_checks.every((c) => c.output_level === 'observation'), `${label}: each is capped at an observation`);
   check.ok(result.report_consistency_checks.every((c) => typeof c.qualification === 'string' && c.qualification.length > 0),
     `${label}: each carries its own qualification sentence`);
-  check.ok(result.report_consistency_checks.every((c) => /not a legal finding|not a statutory finding/.test(c.qualification)),
+  check.ok(result.report_consistency_checks.every((c) => /not a finding that a rule was broken/.test(c.qualification)),
     `${label}: and each qualification states in words that it is not a legal or statutory finding`);
   const kinds = result.assessment.kinds;
   check.ok(kinds.includes('REPORT_FACT_CONSISTENCY'), `${label}: the assessment names the factual class`);
@@ -145,7 +145,7 @@ function assertFactualSurface(check, result, label, expectStatutory) {
   check.equal(result.assessment.statutory_checks_performed, result.observations.length, `${label}: and no factual check is counted as statutory`);
   if (!expectStatutory) {
     check.equal(result.assessment.statutory_checks_performed, 0, `${label}: no statutory comparison ran for this selection`);
-    check.match(result.assessment.plain, /no statutory evaluation recorded for this selection/, `${label}: and the assessment says so in words`);
+    check.match(result.assessment.plain, /No rule for where you live was compared/, `${label}: and the assessment says so in plain words`);
   }
   check.equal(result.comprehensive_legal_check, false, `${label}: no comprehensive legal check is implied`);
   for (const observation of result.observations) {
@@ -420,7 +420,7 @@ async function run(t, check) {
   assertFactualSurface(check, ns.result, 'CA-NS', true);
   check.equal(ns.result.observations.length, 2,
     'CA-NS: its last-payment limb produces one comparison per readable entry; the bankruptcy limb waits for a public-record discharge date');
-  check.match(ns.result.assessment.plain, /AND \d+ factual observations/, 'CA-NS: and its assessment states both classes ran');
+  check.match(ns.result.assessment.plain, /and \d+ factual checks about what your report prints/, 'CA-NS: and its assessment states both classes ran');
 
   const perRegion = everyCaRegion(check, on.stored);
   check.equal(Object.keys(perRegion).length, 13, 'all thirteen canonical Canadian selections were evaluated');

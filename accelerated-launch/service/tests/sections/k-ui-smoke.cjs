@@ -107,7 +107,7 @@ const DEMONSTRATION_RESULT = {
     evidence: { section: 'Collections', field: 'Last Payment Date', page: 16, line: 32, account_number_in_report: 1, printed_value: '2015/03/01' },
     output_level: 'observation',
     is_a_finding: false,
-    qualification: 'This is an observation about your report. It is not a legal finding.'
+    qualification: 'This comes from your report. It is not a finding that a rule was broken.'
   }],
   checks_not_run: [],
   checks_unresolved: [],
@@ -214,7 +214,7 @@ async function run(t, check) {
   await tick();
   check.ok(dom.calls.includes('POST /api/accounts'), 'creating an account calls the service');
   check.ok(/Choose your jurisdiction/.test(panel.innerHTML), 'the jurisdiction step then renders');
-  check.ok(/No region is advertised as launch ready/.test(panel.innerHTML), 'and it says no region is ready');
+  check.ok(/You can open a case for any of the 82 regions/.test(panel.innerHTML), 'and it says a case can be opened for any of the 82 regions');
 
   /* Step 2: open a case for an explicit selection. */
   dom.elementById('country').value = 'CA';

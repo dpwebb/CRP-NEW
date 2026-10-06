@@ -4,6 +4,8 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
+**Identity supersession (Batch 24, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §10 at the end of this file — manifest `499F03D6DD46E5C9852EB0765419B39C09E84DECE71B3332F5B1004A19355D5F`, build `crp-v1-499f03d6dd46e5c9`, 81 files in five groups, full local regression **PASS 5422, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`) describe earlier trees and are superseded.
+
 ## 1. Exact candidate identity
 
 | Field | Value |
@@ -165,3 +167,22 @@ Current build: crp-v1-75755118a71c9399. Manifest SHA-256: 75755118A71C93994F85EB
 Deployed to the authorized Hostinger VPS at https://staging.creditregulatorpro.com. Public health confirmed this build, staging environment and test billing mode. A real-browser fictional account selected Alberta and confirmed the active requirements/upload-to-issue-to-selected-packet wording; the obsolete no-statutory/no-check/no-TransUnion-rule statements are absent. No private report or payment was sent to staging. Complete hosted upload/checkout/packet acceptance and production readiness remain separate and pending.
 
 The prior build and private environment/data were backed up before the service switch; activation provenance and rollback location are recorded on the host in /opt/crp-wizard-staging/candidate-activation.json. Only the staging wizard service was changed. No live charge, Git push or production deployment occurred. This current entry supersedes earlier destination-pending and candidate-identity statements.
+
+## 10. Batch 24 — the coordinated plain-text correction and the refreshed candidate identity
+
+Date: October 5 2026 (America/Halifax). Authority: the owner's instruction to correct stale consumer-facing text across **all 82 jurisdictions** as **one** coordinated change, in plain English for a junior-high reader, preserving the Prime Directive and the single approved main-page footer disclaimer.
+
+**What changed (served wording only — no rule, permission, parse, price or scope).** The maintained sources corrected are `accelerated-launch/service/app.cjs` (the 82 per-region availability sentences, the pre-upload note, the three check-class descriptions, the count note and the no-issue sentence), `accelerated-launch/service/results.cjs` (the assessment summary and its qualifications, the per-finding qualifications and the factual-check qualification), `accelerated-launch/service/factual-checks.cjs` (the served headline text of the report-policy comparisons) and `accelerated-launch/service/coverage-matrix.cjs` (the read-support sentence) — plus the **served client tree** `accelerated-launch/service/ui/app.js` and `accelerated-launch/service/ui/index.html` (the pre-upload note, the two on-screen check labels and the "keep rule checks and report-to-report comparisons distinct" principle line). Retired wording: "no statutory evaluation", "nothing would be run", "no jurisdiction is advertised as launch ready", "recorded rule comparison", "factual observation", "policy observation", "is not a statutory finding", "not legal findings", and the "governed rule: deterministic evidence …" explanations.
+
+**Refreshed candidate identity (this is now the current one).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `499F03D6DD46E5C9852EB0765419B39C09E84DECE71B3332F5B1004A19355D5F` |
+| Internal build identity | `crp-v1-499f03d6dd46e5c9` |
+| Covered surface | **81 files in five disjoint groups** — `RUNTIME` **51**, `READER_SUPPORT` **10**, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| Determinism | Regenerated three consecutive times; identical digest each run |
+| Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5422 assertions, 0 failed, 0 skipped** |
+| Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399`; no push and no deploy occurred in this batch |
+
+**New guard.** `accelerated-launch/service/tests/sections/cp-consumer-plain-text.cjs` (25 assertions) reads the live jurisdiction surface for all 82 selections and fails if any of the 82 descriptions, the pre-upload note, the check-class text, the read fallbacks, a finding card or a downloaded packet carries retired wording, an internal term or an over-long sentence — so a regeneration cannot restore the old text.

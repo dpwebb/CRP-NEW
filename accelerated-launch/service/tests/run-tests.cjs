@@ -179,7 +179,9 @@ const SECTION_FILES = [
   'cl-bc-qc-nb-finish.cjs',
   /* BATCH-23 — AU listing reference / overdue amount and the recorded US specimen, real-file extraction. */
   'cn-au-us-ingestion.cjs',
-  'co-canada-upload-delivery.cjs'];
+  'co-canada-upload-delivery.cjs',
+  /* BATCH-24 — the one coordinated plain-text correction across the consumer surface (all 82 jurisdictions). */
+  'cp-consumer-plain-text.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

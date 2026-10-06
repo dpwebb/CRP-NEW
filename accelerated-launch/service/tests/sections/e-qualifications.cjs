@@ -65,7 +65,7 @@ async function run(t, check) {
   check.ok(usResult.checks_not_run.every((c) => typeof c.reason === 'string' && c.reason.length > 0),
     'every check that did not run carries its machine reason for audit');
   check.ok(!JSON.stringify(usResult.observations).includes('605'), 'no FCRA observation was produced');
-  check.ok(/five named report presentations/.test(JSON.stringify(usResult.qualifications)),
+  check.ok(/We have tested this service on five report layouts/.test(JSON.stringify(usResult.qualifications)),
     'and the result states exactly how much read support exists');
 
   /* ---------------------------------------------------------------- regions with no check at all */

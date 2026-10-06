@@ -1,5 +1,8 @@
 # Version 1 staging run sheet — candidate `crp-v1-75755118a71c9399`
 
+**Identity note (Batch 24, October 5 2026) — read before using the table below.** This run sheet describes the **deployed** staging candidate, and staging still serves it: `crp-v1-75755118a71c9399` (manifest `75755118…166A`). The local working tree has since advanced with the coordinated plain-text correction (Batch 24), which changes served wording only — no rule, permission, parse, price or scope. The refreshed local candidate identity is `crp-v1-499f03d6dd46e5c9` (manifest `499F03D6DD46E5C9852EB0765419B39C09E84DECE71B3332F5B1004A19355D5F`, 81 files in five groups, deterministic across three consecutive runs; full local regression **PASS 5422, 0 failed, 0 skipped**). Nothing was pushed or deployed in Batch 24. Run the acceptance journey against the **deployed** identity until an authorized redeploy of the new one; only then set `CRP_BUILD_ID` to `crp-v1-499f03d6dd46e5c9` and re-confirm the digest on the host.
+
+
 Owner/tester sheet. One page. Nothing here requires a secret in chat or in Git.
 
 ## 1. Candidate identity (frozen — do not rebuild before testing)

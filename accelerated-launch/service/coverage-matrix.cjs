@@ -52,10 +52,10 @@ function readSupportQualification() {
   const rows = supportedPresentations();
   const names = rows.map((r) => READ_SUPPORT_LABELS[r.presentation_id] || `one ${r.display_name}`);
   return (
-    `Read support is evidenced for ${numberWord(rows.length)} named report presentations and no others: ` +
+    `We have tested this service on ${numberWord(rows.length)} report layouts: ` +
     names.join(', ') +
-    '. Beyond those, a general intake accepts a plausible credit report from any bureau when it identifies the bureau and prints report-like content, and extracts whatever facts it can read. ' +
-    'A clearly unrelated document and an unreadable report are refused separately, each with its own explanation.'
+    '. For other bureaus we read a report in a general way when we can see which bureau issued it and the page looks like a credit report. ' +
+    'We then use the facts we can read. If a document is not a credit report, or we cannot read it, we say which of the two it is and what to do next.'
   );
 }
 

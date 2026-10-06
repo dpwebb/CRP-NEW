@@ -408,7 +408,7 @@ async function retentionAndDeletion(t, check, evidence) {
   check.ok(/no log record can carry report text/i.test(text), 'and that no report text can reach a log');
   check.ok(/no report, no identifier and no digest/i.test(text), 'and that nothing of the consumer’s appears in a public asset');
   check.equal(Object.keys(policy.json.policy).length, Object.keys(retention.POLICY).length, 'and every recorded policy clause is published');
-  check.ok(/Only that the checks that ran found none/i.test(policy.json.check_classes.no_issue_found_means),
+  check.ok(/We did not find a reporting issue in the information we could review/i.test(policy.json.check_classes.no_issue_found_means),
     'and the three check classes are stated apart, including what “no issue found” means');
 
   /* ACCOUNT DELETION TAKES THE PURCHASE RECORDS WITH IT, AND EVERY SESSION. */

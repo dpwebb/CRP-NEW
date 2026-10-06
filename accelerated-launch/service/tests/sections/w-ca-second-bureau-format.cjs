@@ -460,8 +460,8 @@ async function genuineReportJourney(t, check, specimens) {
   check.equal(result.report_consistency_checks.length, 2, 'and exactly the two TransUnion factual checks are reported');
   check.ok(result.report_consistency_checks.every((c) => c.is_a_finding === false), 'none of them is a finding');
   check.ok(result.report_consistency_checks.every((c) => c.output_level === 'observation'), 'each is capped at an observation');
-  check.ok(result.report_consistency_checks.every((c) => /not a legal finding|not a statutory finding/.test(c.qualification)),
-    'and each qualification says in words that it is not a legal or statutory finding');
+  check.ok(result.report_consistency_checks.every((c) => /not a finding that a rule was broken/.test(c.qualification)),
+    'and each qualification says in words that it is not a finding that a rule was broken');
   check.ok(JSON.stringify(result.observations).includes('Consumer Reporting Act'), 'the result retains the applicable Ontario citation');
 
   const stored = t.service.store.state().files.filter((f) => f.case_id === caseId).pop().extraction;

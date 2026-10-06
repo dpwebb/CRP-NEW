@@ -214,7 +214,7 @@ async function messagingAndRelease(t, check, evidence) {
   check.ok(surface.json.surface.entitlement.plain.startsWith(require('../../payment-provider.cjs').describeProvider(process.env).plain),
     'the surface states the actual configured payment capability before anything is uploaded');
   check.deepEqual(surface.json.surface.paid_actions, PAID_ACTIONS.slice(), 'and names exactly which steps would be paid');
-  check.ok(surface.json.surface.check_classes.no_issue_found_means.startsWith('Only that the checks that ran found none'),
+  check.ok(surface.json.surface.check_classes.no_issue_found_means.startsWith('We did not find a reporting issue'),
     'and says exactly what “no issue found” means');
 
   const formatsView = await t.request('GET', '/api/formats');
@@ -264,11 +264,11 @@ async function draftBoundaryAndRelease(t, check, evidence) {
   check.equal(policy.json.check_classes.statutory_rule_comparison.is_a_statutory_check, true, 'a statutory comparison is named as one');
   check.equal(policy.json.check_classes.report_fact_consistency.is_a_statutory_check, false, 'a factual observation is not');
   check.equal(policy.json.check_classes.printed_policy_observation.is_a_statutory_check, false, 'and neither is a policy observation');
-  check.ok(/never added/.test(policy.json.check_classes.never_summed), 'and the three are never summed');
-  check.ok(results.SET_QUALIFICATIONS.some((line) => /Three kinds of check/.test(line)), 'the result set carries the same separation');
-  check.ok(results.SET_QUALIFICATIONS.some((line) => /never substituted for one another/.test(line)),
+  check.ok(/never counted as a rule check/.test(policy.json.check_classes.never_summed), 'and the three are never summed');
+  check.ok(results.SET_QUALIFICATIONS.some((line) => /more than one kind of check/.test(line)), 'the result set carries the same separation');
+  check.ok(results.SET_QUALIFICATIONS.some((line) => /never mixed together/.test(line)),
     'and says the three are not substituted for each other');
-  check.ok(results.SET_QUALIFICATIONS.some((line) => /neither is a check that passed/.test(line)),
+  check.ok(results.SET_QUALIFICATIONS.some((line) => /neither one ran, and neither one passed/i.test(line)),
     'and that a check which did not run is neither performed nor passed');
 
   const caseId = (await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'CA', region: 'CA-NS' } })).json.case.case_id;

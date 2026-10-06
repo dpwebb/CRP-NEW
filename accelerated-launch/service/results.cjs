@@ -17,15 +17,15 @@ const { readSupportQualification } = require('./coverage-matrix.cjs');
 const issues = require('./issues.cjs');
 
 const SET_QUALIFICATIONS = Object.freeze([
-  'These are observations from your report, not legal findings.',
+  'These come from your own report. They are not findings that a rule was broken.',
   'Only the checks named below were run against your report.',
   'No check of every possible legal issue was made, and none is implied.',
   /* B6-INGEST-001: generated from the registry so the count of named presentations can never drift. */
   readSupportQualification(),
-  'A check can also be reported as not applicable to your report, or as unresolved. Neither is a check that was performed, and neither is a check that passed.',
-  'Three kinds of check are kept apart and never substituted for one another: a recorded rule comparison, a factual observation about two things your report prints, and a policy observation taken from a statement your report makes about itself. Only the last two can run for a selection with no recorded statutory evaluation.',
-  'A factual or policy observation never states that a rule was or was not followed, and a difference it reports is not a finding.',
-  'A date comparison is arithmetic. It does not by itself establish that anything was reported unlawfully.'
+  'A check can also be reported as not applicable to your report, or as unresolved. Neither one ran, and neither one passed.',
+  'We run more than one kind of check. A rule check compares a rule for where you live with what your report prints. A factual check compares two things your report prints. The two are never mixed together.',
+  'A factual check never says that a rule was or was not broken, and a difference it finds is not a finding.',
+  'A date comparison is arithmetic. On its own it does not show that anything was reported unlawfully.'
 ]);
 
 /** Plain language for one adapter result. Never upgrades the state, never adds certainty. */
@@ -125,14 +125,13 @@ function evidenceFrom(record) {
 }
 
 /**
- * One factual check as the consumer surface may show it. It carries its own class, so a policy observation
- * can never be read as a statutory check, and its own qualification sentence, which says in words that no
- * conclusion is drawn from a difference it reports.
+ * One factual check as the consumer surface may show it, with its own plain qualification: the consumer is told
+ * in one short sentence that a difference we show is not a finding.
  */
 function renderFactualCheck(entry) {
   const qualification = entry.check_class === 'PRINTED_POLICY_OBSERVATION'
-    ? 'This is a policy observation taken from a statement your report makes about itself. It is not a statutory finding.'
-    : 'This is a consistency observation about facts your report prints. It is not a legal finding and no conclusion is drawn from it.';
+    ? 'This compares something your report says about itself with a date it prints. It is not a finding that a rule was broken.'
+    : 'This compares two things your report prints. It is not a finding that a rule was broken.';
   return {
     check_class: entry.check_class,
     check_name: entry.title,
@@ -235,9 +234,9 @@ function renderResultSet(input) {
         : null,
       qualification: finding
         ? (finding.classification === 'VIOLATION'
-          ? (finding.content_omission ? 'This is a reporting issue under a governed report-content rule: a judgment entry omits content the rule requires, and that omission is verified from a complete, readable entry on your report.' : (finding.content_inclusion ? 'This is a reporting issue under a governed report-content rule: the report includes content the rule prohibits, verified from a complete, readable entry on your report.' : 'This is a reporting issue under a governed retention rule: every report-determinable fact is resolved and deterministic evaluation establishes that the retained item antedates the report beyond the statutory period.'))
-          : 'This is a probable reporting issue under a governed retention rule: strong deterministic evidence supports a likely issue and one decisive fact is unavailable from a resolved reading of the report.')
-        : 'This is an observation about your report. It is not a legal finding.',
+          ? (finding.content_omission ? 'We found a reporting issue. Your report leaves out information the rules for this place require, and we can see the whole entry that should have carried it.' : (finding.content_inclusion ? 'We found a reporting issue. Your report includes information the rules for this place do not allow, and we can see the whole entry it appears on.' : 'We found a reporting issue. The dates your report prints show that this entry is kept longer than the rules for this place allow.'))
+          : 'This looks like a probable reporting issue. The evidence in your report is strong, but one fact we need is not readable, so we cannot confirm it.')
+        : 'This comes from your report. It is not a finding that a rule was broken.',
       machine: row.machine
     };
   });
@@ -379,19 +378,25 @@ function renderResultSet(input) {
  * clearly when an assessment contains factual checks but no province-specific statutory evaluation, so the
  * sentence is built from what actually ran and never from what the build might have run.
  */
+/**
+ * The plain answer to "what kind of assessment is this?". It is built from what actually ran, never from what the
+ * build might have run, and it is written for a consumer: short sentences, no internal class names.
+ */
 function assessmentPlain(kinds, statutoryCount, factualCount) {
   const has = (kind) => kinds.includes(kind);
   const factual = has('REPORT_FACT_CONSISTENCY') || has('PRINTED_POLICY_OBSERVATION');
+  const rules = `${statutoryCount} rule${statutoryCount === 1 ? '' : 's'}`;
+  const facts = `${factualCount} factual check${factualCount === 1 ? '' : 's'} about what your report prints`;
   if (has('STATUTORY_RULE_COMPARISON') && factual) {
-    return `This assessment contains ${statutoryCount} recorded rule comparison${statutoryCount === 1 ? '' : 's'} AND ${factualCount} factual observation${factualCount === 1 ? '' : 's'} about what your report prints. Those are two different classes of check, and they are reported separately.`;
+    return `We ran ${rules} for where you live, and ${facts}. We report them separately because they are different.`;
   }
   if (factual) {
-    return `This assessment contains ${factualCount} factual observation${factualCount === 1 ? '' : 's'} about what your report prints, and no statutory evaluation recorded for this selection was applied to your report. A factual observation is not a statutory check, and nothing here states that any rule was or was not followed.`;
+    return `We ran ${facts}. No rule for where you live was compared, so nothing here says whether a rule was broken.`;
   }
   if (has('STATUTORY_RULE_COMPARISON')) {
-    return `This assessment contains ${statutoryCount} recorded rule comparison${statutoryCount === 1 ? '' : 's'}, and no factual observation about what your report prints.`;
+    return `We ran ${rules} for where you live. We did not run any factual check about what your report prints.`;
   }
-  return 'No check was performed for this selection, so nothing is implied about this report.';
+  return 'We could not run a check for your selection, so this report says nothing about whether anything in it is wrong.';
 }
 
 /**

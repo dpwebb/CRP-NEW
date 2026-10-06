@@ -587,13 +587,13 @@ function policyOutcome(check, reference, printed, ctx) {
     const first = outside[0];
     return result(check, APPLICABILITY_STATE.APPLICABLE,
       'AN_ENTRY_IS_PRINTED_BEYOND_THE_PERIOD_THE_REPORT_ITSELF_STATES_FOR_ITS_CLASS',
-      `Your report states its own policy: "${first.sentence}" Entry ${first.record_index} prints "${first.anchor_label}" as ${first.anchor_printed_value}, so the period the report states would end on ${first.period_ends_on}, and the report gives its own date as ${first.report_date}. This compares the report's own two printed statements. It is a policy observation and not a statutory finding, and no conclusion is drawn from it.`,
+      `Your report states its own rules: "${first.sentence}" Entry ${first.record_index} prints "${first.anchor_label}" as ${first.anchor_printed_value}, so the period the report states would end on ${first.period_ends_on}, and the report gives its own date as ${first.report_date}. This compares two things your report prints. It is not a finding that a rule was broken.`,
       'AN_ENTRY_IS_PRINTED_BEYOND_THE_PERIOD_THE_REPORT_STATES', AGREEMENT.A_DIFFERENCE_WAS_FOUND,
       { examined, not_examinable: notExaminable, evidence });
   }
   return result(check, APPLICABILITY_STATE.APPLICABLE,
     'EVERY_ENTRY_IS_INSIDE_THE_PERIOD_THE_REPORT_ITSELF_STATES_FOR_ITS_CLASS',
-    `Your report prints its own retention statements, and every entry this build could read falls inside the period the report itself states for its class (${examined.length} entr${examined.length === 1 ? 'y' : 'ies'} checked). This is a policy observation and not a statutory finding.`,
+    `Your report prints its own retention statements, and every entry this build could read falls inside the period the report itself states for its class (${examined.length} entr${examined.length === 1 ? 'y' : 'ies'} checked). It is not a finding that a rule was broken.`,
     'EVERY_ENTRY_IS_INSIDE_THE_PERIOD_THE_REPORT_STATES', AGREEMENT.NO_DIFFERENCE_FOUND,
     { examined, not_examinable: notExaminable, evidence });
 }

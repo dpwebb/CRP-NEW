@@ -30,7 +30,7 @@ async function run(t, check) {
   );
 
   const sentence = coverage.readSupportQualification();
-  check.match(sentence, /five named report presentations/, 'the read-support sentence counts five presentations');
+  check.match(sentence, /We have tested this service on five report layouts/, 'the read-support sentence counts five report layouts');
   check.match(sentence, /TransUnion Canada consumer disclosure/, 'and names the TransUnion Canada family');
 
   const missing = coverage.missingRows();

@@ -123,9 +123,9 @@ async function realJourney(t, check, owner, bytes, region) {
     ['PRINTED_POLICY_OBSERVATION', 'REPORT_FACT_CONSISTENCY'],
     `${region}: and exactly one of them is a printed policy observation`);
   const policy = result.report_consistency_checks.find((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION');
-  check.match(policy.qualification, /not a statutory finding/, `${region}: the policy observation says on its face that it is not a statutory finding`);
-  check.match(result.assessment.plain, /no statutory evaluation recorded for this selection/,
-    `${region}: and the assessment says no statutory evaluation was applied`);
+  check.match(policy.qualification, /not a finding that a rule was broken/, `${region}: the policy comparison says on its face that it is not a finding`);
+  check.match(result.assessment.plain, /No rule for where you live was compared/,
+    `${region}: and the assessment says no rule for this place was compared`);
   check.deepEqual(result.assessment.kinds, ['REPORT_FACT_CONSISTENCY', 'PRINTED_POLICY_OBSERVATION', 'COMMON_ERROR']);
   check.equal(result.report_consistency_checks.filter((c) => c.agreement === 'A_DIFFERENCE_WAS_FOUND').length, 1,
     `${region}: one of the three checks reports a difference between two things the report prints`);
@@ -190,7 +190,7 @@ function realEvidence(check, view, result) {
   check.equal(policy.evidence.policy_statements_printed_by_the_report, 4, 'against the four statements the report prints');
   check.equal(policy.evidence.entries_examined, 5, 'across the five entries those four statements apply to');
   check.ok(policy.evidence.entries_examined >= 1, 'and at least one entry was genuinely compared');
-  check.match(policy.headline, /policy observation and not a statutory finding/, 'and it says so in words to the consumer');
+  check.match(policy.headline, /not a finding that a rule was broken/, 'and it says so in plain words to the consumer');
 
   return {
     records_read: view.records.length,
@@ -297,7 +297,7 @@ function syntheticBranches(check) {
   check.equal(branches.policy_beyond_period.agreement, 'A_DIFFERENCE_WAS_FOUND', 'an entry beyond the stated period is a difference');
   check.equal(branches.policy_beyond_period.check_class, 'PRINTED_POLICY_OBSERVATION', 'and it is still only a policy observation');
   check.equal(branches.policy_beyond_period.evidence.observation_class, 'PRINTED_POLICY_OBSERVATION_NOT_A_STATUTORY_FINDING');
-  check.match(branches.policy_beyond_period.plain, /policy observation and not a statutory finding/, 'and its headline says so');
+  check.match(branches.policy_beyond_period.plain, /not a finding that a rule was broken/, 'and its headline says so');
 
   /* A statement the report does NOT print is never read into it. */
   const notPrinted = runSynthetic(viewOf({

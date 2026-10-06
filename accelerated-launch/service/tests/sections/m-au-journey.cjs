@@ -115,7 +115,8 @@ async function deepJourney(t, check, specimenPath, specimenDigest, bytes) {
   check.equal(result.applicability_summary.NOT_APPLICABLE, 1);
   check.equal(result.applicability_summary.APPLICABILITY_UNRESOLVED, 2);
   check.equal(result.comprehensive_legal_check, false);
-  check.ok(/not legal findings/.test(JSON.stringify(result.qualifications)));
+  check.ok(/They are not findings that a rule was broken/.test(JSON.stringify(result.qualifications)),
+  'and the qualifications say in words that a difference we report is not a finding that a rule was broken');
 
   const draftBefore = await t.request('GET', `/api/cases/${caseId}/response-draft`, { token: owner.token });
   check.equal(draftBefore.status, 409, 'a draft is refused before review');
