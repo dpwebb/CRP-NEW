@@ -111,6 +111,20 @@ async function run(service, check) {
     'nor the balance/past-due pair: this presentation prints no past-due and no payment amount');
   check.equal(gbCap.checks['COMMON-ERROR-DUPLICATE-REPORTING'], false,
     'and with no masked identifier the identity-keyed checks stay unavailable');
+  /* BATCH-22: the artifact PRINTS each credit account's heading (lender + account type) and the reader used that
+     line only to open the block. It is mapped now, so a GB account can take part in identity-based comparison.
+     The confident duplicate/responsibility path still needs a masked reference, so nothing is weakened. */
+  check.deepEqual(gbAccounts.map((r) => r.facts['account.reported_identity']),
+    ['LENDU MONEY LIMITED CURRENT ACCOUNT', 'BOODLES BANK PLC CREDIT CARD', 'GENERAL BANK PLC LOAN', 'MOBILE PHONE FIRM RENTAL', 'MOBILE PHONE COMPANY RENTAL'],
+    'each printed account heading is mapped as the account identity, exactly as printed');
+  check.ok(gbAccounts.every((r) => r.facts['account.reported_identityRaw'] === r.facts['account.reported_identity']),
+    'with the raw printed heading preserved beside it');
+  check.equal(gbAccounts.filter((r) => r.facts['account.reported_identity']).length, 5,
+    'so all five GB credit accounts now carry an identity instead of none');
+  check.equal(gbAccounts.every((r) => r.facts['account.masked_identifier'] === undefined), true,
+    'while no masked reference is invented: the artifact prints none, so the confident duplicate path stays closed');
+  check.ok(commonErrors.runCommonErrorChecks({ extraction: gbReal }).summary.potential_issue === 0,
+    'and mapping the printed identity forces no new potential issue on the real example');
   evidence.gb_material = 'GB balance/current-balance/credit-limit/default/status-history and the printed JOINT ACCOUNT marker reach the shared fact vocabulary with raw readings; every status-history cell is uncertain (no printed legend) and no issue is forced';
 
   /* ---- BLOCKER-REPORT-DATA-TO-ISSUE-001 (AU slice): the AU liability record's printed credit limit, account type

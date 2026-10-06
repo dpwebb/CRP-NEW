@@ -564,6 +564,21 @@ function buildRecord(kind, region, index, unread) {
       if (cells.length) facts['account.paymentHistoryCells'] = cells;
     }
     if (jointMarkerPrinted(region)) facts['account.responsibility'] = 'JOINT';
+    /* BATCH-22 (BLOCKER-REPORT-DATA-TO-ISSUE-001, GB slice): the artifact PRINTS each credit account's heading —
+       the lender name followed by the account type — on the line above its fields, and this reader already used
+       that line to open the block but dropped the name. It is mapped now, so a GB account can take part in the
+       identity-based comparison and in the identity-keyed checks; the value is the printed heading exactly as the
+       artifact prints it (never reconstructed), and the account-type words are the ones MEASURED on the captured
+       official example (CURRENT ACCOUNT / CREDIT CARD / LOAN / RENTAL — five accounts across those four forms).
+       A block whose heading does not carry one of those printed forms maps no identity. */
+    const GB_ACCOUNT_HEADING_FORMS = ['CURRENT ACCOUNT', 'CREDIT CARD', 'LOAN', 'RENTAL'];
+    const headingLine = region
+      .map((l) => String(readable(l.text)).trim().replace(/\s+/g, ' '))
+      .find((text) => GB_ACCOUNT_HEADING_FORMS.some((form) => new RegExp('\\s' + form + '$').test(text)));
+    if (headingLine) {
+      facts['account.reported_identity'] = headingLine;
+      facts['account.reported_identityRaw'] = headingLine;
+    }
   }
   return {
     record_index: index,
