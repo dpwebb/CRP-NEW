@@ -172,9 +172,13 @@ async function run(t, check) {
   check.equal((await compare(t, actor, 'res_does_not_exist', B.result_id)).status, 404, 'an unknown result id is not found');
   check.equal((await compare(t, actor, A.result_id, A.result_id)).status, 400, 'comparing a report with itself is refused');
 
-  /* 12. Reading your own (empty) history needs no purchase. */
+  /* OWNER-PURCHASE-FLOW-001: reading basic information about your own file needs no purchase; the report-history
+     and comparison FEATURES are part of a subscription. */
   const unpaid = await t.unpaidAccount('bz-unpaid@example.test');
-  check.equal((await t.request('GET', '/api/history', { token: unpaid.token })).status, 200, 'reading your own empty history needs no purchase');
+  const unpaidHistory = await t.request('GET', '/api/history', { token: unpaid.token });
+  check.equal(unpaidHistory.status, 402, 'the report-history feature needs a subscription');
+  check.equal(unpaidHistory.json.error.code, 'SUBSCRIPTION_REQUIRED', 'and names the subscription refusal');
+  check.equal((await t.request('GET', '/api/cases', { token: unpaid.token })).status, 200, 'while the owned case list stays readable without a purchase');
 
   /* 13. Existing packet regression: a comparison never changes or invalidates an approved packet. */
   const pvBefore = (await t.request('GET', `/api/cases/${C.case_id}/packet`, { token: actor.token })).json.view;

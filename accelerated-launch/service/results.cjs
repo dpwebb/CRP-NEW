@@ -425,4 +425,103 @@ function availabilitySummary(evaluation) {
   return { state: 'NO_APPLICABLE_CHECK_FOR_THIS_SELECTION', checks: 0 };
 }
 
-module.exports = { renderResultSet, plainStatement, availabilitySummary, assessmentPlain, renderFactualCheck, SET_QUALIFICATIONS };
+/* ---------------------------------------------------- the free results summary (OWNER-PURCHASE-FLOW-001) */
+
+/**
+ * The documented SEVERITY order used to choose the free teaser. It ranks the KIND of concern, never the strength
+ * of the evidence: a definite classification does not by itself establish greater harm, so confidence is never
+ * consulted here. Ties inside a rank break on the stable issue id, so one report always shows the same teaser.
+ *
+ *   REMOVE_ENTRY  — an entry a recorded rule says should not be reported at all (a period exceeded, or content a
+ *                   rule prohibits including); the remedy would be its removal.
+ *   ADD_CONTENT   — a recorded rule requires a detail the entry does not print; the remedy would be an addition.
+ *   INCONSISTENCY — the report contradicts itself; no rule requires or prohibits content.
+ */
+const SEVERITY_ORDER = Object.freeze(['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY']);
+
+const TEASER_TITLE = Object.freeze({
+  RETENTION: 'An entry kept longer than the recorded rule allows',
+  INCLUSION: 'Content a recorded rule prohibits is being reported',
+  OMISSION: 'A detail a recorded rule requires is missing from an entry',
+  INCONSISTENCY: 'Two details on the report cannot both be right'
+});
+
+const TEASER_CONFIDENCE_LABEL = Object.freeze({
+  DEFINITE: 'Reporting issue',
+  PROBABLE: 'Probable reporting issue',
+  POTENTIAL: 'Potential issue'
+});
+
+function severityRankOf(issue) {
+  if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
+  if (issue.basis_type === 'CONTENT_FINDING') {
+    /* The public issue names what was included (`content_included`); an omission carries the recorded rule's
+       required-detail label instead, so the two content remedies stay distinguishable without internal fields. */
+    return (issue.content_included && issue.content_included.length) ? 0 : 1;
+  }
+  return 2;
+}
+
+function teaserTitleFor(issue, rank) {
+  if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
+  if (issue.basis_type === 'CONTENT_FINDING') {
+    return rank === 1 ? TEASER_TITLE.OMISSION : TEASER_TITLE.INCLUSION;
+  }
+  return TEASER_TITLE.RETENTION;
+}
+
+/** The first sentence of a text, so the teaser stays short. Never invents a sentence that is not there. */
+function firstSentence(text) {
+  const value = String(text || '').trim();
+  if (!value) return null;
+  const match = value.match(/^[\s\S]*?[.!?](?=\s|$)/);
+  return (match ? match[0] : value).trim();
+}
+
+/** No unnecessary personal identifiers in the teaser: a printed account or creditor name is redacted first. */
+function redactIdentifiers(text, issue) {
+  let out = String(text || '');
+  const name = issue.account_identity && issue.account_identity.name ? String(issue.account_identity.name) : '';
+  if (name.length > 2) out = out.split(name).join('one account on your report');
+  return out;
+}
+
+function teaserFor(issue) {
+  const rank = severityRankOf(issue);
+  return {
+    issue_id: issue.issue_id,
+    severity: SEVERITY_ORDER[rank],
+    title: teaserTitleFor(issue, rank),
+    confidence: issue.confidence,
+    confidence_label: TEASER_CONFIDENCE_LABEL[issue.confidence] || null,
+    explanation: firstSentence(redactIdentifiers(issue.explanation, issue))
+  };
+}
+
+/**
+ * The free summary of one rendered assessment: how many DISTINCT issues were found, how they split across the
+ * three confidence categories, and ONE limited teaser. The counts are taken from the merged issue list, so the
+ * several rules that support one issue are counted once, each issue sits in exactly one category, and the
+ * category counts always add up to the total.
+ */
+function summariseAssessment(rendered) {
+  const rows = (rendered && Array.isArray(rendered.issues)) ? rendered.issues.slice() : [];
+  const by = { violation: 0, probable_violation: 0, potential: 0 };
+  for (const issue of rows) {
+    if (issue.confidence === 'DEFINITE') by.violation += 1;
+    else if (issue.confidence === 'PROBABLE') by.probable_violation += 1;
+    else if (issue.confidence === 'POTENTIAL') by.potential += 1;
+  }
+  const ranked = rows.slice().sort((a, b) => (severityRankOf(a) - severityRankOf(b))
+    || (a.issue_id < b.issue_id ? -1 : (a.issue_id > b.issue_id ? 1 : 0)));
+  return {
+    distinct_total: rows.length,
+    by_confidence: by,
+    categories_sum_to_total: by.violation + by.probable_violation + by.potential === rows.length,
+    severity_order: SEVERITY_ORDER.slice(),
+    teaser: ranked.length ? teaserFor(ranked[0]) : null,
+    has_issues: rows.length > 0
+  };
+}
+
+module.exports = { renderResultSet, plainStatement, availabilitySummary, assessmentPlain, renderFactualCheck, SET_QUALIFICATIONS, SEVERITY_ORDER, summariseAssessment, teaserFor };

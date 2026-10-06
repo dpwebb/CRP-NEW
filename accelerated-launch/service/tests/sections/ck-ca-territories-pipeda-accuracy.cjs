@@ -56,7 +56,7 @@ function inject(service, actor, caseId, out, extraction) {
   });
 }
 async function payReportOnce(service, actor, caseId) {
-  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'report_once', case_id: caseId } });
+  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'monthly' } });
   const c = checkout.json.checkout;
   await service.postEvent({
     id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
@@ -106,7 +106,7 @@ async function run(service, check) {
   const unpaidCase = (await service.request('POST', '/api/cases', { token: unpaid.token, body: { country: 'CA', region: 'CA-NT' } })).json.case;
   const refused = await service.request('POST', `/api/cases/${unpaidCase.case_id}/packet/correspondence`, { token: unpaid.token, body: { correspondence: DETAILS } });
   check.equal(refused.status, 402, 'an unpaid account cannot reach the packet path');
-  check.equal(refused.json.error.code, 'ENTITLEMENT_REQUIRED', 'with the entitlement refusal');
+  check.equal(refused.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal');
 
   const c = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'CA', region: 'CA-NT' } })).json.case;
   await payReportOnce(service, owner, c.case_id);

@@ -19,7 +19,7 @@ const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const { chromium } = require(PLAYWRIGHT);
 
 async function payReportOnce(service, actor, caseId) {
-  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'report_once', case_id: caseId } });
+  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'monthly' } });
   const c = checkout.json.checkout;
   const event = { id: `test_evt_${crypto.randomBytes(8).toString('hex')}`, type: 'checkout.session.completed', account_reference: actor.account_id, plan_code: c.plan.plan_code, session_reference: c.provider_reference, amount_cents: c.plan.amount_cents, currency: c.plan.currency, occurred_at: new Date().toISOString() };
   await service.postEvent(event);
@@ -214,6 +214,47 @@ async function run(service, check) {
   check.ok(/First report:/.test(comparisonText) && /Second report:/.test(comparisonText), 'and both report identities');
   check.ok(/never proves/.test(comparisonText), 'with the absence note');
   await page.close();
+
+  /* OWNER-PURCHASE-FLOW-001: the unpaid real-browser journey — upload, assess, free summary, teaser and the
+     purchase choices, with a screenshot recorded as the visual evidence. It drives its own steps because the
+     shared helper above continues into the subscriber packet journey. */
+  const freeActor = await service.unpaidAccount('bw-free@example.test');
+  const freeCase = (await service.request('POST', '/api/cases', { token: freeActor.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  const freePage = await (await browser.newContext()).newPage();
+  freePage.setDefaultTimeout(20000);
+  await freePage.goto(service.base + '/');
+  await freePage.locator('#email').fill('bw-free@example.test');
+  await freePage.locator('#password').fill('a-long-enough-password');
+  await freePage.locator('#signin').click();
+  await freePage.waitForSelector('#open');
+  await freePage.locator('#refresh').click();
+  await freePage.waitForSelector(`[data-open="${freeCase.case_id}"]`);
+  await freePage.locator(`[data-open="${freeCase.case_id}"]`).click();
+  await freePage.locator('#steps button[data-step="2"]').click();
+  await freePage.waitForSelector('#file');
+  await freePage.locator('#file').setInputFiles({
+    name: 'fictional-report.pdf',
+    mimeType: 'application/pdf',
+    buffer: buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'] }] })
+  });
+  await freePage.locator('#upload').click();
+  await freePage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
+  const reportText = await freePage.locator('#panel').innerText();
+  check.ok(/Your report is uploaded/.test(reportText) && /Check my report/.test(reportText), 'the browser offers the check action with no purchase recorded');
+  await freePage.locator('#check-report').click();
+  await freePage.waitForTimeout(3000);
+  await freePage.locator('#steps button[data-step="3"]').click();
+  await freePage.waitForTimeout(1200);
+  const summaryText = await freePage.locator('#panel').innerText();
+  check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 1/.test(summaryText), 'the browser shows the distinct issue count to a free account');
+  check.ok(/violations: 0/.test(summaryText) && /potential issues: 1/.test(summaryText), 'and the three category counts');
+  check.ok(/Potential issue/.test(summaryText), 'with the teaser confidence label');
+  check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Annual/.test(summaryText), 'and the purchase choices with their recorded prices');
+  check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
+  const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
+  await freePage.screenshot({ path: shot, fullPage: true });
+  evidence.unpaid_summary_screenshot = shot;
+  await freePage.close();
 
   await browser.close();
 

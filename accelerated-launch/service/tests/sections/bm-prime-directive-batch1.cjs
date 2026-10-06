@@ -27,7 +27,7 @@ function extract(lines) {
 
 async function payReportOnce(service, actor, caseId) {
   const checkout = await service.request('POST', '/api/billing/checkout', {
-    token: actor.token, body: caseId ? { plan_code: 'report_once', case_id: caseId } : { plan_code: 'report_once' }
+    token: actor.token, body: { plan_code: 'monthly' }
   });
   if (checkout.status !== 201) throw new Error(`checkout failed ${checkout.status} ${checkout.text}`);
   const c = checkout.json.checkout;

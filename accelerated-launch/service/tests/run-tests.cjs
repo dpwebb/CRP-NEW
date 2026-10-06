@@ -181,7 +181,10 @@ const SECTION_FILES = [
   'cn-au-us-ingestion.cjs',
   'co-canada-upload-delivery.cjs',
   /* BATCH-24 — the one coordinated plain-text correction across the consumer surface (all 82 jurisdictions). */
-  'cp-consumer-plain-text.cjs'];
+  'cp-consumer-plain-text.cjs',
+  /* BATCH-28 — OWNER-PURCHASE-FLOW-001: assessment before purchase, the free summary and teaser, and the two
+     separate purchase questions (one-time report unlock versus subscription). */
+  'cq-purchase-flow.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

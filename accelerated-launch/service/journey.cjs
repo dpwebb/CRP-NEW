@@ -22,6 +22,7 @@ const multiFileAssembly = require('./multi-file-assembly.cjs');
 const clarification = require('./clarification.cjs');
 const reportUse = require('../adapters/report-use.cjs');
 const { labelFor } = require('./case-status.cjs');
+const entitlement = require('./entitlement.cjs');
 
 function nowIso() {
   return new Date().toISOString();
@@ -45,7 +46,7 @@ function latestResultFor(store, caseId) {
 /** The whole case as the consumer sees it: the file it holds, its result set, and the download boundary. */
 function caseView(store, actor, caseId) {
   const caseRow = cases.requireOwnedCase(store, actor, caseId);
-  return viewForResult(store, caseRow, latestResultFor(store, caseId));
+  return viewForResult(store, actor, caseRow, latestResultFor(store, caseId));
 }
 
 /* OWNER-ACCEPT-010 historical-result compatibility: an EXPLICITLY selected, owned result exposes its OWN normalized
@@ -57,18 +58,42 @@ function caseViewForResult(store, actor, caseId, resultId) {
   if (!resultId) throw new ServiceError('RESULT_ID_REQUIRED');
   const resultRow = store.state().results.find((r) => r.result_id === resultId && r.case_id === caseId);
   if (!resultRow) throw new ServiceError('NOT_FOUND');
-  return viewForResult(store, caseRow, resultRow);
+  return viewForResult(store, actor, caseRow, resultRow);
 }
 
-function viewForResult(store, caseRow, resultRow) {
+function viewForResult(store, actor, caseRow, resultRow) {
   const files = filesFor(store, caseRow.case_id).map(publicFile);
   const rendered = resultRow ? publicResult(resultRow.rendered) : null;
+  /* OWNER-PURCHASE-FLOW-001: the summary (distinct counts + one teaser) is free for every signed-in account;
+     the COMPLETE assessment, its evidence and its download need a one-time unlock of THIS report or a
+     subscription, and the dispute packet needs a subscription. The complete assessment is therefore never
+     embedded in a response an unentitled account can read. */
+  const access = entitlement.assessmentAccess(store, actor, caseRow.case_id);
+  const subscribed = entitlement.subscriptionAccess(store, actor).subscribed;
+  const summary = rendered ? results.summariseAssessment(rendered) : null;
   return {
     case: caseRow,
     status_label: labelFor(caseRow.status),
     files,
-    result: rendered,
-    result_id: resultRow ? resultRow.result_id : null,
+    assessment_access: {
+      complete_assessment: access.complete_assessment,
+      complete_assessment_via: access.via,
+      assessment_download: access.download && access.complete_assessment,
+      dispute_packet: subscribed,
+      purchase_choices: access.complete_assessment ? [] : ['unlock_this_report', 'monthly', 'annual']
+    },
+    assessment_summary: summary
+      ? {
+        result_id: access.complete_assessment && resultRow ? resultRow.result_id : null,
+        created_at: resultRow ? resultRow.created_at : null,
+        distinct_total: summary.distinct_total,
+        by_confidence: summary.by_confidence,
+        teaser: summary.teaser,
+        severity_order: summary.severity_order
+      }
+      : null,
+    result: access.complete_assessment ? rendered : null,
+    result_id: access.complete_assessment && resultRow ? resultRow.result_id : null,
     reviewed: Boolean(resultRow && resultRow.reviewed_at),
     clarifications: resultRow && resultRow.clarifications ? clarification.render(resultRow.clarifications) : [],
     clarification_questions: resultRow && Array.isArray(resultRow.clarification_eligibility) ? clarification.activeQuestions(resultRow.clarification_eligibility) : [],
@@ -492,6 +517,7 @@ module.exports = {
 /** Drop the audit-only machine payload and every internal identifier from a rendered result set. */
 function publicResult(rendered) {
   return Object.assign({}, rendered, {
+    issues: (rendered.issues || []).slice(),
     observations: rendered.observations.map((o) => {
       const view = Object.assign({}, o);
       delete view.machine;

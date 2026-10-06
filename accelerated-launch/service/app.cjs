@@ -232,9 +232,11 @@ function loadJurisdictionSurface() {
     check_classes: CHECK_CLASSES,
     paid_actions: entitlement.PAID_ACTIONS.slice(),
     entitlement: {
-      required_for: 'uploading a report, running an assessment, reviewing, the demonstration and the download',
-      never_required_for: ['reading what you already have', 'recording your own status', 'deleting your data'],
-      plain: payment.plain + ' The paid steps require a verified purchase recorded against your account.',
+      required_for: 'viewing a report complete assessment, downloading it, dispute packets, report history and comparison',
+      never_required_for: ['uploading a report', 'running the assessment of your own report', 'the results summary and the one teaser', 'reading basic information about your own file', 'recording your own status', 'deleting your data'],
+      subscriber_actions: entitlement.SUBSCRIBER_ACTIONS.slice(),
+      free_actions: entitlement.FREE_ACTIONS.slice(),
+      plain: payment.plain + ' Uploading a report and having it assessed are free. Reading the complete assessment of a report, downloading it, dispute packets and the subscriber features need a purchase.',
       payment_mode: payment.key_mode || null
     },
     preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
@@ -403,8 +405,8 @@ function buildCaseHandlers(store, logger) {
 
     uploadFile: ({ params, body, actor }) => {
       const caseRow = cases.requireOwnedCase(store, actor, params.caseId);
-      /* Ownership first (a 403 that leaks nothing), then the paid gate, then any work at all. */
-      entitlement.requirePaid(store, actor);
+      /* Ownership first (a 403 that leaks nothing). OWNER-PURCHASE-FLOW-001: uploading an owned report is FREE,
+         and no purchase is required to have it assessed. */
       const receipt = uploads.receiveReport(store, actor, caseRow, body);
       logger.log({
         event: 'REPORT_UPLOADED',
@@ -416,7 +418,8 @@ function buildCaseHandlers(store, logger) {
 
     evaluateCase: ({ params, body, actor }) => {
       const caseRow = cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      /* OWNER-PURCHASE-FLOW-001: the assessment runs BEFORE any purchase. Only the COMPLETE assessment, its
+         download and the subscriber features are gated. */
       const outcome = journey.evaluateCase(store, actor, params.caseId, body || {});
       logger.log({
         event: 'CASE_EVALUATED',
@@ -427,47 +430,58 @@ function buildCaseHandlers(store, logger) {
       return { status: 201, json: { ok: true, ...outcome } };
     },
 
-    listResults: ({ params, actor }) => ({ status: 200, json: { ok: true, results: journey.listResults(store, actor, params.caseId) } }),
+    listResults: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
+      return { status: 200, json: { ok: true, results: journey.listResults(store, actor, params.caseId) } };
+    },
 
-    getResult: ({ params, actor }) => ({ status: 200, json: { ok: true, result: journey.getResult(store, actor, params.caseId, params.resultId) } }),
+    getResult: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
+      return { status: 200, json: { ok: true, result: journey.getResult(store, actor, params.caseId, params.resultId) } };
+    },
 
-    caseViewForResult: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseViewForResult(store, actor, params.caseId, params.resultId) } }),
+    caseViewForResult: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
+      return { status: 200, json: { ok: true, view: journey.caseViewForResult(store, actor, params.caseId, params.resultId) } };
+    },
 
     reviewResult: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
       return { status: 200, json: { ok: true, ...journey.markReviewed(store, actor, params.caseId, params.resultId) } };
     },
 
     reviewLatestResult: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
       return { status: 200, json: { ok: true, ...journey.markReviewed(store, actor, params.caseId, null) } };
     },
 
     /** OWNER-ACCEPT-009 item 2: record optional clarification answers, stored separately from report facts. */
     clarifyResult: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
       return { status: 200, json: { ok: true, ...journey.recordClarification(store, actor, params.caseId, params.resultId, body ? body.answers : []) } };
     },
 
     /** Refuses, by design, in this batch. The refusal is the recorded output permission, not a defect. */
     responseDraft: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      /* OWNER-PURCHASE-FLOW-001: the response draft is a subscriber feature; a one-time report unlock never
+         grants it. */
+      entitlement.requireSubscriberFeature(store, actor);
       return { status: 200, json: { ok: true, draft: journey.requestResponseDraft(store, actor, params.caseId, null) } };
     },
 
-    /** Paid assessment-report download: one purchased case download OR an active subscription, never both implied. */
+    /** The assessment-report download: the complete assessment of THAT report (one-time unlock) or a subscription. */
     reportDownload: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      const gate = entitlement.downloadEntitled(store, actor, params.caseId);
-      if (!gate.entitled) {
-        throw new ServiceError('DOWNLOAD_NOT_ENTITLED', { via: gate.via });
-      }
+      const access = entitlement.requireAssessmentAccess(store, actor, params.caseId);
       const file = journey.assessmentReport(store, actor, params.caseId);
-      logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: gate.via });
+      logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: access.via });
       return {
         status: 200,
         text: file.body,
@@ -478,7 +492,7 @@ function buildCaseHandlers(store, logger) {
 
     demonstrationDownload: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireAssessmentAccess(store, actor, params.caseId);
       const file = journey.demonstrationDownload(store, actor, params.caseId);
       logger.log({ event: 'DEMONSTRATION_DOWNLOAD_SERVED', outcome: 'FICTIONAL_CONTENT' });
       return {
@@ -491,7 +505,7 @@ function buildCaseHandlers(store, logger) {
 
     demonstration: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      /* A labelled demonstration of the interface on synthetic input: free, like any assessment. */
       const outcome = journey.runDemonstration(store, actor, params.caseId, body && body.scenario);
       logger.log({ event: 'DEMONSTRATION_RUN', outcome: 'NOT_REPORT_SUPPORT', count: outcome.result.checks_performed });
       return { status: 201, json: { ok: true, ...outcome } };
@@ -502,12 +516,14 @@ function buildCaseHandlers(store, logger) {
        the same paid gate as review and clarify. */
     packetView: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
+      /* OWNER-PURCHASE-FLOW-001: dispute packets are a subscriber feature. */
+      entitlement.requireSubscriberFeature(store, actor);
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
 
     packetSelect: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireSubscriberFeature(store, actor);
       packets.selectIssues(store, actor, params.caseId, body && body.issue_ids);
       logger.log({ event: 'PACKET_SELECTED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
@@ -515,7 +531,7 @@ function buildCaseHandlers(store, logger) {
 
     packetWording: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireSubscriberFeature(store, actor);
       packets.setWording(store, actor, params.caseId, body && body.wording);
       logger.log({ event: 'PACKET_WORDING_RECORDED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
@@ -525,7 +541,7 @@ function buildCaseHandlers(store, logger) {
        into the approval, so changing them after approval forces reapproval before the download is available again. */
     packetCorrespondence: ({ params, body, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireSubscriberFeature(store, actor);
       packets.setCorrespondence(store, actor, params.caseId, body && body.correspondence);
       logger.log({ event: 'PACKET_CORRESPONDENCE_RECORDED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
@@ -533,7 +549,7 @@ function buildCaseHandlers(store, logger) {
 
     packetApprove: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      entitlement.requirePaid(store, actor);
+      entitlement.requireSubscriberFeature(store, actor);
       packets.approvePacket(store, actor, params.caseId);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
@@ -541,12 +557,11 @@ function buildCaseHandlers(store, logger) {
 
     packetDownload: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
-      const gate = entitlement.downloadEntitled(store, actor, params.caseId);
-      if (!gate.entitled) {
-        throw new ServiceError('DOWNLOAD_NOT_ENTITLED', { via: gate.via });
-      }
+      /* OWNER-PURCHASE-FLOW-001: the packet download needs a subscription (the packet step itself does), and the
+         recorded approval is still required below. */
+      entitlement.requireSubscriberFeature(store, actor);
       const file = packets.packetDownload(store, actor, params.caseId);
-      logger.log({ event: 'PACKET_DOWNLOAD_SERVED', outcome: gate.via });
+      logger.log({ event: 'PACKET_DOWNLOAD_SERVED', outcome: 'SUBSCRIPTION' });
       return {
         status: 200,
         text: file.body,
@@ -555,13 +570,15 @@ function buildCaseHandlers(store, logger) {
       };
     },
 
-    /* BLOCKER-SUBSCRIPTION-VALUE-001: the owned report history and the evidence-based comparison. Reading the
-       consumer’s own history is always available; the comparison follows the same paid gate as review, clarify and
-       the correction packet, and it writes nothing. */
-    historyView: ({ actor }) => ({ status: 200, json: { ok: true, ...comparison.historyView(store, actor) } }),
+    /* BLOCKER-SUBSCRIPTION-VALUE-001 + OWNER-PURCHASE-FLOW-001: reading basic information about your own file is
+       always available; the report-history and comparison FEATURES are subscriber-only. */
+    historyView: ({ actor }) => {
+      entitlement.requireSubscriberFeature(store, actor);
+      return { status: 200, json: { ok: true, ...comparison.historyView(store, actor) } };
+    },
 
     comparisonView: ({ params, actor }) => {
-      entitlement.requirePaid(store, actor);
+      entitlement.requireSubscriberFeature(store, actor);
       logger.log({ event: "REPORT_COMPARISON_VIEWED", outcome: "OK" });
       return { status: 200, json: { ok: true, ...comparison.comparisonView(store, actor, params.leftResultId, params.rightResultId) } };
     }

@@ -63,7 +63,10 @@ const PLANS_BODY = {
 async function run(t, check) {
   /* ------------------------------------------------------------------ server enforcement */
   const unpaid = await t.unpaidAccount('billing-unpaid@example.test');
-  const paid = await t.account('billing-paid@example.test');
+  /* OWNER-PURCHASE-FLOW-001: this section tests the ONE-TIME purchase itself (its entitlement and its upgrade
+     credit), so it buys one explicitly instead of holding the harness's subscription. */
+  const paid = await t.unpaidAccount('billing-paid@example.test');
+  await t.pay(paid, 'report_once');
   const subscriber = await t.account('billing-subscriber@example.test');
   await t.pay(subscriber, 'monthly');
 
@@ -103,7 +106,7 @@ async function run(t, check) {
   check.equal(afterCancel.json.entitlement.entitled, true, 'access continues to the recorded expiry (not immediately terminated)');
 
   const caseId = (await t.request('POST', '/api/cases', { token: unpaid.token, body: { country: 'CA', region: 'CA-NS' } })).json.case.case_id;
-  check.equal((await t.request('POST', `/api/cases/${caseId}/files`, { token: unpaid.token, body: NOT_A_PDF })).status, 402, 'an unpaid account is refused a paid upload');
+  check.notEqual((await t.request('POST', `/api/cases/${caseId}/files`, { token: unpaid.token, body: NOT_A_PDF })).status, 402, 'uploading an owned report needs no purchase');
 
 
   /* ------------------------------------------------------------------ consumer interface */

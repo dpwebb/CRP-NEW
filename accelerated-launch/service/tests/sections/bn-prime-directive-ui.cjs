@@ -72,6 +72,8 @@ const RESULT = {
 const VIEW = {
   case: { case_id: 'case_stub', country: 'US', region: 'US-CA', status: 'OPEN' },
   status_label: 'Open', files: [], result: RESULT, result_id: 'res_stub', reviewed: false,
+  assessment_access: { complete_assessment: true, complete_assessment_via: 'SUBSCRIPTION', assessment_download: true, dispute_packet: true, purchase_choices: [] },
+  assessment_summary: { result_id: 'res_stub', created_at: '2026-10-05T00:00:00.000Z', distinct_total: 1, by_confidence: { violation: 1, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY'] },
   clarifications: [], clarification_questions: [],
   download: { response_draft_available: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH', reason_plain: 'No response draft.', demonstration_download_available: true },
   demonstration_scenarios: []

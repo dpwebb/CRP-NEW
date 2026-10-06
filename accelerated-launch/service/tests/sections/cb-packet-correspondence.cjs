@@ -35,7 +35,7 @@ const uploadBody = (bytes, filename) => ({
 
 async function payReportOnce(service, actor, caseId) {
   const checkout = await service.request('POST', '/api/billing/checkout', {
-    token: actor.token, body: { plan_code: 'report_once', case_id: caseId }
+    token: actor.token, body: { plan_code: 'monthly' }
   });
   const c = checkout.json.checkout;
   const posted = await service.postEvent({
@@ -253,7 +253,7 @@ async function run(service, check) {
   const unpaidCase = (await service.request('POST', '/api/cases', { token: unpaid.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   const unpaidWrite = await service.request('POST', `/api/cases/${unpaidCase.case_id}/packet/correspondence`, { token: unpaid.token, body: { correspondence: DETAILS } });
   check.equal(unpaidWrite.status, 402, 'an unpaid account cannot record correspondence for a packet');
-  check.equal(unpaidWrite.json.error.code, 'ENTITLEMENT_REQUIRED', 'with the entitlement refusal');
+  check.equal(unpaidWrite.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal');
 
   /* ---- 10. The definite correction, the sending control and the classification on the real download. ---- */
   check.ok(/definite, correction/.test(dl.text), 'the definite evidence reference states the DEFINITE correction classification');

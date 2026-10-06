@@ -37,7 +37,7 @@ function engineRun(adapterId, facts, referenceDate) {
 
 async function payReportOnce(service, actor, caseId) {
   const checkout = await service.request('POST', '/api/billing/checkout', {
-    token: actor.token, body: caseId ? { plan_code: 'report_once', case_id: caseId } : { plan_code: 'report_once' }
+    token: actor.token, body: { plan_code: 'monthly' }
   });
   if (checkout.status !== 201) throw new Error(`checkout failed ${checkout.status} ${checkout.text}`);
   const c = checkout.json.checkout;
@@ -180,17 +180,32 @@ async function run(service, check) {
 
   /* ---- 9. Download without entitlement (no purchase bound to this case) is refused. ---- */
   const noEnt = await service.unpaidAccount('packet-ca-noent@example.test');
-  await payReportOnce(service, noEnt, null);
+  /* OWNER-PURCHASE-FLOW-001: a one-time purchase that is NOT bound to this case unlocks no report here, and a
+     packet needs a subscription, so every download for this case is refused. */
+  const noEntCheckout = await service.request('POST', '/api/billing/checkout', { token: noEnt.token, body: { plan_code: 'report_once' } });
+  const noEntOpened = noEntCheckout.json.checkout;
+  await service.postEvent({
+    id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
+    type: 'checkout.session.completed',
+    account_reference: noEnt.account_id,
+    plan_code: 'report_once',
+    session_reference: noEntOpened.provider_reference,
+    amount_cents: noEntOpened.plan.amount_cents,
+    currency: noEntOpened.plan.currency,
+    occurred_at: new Date().toISOString()
+  });
   const noEntCase = await makeCase(service, noEnt);
   const noEntCaseId = noEntCase.case_id;
   await uploadAndEvaluateTaxLien(service, noEnt, noEntCaseId);
-  const noEntView = (await service.request('GET', `/api/cases/${noEntCaseId}/packet`, { token: noEnt.token })).json.view;
-  await service.request('POST', `/api/cases/${noEntCaseId}/packet/select`, { token: noEnt.token, body: { issue_ids: [noEntView.eligible_issues[0].issue_id] } });
+  const noEntViewRefusal = await service.request('GET', `/api/cases/${noEntCaseId}/packet`, { token: noEnt.token });
+  check.equal(noEntViewRefusal.status, 402, 'the packet view is refused without a subscription');
+  const noEntView = { eligible_issues: [] };
+  await service.request('POST', `/api/cases/${noEntCaseId}/packet/select`, { token: noEnt.token, body: { issue_ids: ['anything'] } });
   await service.request('POST', `/api/cases/${noEntCaseId}/packet/correspondence`, { token: noEnt.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.request('POST', `/api/cases/${noEntCaseId}/packet/approve`, { token: noEnt.token });
   const noEntDownload = await service.request('GET', `/api/cases/${noEntCaseId}/packet-download`, { token: noEnt.token });
-  check.equal(noEntDownload.status, 402, 'downloading without an entitlement bound to this case is refused');
-  check.equal(noEntDownload.json.error.code, 'DOWNLOAD_NOT_ENTITLED', 'with the download-not-entitled code');
+  check.equal(noEntDownload.status, 402, 'downloading without a subscription is refused');
+  check.equal(noEntDownload.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal, because a packet needs a subscription');
 
   evidence.rules = 'three California rules packet-eligible (VIOLATION-only); positive packet path and refusals verified';
   return evidence;

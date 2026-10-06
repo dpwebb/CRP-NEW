@@ -53,7 +53,7 @@ function accountDatesIssue(extraction) {
 }
 
 async function payReportOnce(service, actor, caseId) {
-  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'report_once', case_id: caseId } });
+  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'monthly' } });
   const c = checkout.json.checkout;
   await service.postEvent({
     id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,

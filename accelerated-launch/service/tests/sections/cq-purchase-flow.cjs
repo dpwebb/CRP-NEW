@@ -1,0 +1,174 @@
+'use strict';
+/**
+ * cq-purchase-flow.cjs — OWNER-PURCHASE-FLOW-001 (supersedes payment-before-assessment and the one-time packet).
+ *
+ * Proves, against the real service and with fictional reports only:
+ *   1. a signed-in consumer uploads and assesses an owned report with NO purchase recorded;
+ *   2. the free summary reports DISTINCT issues (after the existing merging), split across the three confidence
+ *      categories so the counts add up, plus ONE teaser chosen by the documented severity order — never by
+ *      confidence — and carrying no printed personal identifier;
+ *   3. the complete assessment, its evidence and its download need a one-time unlock of THAT report or a
+ *      subscription; the packet, the response draft and the history/comparison need a subscription;
+ *   4. a one-time unlock opens exactly one report, never a subscriber feature and never another report;
+ *   5. direct API requests cannot bypass either boundary, cross-account access stays refused, and packet approval
+ *      with the stale-approval refusal keeps working for subscribers.
+ */
+const crypto = require('node:crypto');
+const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
+const results = require('../../results.cjs');
+
+const uploadBody = (bytes, filename) => ({
+  originalFilename: filename,
+  declaredBytes: bytes.length,
+  mimeType: 'application/pdf',
+  contentBase64: bytes.toString('base64')
+});
+
+const expiredRetention = () => buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2016  Closed 01/01/2017'] }] });
+const contradiction = () => buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor B  Balance $200  Opened 01/01/2020  Closed 01/01/2019'] }] });
+
+async function uploadAndAssess(service, actor, bytes, name, region) {
+  const created = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: region || 'CA-NS' } });
+  const caseRow = created.json.case;
+  await service.request('POST', `/api/cases/${caseRow.case_id}/files`, { token: actor.token, body: uploadBody(bytes, name) });
+  await service.request('POST', `/api/cases/${caseRow.case_id}/evaluate`, { token: actor.token });
+  return caseRow;
+}
+
+async function unlockOneReport(service, actor, caseId) {
+  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'report_once', case_id: caseId } });
+  const opened = checkout.json.checkout;
+  await service.postEvent({
+    id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
+    type: 'checkout.session.completed',
+    account_reference: actor.account_id,
+    plan_code: 'report_once',
+    session_reference: opened.provider_reference,
+    amount_cents: opened.plan.amount_cents,
+    currency: opened.plan.currency,
+    occurred_at: new Date().toISOString()
+  });
+  return opened;
+}
+
+async function run(service, check) {
+  const evidence = {};
+
+  /* ---- 1. Free account: upload, assess, summary, teaser, and every protected read refused ---- */
+  const free = await service.unpaidAccount('cq-free@example.test');
+  const created = await service.request('POST', '/api/cases', { token: free.token, body: { country: 'CA', region: 'CA-NS' } });
+  const c = created.json.case;
+  check.equal((await service.request('POST', `/api/cases/${c.case_id}/files`, { token: free.token, body: uploadBody(contradiction(), 'cq-a.pdf') })).status, 201, 'an unpaid account uploads an owned report');
+  check.equal((await service.request('POST', `/api/cases/${c.case_id}/evaluate`, { token: free.token })).status, 201, 'and the assessment runs with no purchase recorded');
+
+  const view = (await service.request('GET', `/api/cases/${c.case_id}`, { token: free.token })).json.view;
+  check.ok(view.assessment_summary, 'the case view carries the free results summary');
+  check.equal(view.result, null, 'and never the complete assessment');
+  check.equal(view.assessment_access.complete_assessment, false, 'the complete assessment is locked');
+  check.equal(view.assessment_access.dispute_packet, false, 'and so is the dispute packet');
+  check.deepEqual(view.assessment_access.purchase_choices, ['unlock_this_report', 'monthly', 'annual'], 'the purchase choices are stated');
+  const summary = view.assessment_summary;
+  const by = summary.by_confidence;
+  check.equal(summary.distinct_total, by.violation + by.probable_violation + by.potential, 'the category counts add up to the distinct total');
+  check.ok(summary.distinct_total >= 1, 'the fictional report produced at least one issue');
+  check.ok(summary.teaser && summary.teaser.confidence_label && summary.teaser.explanation, 'the teaser names a confidence label and a short explanation');
+  check.ok(String(summary.teaser.explanation).length <= 240, 'the teaser stays short');
+  check.ok(!/Creditor B/.test(JSON.stringify(summary.teaser)), 'the teaser carries no printed creditor identity');
+  check.deepEqual(summary.severity_order, results.SEVERITY_ORDER, 'the served severity order is the documented one');
+  evidence.free_summary = { distinct_total: summary.distinct_total, by_confidence: by, teaser: summary.teaser.severity };
+
+  for (const [label, response] of [
+    ['the result list', await service.request('GET', `/api/cases/${c.case_id}/results`, { token: free.token })],
+    ['the result view', await service.request('GET', `/api/cases/${c.case_id}/results/anything/view`, { token: free.token })],
+    ['the assessment download', await service.request('GET', `/api/cases/${c.case_id}/report-download`, { token: free.token })],
+    ['the packet view', await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: free.token })],
+    ['the packet selection', await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: free.token, body: { issue_ids: [] } })],
+    ['the packet approval', await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: free.token })],
+    ['the report history', await service.request('GET', '/api/history', { token: free.token })]
+  ]) {
+    check.ok(response.status === 402 || response.status === 403 || response.status === 404,
+      `${label} is refused for an unpaid account (${response.status})`);
+  }
+  check.equal((await service.request('GET', `/api/cases/${c.case_id}`, { token: free.token })).status, 200, 'while basic information about the owned file stays readable');
+  /* ---- 2. Severity is independent of confidence, and ties break stably ---- */
+  const synthetic = results.summariseAssessment({
+    issues: [
+      { issue_id: 'b', basis_type: 'FACTUAL_CONSISTENCY', confidence: 'DEFINITE', explanation: 'Two printed details cannot both be right.' },
+      { issue_id: 'a', basis_type: 'STATUTORY_RETENTION', confidence: 'PROBABLE', explanation: 'An entry is kept longer than the recorded rule allows.' }
+    ]
+  });
+  check.equal(synthetic.teaser.issue_id, 'a', 'the teaser follows the documented severity order, never the confidence');
+  check.equal(synthetic.teaser.severity, 'REMOVE_ENTRY', 'and names the concern kind it ranked on');
+  check.equal(synthetic.by_confidence.violation, 1, 'the definite issue is still counted as a violation');
+  check.equal(synthetic.by_confidence.probable_violation, 1, 'and the probable one in its own category');
+  const tied = results.summariseAssessment({
+    issues: [
+      { issue_id: 'zzz', basis_type: 'STATUTORY_RETENTION', confidence: 'POTENTIAL', explanation: 'x' },
+      { issue_id: 'aaa', basis_type: 'STATUTORY_RETENTION', confidence: 'DEFINITE', explanation: 'y' }
+    ]
+  });
+  check.equal(tied.teaser.issue_id, 'aaa', 'equal severity breaks on the stable issue id');
+  check.deepEqual(results.summariseAssessment({ issues: [] }), {
+    distinct_total: 0,
+    by_confidence: { violation: 0, probable_violation: 0, potential: 0 },
+    categories_sum_to_total: true,
+    severity_order: results.SEVERITY_ORDER.slice(),
+    teaser: null,
+    has_issues: false
+  }, 'a report with nothing found yields no teaser and no invented count');
+
+  /* ---- 3. One-time unlock: this report only, never the subscriber features, never another report ---- */
+  const once = await service.unpaidAccount('cq-once@example.test');
+  const caseA = await uploadAndAssess(service, once, expiredRetention(), 'cq-once-a.pdf', 'CA-NS');
+  const caseB = await uploadAndAssess(service, once, contradiction(), 'cq-once-b.pdf', 'CA-NS');
+  const beforeUnlock = (await service.request('GET', `/api/cases/${caseA.case_id}`, { token: once.token })).json.view;
+  check.equal(beforeUnlock.result, null, 'the report is locked before the unlock');
+  await unlockOneReport(service, once, caseA.case_id);
+
+  const aView = (await service.request('GET', `/api/cases/${caseA.case_id}`, { token: once.token })).json.view;
+  check.equal(aView.assessment_access.complete_assessment, true, 'the one-time unlock opens the report it was bought for');
+  check.equal(aView.assessment_access.complete_assessment_via, 'ONE_TIME_CREDIT', 'on the recorded one-time authority');
+  check.ok(aView.result && Array.isArray(aView.result.issues), 'and the complete assessment is served');
+  check.equal(aView.result.issues.length, aView.assessment_summary.distinct_total, 'the distinct count equals the merged issue list, so no rule inflates it');
+  check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/report-download`, { token: once.token })).status, 200, 'and the assessment download is allowed');
+  const bView = (await service.request('GET', `/api/cases/${caseB.case_id}`, { token: once.token })).json.view;
+  check.equal(bView.assessment_access.complete_assessment, false, 'another report stays locked');
+  check.equal(bView.result, null, 'so its complete assessment is not served');
+  check.equal((await service.request('GET', `/api/cases/${caseB.case_id}/report-download`, { token: once.token })).status, 402, 'and its download is refused');
+  check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/packet`, { token: once.token })).status, 402, 'the packet stays closed for a one-time unlock');
+  check.equal((await service.request('POST', `/api/cases/${caseA.case_id}/packet/select`, { token: once.token, body: { issue_ids: [] } })).status, 402, 'and packet selection is refused');
+  /* ---- 4. Subscription: the full paid flow, including approval and the stale-approval refusal ---- */
+  const sub = await service.unpaidAccount('cq-sub@example.test');
+  await service.pay(sub, 'monthly');
+  const subCase = await uploadAndAssess(service, sub, contradiction(), 'cq-sub.pdf', 'CA-NS');
+  const sView = (await service.request('GET', `/api/cases/${subCase.case_id}`, { token: sub.token })).json.view;
+  check.equal(sView.assessment_access.complete_assessment, true, 'a subscription opens the complete assessment');
+  check.equal(sView.assessment_access.dispute_packet, true, 'and the dispute packet');
+  check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/report-download`, { token: sub.token })).status, 200, 'and the assessment download');
+  const packet = (await service.request('GET', `/api/cases/${subCase.case_id}/packet`, { token: sub.token })).json.view;
+  const issue = (packet.eligible_issues || []).find((i) => i.eligible);
+  check.ok(issue, 'the subscriber sees a selectable issue');
+  check.equal((await service.request('POST', `/api/cases/${subCase.case_id}/packet/select`, { token: sub.token, body: { issue_ids: [issue.issue_id] } })).status, 200, 'and can select it');
+  await service.request('POST', `/api/cases/${subCase.case_id}/packet/correspondence`, { token: sub.token, body: { correspondence: { consumer_name: 'Fictional Tester', contact: 'fictional@example.test' } } });
+  check.equal((await service.request('POST', `/api/cases/${subCase.case_id}/packet/approve`, { token: sub.token })).status, 200, 'and approve the packet');
+  check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/packet-download`, { token: sub.token })).status, 200, 'and download it');
+  await service.request('POST', `/api/cases/${subCase.case_id}/packet/select`, { token: sub.token, body: { issue_ids: [issue.issue_id] } });
+  check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/packet-download`, { token: sub.token })).status, 409, 're-selecting invalidates the approval (stale-approval refusal preserved)');
+  check.equal((await service.request('GET', '/api/history', { token: sub.token })).status, 200, 'and the subscriber history is available');
+
+  /* ---- 5. Cross-account isolation on both boundaries ---- */
+  const stranger = await service.unpaidAccount('cq-stranger@example.test');
+  check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/report-download`, { token: stranger.token })).status, 403, 'another account is refused the unlocked report');
+  check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/packet-download`, { token: stranger.token })).status, 403, 'and the subscriber packet');
+  check.equal((await service.request('GET', `/api/cases/${caseA.case_id}`, { token: stranger.token })).status, 403, 'and the case itself');
+
+  evidence.one_time = 'unlocks the selected report and its download only; another report and every subscriber feature stay refused';
+  evidence.subscription = 'unlocks the complete assessment, the download, the dispute packet and the history';
+  return evidence;
+}
+
+module.exports = {
+  run,
+  id: 'cq-purchase-flow',
+  title: 'OWNER-PURCHASE-FLOW-001: assessment before purchase, the free summary and teaser, and the two separate purchase outcomes'
+};

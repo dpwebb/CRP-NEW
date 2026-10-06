@@ -58,13 +58,40 @@ const GRACE_HOURS_AFTER_A_FAILED_PAYMENT = 72;
 const MAX_RECORDED_REJECTIONS = 50;
 const IDEMPOTENCY_WINDOW_DAYS = 30;
 
-/** The paid actions. Everything NOT in this list stays reachable without an entitlement, deletion included. */
+/**
+ * OWNER-PURCHASE-FLOW-001 (supersedes payment-before-assessment): the paid work is grouped as TWO separate
+ * questions, never conflated.
+ *
+ *   • FREE for every signed-in account — uploading a report and running its assessment, the results summary
+ *     (distinct issue counts) and the limited teaser, reading basic information about your own file, recording
+ *     your own status and deleting your data.
+ *   • A report's COMPLETE assessment and its download — needs a one-time unlock of THAT report, or a
+ *     subscription.
+ *   • SUBSCRIBER-ONLY — the dispute packet, the response draft and the report history/comparison.
+ */
 const PAID_ACTIONS = Object.freeze([
+  'COMPLETE_ASSESSMENT',
+  'DOWNLOAD_ASSESSMENT',
+  'DISPUTE_PACKET',
+  'REQUEST_RESPONSE_DRAFT',
+  'REPORT_HISTORY_AND_COMPARISON'
+]);
+
+/** Actions that are never gated, for any signed-in account. */
+const FREE_ACTIONS = Object.freeze([
   'UPLOAD_REPORT',
   'RUN_ASSESSMENT',
+  'RESULTS_SUMMARY_AND_TEASER',
+  'READ_BASIC_OWNED_FILE_INFORMATION',
+  'RECORD_OWN_STATUS',
+  'DELETE_OWN_DATA'
+]);
+
+/** The subscriber-only actions. A one-time report unlock never grants these. */
+const SUBSCRIBER_ACTIONS = Object.freeze([
+  'DISPUTE_PACKET',
   'REQUEST_RESPONSE_DRAFT',
-  'DOWNLOAD_DRAFT',
-  'DEMONSTRATION'
+  'REPORT_HISTORY_AND_COMPARISON'
 ]);
 
 function newId(prefix) {
@@ -190,6 +217,69 @@ function requirePaid(store, actor) {
     throw new ServiceError('ENTITLEMENT_REQUIRED', { state: status.state, reason: status.reason });
   }
   return status;
+}
+
+/* --------------------------------------------------------------- the two purchase questions, kept apart */
+
+/** Whether a subscription is recorded and still live. The one question that unlocks subscriber features. */
+function subscriptionAccess(store, actor) {
+  const status = statusFor(store, actor.account_id);
+  const subscribed = Boolean(status.entitled) && status.access_via === ACCESS_VIA.SUBSCRIPTION;
+  return { subscribed, status };
+}
+
+/**
+ * The cases this account unlocked with a one-time purchase, while that purchase is still live. The binding is
+ * the recorded purchase for a named case (`purchased_downloads`), never a client claim.
+ */
+function unlockedCaseIds(store, actor) {
+  const at = nowIso();
+  const liveOneTime = rowsFor(store.state(), actor.account_id)
+    .map((row) => observed(row, at))
+    .find((row) => row && ENTITLED_STATES.includes(row.state) && (row.access_via || ACCESS_VIA.NONE) === ACCESS_VIA.ONE_TIME_CREDIT);
+  if (!liveOneTime) return [];
+  return [...new Set((store.state().purchased_downloads || [])
+    .filter((d) => d.account_id === actor.account_id && d.case_id)
+    .map((d) => d.case_id))];
+}
+
+/**
+ * Whether this account may read the COMPLETE assessment of this case, and on what authority. A subscription
+ * covers every report; a one-time unlock covers only the report it was bought for.
+ */
+function assessmentAccess(store, actor, caseId) {
+  const sub = subscriptionAccess(store, actor);
+  if (sub.subscribed) {
+    return { complete_assessment: true, download: true, via: 'SUBSCRIPTION', case_id: caseId || null };
+  }
+  if (caseId && unlockedCaseIds(store, actor).includes(caseId)) {
+    return { complete_assessment: true, download: true, via: 'ONE_TIME_CREDIT', case_id: caseId };
+  }
+  return { complete_assessment: false, download: false, via: 'NONE', case_id: caseId || null };
+}
+
+/** The gate for a report's complete assessment (and its download). */
+function requireAssessmentAccess(store, actor, caseId) {
+  const access = assessmentAccess(store, actor, caseId);
+  if (!access.complete_assessment) {
+    throw new ServiceError('ASSESSMENT_ACCESS_REQUIRED', {
+      case_id: caseId || null,
+      purchase: 'unlock_this_report_or_subscribe'
+    });
+  }
+  return access;
+}
+
+/** The gate for every subscriber-only feature. A one-time report unlock never satisfies it. */
+function requireSubscriberFeature(store, actor) {
+  const sub = subscriptionAccess(store, actor);
+  if (!sub.subscribed) {
+    throw new ServiceError('SUBSCRIPTION_REQUIRED', {
+      state: sub.status.state,
+      access_via: sub.status.access_via || ACCESS_VIA.NONE
+    });
+  }
+  return sub.status;
 }
 
 /** What a selected plan grants, and how long its period is, in one place. */
@@ -742,6 +832,13 @@ module.exports = {
   ACCESS_VIA,
   EVENT_EFFECTS,
   PAID_ACTIONS,
+  FREE_ACTIONS,
+  SUBSCRIBER_ACTIONS,
+  subscriptionAccess,
+  unlockedCaseIds,
+  assessmentAccess,
+  requireAssessmentAccess,
+  requireSubscriberFeature,
   GRACE_HOURS_AFTER_A_FAILED_PAYMENT,
   MAX_RECORDED_REJECTIONS,
   IDEMPOTENCY_WINDOW_DAYS,

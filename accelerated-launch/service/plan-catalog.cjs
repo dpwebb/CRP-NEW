@@ -25,11 +25,12 @@ const PLAN_INTERVAL = Object.freeze({ report_once: 'one_time', monthly: 'month',
  */
 const GRANTS = Object.freeze({
   report_once: Object.freeze({
-    headline: 'One report lifecycle',
+    headline: 'Unlock this report',
     grants: Object.freeze([
-      'one uploaded PDF credit report held privately for one case',
-      'the supported-format reading of that report',
-      'the checks this build can actually run for your selected region, reported with their limitations'
+      'the complete assessment of the report already uploaded for this case, including every violation, probable violation and potential issue that was found',
+      'the report facts and the plain-English explanations behind those issues, and the next steps that apply to them',
+      'the complete assessment download for that report',
+      'this unlock covers that one report only: it does not include dispute packets or the subscriber features'
     ]),
     period_days: 30,
     access_via: 'ONE_TIME_CREDIT'
@@ -37,8 +38,10 @@ const GRANTS = Object.freeze({
   monthly: Object.freeze({
     headline: 'Monthly access',
     grants: Object.freeze([
-      'the same report lifecycle, for cases opened while the plan is active',
-      'the same supported-format reading and the same performed checks'
+      'complete assessments and assessment downloads for your reports',
+      'consumer-selected dispute packets, through selection, review, approval and download',
+      'report history and subsequent-report comparison',
+      'the other subscriber features this build records, for the monthly period'
     ]),
     period_days: 31,
     access_via: 'SUBSCRIPTION'
@@ -46,8 +49,10 @@ const GRANTS = Object.freeze({
   annual: Object.freeze({
     headline: 'Annual access',
     grants: Object.freeze([
-      'the same report lifecycle, for cases opened while the plan is active',
-      'the same supported-format reading and the same performed checks'
+      'complete assessments and assessment downloads for your reports',
+      'consumer-selected dispute packets, through selection, review, approval and download',
+      'report history and subsequent-report comparison',
+      'the other subscriber features this build records, for the annual period'
     ]),
     period_days: 366,
     access_via: 'SUBSCRIPTION'
@@ -59,10 +64,11 @@ const GRANTS = Object.freeze({
  * plans, and asserted by the suite. These are the product boundaries, not marketing caveats.
  */
 const NOT_GRANTED = Object.freeze([
-  'no finding and no legal conclusion of any kind',
-  'no letter, no dispute filing and no contact with any bureau',
+  'no legal conclusion and no legal advice',
+  'no letter, no dispute filing and no contact with any bureau (you send your own packet)',
   'no removal, no correction and no score change',
-  'no check of every possible legal issue'
+  'no check of every possible legal issue',
+  'a one-time unlock is limited to the one report it was bought for'
 ]);
 
 const PLAN_LABEL = Object.freeze({
@@ -104,7 +110,7 @@ function catalog() {
     plans,
     currency: BILLING_CURRENCY,
     not_granted: NOT_GRANTED.slice(),
-    note: 'One currency, priced once. A plan buys the reading of a report and the performed checks reported — nothing more, and nothing that is not in this list.',
+    note: 'One currency, priced once. Uploading a report and having it assessed are free. A purchase unlocks the reading of the report that was assessed — nothing more, and nothing that is not in this list.',
     upgrade_offer: { credit_cents: 595, currency: 'cad', valid_days: 90, applies_to: ['monthly', 'annual'], first_invoice_only: true },
     catalog_digest: digest
   };

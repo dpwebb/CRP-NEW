@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batches 24–27, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §13 at the end of this file — manifest `7AC42970C633A742A528FD1667380138CE2B33300E1E0B0FE7F4AE50BB752B43`, build `crp-v1-7ac42970c633a742`, 81 files in five groups, full local regression **PASS 5490, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`) describe earlier trees and are superseded.
+**Identity supersession (Batches 24–28, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §15 at the end of this file — manifest `CF8D50D666C602B7C85A51803CC59C6A5E4C4622A6266BB41A80FDA0A8301A5B`, build `crp-v1-cf8d50d666c602b7`, 81 files in five groups, full local regression **PASS 5574, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging still serves `crp-v1-7ac42970c633a742`**; Batch 28 is not deployed.
 
 ## 1. Exact candidate identity
 
@@ -308,4 +308,39 @@ The pre-check wording "Your report is ready to review" is no longer used for a c
 
 **Remaining staging problem.** `STRIPE_APP_ORIGINS` in the host configuration does not include the origin the served app returns to, so test-mode checkout cannot open; the value was not changed in this batch (the instruction was to use the existing host configuration).
 
+
+
+## 15. Batch 28 — OWNER-PURCHASE-FLOW-001: assessment before purchase, and the two separate purchase outcomes
+
+Date: October 5 2026 (America/Halifax). This owner correction **supersedes payment-before-assessment and every earlier instruction that granted dispute packets through a one-time purchase**. Deployment is paused for this batch: nothing was pushed and nothing was deployed, and staging continues to serve `crp-v1-7ac42970c633a742` until the correction is reviewed.
+
+**1. The implemented consumer flow.** A signed-in consumer uploads their own credit report and the assessment runs with **no purchase recorded**. The unpaid consumer then sees a prominent results summary — the total number of **distinct** issues found, the counts split across violations, probable violations and potential issues, and a **limited preview** of the most serious supported issue (a plain-English title, its confidence label and one short explanation, with no printed personal identifier). The consumer chooses a one-time report unlock or a subscription, and the purchase unlocks **the assessment already recorded** — no second upload and no second assessment.
+
+**2. The two purchase outcomes and the exact permissions.**
+
+| Operation | Free account | One-time unlocked report | Valid subscription |
+| --- | --- | --- | --- |
+| Upload and assess owned reports | Allowed (free) | Allowed (free) | Allowed (free) |
+| Counts and the limited teaser | Allowed | Allowed | Allowed |
+| Complete assessment and evidence | **Refused (402 `ASSESSMENT_ACCESS_REQUIRED`)** | **Selected report only** | Allowed |
+| Complete assessment download | Refused (402) | **Selected report only** | Allowed |
+| Dispute-packet selection, editing, approval, download | Refused (402 `SUBSCRIPTION_REQUIRED`) | **Refused (402)** | Allowed |
+| Report history and subsequent-report comparison | Refused (402) | **Refused (402)** | Allowed |
+| Read basic owned-file information, record own status, delete data | Allowed | Allowed | Allowed |
+
+The server enforces both boundaries in `entitlement.requireAssessmentAccess` and `entitlement.requireSubscriberFeature`; a one-time unlock covers exactly the case named in the recorded one-time purchase and never a subscriber feature. Nothing reads a redirect, a flag or a client claim.
+
+**3. Distinct counting and the teaser.** Counts come from the merged issue list (`issues.issuesFor`, which folds several rules supporting one issue into a single issue with its supported bases), so nothing is double counted, each issue sits in exactly one confidence category, and the category counts always add up to the total. The teaser is chosen by the documented `SEVERITY_ORDER` (`REMOVE_ENTRY` → `ADD_CONTENT` → `INCONSISTENCY`) which ranks the **kind** of concern, never the strength of the evidence, with ties broken on the stable issue id; no financial impact, probability or risk score is invented. A report with nothing found shows the approved sentence and no teaser; a report that cannot be assessed explains the next action instead of showing zero as a success.
+
+**4. Verification.** `cq-purchase-flow` (50 assertions) drives the real service through the free upload → assessment → summary → teaser path, every protected read refused, the distinct-count and severity-independence proofs, the one-time unlock (this report only, never another report, never a subscriber feature), the subscription path with packet approval and the stale-approval refusal, and cross-account isolation. `k-ui-smoke` (67) renders every state from the served client, including the unpaid summary with its counts and purchase choices. `bw-browser-wizzard` is the real-browser journey, extended with the unpaid summary, teaser, purchase prices and a screenshot. Full regression **PASS 5574, 0 failed, 0 skipped**.
+
+**5. Refreshed candidate identity (not deployed).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `CF8D50D666C602B7C85A51803CC59C6A5E4C4622A6266BB41A80FDA0A8301A5B` |
+| Internal build identity | `crp-v1-cf8d50d666c602b7` |
+| Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| Determinism | three consecutive regenerations; identical digest each run |
+| Deployment state | **NOT deployed.** Staging still serves `crp-v1-7ac42970c633a742`, per the delivery boundary of this batch |
 

@@ -8,7 +8,7 @@ const tu=require('../../format-families/tu-ca-consumer.cjs');
 const {buildPdf}=require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const uploadBody=(b,name)=>({originalFilename:name,declaredBytes:b.length,mimeType:'application/pdf',contentBase64:b.toString('base64')});
 async function pay(t,owner,caseId){
- const c=(await t.request('POST','/api/billing/checkout',{token:owner.token,body:{plan_code:'report_once',case_id:caseId}})).json.checkout;
+ const c=(await t.request('POST','/api/billing/checkout',{token:owner.token,body:{plan_code:'monthly'}})).json.checkout;
  await t.postEvent({id:'test_evt_'+crypto.randomBytes(8).toString('hex'),type:'checkout.session.completed',account_reference:owner.account_id,plan_code:c.plan.plan_code,session_reference:c.provider_reference,amount_cents:c.plan.amount_cents,currency:c.plan.currency,occurred_at:new Date().toISOString()});
 }
 async function run(t,check){

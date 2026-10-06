@@ -201,6 +201,8 @@ async function run(t, check) {
   // on account A and "Skip" on account B, submit, and confirm the two answers survive.
   const uiSource = fsNode.readFileSync(path.join(__dirname, '..', '..', 'ui', 'app.js'), 'utf8');
   const VIEW = {
+  assessment_access: { complete_assessment: true, complete_assessment_via: 'SUBSCRIPTION', assessment_download: true, dispute_packet: true, purchase_choices: [] },
+  assessment_summary: { result_id: 'res_ap', created_at: '2026-10-05T00:00:00.000Z', distinct_total: 1, by_confidence: { violation: 1, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY'] },
     result_id: 'r-browser',
     case: { country: 'US', region: 'US-NY' },
     result: { support: 'REPORT_SUPPORT', checks_performed: 0, observations: [], qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.', assessment: { plain: '' } },

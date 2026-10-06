@@ -34,21 +34,52 @@ async function openCase(t, actor) {
   return created.json.case.case_id;
 }
 
-/** Every paid route, driven directly with the owner's own token. */
-async function everyPaidRouteRefused(t, check, actor, caseId, label) {
+/**
+ * OWNER-PURCHASE-FLOW-001: the paid work is TWO questions, tested separately.
+ *   • FREE  — uploading an owned report, assessing it, and the labelled demonstration.
+ *   • the COMPLETE assessment of a report (and its download) — a one-time unlock of THAT report or a
+ *     subscription.
+ *   • SUBSCRIBER-ONLY — the response draft, the dispute packet and the report history/comparison.
+ */
+async function freeRoutesAllowed(t, check, actor, caseId, label) {
+  check.notEqual((await t.request('POST', `/api/cases/${caseId}/files`, { token: actor.token, body: NOT_A_PDF })).status, 402,
+    `${label}: uploading an owned report is not a paid step`);
+  check.notEqual((await t.request('POST', `/api/cases/${caseId}/evaluate`, { token: actor.token, body: {} })).status, 402,
+    `${label}: assessing an owned report is not a paid step`);
+  const demonstration = await t.request('POST', `/api/cases/${caseId}/demonstration`, { token: actor.token, body: { scenario: 'TWO_ACCOUNTS' } });
+  check.equal(demonstration.status, 201, `${label}: the labelled demonstration runs with no purchase recorded`);
+  check.equal(demonstration.json.counts_as_report_support, false, `${label}: and still counts as no report support`);
+}
+
+async function assessmentRoutesRefused(t, check, actor, caseId, label) {
   const attempts = [
-    ['POST', `/api/cases/${caseId}/files`, NOT_A_PDF, 'upload'],
-    ['POST', `/api/cases/${caseId}/evaluate`, {}, 'assessment'],
     ['POST', `/api/cases/${caseId}/results/res_anything/review`, {}, 'review'],
     ['POST', `/api/cases/${caseId}/review`, {}, 'review (latest)'],
-    ['GET', `/api/cases/${caseId}/response-draft`, undefined, 'response draft'],
-    ['GET', `/api/cases/${caseId}/demonstration-download`, undefined, 'download'],
-    ['POST', `/api/cases/${caseId}/demonstration`, { scenario: 'TWO_ACCOUNTS' }, 'demonstration']
+    ['GET', `/api/cases/${caseId}/report-download`, undefined, 'assessment download'],
+    ['GET', `/api/cases/${caseId}/demonstration-download`, undefined, 'demonstration download'],
+    ['GET', `/api/cases/${caseId}/results`, undefined, 'result list']
   ];
   for (const [method, route, body, name] of attempts) {
     const response = await t.request(method, route, { token: actor.token, body });
-    check.equal(response.status, 402, `${label}: ${name} is refused with a payment-required status`);
-    check.equal(response.json.error.code, 'ENTITLEMENT_REQUIRED', `${label}: ${name} names the entitlement refusal`);
+    check.equal(response.status, 402, `${label}: ${name} needs the complete assessment, so it is refused with a payment-required status`);
+    check.equal(response.json.error.code, 'ASSESSMENT_ACCESS_REQUIRED', `${label}: ${name} names the assessment-access refusal`);
+    check.ok(!/res_anything|TWO_ACCOUNTS/.test(response.text), `${label}: ${name} echoes nothing from the request`);
+  }
+}
+
+async function subscriberRoutesRefused(t, check, actor, caseId, label) {
+  const attempts = [
+    ['GET', `/api/cases/${caseId}/response-draft`, undefined, 'response draft'],
+    ['GET', `/api/cases/${caseId}/packet`, undefined, 'packet view'],
+    ['POST', `/api/cases/${caseId}/packet/select`, { issue_ids: [] }, 'packet selection'],
+    ['POST', `/api/cases/${caseId}/packet/approve`, {}, 'packet approval'],
+    ['GET', `/api/cases/${caseId}/packet-download`, undefined, 'packet download'],
+    ['GET', '/api/history', undefined, 'report history']
+  ];
+  for (const [method, route, body, name] of attempts) {
+    const response = await t.request(method, route, { token: actor.token, body });
+    check.equal(response.status, 402, `${label}: ${name} is a subscriber feature, so it is refused with a payment-required status`);
+    check.equal(response.json.error.code, 'SUBSCRIPTION_REQUIRED', `${label}: ${name} names the subscription refusal`);
     check.ok(!/res_anything|TWO_ACCOUNTS/.test(response.text), `${label}: ${name} echoes nothing from the request`);
   }
 }
@@ -66,7 +97,8 @@ async function purchaseSurface(t, check, evidence) {
   check.equal(status.json.payment.is_a_working_payment, false, 'and no working payment is claimed');
 
   const notGranted = JSON.stringify(status.json.not_granted);
-  check.ok(/no finding/i.test(notGranted), 'the surface states that no finding is granted');
+  check.ok(/no legal conclusion/i.test(notGranted), 'the surface states that no legal conclusion is granted');
+  check.ok(/one-time unlock is limited to the one report/i.test(notGranted), 'and states the limit of a one-time unlock');
   check.ok(/no letter/i.test(notGranted) && /no dispute/i.test(notGranted), 'and that no letter or dispute is granted');
   check.ok(/no removal/i.test(notGranted), 'and that no removal is granted');
 
@@ -81,7 +113,9 @@ async function purchaseSurface(t, check, evidence) {
   check.ok(!/sk_|pk_|whsec/i.test(planView.text), 'the billing surface carries no provider key');
 
   const caseId = await openCase(t, unpaid);
-  await everyPaidRouteRefused(t, check, unpaid, caseId, 'unpaid');
+  await freeRoutesAllowed(t, check, unpaid, caseId, 'unpaid');
+  await assessmentRoutesRefused(t, check, unpaid, caseId, 'unpaid');
+  await subscriberRoutesRefused(t, check, unpaid, caseId, 'unpaid');
 
   /* READING, RECORDING STATUS AND DELETION ARE NEVER GATED — the legacy rule that a lapsed consumer keeps
      read-only historical access, and that a consumer can always remove their own data. */
@@ -91,11 +125,11 @@ async function purchaseSurface(t, check, evidence) {
     'and record its own status');
 
   /* The bypass attempts the owner named: a client flag, a redirect-shaped query and a body field. */
-  const flagAttempt = await t.request('POST', `/api/cases/${caseId}/evaluate?paid=true&entitled=1&checkout=success`, {
-    token: unpaid.token,
-    body: { paid: true, entitled: true, plan_code: 'annual', entitlement: 'ACTIVE' }
+  const flagAttempt = await t.request('GET', `/api/cases/${caseId}/report-download?paid=true&entitled=1&checkout=success`, {
+    token: unpaid.token
   });
-  check.equal(flagAttempt.status, 402, 'a client flag in the body or query grants nothing');
+  check.equal(flagAttempt.status, 402, 'a client flag in the query grants nothing');
+  check.equal(flagAttempt.json.error.code, 'ASSESSMENT_ACCESS_REQUIRED', 'and the refusal names the missing report access');
   const headerAttempt = await t.request('GET', `/api/cases/${caseId}/demonstration-download`, {
     token: unpaid.token,
     headers: { 'x-crp-entitled': 'true', 'x-forwarded-user': 'owner' }
@@ -145,8 +179,8 @@ async function activationAndIdempotency(t, check, evidence) {
   check.ok(/checkout=success/.test(checkout.json.checkout.redirect_url), 'the decoy redirect carries a success flag');
   check.equal((await t.request('GET', '/api/entitlement', { token: buyer.token })).json.entitlement.entitled, false,
     'and opening it grants nothing at all');
-  check.equal((await t.request('POST', `/api/cases/${caseId}/files`, { token: buyer.token, body: NOT_A_PDF })).status, 402,
-    'and the paid step is still refused after the redirect-shaped URL is produced');
+  check.equal((await t.request('GET', `/api/cases/${caseId}/report-download`, { token: buyer.token })).status, 402,
+    'and the complete assessment is still refused after the redirect-shaped URL is produced');
 
   /* The redirect is FOLLOWED, exactly as a browser would, and then the same paid step is tried again. */
   const followed = await t.request('GET', '/?checkout=success&payment=paid&session=' + checkout.json.checkout.provider_reference, {});
@@ -293,8 +327,8 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
   check.equal(lapsedStatus.json.entitlement.state, 'EXPIRED', 'because the recorded expiry is in the past');
   check.equal(lapsedStatus.json.entitlement.can_read_historical, true, 'and it may still read what it has');
   const lapsedCase = await openCase(t, lapsed);
-  check.equal((await t.request('POST', `/api/cases/${lapsedCase}/evaluate`, { token: lapsed.token, body: {} })).status, 402,
-    'and paid work is refused');
+  check.equal((await t.request('GET', `/api/cases/${lapsedCase}/report-download`, { token: lapsed.token })).status, 402,
+    'and the complete assessment is refused');
   check.equal((await t.request('DELETE', `/api/cases/${lapsedCase}`, { token: lapsed.token })).status, 200,
     'and deletion is NOT refused for an expired account');
 
@@ -378,8 +412,8 @@ async function isolationAndLegacyParity(t, check, evidence) {
 
   check.equal((await t.request('GET', '/api/entitlement', { token: stranger.token })).json.entitlement.entitled, false,
     'the stranger holds no purchase');
-  check.equal((await t.request('POST', `/api/cases/${strangerCase}/evaluate`, { token: stranger.token, body: {} })).status, 402,
-    'and cannot start paid work on its own case');
+  check.equal((await t.request('GET', `/api/cases/${strangerCase}/report-download`, { token: stranger.token })).status, 402,
+    'and cannot read the complete assessment of its own case');
   check.equal((await t.request('POST', `/api/cases/${aliceCase}/evaluate`, { token: stranger.token, body: {} })).status, 403,
     'and cannot reach another account’s case at all — ownership is checked before entitlement');
   check.equal((await t.request('POST', `/api/cases/${strangerCase}/evaluate`, { token: entitled.token, body: {} })).status, 403,

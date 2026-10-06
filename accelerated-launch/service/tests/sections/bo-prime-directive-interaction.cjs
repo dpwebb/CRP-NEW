@@ -72,7 +72,7 @@ async function waitFor(fn, timeout) {
 
 async function payReportOnce(service, actor, caseId) {
   const checkout = await service.request('POST', '/api/billing/checkout', {
-    token: actor.token, body: { plan_code: 'report_once', case_id: caseId }
+    token: actor.token, body: { plan_code: 'monthly' }
   });
   const c = checkout.json.checkout;
   const event = {
@@ -223,16 +223,18 @@ async function run(service, check) {
   await waitFor(() => vm.runInContext('Boolean(state.entitlement && state.entitlement.entitled === false)', postCtx));
   postCtx.__VIEW_B = postViewB;
   vm.runInContext(`state.caseId = "${postCaseB.case_id}"; state.view = __VIEW_B; state.step = 2; render();`, postCtx);
-  check.ok(/id="choose-plan"/.test(postPanel()) && !/id="check-report"/.test(postPanel()), 'an upload whose access has ended offers the plan action instead of a check');
+  check.ok(/id="check-report"/.test(postPanel()), 'an uploaded report still offers the check action after access ended, because assessing is free');
+  check.ok(!/id="choose-plan"/.test(postPanel()), 'and never asks for a purchase before the assessment can run');
   check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(postPanel()), 'with the short access sentence, not the lengthy paragraph');
   check.ok(/Your report is uploaded/.test(postPanel()), 'and the upload is still described as uploaded, never refused');
-  check.equal((await service.request('POST', `/api/cases/${postCaseB.case_id}/evaluate`, { token: postOwner.token })).status, 402, 'the service still refuses the check without access (402 preserved)');
+  check.notEqual((await service.request('POST', `/api/cases/${postCaseB.case_id}/evaluate`, { token: postOwner.token })).status, 402, 'the check itself needs no access');
+  check.equal((await service.request('GET', `/api/cases/${postCaseB.case_id}/report-download`, { token: postOwner.token })).status, 402, 'while the complete assessment needs the unlock or a subscription');
 
   /* Billing states prices and purchase terms before purchase, with no internal readiness text. */
   vm.runInContext('state.step = 8; render();', postCtx);
   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
   const billingBox = post.elementById('billingView').innerHTML;
-  check.ok(/CAD 5\.95/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
+  check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
   check.ok(/Prices are in CAD and shown before you buy/.test(billingBox), 'and states the purchase terms before purchase');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
 

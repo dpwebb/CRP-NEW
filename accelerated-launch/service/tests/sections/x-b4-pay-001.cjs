@@ -126,7 +126,7 @@ async function run(service, check) {
   check.equal(dlA.json.error.code, 'NO_RESULT_TO_DOWNLOAD', 'and the only refusal is the missing result');
   const dlB = await service.request('GET', `/api/cases/${caseBId}/report-download`, { token: e.token });
   check.equal(dlB.status, 402, 'an unpurchased second case is refused');
-  check.equal(dlB.json.error.code, 'DOWNLOAD_NOT_ENTITLED', 'with the download-not-entitled code');
+  check.equal(dlB.json.error.code, 'ASSESSMENT_ACCESS_REQUIRED', 'with the assessment-access refusal');
 
   return {
     credits_exercised: credits().length,

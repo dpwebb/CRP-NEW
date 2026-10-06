@@ -117,6 +117,24 @@ const DEMONSTRATION_RESULT = {
   disclaimer: 'This assessment covers the checks listed in this report.'
 };
 
+/* OWNER-PURCHASE-FLOW-001: the case view now always carries the access decision and the free summary. */
+const STUB_ACCESS_FULL = { complete_assessment: true, complete_assessment_via: 'SUBSCRIPTION', assessment_download: true, dispute_packet: true, purchase_choices: [] };
+const STUB_SUMMARY = {
+  result_id: 'res_stub',
+  created_at: '2026-10-05T00:00:00.000Z',
+  distinct_total: 1,
+  by_confidence: { violation: 0, probable_violation: 0, potential: 1 },
+  teaser: {
+    issue_id: 'i1',
+    severity: 'INCONSISTENCY',
+    title: 'Two details on the report cannot both be right',
+    confidence: 'POTENTIAL',
+    confidence_label: 'Potential issue',
+    explanation: 'This report prints an opened date later than its closed date.'
+  },
+  severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY']
+};
+
 const CASE_VIEW = {
   case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS', status: 'OPEN' },
   status_label: 'Open — you have not recorded a next step yet',
@@ -132,6 +150,8 @@ const CASE_VIEW = {
     demonstration: true,
     extraction: { presentation_evidence: false, extraction_ran: true, accounts_read: 2, account_statuses: [], result_status: 'RESOLVED' }
   }],
+  assessment_access: STUB_ACCESS_FULL,
+  assessment_summary: STUB_SUMMARY,
   result: DEMONSTRATION_RESULT,
   reviewed: false,
   download: {
@@ -150,6 +170,8 @@ const REPORT_VIEW = {
   case: { case_id: 'report_case', country: 'US', region: 'US-NY', status: 'OPEN' },
   status_label: 'Open',
   files: [],
+  assessment_access: STUB_ACCESS_FULL,
+  assessment_summary: STUB_SUMMARY,
   result: REPORT_RESULT,
   result_id: 'res_report',
   reviewed: false,
@@ -161,6 +183,40 @@ const REPORT_VIEW = {
   download: { response_draft_available: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH', reason_plain: 'No result in this build may be used to produce a response draft.', demonstration_download_available: true },
   demonstration_scenarios: []
 };
+
+/* A FREE account's completed case: counts and one teaser, no complete assessment, with the purchase choices. */
+const FREE_VIEW = {
+  case: { case_id: 'free_case', country: 'CA', region: 'CA-NS', status: 'OPEN' },
+  status_label: 'Open',
+  files: [{
+    file_id: 'f1', original_filename: 'report.pdf', stored_bytes: 100, container: 'pdf',
+    upload_gate: { state: 'ACCEPTED_BY_UPLOAD_GATE' }, supported_format: true,
+    recognised_as: 'Equifax Canada consumer report', format_predicates: [], extraction: { admitted: true }
+  }],
+  assessment_access: {
+    complete_assessment: false, complete_assessment_via: 'NONE',
+    assessment_download: false, dispute_packet: false,
+    purchase_choices: ['unlock_this_report', 'monthly', 'annual']
+  },
+  assessment_summary: Object.assign({}, STUB_SUMMARY, { result_id: null }),
+  result: null,
+  result_id: null,
+  reviewed: false,
+  clarifications: [],
+  clarification_questions: [],
+  download: { response_draft_available: false, reason: 'NO_RESULT_YET', reason_plain: 'No result in this build may be used to produce a response draft.', demonstration_download_available: false },
+  demonstration_scenarios: []
+};
+
+/* A ONE-TIME unlocked case: the complete assessment and its download, but no dispute packet. */
+const ONE_TIME_VIEW = Object.assign({}, FREE_VIEW, {
+  assessment_access: {
+    complete_assessment: true, complete_assessment_via: 'ONE_TIME_CREDIT',
+    assessment_download: true, dispute_packet: false, purchase_choices: []
+  },
+  result: REPORT_RESULT,
+  result_id: 'res_once'
+});
 
 function makeResponder() {
   const state = { signed_in: false };
@@ -185,6 +241,13 @@ function makeResponder() {
       return { status: 201, body: { ok: true, demonstration: true, counts_as_report_support: false, label: 'INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT', result: DEMONSTRATION_RESULT } };
     }
     if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: DEMONSTRATION_RESULT } };
+    if (method === 'GET' && url === '/api/billing/plans') {
+      return { status: 200, body: { ok: true, plan_catalog: { currency: 'cad', plans: [
+        { plan_code: 'report_once', label: 'CRP One-Time Credit Report', amount_display: '$5.95 CAD', interval: 'one_time', grants: ['the complete assessment of the report already uploaded for this case'] },
+        { plan_code: 'monthly', label: 'CRP Monthly', amount_display: '$7.95 CAD', interval: 'month', grants: ['complete assessments and assessment downloads for your reports'] },
+        { plan_code: 'annual', label: 'CRP Annual', amount_display: '$79.50 CAD', interval: 'year', grants: ['complete assessments and assessment downloads for your reports'] }
+      ] } } };
+    }
     if (method === 'GET' && url === '/api/cases/case_stub/response-draft') {
       return { status: 409, body: { ok: false, error: { code: 'RESULT_NOT_ELIGIBLE_FOR_DRAFT', message: 'No response draft can be produced for this result.' } } };
     }
@@ -296,6 +359,8 @@ async function run(t, check) {
   };
   const assessedView = Object.assign({}, uploadedView, {
     result_id: 'r1',
+    assessment_access: STUB_ACCESS_FULL,
+    assessment_summary: STUB_SUMMARY,
     result: {
       support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2,
       issues: [{ issue_id: 'i1', confidence: 'POTENTIAL', eligible: true, explanation: 'This report prints an opened date later than its closed date.' }],
@@ -306,6 +371,8 @@ async function run(t, check) {
   });
   const quietView = Object.assign({}, uploadedView, {
     result_id: 'r2',
+    assessment_access: STUB_ACCESS_FULL,
+    assessment_summary: Object.assign({}, STUB_SUMMARY, { distinct_total: 0, by_confidence: { violation: 0, probable_violation: 0, potential: 0 }, teaser: null }),
     result: {
       support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2, issues: [], observations: [], report_consistency_checks: [],
       qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.',
@@ -318,23 +385,19 @@ async function run(t, check) {
   vm.runInContext('state.view = UPLOADED_VIEW; state.step = 2; state.entitlement = { entitled: false, state: "NONE", plain: "No active purchase is recorded against this account." }; state.assessing = false; state.assessment_error = null; state.purchase_needed = null; render();', ctx);
   check.ok(/Your report is uploaded/.test(panel.innerHTML) && /Your report is ready to review\./.test(panel.innerHTML), 'an uploaded report says it is uploaded and ready to review');
   check.ok(/Reviewing your report for Nova Scotia/.test(panel.innerHTML), 'the repeated jurisdiction paragraph is replaced by the short region label');
-  check.ok(/id="choose-plan"/.test(panel.innerHTML) && /Choose a plan to check my report</.test(panel.innerHTML), 'without access it offers the plan action');
-  check.ok(!/id="check-report"|id="view-results"/.test(panel.innerHTML), 'and no other next action');
+  check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'an uploaded report offers the check action with no purchase recorded');
+  check.ok(!/id="choose-plan"|id="view-results"/.test(panel.innerHTML), 'and no other next action');
   check.ok(!/No file has been uploaded|Choose a PDF report or report images in page order/.test(panel.innerHTML), 'and never asks for an upload the case already has');
   check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(panel.innerHTML), 'with the short access sentence in place of the lengthy paragraph');
 
-  vm.runInContext('state.entitlement = { entitled: true, state: "ACTIVE", plan_code: "report_once" }; render();', ctx);
-  check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'with access it offers the check action');
+  vm.runInContext('state.entitlement = { entitled: true, state: "ACTIVE", plan_code: "monthly" }; render();', ctx);
+  check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'the same check action is offered with a purchase recorded');
 
   vm.runInContext('state.assessing = true; render();', ctx);
   check.ok(/We are checking your report\./.test(panel.innerHTML), 'while processing it says the check is running');
   check.ok(!/id="check-report"|id="choose-plan"|id="view-results"/.test(panel.innerHTML), 'and offers no action while the check runs');
 
-  vm.runInContext('state.assessing = false; state.purchase_needed = "Checking a report needs a recorded purchase."; render();', ctx);
-  check.ok(/id="choose-plan"/.test(panel.innerHTML), 'a missing purchase offers the plan action');
-  check.ok(!/We could not check your report/.test(panel.innerHTML), 'and is never described as a failed check');
-
-  vm.runInContext('state.purchase_needed = null; state.assessment_error = "The file on this case could not be read."; render();', ctx);
+  vm.runInContext('state.purchase_needed = null; state.assessing = false; state.assessment_error = "The file on this case could not be read."; render();', ctx);
   check.ok(/We could not check your report:/.test(panel.innerHTML) && /The file on this case could not be read\./.test(panel.innerHTML), 'a failed check explains the specific problem');
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Try again to check my report</.test(panel.innerHTML), 'and offers the retry action');
 
@@ -350,13 +413,38 @@ async function run(t, check) {
   check.ok(/id="view-results"/.test(panel.innerHTML) && !/correct|compliant/i.test(panel.innerHTML), 'still offering the results action, and never implying the report is correct');
   vm.runInContext('state.view = ASSESSED_VIEW; render();', ctx);
 
+  /* The FREE completed state: counts, one teaser and the purchase choices on the results step. */
+  ctx.FREE_VIEW = FREE_VIEW;
+  ctx.ONE_TIME_VIEW = ONE_TIME_VIEW;
+  ctx.CASE_VIEW = CASE_VIEW;
+  vm.runInContext('state.view = FREE_VIEW; state.step = 2; render();', ctx);
+  check.ok(/Your results are ready/.test(panel.innerHTML) && /We found 1 reporting issue/.test(panel.innerHTML), 'an unpaid completed case announces the count it found');
+  check.ok(/id="view-results"/.test(panel.innerHTML) && !/Your report is ready to review/.test(panel.innerHTML), 'and offers the results without the pre-check wording');
+  vm.runInContext('state.step = 3; render();', ctx);
+  check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
+  check.ok(/violations: <b>0<\/b> · probable violations: <b>0<\/b> · potential issues: <b>1<\/b>/.test(panel.innerHTML), 'and the three category counts');
+  check.ok(/Potential issue/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and its confidence label');
+  check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$5\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
+  check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
+  check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');
+
+  /* The ONE-TIME unlocked state: complete findings, the download, and no packet. */
+  vm.runInContext('state.view = ONE_TIME_VIEW; state.step = 3; render();', ctx);
+  check.ok(/Check: <b>/.test(panel.innerHTML), 'a one-time unlock shows the complete findings');
+  check.ok(/id="download-assessment"/.test(panel.innerHTML), 'and offers the assessment download');
+  check.ok(/Dispute packets, report history and subsequent-report comparison are part of a subscription\./.test(panel.innerHTML), 'and explains that packets need a subscription');
+  check.ok(!/id="packet-block"/.test(panel.innerHTML), 'with no packet block for a one-time unlock');
+  vm.runInContext('state.step = 4; render();', ctx);
+  check.ok(/Dispute packets are part of a subscription\./.test(panel.innerHTML) && /id="go-billing"/.test(panel.innerHTML), 'the review step points a one-time unlock at the plans instead of the packet');
+  vm.runInContext('state.view = CASE_VIEW; state.step = 3; render();', ctx);
+
   /* An accepted upload is never described as refused. */
   ctx.GENERAL_VIEW = Object.assign({}, uploadedView, { files: [Object.assign({}, uploadedView.files[0], { supported_format: false, recognised_as: null })] });
-  vm.runInContext('state.view = GENERAL_VIEW; render();', ctx);
+  vm.runInContext('state.view = GENERAL_VIEW; state.step = 2; render();', ctx);
   check.ok(/Accepted and stored for this case/.test(panel.innerHTML), 'a generally-read upload says it was accepted and stored');
   check.ok(!/does not seem to be a credit report|could not read it/.test(panel.innerHTML), 'and is never described as refused');
   ctx.UNREADABLE_VIEW = Object.assign({}, uploadedView, { files: [Object.assign({}, uploadedView.files[0], { supported_format: false, recognised_as: null, extraction: { admitted: false, refusal_reason: 'UNREADABLE_DOCUMENT' } })] });
-  vm.runInContext('state.view = UNREADABLE_VIEW; render();', ctx);
+  vm.runInContext('state.view = UNREADABLE_VIEW; state.step = 2; render();', ctx);
   check.ok(/We could not read your report clearly enough/.test(panel.innerHTML), 'an unreadable upload is described as a reading outcome with a next step');
   check.ok(!/The file was not read:/.test(panel.innerHTML), 'and never leaks an internal reason token');
 

@@ -122,7 +122,7 @@ async function run(service, check) {
   const unpaidCase = (await service.request('POST', '/api/cases', { token: unpaid.token, body: { country: 'CA', region: 'CA-NL' } })).json.case;
   const refused = await service.request('POST', `/api/cases/${unpaidCase.case_id}/packet/correspondence`, { token: unpaid.token, body: { correspondence: DETAILS } });
   check.equal(refused.status, 402, 'an unpaid account cannot reach the packet path');
-  check.equal(refused.json.error.code, 'ENTITLEMENT_REQUIRED', 'with the entitlement refusal');
+  check.equal(refused.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal');
 
   const subscription = await service.pay(owner, 'monthly');
   check.equal(subscription.response.accepted, true, 'the account holds an active subscription, so the paid steps are reachable');

@@ -75,7 +75,7 @@ function renderUIFinding(observation) {
     qualifications: ['These are observations from your report, not legal findings.'],
     disclaimer: 'This assessment covers the checks listed in this report.'
   };
-  vm.runInContext('state.view = { case: { country: "US", region: "US-CA" }, result: ' + JSON.stringify(result) + ' }; state.step = 3; render();', ctx);
+  vm.runInContext('state.view = { case: { country: "US", region: "US-CA" }, result: ' + JSON.stringify(result) + ', assessment_access: { complete_assessment: true, complete_assessment_via: "SUBSCRIPTION", assessment_download: true, dispute_packet: true, purchase_choices: [] }, assessment_summary: { result_id: "res_aw", created_at: "2026-10-05T00:00:00.000Z", distinct_total: 0, by_confidence: { violation: 0, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ["REMOVE_ENTRY", "ADD_CONTENT", "INCONSISTENCY"] } }; state.step = 3; render();', ctx);
   return nodes.get('panel').innerHTML;
 }
 async function run(t, check) {

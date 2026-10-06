@@ -160,6 +160,12 @@ async function refreshAccess() {
     state.entitlement = null;
     state.payment = null;
   }
+  try {
+    /* The purchase choices appear on the results step as well as in billing, so the catalogue is loaded once. */
+    state.billing = await api('GET', '/api/billing/plans');
+  } catch {
+    state.billing = null;
+  }
 }
 
 function notices() {
@@ -327,36 +333,32 @@ function renderJurisdiction(panel) {
  * and the screen never asks for an upload the case already has.
  */
 function reportStatus(view) {
-  const entitled = Boolean(state.entitlement && state.entitlement.entitled);
+  const summary = view.assessment_summary || null;
+  const complete = Boolean(view.assessment_access && view.assessment_access.complete_assessment);
   const head = '<strong>Your report is uploaded</strong>';
-  if (view.result) {
-    /* A recorded assessment is finished: the consumer reviews what was found and chooses what to dispute. The
-       pre-check wording ("ready to review") never describes a completed assessment. */
-    const issues = Array.isArray(view.result.issues) ? view.result.issues : [];
-    const findings = (Array.isArray(view.result.observations) ? view.result.observations : []).filter((o) => o.is_a_finding === true);
-    const surfaced = issues.length > 0 || findings.length > 0;
-    return `<div class="note"><strong>Your results are ready</strong><br>${
-      surfaced
-        ? 'Review the issues we found and choose any you want to dispute.'
-        : 'We did not find a reporting issue in the information we could review.'
-    }</div>
+  if (summary) {
+    /* A recorded assessment is finished. A free account sees the counts and one teaser on the results step; the
+       complete findings need a one-time unlock of this report or a subscription. The pre-check wording ("ready to
+       review") is never used once a result exists, and no payment-before-assessment wording is used anywhere. */
+    const total = Number(summary.distinct_total || 0);
+    const noIssue = 'We did not find a reporting issue in the information we could review.';
+    const line = complete
+      ? (total > 0 ? 'Review the issues we found and choose any you want to dispute.' : noIssue)
+      : (total > 0
+        ? `We found ${total} reporting issue${total === 1 ? '' : 's'} in the information we could review. See the summary and the one we show you, then unlock the rest if you want it.`
+        : noIssue);
+    return `<div class="note"><strong>Your results are ready</strong><br>${line}</div>
       <button class="primary" id="view-results">View my results</button>`;
   }
   if (state.assessing) {
     return `<div class="note">${head}<br>We are checking your report.</div>`;
-  }
-  if (state.purchase_needed) {
-    return `<div class="note">${head}<br>Your report is ready to review.<br>${esc(state.purchase_needed)}</div>
-      <button class="primary" id="choose-plan">Choose a plan to check my report</button>`;
   }
   if (state.assessment_error) {
     return `<div class="note stop">${head}<br>Your report is ready to review.<br><span class="err">We could not check your report:</span> ${esc(state.assessment_error)}</div>
       <button class="primary" id="check-report">Try again to check my report</button>`;
   }
   return `<div class="note">${head}<br>Your report is ready to review.</div>
-    ${entitled
-      ? '<button class="primary" id="check-report">Check my report</button>'
-      : '<button class="primary" id="choose-plan">Choose a plan to check my report</button>'}`;
+    <button class="primary" id="check-report">Check my report</button>`;
 }
 
 /** Run the assessment for this case. A missing purchase is a plan decision, not a failed check. */
@@ -535,21 +537,104 @@ async function wireResultSelector(panel, view) {
 }
 
 
+/** The price strings the purchase choices show, taken from the recorded catalogue (never invented). */
+function planPrice(code) {
+  const catalog = (state.billing && state.billing.plan_catalog) || null;
+  const plan = catalog && (catalog.plans || []).find((p) => p.plan_code === code);
+  if (!plan) return '';
+  const suffix = plan.interval === 'month' ? ' per month' : (plan.interval === 'year' ? ' per year' : '');
+  return `${plan.amount_display}${suffix}`;
+}
+
+/** Start a purchase for one plan. The one-time unlock is bound to this case on the server. */
+function startCheckout(planCode) {
+  return run(async () => {
+    const body = { plan_code: planCode };
+    if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
+    const opened = await api('POST', '/api/billing/checkout', body);
+    state.notice = (opened.checkout && opened.checkout.redirect_grants_nothing)
+      ? 'Checkout opened. Access activates only after the payment provider verifies the payment; returning from the payment page by itself unlocks nothing.'
+      : 'Checkout opened.';
+  });
+}
+
+/**
+ * The free view of a completed assessment: how many distinct issues were found, how they split across the three
+ * categories, and ONE limited teaser. The complete details, the evidence and the download follow a purchase.
+ */
+function freeSummaryBlock(view) {
+  const summary = view.assessment_summary || {};
+  const by = summary.by_confidence || {};
+  const teaser = summary.teaser || null;
+  const total = Number(summary.distinct_total || 0);
+  const counts = total > 0
+    ? `<p class="evidence">Reporting issues found: <b>${total}</b> — violations: <b>${by.violation || 0}</b> · probable violations: <b>${by.probable_violation || 0}</b> · potential issues: <b>${by.potential || 0}</b></p>`
+    : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
+  const preview = teaser
+    ? `<div class="obs">
+      <span class="pill">${esc(teaser.confidence_label || 'Reporting issue')}</span>
+      <h3>${esc(teaser.title || '')}</h3>
+      <p>${esc(teaser.explanation || '')}</p>
+      <p class="evidence">One issue is previewed here. The complete assessment, the report facts and the next steps for every issue are part of the unlock or a subscription.</p>
+    </div>`
+    : '';
+  return `<div class="obs">
+    <span class="pill">SUMMARY — FREE</span>
+    <h3>What we found</h3>
+    ${counts}
+    ${preview}
+  </div>
+  <div class="obs">
+    <span class="pill">UNLOCK THE REST</span>
+    <h3>Choose what you want next</h3>
+    <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
+    <button class="primary" id="buy-report_once">Unlock this report — ${esc(planPrice('report_once'))}</button>
+    <button class="secondary" id="buy-monthly">Monthly — ${esc(planPrice('monthly'))}</button>
+    <button class="secondary" id="buy-annual">Annual — ${esc(planPrice('annual'))}</button>
+    <p class="evidence">Unlocking this report gives you its complete assessment: every violation, probable violation and potential issue, the report facts and explanations behind them, the next steps that apply, and the assessment download for that report. Dispute packets, report history and comparison are part of a subscription.</p>
+  </div>`;
+}
+
+/** A one-time unlocked report: the complete findings, the download, and the subscriber note. */
+function oneTimeNextStepsBlock() {
+  return `<div class="obs">
+    <span class="pill">UNLOCKED REPORT</span>
+    <h3>Next steps for this report</h3>
+    <p class="evidence">This unlock covers this report. Dispute packets, report history and subsequent-report comparison are part of a subscription.</p>
+    <button class="primary" id="download-assessment">Download my assessment</button>
+    <button class="secondary" id="go-subscribe">See subscription plans</button>
+  </div>`;
+}
+
 function renderResults(panel) {
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
   const view = state.view;
+  const access = view.assessment_access || {};
   const result = view.result;
+  const summary = view.assessment_summary || null;
   const demo = result && result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
   panel.innerHTML = `
     <h1>Results</h1>
-    <label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>
+    ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
     <p class="lede">Case for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
     ${notices()}
     <button class="primary" id="evaluate">Run the applicable checks on this case</button>
-    ${result ? resultBlock(result, demo) : '<div class="note">No result set exists for this case yet.</div>'}
-    ${result && !demo ? clarificationBlock(view) : ''}`;
+    ${summary
+      ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
+      : '<div class="note">No result set exists for this case yet.</div>'}
+    ${summary && access.complete_assessment && result && !demo
+      ? (access.dispute_packet ? clarificationBlock(view) : oneTimeNextStepsBlock())
+      : ''}`;
 
   el('evaluate').onclick = () => checkReport();
+  for (const code of ['report_once', 'monthly', 'annual']) {
+    const button = el('buy-' + code);
+    if (button) button.onclick = () => startCheckout(code);
+  }
+  const download = el('download-assessment');
+  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download`);
+  const subscribe = el('go-subscribe');
+  if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -772,6 +857,21 @@ function wireClarification(panel, view) {
 function renderReview(panel) {
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
   const view = state.view;
+  /* OWNER-PURCHASE-FLOW-001: the dispute packet is a subscriber feature. A one-time unlock gives the complete
+     assessment and its download; packet selection, correspondence, approval and download need a subscription. */
+  const access = view.assessment_access || {};
+  if (!access.dispute_packet) {
+    panel.innerHTML = `
+      <h1>Review and download</h1>
+      <p class="lede">Dispute packets are part of a subscription.</p>
+      ${notices()}
+      <div class="note">Your one-time unlock gives you the complete assessment of this report and its download.
+      Selecting issues, reviewing and editing the correspondence, approving the packet and downloading it are part
+      of a subscription.</div>
+      <button class="primary" id="go-billing">See subscription plans</button>`;
+    el('go-billing').onclick = () => run(async () => { state.step = STEP.BILLING; });
+    return;
+  }
   const result = view.result;
   panel.innerHTML = `
     <h1>Review and download</h1>

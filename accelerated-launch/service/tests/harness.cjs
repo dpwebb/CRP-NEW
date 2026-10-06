@@ -178,10 +178,16 @@ class TestService {
     return { checkout_id: checkout.json.checkout.checkout_id, reference, event, response: posted.json.event };
   }
 
-  /** Convenience: a signed-in account that HOLDS a recorded purchase, obtained through the real path. */
+  /**
+   * Convenience: a signed-in account that HOLDS a recorded purchase, obtained through the real path.
+   *
+   * OWNER-PURCHASE-FLOW-001: the full paid service (complete assessments, downloads, dispute packets, history
+   * and comparison) is unlocked by a SUBSCRIPTION. Sections that exercise those flows therefore hold a monthly
+   * plan; the one-time report unlock is exercised explicitly where a section tests it.
+   */
   async account(email) {
     const actor = await this.unpaidAccount(email);
-    actor.payment = await this.pay(actor, 'report_once');
+    actor.payment = await this.pay(actor, 'monthly');
     return actor;
   }
 
