@@ -129,7 +129,7 @@ async function run(service, check) {
   check.equal(config.output_permission.finding_allowed, true, 'which may emit a finding');
   check.equal(config.output_permission.packet_eligible, false, 'with no packet permission granted');
   check.deepEqual(config.applicability, { mode: 'EXACT', country: 'CA', region: 'CA-ON' }, 'and which runs only under an explicit Ontario selection');
-  check.equal(config.presentations_required || config.presentation_required, 'GENERAL-BUREAU-REPORT', 'on the admitted general bureau-report intake');
+  check.deepEqual(config.presentations_required || config.presentation_required, ['GENERAL-BUREAU-REPORT', 'FAM-TU-CA-CONSUMER'], 'on the general intake and source-linked TransUnion account dates');
   check.match(config.limb, /RECORDED PROVISION/, 'whose recorded basis is the located provision rather than an unrecorded subject');
   check.match(config.limb, /any credit information based on evidence that is not the best evidence reasonably available/, 'carrying the provision own wording');
   check.match(config.limb, /consolidation period from July 1, 2026/, 'with the applicable edition recorded');

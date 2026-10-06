@@ -226,8 +226,8 @@ async function messagingAndRelease(t, check, evidence) {
   check.deepEqual(scope.CA.families_admitted, ['FAM-TU-CA-CONSUMER'], 'and names which one, so the claim cannot be read as a widened Equifax contract');
   check.equal(scope.CA.equifax_family_admitted, false, 'while the Equifax presentation\'s own family admission stays false, reported separately');
   check.ok(/structural contract/i.test(scope.CA.plain), 'and the consumer is told the second admission is by measured structure');
-  check.ok(/No rule unit is seated on the TransUnion presentation/.test(scope.CA.plain),
-    'and that no rule unit is seated on it');
+  check.ok(/Applicable Canadian rules/.test(scope.CA.plain),
+    'Canadian scope reflects the current statutory and factual assessment paths');
   check.equal(scope.GB.present_day_support_claimed, false, 'the GB scope reports no present-day claim');
 
   /* THE PRIVATE UI'S OWN WORDS MUST MATCH THE REGISTRY, not the B2 era it was written in. */
@@ -238,8 +238,8 @@ async function messagingAndRelease(t, check, evidence) {
   check.ok(!/Nova Scotia selection only/.test(uiJs), 'and the stale Nova Scotia-only claim is gone from the UI');
   check.ok(!/for <em>one<\/em> report/.test(uiJs), 'and so is the stale one-presentation claim');
   check.ok(/no payment provider is connected/.test(uiJs), 'and the UI states the payment position plainly');
-  check.ok(/three kinds of check are kept apart/i.test(uiJs), 'and keeps the three check classes apart in the consumer’s words');
-  check.ok(/No issue found/.test(uiJs), 'and states what “no issue found” means to the consumer');
+  check.ok(/probable violations and potential errors/.test(uiJs), 'consumer wording states the supported issue assessment promise');
+  check.ok(/choose the ones you want to dispute/.test(uiJs), 'consumer wording connects assessment to consumer-selected packets');
   /* OWNER-CONSUMER-LANGUAGE-001 (footer-only disclaimer): exactly one in the main-page footer, none elsewhere. */
   const disclaimerMatches = html.match(/Credit Regulator Pro provides credit-report information, not legal advice\./g) || [];
   check.equal(disclaimerMatches.length, 1, 'exactly one legal-advice disclaimer appears in the main page');

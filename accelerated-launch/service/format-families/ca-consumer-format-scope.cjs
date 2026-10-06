@@ -154,8 +154,7 @@ function coverageSentence() {
     'consumer-FORMAT FAMILY is admitted, so a different Equifax Canada file is refused rather than read. ' +
     `Separately, a measured structural contract admits ${families}: the TransUnion Canada consumer disclosure, ` +
     'whose record boundary, printed date forms and field labels are its own and are not borrowed from the ' +
-    'Equifax layout. No rule unit is seated on the TransUnion presentation, and the Nova Scotia statutory ' +
-    'evaluation stays bound to the Equifax presentation. ' +
+    'Equifax layout. Applicable Canadian rules and factual-error checks run on the readable facts each reader supplies. ' +
     'The captured Canadian guides are documentation about field names, not report presentations.'
   );
 }

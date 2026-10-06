@@ -4,7 +4,7 @@
   "inputs": {
     "coverage_ledger": "0ba85b52a7f645f1f8e022e7409e005a7dd2b032c066bd2719ba399e81e0b23b",
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
-    "adapter_configs": "27046df5f0540f56867ac3be385b84c6a24c86408f05d60aa9e0a49f3bcba62a",
+    "adapter_configs": "79c5d0602839097b96fdf75d75ca0f189688c9c6703d824a7617bfd31cc7582a",
     "applicability_records": "de53f2e9d92642dc0424a2139c8dd92ad0842c5858952487b73f6fbe2c10afbf"
   },
   "record_classification_counts": {
@@ -3066,7 +3066,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -3074,8 +3075,11 @@
         "country": "CA",
         "region": "CA-ON"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4383,7 +4387,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4391,8 +4396,11 @@
         "country": "CA",
         "region": "CA-NT"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4421,7 +4429,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4429,8 +4438,11 @@
         "country": "CA",
         "region": "CA-NU"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4459,7 +4471,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4467,8 +4480,11 @@
         "country": "CA",
         "region": "CA-YT"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4497,7 +4513,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4505,8 +4522,11 @@
         "country": "CA",
         "region": "CA-BC"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4585,7 +4605,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4593,8 +4614,11 @@
         "country": "CA",
         "region": "CA-QC"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,
@@ -4623,7 +4647,8 @@
       "closed_field": "liability.closedDate",
       "period_years": 0,
       "record_kinds": [
-        "CONSUMER_CREDIT_LIABILITY"
+        "CONSUMER_CREDIT_LIABILITY",
+        "TU_CA_TRADELINE"
       ],
       "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
       "applicability": {
@@ -4631,8 +4656,11 @@
         "country": "CA",
         "region": "CA-SK"
       },
-      "presentation_required": "GENERAL-BUREAU-REPORT",
-      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "presentation_required": [
+        "GENERAL-BUREAU-REPORT",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_required_added_by": "Owner Canada-first correction, October 6, 2026: the admitted TransUnion reader supplies its own source-linked liability.openedDate and liability.closedDate; reuse the same accuracy comparison without changing jurisdiction or confidence.",
       "output_permission": {
         "max_conclusion": "probable_violation",
         "finding_allowed": true,

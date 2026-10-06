@@ -405,6 +405,9 @@ function everyCanadianSelectionAssesses(check, reading) {
       check.deepEqual([...new Set(evaluated.results.map((r) => r.check.adapter_id))],
         ['CA-AB-CPA-CPRR-S4-B-DEBT-LAST-PAYMENT-6Y'], `${region}: and it is the recorded Alberta reporting-period limb`);
       check.ok(evaluated.assessment_kinds.includes('STATUTORY_RULE_COMPARISON'), `${region}: so its assessment names the statutory class too`);
+    } else if (['CA-BC', 'CA-NT', 'CA-NU', 'CA-ON', 'CA-QC', 'CA-SK', 'CA-YT'].includes(region)) {
+      check.equal(evaluated.results.length, 1, `${region}: its accuracy rule evaluates the reader's own account dates`);
+      check.ok(evaluated.assessment_kinds.includes('STATUTORY_RULE_COMPARISON'), `${region}: assessment includes its statutory accuracy class`);
     } else {
       check.equal(evaluated.results.length, 0, `${region}: and no statutory comparison is performed on this presentation`);
       check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'], `${region}: so its assessment names the factual and common-error classes only`);
@@ -453,13 +456,13 @@ async function genuineReportJourney(t, check, specimens) {
   check.equal(evaluated.status, 201, 'the case evaluates');
   const result = evaluated.json.result;
   check.equal(result.support, 'ACTUAL_REPORT_EVIDENCE', 'and the consumer sees what kind of evidence this is');
-  check.equal(result.observations.length, 0, 'CA-ON produces no statutory observation, because none is recorded for it');
+  check.equal(result.observations.length, 1, 'CA-ON evaluates its recorded accuracy rule on this reader');
   check.equal(result.report_consistency_checks.length, 2, 'and exactly the two TransUnion factual checks are reported');
   check.ok(result.report_consistency_checks.every((c) => c.is_a_finding === false), 'none of them is a finding');
   check.ok(result.report_consistency_checks.every((c) => c.output_level === 'observation'), 'each is capped at an observation');
   check.ok(result.report_consistency_checks.every((c) => /not a legal finding|not a statutory finding/.test(c.qualification)),
     'and each qualification says in words that it is not a legal or statutory finding');
-  check.ok(!/[A-Z]{2}-(PIPEDA|CRA)/.test(JSON.stringify(result)), 'and no statutory instrument is named anywhere in the result');
+  check.ok(JSON.stringify(result.observations).includes('Consumer Reporting Act'), 'the result retains the applicable Ontario citation');
 
   const stored = t.service.store.state().files.filter((f) => f.case_id === caseId).pop().extraction;
   check.equal(stored.evidence_readings.factual_view.report_text_retained, false, 'the stored view retains no report text');

@@ -29,3 +29,11 @@ Real browser loaded the HTTPS Wizzard, account controls and journey navigation. 
 
 Previous release: /opt/crp-wizard-staging/releases/crp-wizard-77c1605b03e2aa8d.
 Before activation, the existing service was stopped and private data and environment were backed up beneath /opt/crp-wizard-staging/backups/before-crp-v1-4a88438669cba533-<timestamp>, with restricted permissions. Exact activation provenance is /opt/crp-wizard-staging/candidate-activation.json. Stop only crp-wizard-staging.service before restoring the previous release symlink/configuration. Preserve data; do not delete or restore private data blindly.
+
+## October 6 Canada-first served correction — current status
+
+Current build: crp-v1-75755118a71c9399. Manifest SHA-256: 75755118A71C93994F85EB3E9185DAD80220BD8E17FCA19E1007BD165502166A (81 files, including the required jurisdiction-data runtime dependency). Full local regression: 5397 passed, zero failed or skipped.
+
+Deployed to the authorized Hostinger VPS at https://staging.creditregulatorpro.com. Public health confirmed this build, staging environment and test billing mode. A real-browser fictional account selected Alberta and confirmed the active requirements/upload-to-issue-to-selected-packet wording; the obsolete no-statutory/no-check/no-TransUnion-rule statements are absent. No private report or payment was sent to staging. Complete hosted upload/checkout/packet acceptance and production readiness remain separate and pending.
+
+The prior build and private environment/data were backed up before the service switch; activation provenance and rollback location are recorded on the host in /opt/crp-wizard-staging/candidate-activation.json. Only the staging wizard service was changed. No live charge, Git push or production deployment occurred. This current entry supersedes earlier destination-pending and candidate-identity statements.

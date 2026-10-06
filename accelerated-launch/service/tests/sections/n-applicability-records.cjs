@@ -303,7 +303,7 @@ async function surfaceAvailability(t, check) {
     if (region.availability.state === 'SUPPORTED') {
       check.ok(region.executable_checks + region.factual_checks + region.policy_observations >= 1,
         `${region.value}: a supported region states how many checks of each class would run`);
-      check.equal(region.supported_format_families.length, 1, `${region.value}: and names the format family`);
+      check.ok(region.supported_format_families.length >= 1, `${region.value}: names its available reader paths`);
       check.equal(region.working_assessment, true);
       check.ok(region.assessment_kinds.length >= 1, `${region.value}: and names which classes of check actually ran`);
     } else {
@@ -334,4 +334,3 @@ async function surfaceAvailability(t, check) {
 }
 
 module.exports = { run, id: 'n-applicability', title: 'Explicit per-region applicability, tested for every region' };
-

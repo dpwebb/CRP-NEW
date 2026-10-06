@@ -178,7 +178,8 @@ const SECTION_FILES = [
   /* BATCH-18 — British Columbia accuracy, Quebec accuracy and New Brunswick judgment content. */
   'cl-bc-qc-nb-finish.cjs',
   /* BATCH-23 — AU listing reference / overdue amount and the recorded US specimen, real-file extraction. */
-  'cn-au-us-ingestion.cjs'];
+  'cn-au-us-ingestion.cjs',
+  'co-canada-upload-delivery.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

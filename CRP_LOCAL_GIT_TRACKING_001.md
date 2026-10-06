@@ -9,3 +9,5 @@ consumer-wizard is an existing independent Git repository, with its own history 
 Before each implementation batch, inspect git status. After verifying a coherent batch, inspect its diff and commit only the intended code/directive changes. Never add secrets, consumer reports or private runtime data. Do not use reset --hard, clean, or automatic staging to discard unrelated work.
 
 The configured remote is https://github.com/dpwebb/CRP-NEW.git. Remote configuration does not upload files. No push was performed during setup.
+
+October 6 exception: consumer-wizard/dist/jurisdiction-data.js is now explicitly tracked as a required runtime dependency in the parent baseline and included in the release manifest. Other files in the independent UI repository remain excluded and untouched.

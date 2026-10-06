@@ -201,20 +201,28 @@ function loadJurisdictionSurface() {
     countries: parsed.countries.map((c) => ({ value: c.code, label: c.display_name })),
     regions: parsed.regions.map((r) => {
       const row = byRegion.get(r.region_code) || {};
+      const configured = evaluation.applicableAdapters(r.region_code).confirmed;
+      const configs = require('../adapters/rule-adapters.cjs').ADAPTERS;
+      const regionalRules = configured.map((entry) => configs.find((a) => a.adapter_id === entry.adapter_id)).filter(Boolean);
+      const currentRow = Object.assign({}, row, {
+        executable_checks: regionalRules.length,
+        working_assessment: regionalRules.length > 0 || row.working_assessment === true,
+        supported_format_families: [...new Set(regionalRules.flatMap((a) => Array.isArray(a.presentation_required) ? a.presentation_required : [a.presentation_required]).filter(Boolean).concat(row.supported_format_families || []))]
+      });
       return {
         value: r.region_code,
         country: r.country_code,
         label: r.display_name,
         launch_ready: row.launch_ready === true,
         /* Plan section 2: a regional check's limitations are visible BEFORE anything is uploaded or bought. */
-        supported_format_families: row.supported_format_families || [],
-        executable_checks: typeof row.executable_checks === 'number' ? row.executable_checks : 0,
+        supported_format_families: currentRow.supported_format_families,
+        executable_checks: currentRow.executable_checks,
         factual_checks: typeof row.factual_checks === 'number' ? row.factual_checks : 0,
         policy_observations: typeof row.policy_observations === 'number' ? row.policy_observations : 0,
         assessment_kinds: row.assessment_kinds || [],
         working_assessment: row.working_assessment === true,
         applicability_state: row.applicability_state || null,
-        availability: availabilityFor(row)
+        availability: availabilityFor(currentRow)
       };
     }),
     note: 'Selection is explicit. No jurisdiction is advertised as launch ready by this build, and what each region can actually read and check is reported before you upload anything.',
@@ -251,8 +259,9 @@ function availabilityFor(row) {
     if (policy) parts.push(`${policy} policy observation${policy === 1 ? '' : 's'} taken from a statement your report makes about itself`);
     return {
       state: 'SUPPORTED',
-      plain: `This build reads ${families} for this selection and runs ${parts.length ? parts.join(' and ') : 'no check'}.` +
-        (statutory ? '' : ' No statutory evaluation is recorded for this selection, so none was applied.')
+      plain: statutory
+        ? 'Relevant reporting requirements are available for this selection. We apply the checks supported by the readable information in your report.'
+        : 'We review the readable information in your report for supported reporting errors.'
     };
   }
   if (row.format_path_for_the_market === 'REGISTERED_FOR_THE_MARKET') {

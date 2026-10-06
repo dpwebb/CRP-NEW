@@ -55,7 +55,7 @@ const SERVICE_NON_SHIPPED = [
 
 const GROUPS = [
   { id: 'RUNTIME', dirs: ['accelerated-launch/service'], filter: (n) => n.endsWith('.cjs'), exclude: SERVICE_NON_SHIPPED },
-  { id: 'READER_SUPPORT', dirs: ['internal-validation/ca-ns-last-payment-six-year'], filter: (n) => n.endsWith('.cjs'), exclude: ['internal-validation/ca-ns-last-payment-six-year/tests/'] },
+  { id: 'READER_SUPPORT', dirs: ['internal-validation/ca-ns-last-payment-six-year', 'consumer-wizard/dist'], filter: (n) => n.endsWith('.cjs') || n === 'jurisdiction-data.js', exclude: ['internal-validation/ca-ns-last-payment-six-year/tests/'] },
   { id: 'RULE_CONFIGURATION', dirs: ['accelerated-launch/adapters'], filter: (n) => /\.(json|cjs)$/.test(n) },
   { id: 'RULE_CONFIGURATION_TOP_LEVEL', dirs: ['accelerated-launch'], filter: (n) => /\.(json|cjs)$/.test(n), recursive: false },
   { id: 'SERVED_ASSETS', dirs: ['accelerated-launch/service/ui'], filter: () => true }

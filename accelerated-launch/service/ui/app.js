@@ -246,16 +246,9 @@ function coverage(region) {
   const scope = surface && surface.presentation_scope ? surface.presentation_scope[region.country] : null;
   return `<div class="note">
     <strong>${esc(region.label)} (${esc(region.value)})</strong> — ${esc(avail.plain)}
-    ${families ? `<br>Supported report format: <b>${esc(families)}</b>.` : '<br>No supported report format for this selection.'}
-    ${checks ? `<br>Checks that would run: <b>${esc(checks)}</b>, each capped at an observation.` : '<br>No check would run.'}
-    ${scope ? `<br><span class="evidence">${esc(scope.plain)}</span>` : ''}
-    <br><span class="evidence">Three kinds of check are kept apart and never added together: a recorded rule
-    comparison (a provision of law compared with a date your report prints), a factual observation (two things
-    your report prints, compared with each other) and a printed policy observation (a statement your report makes
-    about itself, compared with a date it prints). Only the last two can run for a selection with no recorded
-    statutory evaluation, and neither names a law or states that a rule was followed. Any difference reported is
-    a difference, not a finding. “No issue found” means only that the checks that ran found none of the things
-    they look for — not that the report is correct, and not that every possible legal issue was checked.</span>
+    <br><span class="evidence">Upload your report. We check its readable information for reporting issues,
+    probable violations and potential errors under the requirements relevant to your selection.
+    Review the issues, choose the ones you want to dispute, and create your packet to send to the bureau.</span>
   </div>`;
 }
 
