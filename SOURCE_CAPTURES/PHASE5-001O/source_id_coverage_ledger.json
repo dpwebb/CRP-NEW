@@ -41264,7 +41264,8 @@
       "source_entry_id": "CRP-LSRC-0392",
       "legacy_statute_or_provision": {
         "instrument_title": "The Credit Reporting Act (Saskatchewan)",
-        "provision_or_citation": "S.S. 2004, c. C-43.2, s. [VERIFY]",
+        "provision_or_citation": "s. 18(a)-(n) retrieved verbatim — implemented limbs s. 18(b) (most reliable evidence reasonably available) and s. 18(j) (judgment content) — official Saskatchewan Queen\u0027s Printer chapter C-43.2 (Publications Centre archive), FCAA current page confirms The Credit Reporting Act governs Saskatchewan credit reporting agencies — BATCH-19 2026-10-06",
+          "provision_or_citation_history": [{"value": "S.S. 2004, c. C-43.2, s. [VERIFY]", "state": "SUPERSEDED_BY_BATCH-19", "note": "the recorded placeholder is replaced by the retrieved verbatim provision set; the instrument and chapter are confirmed unchanged by the FCAA current page"}],
         "source_locator": "NOT RECORDED",
         "source_artifact": "docs\\citation-objects.tsv",
         "source_artifact_sha256": "C5915E80234A8C17FF7D2A466F12EFFF49F02143D0FFF7FAD269128E7AA3AE33",

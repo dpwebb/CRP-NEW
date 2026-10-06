@@ -160,6 +160,58 @@ async function run(service, check) {
   check.notEqual(stale.status, 200, 'a packet whose evidence changed after approval is not silently downloaded');
   check.match(JSON.stringify(stale.json || {}), /STALE/, 'and the refusal names the stale approval');
 
+  /* ---- 5. Saskatchewan: s.18(b) accuracy and s.18(j) judgment content. ---- */
+  const SKACC = 'CA-SK-CRA-S18-B-MOST-RELIABLE-EVIDENCE';
+  const SKJUD = 'CA-SK-CRA-S18-J-JUDGMENT-CONTENT-OMISSION';
+  const sk = evaluateFor(CONFLICT, 'CA-SK');
+  check.equal(hits(sk, SKACC).length, 1, "Saskatchewan's most-reliable-evidence duty runs on an ordinary account");
+  check.equal(findings(sk, SKACC).length, 1, 'and a printed date conflict supports it');
+  check.equal(findings(sk, SKACC)[0].classification, 'PROBABLE_VIOLATION', 'as PROBABLE, never a definite breach');
+  check.match(String(findings(sk, SKACC)[0].citation), /s\. 18\(b\)/, 'citing the retrieved Saskatchewan provision');
+  check.equal(findings(evaluateFor(BENIGN, 'CA-SK'), SKACC).length, 0, 'consistent printed dates raise nothing in Saskatchewan');
+  check.equal(findings(evaluateFor(ONE_DATE, 'CA-SK'), SKACC).length, 0, 'and a missing decisive printed value raises nothing');
+  const skCards = issues.issuesFor({ evaluation: { results: sk.results, common_errors: sk.common_errors }, extraction: extractionFor(CONFLICT) });
+  check.equal(skCards.length, 1, 'one card is offered for the one printed conflict');
+  check.equal((skCards[0].supported_bases || []).length, 2, 'carrying the factual conflict and the recorded rule');
+  const skj = evaluateFor(judgment({ creditor: 'Creditor: PRAIRIE HOLDINGS', address: 'Creditor Address: 12 Main St' }), 'CA-SK');
+  check.equal(findings(skj, SKJUD).length, 1, 'and an omitted judgment amount is a supported finding');
+  check.equal(findings(skj, SKJUD)[0].classification, 'VIOLATION', 'as a definite content violation');
+  check.match(String(findings(skj, SKJUD)[0].citation), /s\. 18\(j\)/, 'citing s.18(j)');
+  check.deepEqual(findings(skj, SKJUD)[0].content_omission.omitted, ['the judgment amount'], 'naming exactly the omitted content');
+  check.equal(findings(evaluateFor(judgment({ creditor: 'Creditor: PRAIRIE HOLDINGS', address: 'Creditor Address: 12 Main St', amount: 'Amount: 4000' }), 'CA-SK'), SKJUD).length, 0, 'a complete judgment entry raises nothing');
+  check.equal(findings(evaluateFor(judgment({ creditor: 'Creditor: PRAIRIE HOLDINGS', amount: 'Amount: 4000' }), 'CA-SK'), SKJUD).length, 0, 'an absent address alone is never claimed, because the provision requires it only if available');
+  check.equal(hits(evaluateFor(CONFLICT, 'CA-BC'), SKACC).length, 0, 'and the Saskatchewan limbs are not offered outside Saskatchewan');
+
+  /* ---- 6. Saskatchewan journey: select, reviewed correspondence, approval, entitled download. ---- */
+  const skOwner = await service.unpaidAccount('cl-sk@example.test');
+  const skStranger = await service.unpaidAccount('cl-sk-stranger@example.test');
+  const skCase = (await service.request('POST', '/api/cases', { token: skOwner.token, body: { country: 'CA', region: 'CA-SK' } })).json.case;
+  await payReportOnce(service, skOwner, skCase.case_id);
+  const skLines = judgment({ creditor: 'Creditor: PRAIRIE HOLDINGS', address: 'Creditor Address: 12 Main St' });
+  inject(service, skOwner, skCase.case_id, evaluateFor(skLines, 'CA-SK'), extractionFor(skLines));
+  const skView = async () => (await service.request('GET', `/api/cases/${skCase.case_id}/packet`, { token: skOwner.token })).json.view;
+  const skIssue = (await skView()).eligible_issues.find((i) => /18\(j\)/.test(String(i.citation || '')));
+  check.ok(skIssue, 'the Saskatchewan judgment-content issue is offered for selection');
+  check.equal(skIssue.request_type, 'CORRECTION', 'as a correction request for a definite content omission');
+  check.equal(skIssue.confidence, 'DEFINITE', 'at the definite confidence the violation carries');
+  check.match(String(skIssue.explanation), /without the judgment amount/, 'naming the omitted content in plain language');
+  check.equal((await service.request('POST', `/api/cases/${skCase.case_id}/packet/select`, { token: skStranger.token, body: { issue_ids: [skIssue.issue_id] } })).status, 403, 'another account cannot select on this packet');
+  check.equal((await service.request('GET', `/api/cases/${skCase.case_id}/packet-download`, { token: skStranger.token })).status, 403, 'nor download it');
+  await service.request('POST', `/api/cases/${skCase.case_id}/packet/select`, { token: skOwner.token, body: { issue_ids: [skIssue.issue_id] } });
+  check.equal((await skView()).packet.selected_count, 1, 'the consumer selects it');
+  await service.request('POST', `/api/cases/${skCase.case_id}/packet/correspondence`, { token: skOwner.token, body: { correspondence: DETAILS } });
+  check.match(JSON.stringify(await skView()), /Finish Batch Consumer/, 'the reviewed correspondence carries the consumer-supplied details');
+  check.equal((await service.request('POST', `/api/cases/${skCase.case_id}/packet/approve`, { token: skOwner.token })).status, 200, 'the packet approves');
+  const skDl = await service.request('GET', `/api/cases/${skCase.case_id}/packet-download`, { token: skOwner.token });
+  check.equal(skDl.status, 200, 'and the entitled download succeeds');
+  check.match(skDl.text, /18\(j\)/, 'naming the recorded Saskatchewan rule');
+  check.match(skDl.text, /judgment amount/, 'carrying the omitted content the correction asks for');
+  const skChanged = judgment({ creditor: 'Creditor: PRAIRIE HOLDINGS', address: 'Creditor Address: 12 Main St', amount: 'Amount: 4000' });
+  inject(service, skOwner, skCase.case_id, evaluateFor(skChanged, 'CA-SK'), extractionFor(skChanged));
+  const skStale = await service.request('GET', `/api/cases/${skCase.case_id}/packet-download`, { token: skOwner.token });
+  check.notEqual(skStale.status, 200, 'a packet whose evidence changed after approval is not silently downloaded');
+  evidence.binding_sk = { provision: 'The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(b) and s. 18(j)', ledger_row: 'CRP-LSRC-0392', instrument_confirmed_by: 'FCAA current page: a Saskatchewan credit reporting agency must be licensed and is governed by The Credit Reporting Act', retention_paragraphs_not_relied_on: ['s.18(d)', 's.18(e)', 's.18(f)', 's.18(g)', 's.18(k)', 's.18(n)'] };
+
   evidence.binding = {
     bc: { provision: 'Business Practices and Consumer Protection Act (B.C.), s. 109(1)(b)', ledger_row: 'CRP-LSRC-0338', duty: 'accuracy/content — most reliable evidence reasonably available', recorded_gap_untouched: ['s.109(1)(m)', 's.109(1)(n)', 's.109(1)(o)'] },
     qc: { provision: 'CQLR c. P-39.1, s. 11', ledger_row: 'CRP-LSRC-0391', duty: 'accuracy', recorded_lead_checked: 'Civil Code of Quebec art. 30 is unrelated (psychiatric custody)' },

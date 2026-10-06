@@ -308,6 +308,26 @@ const CONTENT_FINDING_WORDING = Object.freeze({
     uncertainty: 'The recorded rule requires a judgment entry to state the judgment creditor name, the creditor address if available and the amount. This report prints the entry as a complete public record and the missing item is absent from the entry itself rather than unread; an absent address alone is recorded and not claimed, because the provision requires the address only if available.',
     request: 'please correct this judgment entry so that it states the information the recorded rule requires, or remove the entry'
   },
+  /* BATCH-19: Saskatchewan s.18(b) accuracy. */
+  'CA-SK-CRA-S18-B-MOST-RELIABLE-EVIDENCE': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded duty requires the information to be based on the most reliable evidence reasonably available.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision is: The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(b) — no credit reporting agency shall include any information not based on the most reliable evidence reasonably available.',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
+  /* BATCH-19: Saskatchewan s.18(j) judgment content. */
+  'CA-SK-CRA-S18-J-JUDGMENT-CONTENT-OMISSION': {
+    label: 'A judgment is reported without information the recorded rule requires',
+    request_type: 'CORRECTION',
+    explain: (i) => {
+      const c = (i && i.content_omission) || {};
+      const omitted = Array.isArray(c.omitted) && c.omitted.length ? c.omitted.join(' and ') : 'information the recorded rule requires';
+      return `This report includes ${recordLabel(i)} without ${omitted}, which the recorded rule requires a judgment entry to state.`;
+    },
+    uncertainty: 'The recorded rule requires a judgment entry to state the judgment creditor name, the creditor address if available and the amount of the judgment. This report prints the entry as a complete public record and the missing item is absent from the entry itself rather than unread; an absent address alone is recorded and not claimed, because the provision requires the address only if available.',
+    request: 'please correct this judgment entry so that it states the information the recorded rule requires, or remove the entry'
+  },
   'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS': {
     label: 'The report prints two dates for one account that cannot both be right',
     request_type: 'VERIFICATION',
@@ -527,7 +547,8 @@ const FACTUAL_OVERLAP = Object.freeze({
   'CA-NU-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-YT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
-  'CA-QC-P-39-1-S11-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
+  'CA-QC-P-39-1-S11-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-SK-CRA-S18-B-MOST-RELIABLE-EVIDENCE': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
 });
 
 /** The two printed values a content finding measured, as one comparable key. */

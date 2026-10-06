@@ -97,6 +97,8 @@ const PACKET_ELIGIBLE_RULE_IDS = Object.freeze([
   'CA-PE-CRA-S9-3-J-DISMISSED-CHARGE',
   /* BATCH-18: New Brunswick s.10(3)(f) on the operative 2017 Act. */
   'CA-NB-CRSA-S10-3-F-JUDGMENT-CONTENT-OMISSION',
+  /* BATCH-19: Saskatchewan s.18(j). */
+  'CA-SK-CRA-S18-J-JUDGMENT-CONTENT-OMISSION',
   /* BATCH-14: Prince Edward Island s.9(3)(d). Available only where a COMPLETE judgment entry establishes
      that the amount is absent — never on an unresolved or unreadable field — with its issue-specific source
      facts, uncertainty and correction request recorded in service/issues.cjs. */

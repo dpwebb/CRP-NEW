@@ -1688,7 +1688,7 @@
         "basis": "s. 4(e) excepts the ADDRESS where the information was provided by the director under The Family Support Enforcement Act. The report never states that provenance, so an absent address alone is recorded as an omission candidate and is NOT decisive; the name and the amount carry no exception in the provision.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official New Brunswick consolidation (current to 1 January 2024) on owner-accepted row CRP-LSRC-0379. OPERATIVE LEGISLATION: the replacement Consumer Protection Act, S.N.B. 2024, c.1 repeals this Act by s.380 and comes into force only on a day fixed by proclamation (s.385); no proclamation is recorded, so the repeal has not taken effect and the 2017 Act remains operative for credit reporting (s.366(9) is licence transition). If a proclamation is produced the same limb moves unchanged to the 2024 Act s.254(3)(g). Only an established AMOUNT omission on a complete entry is decisive; packet-eligible.",
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official New Brunswick consolidation (current to 1 January 2024) on owner-accepted row CRP-LSRC-0379. OPERATIVE LEGISLATION: the replacement Consumer Protection Act, S.N.B. 2024, c.1 repeals this Act by s.380 and comes into force only on a day fixed by proclamation (s.385); no commencement record is shown by the official consolidation and the predecessor is not marked repealed, which is OFFICIAL EVIDENCE OF CONTINUING OPERATION but NOT PROOF that repeal has not occurred; the limb is therefore bound with that qualification and moves to s.254(3)(g) unchanged the moment a proclamation or repeal-in-force record is produced (s.366(9) is licence transition). If a proclamation is produced the same limb moves unchanged to the 2024 Act s.254(3)(g). Only an established AMOUNT omission on a complete entry is decisive; packet-eligible.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
     },
@@ -1729,6 +1729,94 @@
       "finding_gate": "ENABLED (2026-10-06): retrieved from the official LegisQuebec consolidation (French and official English). The recorded lead (Civil Code of Quebec art. 30, row CRP-LSRC-0391) concerns psychiatric custody and is UNRELATED to credit reporting, and c. P-40.1 (row CRP-LSRC-0342) holds no consumer-report content duty; the operative duty is c. P-39.1 s. 11. Accuracy only, no retention period; ceiling probable_violation.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-SK-CRA-S18-B-MOST-RELIABLE-EVIDENCE",
+      "legacy_rule_id": "ca-sk.cra.s18_b.most_reliable_evidence",
+      "source_entry_id": "CRP-LSRC-0392",
+      "ledger_row_ids": [
+        "CRP-LSRC-0392"
+      ],
+      "citation": "The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(b) — no credit reporting agency shall include in a credit report any information not based on the most reliable evidence reasonably available",
+      "limb": "Content of credit report, s.18(b): no credit reporting agency shall include in a credit report any information not based on the most reliable evidence reasonably available.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-SK"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Saskatchewan Queen's Printer chapter C-43.2 text (Publications Centre archive), and the Financial and Consumer Affairs Authority current page confirms that a Saskatchewan credit reporting agency \"must be licensed and is governed by The Credit Reporting Act\", so no successor statute applies. The duty relied on is s.18(b) — information not based on the most reliable evidence reasonably available — an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented and the retention paragraphs (s.18(d),(e),(f),(g),(k),(n)) stay separate and unimplemented. Ceiling probable_violation; packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-SK-CRA-S18-J-JUDGMENT-CONTENT-OMISSION",
+      "legacy_rule_id": "sk.judgment_content.required",
+      "source_entry_id": "CRP-LSRC-0392",
+      "ledger_row_ids": [
+        "CRP-LSRC-0392"
+      ],
+      "citation": "The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(j)",
+      "limb": "No credit reporting agency shall include in a credit report information as to any judgment against the consumer unless mention is made of the name and, if available, the address of the judgment creditor or the creditor's agent as given at the date of entry of the judgment and the amount of the judgment.",
+      "anchor_mode": "CONTENT_OMISSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "JUDGMENT_PUBLIC_RECORD_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-SK"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "BATCH-12 (2026-10-05): the judgment-content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, which reads judgment public records. No PR-01 widening and no new bureau-family admission.",
+      "content_omission": {
+        "decisive_contents": [
+          "amount"
+        ],
+        "omitted_from": [
+          "amount"
+        ],
+        "assignment_alternative_applies": false,
+        "read_but_not_treated_as_an_omission": [
+          "creditor_name",
+          "creditor_address"
+        ],
+        "why": "the reader can establish the AMOUNT absence from a complete entry that prints no amount caption and no dollar figure; an absent creditor NAME or ADDRESS caption cannot be distinguished from an uncaptioned value, so those readings are recorded and never claimed as omissions"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "s. 4(e) excepts the ADDRESS where the information was provided by the director under The Family Support Enforcement Act. The report never states that provenance, so an absent address alone is recorded as an omission candidate and is NOT decisive; the name and the amount carry no exception in the provision.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Saskatchewan chapter C-43.2, s.18(j), on the same instrument the FCAA confirms governs credit reporting agencies in Saskatchewan. Only an established AMOUNT omission on a complete entry is decisive; the provision requires the creditor address only \"if available\", so an absent address alone is recorded and never claimed. packet-eligible so the consumer chooses it.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
     }
   ]
 }
