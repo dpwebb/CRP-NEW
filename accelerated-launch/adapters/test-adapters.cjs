@@ -53,7 +53,7 @@ test('packet eligibility is narrow and conditional, and finding permission is re
   /* OWNER-POTENTIAL-ISSUE-001 extended this set from the three bounded California rules to the enumerated
      per-finding authorization in rule-adapters.cjs (PACKET_ELIGIBLE_RULE_IDS); it is never a blanket flag. */
   const PACKET_ELIGIBLE = new Set(adapters.PACKET_ELIGIBLE_RULE_IDS);
-  assert.equal(PACKET_ELIGIBLE.size, 11, 'exactly eleven admitted findings are packet-eligible');
+  assert.equal(PACKET_ELIGIBLE.size, 12, 'exactly twelve admitted findings are packet-eligible');
   for (const a of adapters.ADAPTERS) {
     assert.equal(typeof a.output_permission.packet_eligible, 'boolean', `${a.adapter_id} packet_eligible is boolean`);
     if (a.output_permission.packet_eligible === true) {
@@ -411,8 +411,13 @@ test('region applicability never confirms a relation the records file does not c
   assert.equal(mb[0].confirmed, true);
   assert.equal(mb[0].relation_id, null);
 
+  /* British Columbia now carries its own exact record (BATCH-18), from its own exact region row. */
+  const bc = adapters.adaptersForRegion('CA-BC');
+  assert.equal(bc.length, 1);
+  assert.equal(bc[0].adapter_id, 'CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE');
+
   /* A Canadian province with no exact record of its own and no relation: nothing is offered and nothing is invented. */
-  assert.deepEqual(adapters.adaptersForRegion('CA-BC'), []);
+  assert.deepEqual(adapters.adaptersForRegion('CA-SK'), []);
 
   /* A region the country-wide relation does not name is not served by it, pattern or not. */
   assert.deepEqual(adapters.adaptersForRegion('AU-ZZ'), []);

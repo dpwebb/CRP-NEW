@@ -226,7 +226,7 @@ function australiaAndCanada(check) {
   check.equal(caOn[0].confirmed, true, 'and is confirmed for that region');
   check.equal(adapters.adaptersForRegion('CA-MB').length, 1, 'Manitoba carries its own recorded limb (BATCH-12)');
   check.equal(adapters.adaptersForRegion('CA-MB')[0].adapter_id, 'CA-MB-PIA-S4-E-JUDGMENT-CONTENT-OMISSION', 'which is its own exact-region record, not an inherited Nova Scotia limb');
-  check.equal(adapters.adaptersForRegion('CA-BC').length, 0, 'while a province with no recorded limb of its own is offered none');
+  check.equal(adapters.adaptersForRegion('CA-SK').length, 0, 'while a province with no recorded limb of its own is offered none');
 }
 
 /* ------------------------------------------------------------------ every adapter's presentation dependency */
@@ -317,14 +317,14 @@ async function surfaceAvailability(t, check) {
   const byCountry = {};
   for (const region of surface.regions) byCountry[region.country] = (byCountry[region.country] || 0) + 1;
   check.deepEqual(byCountry, { CA: 13, US: 57, GB: 4, AU: 8 }, 'and the four country batches account for exactly those 82');
-  check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 78,
-    'seventy-eight of them ran or can run a recorded rule comparison of some kind');
+  check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 81,
+    'eighty-one of them ran or can run a recorded rule comparison of some kind');
   check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('REPORT_FACT_CONSISTENCY')).length, 17,
     'seventeen of them ran factual checks about what their report prints: the thirteen Canadian and four British');
   check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('PRINTED_POLICY_OBSERVATION')).length, 4,
     'and four of them ran a printed policy observation: the four British');
-  check.equal(surface.regions.filter((r) => !r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 4,
-    'four regions have no statutory evaluation recorded and say so in their own sentence');
+  check.equal(surface.regions.filter((r) => !r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 1,
+    'one region has no statutory evaluation recorded and says so in its own sentence');
   check.equal(surface.regions.filter((r) => r.availability.state !== 'SUPPORTED').length, 0,
     'no region is left without a registered format path any more');
   check.equal(counts.SUPPORTED + (counts.FORMAT_AVAILABLE_NO_CHECK || 0) + (counts.NO_REPORT_FORMAT || 0), 82,

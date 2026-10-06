@@ -4,10 +4,10 @@
   "inputs": {
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
     "coverage_ledger": "fd50c9ec8f21561161ebbb099d1717e12c08381563ba5552c66247a6144718f7",
-    "rule_adapter_catalog": "d76a7e99f9aed4484b211f559515e809a9c6c8e3f51bfc10280b3701a09e28a7",
-    "applicability_records": "f169c05b27911eca91bc94cefae78fbada67d1dcc2dc9c6044467352168f13ad",
-    "b3_evidence": "a9c2b365bc539663e27ed27f8ec3ca4f18b3d010ec6560e3586a4e82a554aa9c",
-    "b4_evidence": "e28947edf72a9b484c2cddb8f161561d817b975b065d1ec90b8e0182e70f3568"
+    "rule_adapter_catalog": "c0ddb2316a2e0ca0a7a13ca57f6693855dd9336904e345a3232b2edd59afc132",
+    "applicability_records": "e6cd47c5fcbf53ef86a5239753dd337ecd9f37eb335c22e8359b462129c6b738",
+    "b3_evidence": "a2d15ece6948d0c35be033e252c16e929b94e5796ac3ba74f7a44d469adba65d",
+    "b4_evidence": "c4b38cd32899bb834c520e761a922f21d0887fd045a8b2e6b3bdbc9eba4ce49c"
   },
   "regions": [
     {
@@ -100,7 +100,9 @@
         "LIMITATION_OR_RETENTION"
       ],
       "period_executable_candidates_exact": 0,
-      "adapter_coverage": [],
+      "adapter_coverage": [
+        "CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE@EXACT_MATCH"
+      ],
       "report_format_dependency": "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES",
       "concrete_blockers": [
         "LEGACY_OPERATIONAL_MAPPING_NOT_ESTABLISHED",
@@ -125,7 +127,7 @@
           "confirmed": false
         }
       ],
-      "applicability_state": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "applicability_state": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "applicability_confirmed": false,
       "format_path_for_the_market": "REGISTERED_FOR_THE_MARKET",
       "supported_format_families": [
@@ -135,11 +137,12 @@
       "factual_checks": 4,
       "policy_observations": 0,
       "assessment_kinds": [
-        "REPORT_FACT_CONSISTENCY"
+        "REPORT_FACT_CONSISTENCY",
+        "STATUTORY_RULE_COMPARISON"
       ],
       "working_assessment": true,
       "infrastructure_validation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
-      "b3_row_status": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "b3_row_status": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "held_limbs": [],
       "bound_limbs": [],
       "billing": "ENTITLEMENT_ENFORCED_SERVER_SIDE_PROVIDER_NOT_CONFIGURED",
@@ -242,7 +245,9 @@
         "LIMITATION_OR_RETENTION"
       ],
       "period_executable_candidates_exact": 0,
-      "adapter_coverage": [],
+      "adapter_coverage": [
+        "CA-NB-CRSA-S10-3-F-JUDGMENT-CONTENT-OMISSION@EXACT_MATCH"
+      ],
       "report_format_dependency": "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES",
       "concrete_blockers": [
         "LEGACY_OPERATIONAL_MAPPING_NOT_ESTABLISHED",
@@ -267,7 +272,7 @@
           "confirmed": false
         }
       ],
-      "applicability_state": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "applicability_state": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "applicability_confirmed": false,
       "format_path_for_the_market": "REGISTERED_FOR_THE_MARKET",
       "supported_format_families": [
@@ -277,11 +282,12 @@
       "factual_checks": 4,
       "policy_observations": 0,
       "assessment_kinds": [
-        "REPORT_FACT_CONSISTENCY"
+        "REPORT_FACT_CONSISTENCY",
+        "STATUTORY_RULE_COMPARISON"
       ],
       "working_assessment": true,
       "infrastructure_validation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
-      "b3_row_status": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "b3_row_status": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "held_limbs": [],
       "bound_limbs": [],
       "billing": "ENTITLEMENT_ENFORCED_SERVER_SIDE_PROVIDER_NOT_CONFIGURED",
@@ -487,7 +493,7 @@
       "evaluation_support": "EXERCISED_LOCALLY:0_CHECKS",
       "account_isolation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
       "upload_service": "EXERCISED_LOCALLY:ALL_82",
-      "vertical_slice_exercised": false,
+      "vertical_slice_exercised": true,
       "applicability_records": [
         {
           "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
@@ -558,7 +564,7 @@
       "evaluation_support": "EXERCISED_LOCALLY:0_CHECKS",
       "account_isolation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
       "upload_service": "EXERCISED_LOCALLY:ALL_82",
-      "vertical_slice_exercised": false,
+      "vertical_slice_exercised": true,
       "applicability_records": [
         {
           "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
@@ -773,7 +779,9 @@
         "UNCLASSIFIED_SOURCE_FAMILY"
       ],
       "period_executable_candidates_exact": 0,
-      "adapter_coverage": [],
+      "adapter_coverage": [
+        "CA-QC-P-39-1-S11-ACCURACY@EXACT_MATCH"
+      ],
       "report_format_dependency": "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES",
       "concrete_blockers": [
         "INSTRUMENT_CLASS_CONFIRMATION",
@@ -799,7 +807,7 @@
           "confirmed": false
         }
       ],
-      "applicability_state": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "applicability_state": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "applicability_confirmed": false,
       "format_path_for_the_market": "REGISTERED_FOR_THE_MARKET",
       "supported_format_families": [
@@ -809,11 +817,12 @@
       "factual_checks": 4,
       "policy_observations": 0,
       "assessment_kinds": [
-        "REPORT_FACT_CONSISTENCY"
+        "REPORT_FACT_CONSISTENCY",
+        "STATUTORY_RULE_COMPARISON"
       ],
       "working_assessment": true,
       "infrastructure_validation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
-      "b3_row_status": "MEANINGFUL_FACTUAL_ASSESSMENT_NO_STATUTORY_LIMB",
+      "b3_row_status": "MEANINGFUL_STATUTORY_AND_FACTUAL_ASSESSMENT",
       "held_limbs": [],
       "bound_limbs": [],
       "billing": "ENTITLEMENT_ENFORCED_SERVER_SIDE_PROVIDER_NOT_CONFIGURED",
@@ -927,7 +936,7 @@
       "evaluation_support": "EXERCISED_LOCALLY:0_CHECKS",
       "account_isolation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
       "upload_service": "EXERCISED_LOCALLY:ALL_82",
-      "vertical_slice_exercised": false,
+      "vertical_slice_exercised": true,
       "applicability_records": [
         {
           "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
@@ -6670,7 +6679,10 @@
       "CA-PE-CRA-S9-3-J-DISMISSED-CHARGE",
       "CA-NT-PIPEDA-SCH1-4-6-ACCURACY",
       "CA-NU-PIPEDA-SCH1-4-6-ACCURACY",
-      "CA-YT-PIPEDA-SCH1-4-6-ACCURACY"
+      "CA-YT-PIPEDA-SCH1-4-6-ACCURACY",
+      "CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE",
+      "CA-NB-CRSA-S10-3-F-JUDGMENT-CONTENT-OMISSION",
+      "CA-QC-P-39-1-S11-ACCURACY"
     ],
     "executable_rule_candidates": {
       "total": 27,
@@ -7120,7 +7132,7 @@
       }
     }
   },
-  "regions_with_an_adapter": 78,
+  "regions_with_an_adapter": 81,
   "regions_with_exact_period_candidates": 3,
   "regions_carrying_a_recorded_limb_held_for_an_unprinted_anchor": 0,
   "recorded_limbs_held_for_an_unprinted_anchor": [],
@@ -7492,7 +7504,7 @@
     "service_path": "accelerated-launch/service/",
     "evidence": "accelerated-launch\\service\\out\\b2-evidence.json",
     "totals": {
-      "passed": 5097,
+      "passed": 5173,
       "failed": 0,
       "skipped": 0
     },
@@ -7569,8 +7581,11 @@
         "CA-MB",
         "CA-NL",
         "CA-NS",
+        "CA-NT",
+        "CA-NU",
         "CA-ON",
         "CA-PE",
+        "CA-YT",
         "US-AK",
         "US-AL",
         "US-AR",
@@ -7660,8 +7675,11 @@
       "CA-MB",
       "CA-NL",
       "CA-NS",
+      "CA-NT",
+      "CA-NU",
       "CA-ON",
       "CA-PE",
+      "CA-YT",
       "GB-ENG",
       "GB-NIR",
       "GB-SCT",
@@ -7733,7 +7751,7 @@
     "applicability_records": "accelerated-launch\\adapters\\applicability-records.json",
     "evidence": "accelerated-launch\\service\\out\\b3-evidence.json",
     "totals": {
-      "passed": 5097,
+      "passed": 5173,
       "failed": 0,
       "skipped": 0
     },
@@ -7978,9 +7996,6 @@
         "label": "PRINTED_POLICY_OBSERVATION_NOT_A_STATUTORY_FINDING"
       },
       "regions_with_a_working_assessment_but_no_statutory_limb": [
-        "CA-BC",
-        "CA-NB",
-        "CA-QC",
         "CA-SK"
       ],
       "statutory_checks_named_by_a_factual_check": 0
@@ -8079,9 +8094,6 @@
       "US-WY"
     ],
     "regions_with_a_working_assessment_and_no_statutory_limb": [
-      "CA-BC",
-      "CA-NB",
-      "CA-QC",
       "CA-SK"
     ],
     "regions_with_a_confirmed_relation": 69,
@@ -8282,7 +8294,7 @@
     "authority": "OWNER-ALL82-001",
     "evidence": "accelerated-launch\\service\\out\\b4-evidence.json",
     "totals": {
-      "passed": 5097,
+      "passed": 5173,
       "failed": 0,
       "skipped": 0
     },
@@ -8306,7 +8318,7 @@
         "code": "ENTITLEMENT_REQUIRED"
       },
       "activation": {
-        "checkout_id": "chk_a1b1cba482c06993a90e896e",
+        "checkout_id": "chk_dffd8a2d438e96c673bc4783",
         "entitled_after_event": true,
         "duplicate_event_is_idempotent": true,
         "client_confirmation_refused": true,

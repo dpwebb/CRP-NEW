@@ -280,6 +280,34 @@ const CONTENT_FINDING_WORDING = Object.freeze({
     uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision states that personal information shall be as accurate, complete and up-to-date as is necessary for the purposes for which it is to be used (Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6).',
     request: 'please verify which of these two printed values is correct and correct the entry'
   },
+  /* BATCH-18 */
+  'CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded duty requires the information to rest on the most reliable evidence reasonably available.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision is: Business Practices and Consumer Protection Act (British Columbia), S.B.C. 2004, c. 2, s. 109(1)(b) — a reporting agency must not include information not based on the most reliable evidence reasonably available.',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
+  /* BATCH-18 */
+  'CA-QC-P-39-1-S11-ACCURACY': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded duty requires the information to rest on the most reliable evidence reasonably available.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision is: Act respecting the protection of personal information in the private sector (Quebec), CQLR c. P-39.1, s. 11 — personal information held on another person must be up to date and accurate when used to make a decision about that person.',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
+  /* BATCH-18: New Brunswick s.10(3)(f) judgment content, on the operative 2017 Act. */
+  'CA-NB-CRSA-S10-3-F-JUDGMENT-CONTENT-OMISSION': {
+    label: 'A judgment is reported without information the recorded rule requires',
+    request_type: 'CORRECTION',
+    explain: (i) => {
+      const c = (i && i.content_omission) || {};
+      const omitted = Array.isArray(c.omitted) && c.omitted.length ? c.omitted.join(' and ') : 'information the recorded rule requires';
+      return `This report includes ${recordLabel(i)} without ${omitted}, which the recorded rule requires a judgment entry to state.`;
+    },
+    uncertainty: 'The recorded rule requires a judgment entry to state the judgment creditor name, the creditor address if available and the amount. This report prints the entry as a complete public record and the missing item is absent from the entry itself rather than unread; an absent address alone is recorded and not claimed, because the provision requires the address only if available.',
+    request: 'please correct this judgment entry so that it states the information the recorded rule requires, or remove the entry'
+  },
   'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS': {
     label: 'The report prints two dates for one account that cannot both be right',
     request_type: 'VERIFICATION',
@@ -497,7 +525,9 @@ const FACTUAL_OVERLAP = Object.freeze({
   'GB-UK-GDPR-ART5-1-D-ART16-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-NT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-NU-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
-  'CA-YT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
+  'CA-YT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-QC-P-39-1-S11-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
 });
 
 /** The two printed values a content finding measured, as one comparable key. */

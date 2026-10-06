@@ -1603,6 +1603,132 @@
       "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-BC-BPCPA-S109-1-B-MOST-RELIABLE-EVIDENCE",
+      "legacy_rule_id": "ca-bc.bpcpa.s109_1_b.most_reliable_evidence",
+      "source_entry_id": "CRP-LSRC-0338",
+      "ledger_row_ids": [
+        "CRP-LSRC-0338"
+      ],
+      "citation": "Business Practices and Consumer Protection Act (British Columbia), S.B.C. 2004, c. 2, s. 109(1)(b) — Act current to September 22, 2026",
+      "limb": "A reporting agency must not include in a report given under section 108(1)(a) any of the following: ... (b) information not based on the most reliable evidence reasonably available.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-BC"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official King's Printer consolidation of Part 6 (current to September 22, 2026). The duty is s.109(1)(b) — an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented; the recorded gap on s.109(1)(m)/(n)/(o) stays open and separate. Ceiling probable_violation; packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-NB-CRSA-S10-3-F-JUDGMENT-CONTENT-OMISSION",
+      "legacy_rule_id": "nb.judgment_content.required",
+      "source_entry_id": "CRP-LSRC-0379",
+      "ledger_row_ids": [
+        "CRP-LSRC-0379"
+      ],
+      "citation": "Credit Reporting Services Act (New Brunswick), S.N.B. 2017, c. 27, s. 10(3)(f)",
+      "limb": "A credit reporting agency shall not include in a credit report information as to a monetary judgment against a consumer unless mention is made of the name and, if available, the address of the judgment creditor or the judgment creditor's agent as given at the date of entry of the judgment, and the amount.",
+      "anchor_mode": "CONTENT_OMISSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "JUDGMENT_PUBLIC_RECORD_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NB"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "BATCH-12 (2026-10-05): the judgment-content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, which reads judgment public records. No PR-01 widening and no new bureau-family admission.",
+      "content_omission": {
+        "decisive_contents": [
+          "amount"
+        ],
+        "omitted_from": [
+          "amount"
+        ],
+        "assignment_alternative_applies": false,
+        "read_but_not_treated_as_an_omission": [
+          "creditor_name",
+          "creditor_address"
+        ],
+        "why": "the reader can establish the AMOUNT absence from a complete entry that prints no amount caption and no dollar figure; an absent creditor NAME or ADDRESS caption cannot be distinguished from an uncaptioned value, so those readings are recorded and never claimed as omissions"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "s. 4(e) excepts the ADDRESS where the information was provided by the director under The Family Support Enforcement Act. The report never states that provenance, so an absent address alone is recorded as an omission candidate and is NOT decisive; the name and the amount carry no exception in the provision.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official New Brunswick consolidation (current to 1 January 2024) on owner-accepted row CRP-LSRC-0379. OPERATIVE LEGISLATION: the replacement Consumer Protection Act, S.N.B. 2024, c.1 repeals this Act by s.380 and comes into force only on a day fixed by proclamation (s.385); no proclamation is recorded, so the repeal has not taken effect and the 2017 Act remains operative for credit reporting (s.366(9) is licence transition). If a proclamation is produced the same limb moves unchanged to the 2024 Act s.254(3)(g). Only an established AMOUNT omission on a complete entry is decisive; packet-eligible.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-QC-P-39-1-S11-ACCURACY",
+      "legacy_rule_id": "ca-qc.p39_1.s11.accuracy",
+      "source_entry_id": "CRP-LSRC-0391",
+      "ledger_row_ids": [
+        "CRP-LSRC-0391"
+      ],
+      "citation": "Act respecting the protection of personal information in the private sector (Quebec), CQLR c. P-39.1, s. 11 — personal information held on another person must be up to date and accurate when used to make a decision about that person",
+      "limb": "RECORDED PROVISION: CQLR c. P-39.1, s. 11 — every person carrying on an enterprise must ensure that any personal information held on another person is up to date and accurate when used to make a decision in relation to the person concerned. Where the report own two printed values conflict the information cannot both be up to date and accurate; the finding is PROBABLE only.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-QC"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved from the official LegisQuebec consolidation (French and official English). The recorded lead (Civil Code of Quebec art. 30, row CRP-LSRC-0391) concerns psychiatric custody and is UNRELATED to credit reporting, and c. P-40.1 (row CRP-LSRC-0342) holds no consumer-report content duty; the operative duty is c. P-39.1 s. 11. Accuracy only, no retention period; ceiling probable_violation.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     }
   ]
 }
