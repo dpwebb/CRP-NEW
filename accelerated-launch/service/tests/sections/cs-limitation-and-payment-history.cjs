@@ -136,7 +136,20 @@ function runLimitationControls(check, evidence) {
   check.equal(ab.performed.length, 0, 'a jurisdiction without accepted parameters produces no assessment');
   check.equal(ab.withheld[0].reason, 'NO_RECORDED_LIMITATION_PARAMETERS', 'and records exactly what is missing');
   check.ok(/limitation statute for CA-AB/.test(ab.withheld[0].missing_prerequisite), 'naming the jurisdiction and the element it lacks');
-  check.deepEqual(ab.recorded_jurisdictions, ['CA-NS', 'CA-ON'], 'the parameter set covers only Nova Scotia and Ontario');
+  check.deepEqual(ab.recorded_jurisdictions, ['CA-MB', 'CA-NS', 'CA-ON'], 'the parameter set records each supported exact jurisdiction');
+  const mb = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-MB', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
+  check.equal(mb.summary.may_be_outside, 1, 'Manitoba old adverse entry opens a timing verification concern');
+  check.equal(mb.performed[0].period_ends, '2026-01-09', 'the two-year screening comparison uses the printed date');
+  check.ok(/NOT_LEGAL_DISCOVERY/.test(mb.performed[0].start_date.selection_rule), 'the printed date does not establish discovery');
+  check.ok(/transition/.test(mb.performed[0].unknown_conditions.join(' ')), 'transition uncertainty remains explicit');
+  check.ok(/demand obligation/.test(mb.performed[0].unknown_conditions.join(' ')), 'demand timing remains unresolved');
+  const mbBoundary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-MB', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 10, 2024' })]) });
+  check.equal(mbBoundary.summary.may_be_outside, 0, 'the Manitoba anniversary does not trigger a concern');
+  const mbBenign = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-MB', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([satisfactoryBlock()]) });
+  check.equal(mbBenign.performed.length, 0, 'a satisfactory Manitoba account is not assessed as adverse');
   const on = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-ON', assessment_clock: clockAt('2026-01-10'),
     extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
   check.equal(on.summary.may_be_outside, 1, 'Ontario old adverse entry opens a qualified verification concern');
@@ -446,6 +459,36 @@ async function runConsumerPath(service, check, evidence) {
     200, 'approves that selection');
   check.equal((await service.request('GET', `/api/cases/${onId}/packet-download`, { token: actor.token })).status,
     200, 'and downloads the entitled packet');
+  const mbCase = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-MB' } });
+  check.equal(mbCase.status, 201, 'the Manitoba selection creates its own case');
+  const mbId = mbCase.json.case.case_id;
+  const mbExtraction = extractionOf([adverseBlock({ creditor: 'SYNTHETIC MANITOBA DEBT', lastPayment: 'Jan 09, 2024' })]);
+  const mbEvaluation = evaluateCase({ country: 'CA', region: 'CA-MB', extraction: mbExtraction, assessment_clock: clockAt('2026-01-10') });
+  service.service.store.update((state) => {
+    state.results.push({ result_id: `res_cs_${crypto.randomBytes(8).toString('hex')}`, case_id: mbId,
+      account_id: actor.account_id, file_id: null, file_ids: [], evaluation: mbEvaluation,
+      rendered: results.renderResultSet({ evaluation: mbEvaluation, extraction: mbExtraction }),
+      extraction: mbExtraction, clarification_eligibility: [], reviewed_at: null, created_at: new Date().toISOString() });
+  });
+  const mbView = (await service.request('GET', `/api/cases/${mbId}`, { token: actor.token })).json.view;
+  const mbItem = mbView.result.issues.find((i) => i.limitation_concern === true);
+  check.ok(mbItem, 'the Manitoba timing question reaches the consumer issue list');
+  check.equal(mbItem && mbItem.account_identity.name, 'SYNTHETIC MANITOBA DEBT', 'on its own account');
+  check.ok(mbItem && /does not establish when the claim was discovered/.test(mbItem.explanation),
+    'the explanation does not turn a printed date into legal discovery');
+  check.ok(mbItem && /when this claim was discovered/.test(mbItem.request_wording),
+    'the request asks for the decisive missing fact');
+  check.ok(mbItem && /demand and default/.test(mbItem.request_wording), 'the request asks for a possible demand date');
+  check.equal(mbItem && mbItem.request_type, 'VERIFICATION', 'without a breach or deletion claim');
+  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/select`,
+    { token: actor.token, body: { issue_ids: [mbItem.issue_id] } })).status, 200, 'the consumer selects the Manitoba issue');
+  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/correspondence`,
+    { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
+    200, 'reviews the Manitoba correspondence');
+  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/approve`, { token: actor.token })).status,
+    200, 'approves the Manitoba selection');
+  check.equal((await service.request('GET', `/api/cases/${mbId}/packet-download`, { token: actor.token })).status,
+    200, 'and downloads the entitled Manitoba packet');
   evidence.consumer_path = { distinct_total: view.assessment_summary.distinct_total, selected_issue: item.issue_id };
 }
 

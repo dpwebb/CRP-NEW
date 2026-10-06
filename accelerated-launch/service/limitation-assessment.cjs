@@ -87,6 +87,30 @@ const PARAMETERS = Object.freeze({
       'whether a court proceeding or judgment already exists',
       'whether a suspension, exception or transition rule changes the period'
     ]
+  }),
+  'CA-MB': Object.freeze({
+    country_code: 'CA', region_code: 'CA-MB', jurisdiction_label: 'Manitoba',
+    basic_period_years: 2, ultimate_period_years: 15,
+    start_is: 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'The Limitations Act, C.C.S.M. c. L150, ss. 6-8',
+    source_capture: 'SOURCE_CAPTURES/PHASE5-001G/MB-limitations-act-ccsm-l150.txt',
+    source_url: 'https://web2.gov.mb.ca/laws/statutes/ccsm/l150.php',
+    operative_words: 'a proceeding respecting a claim must not be commenced more than two years after the day the claim is discovered',
+    discovery_words: 's. 7: the claimant knew or ought to have known of the loss, its cause, the defendant and that a proceeding was an appropriate means to seek a remedy',
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'The Limitations Act, C.C.S.M. c. L150, s. 20(1)-(3)',
+      words: 'before expiry, a qualifying acknowledgment causes the period to run afresh; it is generally written and signed, while part payment of a debt has the same effect'
+    }),
+    transitional_note: 'ss. 28-31.3 govern transitional claims; the report does not establish their application',
+    uncertainty_since_report: 'The report may be older than this assessment. A qualifying acknowledgment or part payment before expiry may affect the time for a court claim. A court claim may already have been started, a judgment may exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when the claimant first knew or ought to have known the claim and that a proceeding was appropriate',
+      'whether this was a demand obligation, and when a demand and default occurred',
+      'whether a qualifying acknowledgment or part payment occurred before expiry',
+      'whether a court proceeding or judgment already exists',
+      'whether another applicable period, exception, suspension or transition changes the result'
+    ]
   })
 });
 
@@ -326,10 +350,10 @@ function assessRecord(record, params, clock) {
       role: 'HISTORICAL_COMPARISON_AT_THE_REPORT_DATE_NOT_THE_OPERATIVE_ASSESSMENT'
     } : null,
     start_date: Object.assign({}, latest, {
-      basis: params.region_code === 'CA-ON'
-        ? 'report-printed screening reference only; Ontario legal discovery is not established by this date'
+      basis: params.start_is === 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE'
+        ? `report-printed screening reference only; ${params.jurisdiction_label} legal discovery is not established by this date`
         : latest.basis,
-      selection_rule: params.region_code === 'CA-ON'
+      selection_rule: params.start_is === 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE'
         ? 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_DISCOVERY'
         : 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM'
     }),

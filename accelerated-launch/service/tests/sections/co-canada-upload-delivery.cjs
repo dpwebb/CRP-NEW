@@ -47,6 +47,26 @@ async function run(t,check){
   200,'the Ontario selection is approved');
  check.equal((await t.request('GET',`/api/cases/${ca.case_id}/packet-download`,{token:actor.token})).status,
   200,'and its entitled packet downloads from the actual local upload');
+ const mb=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-MB'}})).json.case;
+ const mbUpload=await t.request('POST',`/api/cases/${mb.case_id}/files`,
+  {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')});
+ check.equal(mbUpload.status,201,'the same authorized local report uploads for Manitoba');
+ check.equal((await t.request('POST',`/api/cases/${mb.case_id}/evaluate`,{token:actor.token})).status,
+  201,'Manitoba assesses the uploaded reader facts');
+ const mbView=(await t.request('GET',`/api/cases/${mb.case_id}`,{token:actor.token})).json.view;
+ const mbConcern=mbView.result.issues.find(i=>i.limitation_concern===true);
+ check.ok(mbConcern,'the actual Manitoba upload reaches a qualified court-limit concern');
+ check.ok(mbConcern&&/does not establish when the claim was discovered/.test(mbConcern.explanation),
+  'the Manitoba issue does not equate report dates with discovery');
+ check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[mbConcern.issue_id]}})).status,200,'the Manitoba concern is selectable');
+ check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/correspondence`,
+  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
+  200,'Manitoba correspondence is reviewed');
+ check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/approve`,{token:actor.token})).status,
+  200,'the Manitoba selection is approved');
+ check.equal((await t.request('GET',`/api/cases/${mb.case_id}/packet-download`,{token:actor.token})).status,
+  200,'and its entitled packet downloads from the local upload');
  const real=persisted.extraction;
  for(const region of ['CA-BC','CA-QC','CA-SK','CA-NT','CA-NU','CA-YT']){
   const evaluated=evaluation.evaluateCase({country:'CA',region,extraction:real});
