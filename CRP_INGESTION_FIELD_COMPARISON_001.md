@@ -26,7 +26,7 @@ Specimens: **TU-CA** TransUnion Canada consumer disclosure; **GB** Experian cons
 
 ## Fixed in this batch
 
-The GB reader dropped the printed account heading it already used to open each block; it now maps that heading as `account.reported_identity` with the raw reading preserved, so GB reports can take part in identity-based comparison and in the identity-keyed checks — **without weakening matching**: the confident duplicate/responsibility path still requires a masked reference, no masked reference is invented, and **no new potential issue is forced on the real example** (all asserted in the GB section). Regression **PASS 5260/0**; shipped files changed, so the candidate identity was refreshed to **`crp-v1-48a7d467f59a8bae`** (digest `48A7D467F59A8BAEF7365D260CC0C73B68D902650CEADC8ACCCBE59F86832DB2`).
+The GB reader dropped the printed account heading it already used to open each block; it now maps that heading as `account.reported_identity` with the raw reading preserved, so GB reports can take part in identity-based comparison and in the identity-keyed checks — **without weakening matching**: the confident duplicate/responsibility path still requires a masked reference, no masked reference is invented, and **no new potential issue is forced on the real example** (all asserted in the GB section). Regression **PASS 5260/0**; shipped files changed, so the candidate identity was refreshed to **`crp-v1-4a88438669cba533`** (digest `4A88438669CBA53349B99591C84B51F36FE1BE96B1E1E67BF7159A2737273572`).
 
 ## Remaining concrete limitations
 
@@ -37,3 +37,10 @@ The GB reader dropped the printed account heading it already used to open each b
 
 **Ingestion readiness therefore stays UNRESOLVED** until these are settled, and the earlier statement that production is blocked only by staging is corrected to: **production is blocked by staging verification *and* the ingestion items above.**
 
+
+## Batch 23 update
+
+- **AU reference and amount: RECOVERED.** The printed Account Number is now mapped as the bureau own listing reference on both the overdue and the liability entries (raw value plus its own record association) - never as a masked account identifier and never as a key to the creditor account, so the confident duplicate path stays closed; the printed overdue Amount is parsed only where a record prints one, and this specimen prints none, so nothing is invented.
+- **US: DEMONSTRATED.** The recorded consumer specimen PUB-001 reads as US-CONSUMER-DISCLOSURE with three reported accounts and one inquiry carrying status, balance, past-due and payment facts, so the balance/payment check is supported by that report own facts. The earlier generic fact-free result came from EXP-006, an investigation artifact: the wrong specimen, not a routing or reader defect.
+- **Ingestion readiness: both remaining tasks are closed on measured real-file evidence.** The per-report capability refuses any check whose facts are absent, so no capability is advertised that did not run. Remaining Version 1 ingestion boundaries (not defects): TU-CA and GB print no account reference in their account blocks, and the GB payment-history cells stay undecodable because the artifact prints no legend and no period.
+- Candidate identity refreshed to digest 4A88438669CBA53349B99591C84B51F36FE1BE96B1E1E67BF7159A2737273572 (build crp-v1-4a88438669cba533); full regression PASS 5283/0.

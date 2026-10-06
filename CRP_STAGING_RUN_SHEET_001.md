@@ -1,4 +1,4 @@
-# Version 1 staging run sheet — candidate `crp-v1-48a7d467f59a8bae`
+# Version 1 staging run sheet — candidate `crp-v1-4a88438669cba533`
 
 Owner/tester sheet. One page. Nothing here requires a secret in chat or in Git.
 
@@ -7,8 +7,8 @@ Owner/tester sheet. One page. Nothing here requires a secret in chat or in Git.
 | Item | Value |
 | --- | --- |
 | Manifest file | `accelerated-launch/service/deploy/release-manifest.json` |
-| Manifest digest | `48A7D467F59A8BAEF7365D260CC0C73B68D902650CEADC8ACCCBE59F86832DB2` |
-| Build identity | `crp-v1-48a7d467f59a8bae` |
+| Manifest digest | `4A88438669CBA53349B99591C84B51F36FE1BE96B1E1E67BF7159A2737273572` |
+| Build identity | `crp-v1-4a88438669cba533` |
 | Shipped surface | 80 files, five disjoint groups (RUNTIME 51 · READER_SUPPORT 9 · RULE_CONFIGURATION 7 · RULE_CONFIGURATION_TOP_LEVEL 9 · SERVED_ASSETS 4) |
 | Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5255 assertions, 0 failed, 0 skipped** |
 | Statutory coverage | 82 of 82 promised regions carry at least one demonstrated path (coverage — not completeness; see the work register for the four open blockers) |
@@ -27,7 +27,7 @@ Owner/tester sheet. One page. Nothing here requires a secret in chat or in Git.
 | --- | --- | --- |
 | `CRP_PORT` | Listen port (default 8080) | |
 | `CRP_LOCAL_SERVICE_DATA` | Durable data directory | must be outside the repository |
-| `CRP_BUILD_ID` | `crp-v1-48a7d467f59a8bae` | the release check validates served evidence against it |
+| `CRP_BUILD_ID` | `crp-v1-4a88438669cba533` | the release check validates served evidence against it |
 | `CRP_SUPPORT_REFERENCE_SECRET` | salts consumer support references | **generate on the host** (`openssl rand -hex 32`); never paste into chat, never commit |
 | `CRP_TESSERACT_EXE`, `CRP_TESSDATA_DIR` | optional OCR read support | unset = native-text PDFs unaffected |
 | `CRP_BILLING_PROVIDER`, `CRP_BILLING_API_BASE`, `CRP_BILLING_WEBHOOK_SECRET` | billing | **use the provider's TEST-mode values for staging** |
@@ -38,7 +38,7 @@ Owner/tester sheet. One page. Nothing here requires a secret in chat or in Git.
 
 1. Copy the repository to the host; set the variables above.
 2. `node accelerated-launch/service/deploy/build-release-manifest.cjs` — confirm the digest equals `48A7D467…2DB2`.
-3. Start: `node accelerated-launch/service/server.cjs` (or the deployment unit of your choice). Confirm the release check reports `crp-v1-48a7d467f59a8bae`.
+3. Start: `node accelerated-launch/service/server.cjs` (or the deployment unit of your choice). Confirm the release check reports `crp-v1-4a88438669cba533`.
 4. Health: load the main page; the brief public legal-advice disclaimer appears only in its small footer section.
 5. **Rollback:** stop the service and restore the previous deployed directory. The data directory is external, so rollback does not touch consumer data.
 6. Record the served evidence (build identity, timestamp, the journey in §5) for the release record.
