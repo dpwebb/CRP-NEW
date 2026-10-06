@@ -330,7 +330,16 @@ function reportStatus(view) {
   const entitled = Boolean(state.entitlement && state.entitlement.entitled);
   const head = '<strong>Your report is uploaded</strong>';
   if (view.result) {
-    return `<div class="note">${head}<br>Your report is ready to review.<br>The checks for this case have run.</div>
+    /* A recorded assessment is finished: the consumer reviews what was found and chooses what to dispute. The
+       pre-check wording ("ready to review") never describes a completed assessment. */
+    const issues = Array.isArray(view.result.issues) ? view.result.issues : [];
+    const findings = (Array.isArray(view.result.observations) ? view.result.observations : []).filter((o) => o.is_a_finding === true);
+    const surfaced = issues.length > 0 || findings.length > 0;
+    return `<div class="note"><strong>Your results are ready</strong><br>${
+      surfaced
+        ? 'Review the issues we found and choose any you want to dispute.'
+        : 'We did not find a reporting issue in the information we could review.'
+    }</div>
       <button class="primary" id="view-results">View my results</button>`;
   }
   if (state.assessing) {

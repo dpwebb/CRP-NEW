@@ -297,13 +297,24 @@ async function run(t, check) {
   const assessedView = Object.assign({}, uploadedView, {
     result_id: 'r1',
     result: {
-      support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2, observations: [], report_consistency_checks: [],
+      support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2,
+      issues: [{ issue_id: 'i1', confidence: 'POTENTIAL', eligible: true, explanation: 'This report prints an opened date later than its closed date.' }],
+      observations: [], report_consistency_checks: [],
+      qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.',
+      assessment: { plain: 'We ran 2 rules for where you live.' }
+    }
+  });
+  const quietView = Object.assign({}, uploadedView, {
+    result_id: 'r2',
+    result: {
+      support: 'ACTUAL_REPORT_EVIDENCE', checks_performed: 2, issues: [], observations: [], report_consistency_checks: [],
       qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.',
       assessment: { plain: 'We ran 2 rules for where you live.' }
     }
   });
   ctx.UPLOADED_VIEW = uploadedView;
   ctx.ASSESSED_VIEW = assessedView;
+  ctx.QUIET_VIEW = quietView;
   vm.runInContext('state.view = UPLOADED_VIEW; state.step = 2; state.entitlement = { entitled: false, state: "NONE", plain: "No active purchase is recorded against this account." }; state.assessing = false; state.assessment_error = null; state.purchase_needed = null; render();', ctx);
   check.ok(/Your report is uploaded/.test(panel.innerHTML) && /Your report is ready to review\./.test(panel.innerHTML), 'an uploaded report says it is uploaded and ready to review');
   check.ok(/Reviewing your report for Nova Scotia/.test(panel.innerHTML), 'the repeated jurisdiction paragraph is replaced by the short region label');
@@ -328,9 +339,16 @@ async function run(t, check) {
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Try again to check my report</.test(panel.innerHTML), 'and offers the retry action');
 
   vm.runInContext('state.assessment_error = null; state.view = ASSESSED_VIEW; render();', ctx);
-  check.ok(/Your report is ready to review\./.test(panel.innerHTML) && /id="view-results"/.test(panel.innerHTML), 'after the assessment it offers the results action');
+  check.ok(/Your results are ready/.test(panel.innerHTML), 'a completed assessment says the results are ready');
+  check.ok(/Review the issues we found and choose any you want to dispute\./.test(panel.innerHTML), 'and tells the consumer what to do with them');
+  check.ok(/id="view-results"/.test(panel.innerHTML) && !/Your report is ready to review/.test(panel.innerHTML), 'offering the results action and never the pre-check wording');
   check.ok(!/We are checking your report|Choose a plan to check my report/.test(panel.innerHTML), 'with no contradictory status and no second action');
   check.ok(!/We could not check your report/.test(panel.innerHTML), 'and no stale failure');
+
+  vm.runInContext('state.view = QUIET_VIEW; render();', ctx);
+  check.ok(/Your results are ready/.test(panel.innerHTML) && /We did not find a reporting issue in the information we could review\./.test(panel.innerHTML), 'a completed assessment with nothing surfaced says exactly what the performed checks found');
+  check.ok(/id="view-results"/.test(panel.innerHTML) && !/correct|compliant/i.test(panel.innerHTML), 'still offering the results action, and never implying the report is correct');
+  vm.runInContext('state.view = ASSESSED_VIEW; render();', ctx);
 
   /* An accepted upload is never described as refused. */
   ctx.GENERAL_VIEW = Object.assign({}, uploadedView, { files: [Object.assign({}, uploadedView.files[0], { supported_format: false, recognised_as: null })] });

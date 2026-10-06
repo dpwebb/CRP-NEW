@@ -125,3 +125,13 @@ No rule, finding permission, parsing behaviour, price, access rule or product sc
 | 17 | Internal billing text and the standing credit line on the report screen | "Configured keys alone do not prove working billing …" reached the consumer surface; "Upgrade credit: not currently eligible" stood permanently on the report screen; prices were quoted outside the purchase view | Consumer sentence for the payment state, with the readiness sentence kept as `internal_readiness` for release records; the credit line shows only where a credit is held; prices, grants, renewal and cancellation terms are stated in the billing view before purchase | Cline | IMPLEMENTED_AND_TESTED | `ba-consumer-billing` 40/40, `bo-prime-directive-interaction` 39/39 (billing-view assertions), `k-ui-smoke` 52/52 |
 
 No rule, finding permission, parsing behaviour, price, entitlement gate, ownership rule or access control changed. Nothing was pushed or deployed: staging still serves `crp-v1-75755118a71c9399` until the owner authorizes a redeploy of `crp-v1-179a060f9a3292fe`.
+
+
+## Batch 27 — completed-assessment wording and the authorized staging deployment (October 5 2026)
+
+| # | Item | Defect | Fix | Owner | Status | Evidence |
+|---|---|---|---|---|---|---|
+| 18 | Completed-assessment wording | A case with a recorded assessment still used the pre-check sentence "Your report is ready to review", so a finished assessment read as if the check had not run | "Your results are ready" with "Review the issues we found and choose any you want to dispute." when something surfaced, or "We did not find a reporting issue in the information we could review." when nothing did; one action: View my results | Cline | IMPLEMENTED_AND_TESTED | `k-ui-smoke` 56/56 (both completed states), `bo-prime-directive-interaction` 39/39, `bw-browser-wizzard` 44/44 (real browser), full regression **PASS 5490, 0 failed, 0 skipped** |
+| 19 | Deploy the completed consumer-text fixes to authorized staging | The plain-English, footer, probable-wording and post-upload corrections were local only | Deploy the verified candidate to `https://staging.creditregulatorpro.com` by the existing procedure: manifest hash verification, backup of the current release with private configuration and data, rollback path retained, new build identity from the final manifest | Cline | recorded in §14 of `CRP_VERSION_1_STAGING_CANDIDATE_001.md` | Deployment and hosted verification record |
+
+No rule, finding permission, parsing behaviour, price, entitlement gate, ownership rule or access control changed. Deployment uses the existing host configuration and secrets; no secret is requested, read into the repository, printed or committed, and no live billing, GitHub push or production change is made.

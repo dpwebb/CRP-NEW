@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batches 24–26, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §12 at the end of this file — manifest `179A060F9A3292FED359DA40DE9EC7585583283A47EDBAED34D5A20D60236990`, build `crp-v1-179a060f9a3292fe`, 81 files in five groups, full local regression **PASS 5486, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`) describe earlier trees and are superseded.
+**Identity supersession (Batches 24–27, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §13 at the end of this file — manifest `7AC42970C633A742A528FD1667380138CE2B33300E1E0B0FE7F4AE50BB752B43`, build `crp-v1-7ac42970c633a742`, 81 files in five groups, full local regression **PASS 5490, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`) describe earlier trees and are superseded.
 
 ## 1. Exact candidate identity
 
@@ -255,4 +255,31 @@ Date: October 5 2026 (America/Halifax). Authority: the owner's bounded instructi
 | Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
 | Determinism | three consecutive regenerations; identical digest each run |
 | Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399` |
+
+
+## 13. Batch 27 — completed-assessment wording and the authorized staging deployment
+
+Date: October 5 2026 (America/Halifax). Authority: the owner's instruction to make completed-assessment wording clear, and then to deploy the completed consumer-text fixes to the existing authorized staging environment at `https://staging.creditregulatorpro.com`.
+
+**1. Completed assessment (served text only).** A case with a recorded assessment now shows **Your results are ready** with one of two lines and the single action **View my results**:
+
+| Result of the assessment | Line shown |
+| --- | --- |
+| An issue card or a finding was surfaced | "Review the issues we found and choose any you want to dispute." |
+| Nothing was surfaced | "We did not find a reporting issue in the information we could review." (never implying the report is correct) |
+
+The pre-check wording "Your report is ready to review" is no longer used for a completed assessment. The uploaded, unpaid, processing and failed states, and every access control (including the 402 refusal), are unchanged.
+
+**2. Focused checks.** `k-ui-smoke` renders **both** completed states from the served client (56 assertions, alongside the five post-upload state checks); `bo-prime-directive-interaction` (39) drives the real service; `bw-browser-wizzard` (44) is the real-browser journey; `ba-consumer-billing` (40) covers billing. Full regression **PASS 5490, 0 failed, 0 skipped**.
+
+**3. Refreshed candidate identity (the identity this batch deploys).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `7AC42970C633A742A528FD1667380138CE2B33300E1E0B0FE7F4AE50BB752B43` |
+| Internal build identity | `crp-v1-7ac42970c633a742` (generated from this final manifest; no older identity reused) |
+| Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 (including `consumer-wizard/dist/jurisdiction-data.js`) |
+| Determinism | three consecutive regenerations; identical digest each run |
+
+**4. Deployment.** Recorded in §14 after the activation checks; the previous release `crp-v1-75755118a71c9399` is retained as the rollback target until the hosted verification passes.
 
