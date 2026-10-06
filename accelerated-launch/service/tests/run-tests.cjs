@@ -191,7 +191,9 @@ const SECTION_FILES = [
   'cr-ca-ns-tu-real-report.cjs',
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation assessment and the payment-history
      analysis, with their positive, boundary, missing-prerequisite and benign controls. */
-  'cs-limitation-and-payment-history.cjs'];
+  'cs-limitation-and-payment-history.cjs',
+  /* OWNER correction (SOL assessment date): the server run date is the one clock, with controlled-time tests. */
+  'ct-assessment-clock.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

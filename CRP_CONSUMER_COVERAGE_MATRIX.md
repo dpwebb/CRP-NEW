@@ -263,3 +263,11 @@ produced for the other 81 selections — that is a recorded gap, not a delivered
 mechanisms were verified on one real report and on synthetic controls only; no second bureau's real consumer
 disclosure has been used.
 
+**Clock contract (Batch 32, October 6 2026).** Every limitation comparison now runs on the **server assessment
+date** in America/Halifax, stamped once per run and persisted with the result; the printed report date is kept
+separately as provenance and remains what the reporting-retention and factual checks read. This is a **date**
+contract for all 82 selections and does **not** create legal coverage: it changes *when* a comparison is made,
+never *whether* a jurisdiction has a recorded limitation rule. The two gaps are independent — the jurisdiction
+parameter sets above remain the outstanding legal work, and this row records that no reader or jurisdiction was
+marked complete by the clock change.
+

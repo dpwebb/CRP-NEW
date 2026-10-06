@@ -23,6 +23,7 @@ const clarification = require('./clarification.cjs');
 const reportUse = require('../adapters/report-use.cjs');
 const { labelFor } = require('./case-status.cjs');
 const entitlement = require('./entitlement.cjs');
+const assessmentClock = require('./assessment-clock.cjs');
 
 function nowIso() {
   return new Date().toISOString();
@@ -86,6 +87,10 @@ function viewForResult(store, actor, caseRow, resultRow) {
       ? {
         result_id: access.complete_assessment && resultRow ? resultRow.result_id : null,
         created_at: resultRow ? resultRow.created_at : null,
+        /* OWNER correction (SOL assessment date): the date the SERVER ran THIS assessment, served to the free
+           summary too, so the consumer can see when the report was checked. Reading it never changes it. */
+        assessed_on: rendered ? (rendered.assessed_on || null) : null,
+        assessment_clock_basis: rendered ? (rendered.assessment_clock_basis || null) : null,
         distinct_total: summary.distinct_total,
         by_confidence: summary.by_confidence,
         teaser: summary.teaser,
@@ -126,7 +131,7 @@ function getResult(store, actor, caseId, resultId) {
 
 /* ------------------------------------------------------------------ evaluate */
 
-function persistResult(store, actor, caseRow, provenance, evaluated, extraction) {
+function persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock) {
   const rendered = results.renderResultSet({ evaluation: evaluated, extraction });
   return store.update((state) => {
     const created = {
@@ -143,7 +148,10 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction)
       rendered,
       clarification_eligibility: clarification.eligibleQuestions((extraction && extraction.records) || []).concat(reportUse.eligibleFor(evaluated, extraction)),
       reviewed_at: null,
-      created_at: nowIso()
+      /* OWNER correction (SOL assessment date): the ONE persisted stamp for this assessment run. The row's own
+         timestamp IS that stamp, so nothing downstream can disagree about when the report was checked. */
+      assessment_clock: clock || (evaluated && evaluated.assessment_clock) || null,
+      created_at: clock && clock.assessment_run_at_utc ? clock.assessment_run_at_utc : nowIso()
     };
     state.results.push(created);
     return created;
@@ -186,14 +194,23 @@ function evaluateCase(store, actor, caseId, options) {
     }
   }
 
+  /* OWNER correction (SOL assessment date): the ONE stamp for this run, taken from the server clock and never
+     from the request. Client-supplied clock fields are ignored and named back in the stamp. */
+  const clock = assessmentClock.runStamp(undefined, options);
   const evaluated = evaluation.evaluateCase({
     country: caseRow.country,
     region: caseRow.region,
     extraction,
+    assessment_clock: clock,
     consumer_statements: options && Array.isArray(options.consumer_statements) ? options.consumer_statements : null
   });
-  const stored = persistResult(store, actor, caseRow, provenance, evaluated, extraction);
-  return { result_id: stored.result_id, result: publicResult(stored.rendered) };
+  const stored = persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock);
+  return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered) };
+}
+
+/** The "Assessed on" value for a stored result: the run stamp, never a freshly computed date. */
+function rendered2AssessedOn(stored) {
+  return stored && stored.rendered ? (stored.rendered.assessed_on || null) : null;
 }
 
 /**
@@ -228,7 +245,7 @@ function runDemonstration(store, actor, caseId, scenarioName) {
     return created;
   });
 
-  const evaluated = evaluation.evaluateCase({ country: caseRow.country, region: caseRow.region, extraction });
+  const evaluated = evaluation.evaluateCase({ country: caseRow.country, region: caseRow.region, extraction, assessment_clock: assessmentClock.runStamp() });
   evaluated.support = formats.SUPPORT.DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT;
   const stored = persistResult(
     store,
@@ -236,7 +253,8 @@ function runDemonstration(store, actor, caseId, scenarioName) {
     caseRow,
     { file_id: fileRow.file_id, file_ids: [fileRow.file_id], demonstration: true },
     evaluated,
-    extraction
+    extraction,
+    evaluated.assessment_clock
   );
   return {
     result_id: stored.result_id,
@@ -325,11 +343,15 @@ function recordClarification(store, actor, caseId, resultId, answers) {
   const contextValid = boundReportUse.length === 0 || (Boolean(eligibleRow) && Boolean(extraction));
   const canReassess = contextValid && boundReportUse.length > 0;
   let reassessed = null;
+  /* OWNER correction (SOL assessment date): a deliberate RERUN takes a FRESH stamp, and the superseded stamp is
+     preserved on the row as history rather than overwritten. */
+  const reassessmentClock = assessmentClock.runStamp();
   if (canReassess) {
     reassessed = evaluation.evaluateCase({
       country: caseRow.country,
       region: caseRow.region,
       extraction,
+      assessment_clock: reassessmentClock,
       consumer_statements: boundReportUse
     });
   }
@@ -351,7 +373,11 @@ function recordClarification(store, actor, caseId, resultId, answers) {
          The extraction (report facts) is untouched; only the exception resolution and derived findings change. */
       live.evaluation = reassessed;
       live.rendered = results.renderResultSet({ evaluation: reassessed, extraction });
-      live.reassessed_at = nowIso();
+      /* OWNER correction (SOL assessment date): the rerun carries its OWN fresh stamp, and the stamp it supersedes
+         is preserved as history. `created_at` (the original assessment) is never rewritten. */
+      live.previous_assessment_clock = live.assessment_clock || null;
+      live.assessment_clock = reassessmentClock;
+      live.reassessed_at = reassessmentClock.assessment_run_at_utc || nowIso();
       live.reassessed_with_report_use = true;
       /* A reassessment that changes consumer-visible findings invalidates the prior review/approval so the
          consumer reviews the changed output; the historical review evidence is retained, not deleted. */
@@ -407,6 +433,9 @@ function assessmentReportBody(rendered, producedAt) {
   lines.push('='.repeat(72));
   lines.push(`Selection: ${rendered.jurisdiction.country}/${rendered.jurisdiction.region}`);
   lines.push(`Produced: ${producedAt}`);
+  /* OWNER correction (SOL assessment date): the date the SERVER ran this assessment, read straight from the
+     persisted result — the download states when the report was checked, never when it was viewed. */
+  if (rendered.assessed_on) lines.push(`Assessed on: ${rendered.assessed_on}${rendered.assessment_clock_basis ? ` (${rendered.assessment_clock_basis})` : ''}`);
   lines.push(`Evidence basis: ${rendered.presentation_evidence ? 'a supported, admitted report presentation' : 'a refused or unsupported presentation'}`);
   /* GAP-FINDING-004: name the exact evidence-policy version/digest the findings were admitted under. */
   if (rendered.policy && rendered.policy.digest) {

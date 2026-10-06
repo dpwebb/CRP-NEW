@@ -593,6 +593,7 @@ function freeSummaryBlock(view) {
   return `<div class="obs">
     <span class="pill">SUMMARY — FREE</span>
     <h3>What we found</h3>
+    ${assessmentDateLine(summary)}
     ${counts}
     ${preview}
   </div>
@@ -684,11 +685,23 @@ function resultBlock(result, demo) {
     </div>`).join('');
 
   return `
+    ${assessmentDateLine(result)}
     <h2>Checks performed: ${esc(result.checks_performed)}</h2>
     ${observations || (factual ? '' : '<p class="lede">No findings available.</p>')}
     ${factual ? `<h2>What your report prints, set against itself</h2>${factual}` : ''}
     ${issuesSection(result)}
     <div class="note stop">${esc(result.disclaimer)}</div>`;
+}
+
+/* OWNER correction (SOL assessment date): the date the SERVER ran this assessment, shown wherever results are
+   shown, so a court-time-limit result always says which day it was judged on. Reading a result never moves it. */
+function assessmentDateLine(holder) {
+  const h = holder || {};
+  const assessed = h.assessed_on || (h.limitation && h.limitation.assessed_on) || null;
+  if (!assessed) return '';
+  const basis = h.assessment_clock_basis || (h.limitation && h.limitation.assessment_clock_basis) || null;
+  const reportDate = (h.limitation && h.limitation.report_date) || null;
+  return `<p class="evidence">Assessed on <b>${esc(assessed)}</b>${basis ? ` (${esc(basis)})` : ''}${reportDate ? ` · the report itself is dated <b>${esc(reportDate)}</b>` : ''}.</p>`;
 }
 
 /* OWNER-POTENTIAL-ISSUE-001: supported potential reporting issues, rendered as review cards (never NOT_DETECTED,
@@ -701,6 +714,7 @@ function issuesSection(result) {
       <span class="pill potential">POTENTIAL REPORTING ISSUE — FOR YOUR REVIEW</span>
       <h3>${esc(i.explanation)}</h3>
       <p class="evidence">Why it merits attention: ${esc(i.uncertainty)}</p>
+      ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
       <p class="evidence">A factual discrepancy like this supports a verification request; it is not, by itself, an established legal violation.</p>
     </div>`).join('');

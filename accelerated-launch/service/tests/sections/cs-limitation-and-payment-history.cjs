@@ -16,6 +16,10 @@
 
 const crypto = require('node:crypto');
 const limitation = require('../../limitation-assessment.cjs');
+const assessmentClock = require('../../assessment-clock.cjs');
+/* OWNER correction (SOL assessment date): every engine call is given a CONTROLLED assessment-run stamp; the
+   printed report date is carried separately and is never the operative date. */
+function clockAt(date, iso) { return assessmentClock.runStamp(iso || (date + 'T15:00:00Z')); }
 const paymentHistory = require('../../payment-history-analysis.cjs');
 const issues = require('../../issues.cjs');
 
@@ -135,23 +139,23 @@ function runLimitationControls(check, evidence) {
   check.deepEqual(on.recorded_jurisdictions, ['CA-NS'], 'the recorded parameter set is exactly what has been read from official text');
 
   /* 2. An adverse debt whose latest printed date is inside the period is not raised. */
-  const inside = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })]) });
+  const inside = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })]) });
   check.equal(inside.performed.length, 1, 'an adverse debt that prints a date is assessed');
   check.equal(inside.performed[0].outcome, 'WITHIN_THE_PERIOD', 'and stays inside the period when that date is recent');
   check.equal(inside.summary.may_be_outside, 0, 'so nothing is raised for it');
 
   /* 3. The boundary is decided in days: the anniversary is inside, one day more is outside. */
-  const anniversary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 10, 2024' })]) });
+  const anniversary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 10, 2024' })]) });
   check.equal(anniversary.performed[0].elapsed_days, 731, 'the report date is exactly two calendar years after the printed date');
   check.equal(anniversary.performed[0].period_ends, '2026-01-10', 'so the period ends on the report date itself');
   check.equal(anniversary.performed[0].outcome, 'WITHIN_THE_PERIOD', 'and exactly on the anniversary the period has not elapsed');
-  const beyond = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
+  const beyond = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
   check.equal(beyond.performed[0].period_ends, '2026-01-09', 'one day earlier ends the period one day earlier');
   check.equal(beyond.performed[0].outcome, 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD', 'and one day beyond that is outside the period');
 
   /* 4. An adverse debt that prints no usable date is withheld, never aged from a missing date. */
   const noDates = limitation.runLimitationAssessment({
-    country: 'CA', region: 'CA-NS',
+    country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'),
     extraction: extractionOf([adverseBlock({ lastPayment: '', firstDelinquency: '', chargeOff: '', months: [{ period: 'Oct 2025', mop: '9', narrative: 'WO / CG' }] })])
   });
   check.equal(noDates.performed.length, 0, 'an adverse debt with no printed start date is not aged');
@@ -159,28 +163,44 @@ function runLimitationControls(check, evidence) {
   check.ok(/nothing was concluded from a missing date/.test(noDates.withheld[0].plain), 'naming the missing date rather than treating it as an absence');
 
   /* 5. A satisfactory old account is not adverse merely because it is old. */
-  const old = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([satisfactoryBlock()]) });
+  const old = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([satisfactoryBlock()]) });
   check.equal(old.performed.length, 0, 'an aged, zero-balance, non-derogatory account is not assessed');
   check.equal(old.withheld[0].reason, 'NOT_AN_ADVERSE_DEBT', 'because it does not read as an adverse debt at all');
   check.ok(!/non derogatory/i.test(String(old.withheld[0].plain)), 'and nothing about it is called adverse');
 
-  /* 6. The report date decides the answer: the same record is inside on one report date and outside on a later one. */
-  const early = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })], '2026-01-10') });
-  const later = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })], '2028-01-10') });
-  check.equal(early.performed[0].outcome, 'WITHIN_THE_PERIOD', 'the same entry is inside the period on the earlier report date');
-  check.equal(later.performed[0].outcome, 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD', 'and outside it on the later report date');
-  check.equal(later.performed[0].reference_date, '2028-01-10', 'and each assessment names the report date it used');
+  /* 6. THE RUN DATE DECIDES, THE REPORT DATE DOES NOT: the same entry on the SAME printed report date is inside
+     when the assessment runs earlier and outside when the same report is assessed later. */
+  const early = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2025-08-01'), extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })], '2019-05-01') });
+  const later = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2028-01-10'), extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })], '2019-05-01') });
+  check.equal(early.performed[0].outcome, 'WITHIN_THE_PERIOD', 'the entry is inside the period when the report is assessed earlier');
+  check.equal(later.performed[0].outcome, 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD', 'and outside it when the SAME report is assessed later: the run date decides');
+  check.equal(later.performed[0].assessment_date, '2028-01-10', 'the assessment date is the operative date');
+  check.equal(later.performed[0].report_reference_date, '2019-05-01', 'while the printed report date is carried separately and untouched');
+  check.equal(later.performed[0].at_report_date.outcome, 'WITHIN_THE_PERIOD', 'and the historical view at the report date is recorded, marked as not the operative answer');
+  check.ok(/NOT_THE_OPERATIVE_ASSESSMENT/.test(String(later.performed[0].at_report_date.role)), 'with that role stated on it');
+  check.equal(later.performed[0].report_age_days, 3176, 'and the age of the report at assessment is recorded');
 
-  /* 7. No report date at all: withheld, never guessed. */
-  const noReference = limitation.runLimitationAssessment({
+  /* 7. The ASSESSMENT date is required; the report date is not. Without a run stamp nothing is counted, and the
+     report date is never substituted for it. A missing REPORT date is not an obstacle. */
+  const noClock = limitation.runLimitationAssessment({
     country: 'CA', region: 'CA-NS',
-    extraction: { presentation_id: 'X', records: [{ record_index: 1, kind: 'TU_CA_TRADELINE', facts: { 'account.pastDueAmount': 10, 'tradeline.lastPaymentDate': '2020-01-01' } }] }
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2020' })])
   });
-  check.equal(noReference.withheld[0].reason, 'NO_REPORT_REFERENCE_DATE', 'without a report date the period is not measured at all');
+  check.equal(noClock.performed.length, 0, 'without an assessment-run stamp nothing is counted');
+  check.equal(noClock.withheld[0].reason, 'NO_ASSESSMENT_RUN_DATE', 'and it is withheld for that exact reason');
+  check.ok(/The printed report date is not used for this/.test(String(noClock.withheld[0].plain)), 'saying plainly that the report date is never substituted');
+  const withoutReportDate = extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2020' })]);
+  delete withoutReportDate.reference_date;
+  for (const r of withoutReportDate.records) delete r.source_report_reference_date;
+  const noReportDate = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: withoutReportDate });
+  check.equal(noReportDate.performed.length, 1, 'a report that prints no date of its own is still assessed');
+  check.equal(noReportDate.performed[0].assessment_date, '2026-01-10', 'because the run date is what decides');
+  check.equal(noReportDate.performed[0].report_reference_date, null, 'with no report date recorded, because none is printed');
+  check.ok(/This report was issued before the date shown above/.test(String(noReportDate.performed[0].uncertainty_since_report)), 'and the later-events uncertainty is carried on it');
 
   /* 8. Account isolation: only the adverse account is assessed, and it names its own record. */
   const mixed = limitation.runLimitationAssessment({
-    country: 'CA', region: 'CA-NS',
+    country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'),
     extraction: extractionOf([satisfactoryBlock(), adverseBlock({ creditor: 'SYNTHETIC ADVERSE TWO', lastPayment: 'Mar 09, 2020' })])
   });
   check.equal(mixed.performed.length, 1, 'only the adverse account of the two is assessed');
@@ -289,7 +309,7 @@ async function runConsumerPath(service, check, evidence) {
   const extraction = extractionOf([satisfactoryBlock(), adverseBlock({ creditor: 'SYNTHETIC ADVERSE TWO', lastPayment: 'Mar 09, 2020' })]);
   /* The REAL evaluator runs the statutory, factual, common-error, limitation and payment-history work, so the
      consumer-path assertions below exercise the production chain and not a hand-built assessment. */
-  const evaluation = evaluateCase({ country: 'CA', region: 'CA-NS', extraction });
+  const evaluation = evaluateCase({ country: 'CA', region: 'CA-NS', extraction, assessment_clock: clockAt('2026-01-10') });
   check.equal(evaluation.assessments_performed, 4, 'the evaluator ran the three payment-history analyses and the limitation assessment');
   check.equal(evaluation.limitation_summary.may_be_outside, 1, 'and its own limitation assessment found the one adverse account');
   /* The stored result is rendered by the production renderer, exactly as the upload path renders a real one. */
@@ -320,7 +340,9 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(limitationItems.length, 1, 'exactly one of the four is the court-limitation concern');
   const item = limitationItems[0];
   check.equal(item.account_identity.name, 'SYNTHETIC ADVERSE TWO', 'on the adverse account, not the satisfactory one');
-  check.ok(/may be outside the time limit/.test(String(item.explanation)), 'and says plainly what the dates suggest');
+  check.ok(/may be outside the time limit for a court claim/.test(String(item.explanation)), 'and says plainly what the dates suggest');
+  check.ok(/checked on 2026-01-10/.test(String(item.explanation)), 'with the date the report was checked on the server');
+  check.ok(/Assessed on 2026-01-10|2026-01-10/.test(String((item.limitation || {}).assessed_on || '')), 'and that date recorded as the assessment date');
   check.ok(/not about whether the credit bureau may report/.test(String(item.uncertainty)),
     'while stating that it is not a reporting-rule allegation');
   check.equal(item.request_type, 'VERIFICATION', 'and it asks for the dates and the basis to be verified');

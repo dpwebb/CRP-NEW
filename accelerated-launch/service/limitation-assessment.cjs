@@ -51,6 +51,9 @@ const PARAMETERS = Object.freeze({
       words: 'a person acknowledges liability in respect of a claim ... the limitation period begins again at the time of the acknowledgment'
     }),
     transitional_note: 's. 11(3): a claim discovered before the effective date may not be brought after the earlier of two years from the effective date and the day on which the former limitation period expired or would have expired',
+    /* OWNER correction (SOL assessment date): the report may be older than the day it is checked, and the report
+       cannot show what happened in between. Stated on every result, in plain words. */
+    uncertainty_since_report: 'This report was issued before the date shown above. If you have since made a payment, admitted the debt in writing, dealt with a collection or a court claim, or the debt has changed hands, the time limit may have restarted or the position may have changed. The report cannot show those later events, so the dates you see may no longer be the whole picture.',
     unknown_conditions_plain: [
       'when the creditor first knew, or ought to have known, about the missed payments',
       'whether a later payment or a written admission of the debt restarted the time',
@@ -222,8 +225,13 @@ function referenceDateOf(extraction) {
  * One record's assessment. The clock is started from the LATEST printed date that can bear that relation to
  * the claim, because that is the reading least likely to mislead: an earlier date would produce a stronger
  * claim than the report supports. Every other usable date is reported beside it.
+ *
+ * THE OPERATIVE DATE is the ASSESSMENT-RUN date (`clock.assessment_date`), stamped once by the server per run.
+ * The printed report date is carried beside it as provenance and as a historical comparison only. A missing
+ * report date is not an error here (the report's own date is not what decides the answer); a missing ASSESSMENT
+ * date is: the module withholds rather than fall back to a date that answers a different question.
  */
-function assessRecord(record, params, referenceIso) {
+function assessRecord(record, params, clock) {
   const recordIndex = record && Number.isInteger(record.record_index) ? record.record_index : null;
   const adverse = adverseDebtView(record);
   if (!adverse.is_adverse_debt) {
@@ -247,14 +255,18 @@ function assessRecord(record, params, referenceIso) {
     };
   }
   const latest = dates[dates.length - 1];
-  const elapsedDays = daysBetweenIso(latest.iso, referenceIso);
-  const elapsed = yearsBetween(latest.iso, referenceIso);
+  const assessmentDate = String(clock.assessment_date).slice(0, 10);
+  const elapsedDays = daysBetweenIso(latest.iso, assessmentDate);
+  const elapsed = yearsBetween(latest.iso, assessmentDate);
   /* The comparison is CALENDAR years, not a day-count approximation: the period runs "two years from the day",
      so the anniversary itself is still inside it and the day after is outside. */
   const periodEnd = addYearsIso(latest.iso, params.basic_period_years);
   const outcome = periodEnd === null
     ? 'UNRESOLVED'
-    : (referenceIso.slice(0, 10) > periodEnd ? 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD' : 'WITHIN_THE_PERIOD');
+    : (assessmentDate > periodEnd ? 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD' : 'WITHIN_THE_PERIOD');
+  /* The historical view at the report's own date: recorded for comparison, never the operative answer. */
+  const reportDate = clock.report_reference_date ? String(clock.report_reference_date).slice(0, 10) : null;
+  const reportPeriodEnd = reportDate ? addYearsIso(latest.iso, params.basic_period_years) : null;
   return {
     withheld: false,
     record_index: recordIndex,
@@ -269,14 +281,31 @@ function assessRecord(record, params, referenceIso) {
       ultimate_period_years: params.ultimate_period_years,
       start_is: params.start_is
     },
+    /* THE OPERATIVE CLOCK: one stamp per run, shared by every record in it. */
+    assessment_run_at: clock.assessment_run_at,
+    assessment_date: assessmentDate,
+    assessment_clock_basis: clock.assessment_clock_basis,
+    clock_source: clock.clock_source || null,
+    clock_rule: clock.clock_rule || null,
+    /* PROVENANCE, kept separate: the printed report date, never substituted for the assessment date. */
+    report_reference_date: reportDate,
+    report_age_days: reportDate ? daysBetweenIso(reportDate, assessmentDate) : null,
+    at_report_date: reportDate ? {
+      reference_date: reportDate,
+      period_ends: reportPeriodEnd,
+      elapsed_years: yearsBetween(latest.iso, reportDate),
+      outcome: reportPeriodEnd === null ? 'UNRESOLVED'
+        : (reportDate > reportPeriodEnd ? 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD' : 'WITHIN_THE_PERIOD'),
+      role: 'HISTORICAL_COMPARISON_AT_THE_REPORT_DATE_NOT_THE_OPERATIVE_ASSESSMENT'
+    } : null,
     start_date: Object.assign({}, latest, { selection_rule: 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM' }),
     other_printed_dates: dates.slice(0, -1).map((d) => ({ label: d.label, iso: d.iso, basis: d.basis, location: d.location })),
-    reference_date: referenceIso,
     elapsed_years: elapsed,
     elapsed_days: elapsedDays,
     period_ends: periodEnd,
     outcome,
     unknown_conditions: params.unknown_conditions_plain.slice(),
+    uncertainty_since_report: params.uncertainty_since_report,
     acknowledgment_rule: params.acknowledgment,
     transitional_note: params.transitional_note,
     /* Stated with every result, so no consumer or reviewer can read it as a deletion or a breach. */
@@ -296,10 +325,11 @@ function runLimitationAssessment(context) {
     check_id: CHECK_ID,
     check_class: CHECK_CLASS,
     jurisdiction: null,
+    assessment_clock: null,
     recorded_jurisdictions: recordedJurisdictions(),
     performed: [],
     withheld: [],
-    summary: { records: 0, assessed: 0, may_be_outside: 0, within: 0, withheld: 0, legal_findings_emitted: 0 }
+    summary: { records: 0, assessed: 0, may_be_outside: 0, within: 0, withheld: 0, legal_findings_emitted: 0, report_date_used_for_the_comparison: false, report_reference_date: null }
   };
   const records = (extraction && Array.isArray(extraction.records)) ? extraction.records : [];
   if (!records.length) {
@@ -328,19 +358,34 @@ function runLimitationAssessment(context) {
     source_capture: params.source_capture,
     operative_words: params.operative_words
   };
-  const referenceIso = referenceDateOf(extraction);
-  if (!referenceIso) {
+  /* THE OPERATIVE DATE IS THE RUN DATE. The printed report date is read separately, only as provenance. */
+  const supplied = (context && context.assessment_clock) || null;
+  const assessmentDate = supplied && supplied.assessment_date ? String(supplied.assessment_date).slice(0, 10) : null;
+  if (!assessmentDate) {
     base.withheld.push({
       jurisdiction: region,
-      reason: 'NO_REPORT_REFERENCE_DATE',
-      plain: 'The file does not state its own date, and a court time limit cannot be measured without one, so nothing was counted.',
-      missing_prerequisite: 'the report own reference date'
+      reason: 'NO_ASSESSMENT_RUN_DATE',
+      plain: 'The date this check ran was not recorded, and a court time limit is measured to the day it is checked, so nothing was counted. The printed report date is not used for this.',
+      missing_prerequisite: 'the server assessment-run date (one stamp per assessment run)'
     });
     base.summary.withheld = 1;
     return base;
   }
+  const clock = Object.assign({}, supplied, {
+    assessment_date: assessmentDate,
+    report_reference_date: referenceDateOf(extraction)
+  });
+  base.assessment_clock = {
+    assessment_run_at: clock.assessment_run_at || null,
+    assessment_date: assessmentDate,
+    assessment_clock_basis: clock.assessment_clock_basis || null,
+    clock_source: clock.clock_source || null,
+    report_reference_date: clock.report_reference_date || null
+  };
+  base.summary.report_date_used_for_the_comparison = false;
+  base.summary.report_reference_date = clock.report_reference_date || null;
   for (const record of records) {
-    const assessed = assessRecord(record, params, referenceIso);
+    const assessed = assessRecord(record, params, clock);
     if (assessed.withheld) base.withheld.push(assessed);
     else base.performed.push(assessed);
   }

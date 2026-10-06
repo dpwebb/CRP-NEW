@@ -154,6 +154,9 @@ function evaluateCase(context) {
     limitation_assessment: null,
     payment_history_analysis: null,
     assessments_performed: 0,
+    /* OWNER correction (SOL assessment date): the ONE stamp this run used. Set from the caller's stamp; null when
+       the caller supplied none, in which case the court-limitation mechanism withholds rather than guess. */
+    assessment_clock: context && context.assessment_clock ? context.assessment_clock : null,
     eligibility: { draft_eligible: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH' }
   };
 
@@ -308,7 +311,7 @@ function evaluateCase(context) {
      the new work is reported separately in `assessments_performed` and its own summaries, so no existing count
      silently changes meaning and the assessment is never mistaken for a performed statutory check. */
   base.limitation_assessment = carriesReportEvidence(extraction)
-    ? limitationAssessment.runLimitationAssessment({ country: context.country, region: context.region, extraction })
+    ? limitationAssessment.runLimitationAssessment({ country: context.country, region: context.region, extraction, assessment_clock: context.assessment_clock || null })
     : null;
   base.payment_history_analysis = carriesReportEvidence(extraction)
     ? paymentHistoryAnalysis.runPaymentHistoryAnalysis({ country: context.country, region: context.region, extraction })

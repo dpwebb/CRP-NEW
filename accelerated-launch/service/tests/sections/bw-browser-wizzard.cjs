@@ -326,12 +326,22 @@ async function run(service, check) {
   check.ok(/time limit for a court claim/.test(limSummary), 'and the teaser names the court time limit, not a broken rule');
   check.ok(/violations: 0/.test(limSummary) && /potential issues: 1/.test(limSummary),
     'with the concern counted as a potential issue and no violation claimed');
+  /* OWNER correction (SOL assessment date): the free summary states the date the SERVER assessed the report. */
+  check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(limSummary), 'the free summary shows the date the report was assessed');
   check.ok(!/id="packet-block"/.test(await limPage.content()), 'while the complete findings and the packet stay locked');
   await limPage.close();
 
   const gen = await setupPaidCase(service, 'bw-ns-limitation@example.test', 'CA', 'CA-NS');
   opened = await openCasePage(gen.email, gen.password, gen.caseId, limLines);
   const genPage = opened.page;
+  /* The complete assessment (step 3) states the date it was assessed; the packet step follows. */
+  await genPage.locator('#steps button[data-step="3"]').click();
+  await genPage.waitForTimeout(700);
+  const genPanelText = await genPage.locator('#panel').innerText();
+  check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(genPanelText), 'the complete assessment states the date it was assessed');
+  await genPage.locator('#steps button[data-step="4"]').click();
+  await genPage.waitForSelector('#packet-block');
+  await genPage.waitForTimeout(600);
   const genBlock = await genPage.locator('#packet-block').innerText();
   check.ok(/time limit for a court claim/.test(genBlock), 'the subscriber packet offers the limitation concern to select');
   await genPage.locator('[data-check-issue]').first().check();

@@ -378,6 +378,11 @@ function renderResultSet(input) {
   limitation_assessment: evaluation.limitation_assessment || null,
   payment_history_analysis: evaluation.payment_history_analysis || null,
   assessments_performed: evaluation.assessments_performed || 0,
+  /* OWNER correction (SOL assessment date): the date the SERVER ran THIS assessment. Persisted with the result,
+     shown to the consumer, and never advanced by viewing, unlocking, rendering or downloading it again. */
+  assessed_on: evaluation.assessment_clock ? (evaluation.assessment_clock.assessment_date || null) : null,
+  assessment_run_at: evaluation.assessment_clock ? (evaluation.assessment_clock.assessment_run_at || null) : null,
+  assessment_clock_basis: evaluation.assessment_clock ? (evaluation.assessment_clock.assessment_clock_basis || null) : null,
     detected_report_information: detectedRendered,
     common_errors: commonRendered,
     /* OWNER-POTENTIAL-ISSUE-001: the unified selectable issues (definite/probable/potential) for the packet. */

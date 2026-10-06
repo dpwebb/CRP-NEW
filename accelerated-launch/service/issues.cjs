@@ -288,12 +288,16 @@ const LIMITATION_WORDING = Object.freeze({
   explain: (i) => {
     const e = i.evidence || {};
     const years = e.elapsed_years === null || e.elapsed_years === undefined ? null : Number(e.elapsed_years).toFixed(1);
-    return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was produced on ${e.reference_date}. The dates suggest this debt may be outside the time limit for a court claim.`;
+    const reportPart = e.report_reference_date
+      ? ` The report itself was issued on ${e.report_reference_date}${e.report_age_days ? `, about ${e.report_age_days} days before it was checked` : ''}.`
+      : '';
+    return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was checked on ${e.assessed_on}.${reportPart} The dates suggest this debt may be outside the time limit for a court claim.`;
   },
   uncertainty: (i) => {
     const e = i.evidence || {};
     const unknowns = (e.unknown_conditions || []).map((u) => `• ${u}`).join(' ');
-    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry: an expired court time limit is not by itself a reason a bureau must remove an entry, and this is not a claim that any rule was broken. What the report does not show, and what would change the answer: ${unknowns || '• the conditions this assessment depends on'}`;
+    const since = e.uncertainty_since_report ? ` ${e.uncertainty_since_report}` : '';
+    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry: an expired court time limit is not by itself a reason a bureau must remove an entry, and this is not a claim that any rule was broken. What the report does not show, and what would change the answer: ${unknowns || '• the conditions this assessment depends on'}.${since}`;
   },
   request: 'please verify when this debt first went into default or when you first knew about it, whether any later payment or admission restarted the time, and whether a court claim or judgment already exists on it'
 });
@@ -821,9 +825,18 @@ function limitationIssues(extraction, limitation) {
         start_basis: start.basis || null,
         start_location: start.location || null,
         other_printed_dates: assessment.other_printed_dates || [],
-        reference_date: assessment.reference_date,
+        /* THE OPERATIVE DATE: when the server ran this assessment. */
+        assessed_on: assessment.assessment_date || null,
+        assessment_run_at: assessment.assessment_run_at || null,
+        assessment_clock_basis: assessment.assessment_clock_basis || null,
+        reference_date: assessment.assessment_date || null,
+        /* PROVENANCE and the historical comparison: the printed report date, kept separate. */
+        report_reference_date: assessment.report_reference_date || null,
+        report_age_days: assessment.report_age_days === undefined ? null : assessment.report_age_days,
+        at_report_date: assessment.at_report_date || null,
         elapsed_years: assessment.elapsed_years,
         unknown_conditions: assessment.unknown_conditions || [],
+        uncertainty_since_report: assessment.uncertainty_since_report || null,
         acknowledgment_rule: assessment.acknowledgment_rule || null,
         not_a_reporting_requirement: assessment.not_a_reporting_requirement || null
       },
@@ -894,9 +907,15 @@ function publicIssue(issue) {
       counted_from: e.start_printed_value || e.start_iso || null,
       counted_from_label: e.start_label || null,
       counted_from_because: e.start_basis || null,
-      report_date: e.reference_date || null,
+      /* The date the server ran this assessment: the operative date, shown as "Assessed on …". */
+      assessed_on: e.assessed_on || null,
+      assessment_clock_basis: e.assessment_clock_basis || null,
+      /* The printed report date, kept separate as provenance. */
+      report_date: e.report_reference_date || null,
+      report_age_days: e.report_age_days === undefined ? null : e.report_age_days,
       years_since: e.elapsed_years === undefined ? null : e.elapsed_years,
       what_the_report_does_not_show: e.unknown_conditions || [],
+      uncertainty_since_report: e.uncertainty_since_report || null,
       note: e.not_a_reporting_requirement || null
     };
   }

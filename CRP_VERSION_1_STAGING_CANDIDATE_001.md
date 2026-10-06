@@ -422,7 +422,32 @@ Two shared mechanisms are added platform-wide, and the staging records are corre
 | Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing and no correspondence |
 | Records corrected by this batch | the served build is `crp-v1-1133cf76c411450f`, and the host has both `pdfinfo` and `pdftotext`, so the reader's text-layer dependency is **not** the explanation for the owner's earlier hosted format refusal; that refusal stays **UNRESOLVED** until it is reproduced, and no format check was weakened |
 
-## Deployment history — the checkout return correction (October 6, 2026)
+## 19. Batch 32 — the SOL assessment-date correction (October 6 2026)
+
+Owner direction (`CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md` §“Owner correction — SOL assessment date”): a court-enforcement limitation assessment uses **the date the SERVER runs the assessment**, in the recorded application basis **America/Halifax**, and never the printed report date, the upload date or anything a request supplies. Implemented platform-wide for all 82 canonical selections.
+
+**One authoritative clock — new `accelerated-launch/service/assessment-clock.cjs`.** `runStamp()` produces one stamp per run: `assessment_run_at` (ISO with the Halifax offset), `assessment_run_at_utc`, `assessment_date` (the calendar date **in Halifax**, so an 02:00Z run in January is the previous day), `assessment_clock_basis`, `clock_source` (`SERVER_CLOCK`, `CONTROLLED_TEST_CLOCK` or `EXPLICIT_INSTANT`), the `clock_rule` it follows, and `client_clock_fields_ignored`. The clock decides the calendar **date**, not just the time. `CRP_ASSESSMENT_CLOCK_AT` exists only so tests are not wall-clock dependent, and every run that uses it is stamped `CONTROLLED_TEST_CLOCK`.
+
+**One stamp per run, threaded everywhere.** `journey.evaluateCase` takes exactly one stamp and passes it to `evaluation.evaluateCase`, which shares it with the court-limitation mechanism and records it on the evaluation; `persistResult` persists it on the result row **and** uses it as the row's own `created_at`, so no downstream surface can disagree about when the report was checked. The demonstration path is stamped the same way. A deliberate **rerun** (a fresh `POST …/evaluate`, or the report-use reassessment) takes a **fresh** stamp, keeps the superseded stamp as `previous_assessment_clock`, never rewrites `created_at`, and keeps the existing review/stale-approval protections.
+
+**The report date is kept, separately.** The printed report date is read from the extraction as before and carried as `report_reference_date` with `report_age_days` and a historical `at_report_date` view marked `NOT_THE_OPERATIVE_ASSESSMENT`. Reporting-retention and factual checks are untouched and continue to read the report's own date. If no **assessment** stamp is supplied the mechanism **withholds** (`NO_ASSESSMENT_RUN_DATE`) rather than substitute the report date; a missing **report** date is no obstacle.
+
+**Consumer surface.** `results.renderResultSet` carries `assessed_on`, `assessment_run_at` and `assessment_clock_basis`; the free summary, the complete assessment, the limitation card and the assessment download all state **“Assessed on [date]”**, and the limitation item explains the date it was checked on beside the report's own issue date. The uncertainty now states plainly that a later payment, a written admission, a collection or court claim, or a change of hands **since the report was issued** may have restarted or changed the position — and that an account date is not silently established as discovery. Nothing about the item became a deletion duty or a rule allegation.
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `6B808118A5AB92D61829C0D1DD3845DA36B5B94F2D616AB5E024D033B0EE61E0` |
+| Internal build identity | `crp-v1-6b808118a5ab92d6` |
+| Covered surface | **84 files in five groups** — `RUNTIME` 54, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| New module in the manifest | `accelerated-launch/service/assessment-clock.cjs` (`84958F0B2F13…`) |
+| Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5798, 0 failed, 0 skipped** |
+| Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing and no correspondence |
+| What this does NOT claim | The all-82 clock contract is a **date** contract, not legal coverage: only Nova Scotia has a recorded limitation parameter set, so the other 81 selections still produce no limitation item (recorded as incomplete). Jurisdiction-specific limitation parameters and further reader mapping remain independent work |
+
+### Verification of the clock (controlled time, no wall-clock assertions)
+
+New section `ct-assessment-clock` **43/43**: the Halifax basis decides the date in winter and summer with the right offsets; a client-supplied `assessment_date`/`assessed_at`/`now` cannot move the stamp and is recorded as ignored; an **old report assessed now** uses the run date and records the report's age; a **rerun across a date boundary** produces a fresh stamp and a fresh row while the earlier row keeps its own date, findings and timestamp; **viewing and downloading a year later** changes neither the stored `assessed_on` nor the row count, and the download states the assessment date it was produced with; a **client-supplied date over HTTP** is ignored and recorded; and the **report-date-based findings are byte-identical** under two different assessment dates while the limitation arithmetic moves by exactly the interval. `cs-limitation-and-payment-history` **68/68**, `cr-ca-ns-tu-real-report` **62/62**, `bw-browser-wizzard` **69/69** (the free summary, the complete assessment and the subscriber packet each state the assessment date in a real browser), `k-ui-smoke` 67/67, `ap-accept-010-consistency` 74/74, `bn-prime-directive-ui` 13/13, `aw-consumer-explanations` 40/40, `r-ca-factual-assessment` 236/236.
+
 
 Current served build: crp-v1-1133cf76c411450f. Manifest: 1133CF76C411450F29F892BCACAA71CE681999DD7D3EDA70FE5864E5EF4EC1E3, 81 verified files. Full final regression PASS 5610 / 0 / 0 (including browser return-origin and selected-case assertions). An earlier full run caught one obsolete access-copy expectation; corrected and rerun successfully.
 
