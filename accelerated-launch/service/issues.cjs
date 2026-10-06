@@ -376,6 +376,9 @@ const LIMITATION_WORDING = Object.freeze({
     const reportPart = e.report_reference_date
       ? ` The report itself was issued on ${e.report_reference_date}${e.report_age_days ? `, about ${e.report_age_days} days before it was checked` : ''}.`
       : '';
+    if (e.jurisdiction === 'CA-ON') {
+      return `This report shows an adverse debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. Ontario's ordinary two-year court-claim period runs from discovery of the claim, not automatically from this report date. The printed date makes the timing worth verifying; it does not establish when the claim was discovered or that a court claim is out of time.${reportPart}`;
+    }
     return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was checked on ${e.assessed_on}.${reportPart} The dates suggest this debt may be outside the time limit for a court claim.`;
   },
   uncertainty: (i) => {
@@ -637,7 +640,9 @@ function describeWording(issue) {
       explanation: LIMITATION_WORDING.explain(issue),
       uncertainty: LIMITATION_WORDING.uncertainty(issue),
       request_type: REQUEST_TYPE.VERIFICATION,
-      request_wording: LIMITATION_WORDING.request
+      request_wording: (issue.evidence || {}).jurisdiction === 'CA-ON'
+        ? 'please verify when this claim was discovered, whether a demand was required and made, whether a qualifying acknowledgment or part payment occurred before expiry, and whether a court claim or judgment already exists'
+        : LIMITATION_WORDING.request
     };
   }
   const policy = POTENTIAL_WORDING[issue.check_id] || {
@@ -898,7 +903,9 @@ function limitationIssues(extraction, limitation) {
       basis_type: BASIS_TYPE.LIMITATION_ASSESSMENT,
       classification: null,
       check_id: 'LIMITATION-PERIOD-COURT-CLAIM',
-      label: LIMITATION_WORDING.label,
+      label: assessment.jurisdiction.region_code === 'CA-ON'
+        ? 'The age of this debt may warrant checking the time limit for a court claim'
+        : LIMITATION_WORDING.label,
       reason: start.selection_rule || null,
       record_index: assessment.record_index,
       anchor: { field: start.label || null, iso: start.iso || null, value_as_supplied: start.printed_value || null },
@@ -1087,6 +1094,7 @@ function publicIssue(issue) {
   if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
     const e = issue.evidence || {};
     out.limitation_concern = true;
+    out.request_wording = issue.request_wording || null;
     out.limitation = {
       jurisdiction_label: e.jurisdiction_label || null,
       statute: e.statute || null,

@@ -132,11 +132,23 @@ function satisfactoryBlock(overrides) {
 
 function runLimitationControls(check, evidence) {
   /* 1. A jurisdiction whose limitation statute has not been read produces nothing, and says what is missing. */
-  const on = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-ON', extraction: extractionOf([adverseBlock()]) });
-  check.equal(on.performed.length, 0, 'a jurisdiction whose limitation statute is not read produces no assessment');
-  check.equal(on.withheld[0].reason, 'NO_RECORDED_LIMITATION_PARAMETERS', 'and records exactly what is missing');
-  check.ok(/limitation statute for CA-ON/.test(on.withheld[0].missing_prerequisite), 'naming the jurisdiction and the element it lacks');
-  check.deepEqual(on.recorded_jurisdictions, ['CA-NS'], 'the recorded parameter set is exactly what has been read from official text');
+  const ab = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-AB', extraction: extractionOf([adverseBlock()]) });
+  check.equal(ab.performed.length, 0, 'a jurisdiction without accepted parameters produces no assessment');
+  check.equal(ab.withheld[0].reason, 'NO_RECORDED_LIMITATION_PARAMETERS', 'and records exactly what is missing');
+  check.ok(/limitation statute for CA-AB/.test(ab.withheld[0].missing_prerequisite), 'naming the jurisdiction and the element it lacks');
+  check.deepEqual(ab.recorded_jurisdictions, ['CA-NS', 'CA-ON'], 'the parameter set covers only Nova Scotia and Ontario');
+  const on = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-ON', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
+  check.equal(on.summary.may_be_outside, 1, 'Ontario old adverse entry opens a qualified verification concern');
+  check.equal(on.performed[0].period_ends, '2026-01-09', 'the two-year screening comparison uses the printed date');
+  check.ok(/NOT_LEGAL_DISCOVERY/.test(on.performed[0].start_date.selection_rule), 'and explicitly refuses to establish legal discovery');
+  check.ok(/demand obligation/.test(on.performed[0].unknown_conditions.join(' ')), 'Ontario demand timing remains unresolved');
+  const onBoundary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-ON', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 10, 2024' })]) });
+  check.equal(onBoundary.summary.may_be_outside, 0, 'the second anniversary does not trigger a timing concern');
+  const onBenign = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-ON', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([satisfactoryBlock()]) });
+  check.equal(onBenign.performed.length, 0, 'a satisfactory Ontario account is not assessed as adverse');
 
   /* 2. An adverse debt whose latest printed date is inside the period is not raised. */
   const inside = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([adverseBlock({ lastPayment: 'Mar 09, 2025' })]) });
@@ -405,6 +417,35 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(paymentApproval.status, 200, 'the selected correspondence can be approved');
   const paymentDownload = await service.request('GET', `/api/cases/${paymentCaseId}/packet-download`, { token: actor.token });
   check.equal(paymentDownload.status, 200, 'and the entitled consumer can download the approved packet');
+  const onCase = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-ON' } });
+  check.equal(onCase.status, 201, 'the Ontario selection creates its own case');
+  const onId = onCase.json.case.case_id;
+  const onExtraction = extractionOf([adverseBlock({ creditor: 'SYNTHETIC ONTARIO DEBT', lastPayment: 'Jan 09, 2024' })]);
+  const onEvaluation = evaluateCase({ country: 'CA', region: 'CA-ON', extraction: onExtraction, assessment_clock: clockAt('2026-01-10') });
+  service.service.store.update((state) => {
+    state.results.push({ result_id: `res_cs_${crypto.randomBytes(8).toString('hex')}`, case_id: onId,
+      account_id: actor.account_id, file_id: null, file_ids: [], evaluation: onEvaluation,
+      rendered: results.renderResultSet({ evaluation: onEvaluation, extraction: onExtraction }),
+      extraction: onExtraction, clarification_eligibility: [], reviewed_at: null, created_at: new Date().toISOString() });
+  });
+  const onView = (await service.request('GET', `/api/cases/${onId}`, { token: actor.token })).json.view;
+  const onItem = onView.result.issues.find((i) => i.limitation_concern === true);
+  check.ok(onItem, 'the Ontario timing question reaches the consumer issue list');
+  check.equal(onItem && onItem.account_identity.name, 'SYNTHETIC ONTARIO DEBT', 'on its own account');
+  check.ok(onItem && /does not establish when the claim was discovered/.test(onItem.explanation),
+    'the explanation does not turn a report date into legal discovery');
+  check.ok(onItem && /when this claim was discovered/.test(onItem.request_wording),
+    'and the request asks for the decisive missing fact');
+  check.equal(onItem && onItem.request_type, 'VERIFICATION', 'without a breach or deletion claim');
+  check.equal((await service.request('POST', `/api/cases/${onId}/packet/select`,
+    { token: actor.token, body: { issue_ids: [onItem.issue_id] } })).status, 200, 'the consumer selects it');
+  check.equal((await service.request('POST', `/api/cases/${onId}/packet/correspondence`,
+    { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
+    200, 'reviews the correspondence');
+  check.equal((await service.request('POST', `/api/cases/${onId}/packet/approve`, { token: actor.token })).status,
+    200, 'approves that selection');
+  check.equal((await service.request('GET', `/api/cases/${onId}/packet-download`, { token: actor.token })).status,
+    200, 'and downloads the entitled packet');
   evidence.consumer_path = { distinct_total: view.assessment_summary.distinct_total, selected_issue: item.issue_id };
 }
 

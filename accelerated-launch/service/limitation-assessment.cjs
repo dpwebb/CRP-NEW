@@ -63,6 +63,30 @@ const PARAMETERS = Object.freeze({
       'whether a court claim was already started, or a judgment already obtained, on this debt',
       'whether a bankruptcy, a stay or another court order affects this debt'
     ]
+  }),
+  'CA-ON': Object.freeze({
+    country_code: 'CA', region_code: 'CA-ON', jurisdiction_label: 'Ontario',
+    basic_period_years: 2, ultimate_period_years: 15,
+    start_is: 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitations Act, 2002, S.O. 2002, c. 24, Sched. B, ss. 4-5',
+    source_capture: 'SOURCE_CAPTURES/PHASE5-001H/ONT-02l24-consolidated-text-derivative.txt',
+    source_url: 'https://www.ontario.ca/laws/statute/02l24',
+    operative_words: 'a proceeding shall not be commenced in respect of a claim after the second anniversary of the day on which the claim was discovered',
+    discovery_words: 's. 5(1): the claimant knew or reasonably ought to have known the loss, its cause, the person responsible and that a proceeding was an appropriate remedy; s. 5(3) has a separate demand-obligation rule',
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitations Act, 2002, S.O. 2002, c. 24, Sched. B, s. 13(1), (9)-(11)',
+      words: 'an acknowledgment for a liquidated sum must reach the claimant or specified representative before expiry; the specified acknowledgment is signed in writing, and qualifying part payment has the same effect'
+    }),
+    transitional_note: 's. 24 may affect acts or omissions before January 1, 2004; the report does not establish its application',
+    uncertainty_since_report: 'The report may be older than this assessment. A qualifying signed acknowledgment or part payment before expiry may affect the time for a court claim. A court claim may already have been started, a judgment may exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when the claimant first knew or reasonably ought to have known the claim and that a proceeding was appropriate',
+      'whether this was a demand obligation, and when demand and failure to perform occurred',
+      'whether a qualifying signed acknowledgment or part payment reached the claimant before expiry',
+      'whether a court proceeding or judgment already exists',
+      'whether a suspension, exception or transition rule changes the period'
+    ]
   })
 });
 
@@ -301,7 +325,14 @@ function assessRecord(record, params, clock) {
         : (reportDate > reportPeriodEnd ? 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD' : 'WITHIN_THE_PERIOD'),
       role: 'HISTORICAL_COMPARISON_AT_THE_REPORT_DATE_NOT_THE_OPERATIVE_ASSESSMENT'
     } : null,
-    start_date: Object.assign({}, latest, { selection_rule: 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM' }),
+    start_date: Object.assign({}, latest, {
+      basis: params.region_code === 'CA-ON'
+        ? 'report-printed screening reference only; Ontario legal discovery is not established by this date'
+        : latest.basis,
+      selection_rule: params.region_code === 'CA-ON'
+        ? 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_DISCOVERY'
+        : 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM'
+    }),
     other_printed_dates: dates.slice(0, -1).map((d) => ({ label: d.label, iso: d.iso, basis: d.basis, location: d.location })),
     elapsed_years: elapsed,
     elapsed_days: elapsedDays,
@@ -359,6 +390,7 @@ function runLimitationAssessment(context) {
     basic_period_years: params.basic_period_years,
     ultimate_period_years: params.ultimate_period_years,
     source_capture: params.source_capture,
+    source_url: params.source_url || null,
     operative_words: params.operative_words
   };
   /* THE OPERATIVE DATE IS THE RUN DATE. The printed report date is read separately, only as provenance. */

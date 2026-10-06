@@ -33,6 +33,20 @@ async function run(t,check){
  const persisted=t.service.store.state().results.filter(r=>r.case_id===ca.case_id).at(-1);
  check.equal(persisted.extraction.records.filter(r=>r.kind===tu.TRADELINE_KIND).length,4,'four actual accounts survive HTTP persistence');
  check.ok(persisted.evaluation.results.some(r=>r.check.adapter_id==='CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS'),'Ontario accuracy actually evaluates TransUnion record facts');
+ const onView=(await t.request('GET',`/api/cases/${ca.case_id}`,{token:actor.token})).json.view;
+ const onConcern=onView.result.issues.find(i=>i.limitation_concern===true);
+ check.ok(onConcern,'the actual local Ontario upload reaches a qualified court-limit concern');
+ check.ok(onConcern&&/does not establish when the claim was discovered/.test(onConcern.explanation),
+  'the concern does not claim the printed date proves legal discovery');
+ check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[onConcern.issue_id]}})).status,200,'the Ontario concern can be selected');
+ check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/correspondence`,
+  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
+  200,'Ontario correspondence is reviewed');
+ check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/approve`,{token:actor.token})).status,
+  200,'the Ontario selection is approved');
+ check.equal((await t.request('GET',`/api/cases/${ca.case_id}/packet-download`,{token:actor.token})).status,
+  200,'and its entitled packet downloads from the actual local upload');
  const real=persisted.extraction;
  for(const region of ['CA-BC','CA-QC','CA-SK','CA-NT','CA-NU','CA-YT']){
   const evaluated=evaluation.evaluateCase({country:'CA',region,extraction:real});
