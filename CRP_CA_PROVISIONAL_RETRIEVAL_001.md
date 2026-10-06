@@ -136,3 +136,54 @@ The ledger's FCAC row records the **owner-supplied statutory bases** for the pro
 
 **Note.** Round 1's holding reason for the NL rules is partly superseded: the instrument is now bound to an existing owner-accepted row (§5.2), so the remaining work is the adapter + counters + test, not a new source row. Round 1's remaining untruncated text (s.36–38, s.39(1)(a)–(c)) is still owed.
 
+## 7. Round 3 — measured source outcomes for NB, PE, QC, SK, BC and the three territories
+
+**Measured method.** Official-source retrieval attempted with a browser user-agent from this build environment; where a PDF was obtained it was converted with `pdftotext` 25.12.0 and searched as text. Nothing was inferred from a search snippet, and no provision text was reconstructed from memory. Nothing was downloaded into source control (`*.pdf` is ignored by the repository), and no consumer data or private report was transmitted.
+
+### 7.1 VERIFIED NEGATIVE — Northwest Territories (CA-NT): there is no territorial credit-reporting statute
+
+| Measurement | Value |
+| --- | --- |
+| Artifact | *Consumer Protection Act* (N.W.T.), official publication, `https://www.justice.gov.nt.ca/en/files/legislation/consumer-protection/consumer-protection.a.pdf` |
+| Retrieved | HTTP 200, **701,570 bytes** |
+| Text extracted | **233,852 characters** (`pdftotext`) |
+| Occurrences of "credit report" / "consumer report" (case-insensitive) | **0** |
+| Occurrences of "credit" overall | non-zero, in consumer-transaction senses (credit agreements/cards), i.e. the text is genuine and simply contains no consumer-report provisions |
+
+**Consequence.** The corpus row's *"Consumers Protection Act or Consumer Protection Act"* is **not** a credit-reporting authority for CA-NT. The applicable authority for consumer reports in the territories remains the **federal** instrument (PIPEDA), which the frozen ledger already records as `UNRESOLVED_RELATION_NOT_ESTABLISHED`, `provision_or_citation: NOT RECORDED`. **No rule may be created for CA-NT from the territorial Consumer Protection Act**, and the earlier "unattempted" state is now a measured negative rather than an assumption.
+
+### 7.2 NOT REACHABLE — Nunavut (CA-NU) and Yukon (CA-YT)
+
+* **CA-NU** — `https://www.gov.nu.ca/…` returned **404** for both candidate Act paths, and `https://www.gov.nu.ca/en/legislation` returned **HTTP 403**.
+* **CA-YT** — `laws.yukon.ca` returned **HTTP 403** for the principal-Act PDF (`2002-0040_1.pdf`, with and without a browser user-agent), an alternative consolidated-path guess returned **404**, and `canlii.org` returned **403**.
+
+**Concrete missing prerequisite (recorded once):** a retrieval route to these two publishers' texts — a browser-rendered session or an accessible official mirror. The territories' authority question therefore stays **open, not assumed**, which §7.1 shows was the right posture.
+
+### 7.3 British Columbia (CA-BC) — the recorded trigger gap is structural for the WHOLE content list
+
+Round 2 retrieved BC BPCPA s.109(1) verbatim (items (k)–(p)). Round 3 adds the decisive measurement: the reader's printed public-record date facts are `publicRecord.judgmentEntryDate` (labels **ENTRY / ENTERED**), `publicRecord.judgmentSatisfactionDate`, `publicRecord.taxLienPaidDate`, `publicRecord.bankruptcyOrderForReliefDate` and `publicRecord.bankruptcyAdjudicationDate`. **There is no filing, commencement or "event" label.**
+
+| Item | Anchor the provision names | Printed? |
+| --- | --- | --- |
+| (m) | 6 years after **the fine was imposed** | No — no fine-imposition date is printed |
+| (n) | 12 months after **the date the proceeding began** | No — no commencement date is printed, and an entry date is not a commencement date, so no printed date may be substituted for it |
+| (o) | 6 years after **the event that gave rise to the information** | No — the recorded gap, kept separate and unchanged |
+
+**Consequence:** BC is blocked for **every** content item, not only (o). **Smallest fix:** a presentation that prints the fine-imposition, commencement or event date; otherwise BC carries factual assessment only by explicit owner decision. No counter moved.
+
+### 7.4 Blocked on official-source access — NB, PE, QC, SK
+
+| Region | Provision the corpus names | What actually happened in round 3 | Concrete missing prerequisite (once) |
+| --- | --- | --- | --- |
+| CA-NB | Consumer Reporting Act, S.N.B. 2014, c. 31, **s. 13** | `laws.gnb.ca` is a client-rendered Irosoft LIMS shell: `/en/document/cs/2014-c.31` and `/en/document/cs/2014-c31` both return only the shell chrome, the separately attempted `/en/acts-by-title` is a 404 page, `C-20.2` returns "The document does not exist", and no PDF route resolved (0 bytes) | a rendered retrieval, or the chapter confirmed from the official index — **the citation itself (2014, c. 31 vs C-20.2) stays unconfirmed** |
+| CA-PE | Consumer Reporting Act, recorded variously as **c. C-18 / C-19 / C-20**, s. 10 | `princeedwardisland.ca` is behind **Radware** bot protection: both the legislation index and the Act page return the "Verifying your browser" interstitial; the `/sites/default/files/legislation/c-1X-consumer_reporting_act*.pdf` routes returned **404** | a rendered retrieval — **the C-18 / C-19 / C-20 question is open**, and it is a citation question, not an implementation question |
+| CA-QC | Civil Code of Québec art. 30 (and the Consumer Protection Act) | `legisquebec.gouv.qc.ca` refuses automated access (**403**), unchanged from round 2 | a rendered retrieval |
+| CA-SK | The Credit Reporting Act, S.S. 2004, c. **C-43.2**, s. 18 | `qp.gov.sk.ca` **does not resolve** from this environment ("No such host is known", with and without `www`); the publications search API returns **400**; a `publications.saskatchewan.ca` product-download guess returned **404** | a DNS-reachable official Queen's Printer route |
+
+**Recorded once, not restated as a task.** **No adapter was created for any of these regions.** An adapter without the provision's own words would be a disabled record built only to move a count, which this batch's boundary forbids, and would risk asserting a rule the source does not support.
+
+### 7.5 What round 3 hands to the next batch (measured, not assumed)
+
+A printed **judgment entry date** already flows to `publicRecord.judgmentEntryDate`, and an existing admitted rule already anchors on a printed public-record date (US-NY-GBL-380J-F1-II-JUDGMENT-5Y — 5 years). So as soon as a provincial provision whose rule counts years **from the date of entry of the judgment** is retrieved **with its own words**, its implementation reuses an existing mechanism (adapter + issue + tested packet journey) rather than new infrastructure. Several provincial credit-reporting Acts carry exactly that rule (NS s.10(3)(d), MB s.4(e)); **NB s.13 is the next candidate to check when its text becomes obtainable** — recorded here as a hypothesis to test, never as a fact to implement.
+
+
