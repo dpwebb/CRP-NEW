@@ -13,7 +13,7 @@
   "inputs": {
     "coverage_ledger": "fd50c9ec8f21561161ebbb099d1717e12c08381563ba5552c66247a6144718f7",
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
-    "adapter_configs": "27cbc9054554a5db02fb751c9aecd3f6f1f041729fe72441e98da6ed9c2dd4f5"
+    "adapter_configs": "c51478f522ff2ff6145b66f64c7bdc1f1b09604294a173503111063d01349706"
   },
   "counts": {
     "canonical_regions": 82,

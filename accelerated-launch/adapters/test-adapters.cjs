@@ -53,7 +53,7 @@ test('packet eligibility is narrow and conditional, and finding permission is re
   /* OWNER-POTENTIAL-ISSUE-001 extended this set from the three bounded California rules to the enumerated
      per-finding authorization in rule-adapters.cjs (PACKET_ELIGIBLE_RULE_IDS); it is never a blanket flag. */
   const PACKET_ELIGIBLE = new Set(adapters.PACKET_ELIGIBLE_RULE_IDS);
-  assert.equal(PACKET_ELIGIBLE.size, 10, 'exactly ten admitted findings are packet-eligible');
+  assert.equal(PACKET_ELIGIBLE.size, 11, 'exactly eleven admitted findings are packet-eligible');
   for (const a of adapters.ADAPTERS) {
     assert.equal(typeof a.output_permission.packet_eligible, 'boolean', `${a.adapter_id} packet_eligible is boolean`);
     if (a.output_permission.packet_eligible === true) {

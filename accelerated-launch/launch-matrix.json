@@ -4,10 +4,10 @@
   "inputs": {
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
     "coverage_ledger": "fd50c9ec8f21561161ebbb099d1717e12c08381563ba5552c66247a6144718f7",
-    "rule_adapter_catalog": "3918e36693c74110a4261241e58c8d1ff831c161df87c2c99269f70d5b642c1c",
-    "applicability_records": "19a738789355dd824461590d6800d845203c163aa893378d8624c9b7183b0aae",
-    "b3_evidence": "c8bdf7cd05dd0cb1f98e6f40da519e02788d37e8096ef8f0e08567ea638d2dc6",
-    "b4_evidence": "448fb13b8c5650172c2898b6eff9c8c05d5b2a0341a28ac892028ddba47c3733"
+    "rule_adapter_catalog": "8cebd92fb80349f333e6bd2ae2624234fbc1b0172d9b19deab9a9a2f78c88440",
+    "applicability_records": "50feadd14d4dfd5b929f4a9a3f5a61e42767444f8ad785ce53e9300189efb438",
+    "b3_evidence": "9078ffc475972b21f54cc724c89b5045ef4074cfc42dcf0b614c7aa894d9b6ec",
+    "b4_evidence": "0dcdc7b95db4b599c35f935969fb4aa05a6420fc07449ffaadea7d90890c7e14"
   },
   "regions": [
     {
@@ -697,7 +697,8 @@
       ],
       "period_executable_candidates_exact": 0,
       "adapter_coverage": [
-        "CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION@EXACT_MATCH"
+        "CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION@EXACT_MATCH",
+        "CA-PE-CRA-S9-3-J-DISMISSED-CHARGE@EXACT_MATCH"
       ],
       "report_format_dependency": "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES",
       "concrete_blockers": [
@@ -712,7 +713,7 @@
       "evaluation_support": "EXERCISED_LOCALLY:0_CHECKS",
       "account_isolation": "EXERCISED_LOCALLY_NOT_LAUNCH_VALIDATED",
       "upload_service": "EXERCISED_LOCALLY:ALL_82",
-      "vertical_slice_exercised": false,
+      "vertical_slice_exercised": true,
       "applicability_records": [
         {
           "relation_id": "CA-PIPEDA-FEDERAL-RECORDED-COUNTRY-WIDE",
@@ -6656,7 +6657,8 @@
       "CA-NL-CPBPA-S39-1-G-DISMISSED-CHARGE",
       "CA-AB-CPA-CPRR-S4-B-DEBT-LAST-PAYMENT-6Y",
       "CA-MB-PIA-S4-E-JUDGMENT-CONTENT-OMISSION",
-      "CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION"
+      "CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION",
+      "CA-PE-CRA-S9-3-J-DISMISSED-CHARGE"
     ],
     "executable_rule_candidates": {
       "total": 27,
@@ -7478,7 +7480,7 @@
     "service_path": "accelerated-launch/service/",
     "evidence": "accelerated-launch\\service\\out\\b2-evidence.json",
     "totals": {
-      "passed": 5053,
+      "passed": 5094,
       "failed": 0,
       "skipped": 0
     },
@@ -7556,6 +7558,7 @@
         "CA-NL",
         "CA-NS",
         "CA-ON",
+        "CA-PE",
         "US-AK",
         "US-AL",
         "US-AR",
@@ -7646,6 +7649,7 @@
       "CA-NL",
       "CA-NS",
       "CA-ON",
+      "CA-PE",
       "GB-ENG",
       "GB-NIR",
       "GB-SCT",
@@ -7717,7 +7721,7 @@
     "applicability_records": "accelerated-launch\\adapters\\applicability-records.json",
     "evidence": "accelerated-launch\\service\\out\\b3-evidence.json",
     "totals": {
-      "passed": 5053,
+      "passed": 5094,
       "failed": 0,
       "skipped": 0
     },
@@ -8272,7 +8276,7 @@
     "authority": "OWNER-ALL82-001",
     "evidence": "accelerated-launch\\service\\out\\b4-evidence.json",
     "totals": {
-      "passed": 5053,
+      "passed": 5094,
       "failed": 0,
       "skipped": 0
     },
@@ -8296,7 +8300,7 @@
         "code": "ENTITLEMENT_REQUIRED"
       },
       "activation": {
-        "checkout_id": "chk_59a50707a32fc27ae405f8aa",
+        "checkout_id": "chk_73ea7152d66f107b8c503602",
         "entitled_after_event": true,
         "duplicate_event_is_idempotent": true,
         "client_confirmation_refused": true,
