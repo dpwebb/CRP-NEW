@@ -121,8 +121,10 @@ function realEvidence(check, checkSkip) {
     'account.reported_identity': 'EXPRESS BANK',
     'account.type': 'CREDIT CARD',
     'account.creditLimitRaw': '$10,000',
-    'account.creditLimit': 10000
-  }, 'a liability record supplies only the facts it actually prints: its dates plus the credited provider, the account type and the credit limit it prints as a labelled value');
+    'account.creditLimit': 10000,
+    'liability.accountReference': 'EPB0075',
+    'liability.accountReferenceRaw': 'EPB0075'
+  }, 'a liability record supplies only the facts it actually prints: its dates plus the credited provider, the account type, the credit limit and the account reference the entry prints as a labelled value');
   check.deepEqual(x.evidence_readings.boundary_anomalies, [], 'with no record-boundary anomaly');
 
   const enquiries = x.records.filter((r) => r.kind === 'CREDIT_ENQUIRY');

@@ -176,7 +176,9 @@ const SECTION_FILES = [
   /* BATCH-17 — territorial PIPEDA accuracy and the PEI dismissed-charge limb. */
   'ck-ca-territories-pipeda-accuracy.cjs',
   /* BATCH-18 — British Columbia accuracy, Quebec accuracy and New Brunswick judgment content. */
-  'cl-bc-qc-nb-finish.cjs'];
+  'cl-bc-qc-nb-finish.cjs',
+  /* BATCH-23 — AU listing reference / overdue amount and the recorded US specimen, real-file extraction. */
+  'cn-au-us-ingestion.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T03:26:48.541Z",
+  "generated_at": "2026-10-06T08:02:38.935Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 51,
-      "digest": "213BA53F147D43959EE0AAE31FCDEE3079B529082755E2FBAD027CB222F34797",
+      "digest": "0FAA07005AFC768BA8CA5F88760E1585FA6EC394CA23FDE4554C27B5D32E0D08",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -107,7 +107,7 @@
         },
         {
           "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
-          "sha256": "86640BC5D446005C16875530293B218E3C1EABEEC6D855CB00AF63F3687DB222"
+          "sha256": "FF0A51D9D21EE63D2F770BA6BBFEA09952869E111CF965415449CB8FB00FD1DC"
         },
         {
           "file": "accelerated-launch/service/format-families/ca-consumer-format-scope.cjs",
@@ -360,6 +360,6 @@
       ]
     }
   ],
-  "manifest_digest": "48A7D467F59A8BAEF7365D260CC0C73B68D902650CEADC8ACCCBE59F86832DB2",
+  "manifest_digest": "4A88438669CBA53349B99591C84B51F36FE1BE96B1E1E67BF7159A2737273572",
   "total_file_count": 80
 }

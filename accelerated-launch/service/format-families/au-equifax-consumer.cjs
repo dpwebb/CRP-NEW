@@ -524,7 +524,26 @@ function buildOverdueRecord(entry, index) {
       page: anchor.page, line: anchor.line, label: 'Date', section,
       record_index: index, record_starts_at: boundary, record_ends_at: end
     },
-    facts: { 'overdue.originalListingDate': normalized }
+    facts: (() => {
+      const facts = { 'overdue.originalListingDate': normalized };
+      /* BATCH-23 (AU slice): the printed `Account Number` and `Amount`, taken from THIS record's own entry. The
+         reference is the BUREAU'S OWN LISTING REFERENCE — it is not a masked account identifier and it does not
+         identify the underlying creditor account, so it opens no matching path; it exists so the consumer and the
+         packet can point at the exact entry. The amount is parsed from the record's own printed figure with the
+         raw reading kept beside it. A label printed more than once or without a value maps nothing. */
+      const references = fieldsIn(fields, 'Account Number');
+      if (references.length === 1 && references[0].value) {
+        facts['overdue.accountReference'] = references[0].value;
+        facts['overdue.accountReferenceRaw'] = references[0].value;
+      }
+      const amounts = fieldsIn(fields, 'Amount');
+      if (amounts.length === 1 && amounts[0].value) {
+        facts['overdue.amountRaw'] = amounts[0].value;
+        const parsed = amountOf(amounts[0].value);
+        if (parsed !== undefined) facts['overdue.amount'] = parsed;
+      }
+      return facts;
+    })()
   });
 }
 
@@ -709,6 +728,15 @@ function buildLiabilityRecord(entry, index) {
      The repayment-history EVIDENCE the record prints as text is recorded; NO cell is emitted, because the cells
      are vector graphics and nothing readable exists to put in them. */
   if (provider.value) facts['account.reported_identity'] = provider.value;
+  /* BATCH-23 (AU slice): the printed `Account Number` is the BUREAU'S OWN LISTING REFERENCE for this entry. It is
+     mapped as a reference only — never as a masked account identifier, and never treated as identifying the
+     underlying creditor account — so it opens no matching path and the confident duplicate/responsibility checks
+     stay closed. It is what lets a consumer and a dispute packet point at the exact entry. */
+  const accountReference = liField(fields, 'Account Number');
+  if (accountReference.present && accountReference.value) {
+    facts['liability.accountReference'] = accountReference.value;
+    facts['liability.accountReferenceRaw'] = accountReference.value;
+  }
   if (accountType.value) facts['account.type'] = accountType.value.toUpperCase();
   if (creditLimit.value) {
     facts['account.creditLimitRaw'] = creditLimit.value;
