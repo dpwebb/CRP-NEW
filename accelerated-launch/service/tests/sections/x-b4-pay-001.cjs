@@ -34,7 +34,7 @@ async function run(service, check) {
 
   /* ---- 1. A verified one-time payment earns exactly one eligible credit. ---- */
   const a = await service.unpaidAccount('credit-a@example.test');
-  await payWithBody(service, a, { plan_code: 'report_once' });
+  await payWithBody(service, a, { plan_code: 'report_once', case_id: await service.assessedCase(a) });
   check.equal(credits().length, 1, 'a verified one-time payment earns one credit');
   check.equal(credits()[0].state, 'ELIGIBLE', 'which starts ELIGIBLE');
   check.equal(credits()[0].amount_cents, 595, 'worth CAD 5.95');
@@ -68,7 +68,7 @@ async function run(service, check) {
 
   /* ---- 5. A failed checkout releases its reservation. ---- */
   const b = await service.unpaidAccount('credit-b@example.test');
-  await payWithBody(service, b, { plan_code: 'report_once' });
+  await payWithBody(service, b, { plan_code: 'report_once', case_id: await service.assessedCase(b) });
   const bMonthly = await service.openCheckout(b, 'monthly');
   check.equal(bMonthly.json.checkout.upgrade_credit.reserved, true, 'second account reserves');
   store().update((state) => {
@@ -83,7 +83,7 @@ async function run(service, check) {
 
   /* ---- 6. A refunded one-time payment revokes its credit. ---- */
   const c = await service.unpaidAccount('credit-c@example.test');
-  await payWithBody(service, c, { plan_code: 'report_once', payment_intent: 'test_pi_refunded' });
+  await payWithBody(service, c, { plan_code: 'report_once', case_id: await service.assessedCase(c), payment_intent: 'test_pi_refunded' });
   await service.postEvent({
     id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
     type: 'charge.refunded',
@@ -99,7 +99,7 @@ async function run(service, check) {
 
   /* ---- 7. An unpaid checkout-completed event grants nothing. ---- */
   const d = await service.unpaidAccount('credit-d@example.test');
-  await payWithBody(service, d, { plan_code: 'report_once' });
+  await payWithBody(service, d, { plan_code: 'report_once', case_id: await service.assessedCase(d) });
   const unpaid = await service.postEvent({
     id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
     type: 'checkout.session.completed',
@@ -116,14 +116,12 @@ async function run(service, check) {
 
   /* ---- 8. Paid report download: one purchased case, second case refused. ---- */
   const e = await service.unpaidAccount('credit-e@example.test');
-  const caseA = await service.request('POST', '/api/cases', { token: e.token, body: { country: 'CA', region: 'CA-NS' } });
+  const caseAId = await service.assessedCase(e);
   const caseB = await service.request('POST', '/api/cases', { token: e.token, body: { country: 'CA', region: 'CA-NS' } });
-  const caseAId = caseA.json.case.case_id;
   const caseBId = caseB.json.case.case_id;
   await payWithBody(service, e, { plan_code: 'report_once', case_id: caseAId });
   const dlA = await service.request('GET', `/api/cases/${caseAId}/report-download`, { token: e.token });
-  check.equal(dlA.status, 409, 'the purchased case passes the download gate (409 = entitled but no result yet)');
-  check.equal(dlA.json.error.code, 'NO_RESULT_TO_DOWNLOAD', 'and the only refusal is the missing result');
+  check.equal(dlA.status, 200, 'the purchased case downloads its already-assessed report');
   const dlB = await service.request('GET', `/api/cases/${caseBId}/report-download`, { token: e.token });
   check.equal(dlB.status, 402, 'an unpurchased second case is refused');
   check.equal(dlB.json.error.code, 'ASSESSMENT_ACCESS_REQUIRED', 'with the assessment-access refusal');

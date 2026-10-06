@@ -17,6 +17,7 @@ const os = require('node:os');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { createService } = require('../app.cjs');
+const { buildPdf } = require('../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const { TEST_SECRET_NAME, TEST_ADAPTER_FLAG, TEST_PROVIDER_ID, SIGNATURE_HEADER } = require('../payment-provider.cjs');
 
 /**
@@ -144,9 +145,28 @@ class TestService {
     return { email, token: /crp_session=([^;]+)/.exec(created.setCookie || '')[1], account_id: created.json.account.account_id };
   }
 
-  /** Open a checkout intent through the real endpoint. Returns the raw response. */
-  openCheckout(actor, planCode) {
-    return this.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: planCode || 'report_once' } });
+  /** Open a checkout intent through the real endpoint. A one-time unlock is bound to the case it unlocks. */
+  openCheckout(actor, planCode, caseId) {
+    const body = { plan_code: planCode || 'monthly' };
+    if (planCode === 'report_once' && caseId) body.case_id = caseId;
+    return this.request('POST', '/api/billing/checkout', { token: actor.token, body });
+  }
+
+  /**
+   * A new case for this actor holding one fictional report that has been assessed, so a one-time unlock has a
+   * valid report to buy. Returns the case id.
+   */
+  async assessedCase(actor) {
+    const created = await this.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-NS' } });
+    if (created.status !== 201) throw new Error(`case creation failed: ${created.status} ${created.text}`);
+    const caseId = created.json.case.case_id;
+    const pdf = buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'] }] });
+    await this.request('POST', `/api/cases/${caseId}/files`, {
+      token: actor.token,
+      body: { originalFilename: 'fictional-assessment.pdf', declaredBytes: pdf.length, mimeType: 'application/pdf', contentBase64: pdf.toString('base64') }
+    });
+    await this.request('POST', `/api/cases/${caseId}/evaluate`, { token: actor.token });
+    return caseId;
   }
 
   /** Post one provider event through the real webhook endpoint. `signed: false` exercises the refusal path. */
@@ -156,9 +176,9 @@ class TestService {
   }
 
   /** Pay for one plan the way a provider would: a real checkout, then a real signed event. */
-  async pay(actor, planCode) {
-    const plan = planCode || 'report_once';
-    const checkout = await this.openCheckout(actor, plan);
+  async pay(actor, planCode, caseId) {
+    const plan = planCode || 'monthly';
+    const checkout = await this.openCheckout(actor, plan, caseId);
     if (checkout.status !== 201) throw new Error(`checkout failed: ${checkout.status} ${checkout.text}`);
     const reference = checkout.json.checkout.provider_reference;
     const event = {

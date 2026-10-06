@@ -30,6 +30,7 @@ const { ServiceError } = require('./errors.cjs');
 const plans = require('./plan-catalog.cjs');
 const payments = require('./payment-provider.cjs');
 const credits = require('./billing-credits.cjs');
+const cases = require('./cases.cjs');
 
 /** States in which an account may start paid work. Derived from the legacy ENTITLED_STATES. */
 const ENTITLED_STATES = Object.freeze(['ACTIVE', 'PAST_DUE', 'COMPLIMENTARY']);
@@ -334,6 +335,29 @@ function plansView(store, actor, env) {
 }
 
 /**
+ * OWNER-PURCHASE-FLOW-001 (completion): a consumer must never be charged for a one-time unlock without a valid
+ * report to unlock. Every check happens HERE, on the server, BEFORE the provider is resolved, called or a
+ * checkout row is written — the browser cannot supply a valid selection.
+ *
+ *   • the case must be named;
+ *   • it must belong to the signed-in account (the existing ownership refusal, which exposes no detail about
+ *     someone else's case);
+ *   • it must already carry a completed assessment, because the unlock buys the reading of THAT assessment;
+ *   • it must not already be unlocked by a one-time purchase or an active subscription.
+ */
+function requireUnlockableReport(store, actor, caseId) {
+  if (!caseId) throw new ServiceError('REPORT_UNLOCK_CASE_REQUIRED');
+  const caseRow = cases.requireOwnedCase(store, actor, caseId);
+  const assessed = (store.state().results || []).some((row) => row.case_id === caseId && row.rendered);
+  if (!assessed) throw new ServiceError('REPORT_ASSESSMENT_NOT_COMPLETED', { case_id: caseId });
+  const access = assessmentAccess(store, actor, caseId);
+  if (access.complete_assessment) {
+    throw new ServiceError('REPORT_ALREADY_UNLOCKED', { case_id: caseId, via: access.via });
+  }
+  return caseRow;
+}
+
+/**
  * Open a checkout intent. Fails closed when no provider is usable — no intent, no entitlement, no access.
  *
  * B4-PAY-001: a subscription checkout atomically reserves an eligible upgrade credit BEFORE the provider
@@ -344,6 +368,7 @@ async function openCheckout(store, actor, input, env) {
   const body = input || {};
   const planCode = typeof body.plan_code === 'string' ? body.plan_code : '';
   if (!plans.isPlanCode(planCode)) throw new ServiceError('UNKNOWN_PLAN', { requested: planCode || null });
+  const caseId = typeof body.case_id === 'string' && body.case_id ? body.case_id : null;
   const provider = payments.resolveProvider(env);
   const described = payments.describeProvider(env);
   if (!provider) {
@@ -353,9 +378,11 @@ async function openCheckout(store, actor, input, env) {
       exact_external_dependency: described.exact_external_dependency
     });
   }
+  /* A one-time unlock is validated only after the provider configuration is known-good, and always BEFORE the
+     provider is CALLED or a checkout row is written (OWNER-PURCHASE-FLOW-001). */
+  if (planCode === 'report_once') requireUnlockableReport(store, actor, caseId);
   const plan = plans.plan(planCode);
   const returnUrl = typeof body.return_url === 'string' && /^https?:\/\//.test(body.return_url) ? body.return_url : null;
-  const caseId = typeof body.case_id === 'string' && body.case_id ? body.case_id : null;
 
   const now = nowIso();
   const checkoutId = newId('chk');

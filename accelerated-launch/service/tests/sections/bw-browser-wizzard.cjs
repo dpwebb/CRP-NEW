@@ -241,6 +241,15 @@ async function run(service, check) {
   await freePage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
   const reportText = await freePage.locator('#panel').innerText();
   check.ok(/Your report is uploaded/.test(reportText) && /Check my report/.test(reportText), 'the browser offers the check action with no purchase recorded');
+  /* OWNER-PURCHASE-FLOW-001: with no completed assessment there is nothing to unlock, so the browser guides the
+     consumer to run the checks instead of starting a payment. */
+  await freePage.locator('#steps button[data-step="3"]').click();
+  await freePage.waitForTimeout(800);
+  const bareResults = await freePage.locator('#panel').innerText();
+  check.ok(/Run the checks above to see your results\./.test(bareResults), 'an unassessed report guides the consumer to run the checks');
+  check.ok(!/buy-report_once/.test(await freePage.content()), 'and offers no purchase for a report with no completed assessment');
+  await freePage.locator('#steps button[data-step="2"]').click();
+  await freePage.waitForTimeout(600);
   await freePage.locator('#check-report').click();
   await freePage.waitForTimeout(3000);
   await freePage.locator('#steps button[data-step="3"]').click();
@@ -254,6 +263,27 @@ async function run(service, check) {
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
   await freePage.screenshot({ path: shot, fullPage: true });
   evidence.unpaid_summary_screenshot = shot;
+
+  /* OWNER-PURCHASE-FLOW-001: the one-time button uses the selected assessed report, and a verified payment
+     unlocks that same report in the browser — no second upload, no second assessment. */
+  await freePage.locator('#buy-report_once').click();
+  await freePage.waitForTimeout(1500);
+  const afterCheckout = await freePage.content();
+  check.ok(/Checkout opened\./.test(afterCheckout), 'the one-time button starts a checkout for the selected assessed report (test billing)');
+  check.ok(!/Check: <b>/.test(afterCheckout), 'and opening a checkout unlocks nothing on its own');
+  check.ok(/Unlock this report/.test(await freePage.locator('#panel').innerText()), 'so the report stays locked until the provider verifies the payment');
+  await service.pay(freeActor, 'report_once', freeCase.case_id);
+  await freePage.locator('#steps button[data-step="1"]').click();
+  await freePage.waitForSelector('#refresh');
+  await freePage.locator('#refresh').click();
+  await freePage.waitForSelector(`[data-open="${freeCase.case_id}"]`);
+  await freePage.locator(`[data-open="${freeCase.case_id}"]`).click();
+  await freePage.waitForTimeout(800);
+  await freePage.locator('#steps button[data-step="3"]').click();
+  await freePage.waitForTimeout(1500);
+  const unlockedText = await freePage.locator('#panel').innerText();
+  check.ok(/Check: /.test(unlockedText) && /Download my assessment/.test(unlockedText), 'a verified payment unlocks that report for the consumer in the browser');
+  check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
   await freePage.close();
 
   await browser.close();

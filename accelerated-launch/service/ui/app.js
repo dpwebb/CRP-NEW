@@ -546,12 +546,23 @@ function planPrice(code) {
   return `${plan.amount_display}${suffix}`;
 }
 
-/** Start a purchase for one plan. The one-time unlock is bound to this case on the server. */
+/** Start a purchase for one plan. The one-time unlock is bound to this case on the server, which validates it. */
 function startCheckout(planCode) {
   return run(async () => {
     const body = { plan_code: planCode };
     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
-    const opened = await api('POST', '/api/billing/checkout', body);
+    let opened;
+    try {
+      opened = await api('POST', '/api/billing/checkout', body);
+    } catch (err) {
+      /* The server refuses a one-time unlock with no eligible report, and refreshes the screen when the report is
+         already unlocked, so the consumer sees their results instead of another purchase. */
+      if (err && err.code === 'REPORT_ALREADY_UNLOCKED' && state.caseId) {
+        state.view = (await api('GET', '/api/cases/' + state.caseId)).view;
+        state.step = STEP.RESULTS;
+      }
+      throw err;
+    }
     state.notice = (opened.checkout && opened.checkout.redirect_grants_nothing)
       ? 'Checkout opened. Access activates only after the payment provider verifies the payment; returning from the payment page by itself unlocks nothing.'
       : 'Checkout opened.';
@@ -621,7 +632,7 @@ function renderResults(panel) {
     <button class="primary" id="evaluate">Run the applicable checks on this case</button>
     ${summary
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
-      : '<div class="note">No result set exists for this case yet.</div>'}
+      : '<div class="note">No result set exists for this case yet. Run the checks above to see your results.</div>'}
     ${summary && access.complete_assessment && result && !demo
       ? (access.dispute_packet ? clarificationBlock(view) : oneTimeNextStepsBlock())
       : ''}`;

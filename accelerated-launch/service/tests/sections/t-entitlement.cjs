@@ -167,12 +167,13 @@ async function purchaseSurface(t, check, evidence) {
 
 async function activationAndIdempotency(t, check, evidence) {
   const buyer = await t.unpaidAccount('entitlement-buyer@example.test');
-  const caseId = await openCase(t, buyer);
+  /* OWNER-PURCHASE-FLOW-001: a one-time unlock needs a report that has been assessed, so the buyer owns one. */
+  const caseId = await t.assessedCase(buyer);
 
   const before = await t.request('GET', '/api/entitlement', { token: buyer.token });
   check.equal(before.json.entitlement.entitled, false, 'the buyer is not entitled before a verified event');
 
-  const checkout = await t.openCheckout(buyer, 'report_once');
+  const checkout = await t.openCheckout(buyer, 'report_once', caseId);
   check.equal(checkout.status, 201, 'a checkout intent is opened through the real endpoint');
   check.equal(checkout.json.checkout.provider_is_a_working_payment, false, 'and states the provider is not a working payment');
   check.equal(checkout.json.checkout.redirect_grants_nothing, true, 'and states that the redirect grants nothing');
@@ -197,7 +198,7 @@ async function activationAndIdempotency(t, check, evidence) {
   check.equal(confirm.json.error.code, 'CHECKOUT_NOT_CONFIRMED_BY_PROVIDER', 'and names the reason');
   check.equal((await t.request('GET', '/api/entitlement', { token: buyer.token })).json.entitlement.entitled, false, 'and nothing was granted');
 
-  const payment = await t.pay(buyer, 'report_once');
+  const payment = await t.pay(buyer, 'report_once', caseId);
   check.equal(payment.response.duplicate, false, 'a verified provider event activates the purchase');
   const activated = await t.request('GET', '/api/entitlement', { token: buyer.token });
   check.equal(activated.json.entitlement.entitled, true, 'and the account is entitled afterwards');

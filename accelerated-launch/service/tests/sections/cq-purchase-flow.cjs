@@ -137,6 +137,43 @@ async function run(service, check) {
   check.equal((await service.request('GET', `/api/cases/${caseB.case_id}/report-download`, { token: once.token })).status, 402, 'and its download is refused');
   check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/packet`, { token: once.token })).status, 402, 'the packet stays closed for a one-time unlock');
   check.equal((await service.request('POST', `/api/cases/${caseA.case_id}/packet/select`, { token: once.token, body: { issue_ids: [] } })).status, 402, 'and packet selection is refused');
+
+  /* ---- 3b. A one-time unlock must have a valid report, checked BEFORE the provider is called ---- */
+  const checkouts = () => (service.service.store.state().checkout_sessions || []).length;
+  const before = checkouts();
+  const outsider = await service.unpaidAccount('cq-outsider@example.test');
+  const noCase = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'report_once' } });
+  check.equal(noCase.status, 400, 'a one-time unlock with no report named is refused');
+  check.equal(noCase.json.error.code, 'REPORT_UNLOCK_CASE_REQUIRED', 'with the missing-report code');
+  check.match(noCase.json.error.message, /Choose the report you want to unlock\./, 'and the consumer message names the next step');
+  const unknownCase = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'report_once', case_id: 'case_does_not_exist' } });
+  check.equal(unknownCase.status, 404, 'an unknown report is refused');
+  check.ok(!/case_does_not_exist/.test(unknownCase.text), 'without echoing the requested id');
+  const strangerCheckout = await service.request('POST', '/api/billing/checkout', { token: outsider.token, body: { plan_code: 'report_once', case_id: caseA.case_id } });
+  check.equal(strangerCheckout.status, 403, 'another account cannot buy an unlock for a case it does not own');
+  check.ok(!/CA-NS|Creditor/.test(strangerCheckout.text), 'and the refusal exposes no detail about that case');
+
+  const partialCase = (await service.request('POST', '/api/cases', { token: once.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  await service.request('POST', `/api/cases/${partialCase.case_id}/files`, { token: once.token, body: uploadBody(contradiction(), 'cq-partial.pdf') });
+  const notAssessed = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'report_once', case_id: partialCase.case_id } });
+  check.equal(notAssessed.status, 409, 'a report that has not been assessed cannot be bought');
+  check.equal(notAssessed.json.error.code, 'REPORT_ASSESSMENT_NOT_COMPLETED', 'with the assessment-not-completed code');
+  check.match(notAssessed.json.error.message, /Check your report before buying the full results\./, 'and the consumer message names the next step');
+
+  const alreadyUnlocked = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'report_once', case_id: caseA.case_id } });
+  check.equal(alreadyUnlocked.status, 409, 'an already unlocked report is not sold a second time');
+  check.equal(alreadyUnlocked.json.error.code, 'REPORT_ALREADY_UNLOCKED', 'with the already-unlocked code');
+  check.match(alreadyUnlocked.json.error.message, /This report is already unlocked\. View your results\./, 'and the consumer message points at the results');
+  check.equal(checkouts(), before, 'and none of those refusals reached the provider or created a checkout record');
+
+  const eligible = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'report_once', case_id: caseB.case_id } });
+  check.equal(eligible.status, 201, 'an owned report with a completed assessment starts a checkout');
+  const boundRow = (service.service.store.state().checkout_sessions || []).find((row) => row.checkout_id === eligible.json.checkout.checkout_id);
+  check.equal(boundRow.case_id, caseB.case_id, 'and the selected case is bound to the checkout record');
+  check.equal(boundRow.plan_code, 'report_once', 'with the one-time plan recorded on it');
+  check.equal(checkouts(), before + 1, 'with exactly one checkout record created');
+  const subscriptionCheckout = await service.request('POST', '/api/billing/checkout', { token: once.token, body: { plan_code: 'monthly' } });
+  check.equal(subscriptionCheckout.status, 201, 'subscription checkout is unaffected and needs no case');
   /* ---- 4. Subscription: the full paid flow, including approval and the stale-approval refusal ---- */
   const sub = await service.unpaidAccount('cq-sub@example.test');
   await service.pay(sub, 'monthly');

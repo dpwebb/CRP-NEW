@@ -66,7 +66,8 @@ async function run(t, check) {
   /* OWNER-PURCHASE-FLOW-001: this section tests the ONE-TIME purchase itself (its entitlement and its upgrade
      credit), so it buys one explicitly instead of holding the harness's subscription. */
   const paid = await t.unpaidAccount('billing-paid@example.test');
-  await t.pay(paid, 'report_once');
+  const paidCase = await t.assessedCase(paid);
+  await t.pay(paid, 'report_once', paidCase);
   const subscriber = await t.account('billing-subscriber@example.test');
   await t.pay(subscriber, 'monthly');
 

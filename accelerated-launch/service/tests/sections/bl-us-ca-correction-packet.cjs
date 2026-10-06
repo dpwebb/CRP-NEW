@@ -182,18 +182,12 @@ async function run(service, check) {
   const noEnt = await service.unpaidAccount('packet-ca-noent@example.test');
   /* OWNER-PURCHASE-FLOW-001: a one-time purchase that is NOT bound to this case unlocks no report here, and a
      packet needs a subscription, so every download for this case is refused. */
+  /* OWNER-PURCHASE-FLOW-001: a one-time purchase with no report named is refused BEFORE the provider is called, so
+     nothing is charged and no unbound credit can exist. A packet needs a subscription, so every download here fails. */
   const noEntCheckout = await service.request('POST', '/api/billing/checkout', { token: noEnt.token, body: { plan_code: 'report_once' } });
-  const noEntOpened = noEntCheckout.json.checkout;
-  await service.postEvent({
-    id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
-    type: 'checkout.session.completed',
-    account_reference: noEnt.account_id,
-    plan_code: 'report_once',
-    session_reference: noEntOpened.provider_reference,
-    amount_cents: noEntOpened.plan.amount_cents,
-    currency: noEntOpened.plan.currency,
-    occurred_at: new Date().toISOString()
-  });
+  check.equal(noEntCheckout.status, 400, 'a one-time purchase with no report named is refused before payment');
+  check.equal(noEntCheckout.json.error.code, 'REPORT_UNLOCK_CASE_REQUIRED', 'with the missing-report code');
+  check.equal(noEntCheckout.json.checkout, undefined, 'and no checkout is created for it');
   const noEntCase = await makeCase(service, noEnt);
   const noEntCaseId = noEntCase.case_id;
   await uploadAndEvaluateTaxLien(service, noEnt, noEntCaseId);

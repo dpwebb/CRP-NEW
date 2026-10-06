@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batches 24–28, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §15 at the end of this file — manifest `CF8D50D666C602B7C85A51803CC59C6A5E4C4622A6266BB41A80FDA0A8301A5B`, build `crp-v1-cf8d50d666c602b7`, 81 files in five groups, full local regression **PASS 5574, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging still serves `crp-v1-7ac42970c633a742`**; Batch 28 is not deployed.
+**Identity supersession (Batches 24–29, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §16 at the end of this file — manifest `183DE0DED74A23179C77FE37FB8E04253E3752415E6ADC5A69F54A0C896E43F3`, build `crp-v1-183de0ded74a2317`, 81 files in five groups, full local regression **PASS 5608, 0 failed, 0 skipped**. Earlier digests quoted below (`CF8D50D6…1A5B`, `4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging still serves `crp-v1-7ac42970c633a742`**; Batches 28–29 are not deployed.
 
 ## 1. Exact candidate identity
 
@@ -343,4 +343,35 @@ The server enforces both boundaries in `entitlement.requireAssessmentAccess` and
 | Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
 | Determinism | three consecutive regenerations; identical digest each run |
 | Deployment state | **NOT deployed.** Staging still serves `crp-v1-7ac42970c633a742`, per the delivery boundary of this batch |
+
+## 16. Batch 28 completion — the one-time checkout now requires a valid report (October 5 2026)
+
+This batch closed the defect the owner named in the purchase flow: a consumer could be charged CAD 5.95 with nothing to unlock. The one-time checkout accepted a body with no `case_id`, an unknown case, **another account's** case, a report that had **not been assessed**, or a report that was **already unlocked**.
+
+**1. The server-side rule.** `entitlement.requireUnlockableReport` runs inside `openCheckout`, after the provider configuration is known-good and always **before the payment provider is called or a checkout row is written** (a test asserts the store's checkout count is unchanged after every refusal, so no provider call and no checkout record can have happened):
+
+| Condition | Response | Consumer message |
+| --- | --- | --- |
+| No report named | `400 REPORT_UNLOCK_CASE_REQUIRED` | Choose the report you want to unlock. |
+| Unknown case | `404 NOT_FOUND` (existing refusal, id not echoed) | — |
+| Another account's case | `403 NOT_AUTHORIZED` (existing refusal, no detail about that case) | — |
+| Not assessed | `409 REPORT_ASSESSMENT_NOT_COMPLETED` | Check your report before buying the full results. |
+| Already unlocked by a one-time purchase or an active subscription | `409 REPORT_ALREADY_UNLOCKED` | This report is already unlocked. View your results. |
+
+The selected case is bound to the checkout record and to the verified payment event, so a successful purchase unlocks that same persisted assessment — no second upload, no second assessment. Subscription checkout, prices (`report_once` CAD 5.95, `monthly` CAD 7.95, `annual` CAD 79.50), the upgrade-credit terms and packet permissions are unchanged. The served client shows the refusal message, sends the selected case with the one-time plan, offers **Download my assessment** / **View my results** for a report that is already unlocked, and guides an unassessed report to "Run the checks above to see your results" instead of offering a purchase.
+
+**2. Verification.** `cq-purchase-flow` **69/69** (the five refusals with the store proving no checkout row was created; an eligible owned assessment starts exactly one bound checkout; the one-time unlock still grants no subscriber feature; the checkout record carries `case_id` and `report_once`), `bw-browser-wizzard` **57/57** in a real browser with test billing (no purchase offered before an assessment; the one-time button starts a checkout for the selected assessed report; opening a checkout unlocks nothing; a verified payment unlocks that report; no further purchase is offered), `x-b4-pay-001` **20/20** and `ba-consumer-billing` **40/40** (upgrade credit intact), `t-entitlement` **158/158**, `bl-us-ca-correction-packet` **48/48** (an unbound one-time purchase is refused before payment). Full regression **PASS 5608, 0 failed, 0 skipped**.
+
+**3. Current candidate identity (not deployed).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `183DE0DED74A23179C77FE37FB8E04253E3752415E6ADC5A69F54A0C896E43F3` |
+| Internal build identity | `crp-v1-183de0ded74a2317` |
+| Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| Determinism | three consecutive regenerations; identical digest each run |
+| Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5608, 0 failed, 0 skipped** |
+| Deployment state | **NOT deployed.** Staging still serves `crp-v1-7ac42970c633a742`; deployment stays paused for owner review. No push, no deploy, no live billing, no correspondence |
+
+**4. Remaining functional gaps, stated plainly.** The one-line host `STRIPE_APP_ORIGINS` correction (the served return origin is missing, so test-mode checkout answers `CHECKOUT_OPEN_FAILED` / `RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS`) is still outstanding and is required before the paid hosted journeys can be exercised. Unchanged residue: `entitlement.downloadEntitled` is no longer called by any route; the teaser severity is a documented heuristic for the kind of concern, not a measure of harm; the labelled demonstration is free like any assessment, but its download requires assessment access.
 
