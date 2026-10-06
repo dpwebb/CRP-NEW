@@ -136,7 +136,7 @@ function access() {
   if (ent) {
     parts.push(ent.entitled
       ? `<strong>Your access:</strong> active${ent.plan_code ? ` (${esc(ent.plan_code)})` : ''}${ent.expires_at ? `, until ${esc(ent.expires_at)}` : ''}.`
-      : 'Choose a plan to check this report and create your dispute packet. You can still view or delete your uploaded file.');
+      : 'Upload and check your report for free. Unlock the full assessment with a one-time purchase, or choose a subscription for dispute packets and full access.');
   } else {
     parts.push('Access state is not reported by this build.');
   }
@@ -549,7 +549,7 @@ function planPrice(code) {
 /** Start a purchase for one plan. The one-time unlock is bound to this case on the server, which validates it. */
 function startCheckout(planCode) {
   return run(async () => {
-    const body = { plan_code: planCode };
+    const body = { plan_code: planCode, return_url: typeof location !== 'undefined' ? location.origin + '/' : 'http://127.0.0.1/' };
     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
     let opened;
     try {
@@ -566,6 +566,7 @@ function startCheckout(planCode) {
     state.notice = (opened.checkout && opened.checkout.redirect_grants_nothing)
       ? 'Checkout opened. Access activates only after the payment provider verifies the payment; returning from the payment page by itself unlocks nothing.'
       : 'Checkout opened.';
+    if (opened.checkout && /^https:\/\/checkout\.stripe\.com\//.test(opened.checkout.redirect_url || '')) location.assign(opened.checkout.redirect_url);
   });
 }
 
@@ -1386,12 +1387,7 @@ function renderBillingView(data) {
 
   for (const p of plansList) {
     const btn = el('checkout-' + p.plan_code);
-    if (btn) btn.onclick = () => run(async () => {
-      const opened = await api('POST', '/api/billing/checkout', { plan_code: p.plan_code });
-      state.notice = (opened.checkout && opened.checkout.redirect_grants_nothing)
-        ? 'Checkout opened. Completing it in the provider does not grant access here — access activates only after the provider verifies the payment.'
-        : 'Checkout opened.';
-    });
+    if (btn) btn.onclick = () => startCheckout(p.plan_code);
   }
   const cancel = el('cancelEntitlement');
   if (cancel) cancel.onclick = () => run(async () => {

@@ -388,7 +388,7 @@ async function run(t, check) {
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'an uploaded report offers the check action with no purchase recorded');
   check.ok(!/id="choose-plan"|id="view-results"/.test(panel.innerHTML), 'and no other next action');
   check.ok(!/No file has been uploaded|Choose a PDF report or report images in page order/.test(panel.innerHTML), 'and never asks for an upload the case already has');
-  check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(panel.innerHTML), 'with the short access sentence in place of the lengthy paragraph');
+  check.ok(/Upload and check your report for free\./.test(panel.innerHTML), 'with the short access sentence in place of the lengthy paragraph');
 
   vm.runInContext('state.entitlement = { entitled: true, state: "ACTIVE", plan_code: "monthly" }; render();', ctx);
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'the same check action is offered with a purchase recorded');

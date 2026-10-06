@@ -225,7 +225,7 @@ async function run(service, check) {
   vm.runInContext(`state.caseId = "${postCaseB.case_id}"; state.view = __VIEW_B; state.step = 2; render();`, postCtx);
   check.ok(/id="check-report"/.test(postPanel()), 'an uploaded report still offers the check action after access ended, because assessing is free');
   check.ok(!/id="choose-plan"/.test(postPanel()), 'and never asks for a purchase before the assessment can run');
-  check.ok(/Choose a plan to check this report and create your dispute packet\. You can still view or delete your uploaded file\./.test(postPanel()), 'with the short access sentence, not the lengthy paragraph');
+  check.ok(/Upload and check your report for free\./.test(postPanel()), 'with the short access sentence, not the lengthy paragraph');
   check.ok(/Your report is uploaded/.test(postPanel()), 'and the upload is still described as uploaded, never refused');
   check.notEqual((await service.request('POST', `/api/cases/${postCaseB.case_id}/evaluate`, { token: postOwner.token })).status, 402, 'the check itself needs no access');
   check.equal((await service.request('GET', `/api/cases/${postCaseB.case_id}/report-download`, { token: postOwner.token })).status, 402, 'while the complete assessment needs the unlock or a subscription');

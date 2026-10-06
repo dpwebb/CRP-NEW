@@ -266,7 +266,11 @@ async function run(service, check) {
 
   /* OWNER-PURCHASE-FLOW-001: the one-time button uses the selected assessed report, and a verified payment
      unlocks that same report in the browser — no second upload, no second assessment. */
+  const checkoutRequest = freePage.waitForRequest(r => r.url().endsWith('/api/billing/checkout'));
   await freePage.locator('#buy-report_once').click();
+  const submittedCheckout = (await checkoutRequest).postDataJSON();
+  check.equal(submittedCheckout.return_url, new URL(freePage.url()).origin + '/', 'checkout carries this application origin as its return URL');
+  check.equal(submittedCheckout.case_id, freeCase.case_id, 'checkout retains the selected assessed report');
   await freePage.waitForTimeout(1500);
   const afterCheckout = await freePage.content();
   check.ok(/Checkout opened\./.test(afterCheckout), 'the one-time button starts a checkout for the selected assessed report (test billing)');
