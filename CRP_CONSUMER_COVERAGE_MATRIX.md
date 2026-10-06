@@ -247,3 +247,19 @@ four factual observations, and the aggregate moved with it: 67 of 82 rows carry 
 comparison and 15 state that none is recorded. The fictional-fixture journey is NOT counted as real-evidence
 performance, so no real-evidence figure was inflated.
 
+## Court-limitation assessment and payment-history analysis (Batch 31, October 6 2026)
+
+Two mechanisms now run wherever the printed fields support them. Both are executed through the SAME pipeline that
+produces the free summary, the complete assessment and the subscriber packet, so a row here is "delivered" only
+where a named test produced the item.
+
+| Mechanism | Reader / surface where DELIVERED | Where it is capability-gated | Evidence |
+|---|---|---|---|
+| Court-enforcement limitation (`limitation-assessment.cjs`) | TransUnion Canada family (`FAM-TU-CA-CONSUMER`): the supplied real Nova Scotia report and the synthetic controls; and the **general intake** (a fictional Nova Scotia collection entry). | Every jurisdiction whose limitation statute has **not** been read: the mechanism produces nothing and records the exact element it lacks (the only recorded parameter set is Nova Scotia: S.N.S. 2014, c. 35, s. 8(1), 2 years from discovery, 15-year ultimate, ss. 20-21 acknowledgment, s. 11(3) transitional). The other families supply the shared facts the accessors read, so they execute where a reader prints an adverse indicator and a usable start date. | `cr-ca-ns-tu-real-report` 62/62 (two real items), `cs-limitation-and-payment-history` 56/56 (boundaries, withholding, isolation, the report-date flip), `bw-browser-wizzard` 67/67 (free summary, teaser, locked packet, subscriber selection, approved packet download) |
+| Payment-history analysis (`payment-history-analysis.cjs`) | Every reader whose records carry dated monthly rows with printed rating and narrative meanings (TransUnion Canada on the supplied real report: 112 records, three analyses each). | A record with no dated monthly rows, no printed rating meanings or no printed narrative legend yields no analysis for that record; seven candidates are refused with their exact reason and prerequisite. | `cs-limitation-and-payment-history` 56/56 (three positives, benign twin of each, unknown rating, blank cell, absent anchor), `cr-ca-ns-tu-real-report` 62/62 (three analyses over the real report, no false positive) |
+
+**Not claimed.** No jurisdiction outside Nova Scotia has a limitation parameter set, so no limitation item is
+produced for the other 81 selections — that is a recorded gap, not a delivered behaviour. The payment-history
+mechanisms were verified on one real report and on synthetic controls only; no second bureau's real consumer
+disclosure has been used.
+

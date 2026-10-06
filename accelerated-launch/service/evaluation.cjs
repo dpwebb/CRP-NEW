@@ -24,6 +24,8 @@ const { APPLICABILITY_STATE, resolveApplicability } = require('./applicability.c
 const { runFactualChecks } = require('./factual-checks.cjs');
 const { runDetectedReportInformation, CHECK_CLASS } = require('./content-assessments.cjs');
 const { runCommonErrorChecks, CHECK_CLASS: COMMON_ERROR_CLASS } = require('./common-errors.cjs');
+const limitationAssessment = require('./limitation-assessment.cjs');
+const paymentHistoryAnalysis = require('./payment-history-analysis.cjs');
 
 const CASE_LEVEL_ANCHOR_MODES = Object.freeze(['NOT_REPORT_EVIDENCED']);
 const REGISTERED_PRESENTATIONS = new Set(EXTRACTION_ADAPTERS.map((a) => a.presentation_id).concat(['GENERAL-BUREAU-REPORT']));
@@ -147,6 +149,11 @@ function evaluateCase(context) {
     /* BLOCKER-COMMON-ERRORS-001: common-error data-consistency checks, in their own bucket. Each is a potential
        issue with source-linked evidence — never a VIOLATION and never a legal conclusion. */
     common_errors: null,
+    /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation assessment and the payment-history
+       analysis, each in its own bucket and never counted as a statutory check. */
+    limitation_assessment: null,
+    payment_history_analysis: null,
+    assessments_performed: 0,
     eligibility: { draft_eligible: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH' }
   };
 
@@ -296,6 +303,20 @@ function evaluateCase(context) {
   const detectedPerformed = base.detected_report_information ? base.detected_report_information.performed : [];
   base.common_errors = runCommonErrorChecks({ country: context.country, region: context.region, extraction });
   const commonPerformed = base.common_errors ? base.common_errors.performed : [];
+  /* The court-limitation assessment and the payment-history analysis run on the same admitted report evidence.
+     `checks_performed` keeps its existing meaning (statutory, factual, detected and common-error checks);
+     the new work is reported separately in `assessments_performed` and its own summaries, so no existing count
+     silently changes meaning and the assessment is never mistaken for a performed statutory check. */
+  base.limitation_assessment = carriesReportEvidence(extraction)
+    ? limitationAssessment.runLimitationAssessment({ country: context.country, region: context.region, extraction })
+    : null;
+  base.payment_history_analysis = carriesReportEvidence(extraction)
+    ? paymentHistoryAnalysis.runPaymentHistoryAnalysis({ country: context.country, region: context.region, extraction })
+    : null;
+  base.assessments_performed = (base.limitation_assessment ? base.limitation_assessment.performed.length : 0)
+    + (base.payment_history_analysis ? base.payment_history_analysis.summary.analyses : 0);
+  base.limitation_summary = base.limitation_assessment ? base.limitation_assessment.summary : null;
+  base.payment_history_summary = base.payment_history_analysis ? base.payment_history_analysis.summary : null;
   base.checks_performed_by_kind = {
     STATUTORY_RULE_COMPARISON: base.results.length,
     REPORT_FACT_CONSISTENCY: factualPerformed.filter((c) => c.check_class === 'REPORT_FACT_CONSISTENCY').length,

@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batches 24–30, October 6 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §17 at the end of this file — manifest `49DA3CF7CC00F75973FFD55EBE8640F2D87F82ED8B61F4D356BBC86436DD8B62`, build `crp-v1-49da3cf7cc00f759`, 81 files in five groups, full local regression **PASS 5663, 0 failed, 0 skipped**. Earlier digests quoted below (`4E2ACF54…2B41`, `183DE0DE…43F3`, `CF8D50D6…1A5B`, `4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging serves `crp-v1-4e2acf545c282d14`**; Batch 30 is not deployed.
+**Identity supersession (Batches 24–30, October 6 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §17 at the end of this file — manifest `49DA3CF7CC00F75973FFD55EBE8640F2D87F82ED8B61F4D356BBC86436DD8B62`, build `crp-v1-49da3cf7cc00f759`, 81 files in five groups, full local regression **PASS 5663, 0 failed, 0 skipped**. Earlier digests quoted below (`4E2ACF54…2B41`, `183DE0DE…43F3`, `CF8D50D6…1A5B`, `4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging serves `crp-v1-1133cf76c411450f`** (manifest `1133CF76C411450F29F892BCACAA71CE681999DD7D3EDA70FE5864E5EF4EC1E3`, 81 verified files: the checkout-return correction recorded in `CRP_STAGING_DEPLOYMENT_2026_10_06.md`); Batch 30 is not deployed.
 
 ## 1. Exact candidate identity
 
@@ -394,12 +394,35 @@ The owner's highest-priority core failure (BLOCKER-REPORT-DATA-TO-ISSUE-001, Nov
 | Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
 | Determinism | three consecutive regenerations; identical digest each run |
 | Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5663, 0 failed, 0 skipped** |
-| Deployment state | **NOT deployed by this batch.** Staging continues to serve `crp-v1-4e2acf545c282d14`; deployment stays paused. No push, no deploy, no live billing and no correspondence |
-| Remaining gap | The owner's earlier **hosted** format refusal is not reproduced locally (the same bytes are admitted 201). The reader's text layer needs host poppler (`pdfinfo`/`pdftotext`), which the service README records as a host-provided program — the leading explanation still to verify on the host |
+| Deployment state | **NOT deployed by this batch.** Staging serves **`crp-v1-1133cf76c411450f`** (manifest `1133CF76C411450F29F892BCACAA71CE681999DD7D3EDA70FE5864E5EF4EC1E3`, 81 verified files), the checkout-return correction recorded in `CRP_STAGING_DEPLOYMENT_2026_10_06.md`; Batch 30 is not deployed. No push, no deploy, no live billing and no correspondence |
+| Remaining gap | The owner's earlier **hosted** format rejection is **UNRESOLVED and unreproduced**. The host has both `pdfinfo` and `pdftotext`, so the reader's text-layer dependency is **not** the explanation, and the same bytes are admitted 201 locally; nothing was weakened on speculation. The refusal reason to reproduce is the one the service returns in the upload receipt (`format_detection.refusal_reason` with its per-predicate detail), which the next hosted attempt will name exactly |
 
 
 
-## Checkout return correction — October 6, 2026
+## 18. Batch 31 — the court-limitation assessment and the payment-history analysis (October 6 2026)
+
+Two shared mechanisms are added platform-wide, and the staging records are corrected. `CRP_CA_NS_REAL_REPORT_CORE_REPAIR_001.md` §“Batch 31” carries the real-report inventory and every withheld candidate with its exact reason.
+
+**Court-enforcement limitation — new `accelerated-launch/service/limitation-assessment.cjs`.** A different question from reporting retention: do the dates the report prints suggest that a court claim on the debt may now be outside the limitation period that applies where the consumer lives? One mechanism, jurisdiction-specific parameters, each parameter set carrying its statute, the captured official text and the operative words quoted from it. Only Nova Scotia is recorded so far — `Limitation of Actions Act, S.N.S. 2014, c. 35, s. 8(1)`: two years from the day the claim is discovered, fifteen years ultimate, ss. 20-21 acknowledgment restarting the period, s. 11(3) transitional note. A jurisdiction with no recorded parameters produces **nothing** and records the exact element it lacks; no universal rule is invented and no date is substituted for another. It counts from the **latest** printed date that can bear that relation to the claim, compares **calendar years** (so the anniversary is inside the period and the following day is outside), never ages an entry from a missing date, never treats a zero-balance non-derogatory old account as adverse, and states in every item that an expired court time limit is not by itself a reason a bureau must remove an entry.
+
+**Payment-history analysis — new `accelerated-launch/service/payment-history-analysis.cjs`.** Three evidence-gated analyses over one account's own rows, ratings, amounts, narratives and printed legends: a month rated as a bad debt while the same month says the account was paid or closed without a derogatory rating; a payment printed after the write-off month; and a first-delinquency anchor later than a month the same history already shows as late. Each has its benign twin control. Seven candidates examined and **not** enabled keep their exact reason and prerequisite (an event dated after a printed closure; closure with a non-zero balance; a collection or transfer as re-aging; cumulative counts against the visible window; an unknown rating as a missed payment; the `OPEN` product type as lifecycle; and a changed delinquency anchor across two owned snapshots, which belongs to the owned-history comparison rather than to one snapshot).
+
+**Consumer delivery.** Both mechanisms reach distinct counts, the free teaser (ranked with the additions, under their own titles) and the complete assessment, and the limitation item is selectable into subscriber verification correspondence. It is never a correction demand and never asserts a violation: the public item carries no retention citation and says plainly that it is not a reporting-rule allegation.
+
+**Reader coverage.** Verified on two readers, not one: the TransUnion Canada family (the supplied real report plus synthetic controls) and the **general intake** (a fictional Nova Scotia collection entry whose printed first-delinquency date is outside the period). Execution is capability-gated: a record that prints no adverse indicator, or no usable start date, or belongs to a jurisdiction with no recorded parameters, yields a recorded withheld entry — never an inference.
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `4B6DE873FEFFC7F2CE826D478D799AD003EE45D4262BDAD998BF3516DF6E2723` |
+| Internal build identity | `crp-v1-4b6de873feffc7f2` |
+| Covered surface | **83 files in five groups** — `RUNTIME` 53, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| New modules in the manifest | `accelerated-launch/service/limitation-assessment.cjs` (`24E16D83EA72…`), `accelerated-launch/service/payment-history-analysis.cjs` (`A659F3A7436…`) |
+| Determinism | three consecutive regenerations; identical digest each run |
+| Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5741, 0 failed, 0 skipped** |
+| Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing and no correspondence |
+| Records corrected by this batch | the served build is `crp-v1-1133cf76c411450f`, and the host has both `pdfinfo` and `pdftotext`, so the reader's text-layer dependency is **not** the explanation for the owner's earlier hosted format refusal; that refusal stays **UNRESOLVED** until it is reproduced, and no format check was weakened |
+
+## Deployment history — the checkout return correction (October 6, 2026)
 
 Current served build: crp-v1-1133cf76c411450f. Manifest: 1133CF76C411450F29F892BCACAA71CE681999DD7D3EDA70FE5864E5EF4EC1E3, 81 verified files. Full final regression PASS 5610 / 0 / 0 (including browser return-origin and selected-case assertions). An earlier full run caught one obsolete access-copy expectation; corrected and rerun successfully.
 

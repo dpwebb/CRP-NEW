@@ -188,7 +188,10 @@ const SECTION_FILES = [
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report core repair): the supplied real TransUnion Canada report
      assessed under Nova Scotia — the reader repairs, the supported findings, the reporting-period limb and the
      paid boundaries, with CRLF/LF and benign synthetic controls. */
-  'cr-ca-ns-tu-real-report.cjs'];
+  'cr-ca-ns-tu-real-report.cjs',
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation assessment and the payment-history
+     analysis, with their positive, boundary, missing-prerequisite and benign controls. */
+  'cs-limitation-and-payment-history.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

@@ -167,22 +167,58 @@ async function runRealReport(service, check, evidence) {
   check.equal(evaluated.status, 201, 'the free assessment runs');
   await service.pay(actor, 'report_once', caseId);
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
-  check.equal(view.assessment_summary.distinct_total, 5, 'the paid assessment reports five distinct supported issues');
-  check.equal(view.assessment_summary.by_confidence.potential, 5, 'all five are potential issues to verify');
+  check.equal(view.assessment_summary.distinct_total, 7, 'the paid assessment reports seven distinct supported issues');
+  check.equal(view.assessment_summary.by_confidence.potential, 7, 'all seven are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
     'and none of them is asserted as a violation or a probable violation');
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
+  check.ok(!/definite|violation/i.test(String(view.assessment_summary.teaser.title)),
+    'and the teaser title never claims a violation');
   const publicIssues = view.result.issues;
   const byAccount = {};
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
-  check.deepEqual(byAccount, { FIDO: 2, 'CAPITAL ONE BANK': 1, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
-    'the five issues sit on the accounts the report shows the missing details on');
+  check.deepEqual(byAccount, { FIDO: 3, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
+    'the seven issues sit on the accounts the report shows them on');
+
+  /* The court-limitation items: two adverse debts whose printed dates may be outside the Nova Scotia time
+     limit, counted from the LATEST printed date that can bear that relation, with the unknowns explicit. */
+  const limitationItems = publicIssues.filter((i) => i.limitation_concern === true);
+  check.equal(limitationItems.length, 2, 'two accounts carry a court-limitation concern');
+  check.deepEqual(limitationItems.map((i) => i.account_identity.name).sort(), ['CAPITAL ONE BANK', 'FIDO'],
+    'on the two accounts the report presents as unpaid adverse debts');
+  check.ok(limitationItems.every((i) => i.limitation.jurisdiction_label === 'Nova Scotia'
+    && i.limitation.basic_period_years === 2
+    && /Limitation of Actions Act/.test(String(i.limitation.statute))),
+    'each names the jurisdiction and the statute its period comes from');
+  check.ok(limitationItems.every((i) => i.limitation.years_since > i.limitation.basic_period_years),
+    'and each shows more years elapsed than the recorded period');
+  check.ok(limitationItems.every((i) => (i.limitation.what_the_report_does_not_show || []).length >= 3),
+    'while listing the conditions the report does not show');
+  check.ok(limitationItems.every((i) => !i.citation && /not about whether the credit bureau may report/.test(String(i.uncertainty))),
+    'and each states plainly that it is not a reporting-rule allegation and cites no retention rule');
+  check.ok(limitationItems.every((i) => i.eligible === true && i.request_type === 'VERIFICATION'),
+    'each is a verification request the consumer may select');
+  const balanced = limitationItems.find((i) => i.account_identity.name === 'CAPITAL ONE BANK');
+  check.equal(balanced.limitation.counted_from, 'Dec 16, 2023', 'the later printed date is the one counted from');
+  check.equal(balanced.limitation.counted_from_label, 'First Delinquency Date', 'and it is named as the date it counted from');
+
+  /* The payment-history analysis ran on the same report and found nothing adverse: its candidates are recorded
+     with their benign explanations instead of being raised. */
+  const paymentHistory = view.result.payment_history_analysis;
+  check.equal(paymentHistory.summary.analyses, 3, 'three payment-history analyses ran on this report');
+  check.equal(paymentHistory.summary.potential_issue, 0, 'and none is raised: this history is internally consistent');
+  check.equal(paymentHistory.withheld_candidates.length, 7, 'while every candidate it refused to raise is recorded with its reason');
+  check.ok(paymentHistory.withheld_candidates.every((c) => c.reason && c.missing_prerequisite),
+    'each with the innocent explanation and the prerequisite it would need');
   check.ok(publicIssues.every((i) => i.request_type === 'VERIFICATION' && i.eligible === true),
     'every one of them is a verification request the consumer may dispute');
   check.ok(publicIssues.every((i) => !i.citation),
     'none of them names a legal rule, because none of them asserts one');
   evidence.real_report.issue_inventory = publicIssues.map((i) => ({
-    account: i.account_identity.name, request_type: i.request_type, confidence: i.confidence
+    account: i.account_identity.name,
+    kind: i.limitation_concern ? 'court-limitation' : (i.missing_detail ? 'missing-detail' : 'other'),
+    request_type: i.request_type,
+    confidence: i.confidence
   }));
   return { actor, caseId, view, publicIssues };
 }
@@ -230,7 +266,7 @@ async function runSubscriberPacket(service, check, evidence, real) {
   });
   await service.request('POST', `/api/cases/${caseId}/evaluate`, { token: sub.token });
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: sub.token })).json.view;
-  check.equal(view.result.issues.length, 5, 'a subscriber sees the same five supported issues on the real report');
+  check.equal(view.result.issues.length, 7, 'a subscriber sees the same seven supported issues on the real report');
   const chosen = view.result.issues[0];
   const packetView = await service.request('GET', `/api/cases/${caseId}/packet`, { token: sub.token });
   check.equal(packetView.status, 200, 'the subscriber can open the packet flow for this report');

@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T17:12:19.957Z",
+  "generated_at": "2026-10-06T18:48:56.475Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
-      "file_count": 51,
-      "digest": "730EC3B0B46AD15908564EDC41539FD305D5B9DDCE4ECA553CCE846E7E631CD9",
+      "file_count": 53,
+      "digest": "E94874AF64B1C0806288E31CEBE34BC5F2BDEEDBC0227ADD3783AAC9BAA50CA7",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -79,7 +79,7 @@
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
-          "sha256": "9C4973470A391307B8DD7A0FD754428355A7015562A0506C10092979378BEFA5"
+          "sha256": "CB0330354BFDFA22CE10AE342990D213DCE6C5610144A6D48068B9891AC211D0"
         },
         {
           "file": "accelerated-launch/service/evidence-validator.cjs",
@@ -135,11 +135,15 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "860B292743880D7B05C1580390B6691D00A2D815939AF5218B37C9B6929A02F5"
+          "sha256": "BA6F3A4782B7583AD4EFB6F0B4D7367FC1559EA7113236D6BE864C761642F69B"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
           "sha256": "C2623BACC4D7EF913488163FA538ED5608BE946C85A660D361AAA153989FC11B"
+        },
+        {
+          "file": "accelerated-launch/service/limitation-assessment.cjs",
+          "sha256": "24E16D83EA72A07CC90CE8326EEB6D2D4E6E61BF233386E922062E8C6A5DCB44"
         },
         {
           "file": "accelerated-launch/service/logger.cjs",
@@ -156,6 +160,10 @@
         {
           "file": "accelerated-launch/service/packets.cjs",
           "sha256": "3E8D0BFEB63EDB608DB5ADB40D96B6A1DE695067E6C53089F29FD96185D7050A"
+        },
+        {
+          "file": "accelerated-launch/service/payment-history-analysis.cjs",
+          "sha256": "A659F3A743665D513844423CC768F8331A6AA15E234AD87B10AAAE935FE50EAB"
         },
         {
           "file": "accelerated-launch/service/payment-history-grid.cjs",
@@ -183,7 +191,7 @@
         },
         {
           "file": "accelerated-launch/service/results.cjs",
-          "sha256": "60CEC80983BAF90ADCDC7FF29B312EE91B0D6637CBF7CD7800F2AF2F96B1B4C2"
+          "sha256": "37DC34982F5FC1F5ABCB5E96362ECAD793C71991175D94FCFE2EB2BD273C1820"
         },
         {
           "file": "accelerated-launch/service/retention.cjs",
@@ -364,6 +372,6 @@
       ]
     }
   ],
-  "manifest_digest": "49DA3CF7CC00F75973FFD55EBE8640F2D87F82ED8B61F4D356BBC86436DD8B62",
-  "total_file_count": 81
+  "manifest_digest": "4B6DE873FEFFC7F2CE826D478D799AD003EE45D4262BDAD998BF3516DF6E2723",
+  "total_file_count": 83
 }

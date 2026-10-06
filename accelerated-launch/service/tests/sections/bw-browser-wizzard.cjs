@@ -290,6 +290,63 @@ async function run(service, check) {
   check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
   await freePage.close();
 
+  /* ---- 6. BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation concern in the REAL browser, read by
+     the GENERAL reader: a fictional Nova Scotia collection entry whose own printed delinquency date is outside the
+     recorded period. An unpaid account sees it in the free summary and teaser; a subscriber selects it, and the
+     downloaded packet asks for the dates to be verified without claiming that any rule was broken. ---- */
+  const limLines = [
+    'Equifax  Consumer Credit Report - FICTIONAL TEST FIXTURE',
+    'Report Date: 12 June 2026',
+    'Collection Agency ABC  Balance $500  Past Due $500  Date of First Delinquency 01/01/2019'
+  ];
+  const limActor = await service.unpaidAccount('bw-ns-limitation-free@example.test');
+  const limCase = (await service.request('POST', '/api/cases', { token: limActor.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  const limPage = await (await browser.newContext()).newPage();
+  limPage.setDefaultTimeout(20000);
+  await limPage.goto(service.base + '/');
+  await limPage.locator('#email').fill('bw-ns-limitation-free@example.test');
+  await limPage.locator('#password').fill('a-long-enough-password');
+  await limPage.locator('#signin').click();
+  await limPage.waitForSelector('#open');
+  await limPage.locator('#refresh').click();
+  await limPage.waitForSelector(`[data-open="${limCase.case_id}"]`);
+  await limPage.locator(`[data-open="${limCase.case_id}"]`).click();
+  await limPage.locator('#steps button[data-step="2"]').click();
+  await limPage.waitForSelector('#file');
+  await limPage.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines: limLines }] }) });
+  await limPage.locator('#upload').click();
+  await limPage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
+  await limPage.locator('#check-report').click();
+  await limPage.waitForTimeout(3000);
+  await limPage.locator('#steps button[data-step="3"]').click();
+  await limPage.waitForTimeout(1200);
+  const limSummary = await limPage.locator('#panel').innerText();
+  check.equal((limSummary.match(/Reporting issues found:\s*(\d+)/) || [])[1] || null, '1',
+    'the free summary counts the court-limitation concern exactly once');
+  check.ok(/time limit for a court claim/.test(limSummary), 'and the teaser names the court time limit, not a broken rule');
+  check.ok(/violations: 0/.test(limSummary) && /potential issues: 1/.test(limSummary),
+    'with the concern counted as a potential issue and no violation claimed');
+  check.ok(!/id="packet-block"/.test(await limPage.content()), 'while the complete findings and the packet stay locked');
+  await limPage.close();
+
+  const gen = await setupPaidCase(service, 'bw-ns-limitation@example.test', 'CA', 'CA-NS');
+  opened = await openCasePage(gen.email, gen.password, gen.caseId, limLines);
+  const genPage = opened.page;
+  const genBlock = await genPage.locator('#packet-block').innerText();
+  check.ok(/time limit for a court claim/.test(genBlock), 'the subscriber packet offers the limitation concern to select');
+  await genPage.locator('[data-check-issue]').first().check();
+  await genPage.locator('#packet-name').fill('Robin Alvarez');
+  await genPage.locator('#packet-contact').fill('robin.alvarez@example.test');
+  await genPage.locator('#packet-approve').click();
+  await genPage.waitForTimeout(700);
+  check.equal(await genPage.locator('#packet-download').isEnabled(), true, 'and approval enables the download');
+  const genDownload = await downloadText(genPage);
+  check.ok(/may be outside the time limit for a court claim/.test(genDownload.text),
+    'the downloaded packet asks whether the debt is outside the time limit for a court claim');
+  check.ok(!/violation|ESTABLISHED REPORTING ISSUE/i.test(genDownload.text), 'while claiming no reporting violation');
+  evidence.limitation_browser = { summary: 'the free summary names the court time limit', packet: genDownload.filename };
+  await genPage.close();
+
   await browser.close();
 
   evidence.browser = 'real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service';

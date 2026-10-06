@@ -372,6 +372,12 @@ function renderResultSet(input) {
     checks_performed: rendered.length + factualPerformed.length + detectedRendered.length + commonRendered.length,
     observations: rendered,
     report_consistency_checks: factualPerformed,
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the two new assessment surfaces, in their own result fields.
+     They are recorded for audit and for the next-steps surface; the consumer-facing cards come from the issues
+     the same assessments produce. */
+  limitation_assessment: evaluation.limitation_assessment || null,
+  payment_history_analysis: evaluation.payment_history_analysis || null,
+  assessments_performed: evaluation.assessments_performed || 0,
     detected_report_information: detectedRendered,
     common_errors: commonRendered,
     /* OWNER-POTENTIAL-ISSUE-001: the unified selectable issues (definite/probable/potential) for the packet. */
@@ -496,7 +502,11 @@ const TEASER_TITLE = Object.freeze({
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): a COMPLETENESS item that names no rule. The entry
      states an event the report itself prints and leaves the caption for it without a date, so the remedy would
      be an addition — and the title never claims that a rule requires the detail. */
-  FACTUAL_COMPLETENESS: 'An entry shows an event without the date for it'
+  FACTUAL_COMPLETENESS: 'An entry shows an event without the date for it',
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): a court-limitation concern. Its rank is the addition rank,
+     because the useful next step is to verify dates the report does not show, and its title never claims that
+     the bureau broke a reporting rule. */
+  LIMITATION: 'A debt may be outside the time limit for a court claim'
 });
 
 const TEASER_CONFIDENCE_LABEL = Object.freeze({
@@ -513,6 +523,11 @@ function isCompletenessItem(issue) {
   return Boolean(issue) && issue.missing_detail === true;
 }
 
+/** A court-limitation concern, marked on the PUBLIC issue so the summary can rank and title it. */
+function isLimitationConcern(issue) {
+  return Boolean(issue) && issue.limitation_concern === true;
+}
+
 function severityRankOf(issue) {
   if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
   if (issue.basis_type === 'CONTENT_FINDING') {
@@ -523,10 +538,14 @@ function severityRankOf(issue) {
   /* A completeness item whose remedy is an addition ranks with the additions; every other factual observation
      stays an inconsistency. */
   if (isCompletenessItem(issue)) return 1;
+  /* A limitation concern ranks with the additions: the useful next step is to verify dates the report does not
+     show, and it is never ranked as a removal demand. */
+  if (isLimitationConcern(issue)) return 1;
   return 2;
 }
 
 function teaserTitleFor(issue, rank) {
+  if (isLimitationConcern(issue)) return TEASER_TITLE.LIMITATION;
   if (isCompletenessItem(issue)) return TEASER_TITLE.FACTUAL_COMPLETENESS;
   if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
   if (issue.basis_type === 'CONTENT_FINDING') {

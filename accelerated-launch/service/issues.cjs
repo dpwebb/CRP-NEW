@@ -18,7 +18,7 @@ const crypto = require('node:crypto');
 const { factSourcesForRecord } = require('./formats.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
-const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY' });
+const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
 const REQUEST_TYPE = Object.freeze({ CORRECTION: 'CORRECTION', VERIFICATION: 'VERIFICATION' });
 
 /**
@@ -246,7 +246,56 @@ const POTENTIAL_WORDING = Object.freeze({
     },
     uncertainty: 'The report prints the closure in the account history and leaves the closed-date caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
     request: 'please confirm the date this account was closed and have that date printed on this entry'
+  },
+
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the PAYMENT-HISTORY analyses. Each compares two things the
+     same account prints; each is a potential issue to verify and none asserts a rule was broken. */
+  'PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      return `For ${e.reporting_period || 'one month'}, this report rates ${entryLabel(i)} as "${e.rating_meaning || e.rating_code}" and in the same month prints "${e.narrative_meaning || e.narrative_code}". Those two statements do not agree.`;
+    },
+    uncertainty: 'Both statements come from the report itself for the same month, and an account can change status inside a month, so both may be partly right. Which one describes this account is not shown, so this is a question to verify rather than a conclusion.',
+    request: 'please confirm which of these two statements about this month is correct and have the wrong one corrected'
+  },
+  'PH-PAYMENT-PRINTED-AFTER-A-WRITE-OFF-MONTH': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      return `This report says this debt was written off in ${e.write_off_period} ("${e.write_off_meaning || e.write_off_code}") and then prints a payment of ${e.payment_amount} on ${e.reporting_period} for the same account.`;
+    },
+    uncertainty: 'A payment can be posted and later reversed, and a monthly row may show the month a payment was applied rather than received, so the two statements are not necessarily wrong. The report does not show which payment this was, so this is a question to verify.',
+    request: 'please confirm the payment printed after the write-off month and correct the account history if it is wrong'
+  },
+  'PH-DELINQUENCY-ANCHOR-AFTER-THE-HISTORY-SHOWS-IT': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      const months = (e.months_already_shown_as_late || []).map((m) => m.period).slice(0, 3).join(', ');
+      return `This report gives ${e.delinquency_anchor_printed || e.delinquency_anchor_iso} as the first delinquency date for ${entryLabel(i)}, but its own payment history already shows a late month before then (${months}).`;
+    },
+    uncertainty: 'An unknown rating, a blank cell and an unprinted month are never counted as a missed payment here, so only a printed late month is used. The report does not say whether the printed date is the first delinquency or a later one, so this is a question to verify.',
+    request: 'please confirm the first delinquency date for this account and have it corrected if the printed date is wrong'
   }
+});
+
+/**
+ * BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the COURT-ENFORCEMENT LIMITATION item. It is a different
+ * question from the reporting-retention rules: if the dates suggest a court claim on the debt may now be
+ * outside the time limit that applies where the consumer lives, that is worth verifying. It is never a
+ * deletion demand and never an allegation that a bureau broke a reporting rule.
+ */
+const LIMITATION_WORDING = Object.freeze({
+  label: 'The dates suggest this debt may be outside the time limit for a court claim',
+  explain: (i) => {
+    const e = i.evidence || {};
+    const years = e.elapsed_years === null || e.elapsed_years === undefined ? null : Number(e.elapsed_years).toFixed(1);
+    return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was produced on ${e.reference_date}. The dates suggest this debt may be outside the time limit for a court claim.`;
+  },
+  uncertainty: (i) => {
+    const e = i.evidence || {};
+    const unknowns = (e.unknown_conditions || []).map((u) => `• ${u}`).join(' ');
+    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry: an expired court time limit is not by itself a reason a bureau must remove an entry, and this is not a claim that any rule was broken. What the report does not show, and what would change the answer: ${unknowns || '• the conditions this assessment depends on'}`;
+  },
+  request: 'please verify when this debt first went into default or when you first knew about it, whether any later payment or admission restarted the time, and whether a court claim or judgment already exists on it'
 });
 
 /** Recorded issue-specific request wording for a content finding. A content finding is a prohibition on
@@ -492,6 +541,16 @@ function describeWording(issue) {
       request_wording: 'please verify the event date this rule measures from and correct or remove the entry if the recorded retention period has elapsed'
     };
   }
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
+    /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation item keeps its own wording, its own
+       question and its explicit separation from the reporting rules. It is a verification request only. */
+    return {
+      explanation: LIMITATION_WORDING.explain(issue),
+      uncertainty: LIMITATION_WORDING.uncertainty(issue),
+      request_type: REQUEST_TYPE.VERIFICATION,
+      request_wording: LIMITATION_WORDING.request
+    };
+  }
   const policy = POTENTIAL_WORDING[issue.check_id] || {
     explain: (i) => `This report prints a factual discrepancy on ${recordLabel(i)}.`,
     uncertainty: 'A factual inconsistency in the report. It is not, by itself, an established legal violation.',
@@ -521,6 +580,9 @@ function describe(issue) {
  *  statutory finding (retention OR content) is eligible when its per-rule permission authorizes a VIOLATION
  *  packet, or when it is a PROBABLE verification request. */
 function isEligible(issue) {
+  /* A limitation item is a qualified concern to verify: it can be selected into verification correspondence and
+     is never a correction demand and never a definite finding. */
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return issue.confidence !== CONFIDENCE.DEFINITE;
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION || issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     if (issue.confidence === CONFIDENCE.DEFINITE) return issue.packet_eligible === true;
     return issue.confidence === CONFIDENCE.PROBABLE;
@@ -685,22 +747,123 @@ function mergeOverlappingFactualIssues(statutory, factual) {
 
 /** The unified issue list for one result: statutory (definite/probable) then potential. A factual observation
  *  that duplicates a content finding on the same record is folded into it rather than offered twice. */
+/** The payment-history analyses whose positives become POTENTIAL issues, in the common-error entry shape. */
+const PAYMENT_HISTORY_CHECK_IDS = new Set([
+  'PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH',
+  'PH-PAYMENT-PRINTED-AFTER-A-WRITE-OFF-MONTH',
+  'PH-DELINQUENCY-ANCHOR-AFTER-THE-HISTORY-SHOWS-IT'
+]);
+
+/** The payment-history positives -> POTENTIAL issues, each naming the account and the two printed statements. */
+function paymentHistoryIssues(extraction, analysis) {
+  const issues = [];
+  const performed = analysis && Array.isArray(analysis.performed) ? analysis.performed : [];
+  for (const entry of performed) {
+    if (entry.state !== 'POTENTIAL_ISSUE') continue;
+    if (!PAYMENT_HISTORY_CHECK_IDS.has(entry.check_id)) continue;
+    for (const source of entry.source_records || []) {
+      const record = recordFor(extraction, source.record_index);
+      const issue = {
+        issue_id: issueId(`ph:${entry.check_id}:${source.record_index}:${JSON.stringify(source.evidence || {})}`),
+        confidence: CONFIDENCE.POTENTIAL,
+        basis_type: BASIS_TYPE.FACTUAL_CONSISTENCY,
+        classification: null,
+        check_id: entry.check_id,
+        label: entry.label || null,
+        reason: source.reason || null,
+        record_index: source.record_index,
+        evidence: source.evidence || null,
+        location: source.location || null,
+        record: recordRefFor(record),
+        report_identity: reportIdentityFor(record),
+        account_identity: accountIdentityFor(record),
+        source_facts: []
+      };
+      issue.eligible = isEligible(issue);
+      Object.assign(issue, describe(issue));
+      issues.push(issue);
+    }
+  }
+  return issues;
+}
+
+/**
+ * The court-limitation items: one per account whose printed dates the assessment found may be outside the time
+ * limit. The item carries the jurisdiction, the statute, the printed date it counted from, what that date can
+ * bear, the years elapsed and the conditions the report does not show.
+ */
+function limitationIssues(extraction, limitation) {
+  const issues = [];
+  const performed = limitation && Array.isArray(limitation.performed) ? limitation.performed : [];
+  for (const assessment of performed) {
+    if (assessment.outcome !== 'MAY_BE_OUTSIDE_THE_LIMITATION_PERIOD') continue;
+    const start = assessment.start_date || {};
+    const record = recordFor(extraction, assessment.record_index);
+    const issue = {
+      issue_id: issueId(`limitation:${assessment.jurisdiction.region_code}:${assessment.record_index}:${start.iso}`),
+      confidence: CONFIDENCE.POTENTIAL,
+      basis_type: BASIS_TYPE.LIMITATION_ASSESSMENT,
+      classification: null,
+      check_id: 'LIMITATION-PERIOD-COURT-CLAIM',
+      label: LIMITATION_WORDING.label,
+      reason: start.selection_rule || null,
+      record_index: assessment.record_index,
+      anchor: { field: start.label || null, iso: start.iso || null, value_as_supplied: start.printed_value || null },
+      evidence: {
+        jurisdiction: assessment.jurisdiction.region_code,
+        jurisdiction_label: assessment.jurisdiction.label,
+        statute: assessment.jurisdiction.citation,
+        basic_period_years: assessment.jurisdiction.basic_period_years,
+        ultimate_period_years: assessment.jurisdiction.ultimate_period_years,
+        start_label: start.label || null,
+        start_iso: start.iso || null,
+        start_printed_value: start.printed_value || null,
+        start_basis: start.basis || null,
+        start_location: start.location || null,
+        other_printed_dates: assessment.other_printed_dates || [],
+        reference_date: assessment.reference_date,
+        elapsed_years: assessment.elapsed_years,
+        unknown_conditions: assessment.unknown_conditions || [],
+        acknowledgment_rule: assessment.acknowledgment_rule || null,
+        not_a_reporting_requirement: assessment.not_a_reporting_requirement || null
+      },
+      location: start.location || null,
+      record: recordRefFor(record),
+      report_identity: reportIdentityFor(record),
+      account_identity: accountIdentityFor(record),
+      source_facts: []
+    };
+    issue.eligible = isEligible(issue);
+    Object.assign(issue, describe(issue));
+    issues.push(issue);
+  }
+  return issues;
+}
+
 function issuesFor(ctx) {
   const evaluation = ctx && ctx.evaluation;
   const extraction = ctx && ctx.extraction;
   if (!evaluation) return [];
   const statutory = statutoryIssues(extraction, evaluation.results);
   const factual = potentialIssues(extraction, evaluation.common_errors);
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual));
+  const paymentHistory = paymentHistoryIssues(extraction, evaluation.payment_history_analysis);
+  const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
+  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, limitation);
 }
 
 
 /** The supported bases of a merged issue, in consumer language. Internal adapter and check ids are never exposed;
  *  the recorded rule is named by its citation and the factual base by the plain-language kind of observation. */
 function publicBases(bases) {
-  return (bases || []).map((b) => (b.basis_type === BASIS_TYPE.CONTENT_FINDING
-    ? { basis_type: b.basis_type, kind: 'recorded_rule', citation: b.citation || null }
-    : { basis_type: b.basis_type, kind: 'what_the_report_prints', check_kind: b.label || null }));
+  return (bases || []).map((b) => {
+    if (b.basis_type === BASIS_TYPE.CONTENT_FINDING) {
+      return { basis_type: b.basis_type, kind: 'recorded_rule', citation: b.citation || null };
+    }
+    if (b.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
+      return { basis_type: b.basis_type, kind: 'court_enforcement_time_limit', citation: b.citation || null };
+    }
+    return { basis_type: b.basis_type, kind: 'what_the_report_prints', check_kind: b.label || null };
+  });
 }
 
 /** The consumer-facing view of one issue: no internal adapter/check ids, no machine classification leaks. */
@@ -720,6 +883,22 @@ function publicIssue(issue) {
   };
   if (issue.basis_type !== BASIS_TYPE.STATUTORY_RETENTION && COMPLETENESS_CHECK_IDS.has(issue.check_id)) {
     out.missing_detail = true;
+  }
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
+    const e = issue.evidence || {};
+    out.limitation_concern = true;
+    out.limitation = {
+      jurisdiction_label: e.jurisdiction_label || null,
+      statute: e.statute || null,
+      basic_period_years: e.basic_period_years || null,
+      counted_from: e.start_printed_value || e.start_iso || null,
+      counted_from_label: e.start_label || null,
+      counted_from_because: e.start_basis || null,
+      report_date: e.reference_date || null,
+      years_since: e.elapsed_years === undefined ? null : e.elapsed_years,
+      what_the_report_does_not_show: e.unknown_conditions || [],
+      note: e.not_a_reporting_requirement || null
+    };
   }
   if (issue.report_identity) {
     out.report_identity = {
