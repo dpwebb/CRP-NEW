@@ -172,7 +172,9 @@ const SECTION_FILES = [
   /* BATCH-12 — Manitoba s.4(e) judgment-content omission through the complete packet path. */
   'ci-ca-mb-judgment-content.cjs',
   /* BATCH-14 — Prince Edward Island s.9(3)(d) judgment-content omission through the complete packet path. */
-  'cj-ca-pe-judgment-content.cjs'];
+  'cj-ca-pe-judgment-content.cjs',
+  /* BATCH-17 — territorial PIPEDA accuracy and the PEI dismissed-charge limb. */
+  'ck-ca-territories-pipeda-accuracy.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

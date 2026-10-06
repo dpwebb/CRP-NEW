@@ -250,6 +250,36 @@ const CONTENT_FINDING_WORDING = Object.freeze({
      crp-lsrc-0362-provision-retrieval.json). The report itself shows that its own two printed values for one
      account cannot both be right; it never shows which of them is unreliable, so this is recorded as a probable
      VERIFICATION, never a correction demand and never an established violation. */
+  /* BATCH-17: PIPEDA Schedule 1 clause 4.6 (Accuracy) for the Northwest Territories. Applicability comes from the OPC
+     statement that organizations in the three territories are federally regulated and therefore covered by
+     PIPEDA. The duty relied on is accuracy — no retention period and no prohibition. */
+  'CA-NT-PIPEDA-SCH1-4-6-ACCURACY': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded accuracy principle requires personal information to be as accurate, complete and up-to-date as is necessary for the purposes for which it is used.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision states that personal information shall be as accurate, complete and up-to-date as is necessary for the purposes for which it is to be used (Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6).',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
+  /* BATCH-17: PIPEDA Schedule 1 clause 4.6 (Accuracy) for the Nunavut. Applicability comes from the OPC
+     statement that organizations in the three territories are federally regulated and therefore covered by
+     PIPEDA. The duty relied on is accuracy — no retention period and no prohibition. */
+  'CA-NU-PIPEDA-SCH1-4-6-ACCURACY': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded accuracy principle requires personal information to be as accurate, complete and up-to-date as is necessary for the purposes for which it is used.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision states that personal information shall be as accurate, complete and up-to-date as is necessary for the purposes for which it is to be used (Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6).',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
+  /* BATCH-17: PIPEDA Schedule 1 clause 4.6 (Accuracy) for the Yukon. Applicability comes from the OPC
+     statement that organizations in the three territories are federally regulated and therefore covered by
+     PIPEDA. The duty relied on is accuracy — no retention period and no prohibition. */
+  'CA-YT-PIPEDA-SCH1-4-6-ACCURACY': {
+    label: 'A printed value cannot be accurate as printed',
+    request_type: 'VERIFICATION',
+    explain: (i) => `This report prints ${recordLabel(i)} with two dated values that cannot both be right, and the recorded accuracy principle requires personal information to be as accurate, complete and up-to-date as is necessary for the purposes for which it is used.`,
+    uncertainty: 'Which of the two printed values is unreliable is not established, and a benign explanation — such as a data-entry or formatting difference — has not been excluded. This is not an established violation: the report shows that its own two printed values conflict and does not show which one is wrong. The recorded provision states that personal information shall be as accurate, complete and up-to-date as is necessary for the purposes for which it is to be used (Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6).',
+    request: 'please verify which of these two printed values is correct and correct the entry'
+  },
   'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS': {
     label: 'The report prints two dates for one account that cannot both be right',
     request_type: 'VERIFICATION',
@@ -464,7 +494,10 @@ function potentialIssues(extraction, commonErrors) {
    check keeps running (it is only the duplicate CARD that is suppressed, and only for the overlapping record). */
 const FACTUAL_OVERLAP = Object.freeze({
   'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
-  'GB-UK-GDPR-ART5-1-D-ART16-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
+  'GB-UK-GDPR-ART5-1-D-ART16-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-NT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-NU-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'CA-YT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'
 });
 
 /** The two printed values a content finding measured, as one comparable key. */

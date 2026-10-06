@@ -655,15 +655,25 @@ function runContentInclusion(adapter, req, base) {
   const charge = facts['criminalCharge.chargeState'] || null;
   const dismissed = facts['criminalCharge.dismissedDispositionState'] || null;
   const complete = facts['criminalCharge.entryComplete'] === true;
+  /* BATCH-17: a provision that names its OWN disposition categories declares them here. When it does, the printed
+     CATEGORY — not the shared prohibited-disposition state, which includes withdrawn and stayed — decides whether
+     this limb applies, so a withdrawn or stayed charge is never claimed under a provision that does not name it.
+     An adapter that declares nothing keeps the accepted behaviour exactly (names, not categories). */
+  const declared = (adapter.content_inclusion && Array.isArray(adapter.content_inclusion.accepted_disposition_categories))
+    ? adapter.content_inclusion.accepted_disposition_categories.slice()
+    : null;
+  const category = facts['criminalCharge.dismissedDispositionCategory'] || null;
+  const categoryAccepted = declared !== null && category !== null && declared.indexOf(category) >= 0;
 
   const chargeResolved = charge === 'PRESENT' || charge === 'VERIFIED_ABSENT';
   const dismissedResolved = dismissed === 'PRESENT' || dismissed === 'VERIFIED_ABSENT';
-  const breach = identified && complete && chargeResolved && dismissedResolved
-    && charge === 'PRESENT' && dismissed === 'PRESENT';
+  const breach = identified && complete && chargeResolved && charge === 'PRESENT'
+    && (declared !== null ? categoryAccepted : (dismissedResolved && dismissed === 'PRESENT'));
 
   const included = [];
   if (charge === 'PRESENT') included.push('a criminal or summary conviction charge');
-  if (dismissed === 'PRESENT') included.push('a dismissed, set aside, withdrawn or stayed disposition');
+  if (declared !== null && categoryAccepted) included.push('a criminal charge disposed of as ' + declared.map((c) => c.toLowerCase().split('_').join(' ')).join(', '));
+  else if (declared === null && dismissed === 'PRESENT') included.push('a dismissed, set aside, withdrawn or stayed disposition');
 
   const result = Object.assign(base, {
     state: RESULT_STATE.EVALUATED,
@@ -672,7 +682,7 @@ function runContentInclusion(adapter, req, base) {
     anchor: null,
     arithmetic: null,
     refusal_reason: null,
-    content: { identified, entry_complete: complete, charge, dismissed, included, breach }
+    content: { identified, entry_complete: complete, charge, dismissed, category, accepted_categories: declared, included, breach }
   });
   result._fact_sources = req.fact_sources || null;
   result.evaluation = buildContentInclusionEvaluation(result, adapter, req);
@@ -691,6 +701,17 @@ function buildContentInclusionEvaluation(result, adapter, req) {
     { field: 'criminalCharge.dismissedDispositionState', role: 'dismissed_disposition_presence', resolved: content.dismissed === 'PRESENT' || content.dismissed === 'VERIFIED_ABSENT', value: content.dismissed, source: sources['criminalCharge.dismissedDispositionState'] || null },
     { field: 'criminalCharge.entryComplete', role: 'entry_completeness', resolved: content.entry_complete === true, value: content.entry_complete, source: sources['criminalCharge.entryComplete'] || null }
   ];
+  /* BATCH-17: where the provision names its own disposition categories, the printed category is its own decisive,
+     source-linked predicate; an unresolved, unbound or unsupported category refuses the finding. */
+  if (content.accepted_categories && content.accepted_categories.length) {
+    required_facts.splice(required_facts.length - 1, 0, {
+      field: 'criminalCharge.dismissedDispositionCategory',
+      role: 'disposition_category',
+      resolved: content.category !== null && content.accepted_categories.indexOf(content.category) >= 0,
+      value: content.category,
+      source: sources['criminalCharge.dismissedDispositionCategory'] || null
+    });
+  }
   const allResolved = required_facts.length > 0 && required_facts.every((f) => f.resolved === true);
   return {
     rule_identity: {
@@ -709,7 +730,9 @@ function buildContentInclusionEvaluation(result, adapter, req) {
       charge: content.charge || null,
       dismissed: content.dismissed || null,
       entry_complete: content.entry_complete === true,
-      has_criminal_charge: content.identified === true
+      has_criminal_charge: content.identified === true,
+      category: content.category || null,
+      accepted_categories: content.accepted_categories || null
     },
     required_facts,
     conditions: [],

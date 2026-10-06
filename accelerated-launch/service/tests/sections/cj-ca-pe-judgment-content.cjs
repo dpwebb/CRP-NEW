@@ -18,6 +18,7 @@ const crypto = require('node:crypto');
 const generalIntake = require('../../general-intake.cjs');
 const evaluation = require('../../evaluation.cjs');
 const { SUPPORT } = require('../../formats.cjs');
+const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 
 const PE = 'CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION';
 const REFERENCE_DATE = '2026-06-12';
@@ -152,6 +153,31 @@ async function run(service, check) {
   const stale = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.notEqual(stale.status, 200, 'a packet whose evidence changed after approval is not silently downloaded');
   check.match(JSON.stringify(stale.json || {}), /STALE/, 'and the refusal names the stale approval');
+
+  /* 4. BATCH-17: PEI's dismissed-charge limb, s.9(3)(j) — PEI's OWN categories, through the real reader. */
+  const PEJ = 'CA-PE-CRA-S9-3-J-DISMISSED-CHARGE';
+  const chargeLines = (d) => [text('Public Record: CRG-201'), text('Criminal Charge'), text('Charge: THEFT UNDER $5000'), text('Disposition: ' + d)];
+  const pej = (disposition) => {
+    const rec = generalIntake.buildRecords([{ lines: chargeLines(disposition) }], null).find((r) => r.kind === 'GENERAL_PUBLIC_RECORD');
+    const facts = rec ? rec.facts : {};
+    const sources = {};
+    for (const k of Object.keys(facts)) sources[k] = { normalized_value: facts[k], location: { page: 1, line: 1 }, record_index: 0 };
+    const out = ruleAdapters.runAdapter(PEJ, { country: 'CA', region: 'CA-PE', presentation: 'GENERAL-BUREAU-REPORT', facts, fact_sources: sources });
+    return { found: out.finding ? 1 : 0, category: facts['criminalCharge.dismissedDispositionCategory'], finding: out.finding };
+  };
+  check.equal(pej('Dismissed').found, 1, "PEI's own category 'dismissed' is claimed");
+  check.equal(pej('Set Aside').found, 1, "and 'set aside' is claimed");
+  check.equal(pej('Not Proceeded With').found, 1, "and 'not proceeded with' is claimed — PEI's third category");
+  check.equal(pej('Not Proceeded With').category, 'NOT_PROCEEDED', 'recorded under its own category');
+  check.equal(pej('Withdrawn').category, 'WITHDRAWN', 'a withdrawn charge is classified, not ignored');
+  check.equal(pej('Withdrawn').found, 0, "but it is NOT claimed, because PEI's words do not name it");
+  check.equal(pej('Stay of Proceedings').found, 0, "nor is a stay of proceedings claimed");
+  check.equal(pej('Convicted').found, 0, 'and a conviction is not');
+  check.match(String(pej('Set Aside').finding.citation), /9\(3\)\(j\)/, "with the finding citing PEI's own provision");
+  check.match(JSON.stringify(pej('Set Aside').finding.content_inclusion.included), /dismissed, set aside, not proceeded/i, "and naming PEI's own categories rather than another province's");
+  const ambiguous = generalIntake.buildRecords([{ lines: [text('Public Record: CRG-301'), text('Criminal Charge'), text('Charge: THEFT'), text('Charge: FRAUD'), text('Disposition: Dismissed')] }], null).find((r) => r.kind === 'GENERAL_PUBLIC_RECORD');
+  check.equal(ambiguous.facts['criminalCharge.dismissedDispositionCategory'], null, 'an ambiguous charge/disposition association yields no category');
+  check.equal(ambiguous.facts['criminalCharge.dismissedDispositionState'], 'UNRESOLVED', 'and no bound disposition, so no finding can follow');
 
   evidence.binding = {
     provision: 'Consumer Reporting Act (P.E.I.), s. 9(3)(d)', ledger_row: 'CRP-LSRC-0389',

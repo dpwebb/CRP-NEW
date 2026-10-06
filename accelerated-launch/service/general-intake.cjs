@@ -1187,6 +1187,7 @@ function classifyDisposition(value) {
   if (/\bSET\s+ASIDE\b/.test(up)) return 'SET_ASIDE';
   if (/\bSTAY\s+OF\s+PROCEEDINGS\b/.test(up) || /\bSTAYED\b/.test(up)) return 'STAYED';
   /* Known non-prohibited final dispositions — the charge was resolved in another way. */
+  if (/\bNOT\s+PROCEEDED(\s+WITH|\s+AGAINST)?\b/.test(up) || /\bNO\s+FURTHER\s+PROCEEDINGS\b/.test(up)) return 'NOT_PROCEEDED';
   if (/\bCONVICTED\b|\bGUILTY\b|\bFOUND\s+GUILTY\b/.test(up)) return 'CONVICTED';
   if (/\bACQUITTED\b|\bFOUND\s+NOT\s+GUILTY\b|\bNOT\s+GUILTY\b/.test(up)) return 'ACQUITTED';
   return 'UNRESOLVED';
@@ -1244,9 +1245,21 @@ function criminalChargeEvidence(lines, allTrusted, positivelyBounded) {
     dismissed_disposition = 'VERIFIED_ABSENT';
   }
 
+  /* BATCH-17: the disposition CATEGORY bound to an identified charge, exposed for a provision that names its own
+     categories (Prince Edward Island s.9(3)(j): dismissed, set aside or not proceeded with). Only an unambiguous
+     single binding sets it; an ambiguous, unbound or unsupported disposition leaves it null, so no finding is
+     produced from it. The shared prohibited-disposition state is unchanged, so every other province is
+     unaffected. */
+  let boundCategory = null;
+  if (charge_present === 'PRESENT') {
+    const bound = dispositionEntries.filter((d) => (d.number != null ? chargeEntries.some((c) => c.number === d.number) : chargeEntries.length === 1));
+    boundCategory = bound.length === 1 ? bound[0].classification : null;
+  }
+
   return {
     charge_present,
     dismissed_disposition,
+    disposition_category: boundCategory,
     entry_complete: complete,
     evidence: {
       criminal_context: criminalContext,
@@ -1517,6 +1530,7 @@ function buildRecords(pages, convention) {
       record.facts['criminalCharge.recordIdentified'] = true;
       record.facts['criminalCharge.chargeState'] = evidence.charge_present;
       record.facts['criminalCharge.dismissedDispositionState'] = evidence.dismissed_disposition;
+      record.facts['criminalCharge.dismissedDispositionCategory'] = evidence.disposition_category;
       record.facts['criminalCharge.entryComplete'] = evidence.entry_complete;
       if (evidence.charge_present === 'PRESENT') {
         record.status = 'RESOLVED';
@@ -1527,6 +1541,7 @@ function buildRecords(pages, convention) {
         raw: text.trim(), normalized: null, reason: null,
         location: record.location, kind: 'text', precision: null,
         charge_state: evidence.charge_present, dismissed_disposition: evidence.dismissed_disposition,
+        disposition_category: evidence.disposition_category,
         entry_complete: evidence.entry_complete, evidence: evidence.evidence
       };
     }

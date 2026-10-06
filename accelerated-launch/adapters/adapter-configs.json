@@ -1478,9 +1478,131 @@
         "basis": "s.39(1)(g) records no off-report exception: the dismissed / not-proceeded disposition is a report-printed fact",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Prince Edward Island consolidation (current to 30 March 2026) on ledger row CRP-LSRC-0389. PEI own disposition wording governs — dismissed, set aside or not proceeded with; a withdrawn or stayed charge is NOT claimed under this limb, because importing another province wider categories would invent authority. Period-less CONTENT_INCLUSION; packet-eligible so the consumer chooses it.",
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Prince Edward Island consolidation (current to 30 March 2026) on ledger row CRP-LSRC-0389. PEI own disposition wording governs — dismissed, set aside or not proceeded with; a withdrawn or stayed charge is NOT claimed under this limb, because importing another province wider categories would invent authority. Period-less CONTENT_INCLUSION; packet-eligible so the consumer chooses it. BATCH-17: the printed disposition CATEGORY is the decisive, source-linked predicate (dismissed / set aside / not proceeded with); withdrawn, stayed, convicted and any unresolved or ambiguous association produce no finding.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
-      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+      "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts",
+      "content_inclusion": {
+        "accepted_disposition_categories": [
+          "DISMISSED",
+          "SET_ASIDE",
+          "NOT_PROCEEDED"
+        ],
+        "why": "the provision names its own categories — dismissed, set aside or not proceeded with — so the printed CATEGORY decides; a withdrawn or stayed charge is never claimed under this limb, and an ambiguous, unbound or unclassified disposition carries no category and therefore no finding"
+      }
+    },
+    {
+      "adapter_id": "CA-NT-PIPEDA-SCH1-4-6-ACCURACY",
+      "legacy_rule_id": "ca-territories.pipeda.schedule1_4_6.accuracy",
+      "source_entry_id": "CRP-LSRC-0313",
+      "ledger_row_ids": [
+        "CRP-LSRC-0313"
+      ],
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Northwest Territories (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NT"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-NU-PIPEDA-SCH1-4-6-ACCURACY",
+      "legacy_rule_id": "ca-territories.pipeda.schedule1_4_6.accuracy",
+      "source_entry_id": "CRP-LSRC-0313",
+      "ledger_row_ids": [
+        "CRP-LSRC-0313"
+      ],
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Nunavut (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-NU"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-YT-PIPEDA-SCH1-4-6-ACCURACY",
+      "legacy_rule_id": "ca-territories.pipeda.schedule1_4_6.accuracy",
+      "source_entry_id": "CRP-LSRC-0313",
+      "ledger_row_ids": [
+        "CRP-LSRC-0313"
+      ],
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Yukon (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "anchor_mode": "CONTENT_RELIABILITY",
+      "opened_field": "liability.openedDate",
+      "closed_field": "liability.closedDate",
+      "period_years": 0,
+      "record_kinds": [
+        "CONSUMER_CREDIT_LIABILITY"
+      ],
+      "applicability_rule": "ORDINARY_ACCOUNT_BOTH_DATES_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-YT"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "OWNER-CA-ORDINARY-REPORT-001 (2026-10-04): the ordinary-account opened/closed structure is carried by the general bureau-report intake. No PR-01 widening (nothing establishes that the PR-01 reader produces both printed readings) and no new bureau-family admission.",
+      "output_permission": {
+        "max_conclusion": "probable_violation",
+        "finding_allowed": true,
+        "packet_eligible": false
+      },
+      "exceptions": {
+        "recorded": false,
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+      "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     }
   ]
 }
