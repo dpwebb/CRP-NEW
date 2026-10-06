@@ -193,7 +193,9 @@ const SECTION_FILES = [
      analysis, with their positive, boundary, missing-prerequisite and benign controls. */
   'cs-limitation-and-payment-history.cjs',
   /* OWNER correction (SOL assessment date): the server run date is the one clock, with controlled-time tests. */
-  'ct-assessment-clock.cjs'];
+  'ct-assessment-clock.cjs',
+  /* OWNER dual-date retention: the historical and current comparison per retention rule. */
+  'cu-dual-date-retention.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

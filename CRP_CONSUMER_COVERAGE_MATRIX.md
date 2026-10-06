@@ -271,3 +271,5 @@ never *whether* a jurisdiction has a recorded limitation rule. The two gaps are 
 parameter sets above remain the outstanding legal work, and this row records that no reader or jurisdiction was
 marked complete by the clock change.
 
+
+**Dual-date retention (Batch 33, October 6 2026).** Reporting-retention comparisons now run twice for every period-based limb: at the printed report date (the historical comparison, which keeps its finding and classification) and at the server assessment date (whether the period has ended since, which is a current-review question). A period that ended since the report was issued produces ONE qualified current-review item per entry and rule, merged with the historical finding. This does not create substantive coverage: the NS s.10(3)(c) limb and the other recorded period limbs are the same rules as before, and the missing jurisdiction-specific limitation parameters remain outstanding work independent of the clock and of this comparison.

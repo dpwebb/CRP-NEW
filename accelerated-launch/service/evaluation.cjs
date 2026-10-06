@@ -95,10 +95,46 @@ function runOne(adapterId, context, facts, factSources) {
     facts: facts || {},
     fact_sources: factSources || null,
     referenceDate: context.referenceDate,
+    /* OWNER dual-date retention (Batch 33): the ONE server assessment date of this run, so the same limb can be
+       measured against the report date (historical) and the assessment date (current). */
+    assessmentDate: context.assessment_clock ? context.assessment_clock.assessment_date : (context.assessmentDate || null),
     presentation: context.presentation,
     report: context.report || null,
     consumer_statements: Array.isArray(context.consumer_statements) ? context.consumer_statements : null
   });
+}
+
+/**
+ * OWNER dual-date retention (Batch 33): gather the two-date comparison from every period limb that ran, so the
+ * consumer surface can raise ONE current-review concern per entry+rule. The historical comparison stays where it
+ * always was (the finding/observation and its count); this bucket adds only the "has the period ended since?"
+ * side, keyed on the same anchor, period, precision and ambiguity handling.
+ */
+function collectRetentionDates(results) {
+  const performed = [];
+  const summary = {
+    rows: 0,
+    already_outside_at_both_dates: 0,
+    inside_at_report_outside_at_assessment: 0,
+    inside_at_both_dates: 0,
+    report_date_missing_but_assessment_compared: 0,
+    not_comparable: 0,
+    current_review_warranted: 0,
+    legal_findings_emitted: 0
+  };
+  for (const row of results || []) {
+    const dual = row && row.machine ? row.machine.retention_dates : null;
+    if (!dual) continue;
+    summary.rows += 1;
+    if (dual.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT') summary.already_outside_at_both_dates += 1;
+    else if (dual.state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT') summary.inside_at_report_outside_at_assessment += 1;
+    else if (dual.state === 'INSIDE_AT_BOTH') summary.inside_at_both_dates += 1;
+    else if (dual.state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT') summary.report_date_missing_but_assessment_compared += 1;
+    else summary.not_comparable += 1;
+    if (dual.current_review_warranted) summary.current_review_warranted += 1;
+    performed.push(Object.assign({ record_index: row.record_index }, dual));
+  }
+  return { check_class: 'RETENTION_DUAL_DATE', performed, summary };
 }
 
 /**
@@ -293,6 +329,11 @@ function evaluateCase(context) {
       base.results.push({ record_index: record.record_index, check: descriptor, machine });
     }
   }
+
+  /* OWNER dual-date retention (Batch 33): the current-review side of every period limb that ran, in its own
+     bucket. It is never counted as a statutory check, so `checks_performed` and every existing count keep their
+     meaning, and the historical finding above is untouched. */
+  base.retention_dual_date = collectRetentionDates(base.results);
 
   /* B3 continuation — the third check class. It runs only on an admitted presentation whose own reader
      produced a factual view, and only for the country that registered those checks. A refused file, a

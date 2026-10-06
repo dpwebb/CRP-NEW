@@ -167,8 +167,8 @@ async function runRealReport(service, check, evidence) {
   check.equal(evaluated.status, 201, 'the free assessment runs');
   await service.pay(actor, 'report_once', caseId);
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
-  check.equal(view.assessment_summary.distinct_total, 7, 'the paid assessment reports seven distinct supported issues');
-  check.equal(view.assessment_summary.by_confidence.potential, 7, 'all seven are potential issues to verify');
+  check.equal(view.assessment_summary.distinct_total, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports every distinct supported issue, including a period that has ended since');
+  check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
     'and none of them is asserted as a violation or a probable violation');
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
@@ -177,7 +177,7 @@ async function runRealReport(service, check, evidence) {
   const publicIssues = view.result.issues;
   const byAccount = {};
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
-  check.deepEqual(byAccount, { FIDO: 3, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
+  check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
     'the seven issues sit on the accounts the report shows them on');
 
   /* The court-limitation items: two adverse debts whose printed dates may be outside the Nova Scotia time
@@ -266,7 +266,7 @@ async function runSubscriberPacket(service, check, evidence, real) {
   });
   await service.request('POST', `/api/cases/${caseId}/evaluate`, { token: sub.token });
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: sub.token })).json.view;
-  check.equal(view.result.issues.length, 7, 'a subscriber sees the same seven supported issues on the real report');
+  check.equal(view.result.issues.length, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'a subscriber sees the same supported issues on the real report');
   const chosen = view.result.issues[0];
   const packetView = await service.request('GET', `/api/cases/${caseId}/packet`, { token: sub.token });
   check.equal(packetView.status, 200, 'the subscriber can open the packet flow for this report');

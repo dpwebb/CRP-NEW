@@ -51,9 +51,12 @@ const PARAMETERS = Object.freeze({
       words: 'a person acknowledges liability in respect of a claim ... the limitation period begins again at the time of the acknowledgment'
     }),
     transitional_note: 's. 11(3): a claim discovered before the effective date may not be brought after the earlier of two years from the effective date and the day on which the former limitation period expired or would have expired',
-    /* OWNER correction (SOL assessment date): the report may be older than the day it is checked, and the report
-       cannot show what happened in between. Stated on every result, in plain words. */
-    uncertainty_since_report: 'This report was issued before the date shown above. If you have since made a payment, admitted the debt in writing, dealt with a collection or a court claim, or the debt has changed hands, the time limit may have restarted or the position may have changed. The report cannot show those later events, so the dates you see may no longer be the whole picture.',
+    /* OWNER correction (SOL assessment date; wording corrected in Batch 33): the report may be older than the day
+       it is checked and cannot show what happened in between. A SALE, A TRANSFER, A CHANGE OF OWNERSHIP OR
+       COLLECTION ACTIVITY alone does NOT restart a limitation period and is never described as doing so: only a
+       qualifying payment or an acknowledgment of the debt can restart the clock, and every other later event is
+       listed separately as something that changes the picture WITHOUT restarting it. */
+    uncertainty_since_report: 'This report was issued before the date shown above. A later payment of this debt, or an admission of it in writing, can restart the time limit for a court claim. Other things since then change the picture without restarting it — a court claim may already have been started, a judgment may already exist, the debt may have been sold or placed with a collection agency, or the entry may have been corrected. The report cannot show any of those later events, so the dates you see may no longer be the whole picture.',
     unknown_conditions_plain: [
       'when the creditor first knew, or ought to have known, about the missed payments',
       'whether a later payment or a written admission of the debt restarted the time',

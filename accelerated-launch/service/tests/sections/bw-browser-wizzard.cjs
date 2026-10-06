@@ -87,6 +87,20 @@ async function run(service, check) {
     return { page, context };
   }
 
+  /** OWNER dual-date retention (Batch 33): open the same case in the browser with the ASSESSMENT clock pinned, so
+   *  a period that has ended since the report was issued is exercised without depending on the day the suite runs.
+   *  The clock is the SERVER's, never the browser's, and it is always restored. */
+  async function withDualClockBrowser(account, lines) {
+    const previous = process.env.CRP_ASSESSMENT_CLOCK_AT;
+    process.env.CRP_ASSESSMENT_CLOCK_AT = '2027-06-13T12:00:00Z';
+    try {
+      return await openCasePage(account.email, account.password, account.caseId, lines);
+    } finally {
+      if (previous === undefined) delete process.env.CRP_ASSESSMENT_CLOCK_AT;
+      else process.env.CRP_ASSESSMENT_CLOCK_AT = previous;
+    }
+  }
+
   async function downloadText(page) {
     /* The ACTUAL download control: click #packet-download, capture the file the browser writes. */
     const [download] = await Promise.all([ page.waitForEvent('download'), page.locator('#packet-download').click() ]);
@@ -356,6 +370,69 @@ async function run(service, check) {
   check.ok(!/violation|ESTABLISHED REPORTING ISSUE/i.test(genDownload.text), 'while claiming no reporting violation');
   evidence.limitation_browser = { summary: 'the free summary names the court time limit', packet: genDownload.filename };
   await genPage.close();
+
+  /* ---- 7. OWNER dual-date retention (Batch 33): a reporting period that has ENDED since the report was issued,
+     in the REAL browser, from the free summary through the subscriber packet. The assessment clock is pinned so
+     the case never depends on the day the suite runs, and the correspondence asks about the CURRENT file rather
+     than asserting that anything is still being reported. ---- */
+  const dualLines = [
+    'Equifax  Consumer Credit Report - FICTIONAL TEST FIXTURE',
+    'Report Date: 12 June 2026',
+    'Collection Agency ABC  Balance $500  Past Due $500  Date of First Delinquency 01 June 2019'
+  ];
+  const dualActor = await service.unpaidAccount('bw-dual-date-free@example.test');
+  const dualCase = (await service.request('POST', '/api/cases', { token: dualActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
+  const dualPage = await (await browser.newContext()).newPage();
+  dualPage.setDefaultTimeout(20000);
+  const previousClock = process.env.CRP_ASSESSMENT_CLOCK_AT;
+  process.env.CRP_ASSESSMENT_CLOCK_AT = '2027-06-13T12:00:00Z';
+  try {
+    await dualPage.goto(service.base + '/');
+    await dualPage.locator('#email').fill('bw-dual-date-free@example.test');
+    await dualPage.locator('#password').fill('a-long-enough-password');
+    await dualPage.locator('#signin').click();
+    await dualPage.waitForSelector('#open');
+    await dualPage.locator('#refresh').click();
+    await dualPage.waitForSelector(`[data-open="${dualCase.case_id}"]`);
+    await dualPage.locator(`[data-open="${dualCase.case_id}"]`).click();
+    await dualPage.locator('#steps button[data-step="2"]').click();
+    await dualPage.waitForSelector('#file');
+    await dualPage.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines: dualLines }] }) });
+    await dualPage.locator('#upload').click();
+    await dualPage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
+    await dualPage.locator('#check-report').click();
+    await dualPage.waitForTimeout(3000);
+    await dualPage.locator('#steps button[data-step="3"]').click();
+    await dualPage.waitForTimeout(1200);
+    const dualSummary = await dualPage.locator('#panel').innerText();
+    check.ok(/too old to report/.test(dualSummary), 'the free summary teaser names the entry that may now be too old to report');
+    check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(dualSummary), 'and states the date the report was assessed');
+    check.ok(!/id="packet-block"/.test(await dualPage.content()), 'while the complete assessment stays locked for a free account');
+  } finally {
+    if (previousClock === undefined) delete process.env.CRP_ASSESSMENT_CLOCK_AT;
+    else process.env.CRP_ASSESSMENT_CLOCK_AT = previousClock;
+    await dualPage.close();
+  }
+
+  const dualSub = await setupPaidCase(service, 'bw-dual-date@example.test', 'US', 'US-CA');
+  const dualOpened = await withDualClockBrowser(dualSub, dualLines);
+  const dualPanel = await dualOpened.page.locator('#panel').innerText();
+  check.ok(/Report issued: 2026-06-12/.test(dualPanel), 'the complete assessment shows the date the report was issued');
+  check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');
+  check.ok(/arose through the passage of time/.test(dualPanel), 'and that the concern arose through the passage of time');
+  const dualBlock = await dualOpened.page.locator('#packet-block').innerText();
+  check.ok(/too old to report/.test(dualBlock), 'the subscriber packet offers the current-review concern to select');
+  await dualOpened.page.locator('[data-check-issue]').first().check();
+  await dualOpened.page.locator('#packet-name').fill('Robin Alvarez');
+  await dualOpened.page.locator('#packet-contact').fill('robin.alvarez@example.test');
+  await dualOpened.page.locator('#packet-approve').click();
+  await dualOpened.page.waitForTimeout(700);
+  const dualDownload = await downloadText(dualOpened.page);
+  check.ok(/remains on my current file/.test(dualDownload.text), 'and the downloaded packet asks whether the entry remains on the current file');
+  check.ok(/whether its reporting period has expired/.test(dualDownload.text), 'and whether its reporting period has expired');
+  check.ok(!/established reporting issue/i.test(dualDownload.text), 'without claiming anything is still being reported');
+  evidence.dual_date_browser = { free_summary: 'the teaser names an entry that may now be too old to report', packet: dualDownload.filename };
+  await dualOpened.page.close();
 
   await browser.close();
 

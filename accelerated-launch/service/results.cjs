@@ -377,6 +377,9 @@ function renderResultSet(input) {
      the same assessments produce. */
   limitation_assessment: evaluation.limitation_assessment || null,
   payment_history_analysis: evaluation.payment_history_analysis || null,
+  /* OWNER dual-date retention (Batch 33): the two-date comparison per period limb that ran, and its summary.
+     The historical finding stays where it was; this is the current-review side. */
+  retention_dual_date: evaluation.retention_dual_date || null,
   assessments_performed: evaluation.assessments_performed || 0,
   /* OWNER correction (SOL assessment date): the date the SERVER ran THIS assessment. Persisted with the result,
      shown to the consumer, and never advanced by viewing, unlocking, rendering or downloading it again. */
@@ -511,7 +514,10 @@ const TEASER_TITLE = Object.freeze({
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): a court-limitation concern. Its rank is the addition rank,
      because the useful next step is to verify dates the report does not show, and its title never claims that
      the bureau broke a reporting rule. */
-  LIMITATION: 'A debt may be outside the time limit for a court claim'
+  LIMITATION: 'A debt may be outside the time limit for a court claim',
+  /* OWNER dual-date retention (Batch 33): the period appears to have ended since the report was issued. Ranked
+     with the additions — the useful next step is to check the current file — and never titled as a finding. */
+  LATER_EXPIRY: 'An entry may now be too old to report'
 });
 
 const TEASER_CONFIDENCE_LABEL = Object.freeze({
@@ -533,6 +539,11 @@ function isLimitationConcern(issue) {
   return Boolean(issue) && issue.limitation_concern === true;
 }
 
+/** OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued. */
+function isLaterExpiryConcern(issue) {
+  return Boolean(issue) && issue.later_expiry_concern === true;
+}
+
 function severityRankOf(issue) {
   if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
   if (issue.basis_type === 'CONTENT_FINDING') {
@@ -546,11 +557,15 @@ function severityRankOf(issue) {
   /* A limitation concern ranks with the additions: the useful next step is to verify dates the report does not
      show, and it is never ranked as a removal demand. */
   if (isLimitationConcern(issue)) return 1;
+  /* OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued ranks
+     with the additions too — the next step is to check the current file, not to treat the old report as wrong. */
+  if (isLaterExpiryConcern(issue)) return 1;
   return 2;
 }
 
 function teaserTitleFor(issue, rank) {
   if (isLimitationConcern(issue)) return TEASER_TITLE.LIMITATION;
+  if (isLaterExpiryConcern(issue)) return TEASER_TITLE.LATER_EXPIRY;
   if (isCompletenessItem(issue)) return TEASER_TITLE.FACTUAL_COMPLETENESS;
   if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
   if (issue.basis_type === 'CONTENT_FINDING') {

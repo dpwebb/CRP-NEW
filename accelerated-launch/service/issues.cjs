@@ -274,6 +274,30 @@ const POTENTIAL_WORDING = Object.freeze({
     },
     uncertainty: 'An unknown rating, a blank cell and an unprinted month are never counted as a missed payment here, so only a printed late month is used. The report does not say whether the printed date is the first delinquency or a later one, so this is a question to verify.',
     request: 'please confirm the first delinquency date for this account and have it corrected if the printed date is wrong'
+  },
+
+  /* OWNER dual-date retention (Batch 33): the CURRENT-review side of a reporting period. The entry was inside its
+     period when the uploaded report was issued and appears to be outside it now, so the useful next step is to
+     check the consumer's CURRENT file — never to call the historical report a violation. */
+  'RETENTION-PERIOD-ENDED-SINCE-THE-REPORT': {
+    explain: (i) => {
+      const r = i.retention_review || {};
+      const period = r.anchor_precision === 'MONTH_LEVEL' && r.period_ends_from
+        ? `The period appears to end somewhere between ${r.period_ends_from} and ${r.period_ends_on}, because the date it counts from is printed only to the month.`
+        : `The period appears to have ended on ${r.period_ends_on}.`;
+      const issued = r.report_issued
+        ? `Your uploaded report was issued on ${r.report_issued}, which was before that date, so this entry was still inside its period then.`
+        : 'Your uploaded report does not state a date of its own, so the earlier position cannot be established from it.';
+      return `This entry prints "${r.anchor_label || 'its event date'}" as ${r.anchor_printed_date || r.anchor_iso || 'the printed date'}, and the reporting period that applies to it is ${r.period_years} years. ${period} ${issued} This entry may now be too old to report. An older report shows what was reported at the time; it does not show what is on your file today.`;
+    },
+    uncertainty: (i) => {
+      const r = i.retention_review || {};
+      const extra = r.historical_position_not_established
+        ? ' The report we have does not state its own date, so whether the entry was already outside its period then cannot be established, and it is not claimed either way.'
+        : ' The report we have was issued before the period ended, so it cannot show the position now.';
+      return `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}`;
+    },
+    request: 'Please verify whether this entry remains on my current file and whether its reporting period has expired.'
   }
 });
 
@@ -860,8 +884,68 @@ function issuesFor(ctx) {
   const statutory = statutoryIssues(extraction, evaluation.results);
   const factual = potentialIssues(extraction, evaluation.common_errors);
   const paymentHistory = paymentHistoryIssues(extraction, evaluation.payment_history_analysis);
+  const retentionReview = retentionCurrentReviewIssues(extraction, evaluation.retention_dual_date, statutory);
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, limitation);
+  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation);
+}
+
+/**
+ * OWNER dual-date retention (Batch 33): one current-review item per entry+rule whose reporting period was still
+ * running when the uploaded report was issued and appears to have ended since. When the same entry+rule ALREADY
+ * carries a historical finding (the entry was outside its period at the report date), no second card is created:
+ * the historical finding is the stronger, already-classified statement about the same entry and rule.
+ */
+function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlready) {
+  const issues = [];
+  const performed = dualDate && Array.isArray(dualDate.performed) ? dualDate.performed : [];
+  const alreadyCovered = new Set((statutoryIssuesAlready || [])
+    .filter((i) => i && i.basis_type === BASIS_TYPE.STATUTORY_RETENTION)
+    .map((i) => `${i.record_index}|${i.rule_id || i.citation || ''}`));
+  for (const entry of performed) {
+    if (!entry.current_review_warranted) continue;
+    const key = `${entry.record_index}|${entry.rule || entry.citation || ''}`;
+    if (alreadyCovered.has(key)) continue;
+    const record = recordFor(extraction, entry.record_index);
+    const issue = {
+      issue_id: issueId(`retention-current:${entry.rule || 'rule'}:${entry.record_index}:${entry.anchor_iso}:${entry.assessment_date}`),
+      confidence: CONFIDENCE.POTENTIAL,
+      basis_type: BASIS_TYPE.FACTUAL_CONSISTENCY,
+      classification: null,
+      check_id: 'RETENTION-PERIOD-ENDED-SINCE-THE-REPORT',
+      label: 'This entry may now be too old to report',
+      reason: entry.state,
+      record_index: entry.record_index,
+      anchor: { field: entry.anchor_field || null, iso: entry.anchor_iso || null, value_as_supplied: entry.anchor_printed_date || null },
+      retention_review: {
+        rule: entry.rule || null,
+        adapter_id: entry.adapter_id || null,
+        citation: entry.citation || null,
+        region: entry.region || null,
+        anchor_label: entry.anchor_field || null,
+        anchor_printed_date: entry.anchor_printed_date || null,
+        anchor_iso: entry.anchor_iso || null,
+        anchor_precision: entry.anchor_precision || null,
+        period_years: entry.period_years === undefined ? null : entry.period_years,
+        period_ends_on: entry.at_assessment_date ? entry.at_assessment_date.period_ends_on : null,
+        period_ends_from: entry.at_assessment_date ? entry.at_assessment_date.period_ends_from : null,
+        report_issued: entry.report_reference_date || null,
+        assessed_on: entry.assessment_date || null,
+        state: entry.state,
+        historical_position_not_established: Boolean(entry.historical_position_not_established),
+        comparison_basis: entry.comparison_basis || null
+      },
+      evidence: entry,
+      location: null,
+      record: recordRefFor(record),
+      report_identity: reportIdentityFor(record),
+      account_identity: accountIdentityFor(record),
+      source_facts: []
+    };
+    issue.eligible = isEligible(issue);
+    Object.assign(issue, describe(issue));
+    issues.push(issue);
+  }
+  return issues;
 }
 
 
@@ -917,6 +1001,27 @@ function publicIssue(issue) {
       what_the_report_does_not_show: e.unknown_conditions || [],
       uncertainty_since_report: e.uncertainty_since_report || null,
       note: e.not_a_reporting_requirement || null
+    };
+  }
+  /* OWNER dual-date retention (Batch 33): the CURRENT-review card carries BOTH dates and the period's apparent
+     end, so the consumer can see what the report said then and what the position appears to be now. */
+  if (issue.retention_review) {
+    const r = issue.retention_review;
+    out.later_expiry_concern = true;
+    out.retention_review = {
+      rule: r.rule || null,
+      citation: r.citation || null,
+      anchor_label: r.anchor_label || null,
+      anchor_printed_date: r.anchor_printed_date || null,
+      anchor_precision: r.anchor_precision || null,
+      period_years: r.period_years === undefined ? null : r.period_years,
+      period_appears_to_end_on: r.period_ends_on || null,
+      period_appears_to_end_from: r.period_ends_from || null,
+      report_issued: r.report_issued || null,
+      assessed_on: r.assessed_on || null,
+      arose_through_later_passage_of_time: r.state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT',
+      historical_position_not_established: Boolean(r.historical_position_not_established),
+      based_on: r.comparison_basis || null
     };
   }
   if (issue.report_identity) {

@@ -302,12 +302,24 @@ function runAdapter(adapterId, request) {
 
   const referenceDate = primitives.normalizeFactDate(req.referenceDate);
   if (!referenceDate) {
+    /* OWNER dual-date retention (Batch 33): a report whose own date could not be read can still answer the
+       CURRENT question, because the anchor and the period are the reports' own printed values. The historical
+       position is explicitly NOT established, and the concern is recorded as such — the report date is never
+       invented to fill the gap. */
+    const fallbackAnchor = adapter.anchor_mode === 'SINGLE_FIELD' && adapter.anchor_field
+      ? primitives.resolvePriorityAnchor(req.facts, [adapter.anchor_field])
+      : primitives.resolvePriorityAnchor(req.facts, adapter.anchor_fields || adapter.anchor_field);
+    const assessmentDate = primitives.normalizeFactDate(req.assessmentDate) || null;
+    const dual = fallbackAnchor && assessmentDate
+      ? retentionDates({ adapter, anchor: fallbackAnchor, arithmetic: null, reportReferenceDate: null, assessmentDate })
+      : null;
     return Object.assign(base, {
       state: RESULT_STATE.UNRESOLVED,
       fact_status: ADAPTER_FACT_STATUS.EXTRACTION_UNRESOLVED,
       outcome: COMPARISON_OUTCOME.UNRESOLVED,
-      anchor: null,
+      anchor: fallbackAnchor || null,
       arithmetic: null,
+      retention_dates: dual,
       refusal_reason: 'REPORT_REFERENCE_DATE_NOT_RESOLVED'
     });
   }
@@ -460,7 +472,94 @@ function runAdapter(adapterId, request) {
   evaluated.evaluation = buildEvaluationRecord(evaluated, adapter);
   evaluated.finding = classify(evaluated, adapter);
   evaluated.finding_emitted = evaluated.finding !== null;
+  /* OWNER dual-date retention (Batch 33): the SAME limb, anchor, period and precision measured a SECOND time at
+     the assessment date, to answer a different question — has the period ended SINCE the report was issued? The
+     outcome above, every existing finding, classification and count stay keyed on the REPORT date, unchanged. */
+  evaluated.retention_dates = retentionDates({
+    adapter,
+    anchor,
+    arithmetic,
+    reportReferenceDate: referenceDate,
+    assessmentDate: primitives.normalizeFactDate(req.assessmentDate) || null
+  });
   return evaluated;
+}
+
+/**
+ * OWNER dual-date retention (Batch 33) — two comparisons, one concern, no duplicated card.
+ *
+ *   • AT THE REPORT DATE: the comparison this limb has always made. It decides the finding, its classification
+ *     and every count, exactly as before.
+ *   • AT THE ASSESSMENT DATE (the server's own run date): whether the period has ended SINCE that report was
+ *     issued — a CURRENT-review question, because an old report proves what was reported then and never proves
+ *     what is on file now.
+ *
+ * Nothing is substituted: the same anchor, the same period, the same month-level precision and the same
+ * ambiguity handling are used for both. A month-precision anchor keeps its RANGE, so an estimated end date is
+ * never presented as exact. If the report date could not be read but the anchor supports an assessment-time
+ * comparison, the concern is still recorded and the historical position is explicitly NOT established.
+ */
+function retentionDates(input) {
+  const adapter = input.adapter || {};
+  const anchor = input.anchor || {};
+  const monthPrecision = /^\d{4}-\d{1,2}$/.test(String(anchor.iso || ''));
+  const reportDate = primitives.normalizeFactDate(input.reportReferenceDate) || null;
+  const assessmentDate = primitives.normalizeFactDate(input.assessmentDate) || null;
+  const compare = (reference) => {
+    if (!reference || !anchor.iso) return null;
+    if (monthPrecision) return primitives.computeElapsedPeriodRange(anchor.iso, reference, adapter.period_years);
+    if (anchor.interpretations) {
+      const runs = anchor.interpretations.map((iso) => primitives.computeElapsedPeriod(iso, reference, adapter.period_years));
+      const decisive = [...new Set(runs.map((r) => r.outcome).filter((o) => o === COMPARISON_OUTCOME.PERIOD_EXCEEDED || o === COMPARISON_OUTCOME.PERIOD_NOT_EXCEEDED))];
+      return decisive.length === 1 && runs.every((r) => r.outcome === decisive[0])
+        ? runs[0]
+        : Object.assign({}, runs[0] || {}, { outcome: COMPARISON_OUTCOME.UNRESOLVED, reason: 'AMBIGUOUS_DATE_INTERPRETATIONS_DISAGREE', interpretations: anchor.interpretations, interpretations_agree: false });
+    }
+    return primitives.computeElapsedPeriod(anchor.iso, reference, adapter.period_years);
+  };
+  const atReport = compare(reportDate);
+  const atAssessment = compare(assessmentDate);
+  const exceeded = (a) => Boolean(a) && a.outcome === COMPARISON_OUTCOME.PERIOD_EXCEEDED;
+  const inside = (a) => Boolean(a) && a.outcome === COMPARISON_OUTCOME.PERIOD_NOT_EXCEEDED;
+  let state = 'NOT_COMPARABLE';
+  if (exceeded(atReport)) state = 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT';
+  else if (inside(atReport) && exceeded(atAssessment)) state = 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT';
+  else if (inside(atReport) && inside(atAssessment)) state = 'INSIDE_AT_BOTH';
+  else if (!reportDate && exceeded(atAssessment)) state = 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT';
+  else if (!reportDate) state = 'REPORT_DATE_MISSING';
+  else if (!assessmentDate) state = 'ASSESSMENT_DATE_MISSING';
+  return {
+    adapter_id: adapter.adapter_id || null,
+    rule: adapter.legacy_rule_id || adapter.adapter_id || null,
+    citation: adapter.citation || null,
+    region: adapter.region || null,
+    anchor_field: Array.isArray(anchor.field) ? anchor.field[0] : (anchor.field || null),
+    anchor_printed_date: anchor.value_as_supplied || anchor.iso || null,
+    anchor_iso: anchor.iso || null,
+    anchor_precision: monthPrecision ? 'MONTH_LEVEL' : 'DAY_LEVEL',
+    period_years: adapter.period_years,
+    report_reference_date: reportDate,
+    assessment_date: assessmentDate,
+    at_report_date: atReport ? {
+      outcome: atReport.outcome,
+      period_ends_on: atReport.anniversary || atReport.anniversary_end || null,
+      period_ends_from: atReport.anniversary_start || null,
+      inside_the_period: inside(atReport)
+    } : null,
+    at_assessment_date: atAssessment ? {
+      outcome: atAssessment.outcome,
+      period_ends_on: atAssessment.anniversary || atAssessment.anniversary_end || null,
+      period_ends_from: atAssessment.anniversary_start || null,
+      inside_the_period: inside(atAssessment)
+    } : null,
+    state,
+    /* The one case that is a genuinely NEW current-review concern: inside when the report was issued, outside
+       now. A separate concern is also kept when the report date is unreadable but the anchor still answers. */
+    later_expiry: state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT',
+    historical_position_not_established: state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT',
+    current_review_warranted: state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT' || state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT',
+    comparison_basis: 'the same anchor, period, precision and ambiguity handling at both dates; the report-date comparison is the historical one and never the current position'
+  };
 }
 
 /* OWNER-CANDIDATE-002 (corrected): the judgment-content omission evaluation. The required predicates are
@@ -1424,6 +1523,7 @@ module.exports = {
   PACKET_ELIGIBLE_RULE_IDS,
   verifyConfigs,
   runAdapter,
+  retentionDates,
   classify,
   classifyEvaluation,
   classifyQualifiedEvaluation,
