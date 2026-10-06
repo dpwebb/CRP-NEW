@@ -244,6 +244,16 @@ async function run(t, check) {
   check.equal(uiElement('footer-disclaimer').hidden, false, 'the disclaimer is visible on the main page (step 0)');
   vm.runInContext('state.step = 3; render();', uiCtx);
   check.equal(uiElement('footer-disclaimer').hidden, true, 'the disclaimer is hidden on the assessment/results step');
+  /* OWNER correction (Batch 25): the approved disclaimer is visible in the small main-page footer ONLY. Every
+     step is rendered and measured, not just the two sampled above. */
+  const footerStepCount = vm.runInContext('STEP_KEYS.length', uiCtx);
+  const stepsShowingTheDisclaimer = [];
+  for (let step = 0; step < footerStepCount; step += 1) {
+    vm.runInContext(`state.step = ${step}; render();`, uiCtx);
+    if (!uiElement('footer-disclaimer').hidden) stepsShowingTheDisclaimer.push(step);
+  }
+  check.deepEqual(stepsShowingTheDisclaimer, [0], `the legal-advice disclaimer is shown on the main page only, and hidden on every other step (all ${footerStepCount} steps rendered)`);
+  vm.runInContext('state.step = 3; render();', uiCtx);
   const uiHtml = uiNodes.get('panel').innerHTML;
   check.ok(/Experian credit report dated 2026-06-12/.test(uiHtml), 'the wizard renders the report context in the purpose question');
   check.ok(/A credit transaction \(a loan or credit application\)/.test(uiHtml), 'the wizard renders the readable purpose label');

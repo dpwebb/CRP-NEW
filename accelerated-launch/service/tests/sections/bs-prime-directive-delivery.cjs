@@ -97,6 +97,8 @@ async function run(service, check) {
   check.ok(/not shown to be absent/.test(qual.uncertainty), 'the uncertainty states the exception is unknown, not absent');
   check.ok(/credit transaction involving \$150,000/.test(qual.uncertainty), 'and names the benign alternative (a permitted use)');
   check.ok(/probable reporting issue, not an established one/.test(qual.uncertainty), 'staying probable, never established');
+  check.ok(qual.uncertainty.startsWith(issues.PROBABLE_LEAD), 'the review text leads with the approved probable sentence');
+  check.ok(!/could not be read|not readable/i.test(qual.uncertainty), 'and the exception uncertainty is never described as a reading failure');
 
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [qual.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
@@ -107,6 +109,8 @@ async function run(service, check) {
   check.ok(/not shown to be absent/.test(dl.text), 'with the exception uncertainty');
   check.ok(/verify whether an exception/.test(dl.text), 'with the verification request');
   check.ok(!/established reporting issue/.test(dl.text), 'never asserting a definite breach');
+  check.ok(dl.text.indexOf(issues.PROBABLE_LEAD) !== -1, 'the downloaded packet carries the same approved probable sentence');
+  check.ok(!/could not be read|not readable/i.test(dl.text), 'and never describes the exception uncertainty as a reading failure');
 
   /* ---- 2. AU contradictory-date issue: store-injected extraction -> Wizzard -> entitled download, preserving raw readings + locations. ---- */
   const auOwner = await service.unpaidAccount('bs-au@example.test');

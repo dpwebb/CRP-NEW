@@ -70,6 +70,21 @@ async function run(t, check) {
   check.equal(violation.comprehensive_legal_check, false, 'the surface never claims a comprehensive legal check');
   check.ok(/checks listed/i.test(violation.disclaimer) && !/not legal advi[cs]e/i.test(JSON.stringify(violation)), 'the result states its actual scope without a legal-advice disclaimer');
 
+  /* 6. OWNER correction (Batch 25): a value that genuinely could not be read is named as a reading failure, and
+     an uncertainty that is not a reading failure never borrows that language. A probable finding carries the
+     approved lead sentence instead of the retired generic claim. */
+  const unreadable = results.plainStatement({ state: 'UNRESOLVED' }, null, 1, 'account');
+  check.match(unreadable.headline, /could not be read/, 'a value that could not be read is described as a reading failure');
+  check.match(unreadable.detail, /not the same as a date that is absent/, 'and read failure is distinguished from absence');
+  check.ok(!/probable reporting issue/i.test(`${unreadable.headline} ${unreadable.detail}`), 'a reading failure is never turned into a probable issue');
+  const probableMachine = { state: 'EVALUATED', outcome: 'PERIOD_EXCEEDED', arithmetic: { period_years: 7 }, finding: { classification: 'PROBABLE_VIOLATION' } };
+  const probablePlain = results.plainStatement(probableMachine, null, 1, 'account');
+  check.ok(!/readable|could not be read/i.test(`${probablePlain.headline} ${probablePlain.detail}`), 'a probable finding never calls its uncertainty a reading failure');
+  check.match(probablePlain.headline, /unverified/, 'and names its own specific uncertainty (an unverified correspondence)');
+  const definitePlain = results.plainStatement(Object.assign({}, probableMachine, { finding: { classification: 'VIOLATION' } }), null, 1, 'account');
+  check.ok(/established reporting issue/.test(definitePlain.detail), 'a definite finding keeps its established wording');
+  check.ok(!/probable/i.test(definitePlain.detail), 'and never carries the probable lead');
+
   evidence.prioritization = 'deterministic evidence-backed ordering; no arbitrary rank/score field';
   evidence.reasons = 'plain-English headline/detail/qualification; findings (is_a_finding) distinguished from observations';
   evidence.uncertainty = 'conflicting dates withhold the finding; unread content never equated with absence';

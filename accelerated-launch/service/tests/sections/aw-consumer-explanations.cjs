@@ -14,6 +14,7 @@ const formats = require('../../formats.cjs');
 const evaluation = require('../../evaluation.cjs');
 const results = require('../../results.cjs');
 const journey = require('../../journey.cjs');
+const issues = require('../../issues.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 
 function render(lines) {
@@ -107,6 +108,12 @@ async function run(t, check) {
   check.equal(pFinding.decisive_facts_unavailable[0].identity, 'publicRecord.bankruptcyOrderForReliefDate.historical_correspondence', 'the unavailable decisive fact is named exactly');
   check.ok(pFinding.qualification.indexOf('probable reporting issue') !== -1, 'the probable qualification says probable');
   check.ok(pFinding.qualification.indexOf('established reporting issue') === -1, 'a probable finding never presents the issue as established');
+  /* OWNER correction (Batch 25): the probable lead is the approved sentence, it never claims something was
+     unreadable, and the issue's own specific uncertainty follows it on the same finding. */
+  check.equal(pFinding.qualification, issues.PROBABLE_LEAD, 'the probable finding carries the approved lead sentence exactly');
+  check.ok(!/readable|could not be read/i.test(pFinding.qualification), 'and never describes the uncertainty as a reading failure');
+  check.ok(/has not been verified against the court event/.test(pFinding.detail), 'the specific unverified-fact uncertainty follows it on the same finding');
+  check.ok(/cannot be established from this report/.test(pFinding.detail), 'stating exactly what the report cannot establish');
 
   /* 4. consistency — the downloaded assessment report agrees with the on-screen result. */
   const vBody = journey.assessmentReportBody(violation, '2026-10-03T00:00:00.000Z');
@@ -136,6 +143,8 @@ async function run(t, check) {
   const pui = renderUIFinding(pFinding);
   check.ok(/Probable reporting issue/.test(pui), 'the on-screen card labels the probable consumer wording');
   check.ok(/Decisive fact unavailable/.test(pui), 'the on-screen card names the unavailable decisive fact');
+  check.ok(pui.indexOf(issues.PROBABLE_LEAD) !== -1, 'the on-screen card shows the approved probable lead sentence');
+  check.ok(!/could not be read|not readable/i.test(pui), 'and the card never calls the uncertainty a reading failure');
   check.ok(!/not legal advi[cs]e/i.test(ui+pui+vBody+pBody), 'owner imperative: finding UI and reports have no legal-advice disclaimer');
   check.ok(!/INTERNAL_INCOMPLETE_READING|INTERNAL_UNCOMPLETED_CHECK|INTERNAL_UNACCEPTED_VALUE/.test(ui+pui), 'owner imperative: incomplete finding qualifications stay internal');
   check.ok(!/LIMITATIONS AND QUALIFICATIONS|READING WAS INCOMPLETE|COULD NOT BE READ CONFIDENTLY/.test(vBody+pBody), 'owner imperative: downloaded reports omit incomplete-check qualification sections');

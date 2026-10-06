@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batch 24, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §10 at the end of this file — manifest `499F03D6DD46E5C9852EB0765419B39C09E84DECE71B3332F5B1004A19355D5F`, build `crp-v1-499f03d6dd46e5c9`, 81 files in five groups, full local regression **PASS 5422, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`) describe earlier trees and are superseded.
+**Identity supersession (Batch 24/25, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §11 at the end of this file — manifest `FFAB6CA919D25A3014B04FE7F0EE1EF89FF9EEA9B8A6AB83345BD4064431B733`, build `crp-v1-ffab6ca919d25a30`, 81 files in five groups, full local regression **PASS 5450, 0 failed, 0 skipped**. Earlier digests quoted below (`4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`) describe earlier trees and are superseded.
 
 ## 1. Exact candidate identity
 
@@ -186,3 +186,36 @@ Date: October 5 2026 (America/Halifax). Authority: the owner's instruction to co
 | Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399`; no push and no deploy occurred in this batch |
 
 **New guard.** `accelerated-launch/service/tests/sections/cp-consumer-plain-text.cjs` (25 assertions) reads the live jurisdiction surface for all 82 selections and fails if any of the 82 descriptions, the pre-upload note, the check-class text, the read fallbacks, a finding card or a downloaded packet carries retired wording, an internal term or an over-long sentence — so a regeneration cannot restore the old text.
+
+## 11. Batch 25 — the two bounded corrections (footer statement and probable-issue wording)
+
+Date: October 5 2026 (America/Halifax). Authority: the owner's bounded follow-up to the plain-text batch — correct the inaccurate footer statement and replace the generic probable-issue claim. No audit was restarted and no prerequisite was added.
+
+**1. The footer disclaimer — correction of the batch report.** The Batch 24 report stated that no legal-advice disclaimer existed in the repository's served surface and that the approved sentence therefore required owner input. **That statement was wrong.** The approved sentence — *"Credit Regulator Pro provides credit-report information, not legal advice."* — is present in `accelerated-launch/service/ui/index.html` inside the small main-page `<footer>`, and `accelerated-launch/service/ui/app.js` (`footerDisclaimer()`) sets `hidden = state.step !== 0`. Its behavior is exactly the permitted one and was preserved with **no code change**:
+
+| Surface | Verified behavior | Evidence |
+| --- | --- | --- |
+| Main page (step 0) | visible in the small footer | `bg-report-use` (visible on the main page) |
+| Every other step | hidden — every step rendered and measured, not sampled | `bg-report-use`: all `STEP_KEYS.length` steps rendered; only step 0 shows it |
+| Results surface | absent, not merely hidden | `cp-consumer-plain-text` (the results payload carries no disclaimer) |
+| Review / packet view | absent | `cp-consumer-plain-text` (the packet view carries none) |
+| Downloaded packet | absent | `cp-consumer-plain-text`, `aw-consumer-explanations` |
+| Client tree placement | exactly one occurrence, inside the served footer | `cp-consumer-plain-text`; `v-presentation-and-release` (single occurrence inside `<footer>`) |
+
+**2. Probable-issue wording.** The retired sentence (*"The evidence in your report is strong, but one fact we need is not readable, so we cannot confirm it."*) treated every uncertainty as a reading failure. It is replaced by one approved lead sentence, defined once in `accelerated-launch/service/issues.cjs` as `PROBABLE_LEAD`:
+
+> Your report shows a probable reporting issue. Review the details below before deciding whether to dispute it.
+
+`accelerated-launch/service/results.cjs` serves that sentence as the finding qualification and imports `issues.PROBABLE_LEAD`, so the card, the review step and the packet cannot drift; `accelerated-launch/service/issues.cjs` prefixes it to the uncertainty of **PROBABLE** issues only, followed by that issue's existing, specific uncertainty. A value is described as unreadable only where extraction actually failed (`results.cjs` `plainStatement` UNRESOLVED branch); an unverified fact and an exception the report cannot establish are named as exactly that. No classification, eligibility, request-type or price rule changed: definite stays definite (correction), probable stays probable (verification), potential keeps its own wording.
+
+**Refreshed candidate identity (this is now the current one).**
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `FFAB6CA919D25A3014B04FE7F0EE1EF89FF9EEA9B8A6AB83345BD4064431B733` |
+| Internal build identity | `crp-v1-ffab6ca919d25a30` |
+| Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
+| Determinism | three consecutive regenerations; identical digest each run |
+| Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5450 assertions, 0 failed, 0 skipped** |
+| Deployment state | **NOT deployed.** Staging still serves `crp-v1-75755118a71c9399`; Batch 25 pushed and deployed nothing |
+

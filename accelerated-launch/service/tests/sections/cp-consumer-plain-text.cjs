@@ -138,8 +138,17 @@ async function run(service, check) {
     .map((rel) => [rel, fs.readFileSync(path.join(ROOT, rel), 'utf8')]);
   check.deepEqual(shipped.filter(([, text]) => RETIRED_WORDING.some((re) => re.test(text))).map(([rel]) => rel), [],
     'and the served client tree and the shipped browser client carry none of the retired wording either');
-  const disclaimerCount = shipped.reduce((n, [, text]) => n + (text.match(/not legal advice/gi) || []).length, 0);
-  check.ok(disclaimerCount <= 1, 'the approved legal-advice disclaimer is not repeated in the served or shipped client');
+  /* OWNER correction (Batch 25): the approved disclaimer is real and lives in the small footer of the served
+     main page only — not in the client's other files, and never in the results, review, packet or download
+     surfaces. Per-step visibility is measured against the served client by bg-report-use. */
+  const disclaimerSentence = /Credit Regulator Pro provides credit-report information, not legal advice\./g;
+  const disclaimerCount = shipped.reduce((n, [, text]) => n + (text.match(disclaimerSentence) || []).length, 0);
+  check.equal(disclaimerCount, 1, 'the approved legal-advice disclaimer appears exactly once in the client tree');
+  check.deepEqual(shipped.filter(([, text]) => /not legal advice/i.test(text)).map(([rel]) => rel),
+    ['accelerated-launch/service/ui/index.html'], 'and its only home is the served main page');
+  const servedMainPage = shipped.find(([rel]) => rel === 'accelerated-launch/service/ui/index.html')[1];
+  check.ok(/<footer[^>]*>[\s\S]*Credit Regulator Pro provides credit-report information, not legal advice\.[\s\S]*<\/footer>/.test(servedMainPage),
+    'inside the small footer element of that page');
 
   /* ---------------------------------------------------------------- 3. representative screens */
   const actor = await service.unpaidAccount('cp-plain-text@example.test');
@@ -178,6 +187,8 @@ async function run(service, check) {
   check.ok(download.text.includes(issue.explanation), "and it keeps the selected finding's own words");
   check.deepEqual(RETIRED_WORDING.filter((re) => re.test(download.text)).map(String), [], 'and carries none of the retired wording');
   check.ok(!/not legal advice/i.test(download.text), 'and never repeats the legal-advice disclaimer');
+  check.ok(!/not legal advice/i.test(JSON.stringify(result)), 'the results surface carries no legal-advice disclaimer either');
+  check.ok(!/not legal advice/i.test(JSON.stringify(view)), 'and neither does the review and packet view');
 
   /* ---------------------------------------------------------------- 5. the read fallbacks */
   const intakeSource = fs.readFileSync(path.join(ROOT, 'accelerated-launch', 'service', 'general-intake.cjs'), 'utf8');

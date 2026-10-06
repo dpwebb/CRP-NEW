@@ -235,7 +235,7 @@ function renderResultSet(input) {
       qualification: finding
         ? (finding.classification === 'VIOLATION'
           ? (finding.content_omission ? 'We found a reporting issue. Your report leaves out information the rules for this place require, and we can see the whole entry that should have carried it.' : (finding.content_inclusion ? 'We found a reporting issue. Your report includes information the rules for this place do not allow, and we can see the whole entry it appears on.' : 'We found a reporting issue. The dates your report prints show that this entry is kept longer than the rules for this place allow.'))
-          : 'This looks like a probable reporting issue. The evidence in your report is strong, but one fact we need is not readable, so we cannot confirm it.')
+          : issues.PROBABLE_LEAD)
         : 'This comes from your report. It is not a finding that a rule was broken.',
       machine: row.machine
     };

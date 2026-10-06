@@ -21,6 +21,13 @@ const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', P
 const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY' });
 const REQUEST_TYPE = Object.freeze({ CORRECTION: 'CORRECTION', VERIFICATION: 'VERIFICATION' });
 
+/**
+ * OWNER correction (Batch 25): the one approved lead sentence for a probable reporting issue. It is the single
+ * source for the served text, so the results card, the review step and the downloaded packet cannot drift, and
+ * it is never a claim that something was unreadable.
+ */
+const PROBABLE_LEAD = 'Your report shows a probable reporting issue. Review the details below before deciding whether to dispute it.';
+
 /** The common-error checks whose positives become selectable POTENTIAL issues (Batch 1 + ordinary-account batch). */
 const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
@@ -373,7 +380,7 @@ function contentFindingPolicy(issue) {
 }
 
 /** The explanation and specific uncertainty for one issue, and its recorded request wording. */
-function describe(issue) {
+function describeWording(issue) {
   if (issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     /* OWNER-POTENTIAL-ISSUE-001 reconciliation: a content finding is a prohibition on INCLUDING report content
        the report itself prints. It gets its own content evidence + template representation, never a retention
@@ -430,6 +437,18 @@ function describe(issue) {
     request_type: REQUEST_TYPE.VERIFICATION,
     request_wording: policy.request
   };
+}
+
+/**
+ * OWNER correction (Batch 25): a PROBABLE issue leads with the one approved sentence and is then followed by
+ * that issue's own, specific uncertainty. The uncertainty is never reduced to "a fact was not readable": a value
+ * that could not be read is named as a reading failure by the module that actually measured it, while an
+ * unverified fact or an exception the report cannot establish is named as exactly that.
+ */
+function describe(issue) {
+  const described = describeWording(issue);
+  if (issue.confidence !== CONFIDENCE.PROBABLE) return described;
+  return Object.assign({}, described, { uncertainty: `${PROBABLE_LEAD} ${described.uncertainty}` });
 }
 
 /** Whether one issue is eligible for a consumer correction packet (issue-specific, not a blanket flag). A
@@ -698,6 +717,7 @@ module.exports = {
   CONFIDENCE,
   BASIS_TYPE,
   REQUEST_TYPE,
+  PROBABLE_LEAD,
   POTENTIAL_ISSUE_CHECK_IDS,
   issuesFor,
   publicIssues,

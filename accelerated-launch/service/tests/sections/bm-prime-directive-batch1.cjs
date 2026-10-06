@@ -85,6 +85,10 @@ async function run(service, check) {
   check.equal(cards.length, 1, 'the result surfaces exactly one potential issue card');
   check.ok(cards[0].explanation.includes('opened date later than its closed date'), 'the card states what the report says');
   check.ok(cards[0].uncertainty.includes('not, by itself, an established legal violation'), 'the card states the specific uncertainty');
+  /* OWNER correction (Batch 25): the approved probable lead belongs to PROBABLE issues only, so a potential
+     issue keeps its own wording and the classes stay distinct. */
+  check.ok(!cards[0].uncertainty.includes(issues.PROBABLE_LEAD), 'a potential issue never carries the probable lead sentence');
+  check.ok(!/probable reporting issue/.test(cards[0].uncertainty), 'and is never worded as a probable issue');
   check.ok((result.issues || []).every((i) => i.confidence !== 'NOT_DETECTED'), 'NOT_DETECTED entries are never surfaced as issue cards');
   const benignLines = ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2018  Closed 01/01/2020'];
   const benignExt = extract(benignLines);
@@ -153,6 +157,7 @@ async function run(service, check) {
   check.equal(probables[0].request_type, 'VERIFICATION', 'with a verification (not correction) request');
   check.equal(probables[0].eligible, true, 'and it is packet-eligible');
   check.ok(probables[0].uncertainty.includes('cannot be established'), 'retaining its specific uncertainty');
+  check.ok(probables[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'leading with the approved probable sentence before its specific uncertainty');
   check.ok(probables[0].decisive_fact_unavailable, 'naming the decisive unavailable fact');
 
   const pOwner = await service.unpaidAccount('b1-prob@example.test');
