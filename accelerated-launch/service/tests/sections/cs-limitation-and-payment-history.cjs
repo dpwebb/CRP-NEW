@@ -239,7 +239,7 @@ function runPaymentHistoryControls(check, evidence) {
       months: [{ period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }, { period: 'Sep 2024', mop: '5', narrative: '', payment: '50' }]
     })])
   });
-  const paymentId = 'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF';
+  const paymentId = 'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE';
   check.equal(payment.performed.find((p) => p.check_id === paymentId).state, 'NOT_DETECTED',
     'an ordinary payment after a write-off is not a contradiction');
   const contradictedPayment = paymentHistory.runPaymentHistoryAnalysis({
@@ -253,8 +253,21 @@ function runPaymentHistoryControls(check, evidence) {
   check.equal(payEntry.state, 'POTENTIAL_ISSUE', 'a later payment conflicting with the same month no-payment narrative is raised');
   check.equal(payEntry.source_records[0].evidence.payment_amount, 50, 'with the printed payment amount');
   check.equal(payEntry.source_records[0].evidence.no_payment_meaning, 'No payment received', 'and the report own conflicting meaning');
-  check.equal(payEntry.source_records[0].evidence.write_off_period, '2024-07', 'and the write-off month it followed');
-  /* The benign twin: a payment printed BEFORE the write-off month is not this candidate. */
+  check.equal(payEntry.source_records[0].evidence.payment_raw, '50', 'preserving the raw printed payment');
+  check.ok(payEntry.source_records[0].location, 'and the monthly row location');
+  const noWriteOff = paymentHistory.runPaymentHistoryAnalysis({
+    extraction: extractionOf([tuBlock({ creditor: 'SYNTHETIC NO WRITE OFF', legend: 'NP-No payment received',
+      months: [{ period: 'Sep 2024', mop: '1', narrative: 'NP /', payment: '50' }] })])
+  });
+  check.equal(noWriteOff.performed.find((p) => p.check_id === paymentId).state, 'POTENTIAL_ISSUE',
+    'the same affirmative conflict is found on an account without a write-off');
+  const noLegend = paymentHistory.runPaymentHistoryAnalysis({
+    extraction: extractionOf([tuBlock({ creditor: 'SYNTHETIC UNKNOWN CODE', legend: null,
+      months: [{ period: 'Sep 2024', mop: '1', narrative: 'NP /', payment: '50' }] })])
+  });
+  check.equal(noLegend.performed.find((p) => p.check_id === paymentId).state, 'NOT_DETECTED',
+    'an undecoded narrative code alone cannot establish the no-payment meaning');
+  /* The benign twin: a payment without a conflicting no-payment description is not this candidate. */
   const before = paymentHistory.runPaymentHistoryAnalysis({
     extraction: extractionOf([tuBlock({
       creditor: 'SYNTHETIC BEFORE',
@@ -263,7 +276,7 @@ function runPaymentHistoryControls(check, evidence) {
     })])
   });
   check.equal(before.performed.find((p) => p.check_id === paymentId).state, 'NOT_DETECTED',
-    'a payment printed before the write-off month is not raised');
+    'a payment without a conflicting same-month description is not raised');
 
   /* 4. A printed first-delinquency anchor later than a month the same history already shows as late. */
   const anchor = paymentHistory.runPaymentHistoryAnalysis({
@@ -365,8 +378,8 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(paymentCase.status, 201, 'a second case holds the independent payment-history conflict');
   const paymentCaseId = paymentCase.json.case.case_id;
   const paymentExtraction = extractionOf([tuBlock({
-    creditor: 'SYNTHETIC PAYMENT CONFLICT', legend: 'WO-Bad debt write-off, NP-No payment received',
-    months: [{ period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }, { period: 'Sep 2024', mop: '5', narrative: 'NP /', payment: '50' }]
+    creditor: 'SYNTHETIC PAYMENT CONFLICT', legend: 'NP-No payment received',
+    months: [{ period: 'Sep 2024', mop: '1', narrative: 'NP /', payment: '50' }]
   })]);
   const paymentEvaluation = evaluateCase({ country: 'CA', region: 'CA-NS', extraction: paymentExtraction, assessment_clock: clockAt('2026-01-10') });
   check.equal(paymentEvaluation.payment_history_analysis.summary.potential_issue, 1, 'the evaluator retains the reader-backed conflict');

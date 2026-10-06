@@ -308,10 +308,10 @@ const POTENTIAL_WORDING = Object.freeze({
     uncertainty: 'Both statements come from the report itself for the same month, and an account can change status inside a month, so both may be partly right. Which one describes this account is not shown, so this is a question to verify rather than a conclusion.',
     request: 'please confirm which of these two statements about this month is correct and have the wrong one corrected'
   },
-  'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF': {
+  'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE': {
     explain: (i) => {
       const e = i.evidence || {};
-      return `For ${e.reporting_period}, this report prints a payment of ${e.payment_amount} on ${entryLabel(i)} while the same month's description says "${e.no_payment_meaning || e.no_payment_code}". The account was written off in ${e.write_off_period}.`;
+      return `For ${e.reporting_period}, this report prints a payment of ${e.payment_raw || e.payment_amount} on ${entryLabel(i)} while the same month's description says "${e.no_payment_meaning || e.no_payment_code}".`;
     },
     uncertainty: 'A payment can be posted and later reversed, and a monthly row may show when a payment was applied rather than received. Please verify which of the two readings for this month is correct.',
     request: 'please verify the payment and no-payment description for this month and correct whichever is wrong'
@@ -843,7 +843,7 @@ function mergeOverlappingFactualIssues(statutory, factual) {
 /** The payment-history analyses whose positives become POTENTIAL issues, in the common-error entry shape. */
 const PAYMENT_HISTORY_CHECK_IDS = new Set([
   'PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH',
-  'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF',
+  'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE',
   'PH-DELINQUENCY-ANCHOR-AFTER-THE-HISTORY-SHOWS-IT'
 ]);
 

@@ -130,41 +130,29 @@ function ratingContradictsNarrative(records) {
      'a code meaning is quoted exactly as the report prints it in its own legend, never decoded by this build']);
 }
 
-/* 2. A later payment is ordinary after a write-off. Raise only when that later month also prints an
-   explicit no-payment narrative for the same account and period. */
-function paymentAfterWriteOff(records) {
+/* 2. A positive payment and an explicit no-payment description for the same account and month. The account's
+   write-off state does not decide this check: ordinary payments after write-off are not contradictions. */
+function paymentContradictsNoPaymentNarrative(records) {
   const matches = [];
   for (const record of records) {
-    const rows = rowsOf(record).slice().sort((a, b) => (a.period < b.period ? -1 : 1));
-    const writeOffs = [];
-    for (const row of rows) {
-      const writeOff = narrativesOf(record, row).find((n) => n.meaning && /write-?off|charge-?off/i.test(n.meaning));
-      if (writeOff) writeOffs.push({ period: row.period, code: writeOff.code, meaning: writeOff.meaning, location: row.location || null });
-    }
-    if (!writeOffs.length) continue;
-    const firstWriteOff = writeOffs[0];
-    for (const row of rows) {
-      if (row.period <= firstWriteOff.period) continue;
+    for (const row of rowsOf(record)) {
       const payment = amountOf(row, 'payment');
       if (payment === null || payment <= 0) continue;
       const noPayment = narrativesOf(record, row).find((n) => n.meaning && /\b(?:no payment (?:received|made|posted)|payment not (?:received|made|posted))\b/i.test(n.meaning));
       if (!noPayment) continue;
-      matches.push(match(record, row, 'PAYMENT_CONTRADICTS_SAME_MONTH_NO_PAYMENT_NARRATIVE_AFTER_WRITE_OFF', {
-        write_off_period: firstWriteOff.period,
-        write_off_code: firstWriteOff.code,
-        write_off_meaning: firstWriteOff.meaning,
-        write_off_location: firstWriteOff.location,
+      matches.push(match(record, row, 'PAYMENT_CONTRADICTS_SAME_MONTH_NO_PAYMENT_NARRATIVE', {
+        payment_raw: row.cells.payment,
         payment_amount: payment,
         no_payment_code: noPayment.code,
         no_payment_meaning: noPayment.meaning
       }));
     }
   }
-  return entry('PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF',
-    'a payment amount and a no-payment description printed for the same month after a write-off',
+  return entry('PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE',
+    'a payment amount and a no-payment description printed for the same month',
     matches,
-    'No later month of an account read here prints both a payment amount and an explicit no-payment description.',
-    'For the same month after a write-off, this account prints a payment amount and a description saying no payment was received. Please verify which reading is correct.',
+    'No month of an account read here prints both a payment amount and an explicit no-payment description.',
+    'For the same month, this account prints a payment amount and a description saying no payment was received. Please verify which reading is correct.',
     ['a payment can be posted and later reversed, and a row may report the month a payment was applied rather than received',
      'a write-off is an accounting event and does not by itself stop a payment being recorded']);
 }
@@ -259,7 +247,7 @@ function runPaymentHistoryAnalysis(context) {
     summary: { records: records.length, analyses: 0, potential_issue: 0, not_detected: 0, withheld_candidates: WITHHELD_CANDIDATES.length, legal_findings_emitted: 0 }
   };
   if (!records.length) return base;
-  const performed = [ratingContradictsNarrative(records), paymentAfterWriteOff(records), anchorAfterTheHistoryShowsIt(records)].filter(Boolean);
+  const performed = [ratingContradictsNarrative(records), paymentContradictsNoPaymentNarrative(records), anchorAfterTheHistoryShowsIt(records)].filter(Boolean);
   base.performed = performed;
   base.summary.analyses = performed.length;
   base.summary.potential_issue = performed.filter((p) => p.state === 'POTENTIAL_ISSUE').length;
@@ -271,7 +259,7 @@ module.exports = {
   CHECK_CLASS,
   WITHHELD_CANDIDATES,
   ratingContradictsNarrative,
-  paymentAfterWriteOff,
+  paymentContradictsNoPaymentNarrative,
   anchorAfterTheHistoryShowsIt,
   runPaymentHistoryAnalysis
 };
