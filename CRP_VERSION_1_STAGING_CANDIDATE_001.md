@@ -283,3 +283,29 @@ The pre-check wording "Your report is ready to review" is no longer used for a c
 
 **4. Deployment.** Recorded in §14 after the activation checks; the previous release `crp-v1-75755118a71c9399` is retained as the rollback target until the hosted verification passes.
 
+## 14. Batch 27 deployment — staging activation record (October 5–6 2026)
+
+**Deployed candidate.** build `crp-v1-7ac42970c633a742`, manifest `7AC42970C633A742A528FD1667380138CE2B33300E1E0B0FE7F4AE50BB752B43` (81 files, five groups), generated from the final manifest — no older identity reused.
+
+**Pre-switch verification.** All 81 manifest files were hash-verified locally (0 missing, 0 mismatched) and re-verified **on the VPS before activation**: `VERIFICATION_PASS 81 files 2654492 bytes crp-v1-7ac42970c633a742 7AC42970C633A742…2B43`.
+
+**Backup and rollback.** `/opt/crp-wizard-staging/backups/before-crp-v1-7ac42970c633a742-1791293661` holds the private configuration (`staging.env`, mode 600) and a **real copy of the private data** (16 MB; store mtimes 2026-10-02/03, older than the switch). The first attempt copied systemd's `private/` symlink instead of the data and was corrected within the batch. Previous release `/opt/crp-wizard-staging/releases/crp-v1-75755118a71c9399` retained; rollback script `/opt/crp-wizard-staging/rollback-crp-v1-7ac42970c633a742.sh`; provenance `/opt/crp-wizard-staging/candidate-activation.json`.
+
+**Activation.** Only `crp-wizard-staging.service` was stopped, repointed (`current` → the new release) and restarted; `CRP_BUILD_ID=crp-v1-7ac42970c633a742` was set in the existing env file. The existing nginx/Traefik router, secrets, prices, test-mode billing and the production services were untouched.
+
+**Served verification (public and real-browser, fictional data only).**
+
+| Check | Result |
+| --- | --- |
+| Public `https://staging.creditregulatorpro.com/api/health` | `{"ok":true,"build_id":"crp-v1-7ac42970c633a742","deployment":"staging","billing_mode":"test","launch_ready":false}` |
+| Served `app.js` | all new strings present; internal billing-readiness text, "Upgrade credit: not currently eligible" and the retired phrases absent |
+| `/api/jurisdictions` (82 regions) | 0 retired-wording hits; Alberta "For where you live we can run 1 rule check, 4 factual checks about what your report prints."; Nova Scotia "…4 rule checks, 4 factual checks…" |
+| Real browser: main page | approved disclaimer exactly once, inside the visible footer; staging preview / test-payment banner |
+| Real browser: Alberta and Nova Scotia cases | current plain-English descriptions; a case with no file is asked for one; the short access sentence replaces the lengthy paragraph; no internal billing text; no credit-ineligibility line; the disclaimer is hidden off the main page |
+| Real browser: billing view | `$5.95 CAD` price shown, renewal/recurring wording, pre-purchase terms, no internal text |
+
+**Pending on the host (not exercised).** The uploaded-report status, the completed "Your results are ready" state and the uploaded-without-access state. Reason: opening a test-mode checkout on staging is refused — `CHECKOUT_OPEN_FAILED`, `detail.reason = RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS` — so no purchase can be recorded, and no access-ending event exists in an acceptance run. Stripe test keys (`sk_test_`/`pk_test_`), the configured `price_` IDs and Stripe API reachability were verified healthy from the host. These states are covered **locally** against the real service (`bo-prime-directive-interaction` 39/39) and in the served-client state matrix (`k-ui-smoke` 56/56); local results are not hosted verification.
+
+**Remaining staging problem.** `STRIPE_APP_ORIGINS` in the host configuration does not include the origin the served app returns to, so test-mode checkout cannot open; the value was not changed in this batch (the instruction was to use the existing host configuration).
+
+
