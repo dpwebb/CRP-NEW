@@ -40394,7 +40394,8 @@
       "source_entry_id": "CRP-LSRC-0389",
       "legacy_statute_or_provision": {
         "instrument_title": "Consumer Reporting Act (Prince Edward Island)",
-        "provision_or_citation": "R.S.P.E.I. 1988, c. C-19, s. [VERIFY]",
+        "provision_or_citation": "s. 9(3)(d) and s. 9(3)(j) — retrieved verbatim from the official Prince Edward Island consolidation, current to 30 March 2026 (amended 2025, c.11; the consolidation cites R.S.P.E.I. 1974, Cap. C-18 for its historical revision and is published under chapter C-20) — BATCH-14 2026-10-06; official artifact sha256 A31229854E20E8A217D3D010B1C3EC9E3678E689BEFA52F8E8FA92D3D2B2558F", 
+          "provision_or_citation_history": [{"value": "R.S.P.E.I. 1988, c. C-19, s. [VERIFY]", "state": "SUPERSEDED_BY_BATCH-14", "note": "the recorded edition (1988, c. C-19) matches neither the Act own historical citation (R.S.P.E.I. 1974, Cap. C-18) nor the current publication chapter (C-20); preserved as recorded"}],
         "source_locator": "NOT RECORDED",
         "source_artifact": "docs\\citation-objects.tsv",
         "source_artifact_sha256": "C5915E80234A8C17FF7D2A466F12EFFF49F02143D0FFF7FAD269128E7AA3AE33",

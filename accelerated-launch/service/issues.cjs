@@ -209,6 +209,24 @@ const CONTENT_FINDING_WORDING = Object.freeze({
     uncertainty: 'The recorded rule requires a judgment entry to state the judgment creditor name, the creditor address and the amount of the judgment. This report prints the entry as a complete public record and the missing item is absent from the entry itself rather than unread. The provision excepts the creditor ADDRESS where the information was provided by the director under The Family Support Enforcement Act, and this report does not state that provenance, so an absent address on its own is not treated as established; the creditor name and the amount carry no such exception.',
     request: 'please correct this judgment entry so that it states the information the recorded rule requires, or remove the entry'
   },
+  /* BATCH-14: the Prince Edward Island judgment-content rule (Consumer Reporting Act, R.S.P.E.I. 1974,
+     Cap. C-18, s. 9(3)(d), official consolidation current to 30 March 2026; row CRP-LSRC-0389). The provision
+     requires the creditor name, the creditor address WHERE AVAILABLE and the amount. Only an absent amount on
+     a complete entry is establishable, so an absent address alone is recorded and never claimed. */
+  'CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION': {
+    label: 'A judgment is reported without information the recorded rule requires',
+    request_type: 'CORRECTION',
+    explain: (i) => {
+      const c = (i && i.content_omission) || {};
+      const omitted = Array.isArray(c.omitted) && c.omitted.length
+        ? c.omitted.join(' and ')
+        : 'information the recorded rule requires';
+      return `This report includes ${recordLabel(i)} without ${omitted}, which the recorded rule requires a judgment entry to state.`;
+    },
+    uncertainty: 'The recorded rule requires a judgment entry to state the judgment creditor name, the creditor address where available and the amount of the judgment. This report prints the entry as a complete public record and the missing item is absent from the entry itself rather than unread. The provision requires the creditor address only where available and this report does not state that it was unavailable, so an absent address on its own is not treated as established; the amount carries no such exception.',
+    request: 'please correct this judgment entry so that it states the information the recorded rule requires, or remove the entry'
+  },
+
   /* BATCH-9: the Alberta reporting-period rule (Credit and Personal Reports Regulation, Alta. Reg. 193/99,
      s. 4(b), under the Consumer Protection Act, R.S.A. 2000, c. C-26.3; source row CRP-LSRC-0339). The anchor
      is the TransUnion Canada tradeline's own printed Last Payment Date, which that reader maps to

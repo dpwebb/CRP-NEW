@@ -1395,6 +1395,56 @@
       "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official Manitoba publication (bilingual consolidation, most current version as of 5 Oct. 2026) and is recorded on ledger row CRP-LSRC-0377. Manitoba own wording is applied: creditor name, creditor address and judgment amount. The assignment alternative the Nova Scotia provision carries does NOT apply here and is not required, so the finding does not inherit it. The ceiling is a VIOLATION only where the entry is complete and a decisive content is VERIFIED_ABSENT; an unreadable or unresolved field is never treated as an omission. The finding is packet-eligible: the consumer chooses it, and the correction request travels the real packet path (BATCH-12).",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts"
+    },
+    {
+      "adapter_id": "CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION",
+      "legacy_rule_id": "pe.judgment_content.required",
+      "source_entry_id": "CRP-LSRC-0389",
+      "ledger_row_ids": [
+        "CRP-LSRC-0389"
+      ],
+      "citation": "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1974, Cap. C-18, s. 9(3)(d) — official consolidation current to 30 March 2026 (amended 2025, c.11; published under chapter C-20)",
+      "limb": "a consumer reporting agency shall not include in a consumer report information as to any judgment against the consumer unless mention is made of the name and where available, the address of the judgment creditor as given at the date of entry of the judgment and the amount",
+      "anchor_mode": "CONTENT_OMISSION",
+      "period_years": 0,
+      "record_kinds": [
+        "GENERAL_PUBLIC_RECORD"
+      ],
+      "applicability_rule": "JUDGMENT_PUBLIC_RECORD_PRESENT",
+      "applicability": {
+        "mode": "EXACT",
+        "country": "CA",
+        "region": "CA-PE"
+      },
+      "presentation_required": "GENERAL-BUREAU-REPORT",
+      "presentation_required_added_by": "BATCH-14 (2026-10-06): the judgment-content structure is carried by the authorized GENERAL-BUREAU-REPORT intake, which reads judgment public records. No PR-01 widening and no new bureau-family admission.",
+      "content_omission": {
+        "decisive_contents": [
+          "amount"
+        ],
+        "omitted_from": [
+          "amount"
+        ],
+        "assignment_alternative_applies": false,
+        "read_but_not_treated_as_an_omission": [
+          "creditor_name",
+          "creditor_address"
+        ],
+        "why": "the reader can establish the AMOUNT absence from a complete entry printing no amount caption and no dollar figure; an absent creditor NAME or ADDRESS caption cannot be told from an uncaptioned value, and the provision requires the address only \"where available\", so both are read and recorded and never claimed as omissions"
+      },
+      "output_permission": {
+        "max_conclusion": "violation",
+        "finding_allowed": true,
+        "packet_eligible": true
+      },
+      "exceptions": {
+        "recorded": true,
+        "basis": "the provision requires the judgment creditor address only \"where available\"; an absent address is recorded and is never decisive.",
+        "items": []
+      },
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Prince Edward Island consolidation (current to 30 March 2026, amended 2025, c.11) on the owner-accepted row CRP-LSRC-0389. The recorded chapter question is resolved by the consolidation itself: the Act cites R.S.P.E.I. 1974, Cap. C-18 for its historical revision and is published under chapter C-20. Only an established AMOUNT omission on a complete entry is decisive; packet-eligible so the consumer chooses it.",
+      "source_version": "A31229854E20E8A217D3D010B1C3EC9E3678E689BEFA52F8E8FA92D3D2B2558F",
+      "source_artifact": "https://www.princeedwardisland.ca/sites/default/files/legislation/C-20-Consumer%20Reporting%20Act.pdf"
     }
   ]
 }

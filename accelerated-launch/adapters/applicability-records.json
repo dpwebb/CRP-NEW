@@ -11,9 +11,9 @@
     "A recorded instrument that is guidance, not a statute, does not become a statute by being named in a relation."
   ],
   "inputs": {
-    "coverage_ledger": "e9bab51436e064e089d1cad171d75e6293d97ab9af1330f5e9cb6245a9066e15",
+    "coverage_ledger": "fd50c9ec8f21561161ebbb099d1717e12c08381563ba5552c66247a6144718f7",
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
-    "adapter_configs": "0eb99abbb76c0d70f59e2fff9d9f72378f2be7a69bb4bce583c1bc4b394bf022"
+    "adapter_configs": "27cbc9054554a5db02fb751c9aecd3f6f1f041729fe72441e98da6ed9c2dd4f5"
   },
   "counts": {
     "canonical_regions": 82,

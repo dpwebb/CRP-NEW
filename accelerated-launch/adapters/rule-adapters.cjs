@@ -90,7 +90,11 @@ const PACKET_ELIGIBLE_RULE_IDS = Object.freeze([
      own printed source, an unresolved or unreadable field never reaching a finding — and its issue-specific
      source facts, uncertainty (the Family Support Enforcement address exception) and correction request are
      recorded in service/issues.cjs. */
-  'CA-MB-PIA-S4-E-JUDGMENT-CONTENT-OMISSION'
+    'CA-MB-PIA-S4-E-JUDGMENT-CONTENT-OMISSION',
+  /* BATCH-14: Prince Edward Island s.9(3)(d). Available only where a COMPLETE judgment entry establishes
+     that the amount is absent — never on an unresolved or unreadable field — with its issue-specific source
+     facts, uncertainty and correction request recorded in service/issues.cjs. */
+  'CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION'
 ]);
 const PACKET_ELIGIBLE_RULE_ID_SET = new Set(PACKET_ELIGIBLE_RULE_IDS);
 

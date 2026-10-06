@@ -170,7 +170,9 @@ const SECTION_FILES = [
   /* BATCH-10 — Alberta s.4(b) debt reporting period through the complete packet path. */
   'ch-ca-ab-debt-six-year.cjs',
   /* BATCH-12 — Manitoba s.4(e) judgment-content omission through the complete packet path. */
-  'ci-ca-mb-judgment-content.cjs'];
+  'ci-ca-mb-judgment-content.cjs',
+  /* BATCH-14 — Prince Edward Island s.9(3)(d) judgment-content omission through the complete packet path. */
+  'cj-ca-pe-judgment-content.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

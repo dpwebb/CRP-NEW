@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T02:14:54.239Z",
+  "generated_at": "2026-10-06T02:36:47.737Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 51,
-      "digest": "55448293CD5FE3DCC61705777B84033E1ADD8A5583B8AFE26253B84B3319AED3",
+      "digest": "2A11511EE63D192B595A39F4B86B39447C7EC1A29D721760BC87AA33D0DC5546",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -135,7 +135,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "78E298B66303DC7EDDB96487BDAD320C2131DA58A7958C21A68F87488C9C0BBF"
+          "sha256": "46DFBB2BF36F8F0EF47C59D10B4FA3F3995B8ED12A27A29BC9A14B36B1C235A2"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -261,15 +261,15 @@
     {
       "id": "RULE_CONFIGURATION",
       "file_count": 7,
-      "digest": "41590739A8426A74A1840477C9E31BE5AED95960D55BB7F3E238BE561D112B98",
+      "digest": "D8AC6362CFAD2E231FF11632D61782504C722B7F3F1FF6F8E8ED8A2E3CB4BE51",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
-          "sha256": "0EB99ABBB76C0D70F59E2FFF9D9F72378F2BE7A69BB4BCE583C1BC4B394BF022"
+          "sha256": "27CBC9054554A5DB02FB751C9AECD3F6F1F041729FE72441E98DA6ED9C2DD4F5"
         },
         {
           "file": "accelerated-launch/adapters/applicability-records.json",
-          "sha256": "88AB83B28DDD294D55DDC59117D934E470CD21BD39CAB6BD41C444689E2F2611"
+          "sha256": "19A738789355DD824461590D6800D845203C163AA893378D8624C9B7183B0AAE"
         },
         {
           "file": "accelerated-launch/adapters/evaluation-primitives.cjs",
@@ -281,22 +281,22 @@
         },
         {
           "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
-          "sha256": "C3CC6E5CA39AA30C02CC23276F9F0264A57E23370BE71340641DF5B63E964AC6"
+          "sha256": "3918E36693C74110A4261241E58C8D1FF831C161DF87C2C99269F70D5B642C1C"
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
-          "sha256": "DD630B41DCC5B01905496CDD242B6C4E44A9CF43FC8C31448D80C2E38AE52214"
+          "sha256": "7FE3AB703C93195F58F456D4A5ED56AC916F2A592ABE0D039C66E9FBA2A9FA56"
         },
         {
           "file": "accelerated-launch/adapters/test-adapters.cjs",
-          "sha256": "BFDD7D48E9EEEBD02F1E71CC47FE79293794FB7579BADEF80A4A7A31BDA30013"
+          "sha256": "0F2F6FC625A875F03966E4E48E8271A4CD0A53ADB1A9284306EBD9372CD0B32A"
         }
       ]
     },
     {
       "id": "RULE_CONFIGURATION_TOP_LEVEL",
       "file_count": 9,
-      "digest": "BA7C10B5941AAF38A533D58DE86699C4CD0FA4C45E76B993A7FBA4C6BB019CF0",
+      "digest": "3F25D1274FC9022FFB68586E34E615B3CC888A3B9FBDC365787B0412896E08A1",
       "files": [
         {
           "file": "accelerated-launch/benchmark-ingestion.cjs",
@@ -316,7 +316,7 @@
         },
         {
           "file": "accelerated-launch/launch-matrix.json",
-          "sha256": "449B60DBED4CF458DCF3968731E246429997212E17FAF53158DE5B73F392F1DC"
+          "sha256": "E8080273BC150F57771206008F4AB1552BF016BA2B76AF6238B1F334F6CB3826"
         },
         {
           "file": "accelerated-launch/reported-fact-policy.approval.json",
@@ -360,6 +360,6 @@
       ]
     }
   ],
-  "manifest_digest": "6C3EC8B12B8E5C200718EDDE45FA209442ABE68BE6C782107560E0CC568E7049",
+  "manifest_digest": "F916F5DA938DB0A1CC39C4543F92D86EA9501315C2460C600F7DAC290DD98F35",
   "total_file_count": 80
 }

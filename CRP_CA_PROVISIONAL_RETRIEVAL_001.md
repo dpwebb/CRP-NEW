@@ -140,7 +140,7 @@ The ledger's FCAC row records the **owner-supplied statutory bases** for the pro
 
 **Measured method.** Official-source retrieval attempted with a browser user-agent from this build environment; where a PDF was obtained it was converted with `pdftotext` 25.12.0 and searched as text. Nothing was inferred from a search snippet, and no provision text was reconstructed from memory. Nothing was downloaded into source control (`*.pdf` is ignored by the repository), and no consumer data or private report was transmitted.
 
-### 7.1 VERIFIED NEGATIVE — Northwest Territories (CA-NT): there is no territorial credit-reporting statute
+### 7.1 CA-NT — no credit-reporting wording found in the examined Consumer Protection Act; the broader authority search remains RESOLVED-OPEN
 
 | Measurement | Value |
 | --- | --- |
@@ -150,14 +150,14 @@ The ledger's FCAC row records the **owner-supplied statutory bases** for the pro
 | Occurrences of "credit report" / "consumer report" (case-insensitive) | **0** |
 | Occurrences of "credit" overall | non-zero, in consumer-transaction senses (credit agreements/cards), i.e. the text is genuine and simply contains no consumer-report provisions |
 
-**Consequence.** The corpus row's *"Consumers Protection Act or Consumer Protection Act"* is **not** a credit-reporting authority for CA-NT. The applicable authority for consumer reports in the territories remains the **federal** instrument (PIPEDA), which the frozen ledger already records as `UNRESOLVED_RELATION_NOT_ESTABLISHED`, `provision_or_citation: NOT RECORDED`. **No rule may be created for CA-NT from the territorial Consumer Protection Act**, and the earlier "unattempted" state is now a measured negative rather than an assumption.
+**Corrected reading (owner-directed).** This is a measurement of ONE examined instrument, not a finding that no territorial authority exists: the text examined contains no credit-reporting wording, so **no rule may be created from the territorial Consumer Protection Act**, and the broader question — which instrument governs consumer reports in CA-NT — **remains unresolved**. It does not, on its own, establish that no other N.W.T. instrument applies, and the federal PIPEDA relation is investigated on its own terms in §8.3 rather than assumed to fill the gap.
 
 ### 7.2 NOT REACHABLE — Nunavut (CA-NU) and Yukon (CA-YT)
 
 * **CA-NU** — `https://www.gov.nu.ca/…` returned **404** for both candidate Act paths, and `https://www.gov.nu.ca/en/legislation` returned **HTTP 403**.
 * **CA-YT** — `laws.yukon.ca` returned **HTTP 403** for the principal-Act PDF (`2002-0040_1.pdf`, with and without a browser user-agent), an alternative consolidated-path guess returned **404**, and `canlii.org` returned **403**.
 
-**Concrete missing prerequisite (recorded once):** a retrieval route to these two publishers' texts — a browser-rendered session or an accessible official mirror. The territories' authority question therefore stays **open, not assumed**, which §7.1 shows was the right posture.
+**Concrete missing prerequisite (recorded once):** a retrieval route to these two publishers' texts — a browser-rendered session or an accessible official mirror. These are **source-access failures, not exhausted authority routes**: neither publisher was read, so nothing about their instruments is established either way.
 
 ### 7.3 British Columbia (CA-BC) — the recorded trigger gap is structural for the WHOLE content list
 
@@ -184,6 +184,6 @@ Round 2 retrieved BC BPCPA s.109(1) verbatim (items (k)–(p)). Round 3 adds the
 
 ### 7.5 What round 3 hands to the next batch (measured, not assumed)
 
-A printed **judgment entry date** already flows to `publicRecord.judgmentEntryDate`, and an existing admitted rule already anchors on a printed public-record date (US-NY-GBL-380J-F1-II-JUDGMENT-5Y — 5 years). So as soon as a provincial provision whose rule counts years **from the date of entry of the judgment** is retrieved **with its own words**, its implementation reuses an existing mechanism (adapter + issue + tested packet journey) rather than new infrastructure. Several provincial credit-reporting Acts carry exactly that rule (NS s.10(3)(d), MB s.4(e)); **NB s.13 is the next candidate to check when its text becomes obtainable** — recorded here as a hypothesis to test, never as a fact to implement.
+A printed **judgment entry date** already flows to `publicRecord.judgmentEntryDate`, and an existing admitted rule anchors on a printed public-record date (US-NY-GBL-380J-F1-II-JUDGMENT-5Y). So a provision anchored on a printed public-record date implements without new infrastructure. **Correction (owner-directed):** the delivered provincial limbs that reuse infrastructure are **content** requirements, not retention timing — NS s.10(3)(d) and **MB s.4(e) are judgment-CONTENT requirements** (creditor name, address, amount), which is why the content-omission machinery rather than a period comparison carries them. Retention-timing provisions such as NB's former s.10(3)(g)/the 2024 CPA s.254(3)(h) ("more than six years after the judgment was given") anchor on a legal-event date the report does not print, so they stay unimplemented.
 
 
