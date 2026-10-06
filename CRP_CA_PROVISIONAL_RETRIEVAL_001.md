@@ -186,4 +186,30 @@ Round 2 retrieved BC BPCPA s.109(1) verbatim (items (k)–(p)). Round 3 adds the
 
 A printed **judgment entry date** already flows to `publicRecord.judgmentEntryDate`, and an existing admitted rule anchors on a printed public-record date (US-NY-GBL-380J-F1-II-JUDGMENT-5Y). So a provision anchored on a printed public-record date implements without new infrastructure. **Correction (owner-directed):** the delivered provincial limbs that reuse infrastructure are **content** requirements, not retention timing — NS s.10(3)(d) and **MB s.4(e) are judgment-CONTENT requirements** (creditor name, address, amount), which is why the content-omission machinery rather than a period comparison carries them. Retention-timing provisions such as NB's former s.10(3)(g)/the 2024 CPA s.254(3)(h) ("more than six years after the judgment was given") anchor on a legal-event date the report does not print, so they stay unimplemented.
 
+## 8. Round 4 (BATCH-14) — alternate official routes, applicability verified, PEI delivered
+
+**Method.** Official leads with URL-encoded chapter references; located documents read as text (`pdftotext`; HTML stripped for the N.B. consolidations); **applicability verified before implementing** — a located document does not by itself establish commencement or supersession.
+
+### 8.1 DELIVERED — Prince Edward Island, s. 9(3)(d)
+
+* **Citation resolved.** The official consolidation (`/legislation/C-20-Consumer%20Reporting%20Act.pdf`) is the **Consumer Reporting Act**: its own text cites **R.S.P.E.I. 1974, Cap. C-18** (transfer provision, as amended by **2025, c.11**) and the current publication files it under **chapter C-20**. Row `CRP-LSRC-0389` now records `s. 9(3)(d) and s. 9(3)(j)`, the prior value kept in `provision_or_citation_history`; artifact sha256 `A31229854E20E8A217D3D010B1C3EC9E3678E689BEFA52F8E8FA92D3D2B2558F`; 437 rows preserved (a row UPDATE).
+* **Applicability:** consolidation **current to 30 March 2026** with 2025 amendments — operating law; no commencement or supersession gap.
+* **Verbatim, s. 9(3):** "A consumer reporting agency shall not include in a consumer report ... (d) information as to any judgment against the consumer unless mention is made of the name and where available, the address of the judgment creditor as given at the date of entry of the judgment and the amount".
+* **Delivered:** `CA-PE-CRA-S9-3-D-JUDGMENT-CONTENT-OMISSION` reuses the content-omission machinery — a complete entry printing no amount caption and no dollar figure is an omitted amount → **VIOLATION → correction request** → selectable → reviewed correspondence → approval → entitled download, with complete, printed-zero, missing-name, missing-address (recorded and never claimed: the address is required only "where available"), blank-caption, untrusted, out-of-province, unpaid-402, stranger-403 and stale-approval controls (`cj-ca-pe-judgment-content`, 40 assertions). Counters: statutory **74 → 75**, none **8 → 7**, packet-eligible **9 → 10**.
+* **Next limb already retrieved:** **s. 9(3)(j)** dismissed / set aside / not proceeded charges — a direct match to the delivered dismissed-charge mechanism. s. 9(3)(c) and (k) anchor on legal-event dates the report does not print.
+
+### 8.2 SUPERSESSION FOUND — New Brunswick
+
+* `laws.gnb.ca/en/document/cs/2017%2C%20c.27` = **Credit Reporting Services Act, S.N.B. 2017, c. 27** (s.10(3)(f) judgment content; s.10(3)(c) dismissed/set aside/withdrawn charges) — **the wrong instrument**: the **Consumer Protection Act, S.N.B. 2024, c. 1** provides at s.366(9) "Despite the repeal of the Credit Reporting Services Act, chapter 27 of the Acts of New Brunswick, 2017 ...". The current instrument carries the equivalents at **s.254(3)(d)** (dismissed, set aside, withdrawn, or absolute/conditional discharge), **s.254(3)(g)** (judgment content: creditor name, address where available, amount) and **s.254(3)(h)** (more than six years after the judgment was given).
+* **One prerequisite recorded (not an owner request):** the consolidation gives a currency date only (7 June 2024) and s.366(8)–(9) speak of "the commencement of this section", so **commencement of the 2024 CPA credit-reporting Part must be confirmed**. Nothing is bound to the repealed or to the uncommenced provisions.
+
+### 8.3 PIPEDA — investigated
+
+Measured against the official consolidation (S.C. 2000, c. 5, current to 2026-09-21): PIPEDA contains **no credit-reporting content rule and no credit-information retention period** (no credit-report/credit-bureau division; the only comparable limit is the s.7(3)(h) archival exception). It therefore cannot supply a "shall not report X" rule for any region and is **not** recorded as a substitute for provincial instruments. **One bounded internal question remains:** whether Schedule 1 accuracy clause 4.6 applies to a private-sector bureau in a territory where no substantially similar provincial statute exists — the next applicability step, not a request to establish the relation.
+
+### 8.4 Saskatchewan — access failure, not an exhausted route
+
+The current Publications Centre (`publications.saskatchewan.ca`) was used instead of the retired `qp.gov.sk.ca`: the root returns an application shell (1,215 bytes), the product API times out or returns 400, and no text was obtained. `The Credit Reporting Act, S.S. 2004, c. C-43.2, s. 18` (row `CRP-LSRC-0392`) **remains unread**; the prerequisite is a route to the current Publications Centre product.
+
+
 
