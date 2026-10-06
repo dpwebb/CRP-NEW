@@ -30,7 +30,7 @@ Do not complete three separate systems and integrate them at the end. Each reusa
 
 ## One writer and one remaining-work register
 
-Cline is the implementation writer; Codex reviews the result and maintains owner directives. Do not concurrently edit implementation files or start a competing batch. Apply this amendment at the next safe boundary of an in-flight batch, retaining its completed work. The owner pastes Cline results; no automatic monitoring, background work or cross-chat messaging is implied.
+Owner takeover amendment, October 6, 2026: Codex is the sole implementation writer and handles implementation, verification and owner reporting. Cline is stopped. Preserve its completed and uncommitted work at handover; no concurrent implementation edits. This amendment supersedes earlier Cline-writer and architect-handoff assignments across the build directives. The existing scope, single remaining-work register and release safeguards remain authoritative. No automatic monitoring, background work or cross-chat messaging is implied.
 
 Use CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md as the sole current scheduling/remaining-work list. Existing acceptance, coverage and legal records remain evidence, not competing queues. Every active task names a version 1 consumer outcome, exact defect, required fix, completion evidence and status. Reuse existing blocker IDs; this schedule creates no extra feature requirement or duplicated missing-functionality count.
 

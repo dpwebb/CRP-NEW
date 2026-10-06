@@ -645,11 +645,15 @@ function describeWording(issue) {
     uncertainty: 'A factual inconsistency in the report. It is not, by itself, an established legal violation.',
     request: 'please verify and correct this entry'
   };
+  /* OWNER Batch 33 correction: a policy entry may state its uncertainty or its request as a FUNCTION of the issue
+     (as the limitation and later-expiry entries do). Resolving it here, exactly as `explain` is always resolved,
+     keeps the rule-specific wording on the card instead of leaving an unserialisable function in its place. */
+  const resolvePolicyValue = (value) => (typeof value === 'function' ? value(issue) : value);
   return {
     explanation: policy.explain(issue),
-    uncertainty: policy.uncertainty,
+    uncertainty: resolvePolicyValue(policy.uncertainty),
     request_type: REQUEST_TYPE.VERIFICATION,
-    request_wording: policy.request
+    request_wording: resolvePolicyValue(policy.request)
   };
 }
 

@@ -493,3 +493,15 @@ States: `ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT` (the historical finding is pr
 | Internal build identity | `crp-v1-' + $m.manifest_digest.Substring(0,16).ToLower() + '` |
 | Covered surface | **' + $m.total_file_count + ' files** |
 | Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing, no correspondence, no private report transmitted |
+
+## Batch 34 — owner-authorized Codex takeover and completed uncertainty delivery (October 6, 2026)
+
+Owner authorization: Cline is stopped; Codex is the sole implementation writer. This supersedes earlier writer/handoff assignments. Existing Version 1 scope, October 11 target, all 82 jurisdictions, purchase permissions and release safeguards remain unchanged.
+
+Handover baseline: d77a6f4, with one uncommitted issues.cjs correction left by Cline. Preserved, inspected and validated that correction. The defect was function-valued policy uncertainty being passed through without evaluation and lost in JSON serialization. The common wording projection now evaluates function-valued uncertainty and request wording against the current issue, as it already does for the explanation. Consumer wording retains the specific current-file question and applicable exception uncertainty; no new classification or certainty gate was added.
+
+Implementation: IMPLEMENTED_AND_TESTED. Focused cu/e/g/ct/cs: 248 passed, zero failed/skipped. Full regression: 5846 passed, zero failed/skipped; real-browser Wizzard 80/80; real TransUnion specimen 62/62; dual-date section 36/36; 17/17 closure records regenerated from the same run. Historical source-audit lane was not run; no legal source changed.
+
+Current local candidate: crp-v1-927e4a6a4f122e74; manifest 927E4A6A4F122E744C6A52D633F4DC33259E6F65A13998B55C510AA119B73168; 84 shipped files. Not pushed or deployed. This entry supersedes the Batch 33 remaining-uncertainty defect and its red regression status. Earlier entries remain historical. Staging verification and production readiness remain separate.
+
+Next existing core work: complete supported jurisdiction-specific limitation parameters beyond Nova Scotia and broader reader-backed payment-history analysis; preserve the connected upload-to-issue-to-selected-packet path and do not represent the all-82 clock as all-82 limitation-law coverage. Deployment remains paused pending review of the completed candidate; no live billing or private-report egress.
