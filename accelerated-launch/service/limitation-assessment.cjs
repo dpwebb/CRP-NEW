@@ -29,6 +29,29 @@
 const CHECK_ID = 'LIMITATION-PERIOD-COURT-CLAIM';
 const CHECK_CLASS = 'LIMITATION_ASSESSMENT';
 
+const ENGLAND_WALES_SIMPLE_CONTRACT = Object.freeze({
+  country_code: 'GB', basic_period_years: 6, ultimate_period_years: null,
+  start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+  citation: 'Limitation Act 1980 (England and Wales), ss. 5-6, 29(5)-(7), 30',
+  source_capture: 'CRP_GAP_REFUSAL_RESOLUTION_REGISTER.md (CRP-LSRC-0412 exact England/Wales extent)',
+  source_url: 'https://www.legislation.gov.uk/ukpga/1980/58',
+  operative_words: 'an action founded on simple contract shall not be brought after ... six years from the date on which the cause of action accrued',
+  discovery_words: null,
+  acknowledgment: Object.freeze({
+    restarts_the_period: true,
+    citation: 'Limitation Act 1980, ss. 29(5)-(7), 30',
+    words: 'qualifying acknowledgment or payment may cause fresh accrual while time remains; acknowledgment must be in writing and signed; a barred claim is not revived'
+  }),
+  transitional_note: 's. 6 has a special rule for certain loans; the report does not establish loan terms or a written demand',
+  uncertainty_since_report: 'A qualifying acknowledgment or payment before the claim was barred may affect the time for an action. A court claim or judgment may already exist, or the report entry may have changed since it was issued.',
+  unknown_conditions_plain: [
+    'whether the claim is founded on simple contract and when it accrued',
+    'whether the special loan and written-demand rule in section 6 applies',
+    'whether a qualifying acknowledgment or payment affected a period that had not yet expired',
+    'whether a court claim, judgment or another applicable rule changes the result'
+  ]
+});
+
 /**
  * The recorded parameter sets. `operative_words` is quoted from the captured official text; a set is enabled
  * only when the period, the statutory start and the acknowledgment rule are all read from that text.
@@ -111,6 +134,146 @@ const PARAMETERS = Object.freeze({
       'whether a court proceeding or judgment already exists',
       'whether another applicable period, exception, suspension or transition changes the result'
     ]
+  }),
+  'CA-BC': Object.freeze({
+    country_code: 'CA', region_code: 'CA-BC', jurisdiction_label: 'British Columbia',
+    basic_period_years: 2, ultimate_period_years: 15,
+    start_is: 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation Act, S.B.C. 2012, c. 13, ss. 6, 8, 14, 21, 24',
+    source_capture: 'BC Laws current consolidation (source_url)',
+    source_url: 'https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/00_12013_01',
+    operative_words: 'a court proceeding in respect of a claim must not be commenced more than 2 years after the day on which the claim is discovered',
+    discovery_words: 's. 8: the claimant knew or reasonably ought to have known the loss, its cause, the person responsible and that a court proceeding was appropriate; s. 14 has a demand-obligation rule',
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation Act, S.B.C. 2012, c. 13, s. 24(1), (6)-(7)',
+      words: 'before expiry, qualifying written signed acknowledgment moves the discovery date; part payment of a liquidated sum is an acknowledgment'
+    }),
+    transitional_note: 's. 30 may apply to claims based on acts or omissions before the Act took effect; the report does not establish its application',
+    uncertainty_since_report: 'A qualifying written acknowledgment or part payment before expiry may affect the period. A proceeding or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when the claimant knew or reasonably ought to have known the claim and that a court proceeding was appropriate',
+      'whether this was a demand obligation, and when a demand and failure to perform occurred',
+      'whether a qualifying written acknowledgment or part payment occurred before expiry',
+      'whether a proceeding, judgment, suspension or transition changes the result'
+    ]
+  }),
+  'CA-NT': Object.freeze({
+    country_code: 'CA', region_code: 'CA-NT', jurisdiction_label: 'Northwest Territories',
+    basic_period_years: 6, ultimate_period_years: null,
+    start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation of Actions Act, R.S.N.W.T. 1988, c. L-8, ss. 2(1)(f), 6',
+    source_capture: 'SOURCE_CAPTURES/PHASE5-001G/NWT-limitation-of-actions.txt',
+    source_url: 'https://www.justice.gov.nt.ca/en/files/legislation/limitation-of-actions/limitation-of-actions.a.pdf',
+    operative_words: 'actions for the recovery of money ... within six years after the cause of action arose',
+    discovery_words: null,
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation of Actions Act, R.S.N.W.T. 1988, c. L-8, s. 6(1)-(2)',
+      words: 'a qualifying signed written promise or acknowledgment, or part payment of principal or interest, allows an action within six years afterward even if it would otherwise have been barred'
+    }),
+    transitional_note: 'the report does not establish whether another Act, disability or private-international-law rule changes the applicable period',
+    uncertainty_since_report: 'A qualifying signed promise, written acknowledgment or part payment may affect the time for a court action, including after an earlier period ended. An action or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when the cause of action to recover this money arose',
+      'whether a qualifying signed promise, written acknowledgment or part payment occurred',
+      'whether a court action or judgment already exists',
+      'whether another Act, disability or applicable-law rule changes the result'
+    ]
+  }),
+  'CA-NU': Object.freeze({
+    country_code: 'CA', region_code: 'CA-NU', jurisdiction_label: 'Nunavut',
+    basic_period_years: 6, ultimate_period_years: null,
+    start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation of Actions Act, C.S.Nu. c. L-110, ss. 2(1)(f), 2(2), 6',
+    source_capture: 'Official Nunavut consolidation, current to November 8, 2022 (source_url)',
+    source_url: 'https://www.nunavutlegislation.ca/en/file-download/download/public/7408',
+    operative_words: 'actions for the recovery of money ... within six years after the cause of action arose',
+    discovery_words: null,
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation of Actions Act, C.S.Nu. c. L-110, s. 6(1)-(2)',
+      words: 'a qualifying signed written promise or acknowledgment, or part payment of principal or interest, allows an action within six years afterward even if it would otherwise have been barred'
+    }),
+    transitional_note: 's. 2(2) leaves specially limited claims to their own Act; the report does not establish another applicable period or disability',
+    uncertainty_since_report: 'A qualifying signed promise, written acknowledgment or part payment may affect the time for a court action, including after an earlier period ended. An action or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when the cause of action to recover this money arose',
+      'whether a qualifying signed promise, written acknowledgment or part payment occurred',
+      'whether a court action or judgment already exists',
+      'whether another Act or disability changes the result'
+    ]
+  }),
+  'AU-ACT': Object.freeze({
+    country_code: 'AU', region_code: 'AU-ACT', jurisdiction_label: 'Australian Capital Territory',
+    basic_period_years: 6, ultimate_period_years: null,
+    start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation Act 1985 (ACT), ss. 11(1), 32(1)-(4)',
+    source_capture: 'SOURCE_CAPTURES/PHASE5-001G/ACT-limitation-act-1985-r-current.txt',
+    source_url: 'https://www.legislation.act.gov.au/a/1985-66',
+    operative_words: 'an action on any cause of action is not maintainable if brought after ... 6 years running from the date when the cause of action first accrues',
+    discovery_words: null,
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation Act 1985 (ACT), s. 32(1)-(4)',
+      words: 'confirmation before the end of the limitation period excludes earlier running time; acknowledgment is written and signed, and qualifying payment may confirm the cause of action'
+    }),
+    transitional_note: 'another limitation period, a deed, judgment, postponement or other exception may change the applicable rule; the report does not establish those facts',
+    uncertainty_since_report: 'A qualifying confirmation or payment may affect the time for an action. An action or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'when this particular cause of action first accrued',
+      'whether a different period applies to the instrument or claim',
+      'whether a qualifying acknowledgment or payment confirmed it before the period ended',
+      'whether an action, judgment, postponement or other exception changes the result'
+    ]
+  }),
+  'AU-QLD': Object.freeze({
+    country_code: 'AU', region_code: 'AU-QLD', jurisdiction_label: 'Queensland',
+    basic_period_years: 6, ultimate_period_years: null,
+    start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation of Actions Act 1974 (Qld), ss. 10(1)(a), 35(3), 36',
+    source_capture: 'SOURCE_CAPTURES/PHASE5-001G/QLD-limitation-of-actions-act-1974.txt',
+    source_url: 'https://www.legislation.qld.gov.au/view/whole/pdf/inforce/current/act-1974-075',
+    operative_words: 'an action founded on simple contract ... shall not be brought after the expiration of 6 years from the date on which the cause of action arose',
+    discovery_words: null,
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation of Actions Act 1974 (Qld), ss. 35(3), 36',
+      words: 'acknowledgment or payment in respect of a debt may cause fresh accrual; acknowledgment must be in writing and signed'
+    }),
+    transitional_note: 'the report does not establish whether the claim is founded on simple contract or whether another period or exception applies',
+    uncertainty_since_report: 'A qualifying acknowledgment or payment may affect the time for an action. An action or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'whether the claim is founded on simple contract and when the cause of action arose',
+      'whether a different period applies to the instrument or claim',
+      'whether a qualifying acknowledgment or payment caused fresh accrual',
+      'whether an action, judgment or exception changes the result'
+    ]
+  }),
+  'GB-ENG': Object.freeze({ ...ENGLAND_WALES_SIMPLE_CONTRACT, region_code: 'GB-ENG', jurisdiction_label: 'England' }),
+  'GB-WLS': Object.freeze({ ...ENGLAND_WALES_SIMPLE_CONTRACT, region_code: 'GB-WLS', jurisdiction_label: 'Wales' }),
+  'GB-NIR': Object.freeze({
+    country_code: 'GB', region_code: 'GB-NIR', jurisdiction_label: 'Northern Ireland',
+    basic_period_years: 6, ultimate_period_years: null,
+    start_is: 'ACCRUAL_OF_CAUSE_OF_ACTION_NOT_ESTABLISHED_BY_REPORT_DATE',
+    citation: 'Limitation (Northern Ireland) Order 1989, arts. 4(a), 5, 57, 59, 65, 67',
+    source_capture: 'CRP_GAP_REFUSAL_RESOLUTION_REGISTER.md (CRP-LSRC-0412 exact Northern Ireland extent)',
+    source_url: 'https://www.legislation.gov.uk/nisi/1989/1339',
+    operative_words: 'an action founded on simple contract may not be brought after six years from the date on which the cause of action accrued',
+    discovery_words: null,
+    acknowledgment: Object.freeze({
+      restarts_the_period: true,
+      citation: 'Limitation (Northern Ireland) Order 1989, arts. 57, 59, 65, 67',
+      words: 'qualifying acknowledgment or payment may cause fresh accrual while the period remains current; acknowledgment is written and signed; a barred action is not revived'
+    }),
+    transitional_note: 'article 5 has a special rule for certain loans; the report does not establish the loan terms or any demand',
+    uncertainty_since_report: 'A qualifying acknowledgment or payment before the action was barred may affect the period. An action or judgment may already exist, or the report entry may have changed since it was issued.',
+    unknown_conditions_plain: [
+      'whether the claim is founded on simple contract and when it accrued',
+      'whether the special loan rule in article 5 applies',
+      'whether a qualifying acknowledgment or payment affected a period that had not yet expired',
+      'whether an action, judgment or another applicable rule changes the result'
+    ]
   })
 });
 
@@ -140,7 +303,9 @@ function labelledDates(record) {
   const out = [];
   const add = (label, factKey, printedLabel, basis) => {
     const fromFact = typeof facts[factKey] === 'string' ? facts[factKey] : null;
-    const reading = printedLabel ? printed[printedLabel] : null;
+    const reading = printedLabel ? printed[printedLabel]
+      : (factKey === 'overdue.originalListingDate' && record && record.kind === 'OVERDUE_ACCOUNT'
+        ? { raw: record.raw_value, normalized: record.normalized_value, location: record.location } : null);
     const iso = fromFact || (reading && reading.normalized) || null;
     if (!iso) return;
     out.push({
@@ -157,6 +322,15 @@ function labelledDates(record) {
   add('Date Assigned', 'collection.assignedDate', 'Date Assigned', START_DATE_BASIS.COLLECTION_OR_CHARGE_OFF_ACTION);
   add('Charge Off Date', 'tradeline.chargeOffDate', 'Charge Off Date', START_DATE_BASIS.COLLECTION_OR_CHARGE_OFF_ACTION);
   add('Original listing', 'overdue.originalListingDate', null, START_DATE_BASIS.ORIGINAL_LISTING);
+  if (record && record.kind === 'GB_CREDIT_ACCOUNT') {
+    const defaulted = printed.Defaulted;
+    if (defaulted && defaulted.normalized) out.push({
+      label: 'Defaulted', iso: defaulted.normalized,
+      basis: 'the default date this credit account prints; legal accrual may have occurred on another date',
+      printed_value: defaulted.raw || defaulted.normalized,
+      location: defaulted.location || null, source: 'printed reading'
+    });
+  }
   add('Adverse rating month', 'reportedAccount.adverseRatingDate', null, START_DATE_BASIS.ADVERSE_RATING);
   add('Last Payment Date', 'tradeline.lastPaymentDate', 'Last Payment Date', START_DATE_BASIS.LAST_PAYMENT);
   return out.sort((a, b) => (a.iso < b.iso ? -1 : a.iso > b.iso ? 1 : 0));
@@ -223,6 +397,14 @@ function adverseDebtView(record) {
   if (pastDue !== null && pastDue > 0) indicators.push({ kind: 'PRINTED_AMOUNT_PAST_DUE', amount: pastDue });
   if (typeof facts['account.status'] === 'string' && /collection|charge|write|default|delinquent/i.test(facts['account.status'])) {
     indicators.push({ kind: 'PRINTED_STATUS', value: facts['account.status'] });
+  }
+  if (record && record.kind === 'OVERDUE_ACCOUNT' && record.section_path === 'Overdue Accounts'
+    && typeof facts['overdue.originalListingDate'] === 'string') {
+    indicators.push({ kind: 'PRINTED_OVERDUE_ACCOUNT_LISTING', amount: typeof facts['overdue.amount'] === 'number' ? facts['overdue.amount'] : null });
+  }
+  if (record && record.kind === 'GB_CREDIT_ACCOUNT' && record.printed && record.printed.Defaulted
+    && record.printed.Defaulted.normalized) {
+    indicators.push({ kind: 'PRINTED_DEFAULTED_DATE', value: record.printed.Defaulted.raw || record.printed.Defaulted.normalized });
   }
   return {
     is_adverse_debt: indicators.length > 0,
@@ -350,11 +532,11 @@ function assessRecord(record, params, clock) {
       role: 'HISTORICAL_COMPARISON_AT_THE_REPORT_DATE_NOT_THE_OPERATIVE_ASSESSMENT'
     } : null,
     start_date: Object.assign({}, latest, {
-      basis: params.start_is === 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE'
-        ? `report-printed screening reference only; ${params.jurisdiction_label} legal discovery is not established by this date`
+      basis: params.start_is.endsWith('_NOT_ESTABLISHED_BY_REPORT_DATE')
+        ? `report-printed screening reference only; ${params.jurisdiction_label} ${params.start_is.startsWith('DISCOVERY') ? 'legal discovery' : 'cause-of-action accrual'} is not established by this date`
         : latest.basis,
-      selection_rule: params.start_is === 'DISCOVERY_OF_THE_CLAIM_NOT_ESTABLISHED_BY_REPORT_DATE'
-        ? 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_DISCOVERY'
+      selection_rule: params.start_is.endsWith('_NOT_ESTABLISHED_BY_REPORT_DATE')
+        ? (params.start_is.startsWith('DISCOVERY') ? 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_DISCOVERY' : 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_ACCRUAL')
         : 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM'
     }),
     other_printed_dates: dates.slice(0, -1).map((d) => ({ label: d.label, iso: d.iso, basis: d.basis, location: d.location })),

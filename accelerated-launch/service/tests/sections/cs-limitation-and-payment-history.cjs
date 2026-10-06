@@ -136,7 +136,36 @@ function runLimitationControls(check, evidence) {
   check.equal(ab.performed.length, 0, 'a jurisdiction without accepted parameters produces no assessment');
   check.equal(ab.withheld[0].reason, 'NO_RECORDED_LIMITATION_PARAMETERS', 'and records exactly what is missing');
   check.ok(/limitation statute for CA-AB/.test(ab.withheld[0].missing_prerequisite), 'naming the jurisdiction and the element it lacks');
-  check.deepEqual(ab.recorded_jurisdictions, ['CA-MB', 'CA-NS', 'CA-ON'], 'the parameter set records each supported exact jurisdiction');
+  check.deepEqual(ab.recorded_jurisdictions, ['AU-ACT', 'AU-QLD', 'CA-BC', 'CA-MB', 'CA-NS', 'CA-NT', 'CA-NU', 'CA-ON', 'GB-ENG', 'GB-NIR', 'GB-WLS'],
+    'the parameter set records only supported exact jurisdictions');
+  const bc = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-BC', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
+  check.equal(bc.summary.may_be_outside, 1, 'British Columbia old adverse entry opens a qualified verification concern');
+  check.ok(/NOT_LEGAL_DISCOVERY/.test(bc.performed[0].start_date.selection_rule), 'the printed date does not establish BC discovery');
+  check.ok(/demand obligation/.test(bc.performed[0].unknown_conditions.join(' ')), 'BC demand timing remains unresolved');
+  const bcBoundary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-BC', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 10, 2024' })]) });
+  check.equal(bcBoundary.summary.may_be_outside, 0, 'the BC anniversary does not trigger a concern');
+  const bcBenign = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-BC', assessment_clock: clockAt('2026-01-10'),
+    extraction: extractionOf([satisfactoryBlock()]) });
+  check.equal(bcBenign.performed.length, 0, 'a satisfactory BC account is not assessed as adverse');
+  const nt = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NT', assessment_clock: clockAt('2026-10-06'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Oct 05, 2020' })]) });
+  check.equal(nt.summary.may_be_outside, 1, 'Northwest Territories old adverse debt opens a qualified verification concern');
+  check.ok(/NOT_LEGAL_ACCRUAL/.test(nt.performed[0].start_date.selection_rule), 'the printed date does not prove accrual');
+  check.ok(/even if it would otherwise have been barred/.test(nt.performed[0].acknowledgment_rule.words),
+    'the territory-specific later acknowledgment or payment rule is preserved');
+  const ntBoundary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NT', assessment_clock: clockAt('2026-10-06'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Oct 06, 2020' })]) });
+  check.equal(ntBoundary.summary.may_be_outside, 0, 'the Northwest Territories anniversary stays inside the screening period');
+  const nu = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NU', assessment_clock: clockAt('2026-10-06'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Oct 05, 2020' })]) });
+  check.equal(nu.summary.may_be_outside, 1, 'Nunavut applies its own recorded six-year money-recovery provision');
+  check.ok(/C\.S\.Nu\./.test(nu.jurisdiction.citation), 'its issue basis names the Nunavut consolidation');
+  check.ok(/NOT_LEGAL_ACCRUAL/.test(nu.performed[0].start_date.selection_rule), 'the Nunavut report date does not prove accrual');
+  const nuBoundary = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NU', assessment_clock: clockAt('2026-10-06'),
+    extraction: extractionOf([adverseBlock({ lastPayment: 'Oct 06, 2020' })]) });
+  check.equal(nuBoundary.summary.may_be_outside, 0, 'the Nunavut anniversary stays inside the screening period');
   const mb = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-MB', assessment_clock: clockAt('2026-01-10'),
     extraction: extractionOf([adverseBlock({ lastPayment: 'Jan 09, 2024' })]) });
   check.equal(mb.summary.may_be_outside, 1, 'Manitoba old adverse entry opens a timing verification concern');

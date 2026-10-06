@@ -67,6 +67,66 @@ async function run(t,check){
   200,'the Manitoba selection is approved');
  check.equal((await t.request('GET',`/api/cases/${mb.case_id}/packet-download`,{token:actor.token})).status,
   200,'and its entitled packet downloads from the local upload');
+ const bc=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-BC'}})).json.case;
+ check.equal((await t.request('POST',`/api/cases/${bc.case_id}/files`,
+  {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
+  201,'the authorized local report uploads for British Columbia');
+ check.equal((await t.request('POST',`/api/cases/${bc.case_id}/evaluate`,{token:actor.token})).status,
+  201,'British Columbia assesses the uploaded reader facts');
+ const bcView=(await t.request('GET',`/api/cases/${bc.case_id}`,{token:actor.token})).json.view;
+ const bcConcern=bcView.result.issues.find(i=>i.limitation_concern===true);
+ check.ok(bcConcern,'the actual British Columbia upload reaches a qualified court-limit concern');
+ check.ok(bcConcern&&/does not establish when the claim was discovered/.test(bcConcern.explanation),
+  'the BC issue does not equate report dates with discovery');
+ check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[bcConcern.issue_id]}})).status,200,'the BC concern is selectable');
+ check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/correspondence`,
+  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
+  200,'British Columbia correspondence is reviewed');
+ check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/approve`,{token:actor.token})).status,
+  200,'the British Columbia selection is approved');
+ check.equal((await t.request('GET',`/api/cases/${bc.case_id}/packet-download`,{token:actor.token})).status,
+  200,'and its entitled packet downloads from the local upload');
+ const nt=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-NT'}})).json.case;
+ check.equal((await t.request('POST',`/api/cases/${nt.case_id}/files`,
+  {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
+  201,'the authorized local report uploads for Northwest Territories');
+ check.equal((await t.request('POST',`/api/cases/${nt.case_id}/evaluate`,{token:actor.token})).status,
+  201,'Northwest Territories assesses the uploaded reader facts');
+ const ntView=(await t.request('GET',`/api/cases/${nt.case_id}`,{token:actor.token})).json.view;
+ const ntConcern=ntView.result.issues.find(i=>i.limitation_concern===true);
+ check.ok(ntConcern,'the actual Northwest Territories upload reaches a qualified court-limit concern');
+ check.ok(ntConcern&&/does not establish legal accrual/.test(ntConcern.explanation),
+  'the territory issue does not equate report dates with accrual');
+ check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[ntConcern.issue_id]}})).status,200,'the territory concern is selectable');
+ check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/correspondence`,
+  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
+  200,'Northwest Territories correspondence is reviewed');
+ check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/approve`,{token:actor.token})).status,
+  200,'the territory selection is approved');
+ check.equal((await t.request('GET',`/api/cases/${nt.case_id}/packet-download`,{token:actor.token})).status,
+  200,'and its entitled packet downloads from the local upload');
+ const nu=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-NU'}})).json.case;
+ check.equal((await t.request('POST',`/api/cases/${nu.case_id}/files`,
+  {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
+  201,'the authorized local report uploads for Nunavut');
+ check.equal((await t.request('POST',`/api/cases/${nu.case_id}/evaluate`,{token:actor.token})).status,
+  201,'Nunavut assesses the uploaded reader facts');
+ const nuView=(await t.request('GET',`/api/cases/${nu.case_id}`,{token:actor.token})).json.view;
+ const nuConcern=nuView.result.issues.find(i=>i.limitation_concern===true);
+ check.ok(nuConcern,'the actual Nunavut upload reaches a qualified court-limit concern');
+ check.ok(nuConcern&&/does not establish legal accrual/.test(nuConcern.explanation),
+  'the Nunavut issue does not equate report dates with accrual');
+ check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[nuConcern.issue_id]}})).status,200,'the Nunavut concern is selectable');
+ check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/correspondence`,
+  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
+  200,'Nunavut correspondence is reviewed');
+ check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/approve`,{token:actor.token})).status,
+  200,'the Nunavut selection is approved');
+ check.equal((await t.request('GET',`/api/cases/${nu.case_id}/packet-download`,{token:actor.token})).status,
+  200,'and its entitled packet downloads from the local upload');
  const real=persisted.extraction;
  for(const region of ['CA-BC','CA-QC','CA-SK','CA-NT','CA-NU','CA-YT']){
   const evaluated=evaluation.evaluateCase({country:'CA',region,extraction:real});

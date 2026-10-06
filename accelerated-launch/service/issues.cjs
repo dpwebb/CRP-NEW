@@ -376,8 +376,13 @@ const LIMITATION_WORDING = Object.freeze({
     const reportPart = e.report_reference_date
       ? ` The report itself was issued on ${e.report_reference_date}${e.report_age_days ? `, about ${e.report_age_days} days before it was checked` : ''}.`
       : '';
-    if (e.jurisdiction === 'CA-ON' || e.jurisdiction === 'CA-MB') {
+    if (['CA-BC', 'CA-ON', 'CA-MB'].includes(e.jurisdiction)) {
       return `This report shows an adverse debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. ${e.jurisdiction_label}'s ordinary two-year court-claim period runs from discovery of the claim, not automatically from this printed date. The printed date makes the timing worth verifying; it does not establish when the claim was discovered or that a court claim is out of time.${reportPart}`;
+    }
+    if (String(e.start_is || '').startsWith('ACCRUAL_')) {
+      const scope = e.jurisdiction === 'AU-ACT' ? 'an ordinary cause of action'
+        : ['CA-NT', 'CA-NU'].includes(e.jurisdiction) ? 'an action to recover money' : 'a simple-contract claim';
+      return `This report shows an adverse debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. In ${e.jurisdiction_label}, the ordinary six-year period for ${scope} runs from when the cause of action arose, not automatically from this printed date. The date makes the timing worth verifying; it does not establish legal accrual or that an action is out of time.${reportPart}`;
     }
     return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was checked on ${e.assessed_on}.${reportPart} The dates suggest this debt may be outside the time limit for a court claim.`;
   },
@@ -642,7 +647,11 @@ function describeWording(issue) {
       request_type: REQUEST_TYPE.VERIFICATION,
       request_wording: (issue.evidence || {}).jurisdiction === 'CA-MB'
         ? 'please verify when this claim was discovered, whether a demand and default were required and occurred, whether a qualifying acknowledgment or part payment occurred before expiry, and whether a court claim or judgment already exists'
-        : (issue.evidence || {}).jurisdiction === 'CA-ON'
+        : ['CA-NT', 'CA-NU'].includes((issue.evidence || {}).jurisdiction)
+        ? 'please verify when the cause of action to recover this money arose, whether a qualifying signed promise, written acknowledgment or part payment occurred, and whether an action or judgment already exists'
+        : String((issue.evidence || {}).start_is || '').startsWith('ACCRUAL_')
+        ? 'please verify when this cause of action arose, which time limit applies to the claim, whether a qualifying acknowledgment or payment affected the period, and whether an action or judgment already exists'
+        : ['CA-BC', 'CA-ON'].includes((issue.evidence || {}).jurisdiction)
         ? 'please verify when this claim was discovered, whether a demand was required and made, whether a qualifying acknowledgment or part payment occurred before expiry, and whether a court claim or judgment already exists'
         : LIMITATION_WORDING.request
     };
@@ -905,7 +914,8 @@ function limitationIssues(extraction, limitation) {
       basis_type: BASIS_TYPE.LIMITATION_ASSESSMENT,
       classification: null,
       check_id: 'LIMITATION-PERIOD-COURT-CLAIM',
-      label: ['CA-ON', 'CA-MB'].includes(assessment.jurisdiction.region_code)
+      label: ['CA-BC', 'CA-ON', 'CA-MB'].includes(assessment.jurisdiction.region_code)
+        || String(assessment.jurisdiction.start_is || '').startsWith('ACCRUAL_')
         ? 'The age of this debt may warrant checking the time limit for a court claim'
         : LIMITATION_WORDING.label,
       reason: start.selection_rule || null,
@@ -915,6 +925,7 @@ function limitationIssues(extraction, limitation) {
         jurisdiction: assessment.jurisdiction.region_code,
         jurisdiction_label: assessment.jurisdiction.label,
         statute: assessment.jurisdiction.citation,
+        start_is: assessment.jurisdiction.start_is,
         basic_period_years: assessment.jurisdiction.basic_period_years,
         ultimate_period_years: assessment.jurisdiction.ultimate_period_years,
         start_label: start.label || null,
