@@ -478,3 +478,18 @@ States: `ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT` (the historical finding is pr
 | Internal build identity | `crp-v1-8cfa8dc60a6d0f91` |
 | Covered surface | **84 files in five groups** — RUNTIME 54, READER_SUPPORT 10, RULE_CONFIGURATION 7, RULE_CONFIGURATION_TOP_LEVEL 9, SERVED_ASSETS 4 |
 | Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing, no correspondence, no private report transmitted |
+
+## 21. Batch 33 correction — dual-date retention: exceptions, source evidence, consumer names (October 6 2026)
+
+**Status: IMPLEMENTED; ONE ASSERTION RED — implementation closure NOT achieved. Not deployed.** Baseline `7bc82fa`.
+
+**Delivered and green.** Rule exceptions are now preserved on the later-expiry concern: `summarizeRetentionExceptions()` summarises the adapter own `exceptions` evaluation, an **established exception that applies suppresses the concern entirely** (with `concern_withheld_because` recorded internally), a **material unknown exception qualifies it** in the rule own words (the card and the wording carry that specific uncertainty), and exceptions **resolved against applicability leave it standing** — period arithmetic alone never creates the concern. Source evidence is preserved: the anchor raw printed value, its normalized value and the reader recorded page/line travel through the card, the review step, the assessment download and the packet (`source_evidence`), taken from the evaluation own fact sources with a record-level fallback, never fabricated. Consumer field names replace internal fact names on every consumer surface (`tradeline.lastPaymentDate` becomes "Last payment date", `collection.delinquencyDate` becomes "Date of first delinquency on the collection entry"), and internal adapter/rule identifiers are projected out of the rendered comparison bucket and the card — which closed the two privacy failures for real reasons. Two limbs measuring the same entry from the same anchor to the same end date merge into ONE card. The withdrawn US-CA collection upload-to-download section is restored on the rule own arithmetic (180-day shift reused, not reimplemented): printed 2019-06-01 → anchor 2019-11-28 → period ends 2026-11-28, inside on the 2026-06-12 report and outside at the 2027-06-13 assessment. `cr-ca-ns-tu-real-report` **62/62** on the authorized specimen through the register/environment mechanism, and an unavailable specimen now reports as a **skip with its reason** instead of passing as a real-file test. `e-qualifications` 48/48, `g-privacy` 52/52, `ct` 44/44, `cs` 68/68, `bw-browser-wizzard` passed (76 + the new dual-date browser block).
+
+**The one red assertion (real defect, not an expectation change).** In `cu-dual-date-retention` the later-expiry card reached the consumer with its explanation, its conditional verification request and its source evidence, but **`uncertainty` is null on the public card** while the internal issue carries the rule-specific text: the projection that builds the rendered issue drops that field for this class. The delivered wording is therefore incomplete for this one card. 35 of 36 assertions in the section pass; full regression **5845 passed, 1 failed**.
+
+| Item | Value |
+| --- | --- |
+| Manifest digest | `' + $m.manifest_digest + '` |
+| Internal build identity | `crp-v1-' + $m.manifest_digest.Substring(0,16).ToLower() + '` |
+| Covered surface | **' + $m.total_file_count + ' files** |
+| Deployment state | **NOT deployed.** Staging serves `crp-v1-1133cf76c411450f`; no push, no deploy, no live billing, no correspondence, no private report transmitted |

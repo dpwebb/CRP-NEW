@@ -28,6 +28,56 @@ const REQUEST_TYPE = Object.freeze({ CORRECTION: 'CORRECTION', VERIFICATION: 'VE
  */
 const PROBABLE_LEAD = 'Your report shows a probable reporting issue. Review the details below before deciding whether to dispute it.';
 
+/**
+ * OWNER Batch 33 correction (consumer field names): the card, the review step, the assessment download and the
+ * packet show what the report ITSELF calls a field. The internal fact name is never shown to a consumer, and a
+ * field this build has no consumer name for falls back to a plain description rather than leaking the identifier.
+ */
+const CONSUMER_FIELD_LABELS = Object.freeze({
+  'tradeline.lastPaymentDate': 'Last payment date',
+  'tradeline.firstDelinquencyDate': 'First delinquency date',
+  'tradeline.chargeOffDate': 'Charge-off date',
+  'tradeline.openedDate': 'Opened date',
+  'collection.delinquencyDate': 'Date of first delinquency on the collection entry',
+  'collection.assignedDate': 'Date the account was assigned',
+  'overdue.originalListingDate': 'Original listing date',
+  'reportedAccount.adverseRatingDate': 'Month of the adverse payment rating',
+  'reportedAccount.openedDate': 'Opened date',
+  'reportedAccount.closedDate': 'Closed date',
+  'liability.openedDate': 'Opened date',
+  'liability.closedDate': 'Closed date',
+  'publicRecord.judgmentEntryDate': 'Judgment entry date',
+  'publicRecord.taxLienPaidDate': 'Date the tax lien was paid',
+  'publicRecord.bankruptcyOrderForReliefDate': 'Order for relief date',
+  'bankruptcy.dischargeDate': 'Discharge date'
+});
+
+/** The consumer-facing name of a printed field. Never the internal identifier. */
+function consumerFieldLabel(field) {
+  if (!field) return 'the printed event date';
+  return CONSUMER_FIELD_LABELS[String(field)] || 'the printed event date';
+}
+
+/** The source-linked provenance of one printed fact, as the consumer surface shows it. Never fabricated. */
+function sourceFactFor(entry, label, record) {
+  /* The adapter's own attachment first (the anchor's source as the evaluation handed it over); otherwise the
+     record's OWN printed source for the same fact. Either way the value comes from the reader, and a page or line
+     is carried only when the reader recorded one. */
+  let source = entry && entry.anchor_source ? entry.anchor_source : null;
+  if (!source && record && record.fact_sources && entry && entry.anchor_field) {
+    source = record.fact_sources[entry.anchor_field] || null;
+  }
+  if (!source) return [];
+  const location = source.location || null;
+  return [{
+    field_label: label,
+    printed_value: source.raw_value === undefined ? null : source.raw_value,
+    normalized_value: source.normalized_value || (entry && entry.anchor_iso) || null,
+    page: location && location.page !== undefined ? location.page : null,
+    line: location && location.line !== undefined ? location.line : null
+  }];
+}
+
 /** The common-error checks whose positives become selectable POTENTIAL issues (Batch 1 + ordinary-account batch). */
 const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
@@ -295,11 +345,22 @@ const POTENTIAL_WORDING = Object.freeze({
       const extra = r.historical_position_not_established
         ? ' The report we have does not state its own date, so whether the entry was already outside its period then cannot be established, and it is not claimed either way.'
         : ' The report we have was issued before the period ended, so it cannot show the position now.';
-      return `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}`;
+      /* OWNER Batch 33 correction: when the rule's own exception cannot be resolved from the report, the specific
+         unresolved condition is stated in the rule's words — the concern is qualified, not asserted. */
+      const exception = r.exception_material_unknown && r.exception_specific_uncertainty
+        ? ` One condition this period depends on is not settled by your report: ${r.exception_specific_uncertainty} If it applies to this entry, the entry may still be reported for longer, so ask the credit bureau to check it as part of the same request.`
+        : '';
+      return `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}${exception}`;
     },
     request: 'Please verify whether this entry remains on my current file and whether its reporting period has expired.'
   }
 });
+
+/**
+ * OWNER Batch 33: the later-expiry card's own wording, so the qualified concern always delivers its specific
+ * uncertainty and its conditional verification request regardless of the generic factual wording path.
+ */
+const RETENTION_CURRENT_REVIEW_WORDING = POTENTIAL_WORDING['RETENTION-PERIOD-ENDED-SINCE-THE-REPORT'];
 
 /**
  * BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the COURT-ENFORCEMENT LIMITATION item. It is a different
@@ -901,13 +962,29 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
   const alreadyCovered = new Set((statutoryIssuesAlready || [])
     .filter((i) => i && i.basis_type === BASIS_TYPE.STATUTORY_RETENTION)
     .map((i) => `${i.record_index}|${i.rule_id || i.citation || ''}`));
+  /* ONE coherent concern per entry and period, not one per limb: two recorded limbs that measure the same entry
+     from the same anchor to the same end date are the same underlying concern, so they merge into one card with
+     both citations rather than inflating the count. */
+  const groups = new Map();
   for (const entry of performed) {
     if (!entry.current_review_warranted) continue;
-    const key = `${entry.record_index}|${entry.rule || entry.citation || ''}`;
-    if (alreadyCovered.has(key)) continue;
+    const key = `${entry.record_index}|${entry.anchor_iso}|${entry.at_assessment_date ? entry.at_assessment_date.period_ends_on : ''}`;
+    if (!groups.has(key)) groups.set(key, { entry, citations: [], rule_refs: [], materials: [] });
+    const group = groups.get(key);
+    if (entry.citation && !group.citations.includes(entry.citation)) group.citations.push(entry.citation);
+    if (entry.rule && !group.rule_refs.includes(entry.rule)) group.rule_refs.push(entry.rule);
+    group.materials.push(entry);
+  }
+  for (const group of groups.values()) {
+    const entry = group.entry;
+    if (alreadyCovered.has(`${entry.record_index}|${entry.rule || entry.citation || ''}`)) continue;
     const record = recordFor(extraction, entry.record_index);
+    const label = consumerFieldLabel(entry.anchor_field);
+    const sourceFacts = sourceFactFor(entry, label, record);
+    /* The consumer-safe evidence only: dates, states and the source the reader recorded. The raw machine entry
+       stays internal, under `machine`, exactly as the other issue producers keep their audit payload. */
     const issue = {
-      issue_id: issueId(`retention-current:${entry.rule || 'rule'}:${entry.record_index}:${entry.anchor_iso}:${entry.assessment_date}`),
+      issue_id: issueId(`retention-current:${entry.anchor_iso}:${entry.record_index}:${entry.assessment_date}`),
       confidence: CONFIDENCE.POTENTIAL,
       basis_type: BASIS_TYPE.FACTUAL_CONSISTENCY,
       classification: null,
@@ -915,13 +992,12 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
       label: 'This entry may now be too old to report',
       reason: entry.state,
       record_index: entry.record_index,
-      anchor: { field: entry.anchor_field || null, iso: entry.anchor_iso || null, value_as_supplied: entry.anchor_printed_date || null },
+      anchor: { field: label, iso: entry.anchor_iso || null, value_as_supplied: entry.anchor_printed_date || null },
       retention_review: {
-        rule: entry.rule || null,
-        adapter_id: entry.adapter_id || null,
-        citation: entry.citation || null,
+        citation: group.citations[0] || null,
+        citations: group.citations.slice(),
         region: entry.region || null,
-        anchor_label: entry.anchor_field || null,
+        anchor_label: label,
         anchor_printed_date: entry.anchor_printed_date || null,
         anchor_iso: entry.anchor_iso || null,
         anchor_precision: entry.anchor_precision || null,
@@ -932,17 +1008,40 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
         assessed_on: entry.assessment_date || null,
         state: entry.state,
         historical_position_not_established: Boolean(entry.historical_position_not_established),
+        exception_recorded: Boolean(entry.exceptions && entry.exceptions.recorded),
+        exception_material_unknown: Boolean(entry.exceptions && entry.exceptions.material_unknown),
+        exception_specific_uncertainty: entry.exceptions ? entry.exceptions.specific_uncertainty_text || entry.exceptions.specific_uncertainty || null : null,
+        exception_resolved_against_applicability: Boolean(entry.exceptions && entry.exceptions.resolved_against_applicability),
         comparison_basis: entry.comparison_basis || null
       },
-      evidence: entry,
-      location: null,
+      evidence: {
+        state: entry.state,
+        anchor_field_label: label,
+        anchor_printed_value: entry.anchor_printed_date || null,
+        anchor_normalized_value: entry.anchor_iso || null,
+        anchor_precision: entry.anchor_precision || null,
+        period_years: entry.period_years === undefined ? null : entry.period_years,
+        period_ends_on: entry.at_assessment_date ? entry.at_assessment_date.period_ends_on : null,
+        report_reference_date: entry.reference_date || entry.report_reference_date || null,
+        assessment_date: entry.assessment_date || null,
+        source_page: sourceFacts.length ? sourceFacts[0].page : null,
+        source_line: sourceFacts.length ? sourceFacts[0].line : null
+      },
+      /* The audit payload: the raw comparison entries, never rendered to a consumer. */
+      machine: { retention_dates: group.materials, internal_rule_refs: group.rule_refs.slice() },
+      location: sourceFacts.length && sourceFacts[0].page !== null ? { page: sourceFacts[0].page, line: sourceFacts[0].line } : null,
+      source_facts: sourceFacts,
       record: recordRefFor(record),
       report_identity: reportIdentityFor(record),
-      account_identity: accountIdentityFor(record),
-      source_facts: []
+      account_identity: accountIdentityFor(record)
     };
     issue.eligible = isEligible(issue);
     Object.assign(issue, describe(issue));
+    /* The rule's own uncertainty and the conditional verification request are delivered on this card, so the
+       qualified concern can never reach a consumer without them. */
+    issue.uncertainty = issue.uncertainty || RETENTION_CURRENT_REVIEW_WORDING.uncertainty(issue);
+    issue.request_wording = issue.request_wording || RETENTION_CURRENT_REVIEW_WORDING.request;
+    issue.request_type = issue.request_type || REQUEST_TYPE.VERIFICATION;
     issues.push(issue);
   }
   return issues;
@@ -1008,9 +1107,15 @@ function publicIssue(issue) {
   if (issue.retention_review) {
     const r = issue.retention_review;
     out.later_expiry_concern = true;
+    /* The qualified concern carries its own uncertainty and its conditional verification request on the public
+       card, exactly as the limitation item does. */
+    out.uncertainty = issue.uncertainty || null;
+    out.request_wording = issue.request_wording || null;
+    out.request_type = issue.request_type || null;
     out.retention_review = {
-      rule: r.rule || null,
+      /* The recorded statutory citation only — no internal adapter or rule identifier reaches a consumer. */
       citation: r.citation || null,
+      /* The consumer-facing name of the printed field, and the printed value it read. */
       anchor_label: r.anchor_label || null,
       anchor_printed_date: r.anchor_printed_date || null,
       anchor_precision: r.anchor_precision || null,
@@ -1021,7 +1126,19 @@ function publicIssue(issue) {
       assessed_on: r.assessed_on || null,
       arose_through_later_passage_of_time: r.state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT',
       historical_position_not_established: Boolean(r.historical_position_not_established),
+      exception_recorded: Boolean(r.exception_recorded),
+      exception_material_unknown: Boolean(r.exception_material_unknown),
+      exception_specific_uncertainty: r.exception_specific_uncertainty || null,
+      exception_resolved_against_applicability: Boolean(r.exception_resolved_against_applicability),
       based_on: r.comparison_basis || null
+    };
+    /* The source evidence the card, the review step, the download and the packet all carry. */
+    out.source_evidence = {
+      field_label: (issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].field_label : null) || r.anchor_label || null,
+      printed_value: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].printed_value : null,
+      normalized_value: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].normalized_value : null,
+      page: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].page : null,
+      line: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].line : null
     };
   }
   if (issue.report_identity) {

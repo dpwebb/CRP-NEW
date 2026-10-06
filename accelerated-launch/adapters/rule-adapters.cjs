@@ -311,7 +311,16 @@ function runAdapter(adapterId, request) {
       : primitives.resolvePriorityAnchor(req.facts, adapter.anchor_fields || adapter.anchor_field);
     const assessmentDate = primitives.normalizeFactDate(req.assessmentDate) || null;
     const dual = fallbackAnchor && assessmentDate
-      ? retentionDates({ adapter, anchor: fallbackAnchor, arithmetic: null, reportReferenceDate: null, assessmentDate })
+      ? retentionDates({
+        adapter,
+        anchor: fallbackAnchor,
+        arithmetic: null,
+        /* The report's own date could not be read, but the rule's exceptions are still evaluated from what the
+           record and any consumer statement carry, so the concern is qualified by the rule's own conditions. */
+        evaluation: { exceptions: buildExceptionEvaluation(adapter, req.report, req.consumer_statements) },
+        reportReferenceDate: null,
+        assessmentDate
+      })
       : null;
     return Object.assign(base, {
       state: RESULT_STATE.UNRESOLVED,
@@ -479,6 +488,7 @@ function runAdapter(adapterId, request) {
     adapter,
     anchor,
     arithmetic,
+    evaluation: evaluated.evaluation,
     reportReferenceDate: referenceDate,
     assessmentDate: primitives.normalizeFactDate(req.assessmentDate) || null
   });
@@ -505,6 +515,9 @@ function retentionDates(input) {
   const monthPrecision = /^\d{4}-\d{1,2}$/.test(String(anchor.iso || ''));
   const reportDate = primitives.normalizeFactDate(input.reportReferenceDate) || null;
   const assessmentDate = primitives.normalizeFactDate(input.assessmentDate) || null;
+  /* OWNER Batch 33 correction: the rule's OWN exception resolution governs the current-review concern too, so a
+     concern is never created from period arithmetic alone while the rule's substantive conditions are dropped. */
+  const exceptions = summarizeRetentionExceptions(input.evaluation);
   const compare = (reference) => {
     if (!reference || !anchor.iso) return null;
     if (monthPrecision) return primitives.computeElapsedPeriodRange(anchor.iso, reference, adapter.period_years);
@@ -555,10 +568,64 @@ function retentionDates(input) {
     state,
     /* The one case that is a genuinely NEW current-review concern: inside when the report was issued, outside
        now. A separate concern is also kept when the report date is unreadable but the anchor still answers. */
-    later_expiry: state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT',
+    later_expiry: state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT' && !exceptions.established_defeating,
     historical_position_not_established: state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT',
-    current_review_warranted: state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT' || state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT',
-    comparison_basis: 'the same anchor, period, precision and ambiguity handling at both dates; the report-date comparison is the historical one and never the current position'
+    /* AN ESTABLISHED EXCEPTION THAT DEFEATS THE LIMIT SUPPRESSES THE CONCERN ENTIRELY. An unresolved MATERIAL
+       exception qualifies it instead of suppressing it, and exceptions resolved against applicability leave it
+       standing — the rule's own conditions are never dropped in favour of period arithmetic. */
+    exceptions,
+    concern_withheld_because: exceptions.established_defeating ? 'AN_ESTABLISHED_EXCEPTION_DEFEATS_THIS_RETENTION_LIMIT' : null,
+    current_review_warranted: !exceptions.established_defeating
+      && (state === 'INSIDE_AT_REPORT_OUTSIDE_AT_ASSESSMENT' || state === 'REPORT_DATE_MISSING_OUTSIDE_AT_ASSESSMENT'),
+    /* The provenance of the anchor this comparison used, carried through to the card: raw printed value,
+       normalized value and the source location when the reader recorded one. Never fabricated. */
+    anchor_source: anchor.source || null,
+    comparison_basis: 'the same anchor, period, precision, ambiguity handling and exception resolution at both dates; the report-date comparison is the historical one and never the current position'
+  };
+}
+
+/**
+ * OWNER Batch 33 correction: the rule's OWN exception resolution, summarised for the current-review concern. The
+ * adapter declares whether it records an exception at all; each item records whether it applies and whether that
+ * was resolved. An established item that applies defeats the limit; an item whose applicability is not
+ * determinable is a MATERIAL UNKNOWN that qualifies the concern with its own recorded words; items resolved as
+ * not applying leave the concern standing.
+ */
+function summarizeRetentionExceptions(evaluation) {
+  const recorded = evaluation && evaluation.exceptions ? evaluation.exceptions : null;
+  if (!recorded) {
+    return {
+      recorded: false,
+      evaluation_required: false,
+      basis: null,
+      items: [],
+      established_defeating: false,
+      material_unknown: false,
+      resolved_against_applicability: false,
+      specific_uncertainty: null,
+      specific_uncertainty_text: null
+    };
+  }
+  const items = (recorded.items || []).map((i) => ({
+    id: i.id || null,
+    text: i.text || null,
+    applies: i.applies === undefined ? null : i.applies,
+    resolved: i.resolved === true,
+    basis: i.evaluation_basis || null
+  }));
+  const established = items.some((i) => i.applies === true && i.resolved === true);
+  const unknownItems = items.filter((i) => i.applies === null && i.resolved !== true);
+  const resolvedAgainst = items.length > 0 && items.every((i) => i.resolved === true && i.applies === false);
+  return {
+    recorded: recorded.evaluation_required === true,
+    evaluation_required: recorded.evaluation_required === true,
+    basis: recorded.basis || null,
+    items,
+    established_defeating: established,
+    material_unknown: !established && unknownItems.length > 0,
+    resolved_against_applicability: resolvedAgainst,
+    specific_uncertainty: unknownItems.length ? unknownItems[0].basis || null : null,
+    specific_uncertainty_text: unknownItems.length ? unknownItems[0].text || null : null
   };
 }
 

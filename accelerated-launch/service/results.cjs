@@ -378,8 +378,31 @@ function renderResultSet(input) {
   limitation_assessment: evaluation.limitation_assessment || null,
   payment_history_analysis: evaluation.payment_history_analysis || null,
   /* OWNER dual-date retention (Batch 33): the two-date comparison per period limb that ran, and its summary.
-     The historical finding stays where it was; this is the current-review side. */
-  retention_dual_date: evaluation.retention_dual_date || null,
+     The historical finding stays where it was; this is the current-review side. The internal adapter and rule
+     identifiers are projected OUT here, exactly as the consumer surfaces drop them. */
+  retention_dual_date: evaluation.retention_dual_date ? {
+    check_class: evaluation.retention_dual_date.check_class,
+    summary: evaluation.retention_dual_date.summary,
+    performed: (evaluation.retention_dual_date.performed || []).map((p) => ({
+      record_index: p.record_index,
+      state: p.state,
+      anchor_field: p.anchor_field || null,
+      anchor_printed_date: p.anchor_printed_date || null,
+      anchor_iso: p.anchor_iso || null,
+      anchor_precision: p.anchor_precision || null,
+      period_years: p.period_years === undefined ? null : p.period_years,
+      report_reference_date: p.report_reference_date || null,
+      assessment_date: p.assessment_date || null,
+      at_report_date: p.at_report_date || null,
+      at_assessment_date: p.at_assessment_date || null,
+      later_expiry: Boolean(p.later_expiry),
+      historical_position_not_established: Boolean(p.historical_position_not_established),
+      current_review_warranted: Boolean(p.current_review_warranted),
+      concern_withheld_because: p.concern_withheld_because || null,
+      exceptions: p.exceptions || null,
+      comparison_basis: p.comparison_basis || null
+    }))
+  } : null,
   assessments_performed: evaluation.assessments_performed || 0,
   /* OWNER correction (SOL assessment date): the date the SERVER ran THIS assessment. Persisted with the result,
      shown to the consumer, and never advanced by viewing, unlocking, rendering or downloading it again. */

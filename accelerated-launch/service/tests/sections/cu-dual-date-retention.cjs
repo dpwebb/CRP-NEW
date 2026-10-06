@@ -87,14 +87,50 @@ function boundaryAndPrecisionControls(check) {
   check.equal(noReportDate.current_review_warranted, true, 'and a qualified current-review concern kept');
 }
 
-/* The US-CA HTTP fixture is NOT asserted here: its collection anchor is shifted by the FCRA 180-day rule, so
-   pinnings its dates is separate work. The later-expiry end-to-end is asserted where it belongs — on the supplied
-   real report through the paid assessment and the subscriber packet (`cr-ca-ns-tu-real-report`) and in a real
-   browser from the free summary through the downloaded packet (`bw-browser-wizzard`). */
+/* The US-CA collection limb is the vehicle: its anchor is the printed collection delinquency date SHIFTED by the
+   platform's existing FCRA 180-day rule, and its period is 7 years — both reused through the rule's own
+   arithmetic, never reimplemented here. With the printed date 01 June 2019 the anchor is 2019-11-28, so the period
+   ends 2026-11-28: inside it on the report's own date (2026-06-12) and outside it when the server assesses on
+   2027-06-13. */
+
+async function runHttpControls(service, check, evidence) {
+  const actor = await service.account('cu-dual-date@example.test');
+
+  /* 1. WITHIN ITS PERIOD AT ISSUE, OUTSIDE IT NOW — the later-expiry concern, once, with its source evidence. */
+  const later = await caseWith(service, actor, US_LINES('01 June 2019'), '2027-06-13T12:00:00Z');
+  const laterItems = later.view.result.issues.filter((i) => i.later_expiry_concern === true);
+  check.equal(laterItems.length, 1, 'one current-review concern is raised for the entry whose period has since ended');
+  const card = laterItems[0];
+  check.equal(card.retention_review.period_appears_to_end_on, '2026-11-28', 'it states the date the period appears to end');
+  check.equal(card.retention_review.report_issued, '2026-06-12', 'and the date the uploaded report was issued');
+  check.equal(card.retention_review.assessed_on, '2027-06-13', 'and the date the assessment ran');
+  check.equal(card.retention_review.arose_through_later_passage_of_time, true, 'and that it arose through the passage of time');
+  check.equal(card.retention_review.period_years, 7, 'with the rule own period, not a substituted one');
+  check.equal(card.confidence, 'POTENTIAL', 'as a potential issue to verify, not a violation');
+  /* The 180-day shift is the rule's own arithmetic: the period is measured from the SHIFTED anchor. */
+  check.equal(card.retention_review.anchor_printed_date, '2019-06-01', 'the printed collection delinquency date is carried raw');
+  check.equal(card.evidence.anchor_normalized_value, '2019-11-28', 'and the anchor the rule measures from is the 180-day-shifted date');
+  /* Consumer field names and source evidence, never internal identifiers. */
+  check.equal(card.retention_review.anchor_label, 'Date of first delinquency on the collection entry', 'the card names the field the way the report does: ' + JSON.stringify({ evidence: card.evidence, src: card.source_evidence, retained: card.retention_review, summary: later.view.result.retention_dual_date.summary, unc: String(card.uncertainty).slice(0, 120), req: String(card.request_wording).slice(0, 80) }));
+  check.ok(!/collection\.delinquencyDate/.test(JSON.stringify(card)), 'and the internal fact name appears nowhere on the card');
+  check.ok(card.source_evidence && card.source_evidence.printed_value && card.source_evidence.field_label, 'the card carries the printed source evidence');
+  check.equal(card.source_evidence.normalized_value, '2019-06-01', 'with the printed value normalized, before the rule own 180-day shift');
+  check.ok(card.source_evidence.page !== null && card.source_evidence.page !== undefined, 'and the page the reader recorded');
+  check.ok(!/CA-NS-CRA|CCRAA-1785|"adapter_id"/.test(JSON.stringify(card)), 'while no internal adapter or rule identifier is exposed');
+  check.equal(later.view.assessment_summary.teaser.title, 'An entry may now be too old to report', 'the free teaser names the later-expiry concern');
+  check.ok(later.view.result.retention_dual_date.summary.inside_at_report_outside_at_assessment >= 1, 'the dual-date summary records the entry, once per limb that measures it');
+  check.equal(later.view.result.retention_dual_date.summary.legal_findings_emitted, 0, 'and emits no legal finding');
+  check.ok(!/"adapter_id"/.test(JSON.stringify(later.view.result.retention_dual_date)), 'and the rendered comparison exposes no internal identifiers either');
+  check.ok(/may now be too old to report/.test(String(card.explanation)), 'the explanation says plainly what the dates suggest');
+  check.ok(/still on your current credit file/.test(String(card.uncertainty)), 'the uncertainty asks about the current file: ' + String(card.uncertainty).slice(0, 200));
+  check.ok(/remains on my current file/.test(String(card.request_wording)), 'and the request is conditional on continued reporting: ' + String(card.request_wording).slice(0, 160));
+  check.equal(card.request_type, 'VERIFICATION', 'as a verification request');
+}
+
 async function run(service, check) {
   const evidence = {};
   boundaryAndPrecisionControls(check);
-  evidence.mechanism_controls = 'engine-level only; end-to-end proven in cr-ca-ns-tu-real-report and bw-browser-wizzard';
+  await runHttpControls(service, check, evidence);
   return evidence;
 }
 

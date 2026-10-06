@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T20:05:50.934Z",
+  "generated_at": "2026-10-06T20:33:01.355Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 54,
-      "digest": "B16A95C7F64E6A8EA80E99E2B8ADA6F297CBF94ED4D019479ECAF7B5ABD39AA1",
+      "digest": "4373589A090A6057C4612A24A37B75CDA11BB8F0A146819EC013C192A5E9458A",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -139,7 +139,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "8D282923C487E7FB0B72BC33EEC2B63363306722F0E6B80D72B875A973EA90A4"
+          "sha256": "8911271D8A484F7FF13A7BA5F44406A00BD3AE87E586AEBEBF3D7EB60231C66A"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -195,7 +195,7 @@
         },
         {
           "file": "accelerated-launch/service/results.cjs",
-          "sha256": "3189884BAF23A888D79FBF90CCE2ACE117333276EEA866D3C0BD73D225B01D48"
+          "sha256": "B5AFE3E982A27FD5F7AFAE8962251D7804F5A01EA30EA65076E830737659B391"
         },
         {
           "file": "accelerated-launch/service/retention.cjs",
@@ -277,7 +277,7 @@
     {
       "id": "RULE_CONFIGURATION",
       "file_count": 7,
-      "digest": "9FD9318CC2C414021305E0391A55EBE945528D5F0B15188ABC7E879AE7DBF496",
+      "digest": "84796DA0E41E2448AA01633065B700C0F43C788B1CA3D863EB6F313C9EE43B6F",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
@@ -301,7 +301,7 @@
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
-          "sha256": "758616FA8EA7CF68F07971F80F2D476DF240293844B5C057E40B069EE7351084"
+          "sha256": "122621E0C12682C9E4D6C069025B86449D558C879F180B89911A304E579A2815"
         },
         {
           "file": "accelerated-launch/adapters/test-adapters.cjs",
@@ -376,6 +376,6 @@
       ]
     }
   ],
-  "manifest_digest": "8CFA8DC60A6D0F91184CF6A212B92E3D89F018D47440AF24C64FCCC2E0F9C367",
+  "manifest_digest": "FF771B48A011C675B495AADBA00EC0C5628164A3DE94B75470F4A9B6F1D95B8A",
   "total_file_count": 84
 }

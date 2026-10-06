@@ -416,10 +416,17 @@ async function run(service, check) {
 
   const dualSub = await setupPaidCase(service, 'bw-dual-date@example.test', 'US', 'US-CA');
   const dualOpened = await withDualClockBrowser(dualSub, dualLines);
+  /* The complete assessment is the results step; the packet step follows. */
+  await dualOpened.page.locator('#steps button[data-step="3"]').click();
+  await dualOpened.page.waitForTimeout(700);
   const dualPanel = await dualOpened.page.locator('#panel').innerText();
   check.ok(/Report issued: 2026-06-12/.test(dualPanel), 'the complete assessment shows the date the report was issued');
   check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');
   check.ok(/arose through the passage of time/.test(dualPanel), 'and that the concern arose through the passage of time');
+  check.ok(/Date of first delinquency on the collection entry/.test(dualPanel), 'and names the printed field the way the report does');
+  await dualOpened.page.locator('#steps button[data-step="4"]').click();
+  await dualOpened.page.waitForSelector('#packet-block');
+  await dualOpened.page.waitForTimeout(600);
   const dualBlock = await dualOpened.page.locator('#packet-block').innerText();
   check.ok(/too old to report/.test(dualBlock), 'the subscriber packet offers the current-review concern to select');
   await dualOpened.page.locator('[data-check-issue]').first().check();

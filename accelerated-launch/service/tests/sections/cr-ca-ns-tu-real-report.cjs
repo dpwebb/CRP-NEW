@@ -111,7 +111,15 @@ function ids(issueList) {
 async function runRealReport(service, check, evidence) {
   const specimen = realReportPath();
   if (!specimen || !fs.existsSync(specimen)) {
-    evidence.real_report = { available: false, reason: 'CRP_CA_TRANSUNION_SPECIMEN is not set on this machine' };
+    /* OWNER Batch 33: an unavailable specimen is reported as a SKIP with its reason, never as a passing real-file
+       test. The register pointer and the environment variable are the only sources for the path; when neither
+       yields the file, nothing here asserts anything about the real report. */
+    evidence.real_report = {
+      available: false,
+      reason: 'CRP_CA_TRANSUNION_SPECIMEN is not set on this machine, and the preserved register record holds the specimen identity and digest but not the file itself',
+      register_status_as_recorded: tuFamily.readSecondCanadianPointer().register_status_as_recorded
+    };
+    check.skip('the supplied real TransUnion Canada report', evidence.real_report.reason);
     return null;
   }
   evidence.real_report = { available: true, bytes: fs.statSync(specimen).size, read_only: true };
@@ -167,6 +175,7 @@ async function runRealReport(service, check, evidence) {
   check.equal(evaluated.status, 201, 'the free assessment runs');
   await service.pay(actor, 'report_once', caseId);
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
+  const publicIssues = view.result.issues;
   check.equal(view.assessment_summary.distinct_total, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports every distinct supported issue, including a period that has ended since');
   check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
@@ -174,7 +183,6 @@ async function runRealReport(service, check, evidence) {
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
   check.ok(!/definite|violation/i.test(String(view.assessment_summary.teaser.title)),
     'and the teaser title never claims a violation');
-  const publicIssues = view.result.issues;
   const byAccount = {};
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
   check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
@@ -266,6 +274,7 @@ async function runSubscriberPacket(service, check, evidence, real) {
   });
   await service.request('POST', `/api/cases/${caseId}/evaluate`, { token: sub.token });
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: sub.token })).json.view;
+  const publicIssues = view.result.issues;
   check.equal(view.result.issues.length, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'a subscriber sees the same supported issues on the real report');
   const chosen = view.result.issues[0];
   const packetView = await service.request('GET', `/api/cases/${caseId}/packet`, { token: sub.token });
