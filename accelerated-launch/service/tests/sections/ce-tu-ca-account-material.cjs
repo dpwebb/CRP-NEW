@@ -172,14 +172,26 @@ async function run(service, check) {
     { O: 'Open Account (payment required in full)', R: 'Revolving or Option (30 days)', I: 'Installment (fixed number of payments)', M: 'Mortgage' },
     "the report's own account-type legend is carried with the facts");
 
-  /* The genuine report is BENIGN for these checks: NO issue may be forced from it. */
+  /* The genuine report is BENIGN for the shared CONTRADICTION checks: none of THEM may be forced from it. The
+     three completeness items it does support are the whole point of the real-report repair — an adverse entry
+     whose delinquency caption is printed empty, a write-off with no charge-off date, and closures with no closure
+     dates — so the assertion is scoped to the class it protects and the completeness items are named explicitly. */
   const realPipeline = pipeline(extraction);
-  check.equal(realPipeline.ce.summary.potential_issue, 0, 'the genuine report forces NO potential issue (it is benign for the shared checks)');
+  const CONTRADICTION_IDS = ['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', 'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
+    'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY', 'COMMON-ERROR-DUPLICATE-REPORTING', 'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY'];
+  check.equal(realPipeline.ce.performed.filter((c) => c.state === 'POTENTIAL_ISSUE' && CONTRADICTION_IDS.includes(c.check_id)).length, 0,
+    'the genuine report forces no contradiction item (it is benign for the shared contradiction checks)');
   check.equal(balanceIssues(realPipeline.iss).length, 0, 'and specifically no balance/past-due issue');
+  check.deepEqual([...new Set(realPipeline.iss.map((i) => i.check_id))].sort(), [
+    'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
+    'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE',
+    'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE'
+  ], 'while it yields exactly the three completeness items the report itself supports');
 
   evidence.genuine_transunion_material =
     "the real TransUnion Canada disclosure yields 4 account blocks with printed creditor identity, type/responsibility, " +
-    "terms, balances, past-due amounts and MOP cells resolved from the report's own legend; it forces no issue";
+    "terms, balances, past-due amounts and MOP cells resolved from the report's own legend; it forces no contradiction " +
+    "item and yields the three completeness items the report itself supports";
 
   /* ---- 2. SYNTHETIC: the reader's measured column rule, and a supported potential issue end to end. ---- */
   const positive = pipeline(tuExtraction(tuAccountBlock({ creditor: 'SYNTHETIC CREDITOR ONE', balance: 100, pastDue: 500, mop: '5' })));

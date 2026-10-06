@@ -178,6 +178,15 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
 
   /* THE NOVA SCOTIA STATUTORY UNIT IS STILL EXACT-SPECIMEN, IN FACT AND NOT ONLY IN WORDING. */
   for (const adapter of adapters.ADAPTERS.filter((a) => /^CA-NS-/.test(a.adapter_id) && a.adapter_id !== 'CA-NS-CRA-S10-3-D-JUDGMENT-CONTENT' && a.adapter_id !== 'CA-NS-CRA-S10-3-F-DISMISSED-CHARGE')) {
+    if (adapter.adapter_id === 'CA-NS-CRA-S10-3-C-LIMB-1') {
+      /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): this limb's recorded anchor is a TRADELINE field
+         and the TransUnion Canada presentation prints that field on its own tradelines, so the limb is admitted to
+         that presentation as well. Its conclusion ceiling, its packet permission and its single admitted limb are
+         unchanged, and the default-date limb stays unseated. */
+      check.deepEqual(adapter.presentation_required, ['PR-01', 'FAM-TU-CA-CONSUMER'],
+        'the last-payment limb is admitted to the TransUnion Canadian presentation whose tradelines print its anchor');
+      continue;
+    }
     check.equal(adapter.presentation_required, 'PR-01', `${adapter.adapter_id} is bound to PR-01`);
   }
   /* OWNER-CANDIDATE-002/003: the judgment-CONTENT and dismissed-CHARGE rules are report-content rules on the
@@ -195,14 +204,21 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
   const model = formats.buildPdfDocumentModel(specimens.transunion.path);
   const extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'CA' });
   const ns = evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction });
-  check.equal(ns.results.length, 0, 'no statutory comparison is performed on the TransUnion presentation, even in Nova Scotia');
-  check.deepEqual(ns.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
-    'so its assessment names the factual and common-error classes only');
+  const nsEvaluated = ns.results.filter((r) => r.machine && r.machine.state === 'EVALUATED');
+  check.equal(nsEvaluated.length, 4, 'the Nova Scotia last-payment limb measures the four account blocks of the TransUnion presentation');
+  check.deepEqual([...new Set(nsEvaluated.map((r) => r.check.adapter_id))], ['CA-NS-CRA-S10-3-C-LIMB-1'],
+    'and it is the only statutory limb seated on that presentation');
+  check.deepEqual([...new Set(nsEvaluated.map((r) => r.machine.anchor.field))], ['tradeline.lastPaymentDate'],
+    'measuring from the last payment date the report prints on each entry');
+  check.ok(ns.results.length > nsEvaluated.length,
+    'while every record that prints no such date is recorded as an unread row, never as a comparison');
+  check.deepEqual(ns.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
+    'so its assessment names the statutory, factual and common-error classes');
   check.ok(ns.unavailable_checks.length > 0, 'and every recorded limb is reported as not run against this format rather than silently dropped');
   check.ok(ns.unavailable_checks.every((row) => typeof row.plain === 'string' && row.plain.length > 0),
     'each of them saying in words why it was not run');
-  check.ok(ns.unavailable_checks.some((row) => /format/i.test(row.plain)),
-    'and the presentation-bound limb says it was written for a report format the file did not match');
+  check.ok(ns.unavailable_checks.some((row) => /format|kind of entry/i.test(row.plain)),
+    'and a limb that still cannot run on this format says so in words');
 
   const nsEquifax = specimens.equifax
     ? evaluation.evaluateCase({
@@ -409,8 +425,8 @@ function everyCanadianSelectionAssesses(check, reading) {
       check.equal(evaluated.results.length, 1, `${region}: its accuracy rule evaluates the reader's own account dates`);
       check.ok(evaluated.assessment_kinds.includes('STATUTORY_RULE_COMPARISON'), `${region}: assessment includes its statutory accuracy class`);
     } else {
-      check.equal(evaluated.results.length, 0, `${region}: and no statutory comparison is performed on this presentation`);
-      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'], `${region}: so its assessment names the factual and common-error classes only`);
+      check.equal(evaluated.results.filter((r) => r.machine && r.machine.state === 'EVALUATED').length, region === 'CA-NS' ? 4 : 0, `${region}: its statutory comparisons on this presentation are exactly the ones it can measure`);
+      check.deepEqual(evaluated.assessment_kinds, region === 'CA-NS' ? ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'] : ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'], `${region}: so its assessment names exactly the classes that ran`);
     }
   }
   check.equal(Object.keys(perRegion).length, 13, 'all thirteen canonical Canadian selections were evaluated');

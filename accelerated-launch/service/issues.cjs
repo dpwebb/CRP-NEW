@@ -35,15 +35,34 @@ const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY',
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY',
   'COMMON-ERROR-DUPLICATE-REPORTING',
-  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY'
+  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY',
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness checks over an entry's own printed
+     material and the meanings the report itself prints for its codes. Each is a POTENTIAL verification item. */
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
 ]);
 const POTENTIAL_ISSUE_CHECK_ID_SET = new Set(POTENTIAL_ISSUE_CHECK_IDS);
+
+/** The three factual COMPLETENESS checks: an event the report prints whose own caption carries no date. Their
+ *  public issue is marked `missing_detail` so the teaser can rank and title them as an addition, without any
+ *  internal check id ever reaching the consumer. */
+const COMPLETENESS_CHECK_IDS = new Set([
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
+]);
 
 /** Per-check source-record filter: a signal whose benign explanation defeats the discrepancy is NOT promoted.
  *  A payment exceeding the current balance can be legitimate (payment type/timing/snapshot), so only the
  *  past-due-exceeds-balance contradiction becomes a selectable issue. */
 const POTENTIAL_REASON_FILTER = Object.freeze({
-  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': (sr) => sr.reason === 'PAST_DUE_EXCEEDS_BALANCE'
+  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': (sr) => sr.reason === 'PAST_DUE_EXCEEDS_BALANCE',
+  /* The three completeness checks below promote ONLY the fact they measured. A source record that reached the
+     check for a different reason is never offered to the consumer as this issue. */
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': (sr) => sr.reason === 'ADVERSE_ENTRY_WITHOUT_A_USABLE_DELINQUENCY_DATE',
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': (sr) => sr.reason === 'WRITE_OFF_PRINTED_WITHOUT_A_CHARGE_OFF_DATE',
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': (sr) => sr.reason === 'CLOSURE_PRINTED_WITHOUT_A_CLOSED_DATE'
 });
 
 function issueId(seed) {
@@ -58,6 +77,17 @@ function recordFor(extraction, recordIndex) {
 function recordLabel(issue) {
   const kind = issue.record && issue.record.kind_label ? issue.record.kind_label : 'a record';
   return issue.record_index != null ? `${kind} ${issue.record_index}` : 'your report';
+}
+
+/**
+ * How one entry is named to the CONSUMER in an explanation: the reader's own plain kind, never an internal record
+ * id or its index number ("tradeline 3"). The account itself is identified separately on the issue by the printed
+ * creditor name it came from (`account_identity`), which is what the report uses and what the consumer recognises.
+ */
+function entryLabel(issue) {
+  const kind = issue.record && issue.record.kind_label ? String(issue.record.kind_label) : '';
+  if (kind === 'tradeline') return 'an account on your report';
+  return kind ? `the ${kind} on your report` : 'an entry on your report';
 }
 
 /** The report/source identity a detector read its facts from (never fabricated). Falls back from the
@@ -180,6 +210,42 @@ const POTENTIAL_WORDING = Object.freeze({
     explain: (i) => `This report prints the same corroborated account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) with two different responsibility labels (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in the same reporting snapshot.`,
     uncertainty: 'A joint account, an authorized-user role, a changed responsibility over time, or a masked-identifier collision can produce different labels. It is not, by itself, an established legal violation.',
     request: 'please verify the responsibility on this account and correct the inconsistency'
+  },
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness items read from an entry's own
+     printed material and the meanings the report itself prints for its codes. Each is a potential issue to
+     VERIFY — a completeness question about what the report prints, never a claim that a rule was broken and
+     never an invented date. */
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      const ratings = e.adverse_payment_ratings || [];
+      const codes = (e.collection_or_cancellation_codes || []).map((c) => `${c.code} - ${c.meaning_as_the_report_prints_it}`);
+      const months = ratings.length === 1 ? 'one month' : `${ratings.length} months`;
+      const what = ratings.length
+        ? `a bad-debt payment rating printed for ${months} (most recently ${ratings[0].code} - ${ratings[0].meaning_as_the_report_prints_it})`
+        : `a collection or cancellation code (${codes.join('; ')})`;
+      return `This report presents ${entryLabel(i)} as a debt in trouble, printing ${what}, while its "First Delinquency Date" caption prints with no date at all. The entry shows no date for when the delinquency began.`;
+    },
+    uncertainty: 'The report prints the caption and leaves the value empty rather than printing a date, so no delinquency date can be read from this entry. The underlying date may still exist in the file the creditor supplied. This is a completeness question to verify, not an established reporting issue.',
+    request: 'please confirm the date this debt first became delinquent and have that date printed on this entry'
+  },
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      const codes = (e.write_off_codes || []).map((c) => `${c.period || ''}${c.code ? ` (${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''})` : ''}`.trim());
+      return `This report prints ${entryLabel(i)} with a write-off (${codes.join('; ')}) while its "Charge Off Date" caption prints with no date at all, so the entry shows no date for the write-off event.`;
+    },
+    uncertainty: 'The report prints the write-off in the account history and leaves the charge-off caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
+    request: 'please confirm the charge-off date for this account and have that date printed on this entry'
+  },
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': {
+    explain: (i) => {
+      const e = i.evidence || {};
+      const codes = (e.closure_codes || []).map((c) => `${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''}${c.period ? ` (${c.period})` : ''}`);
+      return `This report states that ${entryLabel(i)} is closed or cancelled (${codes.join('; ')}) while its "Closed Date" caption prints with no date at all, so the entry shows no closure date.`;
+    },
+    uncertainty: 'The report prints the closure in the account history and leaves the closed-date caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
+    request: 'please confirm the date this account was closed and have that date printed on this entry'
   }
 });
 
@@ -652,6 +718,9 @@ function publicIssue(issue) {
     account_number_in_report: issue.record_index,
     record_kind: issue.record ? issue.record.kind_label : null
   };
+  if (issue.basis_type !== BASIS_TYPE.STATUTORY_RETENTION && COMPLETENESS_CHECK_IDS.has(issue.check_id)) {
+    out.missing_detail = true;
+  }
   if (issue.report_identity) {
     out.report_identity = {
       bureau: issue.report_identity.bureau,

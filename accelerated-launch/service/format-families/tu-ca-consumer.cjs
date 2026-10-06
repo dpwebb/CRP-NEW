@@ -646,15 +646,30 @@ function paymentHistorySummary(region) {
 }
 
 
-/** The narrative codes and meanings the block prints on its own `Legend:` line. */
+/**
+ * The narrative codes and meanings the block prints on its own `Legend:` line.
+ *
+ * BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): the production lines of this presentation end in a
+ * CARRIAGE RETURN. In JavaScript `.` never matches `\r` and, without the multiline flag, `$` matches only at the
+ * very end of the string — so `(.+)$` could not match a line that ends in `\r` and every printed legend was
+ * silently dropped, leaving `narrative_legend` empty on all four accounts of the supplied report while the codes
+ * themselves (AC, CG, WO, TC, CZ) were still captured. The line's own native ending is removed here — nothing
+ * else about the line is changed and the entry's page/line location is preserved by the caller — so the report's
+ * OWN printed meanings are read instead of being lost. No code is ever decoded by guessing: a code carries a
+ * meaning only when the report itself prints one.
+ */
 function narrativeLegend(region) {
   const legend = {};
   for (const entry of region) {
-    const match = /^\s*Legend:\s*(.+)$/.exec(readable(entry.text));
+    const line = readable(entry.text).replace(/[\r\n]+/g, ' ').trim();
+    const match = /^\s*Legend:\s*(.+)$/.exec(line);
     if (!match) continue;
     for (const part of match[1].split(/,\s*/)) {
       const code = /^\s*([A-Z]{1,2})\s*-\s*(.+)$/.exec(part);
-      if (code && !Object.prototype.hasOwnProperty.call(legend, code[1])) legend[code[1]] = code[2].trim();
+      if (code) {
+        const meaning = code[2].trim();
+        if (meaning && !Object.prototype.hasOwnProperty.call(legend, code[1])) legend[code[1]] = meaning;
+      }
     }
   }
   return legend;
@@ -762,7 +777,14 @@ function buildTradeline(region, index, unread, mopLegend) {
      mapped only the opened and closed dates, so no recorded rule keyed on a last payment date could reach a
      TransUnion Canada tradeline. The shared bridge derives this fact’s source — raw printed value,
      page/line location and normalization — from the same `printed` entry, so nothing is invented here. */
-  if (printed['Last Payment Date'] && printed['Last Payment Date'].normalized) facts['tradeline.lastPaymentDate'] = printed['Last Payment Date'].normalized
+  if (printed['Last Payment Date'] && printed['Last Payment Date'].normalized) facts['tradeline.lastPaymentDate'] = printed['Last Payment Date'].normalized;
+
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): the two remaining decisive printed dates of this
+     layout are mapped into the SAME shared fact vocabulary, from the printed reading only. An explicit blank
+     maps NOTHING — the reading's own five-state entry stays in `printed`, so a check can still tell a caption
+     the report prints without a value from a label the report never prints, and no date is ever invented. */
+  if (printed['First Delinquency Date'] && printed['First Delinquency Date'].normalized) facts['tradeline.firstDelinquencyDate'] = printed['First Delinquency Date'].normalized;
+  if (printed['Charge Off Date'] && printed['Charge Off Date'].normalized) facts['tradeline.chargeOffDate'] = printed['Charge Off Date'].normalized;
 
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 first slice: read the block's printed MATERIAL fields through its own
      captions and its table's own header, and map them to the SAME fact vocabulary the shared checks already

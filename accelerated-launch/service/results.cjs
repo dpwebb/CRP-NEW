@@ -32,8 +32,13 @@ const SET_QUALIFICATIONS = Object.freeze([
 function plainStatement(machine, check, recordIndex, recordNoun) {
   if (!machine) return { headline: 'This check produced no result.', detail: null };
   const years = machine.arithmetic && machine.arithmetic.period_years ? machine.arithmetic.period_years : null;
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): an internal record kind ("tradeline") is never the
+     consumer's word for their own entry, and where a consumer word is used the internal index number is dropped
+     with it. A record kind without a consumer word keeps the pre-existing wording exactly. */
+  const CONSUMER_NOUNS = { tradeline: 'an account on your report', 'enquiry row': 'an enquiry on your report' };
   const noun = recordNoun || 'account';
-  const where = recordIndex === null ? 'your report' : `${noun} ${recordIndex}`;
+  const consumerNoun = CONSUMER_NOUNS[recordNoun] || null;
+  const where = consumerNoun ? consumerNoun : (recordIndex === null ? 'your report' : `${noun} ${recordIndex}`);
 
   if (machine.state === 'EVALUATED' && machine.outcome === COMPARISON_OUTCOME.PERIOD_EXCEEDED) {
     const finding = machine.finding || null;
@@ -183,6 +188,49 @@ function unresolvedReportFields(extraction, evaluation) {
   return fields;
 }
 
+/**
+ * BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): the printed label a comparison MEASURED FROM, taken
+ * from the run's own anchor. A comparison whose anchor is known is never attributed to a neighbouring field:
+ * telling a consumer that a rule measures from a date the rule does not measure from is a wrong statement about
+ * the comparison, even when the arithmetic itself is right. Only declared anchors with a printed label of their
+ * own are mapped here; every other run keeps the record's own source field exactly as before.
+ */
+const ANCHOR_FIELD_LABELS = Object.freeze({
+  'tradeline.lastPaymentDate': 'Last Payment Date'
+});
+
+function anchorFieldOf(machine) {
+  const anchor = machine && machine.anchor ? machine.anchor : null;
+  if (!anchor) return null;
+  const field = Array.isArray(anchor.field) ? anchor.field[0] : anchor.field;
+  return typeof field === 'string' ? field : null;
+}
+
+/** The record's own five-state reading of the anchor's printed label, when that label is one this build knows. */
+function anchorReading(record, field) {
+  const label = ANCHOR_FIELD_LABELS[field] || null;
+  if (!label || !record || !record.printed) return null;
+  const reading = record.printed[label];
+  return reading && typeof reading === 'object' ? reading : null;
+}
+
+/** The evidence for one comparison: the anchor's OWN printed reading when it is known, else the record's. */
+function evidenceForAnchor(record, field) {
+  const reading = anchorReading(record, field);
+  if (!reading) return evidenceFrom(record);
+  const loc = record.location || {};
+  return {
+    section: loc.section || null,
+    field: ANCHOR_FIELD_LABELS[field],
+    page: reading.location ? reading.location.page : null,
+    line: reading.location ? reading.location.line : null,
+    account_number_in_report: record.record_index,
+    account_starts_at: loc.account_starts_at || null,
+    account_ends_at: loc.account_ends_at || null,
+    printed_value: reading.raw || null
+  };
+}
+
 /** Build the consumer-facing result set. `machine` is retained for audit and is never rendered by the UI. */
 function renderResultSet(input) {
   const evaluation = input.evaluation;
@@ -199,13 +247,14 @@ function renderResultSet(input) {
     const record = row.record_index === null ? null : recordsByIndex.get(row.record_index) || null;
     const plain = plainStatement(row.machine, row.check, row.record_index, record ? record.kind_label : null);
     const finding = row.machine && row.machine.finding ? row.machine.finding : null;
+    const anchorField = anchorFieldOf(row.machine);
     return {
       account_number_in_report: row.record_index,
       check_name: row.check ? row.check.citation : null,
-      measures_from: record && record.source_field ? record.source_field : null,
+      measures_from: ANCHOR_FIELD_LABELS[anchorField] || (record && record.source_field ? record.source_field : null),
       headline: plain.headline,
       detail: plain.detail,
-      evidence: evidenceFrom(record),
+      evidence: evidenceForAnchor(record, anchorField),
       output_level: row.check ? row.check.output_ceiling : null,
       assessment_completed: Boolean(row.machine && row.machine.state === 'EVALUATED'),
       is_a_finding: Boolean(finding),
@@ -443,7 +492,11 @@ const TEASER_TITLE = Object.freeze({
   RETENTION: 'An entry kept longer than the recorded rule allows',
   INCLUSION: 'Content a recorded rule prohibits is being reported',
   OMISSION: 'A detail a recorded rule requires is missing from an entry',
-  INCONSISTENCY: 'Two details on the report cannot both be right'
+  INCONSISTENCY: 'Two details on the report cannot both be right',
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): a COMPLETENESS item that names no rule. The entry
+     states an event the report itself prints and leaves the caption for it without a date, so the remedy would
+     be an addition — and the title never claims that a rule requires the detail. */
+  FACTUAL_COMPLETENESS: 'An entry shows an event without the date for it'
 });
 
 const TEASER_CONFIDENCE_LABEL = Object.freeze({
@@ -452,6 +505,14 @@ const TEASER_CONFIDENCE_LABEL = Object.freeze({
   POTENTIAL: 'Potential issue'
 });
 
+/** The factual COMPLETENESS items: an event the report prints whose own caption carries no date. They name no
+ *  rule, so they are ranked as an addition for the teaser, and they are titled as what the report shows rather
+ *  than as a requirement of any recorded rule. The mark is the PUBLIC `missing_detail` flag, because the summary
+ *  is computed from the public issues and never from an internal check id. */
+function isCompletenessItem(issue) {
+  return Boolean(issue) && issue.missing_detail === true;
+}
+
 function severityRankOf(issue) {
   if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
   if (issue.basis_type === 'CONTENT_FINDING') {
@@ -459,10 +520,14 @@ function severityRankOf(issue) {
        required-detail label instead, so the two content remedies stay distinguishable without internal fields. */
     return (issue.content_included && issue.content_included.length) ? 0 : 1;
   }
+  /* A completeness item whose remedy is an addition ranks with the additions; every other factual observation
+     stays an inconsistency. */
+  if (isCompletenessItem(issue)) return 1;
   return 2;
 }
 
 function teaserTitleFor(issue, rank) {
+  if (isCompletenessItem(issue)) return TEASER_TITLE.FACTUAL_COMPLETENESS;
   if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
   if (issue.basis_type === 'CONTENT_FINDING') {
     return rank === 1 ? TEASER_TITLE.OMISSION : TEASER_TITLE.INCLUSION;

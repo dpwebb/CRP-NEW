@@ -4,7 +4,7 @@
   "inputs": {
     "coverage_ledger": "0ba85b52a7f645f1f8e022e7409e005a7dd2b032c066bd2719ba399e81e0b23b",
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
-    "adapter_configs": "79c5d0602839097b96fdf75d75ca0f189688c9c6703d824a7617bfd31cc7582a",
+    "adapter_configs": "93ee073a648cdc497e6cdceb9ebd5d90a86862c4da212c6d22ef332f892b04f2",
     "applicability_records": "de53f2e9d92642dc0424a2139c8dd92ad0842c5858952487b73f6fbe2c10afbf"
   },
   "record_classification_counts": {
@@ -2916,7 +2916,11 @@
         "country": "CA",
         "region": "CA-NS"
       },
-      "presentation_required": "PR-01",
+      "presentation_required": [
+        "PR-01",
+        "FAM-TU-CA-CONSUMER"
+      ],
+      "presentation_admission_note": "BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair, 2026-10-06): this limb's recorded anchor is a TRADELINE field, and the config itself recorded the divergence ('the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record'). The TransUnion Canada consumer presentation prints last-payment dates ON its tradelines and its reader maps them to that same shared fact with the printed page/line location, so the limb is admitted to this presentation as well. The output ceiling, the packet permission and the single admitted limb are UNCHANGED: the run records its own per-record arithmetic and emits no consumer finding. Any future consumer wording stays scoped to what the report shows: an aged but satisfactory, zero-balance, non-derogatory entry is NOT by itself asserted to be unlawful, and the default-date limb remains unseated.",
       "output_permission": {
         "max_conclusion": "observation",
         "finding_allowed": false,

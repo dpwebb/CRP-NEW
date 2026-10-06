@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T16:08:36.107Z",
+  "generated_at": "2026-10-06T17:12:19.957Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 51,
-      "digest": "B7C58944A089122228F0624258ABA17419FF8168EA2942400A33C73B9FF51FB9",
+      "digest": "730EC3B0B46AD15908564EDC41539FD305D5B9DDCE4ECA553CCE846E7E631CD9",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -47,7 +47,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "6F35E40AB550D0617DF192D65D2BF079595AADB6A5A32BAA33D5E1AB549A68AA"
+          "sha256": "A789769002093DCB7D8C9FFB077FA066A7075A729822F1092AF96D09DF9CB8FD"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -119,7 +119,7 @@
         },
         {
           "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
-          "sha256": "A8CEFC01C93C301BE76B851664276FEFD09386459CFB90B63E835C690D6E9288"
+          "sha256": "585024B498FBC6D27B382EC3762D81BC2A308AE45A4590BCD052CAB708544357"
         },
         {
           "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
@@ -135,7 +135,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "5864A702139DB091BC7393881E0521FF3DAB15119D285392CBE5A5502EEB5B68"
+          "sha256": "860B292743880D7B05C1580390B6691D00A2D815939AF5218B37C9B6929A02F5"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -183,7 +183,7 @@
         },
         {
           "file": "accelerated-launch/service/results.cjs",
-          "sha256": "77274D6D4DCDFF336CF6AD92C23847CF81C1A4D06D523CEDF92956DFDA669923"
+          "sha256": "60CEC80983BAF90ADCDC7FF29B312EE91B0D6637CBF7CD7800F2AF2F96B1B4C2"
         },
         {
           "file": "accelerated-launch/service/retention.cjs",
@@ -265,11 +265,11 @@
     {
       "id": "RULE_CONFIGURATION",
       "file_count": 7,
-      "digest": "5D06543A3EF05AB73B85C49B595AA67DEEC58CC93D406891E3FB6C80B5B150EC",
+      "digest": "393F01E84CD32E004FE1EB3CCBC6B8F9A4A02304F1911E8E3F4AE0A686F7EE17",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
-          "sha256": "79C5D0602839097B96FDF75D75CA0F189688C9C6703D824A7617BFD31CC7582A"
+          "sha256": "93EE073A648CDC497E6CDCEB9EBD5D90A86862C4DA212C6D22EF332F892B04F2"
         },
         {
           "file": "accelerated-launch/adapters/applicability-records.json",
@@ -285,7 +285,7 @@
         },
         {
           "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
-          "sha256": "515E12733B806F856161ECBC3C6E667057311605F84E561EEBE89E96B9F33A90"
+          "sha256": "3E66524191193045B2D763EDEFB62F04ED5E54A90B893DACAE5D6F2E5F614899"
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
@@ -364,6 +364,6 @@
       ]
     }
   ],
-  "manifest_digest": "1133CF76C411450F29F892BCACAA71CE681999DD7D3EDA70FE5864E5EF4EC1E3",
+  "manifest_digest": "49DA3CF7CC00F75973FFD55EBE8640F2D87F82ED8B61F4D356BBC86436DD8B62",
   "total_file_count": 81
 }

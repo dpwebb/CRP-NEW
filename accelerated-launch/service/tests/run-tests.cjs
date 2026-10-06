@@ -184,7 +184,11 @@ const SECTION_FILES = [
   'cp-consumer-plain-text.cjs',
   /* BATCH-28 — OWNER-PURCHASE-FLOW-001: assessment before purchase, the free summary and teaser, and the two
      separate purchase questions (one-time report unlock versus subscription). */
-  'cq-purchase-flow.cjs'];
+  'cq-purchase-flow.cjs',
+  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report core repair): the supplied real TransUnion Canada report
+     assessed under Nova Scotia — the reader repairs, the supported findings, the reporting-period limb and the
+     paid boundaries, with CRLF/LF and benign synthetic controls. */
+  'cr-ca-ns-tu-real-report.cjs'];
 
 function makeCheck(report, verbose) {
   const record = (label, fn) => {

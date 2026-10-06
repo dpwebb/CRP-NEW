@@ -482,6 +482,160 @@ function presentationCapability(presentationId) {
 }
 
 
+/* ------------------------------------------- the report's OWN narrative legend (TransUnion Canada blocks) */
+
+/**
+ * BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): the meanings a TransUnion Canada account block prints
+ * for its own narrative codes, and the codes that account's own monthly rows print. Every meaning used below is
+ * the report's OWN printed word — measured on the supplied disclosure: `AC-Account closed/rating non derogatory`,
+ * `CG-Account cancelled by credit grantor with derogatory rating`, `WO-Bad debt write-off`,
+ * `TC-Third party collection/account turned over to collection agency`, `CZ-Closed at consumer's request`. A code
+ * is NEVER decoded by guessing: a code whose meaning the report does not print carries no meaning here, and a
+ * check that needs one produces no result.
+ */
+function narrativeLegendOf(record) {
+  const material = record && record.account_material;
+  const legend = material && material.narrative_legend;
+  return legend && typeof legend === 'object' ? legend : {};
+}
+
+/** The narrative codes this account's own monthly rows print, each with the row that printed it. */
+function printedNarrativeCodes(record) {
+  const out = new Map();
+  for (const row of (record && record.monthly_rows) || []) {
+    for (const code of row.narrative_codes || []) {
+      const key = String(code).toUpperCase();
+      if (key && !out.has(key)) out.set(key, row);
+    }
+  }
+  return out;
+}
+
+/** The meaning the report's own legend line prints for a code, or null when the report prints none for it. */
+function printedMeaning(record, code) {
+  const legend = narrativeLegendOf(record);
+  for (const key of Object.keys(legend)) {
+    if (String(key).toUpperCase() === String(code).toUpperCase()) return String(legend[key]).trim() || null;
+  }
+  return null;
+}
+
+/** The five-state printed reading of one caption on one record, or null when the label is not on the record. */
+function printedCaption(record, label) {
+  const printed = (record && record.printed) || {};
+  return printed[label] || null;
+}
+
+/** A caption the report ITSELF prints but leaves without a value. A label the report never prints is not this. */
+function captionPrintedWithoutValue(record, label) {
+  const field = printedCaption(record, label);
+  return Boolean(field && field.state === 'LABEL_PRINTED_WITHOUT_VALUE');
+}
+
+/** The monthly cells whose manner-of-payment meaning the report itself prints as a bad debt placed for collection. */
+function adverseRatingCells(record) {
+  const facts = (record && record.facts) || {};
+  const cells = Array.isArray(facts['account.paymentHistoryCells']) ? facts['account.paymentHistoryCells'] : [];
+  return cells.filter((c) => /bad debt|placed for collection/i.test(String((c && c.meaning) || '')));
+}
+
+/** The codes this account prints whose OWN printed meaning matches the pattern. */
+function codesMeaning(record, pattern) {
+  return [...printedNarrativeCodes(record).entries()]
+    .map(([code, row]) => ({ code, row, meaning: printedMeaning(record, code) }))
+    .filter((e) => e.meaning && pattern.test(e.meaning));
+}
+
+function codeEvidence(entries) {
+  return entries.map((e) => ({
+    code: e.code,
+    meaning_as_the_report_prints_it: e.meaning,
+    period: e.row ? e.row.period : null,
+    location: e.row ? e.row.location : null
+  }));
+}
+
+/* 11. An entry the REPORT ITSELF presents as an adverse or collection debt, on which its own delinquency caption
+   is printed with no value. The report states the bad-debt/collection status and, in the same entry, prints the
+   `First Delinquency Date` caption without a date, so the entry carries no usable anchor for when the
+   delinquency began. This is a factual COMPLETENESS concern offered as a POTENTIAL verification item: no statute
+   is named, no omission is established, no date is invented, and an aged but satisfactory account never reaches
+   this check. */
+function adverseEntryWithoutADelinquencyAnchor(records) {
+  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+    && captionPrintedWithoutValue(r, 'First Delinquency Date')
+    && (adverseRatingCells(r).length > 0 || codesMeaning(r, /collection/i).length > 0);
+  if (!records.some(relevant)) return null;
+  const matches = [];
+  for (const r of records) {
+    if (!relevant(r)) continue;
+    const caption = printedCaption(r, 'First Delinquency Date');
+    matches.push(match(r, 'ADVERSE_ENTRY_WITHOUT_A_USABLE_DELINQUENCY_DATE', {
+      delinquency_caption: { state: caption.state, reason: caption.reason || null, location: caption.location || null },
+      adverse_payment_ratings: adverseRatingCells(r).map((c) => ({
+        period: c.period || null,
+        raw_period: c.raw_period || null,
+        code: c.code || null,
+        meaning_as_the_report_prints_it: c.meaning || null,
+        location: c.location || null
+      })),
+      collection_or_cancellation_codes: codeEvidence(codesMeaning(r, /collection/i))
+    }));
+  }
+  return entry('COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
+    'an entry the report presents as a bad debt or collection with no date for when the delinquency began',
+    matches,
+    'No entry that the report presents as a bad debt or collection with an empty delinquency date was detected in the records we could read.',
+    'This report presents at least one entry as a bad debt or collection debt and prints that entry delinquency caption without a date, so the entry shows no date for when the delinquency began. That is a completeness question about what the report prints, not a legal conclusion.');
+}
+
+/* 12. A write-off the report's OWN legend defines, printed on an entry whose charge-off caption carries no date.
+   The report says the debt was written off and gives the reader no charge-off date for it. */
+function writeOffWithoutAChargeOffDate(records) {
+  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+    && captionPrintedWithoutValue(r, 'Charge Off Date')
+    && codesMeaning(r, /write-?off/i).length > 0;
+  if (!records.some(relevant)) return null;
+  const matches = [];
+  for (const r of records) {
+    if (!relevant(r)) continue;
+    const caption = printedCaption(r, 'Charge Off Date');
+    matches.push(match(r, 'WRITE_OFF_PRINTED_WITHOUT_A_CHARGE_OFF_DATE', {
+      charge_off_caption: { state: caption.state, reason: caption.reason || null, location: caption.location || null },
+      write_off_codes: codeEvidence(codesMeaning(r, /write-?off/i))
+    }));
+  }
+  return entry('COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
+    'an entry that prints a write-off with no charge-off date',
+    matches,
+    'No entry that prints a write-off with an empty charge-off date was detected in the records we could read.',
+    'This report prints a write-off in at least one entry and prints that entry charge-off caption without a date, so the entry shows no date for the write-off event. That is a completeness question about what the report prints, not a legal conclusion.');
+}
+
+/* 13. A closure the report's OWN legend defines, printed on an entry whose closed caption carries no date. Only
+   the report's own printed meaning counts: `Closed at consumer's request` is a closure, and a code the report
+   does not define is never treated as one. A printed product type of OPEN is never read as a lifecycle status. */
+function closureStatedWithoutAClosedDate(records) {
+  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+    && captionPrintedWithoutValue(r, 'Closed Date')
+    && codesMeaning(r, /closed|cancell?ed/i).length > 0;
+  if (!records.some(relevant)) return null;
+  const matches = [];
+  for (const r of records) {
+    if (!relevant(r)) continue;
+    const caption = printedCaption(r, 'Closed Date');
+    matches.push(match(r, 'CLOSURE_PRINTED_WITHOUT_A_CLOSED_DATE', {
+      closed_caption: { state: caption.state, reason: caption.reason || null, location: caption.location || null },
+      closure_codes: codeEvidence(codesMeaning(r, /closed|cancell?ed/i))
+    }));
+  }
+  return entry('COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE',
+    'an entry that states a closure or cancellation with no closed date',
+    matches,
+    'No entry that states a closure or cancellation with an empty closed date was detected in the records we could read.',
+    'This report states a closure or cancellation in at least one entry and prints that entry closed caption without a date, so the entry shows no date for the closure. That is a completeness question about what the report prints, not a legal conclusion.');
+}
+
 function runCommonErrorChecks(context) {
   const extraction = context.extraction || null;
   /* BLOCKER-COMMON-ERRORS-001 runs on ANY presentation whose records carry the account/liability facts a check
@@ -503,7 +657,13 @@ function runCommonErrorChecks(context) {
     similarEntriesWorthReviewing(records),
     reportedDatesOutOfOrder(records),
     adverseAfterFirstReport(records),
-    identityDiscrepancy(identity)
+    identityDiscrepancy(identity),
+    /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three factual COMPLETENESS checks over the entry's
+       own printed material and the meanings the report itself prints for its codes. Each returns null when its
+       evidence is absent, so a presentation that does not print this material is never forced through it. */
+    adverseEntryWithoutADelinquencyAnchor(records),
+    writeOffWithoutAChargeOffDate(records),
+    closureStatedWithoutAClosedDate(records)
   ].filter(Boolean);
   return {
     performed,
@@ -517,5 +677,5 @@ function runCommonErrorChecks(context) {
   };
 }
 
-module.exports = { CHECK_CLASS, runCommonErrorChecks, formatCapability, presentationCapability, PRESENTATION_FIELD_CAPABILITY, PRESENTATION_RETAINED_NOT_USABLE, USABLE_FIELD_PREDICATES, usableField, ISSUE_TYPE_FIELD_REQUIREMENTS, contradictoryAccountDates, accountStatusDateContradiction, balancePaymentConsistency, paymentHistoryConsistency, responsibilityInconsistency, identityDiscrepancy, duplicateReporting, similarEntriesWorthReviewing, reportedDatesOutOfOrder, adverseAfterFirstReport };
+module.exports = { CHECK_CLASS, runCommonErrorChecks, formatCapability, presentationCapability, PRESENTATION_FIELD_CAPABILITY, PRESENTATION_RETAINED_NOT_USABLE, USABLE_FIELD_PREDICATES, usableField, ISSUE_TYPE_FIELD_REQUIREMENTS, contradictoryAccountDates, accountStatusDateContradiction, balancePaymentConsistency, paymentHistoryConsistency, responsibilityInconsistency, identityDiscrepancy, duplicateReporting, similarEntriesWorthReviewing, reportedDatesOutOfOrder, adverseAfterFirstReport, adverseEntryWithoutADelinquencyAnchor, writeOffWithoutAChargeOffDate, closureStatedWithoutAClosedDate };
 
