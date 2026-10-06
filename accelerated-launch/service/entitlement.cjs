@@ -336,8 +336,9 @@ function plansView(store, actor, env) {
 
 /**
  * OWNER-PURCHASE-FLOW-001 (completion): a consumer must never be charged for a one-time unlock without a valid
- * report to unlock. Every check happens HERE, on the server, BEFORE the provider is resolved, called or a
- * checkout row is written — the browser cannot supply a valid selection.
+ * report to unlock. Every check happens HERE, on the server, BEFORE the payment provider is called and BEFORE a
+ * checkout row is written — the browser cannot supply a valid selection. (The provider CONFIGURATION is checked
+ * first, only so a host with no usable provider still fails closed with PAYMENT_PROVIDER_NOT_CONFIGURED.)
  *
  *   • the case must be named;
  *   • it must belong to the signed-in account (the existing ownership refusal, which exposes no detail about

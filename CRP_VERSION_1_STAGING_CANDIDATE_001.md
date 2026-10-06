@@ -4,7 +4,7 @@ Date: October 5, 2026 (America/Halifax). Authority: the owner's seven-day finish
 
 **NOTHING HERE HAS BEEN DEPLOYED, AND NOTHING HERE MAY BE DEPLOYED WITHOUT THE APPLICABLE AUTHORIZATION.** No host was contacted, no DNS record or TLS certificate exists, no service unit was installed, no payment provider was provisioned, no container was built, no key or secret was read, and no outbound call was made. This record prepares the reviewable candidate; it does not serve it.
 
-**Identity supersession (Batches 24–29, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §16 at the end of this file — manifest `183DE0DED74A23179C77FE37FB8E04253E3752415E6ADC5A69F54A0C896E43F3`, build `crp-v1-183de0ded74a2317`, 81 files in five groups, full local regression **PASS 5608, 0 failed, 0 skipped**. Earlier digests quoted below (`CF8D50D6…1A5B`, `4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging still serves `crp-v1-7ac42970c633a742`**; Batches 28–29 are not deployed.
+**Identity supersession (Batches 24–29, October 5 2026).** The identity rows in this record are layered history: the **current** candidate identity is recorded in §16 at the end of this file — manifest `4E2ACF545C282D145CD2BF36C12C16A4DF2CECEA2616C52E495E1105E4DB2B41`, build `crp-v1-4e2acf545c282d14`, 81 files in five groups, full local regression **PASS 5608, 0 failed, 0 skipped**. Earlier digests quoted below (`183DE0DE…43F3`, `CF8D50D6…1A5B`, `4A884386…3572`, `48A7D467…2DB2`, `75755118…166A`, `B4501A27…89D0`, `C127270A…A830`, `C796E1B5…B65B`, `499F03D6…5D5F`, `FFAB6CA9…B733`, `179A060F…6990`, `7AC42970…2B43`) describe earlier trees and are superseded. **Staging still serves `crp-v1-7ac42970c633a742`**; Batches 28–29 are not deployed.
 
 ## 1. Exact candidate identity
 
@@ -366,8 +366,8 @@ The selected case is bound to the checkout record and to the verified payment ev
 
 | Item | Value |
 | --- | --- |
-| Manifest digest | `183DE0DED74A23179C77FE37FB8E04253E3752415E6ADC5A69F54A0C896E43F3` |
-| Internal build identity | `crp-v1-183de0ded74a2317` |
+| Manifest digest | `4E2ACF545C282D145CD2BF36C12C16A4DF2CECEA2616C52E495E1105E4DB2B41` |
+| Internal build identity | `crp-v1-4e2acf545c282d14` |
 | Covered surface | **81 files in five groups** — `RUNTIME` 51, `READER_SUPPORT` 10, `RULE_CONFIGURATION` 7, `RULE_CONFIGURATION_TOP_LEVEL` 9, `SERVED_ASSETS` 4 |
 | Determinism | three consecutive regenerations; identical digest each run |
 | Regression at freeze | `node accelerated-launch/service/tests/run-tests.cjs` → **PASS 5608, 0 failed, 0 skipped** |
