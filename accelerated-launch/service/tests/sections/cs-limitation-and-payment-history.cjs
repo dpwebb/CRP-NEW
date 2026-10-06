@@ -231,17 +231,28 @@ function runPaymentHistoryControls(check, evidence) {
   check.equal(benign.performed.find((p) => p.check_id === 'PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH').state, 'NOT_DETECTED',
     'a month rated as a bad debt and cancelled with a derogatory rating is consistent, so nothing is raised');
 
-  /* 3. A payment printed on a month after the write-off month. */
+  /* 3. Ordinary post-write-off payment is benign; a same-month no-payment description is affirmative conflict. */
   const payment = paymentHistory.runPaymentHistoryAnalysis({
     extraction: extractionOf([tuBlock({
       creditor: 'SYNTHETIC PAYMENT',
-      legend: 'WO-Bad debt write-off',
+      legend: 'WO-Bad debt write-off, NP-No payment received',
       months: [{ period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }, { period: 'Sep 2024', mop: '5', narrative: '', payment: '50' }]
     })])
   });
-  const payEntry = payment.performed.find((p) => p.check_id === 'PH-PAYMENT-PRINTED-AFTER-A-WRITE-OFF-MONTH');
-  check.equal(payEntry.state, 'POTENTIAL_ISSUE', 'a payment printed after the write-off month is raised');
+  const paymentId = 'PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF';
+  check.equal(payment.performed.find((p) => p.check_id === paymentId).state, 'NOT_DETECTED',
+    'an ordinary payment after a write-off is not a contradiction');
+  const contradictedPayment = paymentHistory.runPaymentHistoryAnalysis({
+    extraction: extractionOf([tuBlock({
+      creditor: 'SYNTHETIC PAYMENT CONFLICT',
+      legend: 'WO-Bad debt write-off, NP-No payment received',
+      months: [{ period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }, { period: 'Sep 2024', mop: '5', narrative: 'NP /', payment: '50' }]
+    })])
+  });
+  const payEntry = contradictedPayment.performed.find((p) => p.check_id === paymentId);
+  check.equal(payEntry.state, 'POTENTIAL_ISSUE', 'a later payment conflicting with the same month no-payment narrative is raised');
   check.equal(payEntry.source_records[0].evidence.payment_amount, 50, 'with the printed payment amount');
+  check.equal(payEntry.source_records[0].evidence.no_payment_meaning, 'No payment received', 'and the report own conflicting meaning');
   check.equal(payEntry.source_records[0].evidence.write_off_period, '2024-07', 'and the write-off month it followed');
   /* The benign twin: a payment printed BEFORE the write-off month is not this candidate. */
   const before = paymentHistory.runPaymentHistoryAnalysis({
@@ -251,7 +262,7 @@ function runPaymentHistoryControls(check, evidence) {
       months: [{ period: 'Jan 2024', mop: '2', narrative: '', payment: '50' }, { period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }]
     })])
   });
-  check.equal(before.performed.find((p) => p.check_id === 'PH-PAYMENT-PRINTED-AFTER-A-WRITE-OFF-MONTH').state, 'NOT_DETECTED',
+  check.equal(before.performed.find((p) => p.check_id === paymentId).state, 'NOT_DETECTED',
     'a payment printed before the write-off month is not raised');
 
   /* 4. A printed first-delinquency anchor later than a month the same history already shows as late. */
@@ -350,6 +361,37 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(packet.status, 200, 'a subscriber can open the packet flow for it');
   const selected = await service.request('POST', `/api/cases/${caseId}/packet/select`, { token: actor.token, body: { issue_ids: [item.issue_id] } });
   check.equal(selected.status, 200, 'and select the limitation concern into verification correspondence');
+  const paymentCase = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-NS' } });
+  check.equal(paymentCase.status, 201, 'a second case holds the independent payment-history conflict');
+  const paymentCaseId = paymentCase.json.case.case_id;
+  const paymentExtraction = extractionOf([tuBlock({
+    creditor: 'SYNTHETIC PAYMENT CONFLICT', legend: 'WO-Bad debt write-off, NP-No payment received',
+    months: [{ period: 'Jul 2024', mop: '9', narrative: 'WO /', payment: '0' }, { period: 'Sep 2024', mop: '5', narrative: 'NP /', payment: '50' }]
+  })]);
+  const paymentEvaluation = evaluateCase({ country: 'CA', region: 'CA-NS', extraction: paymentExtraction, assessment_clock: clockAt('2026-01-10') });
+  check.equal(paymentEvaluation.payment_history_analysis.summary.potential_issue, 1, 'the evaluator retains the reader-backed conflict');
+  const paymentRendered = results.renderResultSet({ evaluation: paymentEvaluation, extraction: paymentExtraction });
+  service.service.store.update((state) => {
+    state.results.push({ result_id: `res_cs_${crypto.randomBytes(8).toString('hex')}`, case_id: paymentCaseId,
+      account_id: actor.account_id, file_id: null, file_ids: [], evaluation: paymentEvaluation,
+      rendered: paymentRendered, extraction: paymentExtraction, clarification_eligibility: [],
+      reviewed_at: null, created_at: new Date().toISOString() });
+  });
+  const paymentView = (await service.request('GET', `/api/cases/${paymentCaseId}`, { token: actor.token })).json.view;
+  const paymentItem = paymentView.result.issues.find((i) => /No payment received/i.test(String(i.explanation)));
+  check.ok(paymentItem, `the reader-backed payment conflict reaches a plain-English consumer issue; saw ${paymentView.result.issues.map((i) => i.explanation).join(' | ')}`);
+  check.ok(paymentItem && /No payment received/.test(String(paymentItem.explanation)), 'the issue names the printed conflicting description');
+  check.equal(paymentItem && paymentItem.request_type, 'VERIFICATION', 'without asserting a violation');
+  const paymentSelection = await service.request('POST', `/api/cases/${paymentCaseId}/packet/select`,
+    { token: actor.token, body: { issue_ids: [paymentItem.issue_id] } });
+  check.equal(paymentSelection.status, 200, 'the consumer can select that factual issue');
+  const correspondence = await service.request('POST', `/api/cases/${paymentCaseId}/packet/correspondence`,
+    { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+  check.equal(correspondence.status, 200, 'and review the correspondence with fictional contact details');
+  const paymentApproval = await service.request('POST', `/api/cases/${paymentCaseId}/packet/approve`, { token: actor.token });
+  check.equal(paymentApproval.status, 200, 'the selected correspondence can be approved');
+  const paymentDownload = await service.request('GET', `/api/cases/${paymentCaseId}/packet-download`, { token: actor.token });
+  check.equal(paymentDownload.status, 200, 'and the entitled consumer can download the approved packet');
   evidence.consumer_path = { distinct_total: view.assessment_summary.distinct_total, selected_issue: item.issue_id };
 }
 

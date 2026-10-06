@@ -130,7 +130,8 @@ function ratingContradictsNarrative(records) {
      'a code meaning is quoted exactly as the report prints it in its own legend, never decoded by this build']);
 }
 
-/* 2. A payment amount printed on a month AFTER a month whose own narrative is a write-off or charge-off. */
+/* 2. A later payment is ordinary after a write-off. Raise only when that later month also prints an
+   explicit no-payment narrative for the same account and period. */
 function paymentAfterWriteOff(records) {
   const matches = [];
   for (const record of records) {
@@ -146,20 +147,24 @@ function paymentAfterWriteOff(records) {
       if (row.period <= firstWriteOff.period) continue;
       const payment = amountOf(row, 'payment');
       if (payment === null || payment <= 0) continue;
-      matches.push(match(record, row, 'PAYMENT_PRINTED_AFTER_A_WRITE_OFF_MONTH', {
+      const noPayment = narrativesOf(record, row).find((n) => n.meaning && /\b(?:no payment (?:received|made|posted)|payment not (?:received|made|posted))\b/i.test(n.meaning));
+      if (!noPayment) continue;
+      matches.push(match(record, row, 'PAYMENT_CONTRADICTS_SAME_MONTH_NO_PAYMENT_NARRATIVE_AFTER_WRITE_OFF', {
         write_off_period: firstWriteOff.period,
         write_off_code: firstWriteOff.code,
         write_off_meaning: firstWriteOff.meaning,
         write_off_location: firstWriteOff.location,
-        payment_amount: payment
+        payment_amount: payment,
+        no_payment_code: noPayment.code,
+        no_payment_meaning: noPayment.meaning
       }));
     }
   }
-  return entry('PH-PAYMENT-PRINTED-AFTER-A-WRITE-OFF-MONTH',
-    'a payment printed on a month after the month the report says the debt was written off',
+  return entry('PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE-AFTER-WRITE-OFF',
+    'a payment amount and a no-payment description printed for the same month after a write-off',
     matches,
-    'No account read here prints a payment amount on a month after its own write-off or charge-off month.',
-    'This report prints a payment amount on a month that follows the month it says the debt was written off, on the same account. Both of those statements are the report own.',
+    'No later month of an account read here prints both a payment amount and an explicit no-payment description.',
+    'For the same month after a write-off, this account prints a payment amount and a description saying no payment was received. Please verify which reading is correct.',
     ['a payment can be posted and later reversed, and a row may report the month a payment was applied rather than received',
      'a write-off is an accounting event and does not by itself stop a payment being recorded']);
 }

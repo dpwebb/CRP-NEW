@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-06T20:51:29.111Z",
+  "generated_at": "2026-10-06T21:04:17.144Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 54,
-      "digest": "A35F5330B752DBD7F193880C3DA4CAFB48CEF26E5BC5A83705FFFE34E04B9A02",
+      "digest": "B74CEC3E91BA4A656504F3452D6D6800DD4A12E63B9E9C43D2EBFAE3081A02AF",
       "files": [
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -139,7 +139,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "048735E81EA63A2CA3B9320C9110754DE3823BC23863F59DD369F65E0F19748D"
+          "sha256": "F18A1C626B87614934EFB8D51E2553DD7ECF6A49B68D08762ACCDE5FEAADCCD5"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -167,7 +167,7 @@
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
-          "sha256": "A659F3A743665D513844423CC768F8331A6AA15E234AD87B10AAAE935FE50EAB"
+          "sha256": "3147341DB472F0EF467A43290A915F4B339BE3EE7B09E1C4C75D99CB6020F582"
         },
         {
           "file": "accelerated-launch/service/payment-history-grid.cjs",
@@ -376,6 +376,6 @@
       ]
     }
   ],
-  "manifest_digest": "927E4A6A4F122E744C6A52D633F4DC33259E6F65A13998B55C510AA119B73168",
+  "manifest_digest": "586FCACAB1619B4958271B0E7ABF791EDA975C13422929C4D60FEB854B7BE840",
   "total_file_count": 84
 }
