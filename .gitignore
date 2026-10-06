@@ -60,3 +60,5 @@ bundle/
 # Existing independently versioned UI repository: preserve its own history
 /consumer-wizard/
 /SOURCE_CAPTURES/PHASE5-001N/retrieved/R01-CA-FCA-credit-report-information.html
+
+.playwright-cli/
