@@ -740,9 +740,9 @@ function printedTextValue(label, reading) {
 /** A printed amount as a number, only when the whole cell is a printed number; otherwise undefined (never zero). */
 function amountOf(raw) {
   if (raw === undefined || raw === null) return undefined;
-  const text = String(raw).replace(/[^0-9.]/g, '');
-  if (!/^\d+(\.\d+)?$/.test(text)) return undefined;
-  const value = Number(text);
+  const text = String(raw).trim();
+  if (!/^(?:[+-]?\$?|\$[+-]?)(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/.test(text)) return undefined;
+  const value = Number(text.replace(/[$,]/g, ''));
   return Number.isFinite(value) ? value : undefined;
 }
 
@@ -770,6 +770,7 @@ function buildTradeline(region, index, unread, mopLegend) {
      tradeline) to the account lifecycle facts the account-dates check compares. Values are taken only from the printed
      reading; a missing or unresolved label maps nothing and never stops an independent check. */
   const facts = {};
+  const factSources = {};
   if (printed['Opened Date'] && printed['Opened Date'].normalized) facts['liability.openedDate'] = printed['Opened Date'].normalized;
   if (printed['Closed Date'] && printed['Closed Date'].normalized) facts['liability.closedDate'] = printed['Closed Date'].normalized;
   /* BATCH-8: map the block’s own printed Last Payment Date into the SHARED fact vocabulary the statutory
@@ -808,21 +809,36 @@ function buildTradeline(region, index, unread, mopLegend) {
     if (material.summary) printed['Payment History'] = printedTextValue('Payment History', material.summary);
     if (material.creditor && material.creditor.raw) facts['account.reported_identity'] = material.creditor.raw;
     if (material.account_type && material.account_type.account_type) facts['account.type'] = material.account_type.account_type;
-    if (material.account_type && material.account_type.responsibility) facts['account.responsibility'] = material.account_type.responsibility;
+    if (material.account_type && material.account_type.responsibility) {
+      facts['account.responsibility'] = material.account_type.responsibility;
+      factSources['account.responsibility'] = {
+        raw_value: material.account_type.raw,
+        normalized_value: material.account_type.responsibility,
+        source_field: 'Account Type',
+        location: { ...material.account_type.location },
+        record_index: index
+      };
+    }
     const latest = material.rows.length ? material.rows[0] : null;
     if (latest) {
       /* Each amount keeps its printed raw reading beside the number, under the `<field>Raw` key the packet's
          source-linked provenance already reads, so a compared amount can state exactly what the report printed. */
-      const balance = amountOf(latest.cells.balance);
-      if (balance !== undefined) { facts['account.balance'] = balance; facts['account.balanceRaw'] = latest.cells.balance; }
-      const pastDue = amountOf(latest.cells.past_due);
-      if (pastDue !== undefined) { facts['account.pastDueAmount'] = pastDue; facts['account.pastDueAmountRaw'] = latest.cells.past_due; }
-      const payment = amountOf(latest.cells.payment);
-      if (payment !== undefined) { facts['account.paymentAmount'] = payment; facts['account.paymentAmountRaw'] = latest.cells.payment; }
-      const highCredit = amountOf(latest.cells.high_credit);
-      if (highCredit !== undefined) { facts['account.amount'] = highCredit; facts['account.amountRaw'] = latest.cells.high_credit; }
-      const creditLimit = amountOf(latest.cells.credit_limit);
-      if (creditLimit !== undefined) { facts['account.creditLimit'] = creditLimit; facts['account.creditLimitRaw'] = latest.cells.credit_limit; }
+      for (const [field, cell, caption] of [
+        ['account.balance', 'balance', 'Balance'],
+        ['account.pastDueAmount', 'past_due', 'Past Due'],
+        ['account.paymentAmount', 'payment', 'Payment'],
+        ['account.amount', 'high_credit', 'High Credit'],
+        ['account.creditLimit', 'credit_limit', 'Credit Limit']
+      ]) {
+        const value = amountOf(latest.cells[cell]);
+        if (value === undefined) continue;
+        facts[field] = value;
+        facts[field + 'Raw'] = latest.cells[cell];
+        /* A field-keyed source keeps equal numeric values on their own columns; the block's Reported Date
+           and another amount with the same value are never substitutes for this row's caption and location. */
+        factSources[field] = { raw_value: latest.cells[cell], normalized_value: value,
+          source_field: caption, location: { ...latest.location, label: caption }, record_index: index };
+      }
     }
     if (material.rows.length) {
       facts['account.paymentHistoryCells'] = material.rows.map((row) => {
@@ -865,7 +881,8 @@ function buildTradeline(region, index, unread, mopLegend) {
       narrative_codes: narrativeCodesOf(row.cells.narrative)
     })) : [],
     printed,
-    facts
+    facts,
+    fact_sources: factSources
   };
 }
 
@@ -1201,7 +1218,11 @@ function extract(model, admission) {
       normalized_value: readableAnchor ? readableAnchor.normalized : null,
       raw_value: readableAnchor ? readableAnchor.raw : null,
       source_field: TRADELINE_DATE_LABELS[0],
-      section_path: record.section
+      section_path: record.section,
+      ...(referenceDate.status === FACT_STATUS.RESOLVED && referenceDate.raw_value != null
+        && referenceDate.normalized_value && referenceDate.location ? {
+          report_reference_date: { ...referenceDate, location: { ...referenceDate.location } }
+        } : {})
     });
   });
   const byKind = {
