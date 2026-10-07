@@ -23,18 +23,17 @@
  *     `LABEL_PRINTED_WITHOUT_VALUE`, `VALUE_MALFORMED_PRINTED_FORM` and `VALUE` are four distinct states
  *     and are never collapsed. A read failure on the page is a fifth and is never a blank.
  *   • IT READS ONLY WHAT IT CAN BIND. The account sections print a two-column block in which a label and its
- *     value can fall on different lines. No label/value binding is attempted there, so no value is borrowed
- *     from an adjacent column: those sections contribute only their own printed item boundary. A value that
- *     cannot be bound is left unread rather than guessed.
- *   • IT RETAINS NO REPORT TEXT AND NO IDENTIFIER. It returns labels, tokens the checks name explicitly
- *     (dates, counts and status words), and page/line locations. It never returns page text. An account
- *     number or member number is used INSIDE this module only, to group records that print the same
- *     identifiers, and is replaced by the record indexes it matched before anything is returned.
+ *     value can fall on different lines. The own Overview schema and native word geometry bind those
+ *     columns; missing geometry cannot supply an association. A value that cannot be bound is unread.
+ *   • IT RETAINS NO REPORT TEXT OR FULL IDENTIFIER. It returns labels, named facts, literal masked
+ *     identifiers, privacy tokens for creditor matching, and source locations. Historical collection
+ *     identifier readings remain redacted. Unmasked account/member numbers never leave this module.
  *   • IT NEVER MATCHES TWO RECORDS BY NAME. Two similar creditor names are not the same account, and a name
  *     is never an input to the grouping.
  */
 
 const crypto = require('node:crypto');
+const { printedAmount } = require('./report-amount.cjs');
 const { FACT_STATUS } = require('../../internal-validation/ca-ns-last-payment-six-year/constants.cjs');
 const {
   locateRequestDate, locateCollectionsSection, locateDebtRecords, tokenAfter, normalizePrintedDate
@@ -406,17 +405,286 @@ function redactIdentifiers(record) {
   return Object.assign({}, record, { printed });
 }
 
+/* PR-01's ordinary account tables use positioned, wrapped captions. Values sit between
+   caption baselines: text-line adjacency cannot bind them to the correct column. Read
+   only the measured native geometry inside an own Overview block. No family admission
+   or whole-report text fallback is introduced here. */
+function decodedWord(text) {
+  return readable(String(text || '').replace(/\uFB00/g, 'ff').replace(/\uFB03/g, 'ffi')
+    .replace(/&#(x[0-9a-f]+|\d+);/gi, (raw, n) => {
+      const code = n[0].toLowerCase() === 'x' ? parseInt(n.slice(1), 16) : Number(n);
+      return code <= 0x10ffff ? String.fromCodePoint(code) : raw;
+    })
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&apos;/g, "'"));
+}
+
+function textKey(text) { return decodedWord(text).replace(/\s+/g, ' ').trim(); }
+
+function nativeRows(page) {
+  const rows = [];
+  for (const word of (page.word_boxes || []).slice().sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0)) {
+    if (![word.x0, word.y0, word.x1, word.y1].every(Number.isFinite)) continue;
+    let row = rows.find((r) => Math.abs(r.y - word.y0) <= 2);
+    if (!row) { row = { y: word.y0, words: [] }; rows.push(row); }
+    row.words.push({ ...word, text: decodedWord(word.text) });
+  }
+  const native = page.lines.map((line, index) => ({ text: textKey(line), line: index + 1 }));
+  for (const row of rows) {
+    row.words.sort((a, b) => a.x0 - b.x0);
+    const joined = (items) => textKey(items.flatMap((r) => r.words).sort((a, b) => a.x0 - b.x0).map((w) => w.text).join(' '));
+    const next = rows.find((r) => r.y > row.y && r.y - row.y <= 8), previous = rows.slice().reverse().find((r) => r.y < row.y && row.y - r.y <= 8);
+    const choices = [[row], ...(next ? [[row, next]] : []), ...(previous ? [[previous, row]] : [])];
+    const choice = choices.find((items) => native.some((line) => line.text === joined(items)));
+    row.matchText = choice ? joined(choice) : null;
+    row.matchY = choice ? Math.min(...choice.map((r) => r.y)) : row.y;
+  }
+  for (const row of rows) {
+    const matches = row.matchText ? native.filter((line) => line.text === row.matchText) : [];
+    const physical = [...new Set(rows.filter((r) => r.matchText === row.matchText).map((r) => r.matchY))].sort((a, b) => a - b);
+    row.line = matches.length === 1 ? matches[0].line : matches.length && matches.length === physical.length
+      ? matches[physical.indexOf(row.matchY)].line : null;
+  }
+  return rows;
+}
+
+function wordsLocation(page, rows, words, label) {
+  if (!words.length) return null;
+  const row = rows.find((r) => Math.abs(r.y - words[0].y0) <= 2);
+  return { page: page.page, line: row && row.line, label, source: 'NATIVE_TEXT',
+    bbox: { x0: Math.min(...words.map((w) => w.x0)), y0: Math.min(...words.map((w) => w.y0)),
+      x1: Math.max(...words.map((w) => w.x1)), y1: Math.max(...words.map((w) => w.y1)), units: 'pt' },
+    trusted: words.every((w) => w.trusted !== false) };
+}
+
+function captionReadings(page, rows, label, minX, maxX, minY, maxY) {
+  const want = label.toLowerCase();
+  const candidates = rows.filter((r) => r.y >= minY && r.y < maxY)
+    .map((r) => ({ y: r.y, words: r.words.filter((w) => w.x0 >= minX && w.x0 < maxX) }))
+    .filter((r) => r.words.length);
+  const found = [];
+  for (let i = 0; i < candidates.length; i += 1) {
+    const first = candidates[i], next = candidates[i + 1];
+    const a = textKey(first.words.map((w) => w.text).join(' ')).toLowerCase();
+    const wrapped = next && next.y - first.y <= 18
+      ? first.words.concat(next.words) : null;
+    const b = wrapped && textKey(wrapped.map((w) => w.text).join(' ')).toLowerCase();
+    if (a === want || b === want) found.push({ words: a === want ? first.words : wrapped,
+      top: first.y, bottom: a === want ? first.y : next.y });
+  }
+  return found;
+}
+
+function positionedReading(page, rows, label, captions, valueMin, valueMax, normalize) {
+  const base = { label, raw: null, normalized: null, printed_times_in_record: captions.length,
+    state: captions.length ? 'LABEL_PRINTED_WITHOUT_VALUE' : 'NOT_PRINTED', reason: 'LABEL_NOT_PRINTED_ON_THIS_RECORD',
+    location: null };
+  if (!captions.length) return base;
+  const readings = captions.map((caption) => {
+    const values = rows.filter((r) => r.y >= caption.top - 1 && r.y <= caption.bottom + 12)
+      .flatMap((r) => r.words.filter((w) => w.x0 >= valueMin && w.x0 < valueMax));
+    const raw = textKey(values.map((w) => w.text).join(' '));
+    const captionLocation = wordsLocation(page, rows, caption.words, label);
+    const location = wordsLocation(page, rows, values, label) || (captionLocation && { ...captionLocation });
+    if (location) location.caption_location = captionLocation;
+    const trusted = caption.words.concat(values).every((w) => w.trusted !== false);
+    const value = raw && trusted ? normalize(raw) : null;
+    return { ...base, raw: raw || null, normalized: value, location,
+      trusted, state: !trusted ? 'SOURCE_UNTRUSTED' : !raw ? 'LABEL_PRINTED_WITHOUT_VALUE'
+        : value == null ? 'VALUE_MALFORMED_PRINTED_FORM' : 'VALUE',
+      reason: !trusted ? 'CAPTION_OR_VALUE_WORD_UNTRUSTED' : !raw ? 'LABEL_PRINTED_WITHOUT_VALUE'
+        : value == null ? 'VALUE_NOT_SUPPORTED_BY_PRINTED_CAPTION' : null };
+  });
+  if (readings.length === 1) return readings[0];
+  return { ...base, state: 'VALUE_AMBIGUOUS_PRINTED_FORM', reason: 'MULTIPLE_OWN_CAPTION_READINGS',
+    location: readings[0].location, printed_readings: readings };
+}
+
+function maskedValue(raw) {
+  const m = /^[*#Xx\u2022\u00b7]{2,}\s*-?\s*(\d{3,4})$/.exec(raw);
+  return m ? `MASK-${m[1].padStart(4, '0')}` : null;
+}
+
+function nameToken(raw) {
+  const name = textKey(raw).toUpperCase();
+  return name ? `CREDITOR-${crypto.createHash('sha256').update(name).digest('hex').slice(0, 24)}` : null;
+}
+
+function putShared(reading, field, facts, sources) {
+  if (!reading || reading.state !== 'VALUE' || reading.normalized == null || !reading.location
+    || reading.location.trusted === false || reading.trusted === false || reading.printed_times_in_record !== 1) return;
+  facts[field] = reading.normalized;
+  sources[field] = { raw_value: reading.raw, normalized_value: reading.normalized, source_field: reading.label,
+    location: reading.location, caption_count: 1, status: FACT_STATUS.RESOLVED,
+    ...(reading.precision ? { precision: reading.precision } : {}),
+    ...(reading.privacy_redacted ? { privacy_redacted: true } : {}) };
+}
+
+function ordinaryRecords(model) {
+  const records = [], unread = new Set(unreadPages(model));
+  for (const page of model.pages) {
+    const rows = nativeRows(page);
+    if (!rows.length) continue;
+    let section = null;
+    const starts = [];
+    page.lines.forEach((line, index) => {
+      const text = textKey(line);
+      if (isHeading(text)) section = /^Accounts - /.test(text) ? text : null;
+      if (text === 'Overview' && section) starts.push({ index, section });
+    });
+    for (let n = 0; n < starts.length; n += 1) {
+      const start = starts[n], overview = rows.find((r) => r.line === start.index + 1);
+      if (!overview) continue;
+      const next = starts[n + 1], nextRow = next && rows.find((r) => r.line === next.index + 1);
+      const stopLine = page.lines.findIndex((line, i) => i > start.index && isHeading(textKey(line)));
+      const stopRow = stopLine >= 0 && rows.find((r) => r.line === stopLine + 1);
+      const maxY = Math.min(nextRow ? nextRow.y : Infinity, stopRow ? stopRow.y : Infinity);
+      const region = rows.filter((r) => r.y > overview.y && r.y < maxY);
+      const words = region.flatMap((r) => r.words);
+      const header = words.filter((w) => w.y0 < overview.y + 65);
+      const account = header.find((w) => w.text === 'Account'), number = account && header.find((w) =>
+        w.text === 'Number' && Math.abs(w.x0 - account.x0) < 2 && w.y0 > account.y0 && w.y0 - account.y0 <= 18);
+      const phone = header.find((w) => w.text === 'Phone'), highest = header.find((w) => w.text === 'Highest');
+      const notes = header.find((w) => w.text === 'Notes'), member = header.find((w) => w.text === 'Member');
+      const panel = region.find((r) => textKey(r.words.filter((w) => account && w.x0 >= account.x0 - 1
+        && phone && w.x0 < phone.x0).map((w) => w.text).join(' ')) === 'Balance And');
+      if (!account || !number || !phone || !highest || !notes || !member || !panel
+        || !(account.x0 < phone.x0 && phone.x0 < highest.x0 && highest.x0 < notes.x0 && notes.x0 < member.x0)) continue;
+      const printed = {}, facts = {}, sources = {};
+      const tableFloor = Math.max(...header.filter((w) => w.y0 <= number.y0 + 2).map((w) => w.y1));
+      const idCaptions = captionReadings(page, rows, 'Account Number', account.x0 - 1, phone.x0,
+        overview.y + 1, tableFloor + 1);
+      const idWords = words.filter((w) => w.x0 >= account.x0 - 1 && w.x0 < phone.x0
+        && w.y0 > tableFloor && w.y0 < panel.y);
+      const idLocation = wordsLocation(page, rows, idWords, 'Account Number') || wordsLocation(page, rows, [account, number], 'Account Number');
+      idLocation.caption_location = wordsLocation(page, rows, [account, number], 'Account Number');
+      const idRaw = textKey(idWords.map((w) => w.text).join(' '));
+      printed['Account Number'] = { label: 'Account Number', state: !idRaw ? 'LABEL_PRINTED_WITHOUT_VALUE'
+        : maskedValue(idRaw) == null ? 'VALUE_MALFORMED_PRINTED_FORM' : 'VALUE',
+        raw: maskedValue(idRaw) == null ? null : idRaw, normalized: maskedValue(idRaw),
+        printed_times_in_record: idCaptions.length, trusted: [account, number, ...idWords].every((w) => w.trusted !== false),
+        location: idLocation };
+      if (!printed['Account Number'].trusted) {
+        printed['Account Number'].state = 'SOURCE_UNTRUSTED'; printed['Account Number'].normalized = null;
+      }
+      if (idCaptions.length !== 1) {
+        printed['Account Number'].state = 'VALUE_AMBIGUOUS_PRINTED_FORM'; printed['Account Number'].normalized = null;
+      }
+      const noteWords = words.filter((w) => w.x0 >= notes.x0 - 1 && w.x0 < member.x0
+        && w.y0 > tableFloor && w.y0 < panel.y);
+      const noteRaw = textKey(noteWords.map((w) => w.text).join(' '));
+      const closed = /\bclosed by (?:credit grantor|consumer)\b/i.test(noteRaw);
+      const hasOpen = /\b(?:open|active)\b/i.test(noteRaw);
+      const open = /^(?:Open|Active|Account(?: is)? (?:open|active))$/i.test(noteRaw);
+      const noteLocation = wordsLocation(page, rows, noteWords, 'Notes') || wordsLocation(page, rows, [notes], 'Notes');
+      noteLocation.caption_location = wordsLocation(page, rows, [notes], 'Notes');
+      const noteCaptionCount = header.filter((w) => w.text === 'Notes' && Math.abs(w.x0 - notes.x0) < 2).length;
+      printed.Notes = { label: 'Notes', raw: noteRaw || null, normalized: closed && !hasOpen ? 'CLOSED' : !closed && open ? 'OPEN' : null,
+        state: !noteRaw ? 'LABEL_PRINTED_WITHOUT_VALUE' : closed && hasOpen ? 'VALUE_AMBIGUOUS_PRINTED_FORM'
+          : closed || open ? 'VALUE' : 'VALUE_MALFORMED_PRINTED_FORM',
+        location: noteLocation, printed_times_in_record: noteCaptionCount, trusted: header.filter((w) => w.text === 'Notes').concat(noteWords).every((w) => w.trusted !== false) };
+      if (!printed.Notes.trusted) { printed.Notes.state = 'SOURCE_UNTRUSTED'; printed.Notes.normalized = null; }
+      if (noteCaptionCount !== 1) { printed.Notes.state = 'VALUE_AMBIGUOUS_PRINTED_FORM'; printed.Notes.normalized = null; }
+      const panelMin = panel.y + 25, details = region.find((r) => textKey(r.words.filter((w) =>
+        w.x0 >= account.x0 - 1 && w.x0 < highest.x0).map((w) => w.text).join(' ')) === 'Payment Details');
+      const panelMax = details ? details.y : maxY;
+      for (const [caption, field] of [['Balance', 'account.balance'], ['Credit Limit', 'account.creditLimit'],
+        ['Amount Past Due', 'account.pastDueAmount'], ['Payment Due', 'account.scheduledPaymentAmount'],
+        ['Actual payment', 'account.actualPaymentAmount'], ['Amount Written Off', 'tradeline.writtenOffAmount']]) {
+        const caps = captionReadings(page, rows, caption, account.x0 - 1, phone.x0, panelMin, panelMax);
+        printed[caption] = positionedReading(page, rows, caption, caps, phone.x0, highest.x0, printedAmount);
+        putShared(printed[caption], field, facts, sources);
+      }
+      for (const [caption, field] of [['Opened', 'liability.openedDate'], ['Last Reported', 'account.lastReportedDate'],
+        ['Last Payment', 'tradeline.lastPaymentDate'], ['Date Closed', 'liability.closedDate']]) {
+        const caps = captionReadings(page, rows, caption, highest.x0 - 1, notes.x0, panelMin, panelMax);
+        printed[caption] = positionedReading(page, rows, caption, caps, notes.x0, member.x0,
+          (raw) => normalizePrintedDate(raw).normalized);
+        printed[caption].precision = 'DAY';
+        putShared(printed[caption], field, facts, sources);
+      }
+      printed['Closed Date'] = printed['Date Closed'];
+      const roleCaps = captionReadings(page, rows, 'Payment Responsibility', account.x0 - 1, highest.x0,
+        details ? details.y + 1 : panelMax, maxY);
+      printed['Payment Responsibility'] = positionedReading(page, rows, 'Payment Responsibility', roleCaps,
+        highest.x0, member.x0, (raw) => /^(?:Individual|Joint)$/i.test(raw) ? raw.toUpperCase() : null);
+      putShared(printed['Payment Responsibility'], 'account.responsibility', facts, sources);
+      putShared(printed['Account Number'], 'account.masked_identifier', facts, sources);
+      putShared(printed.Notes, 'account.status', facts, sources);
+      const previous = page.lines.slice(0, start.index).map((line, i) => ({ text: textKey(line), line: i + 1 }))
+        .filter((line) => line.text).at(-1);
+      const previousRow = previous && rows.find((r) => r.line === previous.line);
+      if (previous && previousRow && !isHeading(previous.text)
+        && !/\b(?:Credit Report|Request Date)\b/i.test(previous.text)
+        && overview.y - previousRow.y >= 10 && overview.y - previousRow.y <= 40
+        && Math.abs(previousRow.words[0].x0 - account.x0) <= 2) {
+        const creditorRows = rows.filter((r) => r.line === previous.line);
+        const creditorWords = creditorRows.flatMap((r) => r.words);
+        const token = nameToken(previous.text), location = wordsLocation(page, rows, creditorWords, 'Creditor Name (account heading)');
+        const reading = { label: 'Creditor Name (account heading)', raw: token, normalized: token,
+          state: token && location ? 'VALUE' : 'SOURCE_UNTRUSTED', location, trusted: creditorWords.every((w) => w.trusted !== false),
+          printed_times_in_record: 1, privacy_redacted: true };
+        printed['Creditor Name'] = reading; putShared(reading, 'account.reported_identity', facts, sources);
+      }
+      if (unread.has(page.page)) {
+        for (const reading of Object.values(printed)) { reading.state = 'PAGE_NOT_READ'; reading.normalized = null; }
+        for (const key of Object.keys(facts)) delete facts[key];
+        for (const key of Object.keys(sources)) delete sources[key];
+      }
+      const report_status_statements = printed.Notes.raw && printed.Notes.trusted
+        && printed.Notes.printed_times_in_record === 1 && printed.Notes.state !== 'VALUE_AMBIGUOUS_PRINTED_FORM'
+        && !unread.has(page.page) && printed.Notes.location && printed.Notes.location.trusted !== false
+        ? [{ raw_value: printed.Notes.raw, meaning: printed.Notes.raw, location: printed.Notes.location,
+          source_field: 'Notes', caption_count: 1, trusted: true }] : [];
+      records.push({ record_index: records.length + 1, kind: 'CA_EQUIFAX_ORDINARY_ACCOUNT', kind_label: 'credit account',
+        section: start.section, status: unread.has(page.page) ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED,
+        boundary: { page: page.page, line: start.index + 1 }, end: { page: page.page, line: stopLine >= 0 ? stopLine : page.lines.length },
+        printed, facts, fact_sources: sources, report_status_statements });
+    }
+  }
+  return records;
+}
+
+function collectionSharedIdentity(record, model) {
+  const facts = {}, fact_sources = {}, account = record.printed['Account Number'];
+  if (record.page_read_failure) return { facts, fact_sources };
+  const normalized = account.state === 'VALUE' && account.printed_times_in_record === 1
+    ? maskedValue(textKey(account.raw)) : null;
+  const ownLocation = (reading) => {
+    const page = model.pages.find((p) => p.page === reading.location.page), rows = nativeRows(page);
+    const row = rows.find((r) => r.line === reading.location.line);
+    return row ? wordsLocation(page, rows, row.words, reading.label)
+      : { ...reading.location, trusted: !(page.word_boxes || []).length };
+  };
+  if (normalized) putShared({ ...account, normalized, location: ownLocation(account) }, 'account.masked_identifier', facts, fact_sources);
+  const region = documentLines(model).filter((line) => (line.page > record.boundary.page || line.page === record.boundary.page && line.line >= record.boundary.line)
+    && (line.page < record.end.page || line.page === record.end.page && line.line <= record.end.line));
+  const hits = hitsIn(region, 'Member Name');
+  if (hits.length === 1 && hits[0].value_present) {
+    const lineText = readable(region.find((line) => line.page === hits[0].page && line.line === hits[0].line).text);
+    const raw = lineText.slice(lineText.indexOf('Member Name') + 'Member Name'.length).trim();
+    const token = nameToken(raw), page = model.pages.find((p) => p.page === hits[0].page), rows = nativeRows(page);
+    const row = rows.find((r) => r.line === hits[0].line);
+    const location = row ? wordsLocation(page, rows, row.words, 'Member Name (creditor)')
+      : { page: hits[0].page, line: hits[0].line, label: 'Member Name (creditor)', trusted: !(page.word_boxes || []).length };
+    putShared({ label: 'Member Name (creditor)', raw: token, normalized: token, state: 'VALUE',
+      printed_times_in_record: 1, location, privacy_redacted: true }, 'account.reported_identity', facts, fact_sources);
+  }
+  return { facts, fact_sources };
+}
+
 /**
  * Read the factual view. This is the whole public surface of the module: labels, tokens the checks name,
  * page/line locations, and the indexes of records that print the same secure identifiers. No page text and
- * no identifier is returned.
+ * no full identifier is returned; literal masked identity and source-linked privacy tokens support shared checks.
  */
 function read(model) {
   const reference = locateRequestDate(model);
   const section = locateCollectionsSection(model);
   const collections = collectionRecords(model, section);
   const identity_groups = identityGroups(collections.records);
-  const records = collections.records.map(redactIdentifiers);
+  const records = collections.records.map((record) => ({ ...redactIdentifiers(record),
+    shared_identity: collectionSharedIdentity(record, model) }));
   const summary_counts = summaryCaptions(model).map((caption) => Object.assign({
     summary_block: caption.summary_block,
     category: caption.category,
@@ -453,12 +721,13 @@ function read(model) {
       not_a_debt_record_count: collections.not_a_debt_record_count
     },
     records,
+    ordinary_records: ordinaryRecords(model),
     identity_groups,
     policy_statements: [],
     headings_printed: [...new Set(documentLines(model).map((l) => l.text.trim()).filter(isHeading))].sort(),
     pages_not_read: unreadPages(model),
     report_text_retained: false,
-    note: 'A reading of the presentation\'s own printed facts. It carries no legal rule, no legal conclusion and no statutory applicability, and it returns no page text, no account number and no member number.'
+    note: 'A reading of the presentation\'s own printed facts. It carries no legal rule, no legal conclusion or statutory applicability. It returns no page text, full account number or member number; printed masks and source-linked creditor privacy tokens support shared comparisons.'
   };
 }
 
@@ -488,5 +757,7 @@ module.exports = {
   countAccountBlocks,
   collectionRecords,
   identityGroups,
+  ordinaryRecords,
+  collectionSharedIdentity,
   read
 };
