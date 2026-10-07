@@ -557,6 +557,9 @@ function buildOverdueRecord(entry, index) {
   retain('current_listing_date', 'Date', 'CURRENT', 'overdue.currentListingDate', (value) => normalizePrintedDate(value).normalized);
   retain('original_listing_date', 'Date', 'ORIGINAL', 'overdue.originalListingDate', (value) => normalizePrintedDate(value).normalized);
   retain('current_listing_account_reference', 'Account Number', 'CURRENT', 'overdue.accountReference');
+  // Supporting listing evidence only: the literal role never resolves sole versus joint responsibility.
+  retain('current_listing_association_code', 'Association Code', 'CURRENT', 'overdue.associationCode');
+  retain('current_listing_co_borrower', 'Co Borrower', 'CURRENT', 'overdue.coBorrower');
   const statusValue = valueAfterLabel(entry.boundary.text.trim(), 'Status');
   ownReadings.current_listing_status = { label: 'Status', raw: statusValue, normalized: statusValue,
     status: statusValue ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
