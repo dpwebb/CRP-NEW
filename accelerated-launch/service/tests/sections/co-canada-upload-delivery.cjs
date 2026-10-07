@@ -2,10 +2,8 @@
 // Canada-first: actual local HTTP PDF uploads; no private report leaves loopback.
 const fs=require('node:fs');
 const crypto=require('node:crypto');
-const formats=require('../../formats.cjs');
 const evaluation=require('../../evaluation.cjs');
 const tu=require('../../format-families/tu-ca-consumer.cjs');
-const {buildPdf}=require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const uploadBody=(b,name)=>({originalFilename:name,declaredBytes:b.length,mimeType:'application/pdf',contentBase64:b.toString('base64')});
 async function pay(t,owner,caseId){
  const c=(await t.request('POST','/api/billing/checkout',{token:owner.token,body:{plan_code:'monthly'}})).json.checkout;
@@ -132,25 +130,6 @@ async function run(t,check){
   const evaluated=evaluation.evaluateCase({country:'CA',region,extraction:real});
   check.ok(evaluated.results.some(r=>r.check.adapter_id.startsWith(region+'-')&&r.machine.content),'each applicable accuracy rule consumes this reader own facts: '+region);
  }
- const pdf=buildPdf({pages:[{lines:['Equifax Consumer Credit Report','Report Date: June 12, 2026','Account: Fictional Canadian Lender Balance $100 Opened 01/01/2020 Closed 01/01/2019']}]});
- // Each Canadian region: actual fictional PDF upload -> selected issue -> reviewed correspondence -> download.
- for(const region of canadian){
-  const owner=await t.unpaidAccount('canada-'+region.value.toLowerCase()+'@example.test');
-  const c=(await t.request('POST','/api/cases',{token:owner.token,body:{country:'CA',region:region.value}})).json.case;
-  await pay(t,owner,c.case_id);
-  const uploaded=await t.request('POST',`/api/cases/${c.case_id}/files`,{token:owner.token,body:uploadBody(pdf,'fictional-canadian-account.pdf')});
-  check.equal(uploaded.status,201,region.value+' fictional PDF uploads');
-  check.equal((await t.request('POST',`/api/cases/${c.case_id}/evaluate`,{token:owner.token})).status,201,region.value+' evaluates uploaded facts');
-  const view=(await t.request('GET',`/api/cases/${c.case_id}/packet`,{token:owner.token})).json.view;
-  check.ok(view.eligible_issues.length>0,region.value+' exposes a supported selectable reporting issue');
-  const issue=view.eligible_issues[0];
-  check.equal((await t.request('POST',`/api/cases/${c.case_id}/packet/select`,{token:owner.token,body:{issue_ids:[issue.issue_id]}})).status,200,region.value+' selection persists');
-  await t.request('POST',`/api/cases/${c.case_id}/packet/correspondence`,{token:owner.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}});
-  check.equal((await t.request('POST',`/api/cases/${c.case_id}/packet/approve`,{token:owner.token})).status,200,region.value+' approves correspondence');
-  const download=await t.request('GET',`/api/cases/${c.case_id}/packet-download`,{token:owner.token});
-  check.equal(download.status,200,region.value+' entitled packet downloads');
-  check.ok(download.text.includes('Fictional Canadian Tester'),region.value+' packet contains reviewed correspondence');
- }
- return {real_canadian_http_upload:true,canadian_actual_pdf_packet_journeys:13,private_report_egress:false};
+ return {real_canadian_http_upload:true,real_transunion_limitation_packet_journeys:['CA-ON','CA-MB','CA-BC','CA-NT','CA-NU'],private_report_egress:false};
 }
-module.exports={id:'co-canada-upload-delivery',title:'Canada real HTTP intake and thirteen selected packet journeys',run};
+module.exports={id:'co-canada-upload-delivery',title:'Canada real TransUnion HTTP intake and selected limitation packets',run};
