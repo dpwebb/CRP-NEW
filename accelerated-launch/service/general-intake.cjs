@@ -332,19 +332,193 @@ function lineLocation(line) {
 
 const PAIRED_CAPTIONS = Object.freeze({
   'ACCOUNT NAME': 'identity', CREDITOR: 'identity', LENDER: 'identity', 'CREDIT PROVIDER': 'identity',
-  'ACCOUNT NUMBER': 'identifier', 'ACCT NUMBER': 'identifier',
-  STATUS: 'status', 'ACCOUNT STATUS': 'status', RESPONSIBILITY: 'role',
+  'ACCOUNT NUMBER': 'identifier', 'ACCT NUMBER': 'identifier', 'ACCT NO': 'identifier',
+  'ACCOUNT NUMBER / SUFFIX': 'identifier',
+  STATUS: 'status', 'ACCOUNT STATUS': 'status', RESPONSIBILITY: 'role', OWNERSHIP: 'role',
   'ACCOUNT TYPE': 'type', 'TYPE OF ACCOUNT': 'type',
-  BALANCE: 'money', 'CURRENT BALANCE': 'money', 'RECENT BALANCE': 'money',
+  BALANCE: 'money', 'CURRENT BALANCE': 'money', 'RECENT BALANCE': 'money', 'LATEST BALANCE': 'money',
   'PAST DUE': 'money', 'PAST DUE AMOUNT': 'money', 'AMOUNT PAST DUE': 'money',
   'OVERDUE AMOUNT': 'money', 'CREDIT LIMIT': 'money', 'CREDIT LINE': 'money',
-  'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money',
+  'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money', 'SCHEDULED PAYMENT': 'money',
   OPENED: 'date', 'DATE OPENED': 'date', 'OPENED DATE': 'date',
   CLOSED: 'date', 'CLOSED DATE': 'date', 'DATE CLOSED': 'date',
+  'ACCOUNT START DATE': 'date', 'ACCOUNT END DATE': 'date',
   'FIRST DELINQUENCY DATE': 'date', 'DATE OF FIRST DELINQUENCY': 'date', 'FIRST DATE OF DELINQUENCY': 'date',
-  'LAST PAYMENT DATE': 'date', 'DATE OF LAST PAYMENT': 'date', 'LAST PAYMENT': 'date', 'FIRST REPORTED': 'date'
+  'LAST PAYMENT DATE': 'date', 'DATE OF LAST PAYMENT': 'date', 'LAST PAYMENT': 'date',
+  'LAST PAYMENT MADE': 'date', 'FIRST REPORTED': 'date'
 });
 const captionName = (text) => String(text || '').trim().replace(/[:\-]\s*$/, '').replace(/\s+/g, ' ').toUpperCase();
+
+/* Physical caption cards print several labels on one row and their values on the next. Whole-line native
+   matching can fail when a diagonal watermark crosses that row. Only measured words in the caption's own
+   column supply its value; unrelated words never supply trust, dates or an account boundary. The ignored
+   captions still bound their columns, so a reporting date, payment count or party-end date cannot spill over. */
+const COLUMN_BOUNDARY_CAPTIONS = Object.freeze({ ...PAIRED_CAPTIONS,
+  'LAST ACTIVITY': 'ignored', 'STATUS DATE': 'ignored', 'PAYMENT RATING': 'ignored', 'HIGH CREDIT': 'ignored',
+  'ACCOUNT HOLDER START DATE': 'ignored', 'ACCOUNT HOLDER END DATE': 'ignored', 'PAYMENT START DATE': 'ignored',
+  'DATE ACCOUNT LAST UPDATED': 'ignored', 'DATE OF LAST UPDATE': 'ignored', DATELASTUPDATE: 'ignored',
+  'NO OF OVERDUE PAYMENTS': 'ignored', 'NEXT PAYMENT AMOUNT': 'ignored' });
+function columnCaptionLines(page) {
+  if (page.source !== 'NATIVE_TEXT' || !(page.words || []).length) return page.lines;
+  const normalize = (s) => String(s).replace(/\s+/g, ' ').trim();
+  const rows = [];
+  const heights = page.words.map((w) => w.y1 - w.y0).filter((n) => n > 0).sort((a, b) => a - b);
+  const ordinaryHeight = heights[Math.floor(heights.length / 2)];
+  for (const rawWord of page.words.slice().sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0)) {
+    const word = { ...rawWord, text: String(rawWord.text).replace(/&(?:amp|lt|gt|quot|apos);/gi,
+      (s) => ({ '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'" })[s.toLowerCase()]) };
+    if (![word.x0, word.x1, word.y0, word.y1].every(Number.isFinite)) continue;
+    // Oversized diagonal decoration has no common account-row baseline. It never changes decisive word trust.
+    if (word.y1 - word.y0 > ordinaryHeight * 1.8) continue;
+    let row = rows.find((r) => Math.abs(r.y - word.y0) < 2);
+    if (!row) rows.push(row = { y: word.y0, words: [] });
+    row.words.push(word);
+  }
+  const box = (words) => words.length ? { x0: Math.min(...words.map((w) => w.x0)), y0: Math.min(...words.map((w) => w.y0)),
+    x1: Math.max(...words.map((w) => w.x1)), y1: Math.max(...words.map((w) => w.y1)) } : null;
+  const chunks = (row) => {
+    const result = [];
+    for (const word of row.words.slice().sort((a, b) => a.x0 - b.x0)) {
+      let chunk = result[result.length - 1];
+      if (!chunk || word.x0 - chunk.words[chunk.words.length - 1].x1 > 12) result.push(chunk = { words: [] });
+      chunk.words.push(word);
+    }
+    return result.map((c) => ({ ...c, text: normalize(c.words.map((w) => w.text).join(' ')), bbox: box(c.words) }));
+  };
+  rows.forEach((row) => { row.chunks = chunks(row); });
+  const captionRows = rows.filter((row) => row.chunks.length >= 2 && row.chunks.length <= 6
+    && row.chunks.filter((c) => COLUMN_BOUNDARY_CAPTIONS[captionName(c.text)]).length >= 2
+    && row.chunks.every((c, i) => !i || c.bbox.x0 - row.chunks[i - 1].bbox.x1 > 12));
+  if (!captionRows.length) return page.lines;
+  const replacements = new Map(), removed = new Set(), assigned = new Map();
+  // Text ties are resolved by the physical occurrence, just as nativeLineObjects resolves repeated rows.
+  let nativeFloor = 0;
+  const contains = (text, token) => new RegExp('(?:^|\\s)' + String(token).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?=$|\\s)').test(normalize(text));
+  for (const row of rows) {
+    const texts = row.chunks.map((c) => c.text).filter(Boolean);
+    const claimed = [...assigned.values()].flatMap((l) => l._column_originals || [l]);
+    const candidates = page.lines.filter((line, i) => i >= nativeFloor && !claimed.includes(line)
+      && (line.bbox ? Math.abs(line.bbox.y0 - row.y) < 2
+        : texts.length >= 2 && texts.every((s) => contains(line.text, s))
+          || texts.some((s) => s.length >= 4 && contains(line.text, s))));
+    if (candidates.length) {
+      const full = candidates.find((line) => (line.bbox || texts.every((s) => contains(line.text, s)))
+        && line.line - candidates[0].line <= 16);
+      const nearby = candidates.filter((line) => line.line - candidates[0].line <= 16);
+      const selected = full ? [full] : [...new Set(texts.filter((s) => s.length >= 4)
+        .map((s) => nearby.find((line) => contains(line.text, s))).filter(Boolean))];
+      if (selected.length) {
+        selected.sort((a, b) => a.line - b.line); selected[0]._column_originals = selected;
+        assigned.set(row, selected[0]); nativeFloor = Math.max(...selected.map((l) => page.lines.indexOf(l))) + 1;
+      }
+    }
+  }
+  let fallback = Math.max(0, ...page.lines.map((l) => l.line)) + 1;
+  function reading(words, row, text, caption) {
+    let offset = caption ? caption.text.length + 2 : 0;
+    const evidence = words.map((w) => { const start = offset; offset += String(w.text).length + 1;
+      return { ...w, start, end: offset - 1 }; });
+    const original = assigned.get(row);
+    return { text, page: page.page, line: original ? original.line : fallback++, source: 'NATIVE_TEXT',
+      confidence: null, trusted: words.every((w) => w.trusted !== false) && (!caption || caption.words.every((w) => w.trusted !== false)),
+      measured_words: true, words: evidence, bbox: box(words),
+      ...(caption ? { caption_label: caption.text, caption_location: { page: page.page,
+        line: assigned.get(caption.row)?.line || fallback++, source: 'NATIVE_TEXT', confidence: null, min_confidence: null,
+        trusted: caption.words.every((w) => w.trusted !== false), bbox: caption.bbox },
+        column_field: COLUMN_BOUNDARY_CAPTIONS[captionName(caption.text)], column_raw: words.map((w) => w.text).join(' ') } : {}) };
+  }
+  function replaceRow(row, lines) {
+    const original = assigned.get(row);
+    if (original) { (original._column_originals || [original]).forEach((l) => removed.add(l));
+      replacements.set(original, (replacements.get(original) || []).concat(lines)); }
+    else { row.added = (row.added || []).concat(lines); }
+  }
+  let active = false, previousCaption = null;
+  for (const row of captionRows) {
+    const startsCard = row.chunks.some((c) => COLUMN_BOUNDARY_CAPTIONS[captionName(c.text)] === 'identifier')
+      && row.chunks.some((c) => ['type', 'role'].includes(COLUMN_BOUNDARY_CAPTIONS[captionName(c.text)]));
+    if (startsCard) {
+      active = false;
+      const preceding = rows.filter((r) => r.y < row.y && row.y - r.y <= 30 && !captionRows.includes(r)).at(-1);
+      if (preceding && preceding.chunks.length === 1 && explicitAccountIdentity(preceding.chunks[0].text)) {
+        const name = preceding.chunks[0], identity = explicitAccountIdentity(name.text);
+        const heading = reading(name.words, preceding, name.text);
+        heading.column_field = 'identity'; heading.column_boundary = true;
+        heading.column_raw = identity.raw;
+        replaceRow(preceding, [heading]); active = true;
+      } else if (preceding && preceding.chunks.length === 2) {
+        const [name, status] = preceding.chunks;
+        const statusText = status.text.replace(/\s*[—–-]\s*/g, ' ');
+        const statusReading = statusReadingOf('Status: ' + statusText, []);
+        const nameOkay = /^[A-Za-z][A-Za-z0-9 &'.-]*$/.test(name.text) && !BOILERPLATE_RE.test(name.text)
+          && !isReportHeaderLine(name.text) && !/^(?:ACCOUNT|CREDIT REPORT|PAYMENT HISTORY)\b/i.test(name.text);
+        if (nameOkay && statusReading && status.bbox.x0 - name.bbox.x1 > 24
+          && Math.abs(name.bbox.x0 - row.chunks[0].bbox.x0) < 5) {
+          const heading = reading(name.words, preceding, 'Creditor: ' + name.text);
+          heading.words = heading.words.map((word) => ({ ...word, start: word.start + 10, end: word.end + 10 }));
+          heading.caption_label = 'Printed account heading';
+          heading.column_field = 'identity'; heading.column_boundary = true;
+          const ownStatus = reading(status.words, preceding, 'Status: ' + status.text);
+          ownStatus.words = ownStatus.words.map((word) => ({ ...word, start: word.start + 8, end: word.end + 8 }));
+          ownStatus.column_field = 'status'; ownStatus.column_raw = status.text;
+          ownStatus.caption_label = 'Printed account heading';
+          replaceRow(preceding, [heading, ownStatus]); active = true;
+        }
+      }
+      // An unowned card must not continue the preceding account (including an account on the preceding page).
+      if (!active) replaceRow(row, [{ text: '', page: page.page, line: assigned.get(row)?.line || fallback++, column_reset: true }]);
+    }
+    if (previousCaption && !startsCard && row.y - previousCaption.y > 50) active = false;
+    previousCaption = row;
+    const nextCaption = captionRows.find((r) => r.y > row.y);
+    const candidates = rows.filter((r) => r.y > row.y + 2 && r.y - row.y <= 24
+      && (!nextCaption || r.y < nextCaption.y - 2));
+    // All actual values on this card row share a baseline. Conflicting or wrapped rows are unresolved.
+    const valueRows = candidates.filter((r) => row.chunks.some((c) => r.words.some((w) => Math.abs(w.x0 - c.bbox.x0) < 5)));
+    const valueRow = valueRows[0] || null;
+    if (!active) { replaceRow(row, []); if (valueRow) replaceRow(valueRow, []); previousCaption = row; continue; }
+    const lines = [];
+    for (let i = 0; i < row.chunks.length; i++) {
+      const caption = { ...row.chunks[i], row }, name = captionName(caption.text), kind = COLUMN_BOUNDARY_CAPTIONS[name];
+      if (!kind || kind === 'ignored') continue;
+      const right = row.chunks[i + 1]?.bbox.x0 ?? caption.bbox.x0 + (caption.bbox.x0 - row.chunks[i - 1].bbox.x0);
+      let words = valueRow ? valueRow.words.filter((w) => w.x0 >= caption.bbox.x0 - 2 && w.x1 < right - 2) : [];
+      if (words.length && Math.abs(words[0].x0 - caption.bbox.x0) >= 5) words = [];
+      const raw = words.map((w) => w.text).join(' ');
+      const line = reading(words, valueRow || row, name + ': ' + raw, caption);
+      if (name === 'OWNERSHIP' && valueRow) {
+        const roleIndex = row.chunks.findIndex((c) => captionName(c.text) === 'RESPONSIBILITY');
+        if (roleIndex >= 0) {
+          const roleCaption = row.chunks[roleIndex], roleRight = row.chunks[roleIndex + 1]?.bbox.x0
+            ?? roleCaption.bbox.x0 + (roleCaption.bbox.x0 - row.chunks[roleIndex - 1].bbox.x0);
+          const roleWords = valueRow.words.filter((w) => w.x0 >= roleCaption.bbox.x0 - 2 && w.x1 < roleRight - 2);
+          const rawRole = roleWords.map((w) => w.text).join(' ');
+          if (roleWords.length && Math.abs(roleWords[0].x0 - roleCaption.bbox.x0) < 5
+            && roleWords.every((w) => w.trusted !== false) && roleCaption.words.every((w) => w.trusted !== false)
+            && responsibilityOf('Responsibility: ' + rawRole)) line.column_field = 'ownership';
+        }
+      }
+      if (valueRows.slice(1).some((r) => r.words.some((w) => Math.abs(w.x0 - caption.bbox.x0) < 5))) {
+        line.trusted = false; line.column_conflict = true;
+      }
+      if (!words.length) { line.column_raw = ''; line.column_missing = true; line.bbox = null; }
+      if (kind === 'identifier' && !maskedIdentifierToken(line.text)) {
+        line.text = name + ': [unmasked or unreadable identifier withheld]'; line.column_raw = '[identifier withheld]';
+      }
+      lines.push(line);
+    }
+    replaceRow(row, []);
+    if (valueRow) { replaceRow(valueRow, lines); valueRows.slice(1).forEach((r) => replaceRow(r, [])); }
+    else replaceRow(row, lines);
+  }
+  const out = page.lines.flatMap((line) => removed.has(line) ? replacements.get(line) || [] : [line]);
+  // Unmatched source rows carry geometry but no invented original line number. Insert by physical vertical order.
+  for (const row of rows.filter((r) => r.added)) {
+    const at = out.findIndex((line) => line.bbox && line.bbox.y0 > row.y);
+    out.splice(at < 0 ? out.length : at, 0, ...row.added);
+  }
+  return out;
+}
 function pairedCaptionLines(lines) {
   const out = [];
   for (let index = 0; index < lines.length; index++) {
@@ -353,10 +527,11 @@ function pairedCaptionLines(lines) {
       || PAIRED_CAPTIONS[captionName(next.text)] || isReportHeaderLine(next.text)) { out.push(caption); continue; }
     const raw = String(next.text).trim();
     const valid = kind === 'money' ? printedAmount(raw) != null || /^[\s(+-−–—]*[$£€]/.test(raw)
-      : kind === 'date' ? Boolean(normalizePrintedDate(raw).normalized)
+      : kind === 'date' ? Boolean(normalizePrintedDate(raw).normalized || normalizePrintedDate(raw).interpretations)
+        || /^(?:[-—–]|N\/?A)$/i.test(raw)
         : kind === 'identifier' ? Boolean(maskedIdentifierToken(`${name} ${raw}`))
           : kind === 'status' ? Boolean(statusReadingOf(`Status: ${raw}`, []))
-            : kind === 'role' ? Boolean(responsibilityOf(raw))
+            : kind === 'role' ? Boolean(responsibilityOf(`${name}: ${raw}`))
               : kind === 'type' ? /^(?:CREDIT CARD|REVOLVING|LINE OF CREDIT)$/i.test(raw)
                 : /^[A-Za-z][A-Za-z0-9 &'.-]*$/.test(raw) && !BOILERPLATE_RE.test(raw);
     const geometry = caption.bbox && next.bbox;
@@ -435,7 +610,9 @@ function collectPages(model) {
   const pages = [];
   for (const p of native) {
     if (p.has_native_text) {
-      pages.push({ page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined });
+      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
+      page.lines = columnCaptionLines(page);
+      pages.push(page);
     }
   }
   if ((missing.length || incomplete.length || mixed.length) && model.path) {
@@ -529,10 +706,12 @@ function detectMissingPages(pages) {
 function labelForDate(textBefore) {
   const tail = String(textBefore || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
   if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$|FIRST DATE OF DELINQUENCY$/.test(tail)) return 'FIRST DELINQUENCY DATE';
-  if (/(?:DATE OF )?LAST PAYMENT(?: DATE)?$/.test(tail)) return 'LAST PAYMENT DATE';
+  if (/(?:DATE OF )?LAST PAYMENT(?: DATE| MADE)?$/.test(tail)) return 'LAST PAYMENT DATE';
   if (/(?:DATE )?FIRST REPORTED(?: DATE)?$/.test(tail)) return 'FIRST REPORTED';
   if (/\b(?:OPENED DATE|OPEN DATE)$/.test(tail)) return 'OPENED';
   if (/\bCLOSED DATE$/.test(tail)) return 'CLOSED';
+  if (/\bACCOUNT START DATE$/.test(tail)) return 'OPENED';
+  if (/\bACCOUNT END DATE$/.test(tail)) return 'CLOSED';
   const words = String(textBefore || '').trim().split(/[\s:]+/).filter(Boolean);
   if (!words.length) return 'Date';
   const last = words[words.length - 1];
@@ -552,6 +731,14 @@ function lineFacts(line, convention) {
     const norm = normalizePrintedDate(raw, convention);
     dates.push({ label, textBefore, raw, normalized: norm.normalized, precision: norm.precision, reason: norm.reason, convention: norm.convention || null, ambiguous: norm.ambiguous === true || undefined, alternative: norm.alternative || null, interpretations: norm.interpretations || null });
   }
+  // Explicit own blank/damaged date fields remain source evidence; no date is supplied by a neighboring field.
+  const ownCaption = /^\s*([^:]+):\s*(.*?)\s*$/.exec(text);
+  if (!dates.length && ownCaption && PAIRED_CAPTIONS[captionName(ownCaption[1])] === 'date') {
+    const raw = ownCaption[2];
+    dates.push({ label: labelForDate(ownCaption[1]), textBefore: ownCaption[1], raw,
+      normalized: null, precision: null, reason: line.column_missing ? 'OWN_COLUMN_VALUE_NOT_READ'
+        : /^(?:[-—–]|N\/?A)?$/i.test(raw) ? 'PRINTED_DATE_BLANK' : 'DATE_NOT_RECOGNISED' });
+  }
   const amounts = [];
   const amt = new RegExp(AMOUNT_TOKEN.source, 'gi');
   while ((m = amt.exec(text))) amounts.push(m[0]);
@@ -561,7 +748,7 @@ function lineFacts(line, convention) {
 function recordKind(text) {
   const up = String(text || '').toUpperCase();
   if (/COLLECTION|PLACED FOR COLLECTION/.test(up)) return 'GENERAL_COLLECTION';
-  if (/INQUIR|ENQUIR/.test(up)) return 'GENERAL_INQUIRY';
+  if (/INQUIR|ENQUIR|\b(?:CREDIT|QUOTATION|ACCOUNT MANAGEMENT|IDENTITY) SEARCH(?:ES)?\b/.test(up)) return 'GENERAL_INQUIRY';
   if (/PUBLIC RECORD|JUDGMENT|BANKRUPTCY|LIEN/.test(up)) return 'GENERAL_PUBLIC_RECORD';
   return 'GENERAL_ACCOUNT';
 }
@@ -638,13 +825,17 @@ function statusReadingOf(text, dates) {
 function labeledAmounts(text) {
   const out = {};
   const src = String(text || '');
-  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+)?BALANCE|MONTHLY\s+PAYMENT|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
+  if (PAYMENT_HISTORY_HEADER_RE.test(src)) return out;
+  const ownCaption = captionName(src.split(':')[0]);
+  if (PAIRED_CAPTIONS[ownCaption] === 'date' || COLUMN_BOUNDARY_CAPTIONS[ownCaption] === 'ignored') return out;
+  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+|LATEST\s+)?BALANCE|MONTHLY\s+PAYMENT|SCHEDULED\s+PAYMENT|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
   for (let index = 0; index < labels.length; index++) {
     const match = labels[index], label = match[1].toUpperCase();
+    if (/\b(?:LAST|DATE OF LAST)\s*$/i.test(src.slice(0, match.index)) && /^PAYMENT$/i.test(label)) continue;
     const rest = src.slice(match.index + match[0].length, labels[index + 1]?.index ?? src.length);
     const boundary = /\b(?:ACCOUNT\s+(?:NUMBER|STATUS|TYPE)|(?:INDIVIDUAL|JOINT)\s+ACCOUNT|AUTHORI[ZS]ED\s+USER|CO[- ]?(?:SIGNER|BORROWER|APPLICANT)|STATUS|RESPONSIBILITY|OPENED|CLOSED|DATE\s+OPENED|DATE\s+CLOSED|FIRST\s+DELINQUENCY|LAST\s+PAYMENT\s+DATE|FIRST\s+REPORTED)\b/i.exec(rest);
     const raw = rest.slice(0, boundary?.index ?? rest.length).trim();
-    if (!raw || !/[$£€\d]/.test(raw)) continue;
+    if ((!raw || !/[$£€\d]/.test(raw)) && !PAIRED_CAPTIONS[captionName(src.split(':')[0])]) continue;
     const key = /PAST\s+DUE|OVERDUE/.test(label) ? 'account.pastDueAmount'
       : /PAYMENT/.test(label) ? 'account.paymentAmount'
         : /LIMIT|CREDIT|HIGH/.test(label) ? 'account.creditLimit' : 'account.balance';
@@ -663,6 +854,7 @@ function responsibilityOf(text) {
   if (/AUTHORI[ZS]ED\s+USER/.test(up)) return { responsibility: 'AUTHORIZED_USER', raw: 'AUTHORIZED USER' };
   if (/JOINT|JOINTLY|CO[- ]?(SIGNER|BORROWER|APPLICANT)/.test(up)) return { responsibility: 'JOINT', raw: 'JOINT' };
   if (/\bINDIVIDUAL\b/.test(up)) return { responsibility: 'INDIVIDUAL', raw: 'INDIVIDUAL' };
+  if (/\b(?:RESPONSIBILITY|OWNERSHIP)\s*:\s*SOLE\s*$/i.test(String(text || ''))) return { responsibility: 'INDIVIDUAL', raw: 'Sole' };
   return null;
 }
 
@@ -1005,7 +1197,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
   /* An overdue/default record whose original-listing date was not printed: the check runs with an unresolved
      anchor — the current-listing date is never borrowed (recorded ambiguity rule). */
   const upText = String(text || '').toUpperCase();
-  if (kind === null && /OVERDUE|DEFAULT/.test(upText)) kind = 'OVERDUE_ACCOUNT';
+  if (kind === null && !line.column_field && /OVERDUE|DEFAULT/.test(upText)) kind = 'OVERDUE_ACCOUNT';
 
   return { facts, canonicalPrinted, kind };
 }
@@ -1042,8 +1234,8 @@ function accountIdentityToken(text) {
    two records as the SAME debt. */
 function maskedIdentifierToken(text) {
   const s = String(text || '');
-  let m = /(?:ACCOUNT|ACCT)\s*(?:NUMBER|NO|#)?\s*[:#]?\s*[*#Xx·•]{2,}[\s\-]?(\d{3,4})/i.exec(s);
-  if (!m) m = /(?:ACCOUNT|ACCT)\s*(?:NUMBER|NO|#)?\s*[:#]?\s*(?:ENDING|LAST|#)\s*(\d{3,4})/i.exec(s);
+  let m = /(?:ACCOUNT|ACCT)\s*(?:NUMBER|NO\.?|#)?(?:\s*\/\s*SUFFIX)?\s*[:#]?\s*[*#Xx·•]{2,}[\s\-]?(\d{3,4})(?!\d)/i.exec(s);
+  if (!m) m = /(?:ACCOUNT|ACCT)\s*(?:NUMBER|NO\.?|#)?(?:\s*\/\s*SUFFIX)?\s*[:#]?\s*(?:ENDING|LAST|#)\s*(\d{3,4})(?!\d)/i.exec(s);
   if (!m) return null;
   const digits = String(m[1]).replace(/\D/g, '');
   if (digits.length < 3 || digits.length > 4) return null;
@@ -1077,7 +1269,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     const state = value ? 'VALUE' : 'UNRESOLVED';
     if (state === 'VALUE') resolved += 1;
     printed[key] = {
-      label: d.label || 'Date', state, raw: d.raw, normalized: value ? d.normalized : null,
+      label: line.caption_label || d.label || 'Date', state, raw: d.raw, normalized: value ? d.normalized : null,
       reason: value ? null : (!trusted ? 'LOW_CONFIDENCE_OCR_READING' : (decisiveWordsTrusted(line, d.raw) === false ? 'LOW_CONFIDENCE_OCR_READING_ON_DECISIVE_CHARACTERS' : (d.reason || 'DATE_NOT_RECOGNISED'))),
       location: lineLocation(line), kind: 'date', precision: d.precision || null
     };
@@ -1091,6 +1283,18 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     };
   }
   const canonical = canonicalAssessmentFields(line.text, facts.dates, convention, kind, trusted, line, recordIdentity);
+  for (const d of facts.dates) {
+    const field = CLOSURE_LABELS.includes(d.label) ? 'closed_date' : OPENED_LABELS.includes(d.label) ? 'opened_date'
+      : d.label === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate'
+        : d.label === 'FIRST DELINQUENCY DATE' ? 'tradeline.firstDelinquencyDate'
+          : d.label === 'FIRST REPORTED' ? 'reportedAccount.firstReported' : null;
+    if (field && (!trusted || !d.normalized || decisiveWordsTrusted(line, d.raw) === false)) {
+      canonical.canonicalPrinted[field] = { label: line.caption_label || d.textBefore.trim().replace(/:\s*$/, '') || d.label,
+        state: 'UNRESOLVED', status: 'EXTRACTION_UNRESOLVED', raw: d.raw, normalized: null,
+        reason: trusted ? d.reason || 'UNTRUSTED_VALUE' : 'UNTRUSTED_VALUE', location: lineLocation(line),
+        kind: 'date', precision: d.precision || null, ...(d.interpretations ? { interpretations: d.interpretations.slice() } : {}) };
+    }
+  }
   /* GAP-INGEST: preserve the printed amount, its currency marker and the printed status as facts, so
      common-error checks compare COMPATIBLE facts only. A printed amount is not an assertion that the account
      is or is not in any particular state. */
@@ -1120,7 +1324,8 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   /* BLOCKER-FDT-001 / duplicate corroboration: an account-intro line contributes its printed account/creditor
      identity as a normalized, non-identifying token. A continuation line never adds one. */
   if (kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase())
-    && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)) {
+    && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)
+    && (!line.column_field || line.column_field === 'identity')) {
     const identity = explicitAccountIdentity(line.text)?.normalized || accountIdentityToken(line.text);
     if (trusted && identity) canonical.facts['account.reported_identity'] = identity;
   }
@@ -1131,8 +1336,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   if (trusted) {
     const resp = responsibilityOf(line.text);
     if (resp) {
-      canonical.facts['account.responsibility'] = resp.responsibility;
-      canonical.facts['account.responsibilityRaw'] = resp.raw;
+      const roleField = line.column_field === 'ownership' ? 'account.ownership' : 'account.responsibility';
+      canonical.facts[roleField] = resp.responsibility;
+      canonical.facts[roleField + 'Raw'] = resp.raw;
     }
     const ph = paymentHistoryFacts(line.text);
     if (ph) {
@@ -1144,19 +1350,21 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   for (const key of Object.keys(canonical.canonicalPrinted)) {
     const field = canonical.canonicalPrinted[key];
     if (field.location === null) field.location = lineLocation(line);
+    if (line.caption_label) field.label = line.caption_label;
+    else if (PAIRED_CAPTIONS[captionName(line.text.split(':')[0])] === 'date') field.label = line.text.split(':')[0].trim();
     printed[key] = field;
   }
   /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
      The fact map alone is not a printed reading: it must carry its own raw token and location. */
   if (printedStatus) {
-    printed.Status = { label: 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
-      raw: printedStatus.raw, normalized: statusTrusted ? printedStatus.value : null,
+    printed.Status = { label: line.caption_label || 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
+      raw: line.column_field === 'status' ? line.column_raw : printedStatus.raw, normalized: statusTrusted ? printedStatus.value : null,
       status: statusTrusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', reason: statusTrusted ? null : 'UNTRUSTED_VALUE',
       location: lineLocation(line), kind: 'status' };
   }
   if (trusted && masked) {
     const rawMask = /[*#Xx·•]{2,}[\s\-]?\d{3,4}|(?:ENDING|LAST)\s*\d{3,4}/i.exec(String(line.text || ''));
-    if (rawMask) printed['account.masked_identifier'] = { label: 'Masked account number',
+    if (rawMask) printed['account.masked_identifier'] = { label: line.caption_label || 'Masked account number',
       state: 'VALUE', raw: rawMask[0], normalized: masked,
       location: lineLocation(line), kind: 'identifier' };
   }
@@ -1170,13 +1378,23 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   }
   const responsibility = canonical.facts['account.responsibility'];
   if (trusted && responsibility && canonical.facts['account.responsibilityRaw']) {
-    printed['account.responsibility'] = { label: 'Responsibility', state: 'VALUE',
-      raw: canonical.facts['account.responsibilityRaw'], normalized: responsibility,
+    printed['account.responsibility'] = { label: line.caption_label || 'Responsibility', state: 'VALUE',
+      raw: line.column_field === 'role' ? line.column_raw : canonical.facts['account.responsibilityRaw'], normalized: responsibility,
       location: lineLocation(line), kind: 'responsibility' };
   }
+  if (trusted && canonical.facts['account.ownership']) printed['account.ownership'] = {
+    label: line.caption_label, state: 'VALUE', raw: line.column_raw, normalized: canonical.facts['account.ownership'],
+    location: lineLocation(line), kind: 'ownership' };
   if (trusted && accountType) printed['account.type'] = { label: 'Account type', state: 'VALUE',
     raw: accountType[1], normalized: canonical.facts['account.type'],
     location: lineLocation(line), kind: 'account_type' };
+  if (line.column_field && !['identity', 'date', 'money'].includes(line.column_field)) {
+    const field = { status: 'Status', identifier: 'account.masked_identifier',
+      role: trusted && line.column_raw && !responsibilityOf(line.text) ? 'Printed responsibility' : 'account.responsibility', type: 'account.type' }[line.column_field];
+    if (field && !printed[field]) printed[field] = { label: line.caption_label, state: 'UNRESOLVED', status: 'EXTRACTION_UNRESOLVED',
+      raw: line.column_raw, normalized: null, reason: trusted ? 'UNRECOGNIZED_OWN_COLUMN_VALUE' : 'UNTRUSTED_VALUE',
+      location: lineLocation(line), kind: line.column_field };
+  }
   for (const [field, label] of [['account.balance', 'Balance'], ['account.pastDueAmount', 'Past Due'],
     ['account.creditLimit', 'Credit Limit']]) {
     const raw = canonical.facts[`${field}Raw`];
@@ -1459,8 +1677,30 @@ function buildRecords(pages, convention) {
   const records = [];
   let index = 0;
   let current = null;
+  let nonAccountSection = false;
   for (const page of pages) {
+    // A physical card's missing heading cannot borrow the preceding page's record.
+    if (page.lines.some((line) => line.column_boundary || line.column_reset)) current = null;
     for (const line of pairedCaptionLines(page.lines)) {
+      if (line.column_reset) { current = null; continue; }
+      const text = String(line.text || '').trim();
+      if (/^(?:CO[- ]?APPLICANTS|JOINT HOLDERS|RELATED PARTIES|FINANCIAL ASSOCIATES|EMPLOYMENT|EMPLOYERS)(?:\s|\/|$)/i.test(text)) {
+        current = null; nonAccountSection = true; continue;
+      }
+      if (nonAccountSection) {
+        if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
+        else continue;
+      }
+      if (bureauSectionOf(text) || /^(?:GENERATED|FILE OPENED)\s*:/i.test(text)
+        || /^TOTAL\s+(?:CREDIT\s+LIMIT|BALANCE|PAST DUE|ACCOUNTS)\b/i.test(text)
+        || /\bTOTAL\s+(?:BALANCE|CREDIT LIMIT)\s*:?\s*[$£€\d]/i.test(text)
+        || /^(?:DATE OF BIRTH|CURRENT ADDRESS|PREVIOUS ADDRESS)\b|^(?:PREVIOUS|FORMER|CURRENT)\s+(?:\d+|FLAT\b)/i.test(text)
+        || /^(?:REVOLVING UTILISATION|REVOLVING UTILIZATION|CREDIT SCORE|ACCOUNT SUMMARY)\b/i.test(text)) {
+        current = null; continue;
+      }
+      if (/\b(?:are reportable|bureaus suppress|exercise (?:your|the) parser)\b/i.test(text)) continue;
+      const ownCaption = captionName(String(line.text).split(':')[0]);
+      if (COLUMN_BOUNDARY_CAPTIONS[ownCaption] === 'ignored') continue;
       if (/^\s*(REPORT DATE|DATE OF REPORT|PREPARED(?: ON)?|REQUEST DATE|AS OF)\s*:/i.test(line.text)) continue;
       const facts = lineFacts(line, convention);
       const hasDate = facts.dates.some((d) => d.normalized);
@@ -1489,17 +1729,21 @@ function buildRecords(pages, convention) {
         || (current && current.kind === 'GENERAL_PUBLIC_RECORD'
           && (JUDGMENT_CONTENT_LINE_RE.test(up) || CRIMINAL_CONTENT_LINE_RE.test(up)
             || JUDGMENT_TRUNCATION_MARKERS.test(up)));
-      const hasValue = hasDate || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
+      const hasValue = hasDate || Boolean(line.column_field) || facts.dates.some((d) => CLOSURE_LABELS.includes(d.label)
+        || OPENED_LABELS.includes(d.label) || ['LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE', 'FIRST REPORTED'].includes(d.label))
+        || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
         || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text)
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
         || hasStatus || hasIdentifier || hasPublicRecordContent;
       if (!hasValue) continue;
       const trusted = line.trusted !== false;
-      const kind = recordKind(line.text);
+      const kind = line.column_field ? 'GENERAL_ACCOUNT' : recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
       const isAccountIntro = kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(up)
-        && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType && !isAccountStatusLine(line.text);
+        && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType && !isAccountStatusLine(line.text)
+        && PAIRED_CAPTIONS[ownCaption] !== 'date' && (!line.column_field || line.column_boundary)
+        && !/^\s*(?:AUTHORI[ZS]ED USER|INDIVIDUAL|JOINT)\s+(?:ON|ACCOUNT\b)/i.test(line.text);
 
       /* OWNER-CANDIDATE-002: a judgment-content line (Judgment context, creditor/amount/assignee, case/docket,
          date of entry) continues the OPEN public record — it is a field of the judgment, not a new account and
