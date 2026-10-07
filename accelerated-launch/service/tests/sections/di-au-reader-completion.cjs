@@ -107,8 +107,8 @@ function read(t, accounts, amend, overdue, bytesOverride) {
   return { bytes, model, admission: family.admit(model), extraction: formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'AU' }) };
 }
 
-function offered(extraction) {
-  const assessed = evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction });
+function offered(extraction, assessmentClock) {
+  const assessed = evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction, assessment_clock: assessmentClock });
   return { assessed, findings: issues.issuesFor({ extraction, evaluation: assessed }), public: issues.publicIssues({ extraction, evaluation: assessed }) };
 }
 
@@ -159,6 +159,34 @@ async function run(t, check) {
     check.equal(sourceForField(extraction.records[0], field), null, `${name} is not a usable source`);
     check.equal(offered(extraction).findings.some((issue) => issue.check_id === DATES), false, `${name} cannot become a selectable dates violation`);
   }
+  const clock = { assessment_date: '2026-10-07', assessed_at: '2026-10-07T12:00:00Z' };
+  const periodIssue = (finding) => finding.eligible && (finding.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y'
+    || finding.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y'
+    || finding.check_id === 'RETENTION-PERIOD-ENDED-SINCE-THE-REPORT');
+  const markYearUntrusted = (page, year) => (model) => {
+    model.pages[page - 1].word_boxes.filter((word) => word.text === year).forEach((word) => { word.trusted = false; });
+  };
+  for (const [name, changes, amend] of [
+    ['untrusted closed-date anchor', { opened: '11 Apr 2005', closed: '10 Apr 2010' }, markYearUntrusted(3, '2010')],
+    ['duplicate closed-date anchor', { opened: '11 Apr 2005', closed: '10 Apr 2010', extra: [{ label: 'Closed Date', value: '10 Apr 2015' }] }, null]
+  ]) {
+    const extraction = read(t, [changes], amend).extraction;
+    check.equal(extraction.records[0].facts['liability.closedDate'], '2010-04-10', 'the legacy closure reading remains available internally');
+    check.equal(formats.factsForRecord(extraction.records[0])['liability.closedDate'], undefined, `${name} is withheld from the active adapter facts`);
+    check.equal(offered(extraction, clock).findings.some(periodIssue), false, `${name} cannot become a selectable reporting-period issue`);
+  }
+  const independentClosed = read(t, [{ opened: '11 Apr 2005', closed: '10 Apr 2010' }], markYearUntrusted(3, '2005')).extraction;
+  check.equal(formats.factsForRecord(independentClosed.records[0])['liability.closedDate'], '2010-04-10', 'a trusted closure anchor survives an unrelated untrusted opening reading');
+  check.equal(offered(independentClosed, clock).findings.some(periodIssue), true, 'the independently sourced closure still supports its reporting-period issue');
+  const rejectedOriginal = read(t, [], markYearUntrusted(4, '2014'), [{}]).extraction;
+  check.equal(rejectedOriginal.records[0].facts['overdue.originalListingDate'], '2014-07-20', 'the legacy original-listing date reading remains available internally');
+  check.equal(formats.factsForRecord(rejectedOriginal.records[0])['overdue.originalListingDate'], undefined, 'an explicitly untrusted original-listing date is withheld from the adapter facts');
+  check.equal(offered(rejectedOriginal, clock).findings.some(periodIssue), false, 'an untrusted original-listing anchor cannot become a current reporting-period issue');
+  const duplicateOriginal = read(t, [], null, [{ extra: ['Original Listing', 'Date 20 Jul 2013'] }]).extraction;
+  check.equal(offered(duplicateOriginal, clock).findings.some(periodIssue), false, 'duplicate original-listing dates supply no arbitrary reporting-period anchor');
+  const independentOriginal = read(t, [], markYearUntrusted(4, '2015'), [{}]).extraction;
+  check.equal(formats.factsForRecord(independentOriginal.records[0])['overdue.originalListingDate'], '2014-07-20', 'a trusted original-listing anchor survives an unrelated untrusted current-listing date');
+  check.equal(offered(independentOriginal, clock).findings.some(periodIssue), true, 'the independently sourced original listing still supports its current reporting-period issue');
   for (const [name, changes, amend] of [['missing own legend', { legend: false }, null],
     ['missing month caption', { missingMonth: 'Jan' }, null], ['absent native geometry', {}, (m) => { m.pages[2].word_boxes = []; }],
     ['untrusted printed year', {}, (m) => { m.pages[2].word_boxes.filter((w) => w.text === '2015').forEach((w) => { w.trusted = false; }); }]]) {
@@ -229,6 +257,16 @@ async function run(t, check) {
     'two printed cells with the same period and meaning are benign');
   check.equal(offered(read(t, [{ years: ['2015', '2015'], contradiction: true, unknown: true }]).extraction).findings.some((i) => i.check_id === HISTORY), false,
     'an unresolved own-legend glyph supplies no contradictory status');
+  for (const meaning of ['Account Closed', 'Payment Not Reported', 'Outside Reporting Window']) {
+    const extraction = read(t, [{ years: ['2015', '2015'], contradiction: true, meaning }]).extraction;
+    const cell = extraction.records[0].facts['account.paymentHistoryCells'][0];
+    check.equal(cell.meaning, meaning, 'a decoded non-rating glyph retains its literal own-legend meaning');
+    check.equal(cell.uncertain, false, 'a known non-rating glyph remains physically resolved');
+    check.equal(cell.performance_usable, false, `${meaning} is explicitly unavailable for performance comparison`);
+    check.equal(extraction.records[0].printed.repayment_history.cells_readable, true, 'all printed non-rating and rating glyphs are still physically decoded');
+    check.equal(offered(extraction).findings.some((i) => i.check_id === HISTORY), false,
+      `${meaning} beside a payment rating for the same period is not a contradictory performance issue`);
+  }
 
   const owner = await t.unpaidAccount('di-au-reader-owner@example.test'); await t.pay(owner, 'monthly');
   const caseId = (await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'AU', region: 'AU-NSW' } })).json.case.case_id;

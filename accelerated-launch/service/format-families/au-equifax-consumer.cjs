@@ -781,6 +781,7 @@ function historyCells(model, lines) {
         geometry_source: 'pdftohtml -xml -zoom 1' };
       cells.push({ period: `${row[0].text}-${String(MONTH_CAPTIONS.indexOf(column[0].text) + 1).padStart(2, '0')}`,
         raw_period: `${column[0].text} ${row[0].text}`, code: meaning, meaning,
+        performance_usable: Boolean(meaning) && !/^(Account Closed|Payment Not Reported|Outside Reporting Window)$/i.test(meaning),
         raw_symbol: { kind: 'SOURCE_IMAGE', sha256: image.hash, location },
         legend: matching.length ? { raw_value: meaning, location: matching[0].location,
           raw_symbol: matching[0].raw_symbol } : null,
