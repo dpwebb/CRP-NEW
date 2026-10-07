@@ -16,6 +16,7 @@ const cases = require('./cases.cjs');
 const formats = require('./formats.cjs');
 const evaluation = require('./evaluation.cjs');
 const results = require('./results.cjs');
+const issues = require('./issues.cjs');
 const drafts = require('./drafts.cjs');
 const demo = require('./demo.cjs');
 const multiFileAssembly = require('./multi-file-assembly.cjs');
@@ -64,7 +65,7 @@ function caseViewForResult(store, actor, caseId, resultId) {
 
 function viewForResult(store, actor, caseRow, resultRow) {
   const files = filesFor(store, caseRow.case_id).map(publicFile);
-  const rendered = resultRow ? publicResult(resultRow.rendered) : null;
+  const rendered = resultRow ? publicResult(resultRow.rendered, resultRow.evaluation) : null;
   /* OWNER-PURCHASE-FLOW-001: the summary (distinct counts + one teaser) is free for every signed-in account;
      the COMPLETE assessment, its evidence and its download need a one-time unlock of THIS report or a
      subscription, and the dispute packet needs a subscription. The complete assessment is therefore never
@@ -126,7 +127,7 @@ function getResult(store, actor, caseId, resultId) {
   cases.requireOwnedCase(store, actor, caseId);
   const row = store.state().results.find((r) => r.result_id === resultId && r.case_id === caseId);
   if (!row) throw new ServiceError('NOT_FOUND');
-  return publicResult(row.rendered);
+  return publicResult(row.rendered, row.evaluation);
 }
 
 /* ------------------------------------------------------------------ evaluate */
@@ -205,7 +206,7 @@ function evaluateCase(store, actor, caseId, options) {
     consumer_statements: options && Array.isArray(options.consumer_statements) ? options.consumer_statements : null
   });
   const stored = persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock);
-  return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered) };
+  return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered, stored.evaluation) };
 }
 
 /** The "Assessed on" value for a stored result: the run stamp, never a freshly computed date. */
@@ -261,7 +262,7 @@ function runDemonstration(store, actor, caseId, scenarioName) {
     demonstration: true,
     counts_as_report_support: false,
     label: 'INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT',
-    result: publicResult(stored.rendered)
+    result: publicResult(stored.rendered, stored.evaluation)
   };
 }
 
@@ -445,88 +446,55 @@ function assessmentReportBody(rendered, producedAt) {
   lines.push('REPORTING ISSUES AND REPORT FACTS');
   lines.push('');
   lines.push(`CHECKS PERFORMED (${rendered.checks_performed})`);
-  const reportIssues = (rendered.issues || []).filter((issue) => issue.eligible === true);
+  const reportIssues = (rendered.issues || []).map((issue) => issues.projectConsumerIssue(issue));
+  const sourceLines = (facts) => {
+    for (const fact of facts || []) {
+      const loc = fact.location || {};
+      const where = loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
+      const reading = fact.raw_value != null ? `printed "${fact.raw_value}"`
+        : fact.normalized_value != null ? `normalized value ${fact.normalized_value}` : 'value omitted';
+      lines.push(`  Source: ${fact.source_field || 'report field'} — ${reading} (${where})`);
+    }
+  };
   if (reportIssues.length) {
     lines.push('');
     lines.push('REPORTING ISSUES');
     for (const issue of reportIssues) {
-      const classification = issue.rule_assessment && issue.rule_assessment.classification;
-      const label = classification === 'PROBABLE_VIOLATION' ? 'Probable reporting issue'
-        : classification ? 'Reporting issue'
-          : issue.confidence === 'PROBABLE' ? 'Probable reporting issue' : 'Reporting issue to verify';
+      const label = issues.consumerLabel(issue) || 'Verification request';
       lines.push(`- ${label}${issue.check_kind ? `: ${issue.check_kind}` : ''}`);
       if (issue.explanation) lines.push(`  ${issue.explanation}`);
+      if (issue.uncertainty) lines.push(`  Why it merits attention: ${issue.uncertainty}`);
+      if (issue.account_identity && issue.account_identity.name) lines.push(`  Account: ${issue.account_identity.name}`);
+      if (issue.account_number_in_report != null) lines.push(`  Record: ${issue.record_kind || 'report entry'} ${issue.account_number_in_report}`);
       if (issue.rule_assessment && issue.rule_assessment.requirement) {
         lines.push(`  Reporting rule: ${issue.rule_assessment.requirement}`);
       }
-      for (const fact of issue.source_facts || []) {
-        const loc = fact.location || {};
-        const where = loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-        lines.push(`  Source: ${fact.source_field || 'report field'} — ${fact.raw_value == null ? 'value omitted' : `printed "${fact.raw_value}"`} (${where})`);
+      if (issue.citation) {
+        lines.push(`  Supporting rule: ${issue.citation}`);
+        if (issue.rule_source_version) lines.push(`  Rule version: ${issue.rule_source_version}`);
       }
-    }
-  }
-  for (const o of (rendered.observations || []).filter(o => o.assessment_completed !== false)) {
-    lines.push(`- ${o.headline || '(a recorded rule comparison)'}`);
-    if (o.check_name) lines.push(`  Rule: ${o.check_name}`);
-    if (o.detail) lines.push(`  ${o.detail}`);
-    /* GAP-FINDING-003: retain the admitted-source version (digest) beside the comparison. The internal
-       source-entry id is not rendered here — it stays in the audit record. */
-    if (o.rule_source_version) lines.push(`  Rule version: ${o.rule_source_version}`);
-    /* GAP-FINDING-004: trace the comparison to the exact report fact it read — raw printed value, page/line
-       location, normalization and uncertainty — never another account's evidence. */
-    if (o.rule_source && o.rule_source.location) {
-      const loc = o.rule_source.location;
-      const pageLine = (loc.page != null) ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(`  Source fact: printed "${o.rule_source.raw_value}" (${pageLine}) → normalized ${o.rule_source.normalization && o.rule_source.normalization.to}`);
-    } else if (o.evidence && o.evidence.page != null) {
-      lines.push(`  Source: ${o.evidence.section || 'report'} page ${o.evidence.page}, line ${o.evidence.line}${o.evidence.printed_value ? ` — printed "${o.evidence.printed_value}"` : ''}`);
-    }
-    /* OWNER-GAP-FINDING-002-RESOURCE-001: for a probable finding, name the decisive fact and the report reading
-       that left it unavailable, with its source location — never an arbitrary flag. */
-    for (const d of (o.decisive_facts_unavailable || [])) {
-      const dloc = d.source && d.source.location;
-      const dpage = dloc && dloc.page != null ? `page ${dloc.page}${dloc.line != null ? `, line ${dloc.line}` : ''}` : 'source location recorded';
-      lines.push(`  Decisive fact unavailable: ${d.identity} — ${d.evidence} (${dpage})`);
-    }
-  }
-  for (const f of (rendered.report_consistency_checks || [])) {
-    lines.push(`- ${f.plain || f.headline || '(a factual observation about what the report prints)'}`);
-  }
-  if (!(rendered.observations || []).length && !(rendered.report_consistency_checks || []).length) {
-    lines.push('- (none)');
-  }
-  /* BLOCKER-COMMON-ERRORS-001 / OWNER-ACCEPT-009: render every performed common-error assessment with its
-     outcome, plain explanation, source locations and uncertainty — never only an aggregate count, and never a
-     legal determination. A payment-history issue names its account reference, period, conflicting readings and the
-     printed legend basis (the meanings are the legend's own words). */
-  const commonErrors = (rendered.common_errors || []).filter((ce) =>
-    ce.state === 'POTENTIAL_ISSUE' || ce.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING');
-  if (commonErrors.length) {
-    lines.push('');
-    lines.push('REPORT FACTS REVIEWED');
-    for (const ce of commonErrors) {
-      lines.push(`- ${ce.label || 'Report detail to review'}`);
-      if (ce.detail) lines.push(`  ${ce.detail}`);
-      for (const sr of (ce.source_records || [])) {
-        const loc = sr.location ? `page ${sr.location.page}, line ${sr.location.line}` : 'source location not recorded';
-        const account = sr.record_index != null ? `Account ${sr.record_index}` : null;
-        const bits = [`${account ? account + ' · ' : ''}${loc}`];
-        const ev = sr.evidence || {};
-        for (const k of Object.keys(ev)) {
-          const v = ev[k];
-          if (v === null || v === undefined) continue;
-          bits.push(`${k}: ${Array.isArray(v) ? JSON.stringify(v) : String(v)}`);
+      for (const citation of issue.retention_review && issue.retention_review.citations || []) {
+        lines.push(`  Reporting-period rule: ${citation}`);
+      }
+      sourceLines(issue.source_facts);
+      if (!(issue.source_facts || []).length && issue.source_location && issue.source_location.page != null) {
+        const loc = issue.source_location;
+        lines.push(`  Report entry location: page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}`);
+      }
+      for (const basis of issue.supported_bases || []) {
+        if (basis.citation && basis.citation !== issue.citation) {
+          lines.push(`  Additional supporting rule: ${basis.citation}`);
+          if (basis.rule_source_version) lines.push(`  Rule version: ${basis.rule_source_version}`);
+          if (basis.uncertainty) lines.push(`  Qualification for this rule: ${basis.uncertainty}`);
+          sourceLines(basis.source_facts);
         }
-        lines.push(`  ${bits.join(' · ')}`);
+        if (basis.requirement) lines.push(`  Reporting rule: ${basis.requirement}`);
       }
     }
+  } else {
+    lines.push('No findings available.');
   }
   lines.push('');
-  if (rendered.recovery && rendered.recovery.facts_added && rendered.recovery.facts_added.length) {
-    lines.push('');
-    lines.push(`RECOVERY: ${rendered.recovery.facts_added.length} fact(s) were recovered by a bounded local OCR pass (never substituted).`);
-  }
   lines.push('');
   lines.push(rendered.disclaimer || 'This assessment covers the checks listed in this report.');
   lines.push('');
@@ -540,7 +508,7 @@ function assessmentReport(store, actor, caseId) {
   return {
     filename: `CRP-assessment-report-${caseId}.txt`,
     content_type: 'text/plain; charset=utf-8',
-    body: assessmentReportBody(row.rendered, row.created_at),
+    body: assessmentReportBody(publicResult(row.rendered, row.evaluation), row.created_at),
     is_a_response_packet: false
   };
 }
@@ -565,11 +533,28 @@ module.exports = {
 
 
 /** Drop the audit-only machine payload and every internal identifier from a rendered result set. */
-function publicResult(rendered) {
+function publicResult(rendered, savedEvaluation = null) {
+  // Older saved public statutory issues omitted the primary classification. Recover only its label from
+  // the exact persisted finding ID; never rerun assessment or change historical evidence/confidence.
+  const labels = new Map();
+  for (const row of savedEvaluation && savedEvaluation.results || []) {
+    const machine = row.machine, finding = machine && machine.finding;
+    if (!finding) continue;
+    const id = issues.issueId(`statutory:${machine.adapter_id}:${row.record_index}:${finding.classification}`);
+    labels.set(id, issues.consumerLabel({ ...finding, adapter_id: machine.adapter_id }));
+  }
   return Object.assign({}, rendered, {
-    issues: (rendered.issues || []).slice(),
-    observations: rendered.observations.map((o) => {
+    issues: (rendered.issues || []).map((issue) => issues.projectConsumerIssue(issue,
+      issues.consumerLabel(issue) || labels.get(issue.issue_id) || null)),
+    qualifications: (rendered.qualifications || []).map((text) => text ===
+      'The report evidence and the rule determine whether an issue is definite, probable or potential.'
+      ? 'Each finding states the supporting report evidence and any specific uncertainty.' : issues.consumerText(text)),
+    observations: (rendered.observations || []).map((o) => {
       const view = Object.assign({}, o);
+      const machine = o.machine;
+      const finding = machine && machine.finding;
+      view.consumer_label = finding ? issues.consumerLabel({ ...finding, adapter_id: machine.adapter_id }) : null;
+      if (finding) view.qualification = issues.consumerText(o.detail || 'The supporting report facts and rule are shown below.');
       delete view.machine;
       return view;
     })

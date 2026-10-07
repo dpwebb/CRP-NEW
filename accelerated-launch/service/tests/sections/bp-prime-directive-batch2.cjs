@@ -154,7 +154,7 @@ async function run(service, check) {
   check.equal(dl.status, 200, 'the balance/past-due packet downloads');
   check.ok(/past-due amount/.test(dl.text), 'with the factual verification request');
   check.ok(/verify the balance/.test(dl.text), 'and the recorded request wording');
-  check.ok(/Probable violation of report-data requirement:/.test(dl.text), 'stating the breached report-data requirement');
+  check.ok(/VIOLATION of report-data requirement:/.test(dl.text), 'stating the breached report-data requirement');
   check.ok(!/established reporting issue/.test(dl.text), 'never asserting a definite reporting issue');
 
   /* ---- 5. HTTP end-to-end: potential duplicate through the packet path (qualified wording). ---- */

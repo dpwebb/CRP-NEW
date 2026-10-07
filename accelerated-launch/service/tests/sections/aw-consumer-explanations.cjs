@@ -77,7 +77,7 @@ async function run(t, check) {
   check.ok(/opened date later than its closed date/.test(body), 'the assessment report carries the same breach');
   check.ok(body.includes('01/01/2020') && body.includes('01/01/2019'), 'the report carries both raw dates');
   const ui = renderUIFinding(result);
-  check.ok(/Reporting issue/.test(ui), 'the card uses consumer-facing reporting-issue wording');
+  check.ok(/VIOLATION/.test(ui), 'the card uses the sole consumer breach term');
   check.ok(/2020-01-01|01\/01\/2020/.test(ui), 'the card identifies a decisive date');
   check.ok(!/not legal advi[cs]e|INTERNAL_UNFINISHED_COMPARISON/.test(ui + body));
   const retired = render(VIOLATION_LINES);

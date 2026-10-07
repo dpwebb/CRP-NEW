@@ -23,10 +23,21 @@ const PRINTED_LABEL = Object.freeze({
   'tradeline.firstDelinquencyDate': /first.*delinquen/i
 });
 
+function reportReference(record) {
+  const date = record && record.report_reference_date;
+  if (!date || date.status && date.status !== 'RESOLVED') return null;
+  if (date.raw_value != null && date.raw != null && date.raw_value !== date.raw
+    || date.normalized_value != null && date.normalized != null && date.normalized_value !== date.normalized) return null;
+  const raw = date.raw_value ?? date.raw;
+  const normalized = date.normalized_value ?? date.normalized;
+  return raw != null && normalized && date.location
+    ? { ...date, raw_value: raw, normalized_value: normalized } : null;
+}
+
 function sourceForField(record, field) {
   if (field === 'report.referenceDate') {
-    const date = record.report_reference_date;
-    if (!date || date.raw_value == null || !date.normalized_value || !date.location) return null;
+    const date = reportReference(record);
+    if (!date) return null;
     return { raw_value: date.raw_value, normalized_value: date.normalized_value,
       location: date.location, source_field: date.source_field || 'Report date',
       record_index: record.record_index };
@@ -86,7 +97,7 @@ const REPORT_RULES = Object.freeze({
   'COMMON-ERROR-DUPLICATE-REPORTING': 'One account should not be presented as two separate current obligations in the same report.',
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': 'One account should not carry contradictory responsibility labels in the same reporting snapshot.',
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': 'A collection and its linked original account should not misstate one obligation as two amounts currently due.',
-  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first delinquency cannot predate the opening of its account.',
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first delinquency cannot predate account opening or occur after the report was issued.',
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': 'One account and period cannot carry two contradictory report-defined payment statuses.',
   'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'A reported adverse event needs a usable date anchor to permit verification.',
   'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'A reported write-off needs a usable charge-off date to permit verification.',
@@ -129,10 +140,11 @@ function decisiveFields(issue, record) {
       const dateField = e.field === 'last_payment' ? 'tradeline.lastPaymentDate'
         : e.field === 'first_delinquency' ? 'tradeline.firstDelinquencyDate' : null;
       if (!dateField || e.value !== f[dateField]) return null;
-      if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED' && e.opened === f['liability.openedDate'])
+      if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED' && e.opened === f['liability.openedDate']
+        && e.value < e.opened)
         return ['liability.openedDate', dateField];
       if (issue.reason === 'DATE_AFTER_REPORT_ISSUED'
-        && e.report_date === (record.report_reference_date || {}).normalized_value)
+        && e.report_date === (reportReference(record) || {}).normalized_value && e.value > e.report_date)
         return ['report.referenceDate', dateField];
       return null;
     }
@@ -245,8 +257,13 @@ function completenessSources(issue, record) {
 }
 
 function assess(issue, record, evaluation, extraction) {
-  if (!issue || !record || !evaluation || !evaluation.region || record.status !== 'RESOLVED') return null;
-  const requirement = REPORT_RULES[issue.check_id];
+  if (!issue || !record || !evaluation || !evaluation.region
+    || record.status !== 'RESOLVED' && record.shared_facts_status !== 'RESOLVED') return null;
+  let requirement = REPORT_RULES[issue.check_id];
+  if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE') {
+    if (issue.reason === 'DATE_AFTER_REPORT_ISSUED') requirement = 'A payment or first delinquency cannot occur after the report was issued.';
+    else if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED') requirement = 'A payment or first delinquency cannot predate the opening of its account.';
+  }
   if (!requirement) return null;
   const omission = completenessSources(issue, record);
   const paymentHistory = omission ? null : paymentHistorySources(issue, record);
@@ -260,7 +277,7 @@ function assess(issue, record, evaluation, extraction) {
     && source.location && (source.raw_value != null || source.omitted_value === true)
     && (source.omitted_value === true || field === 'account.paymentHistoryCells'
       || field === 'account.reported_event' || String(source.normalized_value) === String(
-        field === 'report.referenceDate' ? record.report_reference_date.normalized_value :
+        field === 'report.referenceDate' ? (reportReference(record) || {}).normalized_value :
         record_index == null || record_index === record.record_index ? record.facts[field]
           : extraction.records.find((r) => r.record_index === record_index).facts[field])))) return null;
   const adapterId = RULE_BY_REGION[evaluation.region];

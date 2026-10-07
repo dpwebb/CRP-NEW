@@ -92,7 +92,7 @@ async function run(service, check) {
 
   const notPlain = [];
   const classMismatch = [];
-  let ruleCheckDescriptions = 0;
+  let checklistDescriptions = 0;
   let supportedRegions = 0;
   for (const region of surface.regions) {
     const text = (region.availability && region.availability.plain) || '';
@@ -103,14 +103,14 @@ async function run(service, check) {
     for (const [kind, phrase] of CLASS_PHRASES) {
       if (phrase.test(text) && !kinds.includes(kind)) classMismatch.push(`${region.region_code} names ${kind} without recording it`);
     }
-    if (/rule check/.test(text)) ruleCheckDescriptions = ruleCheckDescriptions + 1;
+    if (/common-error checklist/.test(text)) checklistDescriptions += 1;
     if (region.availability && region.availability.state === 'SUPPORTED') supportedRegions = supportedRegions + 1;
   }
-  const recordedRuleRegions = surface.regions.filter((r) => (r.assessment_kinds || []).includes('STATUTORY_RULE_COMPARISON')).length;
+  const recordedChecklistRegions = surface.regions.filter((r) => (r.assessment_kinds || []).includes('COMMON_ERROR')).length;
   check.deepEqual(notPlain, [], 'all 82 descriptions are short, plain sentences with no internal terms and no retired wording');
   check.deepEqual(classMismatch, [], 'and no region claims a kind of check it did not record');
-  check.equal(ruleCheckDescriptions, recordedRuleRegions,
-    'the regions that state rule checks for that place are exactly the regions whose recorded checks include a rule comparison');
+  check.equal(checklistDescriptions, recordedChecklistRegions,
+    'every description names the shared checklist rather than a separate statutory or factual scope');
   check.ok(supportedRegions >= 80, 'and nearly every promised jurisdiction states what this build can run for it');
   check.deepEqual(plainProblems(surface.note), [], 'the sentence shown before an upload is plain as well');
 
@@ -202,7 +202,7 @@ async function run(service, check) {
 
   return {
     jurisdictions_described: surface.regions.length,
-    jurisdictions_stating_rule_checks: ruleCheckDescriptions,
+    jurisdictions_stating_common_error_checklist: checklistDescriptions,
     jurisdictions_supported: supportedRegions,
     retired_wording_guard: RETIRED_WORDING.map(String),
     internal_vocabulary_guard: INTERNAL_VOCABULARY.map(String),

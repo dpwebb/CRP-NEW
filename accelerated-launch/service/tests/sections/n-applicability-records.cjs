@@ -302,8 +302,8 @@ async function surfaceAvailability(t, check) {
   for (const region of surface.regions) {
     counts[region.availability.state] = (counts[region.availability.state] || 0) + 1;
     if (region.availability.state === 'SUPPORTED') {
-      check.ok(region.executable_checks + region.factual_checks + region.policy_observations >= 1,
-        `${region.value}: a supported region states how many checks of each class would run`);
+      check.equal(region.checklist_items, 19,
+        `${region.value}: the shared checklist scope is available before upload`);
       check.ok(region.supported_format_families.length >= 1, `${region.value}: names its available reader paths`);
       check.equal(region.working_assessment, true);
       check.ok(region.assessment_kinds.length >= 1, `${region.value}: and names which classes of check actually ran`);
@@ -329,6 +329,9 @@ async function surfaceAvailability(t, check) {
     const hasActiveStatutorySupport = evaluation.applicableAdapters(region.value).confirmed.length > 0;
     check.equal(region.assessment_kinds.includes('STATUTORY_RULE_COMPARISON'), hasActiveStatutorySupport,
       `${region.value}: public rule-comparison label matches the active checklist-related adapter scope`);
+    check.ok(region.assessment_kinds.includes('COMMON_ERROR'), `${region.value}: the shared common-error path is available`);
+    check.equal(region.statutory_support_checks, evaluation.applicableAdapters(region.value).confirmed.length,
+      `${region.value}: statutory support is recorded independently of the checklist item count`);
     if (!hasActiveStatutorySupport) check.ok(region.assessment_kinds.includes('REPORT_FACT_CONSISTENCY'),
       `${region.value}: factual support remains available without a statutory adapter`);
   }

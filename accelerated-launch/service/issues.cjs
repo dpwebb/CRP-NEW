@@ -21,14 +21,15 @@ const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
 const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
 const { activeAdapter, activeRuleRef } = require('./common-error-scope.cjs');
+const CHECKLIST_IDS = new Set(require('./common-error-checklist.cjs').CHECKS.map((check) => check.check_id));
+const BREACH_CLASSES = new Set(['VIOLATION', 'PROBABLE_VIOLATION', 'POTENTIAL_VIOLATION']);
 const REQUEST_TYPE = Object.freeze({ CORRECTION: 'CORRECTION', VERIFICATION: 'VERIFICATION' });
 
 /**
- * OWNER correction (Batch 25): the one approved lead sentence for a probable reporting issue. It is the single
- * source for the served text, so the results card, the review step and the downloaded packet cannot drift, and
- * it is never a claim that something was unreadable.
+ * Compatibility export retained for older callers and assertions. The consumerLabel and consumerText helpers
+ * implement the latest owner terminology; uncertainty always describes the specific report facts.
  */
-const PROBABLE_LEAD = 'Your report shows a probable reporting issue. Review the details below before deciding whether to dispute it.';
+const PROBABLE_LEAD = 'Review the report details below before deciding whether to dispute this entry.';
 
 /**
  * OWNER Batch 33 correction (consumer field names): the card, the review step, the assessment download and the
@@ -72,11 +73,11 @@ function sourceFactFor(entry, label, record) {
   if (!source) return [];
   const location = source.location || null;
   return [{
-    field_label: label,
-    printed_value: source.raw_value === undefined ? null : source.raw_value,
+    field: entry && entry.anchor_field || null,
+    source_field: label,
+    raw_value: source.raw_value === undefined ? null : source.raw_value,
     normalized_value: source.normalized_value || (entry && entry.anchor_iso) || null,
-    page: location && location.page !== undefined ? location.page : null,
-    line: location && location.line !== undefined ? location.line : null
+    location
   }];
 }
 
@@ -234,7 +235,7 @@ function recordRefFor(record) {
 function contentFindingFacts(requiredFacts) {
   return (requiredFacts || []).map((f) => ({
     field: f.field,
-    source_field: f.role || f.field,
+    source_field: f.source && f.source.source_field || f.role || f.field,
     raw_value: f.source ? f.source.raw_value : null,
     normalized_value: f.source ? f.source.normalized_value : null,
     location: f.source ? f.source.location : null
@@ -254,7 +255,12 @@ const POTENTIAL_WORDING = Object.freeze({
     request: 'please verify the status and the closure date for this account and correct the inconsistency'
   },
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': {
-    explain: (i) => `This report prints ${recordLabel(i)} with the same payment-history period (${(i.evidence || {}).period}) twice with two different cells.`,
+    explain: (i) => {
+      const e = i.evidence || {};
+      const readings = e.first_code != null && e.second_code != null && e.first_meaning && e.second_meaning
+        ? `: "${e.first_code}" (${e.first_meaning}) and "${e.second_code}" (${e.second_meaning})` : '';
+      return `This report prints ${recordLabel(i)} with the same payment-history period (${e.period}) twice with two different cells${readings}.`;
+    },
     uncertainty: 'The same period has two different meanings. The report does not show which cell needs correction; a printing duplication may explain the conflict.',
     request: 'please verify the payment-history cells for this period and correct the inconsistency'
   },
@@ -392,11 +398,11 @@ const POTENTIAL_WORDING = Object.freeze({
         ? ` One condition this period depends on is not settled by your report: ${r.exception_specific_uncertainty} If it applies to this entry, the entry may still be reported for longer, so ask the credit bureau to check it as part of the same request.`
         : '';
       return historical
-        ? `The printed last-payment date and the six-year period support a correction request. The bureau should verify the payment date and correct or remove the debt information if the recorded period applies.${exception}`
+        ? `The printed ${r.anchor_label || 'event date'} and the ${r.period_years}-year period support a verification request. The bureau should verify that date and correct or remove the debt information if the recorded period applies.${exception}`
         : `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}${exception}`;
     },
     request: (i) => i.retention_review && i.retention_review.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT'
-      ? 'Please verify the last-payment date and remove or correct this debt information if it has exceeded the reporting period.'
+      ? `Please verify the ${i.retention_review.anchor_label || 'event date'} and remove or correct this debt information if it has exceeded the ${i.retention_review.period_years}-year reporting period.`
       : 'Please verify whether this entry remains on my current file and whether its reporting period has expired.'
   }
 });
@@ -718,20 +724,47 @@ function describeWording(issue) {
   };
 }
 
-/**
- * OWNER correction (Batch 25): a PROBABLE issue leads with the one approved sentence and is then followed by
- * that issue's own, specific uncertainty. The uncertainty is never reduced to "a fact was not readable": a value
- * that could not be read is named as a reading failure by the module that actually measured it, while an
- * unverified fact or an exception the report cannot establish is named as exactly that.
- */
-function describe(issue) {
-  const wording = describeWording(issue);
-  /* The specific uncertainty matters to the consumer; the engine's confidence tier does not. */
-  const uncertainty = String(wording.uncertainty || '')
+/** One public breach term, derived from an existing checklist assessment, never from confidence or eligibility. */
+function consumerLabel(issue) {
+  if (!issue) return null;
+  const classification = issue.rule_assessment && issue.rule_assessment.classification || issue.classification;
+  const scopedRule = issue.rule_assessment && (!issue.check_id || CHECKLIST_IDS.has(issue.check_id));
+  if (BREACH_CLASSES.has(classification) && (scopedRule || activeAdapter(issue.adapter_id))) return 'VIOLATION';
+  if ((issue.supported_bases || []).some((basis) => consumerLabel(basis) === 'VIOLATION')) return 'VIOLATION';
+  // Public issues carry the server's decision after internal rule identifiers have been removed.
+  return issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : null;
+}
+
+/** Normalize only generated confidence boilerplate, including saved wording. Printed evidence is untouched. */
+function consumerText(text) {
+  if (text == null) return text;
+  return String(text)
+    .replace(/, so this is a probable reporting issue, not an established one\./gi, '.')
+    .replace(/Your report shows a probable reporting issue\.\s*/gi, '')
     .replace(/\s*This is a probable reporting issue(?: under a governed rule, to be verified)?,? not an established (?:one|violation)\./gi, '')
     .replace(/\s*This is an established reporting issue under a governed rule\./gi, '')
-    .replace(/makes what the report shows a probable reporting issue to verify, not an established violation\./gi, 'supports a verification request.');
-  return Object.assign({}, wording, { uncertainty });
+    .replace(/makes what the report shows a probable reporting issue to verify, not an established violation\./gi, 'supports a verification request.')
+    .replace(/\s*This is a qualified potential-duplicate review, not a definite finding\./gi, '')
+    .replace(/This is a completeness question to verify, not an established reporting issue\./gi, 'Please verify the missing detail.')
+    .replace(/This is not an established violation: the report/gi, 'The report')
+    .replace(/, and this is an established reporting issue under a governed retention rule\./gi, '.')
+    .trim();
+}
+
+/** A presentation projection for newly generated and saved issues; it does not change the assessment or facts. */
+function projectConsumerIssue(issue, label = consumerLabel(issue)) {
+  const out = { ...issue, consumer_label: label };
+  for (const field of ['explanation', 'uncertainty', 'request_wording']) {
+    if (Object.hasOwn(out, field)) out[field] = consumerText(out[field]);
+  }
+  if (issue.supported_bases) out.supported_bases = issue.supported_bases.map((basis) => projectConsumerIssue(basis));
+  return out;
+}
+
+/** Preserve specific uncertainty while keeping the engine's confidence tier out of consumer wording. */
+function describe(issue) {
+  const wording = describeWording(issue);
+  return { ...wording, uncertainty: consumerText(wording.uncertainty) };
 }
 
 /** Whether one issue is eligible for a consumer correction packet (issue-specific, not a blanket flag). A
@@ -776,6 +809,8 @@ function statutoryIssues(extraction, results) {
       basis_type: isContentFinding ? BASIS_TYPE.CONTENT_FINDING : BASIS_TYPE.STATUTORY_RETENTION,
       classification,
       adapter_id: m.adapter_id,
+      rule_id: m.adapter_id,
+      legacy_rule_id: m.legacy_rule_id || null,
       packet_eligible: m.packet_eligible === true,
       record_index: row.record_index,
       citation: finding.citation || null,
@@ -804,6 +839,44 @@ function statutoryIssues(extraction, results) {
     issues.push(issue);
   }
   return issues;
+}
+
+/** Equivalent period breaches on one report entry are one consumer concern. Keep the complete
+ * per-rule bases; the primary card uses an existing eligible basis and never invents a stronger class. */
+function consolidateRetentionIssues(rows) {
+  const groups = new Map();
+  for (const issue of rows) {
+    if (issue.basis_type !== BASIS_TYPE.STATUTORY_RETENTION) continue;
+    const a = issue.arithmetic || {};
+    const key = JSON.stringify([issue.record_index, issue.anchor_field, a.anchor_date,
+      a.reference_date, a.anniversary, issue.period_years]);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(issue);
+  }
+  const replacements = new Map();
+  const consumed = new Set();
+  const rank = { DEFINITE: 0, PROBABLE: 1, POTENTIAL: 2 };
+  for (const group of groups.values()) {
+    if (group.length < 2) continue;
+    const ordered = group.slice().sort((a, b) => Number(b.eligible) - Number(a.eligible)
+      || rank[a.confidence] - rank[b.confidence] || a.issue_id.localeCompare(b.issue_id));
+    const primary = ordered[0];
+    primary.supported_bases = ordered.map((basis) => ({
+      basis_type: basis.basis_type, issue_id: basis.issue_id, adapter_id: basis.adapter_id,
+      rule_id: basis.rule_id, legacy_rule_id: basis.legacy_rule_id,
+      classification: basis.classification, confidence: basis.confidence,
+      citation: basis.citation, source_version: basis.source_version,
+      source: basis.source, anchor_field: basis.anchor_field,
+      period_years: basis.period_years, arithmetic: basis.arithmetic,
+      explanation: basis.explanation, uncertainty: basis.uncertainty,
+      request_type: basis.request_type, request_wording: basis.request_wording,
+      packet_eligible: basis.packet_eligible, eligible: basis.eligible
+    }));
+    replacements.set(group[0].issue_id, primary);
+    group.slice(1).forEach((issue) => consumed.add(issue.issue_id));
+  }
+  return rows.filter((issue) => !consumed.has(issue.issue_id))
+    .map((issue) => replacements.get(issue.issue_id) || issue);
 }
 
 /** The three in-scope common-error positives -> POTENTIAL issues. */
@@ -851,6 +924,11 @@ function potentialIssues(extraction, commonErrors, evaluation) {
           raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
           location: f.source.location
         }));
+        const dateField = issue.evidence && issue.evidence.field === 'first_delinquency'
+          ? 'tradeline.firstDelinquencyDate' : issue.evidence && issue.evidence.field === 'last_payment'
+            ? 'tradeline.lastPaymentDate' : null;
+        const decisiveSource = dateField && assessment.required_facts.find((fact) => fact.field === dateField);
+        if (decisiveSource) issue.location = decisiveSource.source.location;
       }
       issue.eligible = isEligible(issue);
       Object.assign(issue, describe(issue));
@@ -920,7 +998,10 @@ function mergeOverlappingFactualIssues(statutory, factual) {
       adapter_id: s.adapter_id,
       citation: s.citation || null,
       source_version: s.source_version || null,
-      confidence: s.confidence
+      confidence: s.confidence,
+      classification: s.classification,
+      uncertainty: s.uncertainty,
+      source_facts: s.source_facts || []
     });
     s.merged_factual_issue_ids = [...(s.merged_factual_issue_ids || []), match.issue_id];
   }
@@ -1039,9 +1120,9 @@ function issuesFor(ctx) {
   const evaluation = ctx && ctx.evaluation;
   const extraction = ctx && ctx.extraction;
   if (!evaluation) return [];
-  const statutory = statutoryIssues(extraction, (evaluation.results || [])
+  const statutory = consolidateRetentionIssues(statutoryIssues(extraction, (evaluation.results || [])
     .filter((row) => row && row.machine && row.machine.finding
-      && activeAdapter((row.check && row.check.adapter_id) || row.machine.adapter_id)));
+      && activeAdapter((row.check && row.check.adapter_id) || row.machine.adapter_id))));
   const factual = potentialIssues(extraction, evaluation.common_errors, evaluation);
   const paymentHistory = paymentHistoryIssues(extraction, evaluation.payment_history_analysis);
   const scopedRetention = evaluation.retention_dual_date ? {
@@ -1064,7 +1145,9 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
   const performed = dualDate && Array.isArray(dualDate.performed) ? dualDate.performed : [];
   const alreadyCovered = new Set((statutoryIssuesAlready || [])
     .filter((i) => i && i.basis_type === BASIS_TYPE.STATUTORY_RETENTION)
-    .map((i) => `${i.record_index}|${i.rule_id || i.citation || ''}`));
+    .flatMap((i) => [i, ...(i.supported_bases || [])].flatMap((basis) =>
+      [basis.adapter_id, basis.rule_id, basis.legacy_rule_id, basis.citation]
+        .filter(Boolean).map((identity) => `${i.record_index}|${identity}`))));
   /* ONE coherent concern per entry and period, not one per limb: two recorded limbs that measure the same entry
      from the same anchor to the same end date are the same underlying concern, so they merge into one card with
      both citations rather than inflating the count. */
@@ -1081,7 +1164,8 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
   }
   for (const group of groups.values()) {
     const entry = group.entry;
-    if (alreadyCovered.has(`${entry.record_index}|${entry.rule || entry.citation || ''}`)) continue;
+    if (group.materials.some((material) => [material.adapter_id, material.rule, material.citation]
+      .filter(Boolean).some((identity) => alreadyCovered.has(`${entry.record_index}|${identity}`)))) continue;
     const record = recordFor(extraction, entry.record_index);
     const label = consumerFieldLabel(entry.anchor_field);
     const sourceFacts = sourceFactFor(entry, label, record);
@@ -1128,12 +1212,12 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
         period_ends_on: entry.at_assessment_date ? entry.at_assessment_date.period_ends_on : null,
         report_reference_date: entry.reference_date || entry.report_reference_date || null,
         assessment_date: entry.assessment_date || null,
-        source_page: sourceFacts.length ? sourceFacts[0].page : null,
-        source_line: sourceFacts.length ? sourceFacts[0].line : null
+        source_page: sourceFacts.length && sourceFacts[0].location ? sourceFacts[0].location.page : null,
+        source_line: sourceFacts.length && sourceFacts[0].location ? sourceFacts[0].location.line : null
       },
       /* The audit payload: the raw comparison entries, never rendered to a consumer. */
       machine: { retention_dates: group.materials, internal_rule_refs: group.rule_refs.slice() },
-      location: sourceFacts.length && sourceFacts[0].page !== null ? { page: sourceFacts[0].page, line: sourceFacts[0].line } : null,
+      location: sourceFacts.length ? sourceFacts[0].location : null,
       source_facts: sourceFacts,
       record: recordRefFor(record),
       report_identity: reportIdentityFor(record),
@@ -1156,15 +1240,32 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
  *  the recorded rule is named by its citation and the factual base by the plain-language kind of observation. */
 function publicBases(bases) {
   return (bases || []).map((b) => {
+    if (b.basis_type === BASIS_TYPE.STATUTORY_RETENTION) {
+      const source = b.source || {};
+      return { basis_type: b.basis_type, kind: 'recorded_rule', citation: b.citation || null,
+        classification: b.classification, confidence: b.confidence,
+        rule_source_version: b.source_version || null, period_years: b.period_years,
+        explanation: b.explanation, uncertainty: b.uncertainty,
+        source_facts: [{ source_field: source.source_field || consumerFieldLabel(b.anchor_field),
+          raw_value: source.raw_value, normalized_value: source.normalized_value,
+          location: source.location || null }] };
+    }
     if (b.basis_type === BASIS_TYPE.CONTENT_FINDING) {
-      return { basis_type: b.basis_type, kind: 'recorded_rule', citation: b.citation || null };
+      return { basis_type: b.basis_type, kind: 'recorded_rule', citation: b.citation || null,
+        classification: b.classification, confidence: b.confidence,
+        rule_source_version: b.source_version || null, uncertainty: b.uncertainty,
+        source_facts: (b.source_facts || []).map((f) => ({ source_field: f.source_field,
+          raw_value: f.raw_value, normalized_value: f.normalized_value, location: f.location || null })) };
     }
     if (b.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
       return { basis_type: b.basis_type, kind: 'court_enforcement_time_limit', citation: b.citation || null };
     }
     return { basis_type: b.basis_type, kind: 'what_the_report_prints', check_kind: b.label || null,
-      requirement: b.rule_assessment ? b.rule_assessment.requirement : null };
-  });
+      classification: b.classification, confidence: b.confidence,
+      requirement: b.rule_assessment ? b.rule_assessment.requirement : null,
+      source_facts: (b.source_facts || []).map((f) => ({ source_field: f.source_field,
+        raw_value: f.raw_value, normalized_value: f.normalized_value, location: f.location || null })) };
+  }).map((basis, index) => projectConsumerIssue(basis, consumerLabel(bases[index])));
 }
 
 /** The consumer-facing view of one issue: no internal adapter/check ids, no machine classification leaks. */
@@ -1222,6 +1323,7 @@ function publicIssue(issue) {
     out.retention_review = {
       /* The recorded statutory citation only — no internal adapter or rule identifier reaches a consumer. */
       citation: r.citation || null,
+      citations: r.citations || [r.citation].filter(Boolean),
       /* The consumer-facing name of the printed field, and the printed value it read. */
       anchor_label: r.anchor_label || null,
       anchor_printed_date: r.anchor_printed_date || null,
@@ -1241,11 +1343,11 @@ function publicIssue(issue) {
     };
     /* The source evidence the card, the review step, the download and the packet all carry. */
     out.source_evidence = {
-      field_label: (issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].field_label : null) || r.anchor_label || null,
-      printed_value: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].printed_value : null,
+      field_label: (issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].source_field : null) || r.anchor_label || null,
+      printed_value: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].raw_value : null,
       normalized_value: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].normalized_value : null,
-      page: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].page : null,
-      line: issue.source_facts && issue.source_facts[0] ? issue.source_facts[0].line : null
+      page: issue.source_facts && issue.source_facts[0] && issue.source_facts[0].location ? issue.source_facts[0].location.page : null,
+      line: issue.source_facts && issue.source_facts[0] && issue.source_facts[0].location ? issue.source_facts[0].location.line : null
     };
   }
   if (issue.report_identity) {
@@ -1270,6 +1372,10 @@ function publicIssue(issue) {
     out.period_years = issue.period_years || null;
     out.printed_value = src ? src.raw_value : null;
     out.normalized_value = src ? src.normalized_value : null;
+    out.source_facts = src ? [{ source_field: src.source_field || consumerFieldLabel(issue.anchor_field),
+      raw_value: src.raw_value, normalized_value: src.normalized_value,
+      location: src.location || null }] : [];
+    if (issue.supported_bases && issue.supported_bases.length) out.supported_bases = publicBases(issue.supported_bases);
   } else if (issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     /* A content finding states the prohibited content and its decisive facts — never a retention period. */
     out.citation = issue.citation || null;
@@ -1313,7 +1419,7 @@ function publicIssue(issue) {
   if (loc) {
     out.source_location = { section: loc.section || null, page: loc.page, line: loc.line };
   }
-  return out;
+  return projectConsumerIssue(out, consumerLabel(issue));
 }
 
 function publicIssues(ctx) {
@@ -1329,6 +1435,9 @@ module.exports = {
   issuesFor,
   publicIssues,
   publicIssue,
+  consumerLabel,
+  consumerText,
+  projectConsumerIssue,
   issueId,
   isEligible
 };

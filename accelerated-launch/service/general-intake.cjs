@@ -512,13 +512,39 @@ const OPENED_LABELS = Object.freeze(['OPENED', 'OPENED DATE', 'DATE OPENED', 'OP
 
 /* GAP-INGEST: a printed account status word, used only for data-consistency comparison, never to infer a legal
    state. "Open" vs "Closed" is a printed label, not a conclusion about the account's actual state. */
-const STATUS_WORDS = Object.freeze(['OPEN', 'CLOSED', 'PAID', 'CURRENT', 'ACTIVE', 'CHARGED OFF', 'CHARGE OFF', 'SETTLED', 'DEFAULT', 'IN COLLECTION']);
-function statusWordOf(text) {
-  const up = String(text || '').toUpperCase();
-  for (const w of STATUS_WORDS) {
-    if (new RegExp(`\\b${w.replace(/\s+/g, '\\s+')}\\b`).test(up)) return w;
+const STATUS_WORDS = Object.freeze(['PAID AS AGREED', 'PAID IN FULL', 'SETTLED IN FULL',
+  'NOT OVERDUE', 'UP TO DATE', 'CHARGED OFF', 'CHARGE OFF', 'IN COLLECTION',
+  'OPEN', 'CLOSED', 'PAID', 'CURRENT', 'ACTIVE', 'SETTLED', 'DEFAULT']);
+const STATUS_PATTERN = STATUS_WORDS.map((word) => word.replace(/\s+/g, '\\s+')).join('|');
+
+function isAccountStatusLine(text) {
+  return new RegExp(`^\\s*(?:(?:THIS|THE)\\s+)?ACCOUNT\\s+(?:STATUS\\b|IS\\b|REPORTED\\s+AS\\b|(?:${STATUS_PATTERN})\\s*[.!]?\\s*$)`, 'i')
+    .test(String(text || ''));
+}
+
+function statusReadingOf(text, dates) {
+  const raw = String(text || '');
+  const explicit = new RegExp(`\\b(?:ACCOUNT\\s+)?STATUS\\s*[:\\-]?\\s*(?:IS\\s+)?(${STATUS_PATTERN})\\b`, 'i').exec(raw);
+  if (explicit) return { value: explicit[1].toUpperCase().replace(/\s+/g, ' '), raw: explicit[1] };
+  // An explicit, unrecognized status must not be replaced by a word in a different field.
+  if (/\bSTATUS\b/i.test(raw)) return null;
+  const escape = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (/^\s*(?:OPEN|CLOSED|PAID|SETTLED)\s*:\s*$/i.test(raw)) return null;
+  let remaining = raw;
+  const dateCaptions = [...CLOSURE_LABELS, ...OPENED_LABELS].filter((label) => /\bDATE\b/.test(label))
+    .sort((a, b) => b.length - a.length).map((label) => escape(label).replace(/\s+/g, '\\s+'));
+  remaining = remaining.replace(new RegExp(`\\b(?:${dateCaptions.join('|')})\\b`, 'gi'),
+    (value) => ' '.repeat(value.length));
+  for (const date of dates || []) {
+    if (!date.label || !date.raw) continue;
+    const caption = new RegExp(`\\b${escape(date.label)}\\s*[:\\-]?\\s*${escape(date.raw)}`, 'gi');
+    remaining = remaining.replace(caption, (value) => ' '.repeat(value.length));
   }
-  return null;
+  // A date caption or creditor name is not a status. Unlabelled input must be a standalone status
+  // or an explicit statement about the account, such as "This account is open".
+  const word = new RegExp(`^\\s*(?:ACCOUNT\\s+)?(${STATUS_PATTERN})\\s*[.!]?\\s*$`, 'i').exec(remaining)
+    || new RegExp(`\\bACCOUNT\\s+(?:IS|REPORTED\\s+AS)\\s+(${STATUS_PATTERN})\\b`, 'i').exec(remaining);
+  return word ? { value: word[1].toUpperCase().replace(/\s+/g, ' '), raw: word[1] } : null;
 }
 
 /* OWNER-ACCEPT-009 item 3: distinct printed amounts. The flat amount list is preserved as account.amount, but a
@@ -995,11 +1021,13 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
       if (val.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
     }
   }
-  const printedStatus = PAYMENT_HISTORY_HEADER_RE.test(String(line.text || '').toUpperCase()) ? null : statusWordOf(line.text);
-  if (printedStatus) canonical.facts['account.status'] = printedStatus;
+  const printedStatus = !trusted || PAYMENT_HISTORY_HEADER_RE.test(String(line.text || '').toUpperCase())
+    ? null : statusReadingOf(line.text, facts.dates);
+  if (printedStatus) canonical.facts['account.status'] = printedStatus.value;
   /* BLOCKER-FDT-001 / duplicate corroboration: an account-intro line contributes its printed account/creditor
      identity as a normalized, non-identifying token. A continuation line never adds one. */
-  if (kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase()) && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase())) {
+  if (kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase())
+    && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)) {
     const identity = accountIdentityToken(line.text);
     if (identity) canonical.facts['account.reported_identity'] = identity;
   }
@@ -1026,11 +1054,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   }
   /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
      The fact map alone is not a printed reading: it must carry its own raw token and location. */
-  const status = canonical.facts['account.status'];
-  if (status) {
-    const at = String(line.text || '').toUpperCase().indexOf(status);
-    if (at >= 0) printed.Status = { label: 'Status', state: 'VALUE',
-      raw: String(line.text).slice(at, at + status.length), normalized: status,
+  if (printedStatus) {
+    printed.Status = { label: 'Status', state: 'VALUE',
+      raw: printedStatus.raw, normalized: printedStatus.value,
       location: lineLocation(line), kind: 'status' };
   }
   if (trusted && masked) {
@@ -1357,7 +1383,7 @@ function buildRecords(pages, convention) {
       /* GAP-INGEST-002: a printed account status (e.g. "Status: Charged Off") or a masked account identifier
          (e.g. "Account Number ****1234") is a report-supported fact worth reading even when the continuation
          line carries no date or dollar amount, so it reaches its owning record. */
-      const hasStatus = statusWordOf(line.text) !== null;
+      const hasStatus = statusReadingOf(line.text, facts.dates) !== null;
       const hasIdentifier = maskedIdentifierToken(line.text) !== null;
       /* OWNER-CANDIDATE-002/003: a Judgment or criminal-charge context line, and a judgment/criminal content
          field line (or a truncation marker) while a public record is open, are value lines even without a date or
@@ -1376,7 +1402,7 @@ function buildRecords(pages, convention) {
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
       const isAccountIntro = kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(up)
-        && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType;
+        && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType && !isAccountStatusLine(line.text);
 
       /* OWNER-CANDIDATE-002: a judgment-content line (Judgment context, creditor/amount/assignee, case/docket,
          date of entry) continues the OPEN public record — it is a field of the judgment, not a new account and

@@ -1,5 +1,9 @@
 # OWNER-CONSUMER-LANGUAGE-001 — imperative
 
+## October 7 terminology supersession
+
+The owner's latest instruction, recorded in `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`, controls consumer terminology: a supported common-error checklist breach is labelled **VIOLATION** only. Do not surface probable or potential violation wording. This supersedes earlier public classification labels below; internal confidence, source evidence and material uncertainty remain intact.
+
 ## Latest owner correction — main-page footer only
 
 October 4, 2026: the owner explicitly permits one brief public legal-advice disclaimer only in a small footer section of the main page. Approved text: "Credit Regulator Pro provides credit-report information, not legal advice." Keep it readable and unobtrusive, not hidden. Do not include or repeat it in any other consumer area: results, findings, explanations, account/billing/privacy/support views, correction/dispute packets, downloaded reports, generated templates or consumer communications. The footer must not be injected into every wizard view or copied into export templates. This is the sole exception to the earlier absolute prohibition and supersedes conflicting instructions below. Internal finding classes and evidence standards remain unchanged.

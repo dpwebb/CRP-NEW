@@ -7,9 +7,31 @@
  */
 const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
+const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
-function later(a, b) { const x = iso(a); const y = iso(b); return x && y && x > y; }
+
+// A month is a range of possible dates. Overlapping ranges do not establish reversed dates.
+function dateRange(value, precision) {
+  if (typeof value !== 'string') return null;
+  const month = /^(\d{4})-(\d{2})(?:-\d{2})?$/.exec(value);
+  if (month && (/^MONTH(?:_LEVEL)?$/.test(precision || '') || value.length === 7)) {
+    const year = +month[1], number = +month[2];
+    if (number < 1 || number > 12) return null;
+    const prefix = `${month[1]}-${month[2]}`;
+    return { first: `${prefix}-01`, last: `${prefix}-${String(daysInMonth(year, number)).padStart(2, '0')}` };
+  }
+  return parseIso(value) ? { first: value, last: value } : null;
+}
+
+function factDateRange(record, field) {
+  const facts = record.facts || {};
+  const value = facts[field];
+  const reading = Object.values(record.printed || {}).find((item) => item && item.normalized === value && item.kind === 'date');
+  return dateRange(value, facts[`${field}Precision`] || (reading && reading.precision));
+}
+
+function strictlyAfter(a, b) { return Boolean(a && b && a.first > b.last); }
 
 function match(record, why, evidence) {
   return {
@@ -38,14 +60,14 @@ function entry(checkId, label, matches, plain, detectedPlain, state) {
 
 /* 1. An account whose opened date is after its closed date is self-contradictory. */
 function contradictoryAccountDates(records) {
-  const applicable = records.some((r) => { const f = r.facts || {}; return iso(f['liability.openedDate']) && iso(f['liability.closedDate']); });
+  const applicable = records.some((r) => factDateRange(r, 'liability.openedDate') && factDateRange(r, 'liability.closedDate'));
   if (!applicable) return null;
   const matches = [];
   for (const r of records) {
     const f = r.facts || {};
     const opened = iso(f['liability.openedDate']);
     const closed = iso(f['liability.closedDate']);
-    if (opened && closed && opened > closed) {
+    if (strictlyAfter(factDateRange(r, 'liability.openedDate'), factDateRange(r, 'liability.closedDate'))) {
       matches.push(match(r, 'OPENED_DATE_AFTER_CLOSED_DATE', { opened, closed }));
     }
   }
@@ -119,17 +141,19 @@ function corroboratingThirdFact(a, b) {
 function duplicateReporting(records) {
   const groups = groupByDateKey(records);
   const matches = [];
-  const first = new Map();
+  const candidates = new Map();
   for (const [k, list] of groups) {
     for (const r of list) {
       const id = identityKey(r);
       if (!id) continue;
-      const prior = first.get(`${k}|${id}`);
+      const key = `${k}|${id}`;
+      const earlier = candidates.get(key) || [];
+      const prior = earlier.find((item) => corroboratingThirdFact(item, r) === 'CONFIRMED');
       if (prior) {
-        if (corroboratingThirdFact(prior, r) === 'CONFIRMED') {
-          matches.push(match(r, 'SAME_IDENTITY_DATES_AND_SOURCE_REPORT', { duplicate_of_record: prior.record_index, corroborated_identity: id }));
-        }
-      } else first.set(`${k}|${id}`, r);
+        matches.push(match(r, 'SAME_IDENTITY_DATES_AND_SOURCE_REPORT', { duplicate_of_record: prior.record_index, corroborated_identity: id }));
+      }
+      earlier.push(r);
+      candidates.set(key, earlier);
     }
   }
   if (!matches.length) return null;
@@ -179,12 +203,12 @@ function similarEntriesWorthReviewing(records) {
 
 /* 3. A reported-account whose opened date is after its first-reported date is out of order. */
 function reportedDatesOutOfOrder(records) {
-  const applicable = records.some((r) => { const f = r.facts || {}; return iso(f['reportedAccount.dateOpened']) && iso(f['reportedAccount.firstReported']); });
+  const applicable = records.some((r) => factDateRange(r, 'reportedAccount.dateOpened') && factDateRange(r, 'reportedAccount.firstReported'));
   if (!applicable) return null;
   const matches = [];
   for (const r of records) {
     const f = r.facts || {};
-    if (later(f['reportedAccount.dateOpened'], f['reportedAccount.firstReported'])) {
+    if (strictlyAfter(factDateRange(r, 'reportedAccount.dateOpened'), factDateRange(r, 'reportedAccount.firstReported'))) {
       matches.push(match(r, 'DATE_OPENED_AFTER_FIRST_REPORTED', { opened: f['reportedAccount.dateOpened'], first_reported: f['reportedAccount.firstReported'] }));
     }
   }
@@ -214,29 +238,26 @@ function accountStatusDateContradiction(records) {
     'This report prints an account whose status says it is open while the same record prints a closure date. The printed dates conflict.');
 }
 
-/* 3b. OWNER-ACCEPT-009 item 3: balance/payment consistency. A printed past-due amount or payment amount that
-   exceeds the printed balance it sits next to is a factual inconsistency. Only printed amounts are compared;
-   no arithmetic is inferred, and a comparison is skipped when either amount is missing or unclassified. */
+/* Balance consistency compares a current balance with its past-due amount. A payment can legitimately exceed
+   the remaining balance, so its amount alone is not a contradictory value. */
 function nval(v) { return typeof v === 'number' && Number.isFinite(v) ? v : undefined; }
 
 function balancePaymentConsistency(records) {
   const matches = [];
+  let applicable = false;
   for (const r of records) {
     const f = r.facts || {};
-    const balance = nval(f['account.balance']) !== undefined ? nval(f['account.balance']) : nval(f['account.amount']);
+    const balance = nval(f['account.balance']);
     const pastDue = nval(f['account.pastDueAmount']);
-    const payment = nval(f['account.paymentAmount']);
+    if (balance !== undefined && pastDue !== undefined) applicable = true;
     if (balance !== undefined && pastDue !== undefined && pastDue > balance) {
       matches.push(match(r, 'PAST_DUE_EXCEEDS_BALANCE', { balance, past_due: pastDue }));
     }
-    if (balance !== undefined && payment !== undefined && payment > balance) {
-      matches.push(match(r, 'PAYMENT_EXCEEDS_BALANCE', { balance, payment }));
-    }
   }
-  if (!matches.length) return null;
+  if (!applicable) return null;
   return entry('COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY', 'a balance/payment inconsistency', matches,
-    'No printed past-due or payment amount exceeding its printed balance was detected.',
-    'This report prints a past-due or payment amount larger than the balance it sits next to. The printed amounts conflict, and no arithmetic is inferred beyond them.');
+    'No printed past-due amount exceeding its printed balance was detected.',
+    'This report prints a past-due amount larger than the balance it sits next to. The printed amounts conflict.');
 }
 
 /* The report's own revolving-account fields: a positive balance beside an explicitly
@@ -276,7 +297,7 @@ function paidOrSettledShownUnpaid(records) {
       && pastDue !== undefined && pastDue > 0) {
       matches.push(match(r, 'FINAL_PAYMENT_STATUS_WITH_PAST_DUE', { status, past_due: pastDue }));
     }
-    else if (['PAID', 'PAID IN FULL'].includes(status) && balance !== undefined && balance > 0) {
+    else if (['PAID', 'PAID IN FULL', 'SETTLED IN FULL'].includes(status) && balance !== undefined && balance > 0) {
       matches.push(match(r, 'PAID_IN_FULL_WITH_POSITIVE_BALANCE', { status, balance }));
     }
   }
@@ -298,11 +319,14 @@ function paymentOrDelinquencyDateConflict(records) {
     const firstDelinquency = iso(f['tradeline.firstDelinquencyDate']);
     const reportDate = iso(r.source_report_reference_date)
       || iso(r.report_reference_date && r.report_reference_date.normalized_value);
+    const openedRange = factDateRange(r, 'liability.openedDate');
+    const reportRange = dateRange(reportDate, r.report_reference_date && r.report_reference_date.precision);
     for (const [field, value] of [['last_payment', lastPayment], ['first_delinquency', firstDelinquency]]) {
       if (!value) continue;
-      if (opened || reportDate) applicable = true;
-      if (opened && value < opened) matches.push(match(r, 'DATE_BEFORE_ACCOUNT_OPENED', { field, value, opened }));
-      else if (reportDate && value > reportDate) matches.push(match(r, 'DATE_AFTER_REPORT_ISSUED', { field, value, report_date: reportDate }));
+      const eventRange = factDateRange(r, field === 'last_payment' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate');
+      if (eventRange && (openedRange || reportRange)) applicable = true;
+      if (strictlyAfter(openedRange, eventRange)) matches.push(match(r, 'DATE_BEFORE_ACCOUNT_OPENED', { field, value, opened }));
+      else if (strictlyAfter(eventRange, reportRange)) matches.push(match(r, 'DATE_AFTER_REPORT_ISSUED', { field, value, report_date: reportDate }));
     }
   }
   if (!applicable) return null;
@@ -395,14 +419,13 @@ function responsibilityInconsistency(records) {
     if (!id || !resp) continue;
     const snapshot = `${r.source_bureau || ''}|${r.source_report_reference_date || ''}`;
     const key = `${id}|${snapshot}`;
-    const prior = seen.get(key);
+    const earlier = seen.get(key) || [];
+    const prior = earlier.find((item) => item.resp !== resp && corroboratingThirdFact(item.record, r) === 'CONFIRMED');
     if (prior) {
-      if (prior.resp !== resp && corroboratingThirdFact(prior.record, r) === 'CONFIRMED') {
-        matches.push(match(r, 'RESPONSIBILITY_CONFLICT', { responsibility: resp, other_responsibility: prior.resp, other_record: prior.index, snapshot: snapshot || null }));
-      }
-    } else {
-      seen.set(key, { resp, index: r.record_index, record: r });
+      matches.push(match(r, 'RESPONSIBILITY_CONFLICT', { responsibility: resp, other_responsibility: prior.resp, other_record: prior.index, snapshot: snapshot || null }));
     }
+    earlier.push({ resp, index: r.record_index, record: r });
+    seen.set(key, earlier);
   }
   if (!matches.length) return null;
   return entry('COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY', 'an account-responsibility inconsistency', matches,
@@ -438,22 +461,11 @@ function identityDiscrepancy(identityGroups) {
     'SIMILAR_ENTRIES_WORTH_REVIEWING');
 }
 
-/* 4. A potential re-aging signal: the report's OWN adverse event (the "30/60/90 days past due as of" date) is
-   dated AFTER the account was first reported, which is contradictory on the report's own terms. The relevant
-   event is the adverse rating; a later update/payment date alone is NOT a re-aging signal and is never used. */
-function adverseAfterFirstReport(records) {
-  const applicable = records.some((r) => { const f = r.facts || {}; return iso(f['reportedAccount.adverseRatingDate']) && iso(f['reportedAccount.firstReported']); });
-  if (!applicable) return null;
-  const matches = [];
-  for (const r of records) {
-    const f = r.facts || {};
-    if (later(f['reportedAccount.adverseRatingDate'], f['reportedAccount.firstReported'])) {
-      matches.push(match(r, 'ADVERSE_EVENT_DATED_AFTER_FIRST_REPORT', { adverse: f['reportedAccount.adverseRatingDate'], first_reported: f['reportedAccount.firstReported'] }));
-    }
-  }
-  return entry('COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'a potential re-aging signal', matches,
-    'No adverse event dated after its first-reported date was detected.',
-    'This report prints an adverse payment-rating event dated after the account was first reported. That is a potential re-aging signal (the adverse event and the first-report date contradict each other on the report). A later update or payment date alone is not treated as re-aging, and this signal alone does not establish a violation.');
+/* The checklist retains re-aging coverage as a required capability. A later adverse event can follow ordinary
+   first reporting; those two dates establish neither re-aging nor its absence. A supported detector needs
+   evidence of the delinquency/retention anchor being improperly changed, which this date pair cannot supply. */
+function adverseAfterFirstReport() {
+  return null;
 }
 
 /** The normalized fact fields each of the six selectable issue types requires. A check is runnable on a
@@ -475,8 +487,7 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': { field_sets: [['liability.openedDate', 'liability.closedDate']] },
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': { field_sets: [['account.status', 'liability.closedDate']] },
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': { field_sets: [
-    ['account.balance', 'account.pastDueAmount'], ['account.amount', 'account.pastDueAmount'],
-    ['account.balance', 'account.paymentAmount'], ['account.amount', 'account.paymentAmount']
+    ['account.balance', 'account.pastDueAmount']
   ] },
   'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': { field_sets: [['account.type', 'account.balance', 'account.creditLimit']] },
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': { field_sets: [['account.paymentHistoryCells']],
@@ -495,9 +506,8 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': { field_sets: [[
     'reportedAccount.dateOpened', 'reportedAccount.firstReported'
   ]] },
-  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [[
-    'reportedAccount.adverseRatingDate', 'reportedAccount.firstReported'
-  ]] },
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [],
+    additional_evidence: 'SOURCE_LINKED_EVIDENCE_OF_IMPROPERLY_CHANGED_DELINQUENCY_OR_RETENTION_ANCHOR_REQUIRED_MAPPING_PENDING' },
   'COMMON-ERROR-IDENTITY-REVIEW': { field_sets: [], additional_evidence: 'TWO_IDENTITY_FIELDS_OF_SAME_ROLE' },
   'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': { field_sets: [],
     additional_evidence: 'PRINTED_BLANK_CAPTION_AND_REPORT_DEFINED_ADVERSE_EVENT' },
@@ -514,7 +524,9 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   ], ['account.status', 'account.balance']] },
   'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': { field_sets: [[
     'liability.openedDate', 'tradeline.lastPaymentDate'
-  ], ['liability.openedDate', 'tradeline.firstDelinquencyDate']],
+  ], ['liability.openedDate', 'tradeline.firstDelinquencyDate'],
+  ['report.referenceDate', 'tradeline.lastPaymentDate'],
+  ['report.referenceDate', 'tradeline.firstDelinquencyDate']],
   additional_evidence: 'OR_DATE_COMPARED_WITH_SOURCED_REPORT_REFERENCE_DATE' },
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'account.balance'
@@ -534,6 +546,13 @@ const USABLE_FIELD_PREDICATES = Object.freeze({
 });
 
 function usableField(record, field) {
+  if (field === 'report.referenceDate') {
+    const date = record && record.report_reference_date;
+    if (!date || date.status && date.status !== 'RESOLVED') return false;
+    if (date.raw_value != null && date.raw != null && date.raw_value !== date.raw
+      || date.normalized_value != null && date.normalized != null && date.normalized_value !== date.normalized) return false;
+    return (date.raw_value ?? date.raw) != null && Boolean(date.normalized_value ?? date.normalized) && Boolean(date.location);
+  }
   const value = (record && record.facts) ? record.facts[field] : undefined;
   if (value === undefined || value === null) return false;
   const predicate = USABLE_FIELD_PREDICATES[field];
@@ -573,6 +592,10 @@ function formatCapability(extraction) {
       fields.add(f);
       if (usableField(r, f)) { usable.add(f); onRecord.add(f); }
     }
+    if (r.report_reference_date) {
+      fields.add('report.referenceDate');
+      if (usableField(r, 'report.referenceDate')) { usable.add('report.referenceDate'); onRecord.add('report.referenceDate'); }
+    }
     usableByRecord.push(onRecord);
   }
   const checks = {};
@@ -602,7 +625,9 @@ function formatCapability(extraction) {
  *  GB reads no `facts` (its values live in the `printed` map), so it supplies none of these fields; the TU-CA
  *  reader now supplies its ordinary-account facts, so it declares them here by its own measured labels. */
 const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
+  'PR-01': Object.freeze(['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate', 'report.referenceDate']),
   'GENERAL-BUREAU-REPORT': Object.freeze([
+    'report.referenceDate',
     'account.balance', 'account.amount', 'account.pastDueAmount', 'account.paymentAmount', 'account.status',
     'account.responsibility', 'account.masked_identifier', 'account.reported_identity', 'account.paymentHistoryCells',
     'account.creditLimit', 'account.type',

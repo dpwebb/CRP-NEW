@@ -27,6 +27,7 @@ const evaluation = require('./evaluation.cjs');
 const entitlement = require('./entitlement.cjs');
 const retention = require('./retention.cjs');
 const payments = require('./payment-provider.cjs');
+const { CHECKS: COMMON_ERROR_CHECKLIST } = require('./common-error-checklist.cjs');
 
 const UI_DIR = path.join(__dirname, 'ui');
 const SESSION_COOKIE = 'crp_session';
@@ -49,24 +50,24 @@ const SECURITY_HEADERS = Object.freeze({
 });
 
 /**
- * B4 item 8: the three kinds of check, stated in one place, kept apart, and never merged into a single count.
+ * Internal comparison kinds describe evidence mechanisms within the shared product checklist.
  * `no_issue_found_means` is the sentence the owner asked for: it says only what the performed checks found.
  */
 const CHECK_CLASSES = Object.freeze({
   statutory_rule_comparison: {
     is_a_statutory_check: true,
-    plain: 'A rule for where you live, compared with a date your report prints. It shows whether the time the rule measures has passed. It does not say that anything in your report was reported unlawfully.'
+    plain: 'An applicable statute can support a listed reporting check. The issue states the relevant rule and the report facts that support it.'
   },
   report_fact_consistency: {
     is_a_statutory_check: false,
-    plain: 'A comparison of two things your own report prints. If they differ, we show you the difference. It is not a finding, and it names no law.'
+    plain: 'Listed checks compare facts printed in your report. Supported reporting issues can be reviewed and selected for a correction or verification packet.'
   },
   printed_policy_observation: {
     is_a_statutory_check: false,
     label: 'PRINTED_POLICY_OBSERVATION_NOT_A_STATUTORY_FINDING',
-    plain: 'A comparison of something your report says about itself with a date it prints. It names no law and is not a finding.'
+    plain: 'A statement printed in your report can help explain a listed check. It does not establish a reporting issue by itself.'
   },
-  never_summed: 'Rule checks and factual checks are always counted and shown separately. A factual check is never counted as a rule check.',
+  never_summed: 'We use one common-error checklist. Statutory support and report facts can support the same issue without creating extra issue counts.',
   no_issue_found_means: 'We did not find a reporting issue in the information we could review. That does not mean your whole report is correct, and it does not mean we checked every possible rule.'
 });
 
@@ -217,6 +218,7 @@ function loadJurisdictionSurface() {
       if (regionalRules.length > 0 && !assessmentKinds.includes('STATUTORY_RULE_COMPARISON')) {
         assessmentKinds.push('STATUTORY_RULE_COMPARISON');
       }
+      if (!assessmentKinds.includes('COMMON_ERROR')) assessmentKinds.push('COMMON_ERROR');
       return {
         value: r.region_code,
         country: r.country_code,
@@ -225,6 +227,9 @@ function loadJurisdictionSurface() {
         /* Plan section 2: a regional check's limitations are visible BEFORE anything is uploaded or bought. */
         supported_format_families: currentRow.supported_format_families,
         executable_checks: currentRow.executable_checks,
+        common_error_checklist: COMMON_ERROR_CHECKLIST,
+        checklist_items: COMMON_ERROR_CHECKLIST.length,
+        statutory_support_checks: regionalRules.length,
         factual_checks: typeof row.factual_checks === 'number' ? row.factual_checks : 0,
         policy_observations: typeof row.policy_observations === 'number' ? row.policy_observations : 0,
         assessment_kinds: assessmentKinds,
@@ -254,23 +259,13 @@ function loadJurisdictionSurface() {
 
 /**
  * One honest sentence per region, built from the region's own recorded state. B3 continuation: the sentence
- * names each CLASS of check separately, because a region whose assessment is factual only must say so rather
- * than reporting a statutory count it never earned.
+ * names the shared checklist. Adapter counts remain internal capability metadata and are not separate scopes.
  */
 function availabilityFor(row) {
   if (row.working_assessment === true) {
-    const statutory = Number(row.executable_checks || 0);
-    const factual = Number(row.factual_checks || 0);
-    const policy = Number(row.policy_observations || 0);
-    const parts = [];
-    if (statutory) parts.push(`${statutory} rule check${statutory === 1 ? '' : 's'}`);
-    if (factual) parts.push(`${factual} factual check${factual === 1 ? '' : 's'} about what your report prints`);
-    if (policy) parts.push(`${policy} check${policy === 1 ? '' : 's'} on what your report says about itself`);
     return {
       state: 'SUPPORTED',
-      plain: parts.length
-        ? `For where you live we can run ${parts.join(', ')}.`
-        : 'We review the readable information in your report for supported reporting errors.'
+      plain: 'We use the common-error checklist for your jurisdiction. Checks use the readable facts in your report and the rules that apply. Applicable statutes may support a listed check.'
     };
   }
   if (row.format_path_for_the_market === 'REGISTERED_FOR_THE_MARKET') {

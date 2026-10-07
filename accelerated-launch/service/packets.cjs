@@ -95,6 +95,7 @@ function issueContent(issue) {
     confidence: issue.confidence,
     basis_type: issue.basis_type,
     classification: issue.classification || null,
+    consumer_label: issues.consumerLabel(issue),
     request_type: issue.request_type,
     explanation: issue.explanation || null,
     uncertainty: issue.uncertainty || null,
@@ -108,6 +109,9 @@ function issueContent(issue) {
     evidence: issue.evidence || null,
     source: issue.source || null,
     source_facts: issue.source_facts || null,
+    supported_bases: issue.supported_bases || null,
+    retention_review: issue.retention_review || null,
+    location: issue.location || null,
     report_identity: issue.report_identity || null,
     /* The credited account the issue concerns is MATERIAL reviewed content: a change to the printed identity
        between review and approval changes this hash and invalidates the approval. */
@@ -141,13 +145,16 @@ function packetView(store, actor, caseId) {
   const eligible = row ? eligibleIssues(row) : [];
   const packet = currentPacket(store, caseId);
   const identity = row ? reportIdentity(row) : null;
-  const approvalStale = Boolean(packet && packet.approved_version && (!row || packet.result_id !== row.result_id));
 
   /* The correspondence and its organized evidence, exactly as they will appear in the download, so the consumer
      reviews the same thing they will send. */
   const selectedIssues = packet
     ? (packet.selected_issue_ids || []).map((id) => eligible.find((i) => i.issue_id === id)).filter(Boolean)
     : [];
+  const approvalStale = Boolean(packet && packet.approved_version && (!row
+    || packet.result_id !== row.result_id
+    || selectedIssues.length !== (packet.selected_issue_ids || []).length
+    || canonicalVersion(packet, row, selectedIssues) !== packet.approved_version));
   const correspondenceMissing = missingCorrespondenceFields(packet);
   const correspondencePreview = selectedIssues.length
     ? correspondenceLines(packet, row, selectedIssues).concat(evidenceLines(selectedIssues)).join('\n')
@@ -161,7 +168,7 @@ function packetView(store, actor, caseId) {
       selected_issue_ids: packet ? (packet.selected_issue_ids || []).slice() : [],
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
-      approved: Boolean(packet && packet.approved_version),
+      approved: Boolean(packet && packet.approved_version && !approvalStale),
       approved_version: packet ? packet.approved_version : null,
       approved_at: packet ? packet.approved_at : null,
       approval_stale: approvalStale,
@@ -367,9 +374,16 @@ function accountLine(issue, indent) {
 /** One issue block of the packet document: the factual basis, the uncertainty and the request. */
 function issueLines(issue) {
   const lines = [];
+  if (issues.consumerLabel(issue)) lines.push(`  ${issues.consumerLabel(issue)}`);
   if (issue.basis_type === issues.BASIS_TYPE.STATUTORY_RETENTION) {
     lines.push(`  Rule: ${issue.citation}`);
     if (issue.source_version) lines.push(`  Rule version: ${issue.source_version}`);
+    for (const basis of issue.supported_bases || []) {
+      if (basis.adapter_id === issue.adapter_id) continue;
+      lines.push(`  Additional supporting rule: ${basis.citation}`);
+      if (basis.source_version) lines.push(`  Rule version: ${basis.source_version}`);
+      if (basis.uncertainty) lines.push(`  Qualification for this rule: ${basis.uncertainty}`);
+    }
     if (issue.record_index != null) lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
       lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
@@ -377,7 +391,7 @@ function issueLines(issue) {
     if (issue.source && issue.source.location) {
       const loc = issue.source.location;
       const pageLine = (loc.page != null) ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(`  Measures from: ${(issue.record && issue.record.source_field) || issue.source.source_field || 'the printed date'} — printed "${issue.source.raw_value}" (${pageLine}), normalized to ${issue.source.normalized_value}`);
+      lines.push(`  Measures from: ${issue.source.source_field || (issue.record && issue.record.source_field) || 'the printed date'} — printed "${issue.source.raw_value}" (${pageLine}), normalized to ${issue.source.normalized_value}`);
     }
   } else if (issue.basis_type === issues.BASIS_TYPE.CONTENT_FINDING) {
     /* A report-content finding: the printed content a recorded rule prohibits. It states the rule and the
@@ -386,7 +400,7 @@ function issueLines(issue) {
     if (issue.source_version) lines.push(`  Rule version: ${issue.source_version}`);
     if (issue.label) lines.push(`  Finding: ${issue.label}`);
     for (const basis of issue.supported_bases || []) {
-      if (basis.rule_assessment) lines.push(`  ${basis.classification === 'PROBABLE_VIOLATION' ? 'Probable violation' : 'Potential violation'} of report-data requirement: ${basis.rule_assessment.requirement}`);
+      if (basis.rule_assessment) lines.push(`  ${issues.consumerLabel(basis) || 'Reporting rule'} of report-data requirement: ${basis.rule_assessment.requirement}`);
     }
     if (issue.record_index != null) lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
@@ -399,7 +413,10 @@ function issueLines(issue) {
     }
   } else {
     lines.push(`  Issue: ${issue.label}`);
-    if (issue.rule_assessment) lines.push(`  ${issue.classification === 'PROBABLE_VIOLATION' ? 'Probable violation' : 'Potential violation'} of report-data requirement: ${issue.rule_assessment.requirement}`);
+    for (const citation of issue.retention_review && issue.retention_review.citations || []) {
+      lines.push(`  Reporting-period rule: ${citation}`);
+    }
+    if (issue.rule_assessment) lines.push(`  ${issues.consumerLabel(issue) || 'Reporting rule'} of report-data requirement: ${issue.rule_assessment.requirement}`);
     if (issue.rule_assessment && issue.citation) lines.push(`  Supporting statute: ${issue.citation} (source version ${issue.source_version})`);
     if (issue.rule_assessment) {
       for (const fact of issue.rule_assessment.required_facts || []) {
@@ -476,7 +493,7 @@ function evidenceFacts(issue) {
   const push = (field, raw, normalized, location) => {
     if (raw == null && normalized == null) return;
     const loc = location || {};
-    const key = `${raw}|${normalized}|${loc.page}|${loc.line}`;
+    const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}`;
     if (seen.has(key)) return;
     seen.add(key);
     out.push({ field: field || null, raw, normalized, location: location || null });
@@ -486,6 +503,13 @@ function evidenceFacts(issue) {
   }
   if (issue.source) {
     push(issue.source.source_field || (issue.record && issue.record.source_field), issue.source.raw_value, issue.source.normalized_value, issue.source.location || issue.location);
+  }
+  for (const basis of issue.supported_bases || []) {
+    for (const f of basis.source_facts || []) {
+      push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location);
+    }
+    if (basis.source) push(basis.source.source_field || basis.anchor_field,
+      basis.source.raw_value, basis.source.normalized_value, basis.source.location);
   }
   return out;
 }
@@ -507,11 +531,18 @@ function evidenceLines(selected) {
     const account = accountLine(issue, '     ');
     if (account) lines.push(account);
     if (issue.citation) lines.push(`     Recorded rule: ${issue.citation}${issue.source_version ? ` (source version ${issue.source_version})` : ''}`);
+    for (const citation of issue.retention_review && issue.retention_review.citations || []) {
+      lines.push(`     Reporting-period rule: ${citation}`);
+    }
     /* OWNER-CA-ORDINARY-REPORT-002: an issue may rest on more than one supported base. Each factual base is
        stated in plain language so the correspondence shows what the issue rests on, not only its recorded rule. */
     for (const b of (issue.supported_bases || [])) {
       if (b.basis_type === issues.BASIS_TYPE.FACTUAL_CONSISTENCY) {
         lines.push(`     Also rests on: what the report prints — ${b.label || 'a factual discrepancy the report prints'}`);
+      }
+      if (b.basis_type === issues.BASIS_TYPE.STATUTORY_RETENTION && b.adapter_id !== issue.adapter_id) {
+        lines.push(`     Additional supporting rule: ${b.citation}${b.source_version ? ` (source version ${b.source_version})` : ''}`);
+        if (b.uncertainty) lines.push(`     Qualification for this rule: ${b.uncertainty}`);
       }
     }
     for (const f of evidenceFacts(issue)) {

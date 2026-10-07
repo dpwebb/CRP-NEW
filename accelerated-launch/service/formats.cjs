@@ -353,6 +353,7 @@ function extractWithSharedAdapter(model, options) {
   }
 
   const raw = extractFacts(model);
+  const factualView = caFacts.read(model);
   return Object.assign({
     presentation_id: DEMONSTRATION_SHAPE,
     family_id: null,
@@ -363,14 +364,14 @@ function extractWithSharedAdapter(model, options) {
     admission: raw.admission,
     refusal: null,
     support: SUPPORT.ACTUAL_REPORT_EVIDENCE
-  }, normalizeExtraction(raw), {
+  }, normalizeExtraction(raw, factualView), {
     /* B3 continuation: the Canadian presentation's own FACTUAL VIEW, read from the same page model, in
        memory. It carries no legal rule and no legal conclusion; it exists so the Canadian factual checks in
        `factual-checks.cjs` have printed facts to compare, without any statutory relation being named. */
     evidence_readings: {
       sections_printed: [],
       records_found: raw.last_payment_facts.length,
-      factual_view: caFacts.read(model)
+      factual_view: factualView
     }
   });
 }
@@ -386,6 +387,13 @@ function carriesReportEvidence(record) {
 
 /** The per-record fact object a rule adapter reads. It contains ONLY this record's own values. */
 function factsForRecord(record) {
+  /* PR-01's new shared checklist fields do not enlarge the historical statutory
+     anchor surface. That adapter continues to receive only its own resolved
+     last-payment fact, even when the independent delinquency check can run. */
+  if (record && record.kind === 'COLLECTION_ACCOUNT' && record.shared_facts_status === FACT_STATUS.RESOLVED) {
+    return record.status === FACT_STATUS.RESOLVED && record.normalized_value
+      ? { 'tradeline.lastPaymentDate': record.normalized_value } : {};
+  }
   if (record && record.facts && typeof record.facts === 'object') return Object.assign({}, record.facts);
   const facts = {};
   if (record && record.status === 'RESOLVED' && record.normalized_value) {
@@ -715,7 +723,7 @@ function refusedExtraction(detection, container) {
 }
 
 /** The normalized extraction record a case stores. It carries labels, dates and locations — never text. */
-function normalizeExtraction(raw) {
+function normalizeExtraction(raw, factualView) {
   const records = raw.last_payment_facts.map((fact) => ({
     record_index: fact.record_index,
     kind: 'COLLECTION_ACCOUNT',
@@ -728,6 +736,49 @@ function normalizeExtraction(raw) {
     source_field: fact.source_field,
     section_path: fact.section_path
   }));
+  /* PR-01 already reads these collection dates. Carry those readings into the
+     shared checklist without changing its digest admission or the legacy
+     last-payment value/status used by the statutory adapter. The factual and
+     legacy readers use the same collection boundaries; verify that association
+     before copying a second field onto a record. */
+  if (factualView && factualView.presentation_id === 'PR-01') {
+    const reference = raw.request_date;
+    const referenceLocation = reference && reference.location && typeof reference.location === 'object'
+      ? reference.location : reference && reference.occurrences && reference.occurrences[0];
+    const sharedReference = reference && reference.status === FACT_STATUS.RESOLVED
+      && reference.raw_value != null && reference.normalized_value && referenceLocation
+      ? { ...reference, location: { ...referenceLocation } } : null;
+    for (const record of records) {
+      const fact = raw.last_payment_facts.find((entry) => entry.record_index === record.record_index);
+      const boundary = (raw.debt_records || []).find((entry) => entry.record_index === record.record_index);
+      const viewRecord = (factualView.records || []).find((entry) => entry.record_index === record.record_index
+        && entry.kind === 'COLLECTION' && entry.debt_record === true && entry.page_read_failure !== true
+        && boundary && entry.boundary && boundary.boundary
+        && entry.boundary.page === boundary.boundary.page && entry.boundary.line === boundary.boundary.line);
+      const facts = {}, printed = {}, sources = {};
+      const retain = (field, reading) => {
+        if (!reading || reading.raw == null || !reading.normalized || !reading.location) return;
+        facts[field] = reading.normalized;
+        printed[reading.label] = { ...reading, status: FACT_STATUS.RESOLVED };
+        sources[field] = { raw_value: reading.raw, normalized_value: reading.normalized,
+          source_field: reading.label, location: reading.location, record_index: record.record_index };
+      };
+      if (fact && fact.status === FACT_STATUS.RESOLVED) retain('tradeline.lastPaymentDate', {
+        label: fact.source_field, raw: fact.raw_value, normalized: fact.normalized_value,
+        location: fact.location, state: 'VALUE', status: FACT_STATUS.RESOLVED
+      });
+      const delinquency = viewRecord && viewRecord.printed && viewRecord.printed['First Delinquency'];
+      if (delinquency && delinquency.state === 'VALUE' && delinquency.printed_times_in_record === 1)
+        retain('tradeline.firstDelinquencyDate', delinquency);
+      if (Object.keys(facts).length) Object.assign(record, {
+        facts, printed, fact_sources: sources, shared_facts_status: FACT_STATUS.RESOLVED
+      });
+      if (sharedReference) Object.assign(record, {
+        report_reference_date: { ...sharedReference },
+        source_report_reference_date: sharedReference.normalized_value
+      });
+    }
+  }
   return { reference_date: raw.request_date, records, summary: raw.last_payment_fact_summary };
 }
 
@@ -746,6 +797,7 @@ module.exports = {
   detectEncryption,
   detectSupportedFormat,
   extractWithSharedAdapter,
+  normalizeExtraction,
   carriesReportEvidence,
   factsForRecord,
   factSourcesForRecord,

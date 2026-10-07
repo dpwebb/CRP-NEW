@@ -119,7 +119,7 @@ async function run(service, check) {
   check.equal(issue.confidence, 'PROBABLE', 'at the probable confidence');
   check.match(String(issue.explanation), /cannot both be right/, 'its explanation states what the report prints');
   check.match(String(issue.uncertainty), /Which of the two printed values is unreliable is not established/, 'and names the specific uncertainty');
-  check.match(String(issue.uncertainty), /not an established violation/, 'never asserting an established violation');
+  check.equal(issue.consumer_label, 'VIOLATION', 'the supported checklist breach uses the sole consumer term');
   check.match(String(issue.uncertainty), /clause 4\.6/, 'stating the recorded principle own words');
 
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: stranger.token, body: { issue_ids: [issue.issue_id] } })).status, 403, 'another account cannot select on this packet');
@@ -150,5 +150,4 @@ module.exports = {
   id: 'ck-ca-territories-pipeda-accuracy',
   title: 'BATCH-17: territorial PIPEDA Schedule 1 clause 4.6 accuracy outcomes through the complete packet path'
 };
-
 

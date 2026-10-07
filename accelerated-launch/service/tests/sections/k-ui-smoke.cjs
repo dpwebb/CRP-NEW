@@ -129,7 +129,7 @@ const STUB_SUMMARY = {
     severity: 'INCONSISTENCY',
     title: 'Two details on the report cannot both be right',
     confidence: 'POTENTIAL',
-    confidence_label: 'Potential issue',
+    confidence_label: 'VIOLATION',
     explanation: 'This report prints an opened date later than its closed date.'
   },
   severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY']
@@ -423,7 +423,7 @@ async function run(t, check) {
   vm.runInContext('state.step = 3; render();', ctx);
   check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
   check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
-  check.ok(/Reporting issue/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and a single issue label');
+  check.ok(/VIOLATION/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and the sole breach label');
   check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$5\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
   check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
   check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');

@@ -75,6 +75,11 @@ const SECTION_FILES = [
   'ct-owner-common-error-scope.cjs',
   'cw-common-error-rule-assessment.cjs',
   'cx-all82-required-report-data.cjs',
+  'db-common-error-surface-repairs.cjs',
+  'da-common-error-reader-repairs.cjs',
+  'cy-common-error-predicate-repairs.cjs',
+  'cz-common-error-packet-repairs.cjs',
+  'dc-consumer-violation-term.cjs',
   /* OWNER-ACCEPT-009 — BLOCKER-FDT-001: incomplete-reading detection, bounded recovery, consequential
      limitations, corrected duplicate semantics, and the reproducible benchmark. */
   'am-fdt-recovery.cjs',
@@ -886,7 +891,6 @@ async function main() {
         'identity-review (report-internal name/address/alias/co-applicant, roles preserved, qualified review only)',
         'duplicate-reporting (identity + additional compatible fact)',
         'similar-entries-worth-reviewing',
-        're-aging (adverse-after-first-report)',
         'reported-dates-out-of-order',
         'paid-or-settled-status-with-past-due',
         'last-payment-or-first-delinquency-date-conflict',
@@ -898,12 +902,16 @@ async function main() {
       responsibility: 'printed individual/joint/authorized-user responsibility, preserved as distinct roles, never identity theft'
     },
     remaining: {
+      re_aging: 'Source-linked evidence of an improperly changed delinquency or retention anchor needs a supported mapping. Ordinary later delinquency does not establish re-aging or its absence.',
       responsibility_image_or_ocr: 'no deployed image/OCR demonstration of the responsibility check (payment-history grid is demonstrated via native and OCR positions)',
       real_browser_clarification: 'no real-browser demonstration of the consumer clarification interface (node:vm only; endpoint responses are not browser usability evidence)'
     },
     tests: [
       { id: 'al-common-errors', passed: Boolean(commonErrorsSection) && commonErrorsSection.failed === 0 },
-      { id: 'ct-owner-common-error-scope', passed: Boolean(ownerCommonErrorsSection) && ownerCommonErrorsSection.failed === 0 }
+      { id: 'ct-owner-common-error-scope', passed: Boolean(ownerCommonErrorsSection) && ownerCommonErrorsSection.failed === 0 },
+      ...['cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs',
+        'da-common-error-reader-repairs', 'db-common-error-surface-repairs',
+        'dc-consumer-violation-term'].map((id) => ({ id, passed: clean(id) }))
     ]
   };
   fs.writeFileSync(path.join(OUT_DIR, 'common-errors-evidence.json'), `${JSON.stringify(commonErrorsEvidence, null, 2)}\n`, 'utf8');

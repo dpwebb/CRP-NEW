@@ -40,6 +40,7 @@ const FACTUAL_IDS = [
   'CA-FACT-SAME-DEBT-PRINTED-VALUE-CONFLICT'
 ];
 const NS_ADAPTER = 'CA-NS-CRA-S10-3-C-LIMB-1';
+const DATE_CHECK = 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE';
 const OTHER_TWELVE = CA_REGIONS.filter((r) => r !== 'CA-NS');
 
 /* ------------------------------------------------------------------ synthetic structural views (no report) */
@@ -125,8 +126,14 @@ async function uploadSpecimen(t, check, owner, caseId, specimen, region) {
 
 /** The consumer-facing factual surface, asserted from the rendered result set. */
 function assertFactualSurface(check, result, label, expectStatutory) {
-  check.equal(result.checks_performed, result.observations.length + result.report_consistency_checks.length,
-    `${label}: the performed count is exactly the statutory and factual checks that ran`);
+  check.equal(result.checks_performed, result.observations.length + result.report_consistency_checks.length
+    + result.common_errors.length + result.detected_report_information.length,
+    `${label}: the performed count includes every comparison that actually ran`);
+  check.deepEqual(result.common_errors.map((c) => c.check_name), [DATE_CHECK],
+    `${label}: the already-read dates run exactly the shared date check`);
+  check.equal(result.common_errors[0].state, 'NOT_DETECTED', `${label}: the specimen date check is benign`);
+  check.deepEqual(result.common_errors[0].source_records, [], `${label}: benign dates create no issue matches`);
+  check.equal(result.assessment.common_error_checks_performed, 1, `${label}: the summary counts that completed common check`);
   check.equal(result.report_consistency_checks.length, 4, `${label}: all four Canadian factual checks ran`);
   check.deepEqual(result.report_consistency_checks.map((c) => c.check_name).length, 4, `${label}: each is reported at case level`);
   check.deepEqual([...new Set(result.report_consistency_checks.map((c) => c.check_class))], ['REPORT_FACT_CONSISTENCY'],
@@ -139,13 +146,14 @@ function assertFactualSurface(check, result, label, expectStatutory) {
     `${label}: and each qualification states in words that it is not a legal or statutory finding`);
   const kinds = result.assessment.kinds;
   check.ok(kinds.includes('REPORT_FACT_CONSISTENCY'), `${label}: the assessment names the factual class`);
+  check.ok(kinds.includes('COMMON_ERROR'), `${label}: the assessment records the shared date comparison`);
   check.equal(kinds.includes('STATUTORY_RULE_COMPARISON'), expectStatutory,
     `${label}: and names the statutory class only where a statutory comparison actually ran`);
   check.equal(result.assessment.performed_by_kind.REPORT_FACT_CONSISTENCY, 4, `${label}: four factual checks are counted as factual`);
   check.equal(result.assessment.statutory_checks_performed, result.observations.length, `${label}: and no factual check is counted as statutory`);
   if (!expectStatutory) {
     check.equal(result.assessment.statutory_checks_performed, 0, `${label}: no statutory comparison ran for this selection`);
-    check.match(result.assessment.plain, /common-error checklist using \d+ factual checks/, `${label}: the assessment names the shared checklist and the checks that ran`);
+    check.match(result.assessment.plain, /common-error checklist using the report facts/, `${label}: the assessment names the shared checklist and the report evidence`);
   }
   check.equal(result.comprehensive_legal_check, false, `${label}: no comprehensive legal check is implied`);
   for (const observation of result.observations) {
@@ -196,7 +204,12 @@ function everyCaRegion(check, extraction) {
     check.deepEqual(factual.summary.check_ids.slice().sort(), FACTUAL_IDS.slice().sort(),
       `${region}: and they are exactly the four named Canadian factual checks`);
     check.equal(factual.summary.statutory_checks_named, 0, `${region}: no statutory check is among them`);
-    check.equal(evaluated.checks_performed, statutory.length + factual.performed.length,
+    const common = evaluated.common_errors.performed;
+    check.deepEqual(common.map((c) => c.check_id), [DATE_CHECK], `${region}: exactly the shared date check ran`);
+    check.equal(common[0].state, 'NOT_DETECTED', `${region}: the date check remains benign`);
+    check.deepEqual(common[0].source_records, [], `${region}: the benign comparison creates no issue matches`);
+    check.equal(evaluated.checks_performed, statutory.length + factual.performed.length
+      + common.length + evaluated.detected_report_information.performed.length,
       `${region}: the performed count is exactly what ran`);
     if (region === 'CA-NS') {
       check.equal(statutory.length, 2, 'CA-NS: its last-payment limb still runs once per readable entry');
@@ -207,12 +220,12 @@ function everyCaRegion(check, extraction) {
         'CA-NS: each collection entry carries its own comparison');
       check.ok(!evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
         'CA-NS: the out-of-checklist bankruptcy adapter is absent from active assessment, including unavailable checks');
-      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY'],
-        'CA-NS: and its assessment names both classes, because the last-payment limb ran');
+      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
+        'CA-NS: its internal mechanism inventory includes the shared date check and retained last-payment limb');
     } else {
       check.equal(statutory.length, 0, `${region}: no statutory comparison runs, because none is recorded for it`);
-      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY'],
-        `${region}: and its assessment names the factual class only`);
+      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
+        `${region}: the shared date check is recorded without adding a statutory comparison`);
     }
     check.ok(factual.performed.every((c) => c.legal_finding === undefined), `${region}: no factual check carries a legal finding`);
   }
@@ -420,7 +433,7 @@ async function run(t, check) {
   assertFactualSurface(check, ns.result, 'CA-NS', true);
   check.equal(ns.result.observations.length, 2,
     'CA-NS: its last-payment limb produces one comparison per readable entry; the bankruptcy limb waits for a public-record discharge date');
-  check.match(ns.result.assessment.plain, /common-error checklist using \d+ factual checks.*and \d+ rules/, 'CA-NS: the assessment states the factual checks and applicable rules within one checklist');
+  check.match(ns.result.assessment.plain, /common-error checklist using the report facts/, 'CA-NS: the assessment describes one checklist for the supported checks');
 
   const perRegion = everyCaRegion(check, on.stored);
   check.equal(Object.keys(perRegion).length, 13, 'all thirteen canonical Canadian selections were evaluated');

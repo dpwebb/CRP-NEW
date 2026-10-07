@@ -206,8 +206,8 @@ async function run(service, check) {
   check.ok(dl.text.includes(`Recorded rule: ${CITATION}`), 'naming the recorded rule behind the finding');
   check.ok(/Request \(verification\): /.test(dl.text), 'with a verification request, never a correction demand');
   check.ok(/rectify whichever is inaccurate/.test(dl.text), 'asking for rectification of the inaccurate value');
-  check.ok(/opened_date_printed_on_this_record: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading in the evidence references');
-  check.ok(/closed_date_printed_on_this_record: printed "01\/01\/2019"/.test(dl.text), 'with the raw printed closed reading');
+  check.ok(/OPENED: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading under its report caption in the evidence references');
+  check.ok(/CLOSED: printed "01\/01\/2019"/.test(dl.text), 'with the raw printed closed reading under its report caption');
   check.ok(/normalized to 2020-01-01/.test(dl.text), 'with its normalization');
   check.ok(/Also rests on: what the report prints — an account with contradictory dates/.test(dl.text), 'naming its second supported base in plain language');
   check.equal((dl.text.match(/Request \(verification\): /g) || []).length, 1, 'with exactly one request for the one issue');

@@ -264,7 +264,7 @@ async function draftBoundaryAndRelease(t, check, evidence) {
   check.equal(policy.json.check_classes.statutory_rule_comparison.is_a_statutory_check, true, 'a statutory comparison is named as one');
   check.equal(policy.json.check_classes.report_fact_consistency.is_a_statutory_check, false, 'a factual observation is not');
   check.equal(policy.json.check_classes.printed_policy_observation.is_a_statutory_check, false, 'and neither is a policy observation');
-  check.ok(/never counted as a rule check/.test(policy.json.check_classes.never_summed), 'and the three are never summed');
+  check.ok(/one common-error checklist/.test(policy.json.check_classes.never_summed), 'report facts and statutory support belong to one checklist without extra issue counts');
   check.ok(results.SET_QUALIFICATIONS.some((line) => /defined reporting rule or requirement/.test(line)), 'the result set states the violation rule');
   check.ok(results.SET_QUALIFICATIONS.some((line) => /statute may provide additional context/.test(line)),
     'and says statutes provide context without becoming a mandatory gate');

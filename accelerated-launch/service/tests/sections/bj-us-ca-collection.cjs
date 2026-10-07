@@ -123,7 +123,7 @@ async function run(t, check) {
   const row = findings.find((o) => o.check_name && /1785\.13\(a\)\(5\)/.test(o.check_name));
   check.ok(row, 'the collection check ran on the US-CA report');
   check.equal(row.is_a_finding, true, 'the collection result is a finding');
-  check.equal(row.consumer_label, 'Violation', 'its consumer label names the violation');
+  check.equal(row.consumer_label, 'VIOLATION', 'its consumer label names the violation');
   check.equal(row.rule_source_version, SOURCE_DIGEST, 'the consumer result carries the corrected source digest');
   check.ok(row.rule_source && row.rule_source.raw_value, 'the consumer result carries the delinquency source evidence');
 
@@ -139,7 +139,7 @@ async function run(t, check) {
   const coFindings = (coView.result.findings || []).concat(coView.result.observations || []);
   const coRow = coFindings.find((o) => o.check_name && /1785\.13\(a\)\(5\)/.test(o.check_name));
   check.ok(coRow && coRow.is_a_finding === true, 'a charge-off-only record with an explicit first-delinquency date reaches the same finding');
-  check.equal(coRow.consumer_label, 'Violation', 'its consumer label names the violation');
+  check.equal(coRow.consumer_label, 'VIOLATION', 'its consumer label names the violation');
 
   evidence.rule = 'US-CA Civ. Code § 1785.13(a)(5)+(b) collection 7y: internal VIOLATION + consumer Reporting issue, with delinquency-anchor and account-identity guards';
   return evidence;

@@ -167,8 +167,8 @@ async function run(service, check) {
   check.match(ontario.uncertainty, /any credit information based on evidence that is not the best evidence reasonably available/, 'stating the provision own words rather than an unrecorded gloss');
   check.match(ontario.uncertainty, /Consumer Reporting Act \(Ontario\), R\.S\.O\. 1990, c\. C\.33, s\. 9\(3\)\(a\)/, 'with the cited provision named in the consumer wording');
   check.equal((ontario.source_facts || []).length, 2, 'with both printed readings as its decisive facts');
-  const openedFact = ontario.source_facts.find((f) => /opened_date/.test(f.source_field));
-  const closedFact = ontario.source_facts.find((f) => /closed_date/.test(f.source_field));
+  const openedFact = ontario.source_facts.find((f) => f.source_field === 'OPENED');
+  const closedFact = ontario.source_facts.find((f) => f.source_field === 'CLOSED');
   check.ok(openedFact && closedFact, 'one for each of the two printed dates');
   check.equal(openedFact.raw_value, '01/01/2020', 'carrying the raw printed opened value');
   check.equal(openedFact.normalized_value, '2020-01-01', 'and its normalization');
@@ -213,8 +213,8 @@ async function run(service, check) {
   check.ok(/Also rests on: what the report prints — an account with contradictory dates/.test(dl.text), 'naming its second supported base in plain language');
   check.equal((dl.text.match(/Request \(verification\): /g) || []).length, 1, 'with exactly one request for the one issue, so the conflict is never demanded twice');
   check.equal(dl.text.includes('please verify the opened and closed dates for this account and correct the inconsistency'), false, 'and the duplicate factual request wording never appears');
-  check.ok(/opened_date_printed_on_this_record: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading in the evidence references');
-  check.ok(/closed_date_printed_on_this_record: printed "01\/01\/2019"/.test(dl.text), 'and the raw printed closed reading');
+  check.ok(/OPENED: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading under its report caption in the evidence references');
+  check.ok(/CLOSED: printed "01\/01\/2019"/.test(dl.text), 'and the raw printed closed reading under its report caption');
   check.ok(/normalized to 2020-01-01/.test(dl.text), 'with its normalization');
   check.ok(dl.text.includes('Dana Whitfield'), 'carrying the consumer-supplied correspondence details');
   check.ok(!/opened date later than its closed date/.test(dl.text), 'and never the unselected factual card wording as a second issue');

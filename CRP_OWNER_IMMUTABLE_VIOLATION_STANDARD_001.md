@@ -1,5 +1,11 @@
 # Controlling owner rule: violation determination
 
+## Latest owner amendment — one consumer violation term
+
+October 7, 2026: the owner explicitly directed that when the system determines an element of the common-error checklist has been breached, its platform terminology is **VIOLATION**. Only **VIOLATION** is surfaced as the breach classification; do not display probable or potential violation wording. The owner confirmed that this rule supersedes other terminology directives.
+
+This amendment changes consumer terminology. Preserve internal confidence classifications, evidence thresholds, source custody, specific uncertainty, packet eligibility and approval safeguards. Do not add a certainty gate, change a rule predicate, or invent a breach for an unrun or unresolved check to implement the wording.
+
 **Owner direction, October 7, 2026, amended by the owner's explicit October 7 instruction naming this document.** This rule controls later work orders, implementation batches, reviews, tests, and consumer language. A later work order may refine evidence, but it may not silently restore a legal-finding category, a mandatory statute gate, a second-statute threshold, or retired out-of-checklist violation checks.
 
 CRP's job and consumer promise is to surface a **violation** when source-linked credit-report evidence supports a breach of a defined reporting rule, statute, or requirement within the active common-error checklist. The product does **not** determine legal findings. The checklist is the active version 1 violation scope. Independently sourced statutory violations outside the checklist are retired from runtime assessment, consumer findings, packets, and active test expectations. Preserve their source records for later review. Statutes may guide and support a listed check when an applicable, accepted mapping exists; their absence does not suppress a violation supported by that check's report-data rule or reporting requirement.

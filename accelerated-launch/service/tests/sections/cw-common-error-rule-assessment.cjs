@@ -247,7 +247,7 @@ async function run(t, check) {
       200, 'the consumer approves the packet');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the packet downloads');
-    check.match(downloaded.text, /Probable violation of report-data requirement:/,
+    check.match(downloaded.text, /VIOLATION of report-data requirement:/,
       'the packet names the report-data requirement');
   }
   return { source_linked_cases: cases.length, statutory_gate: false,

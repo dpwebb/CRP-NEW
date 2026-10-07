@@ -1,5 +1,7 @@
 # OWNER-SUBSCRIBER-OFFERING-001 — approved product scope
 
+October 7 consumer terminology supersession: the owner's latest instruction in `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md` requires **VIOLATION** as the sole consumer breach label. It supersedes earlier terminology directives and preferred classification labels in this document. Preserve internal confidence, supported uncertainty, source evidence and the existing consumer-controlled packet path.
+
 October 5 owner amendment: apply `CRP_OWNER_POTENTIAL_ISSUE_STANDARD_001.md`. The offering includes supported potential reporting issues as well as definite/probable issues, with distinct honest classifications and consumer-controlled factual verification/correction requests. Definite legal proof is not a universal eligibility requirement. Preserve source-linked affirmative evidence; replace conflicting older thresholds rather than silently misclassifying uncertainty.
 
 Latest owner correction: allow one brief legal-advice disclaimer solely in the main-page footer, as specified in CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md. Every other consumer surface remains disclaimer-free. This supersedes this document's older absolute-ban wording without changing product scope.

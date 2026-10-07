@@ -124,7 +124,7 @@ async function realJourney(t, check, owner, bytes, region) {
     `${region}: and exactly one of them is a printed policy observation`);
   const policy = result.report_consistency_checks.find((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION');
   check.match(policy.qualification, /not a finding that a rule was broken/, `${region}: the policy comparison says on its face that it is not a finding`);
-  check.match(result.assessment.plain, /common-error checklist using \d+ factual checks/,
+  check.match(result.assessment.plain, /common-error checklist using the report facts/,
     `${region}: and the assessment says no rule for this place was compared`);
   check.deepEqual(result.assessment.kinds, ['REPORT_FACT_CONSISTENCY', 'PRINTED_POLICY_OBSERVATION', 'COMMON_ERROR']);
   check.equal(result.report_consistency_checks.filter((c) => c.agreement === 'A_DIFFERENCE_WAS_FOUND').length, 1,

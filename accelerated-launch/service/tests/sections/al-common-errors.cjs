@@ -93,7 +93,8 @@ async function run(t, check) {
   const reAge = commonErrors.adverseAfterFirstReport([
     rec({ facts: { 'reportedAccount.adverseRatingDate': '2021-01-01', 'reportedAccount.firstReported': '2020-01-01' } })
   ]);
-  check.equal(issues.issuesFor({ extraction: { records: [] }, evaluation: { results: [], common_errors: { performed: [reAge] } } }).length, 0, 'adverse-after-first-report alone may describe later delinquency and is not a selectable re-aging issue');
+  check.equal(reAge, null, 'adverse-after-first-report alone supports neither re-aging nor a completed negative check');
+  check.equal(issues.issuesFor({ extraction: { records: [] }, evaluation: { results: [], common_errors: { performed: [] } } }).length, 0, 'later delinquency is not a selectable re-aging issue');
   const outOfOrder = commonErrors.reportedDatesOutOfOrder([
     rec({ facts: { 'reportedAccount.dateOpened': '2021-01-01', 'reportedAccount.firstReported': '2020-01-01' } })
   ]);
@@ -122,11 +123,12 @@ async function run(t, check) {
   const paymentExceeds = commonErrors.balancePaymentConsistency([
     rec({ facts: { 'account.balance': 100, 'account.paymentAmount': 120 } })
   ]);
-  check.equal(issues.issuesFor({ extraction: { records: [rec({ facts: { 'account.balance': 100, 'account.paymentAmount': 120 } })] }, evaluation: { results: [], common_errors: { performed: [paymentExceeds] } } }).length, 0, 'payment above a current balance can be a post-payment snapshot or overpayment and is not a selectable contradiction');
+  check.equal(paymentExceeds, null, 'payment above a current balance is not affirmative inconsistency evidence');
+  check.equal(issues.issuesFor({ extraction: { records: [rec({ facts: { 'account.balance': 100, 'account.paymentAmount': 120 } })] }, evaluation: { results: [], common_errors: { performed: [] } } }).length, 0, 'payment above a current balance can be a post-payment snapshot or overpayment and is not a selectable contradiction');
   const balanced = commonErrors.balancePaymentConsistency([
     rec({ facts: { 'account.balance': 500, 'account.pastDueAmount': 50, 'account.paymentAmount': 120 } })
   ]);
-  check.equal(balanced, null, 'a past-due/payment amount at or below the balance is never flagged');
+  check.equal(balanced.state, 'NOT_DETECTED', 'a valid benign balance/past-due comparison is recorded as performed without an issue');
   const missingAmounts = commonErrors.balancePaymentConsistency([rec({ facts: { 'account.balance': 100 } })]);
   check.equal(missingAmounts, null, 'a missing past-due/payment amount is skipped, never invented');
 
@@ -278,7 +280,7 @@ async function run(t, check) {
   check.ok(Array.isArray(rendered.common_errors), 'the consumer result exposes the common_errors bucket');
   check.ok(rendered.common_errors.some((c) => c.state === 'POTENTIAL_ISSUE' && c.is_a_finding === false), 'and a potential issue is visible, never a finding');
 
-  evidence.qualifying = { contradictory: contradictory.state, duplicate: dup.state, re_aging: reAge.state, status_date: statusContra.state };
+  evidence.qualifying = { contradictory: contradictory.state, duplicate: dup.state, re_aging: 'NOT_PERFORMED_WITHOUT_ANCHOR_CHANGE_EVIDENCE', status_date: statusContra.state };
   evidence.lookalikes = { ok_dates: okDates.state, not_duplicate: notDup === null, similar_only: similarOnly.state, closed_with_balance: closedWithBalance === null };
   evidence.rule_assessment_is_separate = true;
   return evidence;

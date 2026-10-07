@@ -52,6 +52,7 @@ function tick() { return new Promise((r) => setTimeout(r, 0)); }
 const POTENTIAL_ISSUE = {
   issue_id: '24ae89ec96e01afc', confidence: 'POTENTIAL', basis_type: 'FACTUAL_CONSISTENCY',
   request_type: 'VERIFICATION', eligible: true,
+  consumer_label: 'VIOLATION',
   explanation: 'This report prints credit account 1 with an opened date later than its closed date (2020-01-01 after 2019-01-01).',
   uncertainty: 'The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.',
   account_number_in_report: 1, record_kind: 'credit account', check_kind: 'an account with contradictory dates',
@@ -117,7 +118,7 @@ async function run(t, check) {
   const packetBlock = panel.children.get('#packet-block');
   check.ok(packetBlock, 'the review step mounts the correction-packet block');
   check.ok(/Correction packet/.test(packetBlock.innerHTML), 'with a correction-packet heading');
-  check.ok(/Reporting issue/.test(packetBlock.innerHTML), 'with a single consumer issue label');
+  check.ok(/VIOLATION/.test(packetBlock.innerHTML), 'with the sole consumer breach label');
   check.ok(/opened date later than its closed date/.test(packetBlock.innerHTML), 'with the issue explanation');
   check.ok(/data-check-issue=/.test(packetBlock.innerHTML), 'with a per-issue selection checkbox');
   check.ok(/packet-wording/.test(packetBlock.innerHTML), 'with a consumer wording textarea kept separate from the report facts');

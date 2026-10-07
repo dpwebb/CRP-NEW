@@ -25,7 +25,7 @@ const SET_QUALIFICATIONS = Object.freeze([
   readSupportQualification(),
   'A check can also be reported as not applicable to your report, or as unresolved. Neither one ran, and neither one passed.',
   'A report-data rule can support a violation from source-linked report facts. An applicable statute may provide additional context.',
-  'The report evidence and the rule determine whether an issue is definite, probable or potential.',
+  'Each finding states the supporting report evidence and any specific uncertainty.',
   'A date comparison is arithmetic. On its own it does not show that anything was reported unlawfully.'
 ]);
 
@@ -240,7 +240,8 @@ function renderResultSet(input) {
   /* B6-INGEST-003: an accepted upload that yields no usable record facts must say so explicitly, so a
      consumer is never left believing a substantive review occurred when nothing could be examined. */
   const admitted = Boolean(extraction && extraction.admission && extraction.admission.admitted === true);
-  const resolvedRecords = (extraction && extraction.records) ? extraction.records.filter((r) => r.status === 'RESOLVED').length : 0;
+  const resolvedRecords = (extraction && extraction.records) ? extraction.records.filter((r) =>
+    r.status === 'RESOLVED' || r.shared_facts_status === 'RESOLVED').length : 0;
   const readButNoUsableFacts = admitted && resolvedRecords === 0;
 
   const rendered = evaluation.results.map((row) => {
@@ -259,7 +260,7 @@ function renderResultSet(input) {
       assessment_completed: Boolean(row.machine && row.machine.state === 'EVALUATED'),
       is_a_finding: Boolean(finding),
       classification: finding ? finding.classification : null,
-      consumer_label: finding ? (finding.classification === 'VIOLATION' ? 'Violation' : 'Probable violation') : null,
+      consumer_label: finding ? issues.consumerLabel({ ...finding, adapter_id: row.machine.adapter_id }) : null,
       decisive_fact_unavailable: finding ? (finding.decisive_fact_unavailable || null) : null,
       /* OWNER-GAP-FINDING-002-RESOURCE-001: the structured, source-linked decisive-facts-unavailable entries
          (identity, report-reading evidence and source location), surfaced beside a PROBABLE finding. */
@@ -282,9 +283,7 @@ function renderResultSet(input) {
           }
         : null,
       qualification: finding
-        ? (finding.classification === 'VIOLATION'
-          ? (finding.content_omission ? 'We found a reporting issue. Your report leaves out information the rules for this place require, and we can see the whole entry that should have carried it.' : (finding.content_inclusion ? 'We found a reporting issue. Your report includes information the rules for this place do not allow, and we can see the whole entry it appears on.' : 'We found a reporting issue. The dates your report prints show that this entry is kept longer than the rules for this place allow.'))
-          : issues.PROBABLE_LEAD)
+        ? issues.consumerText(plain.detail || 'The supporting report facts and rule are shown below.')
         : 'This comes from your report. It is not a finding that a rule was broken.',
       machine: row.machine
     };
@@ -292,7 +291,10 @@ function renderResultSet(input) {
 
   const checkNotRun = evaluation.unavailable_checks.map(sanitizeCheck);
   const factualRanAlready = Boolean(evaluation.factual_checks && evaluation.factual_checks.performed.length);
-  if (!rendered.length && !factualRanAlready && !checkNotRun.length && !evaluation.unresolved_checks.length) {
+  const otherRanAlready = Boolean(evaluation.common_errors && evaluation.common_errors.performed.length
+    || evaluation.detected_report_information && evaluation.detected_report_information.performed.length
+    || evaluation.assessments_performed > 0);
+  if (!rendered.length && !factualRanAlready && !otherRanAlready && !checkNotRun.length && !evaluation.unresolved_checks.length) {
     checkNotRun.push({
       citation: null,
       reason: 'NO_APPLICABLE_CHECK_FOR_THIS_SELECTION',
@@ -430,7 +432,9 @@ function renderResultSet(input) {
       common_error_summary: evaluation.common_error_summary || null,
       statutory_checks_performed: rendered.length,
       factual_checks_performed: factualPerformed.length,
-      plain: assessmentPlain(assessmentKinds, rendered.length, factualPerformed.length)
+      common_error_checks_performed: commonRendered.length,
+      plain: assessmentPlain(assessmentKinds, rendered.length, factualPerformed.length,
+        commonRendered.length, evaluation.assessments_performed || 0)
     },
     qualifications: SET_QUALIFICATIONS.slice(),
     read_but_no_usable_facts: readButNoUsableFacts
@@ -470,21 +474,11 @@ function renderResultSet(input) {
  * The plain answer to "what kind of assessment is this?". It is built from what actually ran, never from what the
  * build might have run, and it is written for a consumer: short sentences, no internal class names.
  */
-function assessmentPlain(kinds, statutoryCount, factualCount) {
-  const has = (kind) => kinds.includes(kind);
-  const factual = has('REPORT_FACT_CONSISTENCY') || has('PRINTED_POLICY_OBSERVATION');
-  const rules = `${statutoryCount} rule${statutoryCount === 1 ? '' : 's'}`;
-  const facts = `${factualCount} factual check${factualCount === 1 ? '' : 's'} about what your report prints`;
-  if (has('STATUTORY_RULE_COMPARISON') && factual) {
-    return `We reviewed your report against the common-error checklist using ${facts} and ${rules} applicable to your jurisdiction.`;
+function assessmentPlain(kinds, statutoryCount, factualCount, commonCount = 0, otherAssessmentCount = 0) {
+  if (statutoryCount > 0 || factualCount > 0 || commonCount > 0 || otherAssessmentCount > 0) {
+    return 'We reviewed your report against the common-error checklist using the report facts available for each applicable check.';
   }
-  if (factual) {
-    return `We reviewed your report against the common-error checklist using ${facts}.`;
-  }
-  if (has('STATUTORY_RULE_COMPARISON')) {
-    return `We reviewed your report against the common-error checklist using ${rules} applicable to your jurisdiction.`;
-  }
-  return 'We could not run a check for your selection, so this report says nothing about whether anything in it is wrong.';
+  return 'No findings are available from the information we could review.';
 }
 
 /**
@@ -504,8 +498,11 @@ function sanitizeCheck(entry) {
 /** The honest one-line answer to "is anything supported here?" — used by the UI banner and the matrix. */
 function availabilitySummary(evaluation) {
   const factualPerformed = evaluation.factual_checks ? evaluation.factual_checks.performed.length : 0;
-  if (evaluation.results.length || factualPerformed) {
-    return { state: 'SOME_CHECKS_PERFORMED', checks: evaluation.results.length + factualPerformed };
+  const commonPerformed = evaluation.common_errors ? evaluation.common_errors.performed.length : 0;
+  const detectedPerformed = evaluation.detected_report_information ? evaluation.detected_report_information.performed.length : 0;
+  const checks = evaluation.results.length + factualPerformed + commonPerformed + detectedPerformed;
+  if (checks) {
+    return { state: 'SOME_CHECKS_PERFORMED', checks };
   }
   if (evaluation.unresolved_checks && evaluation.unresolved_checks.length) {
     return { state: 'CHECKS_PERFORMED_NONE_RESOLVED', checks: 0 };
@@ -544,12 +541,6 @@ const TEASER_TITLE = Object.freeze({
   /* OWNER dual-date retention (Batch 33): the period appears to have ended since the report was issued. Ranked
      with the additions — the useful next step is to check the current file — and never titled as a finding. */
   LATER_EXPIRY: 'An entry may now be too old to report'
-});
-
-const TEASER_CONFIDENCE_LABEL = Object.freeze({
-  DEFINITE: 'Reporting issue',
-  PROBABLE: 'Reporting issue',
-  POTENTIAL: 'Reporting issue'
 });
 
 /** The factual COMPLETENESS items: an event the report prints whose own caption carries no date. They name no
@@ -629,12 +620,7 @@ function teaserFor(issue) {
     severity: SEVERITY_ORDER[rank],
     title: teaserTitleFor(issue, rank),
     confidence: issue.confidence,
-    confidence_label: issue.rule_assessment
-      ? (issue.rule_assessment.classification === 'PROBABLE_VIOLATION' ? 'Probable violation'
-        : issue.rule_assessment.classification === 'POTENTIAL_VIOLATION' ? 'Potential violation' : 'Violation')
-      : (issue.basis_type === 'STATUTORY_RETENTION' || issue.basis_type === 'CONTENT_FINDING')
-        ? (issue.confidence === 'DEFINITE' ? 'Violation' : 'Probable violation')
-        : TEASER_CONFIDENCE_LABEL[issue.confidence] || null,
+    confidence_label: issues.consumerLabel(issue),
     explanation: firstSentence(redactIdentifiers(issue.explanation, issue))
   };
 }

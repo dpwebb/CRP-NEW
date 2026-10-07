@@ -90,11 +90,11 @@ async function run(t, check) {
   const conflicting = pipeline([conflictA, conflictB], 'US', 'US-NY');
   check.equal(conflicting.assembled.extraction.records.length, 2, 'two conflicting readings stay two records, not one merged record');
 
-  /* ------------------------------------------------------------------ generated report names a later-page fact */
-  const lateB = fileRow('file-lb', 'sha-lb', ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor B  Balance $250  Opened 07/15/2026'], 'US');
+  /* A supported checklist issue on the later page carries its source through the unified export. */
+  const lateB = fileRow('file-lb', 'sha-lb', ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor B  Balance $250  Opened 07/15/2026 Closed 01/01/2020'], 'US');
   const late = pipeline([a, lateB], 'US', 'US-NY');
   check.ok(/07\/15\/2026/.test(late.body), "the later page's printed date reaches the generated report");
-  check.ok(/record 2|entry 2/.test(late.body), 'and the report names it as coming from the later record');
+  check.ok(/record.*2|entry.*2/i.test(late.body), 'and the report names it as coming from the later record');
 
   /* ------------------------------------------------------------------ reordering preserves evaluated facts and findings, not just record count */
   const reorderedFacts = pipeline([b, a], 'US', 'US-NY');

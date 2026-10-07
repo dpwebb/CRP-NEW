@@ -583,7 +583,7 @@ function freeSummaryBlock(view) {
     : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
   const preview = teaser
     ? `<div class="obs">
-      <span class="pill">${esc(teaser.confidence_label || 'Reporting issue')}</span>
+      ${teaser.confidence_label === 'VIOLATION' ? '<span class="pill">VIOLATION</span>' : ''}
       <h3>${esc(teaser.title || '')}</h3>
       <p>${esc(teaser.explanation || '')}</p>
       <p class="evidence">One issue is previewed here. The complete assessment, the report facts and the next steps for every issue are part of the unlock or a subscription.</p>
@@ -656,7 +656,7 @@ function resultBlock(result, demo) {
   if (!demo) {
     const checklist = (result.common_error_checklist || []).map((item) =>
       `<li>${esc(item.label)}</li>`).join('');
-    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We use this checklist for every jurisdiction. A reporting issue appears when the applicable rule and your report support one. A jurisdiction-specific statute may provide additional support for a listed check.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
+    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We use this checklist for every jurisdiction. A VIOLATION appears when the applicable rule and your report support a breach. A jurisdiction-specific statute may provide additional support for a listed check.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
@@ -943,14 +943,7 @@ function renderReview(panel) {
 /* OWNER-POTENTIAL-ISSUE-001: the correction-packet selection/review/edit/approve/download flow, wired into the
    Wizzard review step. Consumer wording is kept separate from the report facts. */
 function issueLabel(issue) {
-  const classification = issue && issue.rule_assessment && issue.rule_assessment.classification;
-  const governedRule = issue && (issue.basis_type === 'STATUTORY_RETENTION'
-    || issue.basis_type === 'CONTENT_FINDING');
-  if (!classification && !governedRule) return 'Reporting issue';
-  if (classification === 'VIOLATION' || (issue && issue.confidence === 'DEFINITE')) return 'Violation';
-  if (classification === 'PROBABLE_VIOLATION' || (issue && issue.confidence === 'PROBABLE')) return 'Probable violation';
-  if (classification === 'POTENTIAL_VIOLATION') return 'Potential violation';
-  return 'Reporting issue';
+  return issue && issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'Verification request';
 }
 
 /* OWNER-PACKET-CORRESPONDENCE-001: the consumer-visible name of each necessary correspondence detail. */
