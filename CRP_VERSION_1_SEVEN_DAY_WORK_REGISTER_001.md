@@ -501,3 +501,15 @@ The first completed full candidate run exposed two regressions: a blank native p
 The earlier request for redacted current report examples containing the missing fields remains pending. Additional admission or reader work requires a concrete source-supported version 1 mapping. Perfect whole-report extraction and exhaustive new research are not prerequisites for delivering the tested supported paths.
 
 **Local supported implementation tested; staging verification PENDING; production readiness OPEN.** Finding/reader, all-82 facilitation and dispute-packet release blockers remain open for unfulfilled substantive coverage and served-release obligations. This batch completes every ready mapping identified in its reviewed sources; it does not claim all-layout or every-check coverage.
+
+## Batch 54 — owner-directed push and staging deployment (October 7, 2026)
+
+Owner authorization: "commit-push-deploy to staging". Coordinator owns the release packaging, activation, evidence and register; a read-only agent reviewed the staging procedure and representative verification scope. No new application implementation was needed.
+
+**DEPLOYED AND VERIFIED for activation and representative hosted smoke:** committed runtime bdc5e87 was pushed to origin/main and deployed to https://staging.creditregulatorpro.com as crp-v1-a9740d383ab0bf94. All 92 manifest-listed files, composite digest A9740D383AB0BF94051587E79A85D31A85B1195ED32FB48E62CE2FBEB25593F3 and archive SHA-256 matched before activation. The staging service alone was stopped; the real private-data directory was copied and all 72 snapshot files hash-verified. Restricted environment/data backup and prior crp-v1-fb3c7033f5cb2bf7 remain available. Host candidate-activation.json records exact source and rollback pointers.
+
+Public HTTPS confirms the build, staging/test mode and launch_ready=false. All 82 selections remain. Required native PDF, graphical PDF and local OCR executables are present. Thirty-two public-service smoke checks passed with five generated fictional native PDFs: general split-caption violation/zero-balance benign controls, dated US history contradiction/different-period benign controls, AU supported listing assessment, free summaries, unpaid packet refusal, real browser VIOLATION wording and the three purchase choices. The disposable account and its five uploads were deleted; its session was revoked.
+
+**Remaining hosted acceptance PENDING:** legitimate subscription/payment/webhook completion, owned-report re-aging and selected/approved subscriber packet downloads. Unpaid smoke is not proof of those paid paths. The local 9,735-assertion full result and Batch 53 supported packet evidence remain unchanged; accepted-report field dependencies remain open. Production readiness OPEN.
+
+Detailed source, digest, backup, rollback and measured scope: CRP_STAGING_DEPLOYMENT_2026_10_07.md. No production deployment, live billing change, private-report transmission or external correspondence.
