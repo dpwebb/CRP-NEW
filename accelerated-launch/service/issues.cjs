@@ -1158,9 +1158,12 @@ function issuesFor(ctx) {
   return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation)
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
-      if (!record || record.kind !== 'OVERDUE_ACCOUNT') return issue;
-      // These literal listing roles support the selected entry's evidence. They do not resolve account ownership.
-      const supporting = ['overdue.associationCode', 'overdue.coBorrower'].flatMap((field) => {
+      if (!record) return issue;
+      // Own printed references and listing roles locate the selected entry; they do not establish account identity or ownership.
+      const fields = record.kind === 'OVERDUE_ACCOUNT'
+        ? ['overdue.associationCode', 'overdue.coBorrower', 'overdue.accountReference']
+        : record.kind === 'CONSUMER_CREDIT_LIABILITY' ? ['liability.accountReference'] : [];
+      const supporting = fields.flatMap((field) => {
         const source = sourceForField(record, field);
         return source ? [{ field, ...source, supporting_evidence: true }] : [];
       });
@@ -1411,8 +1414,9 @@ function publicIssue(issue) {
       raw_value: src.raw_value, normalized_value: src.normalized_value,
       location: src.location || null }] : [];
     out.source_facts.push(...(issue.source_facts || []).filter((fact) => fact.supporting_evidence === true)
-      .map((fact) => ({ source_field: fact.source_field, raw_value: fact.raw_value,
-        normalized_value: fact.normalized_value, location: fact.location || null })));
+      .map((fact) => ({ source_field: fact.source_field, raw_value: consumerFactValue(fact, 'raw_value'),
+        normalized_value: consumerFactValue(fact, 'normalized_value'),
+        ...(fact.privacy_redacted ? { privacy_redacted: true } : {}), location: fact.location || null })));
     if (issue.supported_bases && issue.supported_bases.length) out.supported_bases = publicBases(issue.supported_bases);
   } else if (issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     /* A content finding states the prohibited content and its decisive facts — never a retention period. */
