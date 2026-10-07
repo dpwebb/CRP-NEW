@@ -12,6 +12,7 @@ const ocr = require('./ocr/local-ocr.cjs');
 const { acceptFact, loadPolicy } = require('../reported-fact-policy.cjs');
 const fdt = require('./fdt-recovery.cjs');
 const paymentHistoryGrid = require('./payment-history-grid.cjs');
+const { printedAmount } = require('./report-amount.cjs');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
@@ -132,8 +133,11 @@ function normalizePrintedDate(raw, convention) {
   return { normalized: null, precision: null, reason: 'UNRECOGNIZED_DATE_FORM' };
 }
 
-const DATE_TOKEN = /(\d{4}-\d{1,2}-\d{1,2}|\d{4}\/\d{1,2}\/\d{1,2}|\d{1,2}\/\d{1,2}\/\d{4}|\d{1,2}\/\d{4}|\d{4}\/\d{1,2}|[A-Za-z]{3,9}[.\s]+\d{1,2}(?:st|nd|rd|th)?,?\s+\d{4}|\d{1,2}(?:st|nd|rd|th)?[.\s]+[A-Za-z]{3,9}[.,\s]+\d{4}|[A-Za-z]{3,9}[.,\s]+\d{4})/;
-const AMOUNT_TOKEN = /\$\s?[\d,]+(?:\.\d{2})?/g;
+const PRINTED_MONTH = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)';
+const DATE_TOKEN = new RegExp('(\\d{4}-\\d{1,2}-\\d{1,2}|\\d{4}\\/\\d{1,2}\\/\\d{1,2}|\\d{1,2}\\/\\d{1,2}\\/\\d{4}|\\d{1,2}\\/\\d{4}|\\d{4}\\/\\d{1,2}|'
+  + PRINTED_MONTH + '[.\\s]+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}|\\d{1,2}(?:st|nd|rd|th)?[.\\s]+'
+  + PRINTED_MONTH + '[.,\\s]+\\d{4}|' + PRINTED_MONTH + '[.,\\s]+\\d{4})', 'i');
+const AMOUNT_TOKEN = /\(?[+\-−–—]?\s*[$£€]\s*[+\-−–—]?\s*[\d,]+(?:\.\d{1,2})?\)?/g;
 
 function bureauOf(text) {
   const up = String(text || '').toUpperCase();
@@ -257,7 +261,38 @@ function detect(model) {
    geometry; a local-OCR line carries its mean confidence, its trusted decision and its bounding box, so an
    uncertain critical character can never silently become a resolved fact. */
 function nativeLineObjects(p) {
-  return (p.lines || []).map((t, i) => ({ text: t, page: p.page, line: i + 1, source: 'NATIVE_TEXT', confidence: null, trusted: true, bbox: null }));
+  const rows = [];
+  const decode = (text) => String(text).replace(/&(?:amp|lt|gt|quot|apos);|&#(?:x[0-9a-f]+|\d+);/gi, (entity) => {
+    const named = { '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"', '&apos;': "'" };
+    if (named[entity.toLowerCase()]) return named[entity.toLowerCase()];
+    const value = entity.slice(2, -1);
+    return String.fromCodePoint(value[0].toLowerCase() === 'x' ? parseInt(value.slice(1), 16) : Number(value));
+  });
+  for (const word of (p.word_boxes || []).map((word) => ({ ...word, text: decode(word.text) }))
+    .sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0)) {
+    let row = rows.find((r) => Math.abs(r.y0 - word.y0) < 2);
+    if (!row) { row = { y0: word.y0, words: [] }; rows.push(row); }
+    row.words.push(word);
+  }
+  const normalize = (value) => String(value).replace(/\s+/g, ' ').trim();
+  const counts = new Map(), seen = new Map();
+  for (const text of p.lines || []) counts.set(normalize(text), (counts.get(normalize(text)) || 0) + 1);
+  return (p.lines || []).map((text, i) => {
+    const matches = rows.filter((row) => normalize(row.words.sort((a, b) => a.x0 - b.x0).map((w) => w.text).join(' ')) === normalize(text));
+    const occurrence = seen.get(normalize(text)) || 0; seen.set(normalize(text), occurrence + 1);
+    const matched = matches.length === counts.get(normalize(text)) ? matches[occurrence] : null;
+    const words = matched ? matched.words : [];
+    let offset = 0;
+    const evidence = words.map((word) => {
+      const start = String(text).indexOf(word.text, offset); offset = start + word.text.length;
+      return { ...word, start, end: offset };
+    });
+    return { text, page: p.page, line: i + 1, source: 'NATIVE_TEXT', confidence: null,
+      trusted: !normalize(text) || !(p.word_boxes || []).length || Boolean(matched) && words.every((word) => word.trusted !== false), words: evidence,
+      measured_words: (p.word_boxes || []).length > 0,
+      bbox: words.length ? { x0: Math.min(...words.map((w) => w.x0)), y0: Math.min(...words.map((w) => w.y0)),
+        x1: Math.max(...words.map((w) => w.x1)), y1: Math.max(...words.map((w) => w.y1)) } : null };
+  });
 }
 
 function ocrLineObjects(op) {
@@ -290,8 +325,54 @@ function lineLocation(line) {
     confidence: line.confidence != null ? line.confidence : null,
     min_confidence: line.min_confidence != null ? line.min_confidence : null,
     trusted: line.trusted != null ? line.trusted : null,
-    bbox: line.bbox || null
+    bbox: line.bbox || null,
+    ...(line.caption_location ? { caption_location: line.caption_location } : {})
   };
+}
+
+const PAIRED_CAPTIONS = Object.freeze({
+  'ACCOUNT NAME': 'identity', CREDITOR: 'identity', LENDER: 'identity', 'CREDIT PROVIDER': 'identity',
+  'ACCOUNT NUMBER': 'identifier', 'ACCT NUMBER': 'identifier',
+  STATUS: 'status', 'ACCOUNT STATUS': 'status', RESPONSIBILITY: 'role',
+  'ACCOUNT TYPE': 'type', 'TYPE OF ACCOUNT': 'type',
+  BALANCE: 'money', 'CURRENT BALANCE': 'money', 'RECENT BALANCE': 'money',
+  'PAST DUE': 'money', 'PAST DUE AMOUNT': 'money', 'AMOUNT PAST DUE': 'money',
+  'OVERDUE AMOUNT': 'money', 'CREDIT LIMIT': 'money', 'CREDIT LINE': 'money',
+  'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money',
+  OPENED: 'date', 'DATE OPENED': 'date', 'OPENED DATE': 'date',
+  CLOSED: 'date', 'CLOSED DATE': 'date', 'DATE CLOSED': 'date',
+  'FIRST DELINQUENCY DATE': 'date', 'DATE OF FIRST DELINQUENCY': 'date', 'FIRST DATE OF DELINQUENCY': 'date',
+  'LAST PAYMENT DATE': 'date', 'DATE OF LAST PAYMENT': 'date', 'LAST PAYMENT': 'date', 'FIRST REPORTED': 'date'
+});
+const captionName = (text) => String(text || '').trim().replace(/[:\-]\s*$/, '').replace(/\s+/g, ' ').toUpperCase();
+function pairedCaptionLines(lines) {
+  const out = [];
+  for (let index = 0; index < lines.length; index++) {
+    const caption = lines[index], next = lines[index + 1], name = captionName(caption.text), kind = PAIRED_CAPTIONS[name];
+    if (!kind || !next || caption.page !== next.page || !String(next.text || '').trim()
+      || PAIRED_CAPTIONS[captionName(next.text)] || isReportHeaderLine(next.text)) { out.push(caption); continue; }
+    const raw = String(next.text).trim();
+    const valid = kind === 'money' ? printedAmount(raw) != null || /^[\s(+-−–—]*[$£€]/.test(raw)
+      : kind === 'date' ? Boolean(normalizePrintedDate(raw).normalized)
+        : kind === 'identifier' ? Boolean(maskedIdentifierToken(`${name} ${raw}`))
+          : kind === 'status' ? Boolean(statusReadingOf(`Status: ${raw}`, []))
+            : kind === 'role' ? Boolean(responsibilityOf(raw))
+              : kind === 'type' ? /^(?:CREDIT CARD|REVOLVING|LINE OF CREDIT)$/i.test(raw)
+                : /^[A-Za-z][A-Za-z0-9 &'.-]*$/.test(raw) && !BOILERPLATE_RE.test(raw);
+    const geometry = caption.bbox && next.bbox;
+    const aligned = geometry ? next.bbox.x0 <= caption.bbox.x1 && next.bbox.x1 >= caption.bbox.x0
+      && next.bbox.y0 >= caption.bbox.y0 && next.bbox.y0 - caption.bbox.y1 < 45
+      : !caption.measured_words && !next.measured_words;
+    if (!valid || !aligned) { out.push(caption); continue; }
+    const prefix = `${name}: `, leading = String(next.text).length - String(next.text).trimStart().length;
+    const words = (next.words || []).map((word) => ({ ...word,
+      start: word.start - leading + prefix.length, end: word.end - leading + prefix.length }));
+    out.push({ ...next, text: prefix + raw, words, trusted: caption.trusted !== false && next.trusted !== false
+      && decisiveWordsTrusted(caption, caption.text) !== false,
+      caption_location: lineLocation(caption), caption_label: String(caption.text).trim().replace(/:\s*$/, '') });
+    index++;
+  }
+  return out;
 }
 
 /* GAP-INGEST-003: a decisive date/amount token is trusted only when its OWN words are trusted. A line whose
@@ -447,9 +528,11 @@ function detectMissingPages(pages) {
 
 function labelForDate(textBefore) {
   const tail = String(textBefore || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
-  if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$/.test(tail)) return 'FIRST DELINQUENCY DATE';
+  if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$|FIRST DATE OF DELINQUENCY$/.test(tail)) return 'FIRST DELINQUENCY DATE';
   if (/(?:DATE OF )?LAST PAYMENT(?: DATE)?$/.test(tail)) return 'LAST PAYMENT DATE';
   if (/(?:DATE )?FIRST REPORTED(?: DATE)?$/.test(tail)) return 'FIRST REPORTED';
+  if (/\b(?:OPENED DATE|OPEN DATE)$/.test(tail)) return 'OPENED';
+  if (/\bCLOSED DATE$/.test(tail)) return 'CLOSED';
   const words = String(textBefore || '').trim().split(/[\s:]+/).filter(Boolean);
   if (!words.length) return 'Date';
   const last = words[words.length - 1];
@@ -461,7 +544,7 @@ function lineFacts(line, convention) {
   const text = line.text;
   const dates = [];
   let m;
-  const re = new RegExp(DATE_TOKEN.source, 'g');
+  const re = new RegExp(DATE_TOKEN.source, 'gi');
   while ((m = re.exec(text))) {
     const raw = m[0];
     const textBefore = text.slice(0, m.index);
@@ -555,23 +638,19 @@ function statusReadingOf(text, dates) {
 function labeledAmounts(text) {
   const out = {};
   const src = String(text || '');
-  const re = new RegExp(AMOUNT_TOKEN.source, 'gi');
-  const items = [];
-  let m;
-  while ((m = re.exec(src))) items.push({ raw: m[0], index: m.index, end: m.index + m[0].length });
-  for (let i = 0; i < items.length; i++) {
-    // The label context is the text between the previous amount and this amount (or the line start).
-    const prevEnd = i === 0 ? 0 : items[i - 1].end;
-    const prefix = src.slice(prevEnd, items[i].index).toUpperCase();
-    const raw = items[i].raw;
-    const numeric = Number(String(raw).replace(/[$,]/g, ''));
-    if (!Number.isFinite(numeric)) continue;
-    let key = null;
-    if (/PAST\s*DUE|OVERDUE/.test(prefix)) key = 'account.pastDueAmount';
-    else if (/PAYMENT/.test(prefix)) key = 'account.paymentAmount';
-    else if (/CREDIT\s*LIMIT|CREDIT\s*LINE|\bLIMIT\b|HIGH\s*CREDIT|HIGH\s*BALANCE/.test(prefix)) key = 'account.creditLimit';
-    else if (/BALANCE/.test(prefix)) key = 'account.balance';
-    if (key && !(key in out)) out[key] = { raw, numeric };
+  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+)?BALANCE|MONTHLY\s+PAYMENT|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
+  for (let index = 0; index < labels.length; index++) {
+    const match = labels[index], label = match[1].toUpperCase();
+    const rest = src.slice(match.index + match[0].length, labels[index + 1]?.index ?? src.length);
+    const boundary = /\b(?:ACCOUNT\s+(?:NUMBER|STATUS|TYPE)|(?:INDIVIDUAL|JOINT)\s+ACCOUNT|AUTHORI[ZS]ED\s+USER|CO[- ]?(?:SIGNER|BORROWER|APPLICANT)|STATUS|RESPONSIBILITY|OPENED|CLOSED|DATE\s+OPENED|DATE\s+CLOSED|FIRST\s+DELINQUENCY|LAST\s+PAYMENT\s+DATE|FIRST\s+REPORTED)\b/i.exec(rest);
+    const raw = rest.slice(0, boundary?.index ?? rest.length).trim();
+    if (!raw || !/[$£€\d]/.test(raw)) continue;
+    const key = /PAST\s+DUE|OVERDUE/.test(label) ? 'account.pastDueAmount'
+      : /PAYMENT/.test(label) ? 'account.paymentAmount'
+        : /LIMIT|CREDIT|HIGH/.test(label) ? 'account.creditLimit' : 'account.balance';
+    const numeric = printedAmount(raw, { allowAsOf: true });
+    if (key in out) { out[key].numeric = null; out[key].reason = 'MULTIPLE_VALUES_FOR_PRINTED_CAPTION'; }
+    else out[key] = { raw, numeric, label: match[1], reason: numeric == null ? 'UNRECOGNIZED_AMOUNT_VALUE' : null };
   }
   return out;
 }
@@ -893,11 +972,12 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
         ambiguous: d.ambiguous === true ? true : undefined, alternative_normalized: d.alternative || null
       };
       if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
-    } else if (['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && d.precision === 'DAY'
+    } else if (['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && ['DAY', 'MONTH'].includes(d.precision)
       && ['FIRST REPORTED', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
       const field = up === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
         : up === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate';
       facts[field] = d.normalized;
+      facts[field + 'Precision'] = d.precision;
       canonicalPrinted[field] = { label: up, state: 'VALUE', status: 'RESOLVED',
         raw: d.raw, normalized: d.normalized, reason: null, location: null,
         kind: 'date', precision: d.precision };
@@ -947,7 +1027,7 @@ const IDENTITY_LABEL_STRIP = /\b(OPENED|CLOSED|BALANCE|LIMIT|CREDIT LIMIT|DATE O
 
 function accountIdentityToken(text) {
   let t = String(text || '');
-  t = t.replace(new RegExp(DATE_TOKEN.source, 'g'), ' ');
+  t = t.replace(new RegExp(DATE_TOKEN.source, 'gi'), ' ');
   t = t.replace(new RegExp(AMOUNT_TOKEN.source, 'g'), ' ');
   t = t.replace(IDENTITY_LABEL_STRIP, ' ');
   const token = t.replace(/[^A-Za-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim().toUpperCase();
@@ -970,6 +1050,13 @@ function maskedIdentifierToken(text) {
   return 'MASK-' + digits.padStart(4, '0');
 }
 
+function explicitAccountIdentity(text) {
+  const match = /^\s*(?:ACCOUNT\s+NAME|CREDITOR|LENDER|CREDIT\s+PROVIDER)\s*:\s*(.+)$/i.exec(String(text || '').trim());
+  if (!match) return null;
+  const raw = match[1].split(/\s+(?=ACCOUNT\s+(?:NUMBER|TYPE|STATUS)|OPENED|CLOSED|BALANCE|CREDIT\s+LIMIT|STATUS|RESPONSIBILITY)/i)[0].trim();
+  const normalized = raw.toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  return normalized && !BOILERPLATE_RE.test(raw) ? { raw, normalized } : null;
+}
 
 /* A report-header date (Report Date / Prepared / Request / As Of) is the report's own metadata, not an account
    field. It is never a continuation of an account. */
@@ -1007,32 +1094,38 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   /* GAP-INGEST: preserve the printed amount, its currency marker and the printed status as facts, so
      common-error checks compare COMPATIBLE facts only. A printed amount is not an assertion that the account
      is or is not in any particular state. */
-  if (facts.amounts.length > 0 && trusted && decisiveWordsTrusted(line, facts.amounts[0]) !== false) {
+  const amountsByLabel = labeledAmounts(line.text);
+  if (facts.amounts.length > 0 && !Object.values(amountsByLabel).some((value) => value.numeric == null)
+    && trusted && decisiveWordsTrusted(line, facts.amounts[0]) !== false) {
     canonical.facts['account.amountRaw'] = facts.amounts[0];
-    const numeric = Number(String(facts.amounts[0]).replace(/[$,]/g, ''));
-    if (Number.isFinite(numeric)) canonical.facts['account.amount'] = numeric;
+    const numeric = printedAmount(facts.amounts[0]);
+    if (numeric != null) canonical.facts['account.amount'] = numeric;
     if (facts.amounts[0].indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
   }
-  if (trusted) {
-    for (const [key, val] of Object.entries(labeledAmounts(line.text))) {
-      if (decisiveWordsTrusted(line, val.raw) === false) continue;
+  for (const [key, val] of Object.entries(amountsByLabel)) {
+    const usable = trusted && val.numeric != null && decisiveWordsTrusted(line, val.raw) !== false;
+    printed[key] = { label: line.caption_label || val.label, raw: val.raw, normalized: usable ? val.numeric : null,
+      state: usable ? 'VALUE' : 'UNRESOLVED', status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED',
+      reason: usable ? null : val.reason || 'UNTRUSTED_VALUE', location: lineLocation(line), kind: 'amount' };
+    if (usable) {
       canonical.facts[key] = val.numeric;
       canonical.facts[`${key}Raw`] = val.raw;
       if (val.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
     }
   }
-  const printedStatus = !trusted || PAYMENT_HISTORY_HEADER_RE.test(String(line.text || '').toUpperCase())
+  const printedStatus = PAYMENT_HISTORY_HEADER_RE.test(String(line.text || '').toUpperCase())
     ? null : statusReadingOf(line.text, facts.dates);
-  if (printedStatus) canonical.facts['account.status'] = printedStatus.value;
+  const statusTrusted = trusted && printedStatus && decisiveWordsTrusted(line, printedStatus.raw) !== false;
+  if (statusTrusted) canonical.facts['account.status'] = printedStatus.value;
   /* BLOCKER-FDT-001 / duplicate corroboration: an account-intro line contributes its printed account/creditor
      identity as a normalized, non-identifying token. A continuation line never adds one. */
   if (kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase())
     && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)) {
-    const identity = accountIdentityToken(line.text);
-    if (identity) canonical.facts['account.reported_identity'] = identity;
+    const identity = explicitAccountIdentity(line.text)?.normalized || accountIdentityToken(line.text);
+    if (trusted && identity) canonical.facts['account.reported_identity'] = identity;
   }
   const masked = maskedIdentifierToken(line.text);
-  if (masked) canonical.facts['account.masked_identifier'] = masked;
+  if (trusted && masked) canonical.facts['account.masked_identifier'] = masked;
   const accountType = /\b(?:ACCOUNT\s+TYPE|TYPE\s+OF\s+ACCOUNT)\s*[:\-]?\s*(CREDIT\s+CARD|REVOLVING|LINE\s+OF\s+CREDIT)\b/i.exec(String(line.text || ''));
   if (trusted && accountType) canonical.facts['account.type'] = accountType[1].toUpperCase().replace(/\s+/g, ' ');
   if (trusted) {
@@ -1056,8 +1149,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
      The fact map alone is not a printed reading: it must carry its own raw token and location. */
   if (printedStatus) {
-    printed.Status = { label: 'Status', state: 'VALUE',
-      raw: printedStatus.raw, normalized: printedStatus.value,
+    printed.Status = { label: 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
+      raw: printedStatus.raw, normalized: statusTrusted ? printedStatus.value : null,
+      status: statusTrusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', reason: statusTrusted ? null : 'UNTRUSTED_VALUE',
       location: lineLocation(line), kind: 'status' };
   }
   if (trusted && masked) {
@@ -1069,8 +1163,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   const reportedIdentity = canonical.facts['account.reported_identity'];
   if (trusted && reportedIdentity) {
     const at = String(line.text || '').toUpperCase().indexOf(reportedIdentity);
-    if (at >= 0) printed['account.reported_identity'] = { label: 'Creditor or account name',
-      state: 'VALUE', raw: String(line.text).slice(at, at + reportedIdentity.length),
+    const explicitRaw = explicitAccountIdentity(line.text)?.raw;
+    if (explicitRaw || at >= 0) printed['account.reported_identity'] = { label: 'Creditor or account name',
+      state: 'VALUE', raw: explicitRaw || String(line.text).slice(at, at + reportedIdentity.length),
       normalized: reportedIdentity, location: lineLocation(line), kind: 'account_identity' };
   }
   const responsibility = canonical.facts['account.responsibility'];
@@ -1365,7 +1460,7 @@ function buildRecords(pages, convention) {
   let index = 0;
   let current = null;
   for (const page of pages) {
-    for (const line of page.lines) {
+    for (const line of pairedCaptionLines(page.lines)) {
       if (/^\s*(REPORT DATE|DATE OF REPORT|PREPARED(?: ON)?|REQUEST DATE|AS OF)\s*:/i.test(line.text)) continue;
       const facts = lineFacts(line, convention);
       const hasDate = facts.dates.some((d) => d.normalized);
@@ -1394,7 +1489,8 @@ function buildRecords(pages, convention) {
         || (current && current.kind === 'GENERAL_PUBLIC_RECORD'
           && (JUDGMENT_CONTENT_LINE_RE.test(up) || CRIMINAL_CONTENT_LINE_RE.test(up)
             || JUDGMENT_TRUNCATION_MARKERS.test(up)));
-      const hasValue = hasDate || facts.amounts.length > 0 || hasPaymentHistory || hasResponsibility || hasAccountType
+      const hasValue = hasDate || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
+        || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text)
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
         || hasStatus || hasIdentifier || hasPublicRecordContent;
       if (!hasValue) continue;
@@ -1639,6 +1735,50 @@ function buildRecords(pages, convention) {
   return records;
 }
 
+// Exact ordinary-account readings are authoritative, including a later rejected/contradictory caption.
+function bindOrdinarySources(record) {
+  const mapping = {
+    'account.status': 'Status', 'account.balance': 'account.balance',
+    'account.pastDueAmount': 'account.pastDueAmount', 'account.creditLimit': 'account.creditLimit',
+    'account.paymentAmount': 'account.paymentAmount', 'account.amount': 'account.amount',
+    'account.reported_identity': 'account.reported_identity', 'account.masked_identifier': 'account.masked_identifier',
+    'account.type': 'account.type', 'account.responsibility': 'account.responsibility',
+    'liability.openedDate': 'opened_date', 'reportedAccount.dateOpened': 'opened_date',
+    'liability.closedDate': 'closed_date', 'tradeline.firstDelinquencyDate': 'tradeline.firstDelinquencyDate',
+    'tradeline.lastPaymentDate': 'tradeline.lastPaymentDate', 'reportedAccount.firstReported': 'reportedAccount.firstReported'
+  };
+  record.fact_sources = { ...(record.fact_sources || {}) };
+  for (const [field, base] of Object.entries(mapping)) {
+    const readings = Object.entries(record.printed || {}).filter(([key]) => key === base || key.startsWith(base + ' ('))
+      .map(([, reading]) => reading);
+    const dateLabel = field === 'tradeline.firstDelinquencyDate' ? 'FIRST DELINQUENCY DATE'
+      : field === 'tradeline.lastPaymentDate' ? 'LAST PAYMENT DATE'
+        : field === 'reportedAccount.firstReported' ? 'FIRST REPORTED'
+          : field === 'liability.openedDate' || field === 'reportedAccount.dateOpened' ? 'OPENED'
+            : field === 'liability.closedDate' ? 'CLOSED' : null;
+    if (dateLabel) readings.push(...Object.values(record.printed || {}).filter((reading) =>
+      reading && reading.kind === 'date' && String(reading.label).toUpperCase() === dateLabel));
+    if (!readings.length) continue;
+    const first = readings[0], values = new Set(readings.map((reading) => String(reading.normalized)));
+    const rejected = readings.some((reading) => reading.normalized == null || reading.state === 'UNRESOLVED'
+      || reading.reason || reading.location?.trusted === false);
+    const usable = !rejected && values.size === 1;
+    if (usable) continue; // Existing single-reading source stays live; do not cache a second copy of its evidence.
+    record.fact_sources[field] = { raw_value: first.raw, normalized_value: usable ? first.normalized : null,
+      location: first.location, source_field: first.label, precision: first.precision || null,
+      status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED',
+      reason: usable ? null : 'CONTRADICTORY_OR_UNTRUSTED_CAPTION', trusted: usable };
+    if (!usable) {
+      delete record.facts[field];
+      if (field === 'account.balance') {
+        delete record.facts['account.amount'];
+        record.fact_sources['account.amount'] = { ...record.fact_sources[field] };
+      }
+    }
+  }
+  return record;
+}
+
 function findReferenceDate(pages, convention) {
   const candidates = [];
   for (const page of pages) {
@@ -1738,7 +1878,7 @@ function extract(model, opts) {
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
   }
-  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map((record) =>
+  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their

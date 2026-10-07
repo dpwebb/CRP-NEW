@@ -17,6 +17,7 @@
 const crypto = require('node:crypto');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
+const { sourceForField } = require('./report-fact-sources.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
 const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
@@ -931,6 +932,8 @@ function potentialIssues(extraction, commonErrors, evaluation) {
             : assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
             ? `Account ${f.source.record_index}: ${f.source.source_field}` : f.source.source_field,
           raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
+          ...(f.source.code_definition ? { code_definition: f.source.code_definition } : {}),
+          ...(f.source.period_location ? { period_location: f.source.period_location } : {}),
           location: f.source.location, ...(f.source.report_reference_date ? {
             role: f.role, source_result_id: f.source.source_result_id, source_file_id: f.source.source_file_id,
             bureau: f.source.bureau, report_reference_date: f.source.report_reference_date } : {})
@@ -1142,7 +1145,18 @@ function issuesFor(ctx) {
   } : null;
   const retentionReview = retentionCurrentReviewIssues(extraction, scopedRetention, statutory);
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation);
+  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation)
+    .map((issue) => {
+      const record = recordFor(extraction, issue.record_index);
+      if (!record || record.kind !== 'OVERDUE_ACCOUNT') return issue;
+      // These literal listing roles support the selected entry's evidence. They do not resolve account ownership.
+      const supporting = ['overdue.associationCode', 'overdue.coBorrower'].flatMap((field) => {
+        const source = sourceForField(record, field);
+        return source ? [{ field, ...source, supporting_evidence: true }] : [];
+      });
+      if (supporting.length) issue.source_facts = [...(issue.source_facts || []), ...supporting];
+      return issue;
+    });
 }
 
 /**
@@ -1386,6 +1400,9 @@ function publicIssue(issue) {
     out.source_facts = src ? [{ source_field: src.source_field || consumerFieldLabel(issue.anchor_field),
       raw_value: src.raw_value, normalized_value: src.normalized_value,
       location: src.location || null }] : [];
+    out.source_facts.push(...(issue.source_facts || []).filter((fact) => fact.supporting_evidence === true)
+      .map((fact) => ({ source_field: fact.source_field, raw_value: fact.raw_value,
+        normalized_value: fact.normalized_value, location: fact.location || null })));
     if (issue.supported_bases && issue.supported_bases.length) out.supported_bases = publicBases(issue.supported_bases);
   } else if (issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     /* A content finding states the prohibited content and its decisive facts — never a retention period. */
@@ -1406,7 +1423,7 @@ function publicIssue(issue) {
         source_field: f.source_field,
         raw_value: f.raw_value,
         normalized_value: f.normalized_value,
-        location: f.location ? { section: f.location.section || null, page: f.location.page, line: f.location.line } : null
+        location: publicFactLocation(f.location), ...publicDefinitionSource(f)
       }));
     }
   } else {
@@ -1426,7 +1443,7 @@ function publicIssue(issue) {
         source_field: f.source_field,
         raw_value: f.raw_value,
         normalized_value: f.normalized_value,
-        location: f.location ? { section: f.location.section || null, page: f.location.page, line: f.location.line } : null
+        location: publicFactLocation(f.location), ...publicDefinitionSource(f)
       }));
     }
   }
@@ -1434,6 +1451,20 @@ function publicIssue(issue) {
     out.source_location = { section: loc.section || null, page: loc.page, line: loc.line };
   }
   return projectConsumerIssue(out, consumerLabel(issue));
+}
+
+function publicFactLocation(location) {
+  if (!location) return null;
+  if (location.source_kind === 'EXTERNAL_REPORT_CODE_DEFINITION') return {
+    section: location.section, url: location.url, source_kind: location.source_kind
+  };
+  return { section: location.section || null, page: location.page, line: location.line };
+}
+
+function publicDefinitionSource(fact) {
+  if (fact.field !== 'account.paymentHistoryDefinition' || !fact.code_definition) return {};
+  const { publisher, title, url, section, version } = fact.code_definition.source;
+  return { definition_source: { publisher, title, url, section, version } };
 }
 
 function publicIssues(ctx) {

@@ -473,6 +473,11 @@ function assessmentReportBody(rendered, producedAt) {
   const sourceLines = (facts) => {
     for (const fact of facts || []) {
       const loc = fact.location || {};
+      if (loc.source_kind === 'EXTERNAL_REPORT_CODE_DEFINITION') {
+        const definition = fact.definition_source;
+        lines.push(`  Published definition: ${fact.source_field} — ${fact.normalized_value}; ${definition ? `${definition.publisher}, ${definition.title} (version ${definition.version}), ` : ''}${loc.section}; ${loc.url}`);
+        continue;
+      }
       const where = loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
       const reading = fact.raw_value != null ? `printed "${fact.raw_value}"`
         : fact.normalized_value != null ? `normalized value ${fact.normalized_value}` : 'value omitted';

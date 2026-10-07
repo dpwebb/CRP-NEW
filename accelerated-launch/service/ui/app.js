@@ -968,7 +968,7 @@ function renderPacketBlock(pv) {
       <strong>${esc(i.explanation)}</strong>
       <span class="evidence">Why: ${esc(i.uncertainty)}</span>
       ${i.report_identity ? `<span class="evidence">Report: <b>${esc(i.report_identity.bureau || 'a report')}</b>${i.report_identity.reference_date ? ` · reference date <b>${esc(i.report_identity.reference_date)}</b>` : ''}</span>` : ''}
-      ${(i.source_facts || []).map((f) => `<span class="evidence">${esc(f.source_field || 'field')}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value ? ` → normalized <b>${esc(f.normalized_value)}</b>` : ''}</span>`).join('')}
+      ${comparisonFactList(i)}
     </label>`).join('');
   return `
     <h2>Correction packet</h2>
@@ -1080,7 +1080,13 @@ function historyOption(r) {
 function comparisonFactList(issue) {
   const facts = (issue && issue.source_facts) || [];
   if (!facts.length) return '';
-  return facts.map((f) => `<span class="evidence">${esc(f.source_field || 'field')}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → normalized <b>${esc(f.normalized_value)}</b>` : ''}</span>`).join('');
+  return facts.map((f) => {
+    if (f.definition_source) {
+      const source = f.definition_source;
+      return `<span class="evidence">Published code definition: ${esc(f.source_field)} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)} (version ${esc(source.version)}): ${esc(source.url)}</span>`;
+    }
+    return `<span class="evidence">${esc(f.source_field || 'field')}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → normalized <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
+  }).join('');
 }
 
 function outcomePill(outcome) {

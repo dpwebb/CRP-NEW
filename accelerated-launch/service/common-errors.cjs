@@ -9,6 +9,7 @@ const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
 const reaging = require('./reaging.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const { validatedDefinition } = require('./report-code-definitions.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
@@ -391,7 +392,7 @@ function paymentHistoryConsistency(records) {
       if (!period) continue;
       /* C3: an unresolved cell (low-confidence code, unknown meaning, or no cell) is never compared as a
          delinquency. Only a cell with a resolved code participates in a same-period contradiction. */
-      if (!c || c.code == null || !String(c.meaning || '').trim() || c.uncertain === true || c.performance_usable === false) continue;
+      if (!performanceCellUsable(c, r)) continue;
       if (!byPeriod.has(period)) { byPeriod.set(period, c); continue; }
       const prior = byPeriod.get(period);
       if (prior.meaning && c.meaning && String(prior.meaning).trim().toUpperCase() !== String(c.meaning).trim().toUpperCase()) {
@@ -550,6 +551,12 @@ const USABLE_FIELD_PREDICATES = Object.freeze({
       && String(c.meaning || '').trim() && String(c.period || '').trim())
 });
 
+function performanceCellUsable(cell, record) {
+  return Boolean(cell && cell.code != null && String(cell.meaning || '').trim()
+    && cell.uncertain !== true && cell.performance_usable !== false
+    && (!(cell.code_definition || record.reader_family_id === 'FAM-US-EXP-CONSUMER') || validatedDefinition(cell, record)));
+}
+
 function usableField(record, field) {
   if (field === 'report.referenceDate') {
     return Boolean(record && reportReference(record));
@@ -557,6 +564,8 @@ function usableField(record, field) {
   const value = (record && record.facts) ? record.facts[field] : undefined;
   if (value === undefined || value === null) return false;
   if (record.fact_sources && Object.hasOwn(record.fact_sources, field) && !sourceForField(record, field)) return false;
+  if (field === 'account.paymentHistoryCells') return Array.isArray(value)
+    && value.some((cell) => cell && cell.period && performanceCellUsable(cell, record));
   const predicate = USABLE_FIELD_PREDICATES[field];
   return predicate ? predicate(value) : true;
 }
@@ -647,7 +656,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'account.reported_identity', 'account.masked_identifier', 'account.type', 'account.responsibility',
     'account.status', 'liability.openedDate',
     'reportedAccount.status', 'reportedAccount.dateOpened', 'reportedAccount.firstReported', 'reportedAccount.adverseRatingDate',
-    'account.balance', 'account.pastDueAmount', 'account.creditLimit', 'account.paymentAmount'
+    'account.balance', 'account.pastDueAmount', 'account.creditLimit', 'account.paymentAmount', 'account.paymentHistoryCells'
   ]),
   'FAM-GB-EXP-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit', 'account.type',

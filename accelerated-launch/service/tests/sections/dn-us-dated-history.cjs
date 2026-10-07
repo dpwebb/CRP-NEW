@@ -8,6 +8,11 @@ const crypto = require('node:crypto');
 const formats = require('../../formats.cjs');
 const family = require('../../format-families/us-experian-consumer.cjs');
 const common = require('../../common-errors.cjs');
+const issues = require('../../issues.cjs');
+const engine = require('../../evaluation.cjs');
+const journey = require('../../journey.cjs');
+const results = require('../../results.cjs');
+const definitions = require('../../report-code-definitions.cjs');
 const us = require('./df-us-common-error-reader.cjs').fixtures;
 const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const HISTORY = 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY';
@@ -67,6 +72,37 @@ async function run(t, check) {
   const finding = offered.findings.find((issue) => issue.check_id === HISTORY);
   const publicIssue = offered.public.find((issue) => issue.issue_id === finding?.issue_id);
   check.ok(publicIssue && publicIssue.consumer_label === 'VIOLATION', 'the sourced grid reaches one selectable consumer violation');
+  check.equal(finding?.rule_assessment.required_facts.length, 4, 'two own printed cells and two external definitions support the rule');
+  check.deepEqual(finding?.source_facts.filter((fact) => fact.field === 'account.paymentHistoryDefinition')
+    .map((fact) => [fact.location.url, fact.location.page, fact.code_definition.source.sha256]),
+  [[definitions.SOURCE.url, undefined, definitions.SOURCE.sha256], [definitions.SOURCE.url, undefined, definitions.SOURCE.sha256]],
+  'external definitions retain exact provenance without fictitious report pages');
+  check.ok(finding?.source_facts.filter((fact) => fact.field === 'account.paymentHistoryCells')
+    .every((fact) => fact.period_location.month.page === 1 && fact.period_location.year.page === 1),
+  'each decisive cell retains its own printed year/month evidence');
+  check.ok(publicIssue?.source_facts.filter((fact) => fact.definition_source)
+    .every((fact) => fact.definition_source.version === definitions.SOURCE.version && fact.definition_source.title === definitions.SOURCE.title),
+  'consumer evidence names the reviewed published edition separately');
+  const definitionDownload = journey.assessmentReportBody(results.renderResultSet({
+    extraction: positive.extraction, evaluation: engine.evaluateCase({ country: 'US', region: 'US-NY', extraction: positive.extraction }) }), 'fictional');
+  check.ok(definitionDownload.includes('Published definition:') && definitionDownload.includes(definitions.SOURCE.url),
+    'assessment downloads distinguish the external definition from printed report cells');
+  const capture = path.resolve(__dirname, '../../../../SOURCE_CAPTURES/READER-CODE-DEFINITIONS-2026-10-07/experian-us-consumer-report-code-guide.html');
+  if (fs.existsSync(capture)) check.equal(crypto.createHash('sha256').update(fs.readFileSync(capture)).digest('hex'),
+    definitions.SOURCE.sha256, 'the reviewed public capture matches its frozen definition version');
+  for (const mutate of [
+    (record) => { record.facts['account.paymentHistoryCells'][0].code_definition.source.sha256 = 'changed'; },
+    (record) => { delete record.facts['account.paymentHistoryCells'][0].code_definition; },
+    (record) => { record.source_bureau = 'Equifax'; },
+    (record) => { record.facts['account.paymentHistoryCells'][0].period_location.year.trusted = false; },
+    (record) => { record.facts['account.paymentHistoryCells'][0].location.trusted = false; }
+  ]) {
+    const changed = JSON.parse(JSON.stringify(positive.extraction));
+    mutate(changed.records[0]);
+    check.equal(matches({ extraction: changed }).length, 0, 'rejected source scope, definition or physical reading cannot supply a contradiction');
+    check.equal(us.offered(changed).findings.filter((issue) => issue.check_id === HISTORY).length, 0,
+      'an invalid external proof cannot fall back to an eligible unsourced issue');
+  }
   check.equal(matches(read(t, [{ history: { months: ['May', 'May'], codes: ['OK', 'OK'] } }])).length, 0,
     'equivalent same-period codes do not become a contradiction');
   for (const code of ['ND', '-']) {
@@ -151,6 +187,67 @@ async function run(t, check) {
   const noMonth = read(t, [{ history: { months: ['May', null, 'Mar'], codes: ['OK', '30', 'OK'] } }]);
   check.ok(cells(noMonth).some((cell) => cell.raw_code === '30' && cell.period === null && cell.uncertain),
     'a code without its own aligned month is retained without shifting to another period');
+
+  const owner = await t.unpaidAccount('dn-history-owner@example.test'); await t.pay(owner, 'monthly');
+  const opened = await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'US', region: 'US-NY' } });
+  const caseId = opened.json.case.case_id, endpoint = '/api/cases/' + caseId;
+  check.equal((await t.request('POST', endpoint + '/files', { token: owner.token, body: {
+    originalFilename: 'fictional-us-history.pdf', declaredBytes: positive.bytes.length, mimeType: 'application/pdf',
+    contentBase64: positive.bytes.toString('base64') } })).status, 201, 'native dated history enters the normal upload route');
+  check.equal((await t.request('POST', endpoint + '/evaluate', { token: owner.token })).status, 201, 'the source history reaches checklist assessment');
+  const selector = (await t.request('GET', endpoint + '/packet', { token: owner.token })).json.view;
+  const selected = selector.eligible_issues.find((issue) => issue.source_facts?.some((fact) => fact.definition_source));
+  check.ok(selected, 'the sourced history violation is selectable with its external basis');
+  if (selected) {
+    await t.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
+    await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
+      correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves the report cells and published definition');
+    const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
+    check.equal(download.status, 200, 'the approved history packet downloads');
+    check.ok(download.text.includes('May 2025') && download.text.includes('printed "OK"') && download.text.includes('printed "30"'),
+      'packet states both own printed codes and their reporting period');
+    check.ok(download.text.includes('Published code definition: OK') && download.text.includes('Published code definition: 30')
+      && download.text.includes(definitions.SOURCE.title) && download.text.includes(definitions.SOURCE.url),
+      'packet separately cites the published definitions with their title and URL');
+    check.equal(/page undefined|probable violation|potential violation/.test(download.text.toLowerCase()), false,
+      'consumer packet has no invented source page or obsolete verdict');
+    const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+    const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+    try {
+      const page = await browser.newPage(); page.setDefaultTimeout(20000);
+      await page.goto(t.base + '/');
+      await page.locator('#email').fill('dn-history-owner@example.test');
+      await page.locator('#password').fill('a-long-enough-password');
+      await page.locator('#signin').click();
+      await page.waitForSelector('#open'); await page.locator('#refresh').click();
+      await page.locator('[data-open="' + caseId + '"]').click();
+      await page.locator('#steps button[data-step="4"]').click();
+      await page.waitForSelector('#packet-block');
+      await page.waitForFunction(() => document.body.innerText.includes('Published code definition:'));
+      const text = await page.locator('#packet-block').innerText();
+      check.ok(text.includes('Published code definition:') && text.includes(definitions.SOURCE.title)
+        && text.includes(definitions.SOURCE.url), 'the actual packet review screen cites the external published basis');
+      check.equal(text.includes('printed Current, terms met') || text.includes('printed 30 days past due'), false,
+        'published meanings are not falsely labelled as words printed in the report');
+      check.ok(text.includes('printed OK') && text.includes('printed 30'), 'the actual screen still distinguishes both printed report codes');
+    } finally { await browser.close(); }
+    for (const [label, mutate] of [
+      ['code source', (record) => { record.facts['account.paymentHistoryCells'][0].location.x0 += 1; }],
+      ['month source', (record) => { record.facts['account.paymentHistoryCells'][0].period_location.month.x0 += 1; }],
+      ['year source', (record) => { record.facts['account.paymentHistoryCells'][0].period_location.year.y0 += 1; }],
+      ['definition version', (record) => { record.facts['account.paymentHistoryCells'][0].code_definition.source.version = 'changed'; }],
+      ['definition capture', (record) => { record.facts['account.paymentHistoryCells'][0].code_definition.source.sha256 = 'changed'; }]
+    ]) {
+      const saved = JSON.parse(JSON.stringify(t.service.store.state().results.find((row) => row.case_id === caseId).extraction.records[0]));
+      t.service.store.update((state) => { mutate(state.results.find((row) => row.case_id === caseId).extraction.records[0]); });
+      check.equal((await t.request('GET', endpoint + '/packet-download', { token: owner.token })).status, 409,
+        label + ' is reviewed material and invalidates prior approval');
+      t.service.store.update((state) => { state.results.find((row) => row.case_id === caseId).extraction.records[0] = saved; });
+      check.equal((await t.request('GET', endpoint + '/packet-download', { token: owner.token })).status, 200,
+        'restoring the exact evidence restores the approved version');
+    }
+  }
 
   const publicPdf = process.env.CRP_US_EXPERIAN_PUBLIC_SPECIMEN
     || path.resolve(__dirname, '../../../../SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-001.pdf');

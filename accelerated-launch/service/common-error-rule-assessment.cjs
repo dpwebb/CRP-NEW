@@ -6,6 +6,7 @@ const { ADAPTERS, adaptersForRegion } = require('../adapters/rule-adapters.cjs')
 const APPLICABILITY = require('../adapters/applicability-records.json');
 
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const { validatedDefinition } = require('./report-code-definitions.cjs');
 const reaging = require('./reaging.cjs');
 
 const RULE_BY_REGION = Object.freeze({
@@ -99,14 +100,24 @@ function paymentHistorySources(issue, record) {
   const first = inPeriod.find((c) => c.code === e.first_code && c.meaning === e.first_meaning);
   const second = inPeriod.find((c) => c !== first && c.code === e.second_code && c.meaning === e.second_meaning);
   if (!first || !second || String(first.meaning).trim().toUpperCase() === String(second.meaning).trim().toUpperCase()) return null;
+  if ([first, second].some((cell) => (cell.code_definition || record.reader_family_id === 'FAM-US-EXP-CONSUMER')
+    && !validatedDefinition(cell, record))) return null;
   return [first, second].flatMap((cell, index) => {
     const role = index === 0 ? 'first_printed_cell' : 'second_printed_cell';
     const facts = [{ field: 'account.paymentHistoryCells', role,
-      source: { raw_value: cell.raw_symbol ? 'Graphical repayment symbol' : cell.code, normalized_value: cell.code,
+      source: { raw_value: cell.raw_symbol ? 'Graphical repayment symbol' : cell.raw_code || cell.code, normalized_value: cell.code,
         source_field: `Payment history ${cell.raw_period}`, location: cell.location,
         record_index: record.record_index,
         ...(cell.raw_symbol ? { raw_symbol: cell.raw_symbol } : {}),
-        ...(cell.legend ? { legend: cell.legend } : {}) } }];
+        ...(cell.legend ? { legend: cell.legend } : {}),
+        ...(cell.period_location ? { period_location: cell.period_location } : {}),
+        ...(cell.code_definition ? { code_definition: cell.code_definition } : {}) } }];
+    const definition = cell.code_definition && validatedDefinition(cell, record);
+    if (definition) facts.push({ field: 'account.paymentHistoryDefinition', role: `${role}_definition`,
+      source: { raw_value: definition.meaning, normalized_value: cell.meaning,
+        source_field: `Experian published meaning of ${cell.code}`, record_index: record.record_index,
+        location: { url: definition.source.url, section: definition.source.section,
+          source_kind: definition.source.source_kind }, code_definition: definition } });
     if (cell.raw_symbol && cell.legend && cell.legend.location && cell.legend.raw_value != null) {
       facts.push({ field: 'account.paymentHistoryLegend', role: `${role}_legend`,
         source: { raw_value: cell.legend.raw_value, normalized_value: cell.meaning,
@@ -226,6 +237,8 @@ function assess(issue, record, evaluation, extraction) {
     && source.record_index === (record_index == null ? record.record_index : record_index)
     && source.location && (source.raw_value != null || source.omitted_value === true)
     && (source.omitted_value === true || field === 'account.paymentHistoryCells'
+      || field === 'account.paymentHistoryDefinition' && paymentHistory && source.code_definition
+        && source.normalized_value === source.code_definition.meaning
       || field === 'account.paymentHistoryLegend' && paymentHistory
         && source.raw_value === source.normalized_value
       || field === 'account.reported_event' || String(source.normalized_value) === String(
@@ -268,6 +281,8 @@ function assess(issue, record, evaluation, extraction) {
 /** Preserve supported legacy verification paths, but never offer a decisive reading the reader explicitly rejected. */
 function hasUnusableDecisiveSource(issue, record, extraction) {
   if (!record) return true;
+  if (issue.check_id === 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'
+    && record.reader_family_id === 'FAM-US-EXP-CONSUMER' && !paymentHistorySources(issue, record)) return true;
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'
     && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && record.report_reference_date && !reportReference(record)) return true;
   const rejected = (row, fields) => Boolean(row && fields && fields.some((field) =>

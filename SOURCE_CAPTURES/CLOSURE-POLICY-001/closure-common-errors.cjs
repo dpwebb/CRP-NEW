@@ -18,7 +18,8 @@ const ids = ['al-common-errors', 'ct-owner-common-error-scope', 'cw-common-error
   'cx-all82-required-report-data', 'cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs',
   'da-common-error-reader-repairs', 'db-common-error-surface-repairs', 'dc-consumer-violation-term',
   'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging',
-  'dh-ca-reader-completion', 'di-au-reader-completion', 'dj-gb-reader-completion', 'dk-reader-completion-integration'];
+  'dh-ca-reader-completion', 'di-au-reader-completion', 'dj-gb-reader-completion', 'dk-reader-completion-integration',
+  'dl-general-caption-sources', 'dm-au-role-packet-evidence', 'dn-us-dated-history'];
 const tests = ids.map((id) => {
   const section = run.sections.find((row) => row.id === id);
   if (!section || !section.completed || section.failed || section.skipped.length || !section.passed) {
@@ -41,6 +42,7 @@ sourceFiles.push('accelerated-launch/service/reaging.cjs', 'accelerated-launch/s
   'accelerated-launch/service/account-identity.cjs', 'accelerated-launch/service/format-families/tu-ca-consumer.cjs',
   'accelerated-launch/service/format-families/us-experian-consumer.cjs');
 sourceFiles.push('accelerated-launch/service/report-amount.cjs', 'accelerated-launch/service/ca-consumer-file-facts.cjs',
+  'accelerated-launch/service/report-code-definitions.cjs',
   'accelerated-launch/service/format-families/au-equifax-consumer.cjs',
   'accelerated-launch/service/format-families/gb-experian-consumer.cjs');
 const checklist = require(path.join(root, 'accelerated-launch/service/common-error-checklist.cjs')).CHECKS;

@@ -409,7 +409,8 @@ function issueLines(issue) {
     for (const f of (issue.source_facts || [])) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(`  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
+      lines.push(f.field === 'account.paymentHistoryDefinition' ? externalDefinitionLine(f, '  ')
+        : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
     }
   } else {
     lines.push(`  Issue: ${issue.label}`);
@@ -433,7 +434,8 @@ function issueLines(issue) {
     for (const f of (issue.source_facts || [])) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(`  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
+      lines.push(f.field === 'account.paymentHistoryDefinition' ? externalDefinitionLine(f, '  ')
+        : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
     }
     const loc = issue.location && issue.location.page != null ? issue.location
       : (issue.source_facts || []).map((fact) => fact.location).find((location) => location && location.page != null);
@@ -491,17 +493,18 @@ function correspondenceLines(packet, row, selected) {
 function evidenceFacts(issue) {
   const out = [];
   const seen = new Set();
-  const push = (field, raw, normalized, location, provenance) => {
+  const push = (field, raw, normalized, location, provenance, definition) => {
     if (raw == null && normalized == null) return;
     const loc = location || {};
     const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}|${JSON.stringify(provenance || null)}`;
     if (seen.has(key)) return;
     seen.add(key);
-    out.push({ field: field || null, raw, normalized, location: location || null });
+    out.push({ field: field || null, raw, normalized, location: location || null, code_definition: definition || null });
   };
   for (const f of (issue.source_facts || [])) {
     push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location,
-      f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null);
+      f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null,
+      f.field === 'account.paymentHistoryDefinition' ? f.code_definition : null);
   }
   if (issue.source) {
     push(issue.source.source_field || (issue.record && issue.record.source_field), issue.source.raw_value, issue.source.normalized_value, issue.source.location || issue.location);
@@ -516,9 +519,15 @@ function evidenceFacts(issue) {
   return out;
 }
 
+function externalDefinitionLine(fact, indent) {
+  const definition = fact.code_definition, source = definition.source;
+  return `${indent}Published code definition: ${definition.code} = ${definition.meaning}; ${source.publisher}, ${source.title}, ${source.section} (version ${source.version}); ${source.url}`;
+}
+
 function evidenceLines(selected) {
   const lines = [];
-  lines.push('EVIDENCE REFERENCES (from your report)');
+  lines.push(selected.some((issue) => (issue.source_facts || []).some((fact) => fact.field === 'account.paymentHistoryDefinition'))
+    ? 'EVIDENCE REFERENCES (report readings and published code definitions)' : 'EVIDENCE REFERENCES (from your report)');
   lines.push('='.repeat(72));
   let n = 0;
   for (const issue of selected) {
@@ -551,7 +560,8 @@ function evidenceLines(selected) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
       const label = f.field ? `${f.field}: ` : '';
-      lines.push(`     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null ? `, normalized to ${f.normalized}` : ', not normalized'}`);
+      lines.push(f.code_definition ? externalDefinitionLine(f, '     ')
+        : `     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null ? `, normalized to ${f.normalized}` : ', not normalized'}`);
     }
     lines.push('');
   }

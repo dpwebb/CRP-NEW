@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-07T19:28:55.869Z",
+  "generated_at": "2026-10-07T20:55:09.838Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
-      "file_count": 61,
-      "digest": "350862D18C6F6C4AF799C0B8EB4B0ACD0C6B5F661071C36A6BD1F1A9461F0220",
+      "file_count": 62,
+      "digest": "1B6EF63FC5679222BF3830D2C5BF46FC282F8803DA3EFF447E0FADF767EA18CE",
       "files": [
         {
           "file": "accelerated-launch/service/account-identity.cjs",
@@ -59,7 +59,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
-          "sha256": "599D651D789555B0898B2DE2F818025A31415D66CB65BD1C84F61E9CBC10965C"
+          "sha256": "3C57D225B03050D4F54487C3C63AAAE9D34B2F45658196CF95131C09661394B7"
         },
         {
           "file": "accelerated-launch/service/common-error-scope.cjs",
@@ -67,7 +67,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "BA6DAA009362CE7A8C4A1FB8C71B8DDA3C633143DB1CBB4FB7247096F2FF3775"
+          "sha256": "E24E1EB057A06BCACE041A48BEF1C82CACE946E5A93E6D254C70941489CFD487"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -127,7 +127,7 @@
         },
         {
           "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
-          "sha256": "BE35A51361B50700C046CD136C2A39FEFEF58D1E5A454D80E035D34F5569EE55"
+          "sha256": "080AE6D3C190CDBC62E04948F9DF059328D123C11A6819782B04488713C59ED9"
         },
         {
           "file": "accelerated-launch/service/format-families/ca-consumer-format-scope.cjs",
@@ -143,7 +143,7 @@
         },
         {
           "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
-          "sha256": "4137E9272A38C49E67B2B61F71C4C0DE923FFA5D5E62FDA289A61105F5303768"
+          "sha256": "8575433EE79FEA66A352570712D50AFF22925CAB0BB8319EF500466B3097A858"
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
@@ -151,15 +151,15 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "4B24D692ED8A9765858B620AF2F8803E0AE27F542501F6B2F2767A5082B9C29A"
+          "sha256": "2A35DA360C38337727B4072609574E40D2619AF53837E05867D58555ECE93B3E"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "E624ED445E0654641ED6FADD84C52E3CCC50F35B45C44DB43299555FAC3769E8"
+          "sha256": "5F1D55E6D613396535CC92A7B7C3E5A7841A840951A165B4337F9C1B26120B9A"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "3EA7624E807D29949D4695219817A1A69F49C141219126513BBE026AB28FDFEF"
+          "sha256": "547C11AA5EBC2FC83E7E906551D223DCAA1E57FF3FD78628148314C26BE5855B"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -179,7 +179,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "B694FCC16525C8DA0AC77D1EBF359AEA9FDCE8D87115478B160657E5925C2B53"
+          "sha256": "3FB6A0B52B3239899F7C78467465789C42A1CF73B4861607570612E68FDFCF54"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -216,6 +216,10 @@
         {
           "file": "accelerated-launch/service/report-amount.cjs",
           "sha256": "88991F7B9394F51DEAF738830543CA6576233B210994DA5360D09A6A6C20B54F"
+        },
+        {
+          "file": "accelerated-launch/service/report-code-definitions.cjs",
+          "sha256": "12A3A20AF732F0552C34C35838A8435E504DC52153F6755E95F7F80B5F5D5150"
         },
         {
           "file": "accelerated-launch/service/report-fact-sources.cjs",
@@ -383,11 +387,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "0C2875D019767E45244AFA35D5CB6394DCC8868338F579C7CAD7DBF94F45B980",
+      "digest": "7A8FC974390BE989223324D6B5521C1A48D956D30CBB716F2B68011EDEF30D25",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "A69A21031368B0765D294B3779223F833C4ABDB5C3EB1739719F2A8337525A35"
+          "sha256": "B9AC1BEF83AAADC90B0C77C6990AD907C899382903B08D6D3CD875678275A719"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -404,6 +408,6 @@
       ]
     }
   ],
-  "manifest_digest": "9425AA98398BC59C3508C3934EB4AD94CA7BC7F277A0C70E2A1DB169385F0D7C",
-  "total_file_count": 91
+  "manifest_digest": "A9740D383AB0BF94051587E79A85D31A85B1195ED32FB48E62CE2FBEB25593F3",
+  "total_file_count": 92
 }
