@@ -894,7 +894,8 @@ function historyTrust(word) {
   return require('../payment-history-grid.cjs').wordTrust(word).trusted;
 }
 function historyLocation(word, page, trusted = historyTrust(word)) {
-  return word ? { page, x0: word.x0, y0: word.y0, x1: word.x1, y1: word.y1, trusted } : null;
+  return word ? { page, x0: word.x0, y0: word.y0, x1: word.x1, y1: word.y1, trusted,
+    ...(word.recovery ? { recovery: word.recovery } : {}) } : null;
 }
 function historyYearReading(word) {
   const text = String(word.text || '');
@@ -902,9 +903,30 @@ function historyYearReading(word) {
     && (text.match(/\d/g) || []).length >= 2;
 }
 
+const HISTORY_RECOVERY_CACHE = new WeakMap();
+function rereadHistoryRegions(model, regions) {
+  if (textLayerFor(model).source !== 'LOCAL_OCR' || !model.path || !model.sha256 || !regions.length) return [];
+  const fs = require('node:fs'), crypto = require('node:crypto');
+  try {
+    if (!fs.existsSync(model.path) || crypto.createHash('sha256').update(fs.readFileSync(model.path)).digest('hex')
+      !== String(model.sha256).toLowerCase()) return [];
+  } catch { return []; }
+  if (!HISTORY_RECOVERY_CACHE.has(model)) HISTORY_RECOVERY_CACHE.set(model, { count: 0, readings: new Map() });
+  const cache = HISTORY_RECOVERY_CACHE.get(model);
+  const key = JSON.stringify(regions);
+  if (cache.readings.has(key)) return cache.readings.get(key);
+  if (cache.count + regions.length > 64) return [];
+  cache.count += regions.length;
+  const reading = ocr.readPdfRegions(model.path, regions);
+  const readings = reading.source_sha256 === String(model.sha256).toLowerCase() ? reading.regions || [] : [];
+  cache.readings.set(key, readings);
+  return readings;
+}
+
 /** This family's three-row grid prints sparse year headings above month and code cells. A year
  * applies only from its own aligned column to the next printed year, within this account and grid.
- * Do not infer a year from the report date, repair an OCR month/code, or shift cells past a blank. */
+ * Do not infer a year from the report date or shift cells past a blank. An unresolved OCR glyph may
+ * be reread only from its own physical column and band; text substitutions are never used. */
 function accountHistoryCells(block, model) {
   const allRows = wordRows(model);
   const cells = [];
@@ -981,6 +1003,52 @@ function accountHistoryCells(block, model) {
         if (!codesAt.has(index)) codesAt.set(index, []);
         codesAt.get(index).push(word);
       }
+      const originalCodes = new Map();
+      const recoveryRegions = [];
+      const pixelPt = 72 / 300;
+      const monthHeights = months.map((month) => month.y1 - month.y0).filter((height) => height > 0).sort((a, b) => a - b);
+      const monthBottom = Math.max(...months.map((month) => month.y1));
+      const separateCodeWords = candidates.filter((word) => word.y0 >= monthBottom && historyTrust(word));
+      const bandTop = separateCodeWords.length
+        ? Math.max(monthBottom, Math.min(...separateCodeWords.map((word) => word.y0)) - 0.5) : monthBottom;
+      const codeTop = Math.floor(bandTop / pixelPt) * pixelPt;
+      const codeHeight = Math.round((monthHeights[Math.floor(monthHeights.length / 2)] || 0) * 1.5 / pixelPt) * pixelPt;
+      const codeBottom = Math.min(codeTop + codeHeight, cellEnd - 0.1);
+      if (headingTrusted && candidates.length && codeHeight >= 5 && codeHeight <= 16) {
+        months.forEach((month, index) => {
+          const codes = codesAt.get(index) || [];
+          // Two readings in one column remain ambiguous; a narrower crop must not choose between them.
+          if (codes.length > 1) return;
+          const gaps = [centers[index] - centers[index - 1], centers[index + 1] - centers[index]]
+            .filter((gap) => Number.isFinite(gap) && gap > 0);
+          const width = gaps.length ? Math.round(Math.min(...gaps) * 0.65 / pixelPt) * pixelPt : 0;
+          if (width < 10 || width > 40 || codeBottom - codeTop < 5) return;
+          if (!HISTORY_MONTHS[String(month.text).toUpperCase()] || !historyTrust(month)) {
+            recoveryRegions.push({ id: `month-${index}`, page: heading.page,
+              x0: centers[index] - width / 2, x1: centers[index] + width / 2,
+              y0: Math.max(monthRow.y0 - 0.5, ...yearWords.map((word) => word.y1 + 0.1)), y1: codeTop });
+          }
+          if (!codes.length || !historyTrust(codes[0])
+            || !require('../report-code-definitions.cjs').definitionForCode(String(codes[0].text).toUpperCase())) {
+            recoveryRegions.push({ id: `code-${index}`, page: heading.page,
+              x0: centers[index] - width / 2, x1: centers[index] + width / 2,
+              y0: codeTop, y1: codeBottom });
+          }
+        });
+      }
+      const recoveryReadings = rereadHistoryRegions(model, recoveryRegions);
+      const rejectedRecoveries = new Map();
+      for (const reading of recoveryReadings) {
+        const [kind, rawIndex] = reading.id.split('-'), index = Number(rawIndex);
+        if (!reading.word) { rejectedRecoveries.set(reading.id, reading.reason); continue; }
+        if (kind === 'month') {
+          if (HISTORY_MONTHS[String(reading.word.text).toUpperCase()]) months[index] = reading.word;
+        } else {
+          originalCodes.set(index, (codesAt.get(index) || []).map((word) => ({ raw: word.text,
+            location: historyLocation(word, heading.page) })));
+          codesAt.set(index, [reading.word]);
+        }
+      }
       let activeYears = null;
       months.forEach((month, index) => {
         if (yearsAt.has(index)) activeYears = yearsAt.get(index);
@@ -1007,7 +1075,9 @@ function accountHistoryCells(block, model) {
           uncertain: Boolean(reason), performance_usable: !reason && Boolean(definition && definition.performance_usable),
           location: code ? historyLocation(code, heading.page, !reason) : null,
           period_location: { month: historyLocation(month, heading.page), year: historyLocation(year, heading.page) },
-          source_field: 'Account history', code_definition: !reason ? definition : null, reason });
+          source_field: 'Account history', code_definition: !reason ? definition : null, reason,
+          ...(originalCodes.has(index) ? { original_code_readings: originalCodes.get(index) } : {}),
+          ...(rejectedRecoveries.has(`code-${index}`) ? { recovery_reason: rejectedRecoveries.get(`code-${index}`) } : {}) });
       });
       for (const word of unaligned) cells.push({ period: null, raw_period: null,
         code: word.text, raw_code: word.text, meaning: null, uncertain: true, performance_usable: false,
