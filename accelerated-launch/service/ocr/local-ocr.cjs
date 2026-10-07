@@ -40,6 +40,10 @@ const RASTER_DPI = 150;
 const MAX_OCR_PAGES = 40;
 const OCR_TIMEOUT_MS = 60000;
 
+const REGION_DPI = 300;
+const MAX_REGION_READINGS = 64;
+const REGION_PADDING_PIXELS = 20;
+
 const EXE_NAMES = Object.freeze({ tesseract: 'tesseract', pdftoppm: 'pdftoppm', pdfinfo: 'pdfinfo' });
 
 /**
@@ -487,12 +491,131 @@ function readImage(file, options) {
   return report;
 }
 
+/** Reread narrowly bounded physical glyph regions after the ordinary page reading.
+ * Poppler supplies the pixels; Tesseract sees unrestricted text with its existing
+ * confidence floor. Padding and a second polarity reading do not change a glyph.
+ * Conflicting trusted readings remain unresolved. No vocabulary is supplied. */
+function readPdfRegions(file, regions) {
+  const report = { available: false, regions: [], refusal_reason: null };
+  if (!file || !fs.existsSync(file) || !Array.isArray(regions) || !regions.length
+      || regions.length > MAX_REGION_READINGS || regions.some((region) =>
+        !Number.isInteger(region.page) || region.page < 1 || region.page > MAX_OCR_PAGES
+        || ![region.x0, region.y0, region.x1, region.y1].every(Number.isFinite)
+        || region.x0 < 0 || region.y0 < 0 || region.x1 <= region.x0 || region.y1 <= region.y0
+        || region.x1 - region.x0 > 80 || region.y1 - region.y0 > 30)) {
+    report.refusal_reason = 'INVALID_OR_EXCESSIVE_PHYSICAL_OCR_REGIONS'; return report;
+  }
+  // Same 10 MiB file ceiling as the existing upload route, including standalone callers.
+  const crypto = require('node:crypto');
+  let sourceHash;
+  try {
+    if (fs.statSync(file).size > 10 * 1024 * 1024) {
+      report.refusal_reason = 'PHYSICAL_OCR_FILE_EXCEEDS_UPLOAD_BUDGET'; return report;
+    }
+    sourceHash = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  } catch { report.refusal_reason = 'PHYSICAL_OCR_FILE_UNAVAILABLE'; return report; }
+  // One call covers one nearby own report band; it cannot rasterise an unbounded page span.
+  const page = regions[0].page;
+  const x0 = Math.floor(Math.min(...regions.map((region) => region.x0)) * REGION_DPI / 72);
+  const y0 = Math.floor(Math.min(...regions.map((region) => region.y0)) * REGION_DPI / 72);
+  const x1 = Math.ceil(Math.max(...regions.map((region) => region.x1)) * REGION_DPI / 72);
+  const y1 = Math.ceil(Math.max(...regions.map((region) => region.y1)) * REGION_DPI / 72);
+  if (regions.some((region) => region.page !== page) || (x1 - x0) * (y1 - y0) > 2000000) {
+    report.refusal_reason = 'PHYSICAL_OCR_BAND_EXCEEDS_BUDGET'; return report;
+  }
+  const tesseract = resolveProgram('tesseract', ['--version']);
+  const pdftoppm = resolveProgram('pdftoppm', ['-v']);
+  const tessdata = resolveTessdata(tesseract.path);
+  if (!tesseract.path || !pdftoppm.path || !tessdata.dir) {
+    report.refusal_reason = 'LOCAL_REGION_OCR_DEPENDENCY_UNAVAILABLE'; return report;
+  }
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-region-ocr-'));
+  try {
+    const prefix = path.join(workDir, 'band');
+    const raster = tryRun(pdftoppm.path, ['-r', String(REGION_DPI), '-gray', '-singlefile',
+      '-f', String(page), '-l', String(page), '-x', String(x0), '-y', String(y0),
+      '-W', String(x1 - x0), '-H', String(y1 - y0), file, prefix],
+    { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: OCR_TIMEOUT_MS });
+    if (!raster.ok || !fs.existsSync(prefix + '.pgm')) {
+      report.refusal_reason = 'PHYSICAL_OCR_BAND_NOT_RASTERISED'; return report;
+    }
+    const bytes = fs.readFileSync(prefix + '.pgm');
+    const header = bytes.toString('latin1', 0, 100).match(/^P5\s+(\d+)\s+(\d+)\s+255\s/);
+    if (!header) { report.refusal_reason = 'INVALID_PHYSICAL_OCR_RASTER'; return report; }
+    const width = Number(header[1]), height = Number(header[2]);
+    const pixels = bytes.subarray(header[0].length);
+    if (width !== x1 - x0 || height !== y1 - y0 || pixels.length !== width * height) {
+      report.refusal_reason = 'PHYSICAL_OCR_RASTER_SIZE_MISMATCH'; return report;
+    }
+    for (let index = 0; index < regions.length; index += 1) {
+      const region = regions[index];
+      const left = Math.round(region.x0 * REGION_DPI / 72) - x0;
+      const top = Math.round(region.y0 * REGION_DPI / 72) - y0;
+      const rw = Math.round(region.x1 * REGION_DPI / 72) - x0 - left;
+      const rh = Math.round(region.y1 * REGION_DPI / 72) - y0 - top;
+      if (left < 0 || top < 0 || rw < 1 || rh < 1 || left + rw > width || top + rh > height) {
+        report.regions.push({ id: region.id, page, word: null, reason: 'REGION_OUTSIDE_RASTER' }); continue;
+      }
+      const pad = REGION_PADDING_PIXELS, paddedWidth = rw + pad * 2, paddedHeight = rh + pad * 2;
+      const variants = [];
+      for (const inverted of [false, true]) {
+        const output = Buffer.alloc(paddedWidth * paddedHeight, 255);
+        for (let y = 0; y < rh; y += 1) for (let x = 0; x < rw; x += 1) {
+          const pixel = pixels[(top + y) * width + left + x];
+          output[(y + pad) * paddedWidth + x + pad] = inverted ? 255 - pixel : pixel;
+        }
+        const target = path.join(workDir, `region-${index}-${inverted ? 'inverted' : 'original'}.pgm`);
+        fs.writeFileSync(target, Buffer.concat([Buffer.from(`P5\n${paddedWidth} ${paddedHeight}\n255\n`), output]));
+        const reading = tryRun(tesseract.path, [target, 'stdout', '--tessdata-dir', tessdata.dir,
+          '--psm', '7', '-l', 'eng', 'tsv'],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: OCR_TIMEOUT_MS, maxBuffer: 1024 * 1024 });
+        const words = reading.ok ? parseTsv(reading.stdout).map((word) => ({
+          text: word.text, confidence: word.conf, trusted: word.conf >= TRUSTED_LINE_CONFIDENCE,
+          x0: (x0 + left + word.left - pad) * 72 / REGION_DPI,
+          y0: (y0 + top + word.top - pad) * 72 / REGION_DPI,
+          x1: (x0 + left + word.left - pad + word.width) * 72 / REGION_DPI,
+          y1: (y0 + top + word.top - pad + word.height) * 72 / REGION_DPI
+        })) : [];
+        // A border or neighboring glyph is not silently stripped from the reading.
+        const own = words.length === 1 && words[0].x0 >= region.x0 - 0.25
+          && words[0].y0 >= region.y0 - 0.25 && words[0].x1 <= region.x1 + 0.25
+          && words[0].y1 <= region.y1 + 0.25 ? words[0] : null;
+        variants.push({ polarity: inverted ? 'INVERTED_GRAYSCALE' : 'ORIGINAL_GRAYSCALE', words, own });
+      }
+      const trusted = variants.filter((variant) => variant.own && variant.own.trusted);
+      const values = new Set(trusted.map((variant) => variant.own.text.toUpperCase()));
+      const chosen = values.size === 1 ? trusted.sort((a, b) => b.own.confidence - a.own.confidence)[0] : null;
+      report.regions.push({ id: region.id, page, region: { ...region },
+        word: chosen ? { ...chosen.own, recovery: { source: 'LOCAL_OCR_REGION', raster_dpi: REGION_DPI,
+          psm: 7, polarity: chosen.polarity, confidence_floor: TRUSTED_LINE_CONFIDENCE,
+          confidence: chosen.own.confidence, region: { ...region },
+          source_sha256: sourceHash,
+          engine_version: oneLine(String(tesseract.stdout).split('\n')[0]) } } : null,
+        reason: values.size > 1 ? 'CONFLICTING_TRUSTED_REGION_READINGS' : chosen ? null : 'REGION_NOT_READABLE', variants });
+    }
+    if (crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') !== sourceHash) {
+      report.regions = []; report.refusal_reason = 'PHYSICAL_OCR_FILE_CHANGED_DURING_READING'; return report;
+    }
+    report.source_sha256 = sourceHash;
+    report.available = true;
+    return report;
+  } catch {
+    report.regions = []; report.refusal_reason = 'PHYSICAL_OCR_READING_FAILED'; return report;
+  } finally {
+    const resolved = path.resolve(workDir), temporaryRoot = path.resolve(os.tmpdir()) + path.sep;
+    if (resolved.startsWith(temporaryRoot) && path.basename(resolved).startsWith('crp-region-ocr-')) {
+      fs.rmSync(resolved, { recursive: true, force: true });
+    }
+  }
+}
+
 module.exports = {
   readTextLayer,
   readImage,
   readOsd,
   resolveTessdata,
   resolveProgram,
+  readPdfRegions,
   TRUSTED_LINE_CONFIDENCE,
   RASTER_DPI,
   MAX_OCR_PAGES
