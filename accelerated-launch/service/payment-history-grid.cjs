@@ -10,7 +10,9 @@
  */
 
 const MONTH_RE = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC|\d{4}|\d{1,2}\/\d{4}|\d{4}-\d{1,2})$/i;
-const CODE_RE = /^[A-Za-z0-9*#.-]{1,4}$/;
+const CODE_RE = /^[A-Za-z0-9*#.?/-]{1,4}$/;
+const MONTH_TOKEN_RE = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC)$/i;
+const YEAR_RE = /^[1-9]\d{3}$/;
 const HEADER_RE = /PAYMENT\s+HISTORY|PAYMENT\s+PROFILE|REPAYMENT\s+HISTORY|HISTORY\s+OF\s+PAYMENTS/i;
 const ACCOUNT_RE = /CREDITOR|LENDER|PROVIDER|OPENED|ACCOUNT|TRADELINE/i;
 const CONTINUATION_RE = /CONTINUED|CONT'D|CONT\./i;
@@ -54,6 +56,81 @@ function wordTrust(w) {
 function isHeaderRow(words) { return words.length > 0 && words.every((w) => MONTH_RE.test(w.text)); }
 function isCellRow(words) { return words.length > 0 && words.every((w) => CODE_RE.test(w.text) && !MONTH_RE.test(w.text)); }
 
+/* Only an exact, physically separate row label opens the labelled table path. Short damaged tokens are kept
+   on that path as unresolved readings; they are never corrected to a month or payment code. */
+function labelledRow(words, label) {
+  if (!words || words.length < 2 || String(words[0].text).toUpperCase() !== label.toUpperCase()) return null;
+  const data = words.slice(1);
+  if (!(words[0].x1 <= data[0].x0) || data.some((w) => !/^\S{1,12}$/.test(w.text))) return null;
+  return { words: data, label: words[0] };
+}
+
+function sourceLocation(words, page) {
+  const list = (Array.isArray(words) ? words : [words]).filter(Boolean);
+  const coord = (key, fn) => {
+    const values = list.map((w) => w[key]).filter(Number.isFinite);
+    return values.length ? fn(...values) : null;
+  };
+  return { page: page && page.page || null, source: page && page.source || null,
+    x0: coord('x0', Math.min), x1: coord('x1', Math.max), y0: coord('y0', Math.min), y1: coord('y1', Math.max),
+    raw: list.map((w) => w.text).join(' '), trusted: list.every((w) => wordTrust(w).trusted),
+    ...(list.some((w) => typeof w.confidence === 'number')
+      ? { confidence: Math.min(...list.filter((w) => typeof w.confidence === 'number').map((w) => w.confidence)) } : {}) };
+}
+
+/* A year applies to month-only columns only when it is printed in this exact history heading. Neither the
+   report date nor a previous grid/page supplies a year. Competing/damaged heading years remain unresolved. */
+function headingYear(row) {
+  const text = rowText(row);
+  const m = /^(.*?)\s+PAYMENT\s+HISTORY(?:\s+(?:CONTINUED|CONT'D|CONT\.))?$/i.exec(text);
+  if (!m || !/^\d/.test(m[1])) return null;
+  const prefix = row.words.slice(0, m[1].trim().split(/\s+/).length);
+  return { words: prefix, text: prefix.length === 1 && YEAR_RE.test(prefix[0].text) ? prefix[0].text : null,
+    trusted: prefix.length === 1 && YEAR_RE.test(prefix[0].text) && wordTrust(prefix[0]).trusted };
+}
+
+function noPerformanceMeaning(meaning) { return /^(?:UNKNOWN|NOT REPORTED|NO (?:DATA|PAYMENT HISTORY)|N\/R|[-?])$/i.test(String(meaning || '').trim()); }
+
+/* Read the grid's own printed key. A report-wide key before the account, a neighboring account's key and a key
+   on another page are outside this scope. Repeated/conflicting meanings are retained instead of last-wins. */
+function sectionLegend(rows, startIndex, endIndex, page) {
+  const entries = [], transformations = [], keyRows = new Set();
+  for (let j = startIndex + 1; j < endIndex; j++) {
+    const row = rows[j], text = rowText(row);
+    if (/[A-Z0-9]{1,4}\s*=/.test(text)) {
+      const parsed = parseLegend(text);
+      transformations.push(...parsed.transformed);
+      const location = sourceLocation(row.words, page);
+      for (const item of parsed.legend) entries.push({ ...item, location, trusted: location.trusted,
+        performance_usable: !noPerformanceMeaning(item.meaning) });
+      keyRows.add(j);
+    } else if (/^RATINGS\s+KEY:?$/i.test(text)) {
+      const heading = sourceLocation(row.words, page);
+      keyRows.add(j);
+      for (let k = j + 1; k < endIndex; k++) {
+        const own = rows[k].words;
+        if (own.length < 2 || !CODE_RE.test(own[0].text) || !(own[0].x1 < own[1].x0)) break;
+        const location = sourceLocation(own, page), codeLocation = sourceLocation(own[0], page), meaningLocation = sourceLocation(own.slice(1), page);
+        const meaning = own.slice(1).map((w) => w.text).join(' ');
+        entries.push({ code: own[0].text.toUpperCase(), meaning, location, code_location: codeLocation,
+          meaning_location: meaningLocation, heading_location: heading, trusted: heading.trusted && location.trusted,
+          performance_usable: !noPerformanceMeaning(meaning) });
+        keyRows.add(k);
+      }
+    }
+  }
+  const legend = [];
+  for (const code of new Set(entries.map((e) => e.code))) {
+    const alternatives = entries.filter((e) => e.code === code);
+    const conflict = new Set(alternatives.map((e) => e.meaning.trim().toUpperCase())).size > 1;
+    const trusted = alternatives.every((e) => e.trusted) && !conflict;
+    legend.push({ ...alternatives[0], trusted, ...(alternatives.length > 1 ? { alternatives } : {}),
+      ...(conflict ? { meaning: null, reason: 'CONFLICTING_LEGEND', performance_usable: false }
+        : !trusted ? { reason: 'UNTRUSTED_LEGEND', performance_usable: false } : {}) });
+  }
+  return { legend, transformed: transformations, keyRows };
+}
+
 /* Parse a printed `code=meaning` legend. Non-ASCII OCR artifacts are replaced ONLY for matching (never to change
    a printed code), every replacement is RECORDED so the transformation is not silent, and a legend whose code or
    meaning is materially uncertain is left unresolved. */
@@ -70,18 +147,32 @@ function parseLegend(text) {
 
 /* Group a heading row's words into PERIODS, pairing a month token with a following year token when the row
    prints "JAN 2024 FEB 2024 …" as separate positioned words. Otherwise every word is its own period. */
-function groupHeaderPeriods(words) {
+function groupHeaderPeriods(words, year) {
   if (!words || !words.length) return [];
-  const isYear = (w) => /^\d{4}$/.test(w.text);
-  const isMonth = (w) => /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC)$/i.test(w.text);
   const periods = [];
   let i = 0;
   while (i < words.length) {
-    if (isMonth(words[i]) && i + 1 < words.length && isYear(words[i + 1])) {
-      periods.push({ text: `${words[i].text} ${words[i + 1].text}`, x0: words[i].x0, x1: words[i + 1].x1 });
+    const month = words[i];
+    if (MONTH_TOKEN_RE.test(month.text) && i + 1 < words.length && !MONTH_TOKEN_RE.test(words[i + 1].text)
+      && /^(?:[A-Za-z0-9]{4}|\d{3})$/.test(words[i + 1].text)) {
+      const ownYear = words[i + 1];
+      const conflict = i + 2 < words.length && /^\d{4}$/.test(words[i + 2].text);
+      periods.push({ text: `${month.text} ${ownYear.text}`, raw: `${month.text} ${ownYear.text}`,
+        x0: month.x0, x1: ownYear.x1, monthWords: [month], yearWords: [ownYear],
+        trusted: wordTrust(month).trusted && wordTrust(ownYear).trusted && YEAR_RE.test(ownYear.text)
+          && !conflict && (!year || year.trusted && year.text === ownYear.text),
+        reason: !YEAR_RE.test(ownYear.text) ? 'INVALID_PERIOD_YEAR' : conflict ? 'AMBIGUOUS_PERIOD_YEAR' : year && (!year.trusted || year.text !== ownYear.text)
+          ? 'CONFLICTING_HEADING_YEAR' : null });
       i += 2;
     } else {
-      periods.push({ text: words[i].text, x0: words[i].x0, x1: words[i].x1 });
+      const dated = /^(?:(\d{1,2})\/(\d{4})|(\d{4})-(\d{1,2}))$/.exec(month.text);
+      const valid = MONTH_TOKEN_RE.test(month.text) || dated && Number(dated[1] || dated[4]) >= 1
+        && Number(dated[1] || dated[4]) <= 12 && YEAR_RE.test(dated[2] || dated[3]);
+      const usesHeadingYear = MONTH_TOKEN_RE.test(month.text) && year;
+      periods.push({ text: usesHeadingYear && year.text ? `${month.text} ${year.text}` : month.text,
+        raw: month.text, x0: month.x0, x1: month.x1, monthWords: [month], yearWords: usesHeadingYear ? year.words : [],
+        trusted: valid && wordTrust(month).trusted && (!usesHeadingYear || year.trusted),
+        reason: !valid ? 'INVALID_PERIOD' : usesHeadingYear && !year.trusted ? 'UNRESOLVED_HEADING_YEAR' : null });
       i += 1;
     }
   }
@@ -93,10 +184,9 @@ function groupHeaderPeriods(words) {
    positioned code cell is accepted for AT MOST ONE period — an ambiguous tie (equidistant to two columns), a
    column with no cell, and a column with multiple competing cells are all left UNRESOLVED. C3: a code whose word
    is below the confidence floor (untrusted) is withheld (raw preserved, never resolved into a delinquency). */
-function zipHeaderToCells(headerWords, cellWords, legend) {
-  const map = new Map((legend || []).map((l) => [l.code, l.meaning]));
-  const periods = groupHeaderPeriods(headerWords);
-  const centers = periods.map((h) => ({ text: h.text, x0: h.x0, x1: h.x1, cx: (h.x0 + h.x1) / 2 }));
+function zipHeaderToCells(headerWords, cellWords, legend, context = {}) {
+  const periods = groupHeaderPeriods(headerWords, context.year);
+  const centers = periods.map((h) => ({ ...h, cx: (h.x0 + h.x1) / 2 }));
   if (!centers.length) return [];
 
   // Local column spacing from the heading itself, in the heading's own coordinate units.
@@ -128,54 +218,68 @@ function zipHeaderToCells(headerWords, cellWords, legend) {
   for (let i = 0; i < centers.length; i++) {
     const col = columnCells[i];
     if (!col.length) {
-      cells.push({ period: centers[i].text, code: null, meaning: null, uncertain: true, x: centers[i].cx, reason: 'NO_CELL' });
+      cells.push(readCell(centers[i], null, legend, context, 'NO_CELL'));
       continue;
     }
     if (col.length > 1) {
-      cells.push({ period: centers[i].text, code: null, meaning: null, uncertain: true, x: centers[i].cx, reason: 'AMBIGUOUS_MULTIPLE_CELLS' });
+      cells.push({ ...readCell(centers[i], null, legend, context, 'AMBIGUOUS_MULTIPLE_CELLS'),
+        competing_cells: col.map((w) => sourceLocation(w, context.page)) });
       continue;
     }
-    const best = col[0];
-    const trust = wordTrust(best);
-    const rawCode = best.text.toUpperCase();
-    if (!trust.trusted) {
-      cells.push({ period: centers[i].text, code: null, meaning: null, uncertain: true, raw_code: rawCode, x: centers[i].cx, source_x0: best.x0, source_x1: best.x1, source_y0: best.y0, reason: trust.reason });
-      continue;
-    }
-    const known = map.has(rawCode);
-    cells.push({ period: centers[i].text, code: rawCode, meaning: known ? map.get(rawCode) : null, uncertain: !known, x: centers[i].cx, source_x0: best.x0, source_x1: best.x1, source_y0: best.y0 });
+    cells.push(readCell(centers[i], col[0], legend, context));
   }
   return cells;
 }
 
+function readCell(period, word, legend, context, failure) {
+  const code = word && String(word.text).toUpperCase();
+  const entries = (legend || []).filter((l) => l.code === code);
+  const conflicting = new Set(entries.map((l) => l.meaning)).size > 1;
+  const entry = entries[0];
+  const headingTrusted = !context.heading || context.heading.words.every((w) => wordTrust(w).trusted);
+  const labelsTrusted = [context.headerLabel, context.cellLabel].filter(Boolean).every((w) => wordTrust(w).trusted);
+  const missingYear = (context.headerLabel || context.cellLabel) && MONTH_TOKEN_RE.test(period.raw) && !period.yearWords.length;
+  const periodTrusted = period.trusted && headingTrusted && labelsTrusted && !context.periodAmbiguous && !missingYear;
+  const periodLocation = { month: sourceLocation(period.monthWords, context.page),
+    year: period.yearWords.length ? sourceLocation(period.yearWords, context.page) : null,
+    ...(context.headerLabel ? { label: sourceLocation(context.headerLabel, context.page) } : {}),
+    ...(context.heading ? { heading: sourceLocation(context.heading.words, context.page) } : {}) };
+  if (context.headerLabel) periodLocation.month.source_field = context.headerLabel.text;
+  const location = word ? sourceLocation(word, context.page) : null;
+  const reason = failure || (!periodTrusted ? period.reason || (missingYear ? 'MISSING_PERIOD_YEAR' : 'UNTRUSTED_OR_AMBIGUOUS_PERIOD') : null)
+    || (word && !wordTrust(word).trusted ? wordTrust(word).reason : null)
+    || (word && !CODE_RE.test(word.text) ? 'INVALID_CODE' : null)
+    || (conflicting ? 'CONFLICTING_LEGEND' : entry && (entry.trusted === false || entry.location?.trusted === false)
+      ? entry.reason || 'UNTRUSTED_LEGEND' : !entry || !entry.meaning ? 'UNKNOWN_CODE' : null);
+  return { period: periodTrusted ? period.text : null, raw_period: period.raw, period_location: periodLocation,
+    code: word && CODE_RE.test(word.text) && wordTrust(word).trusted ? code : null,
+    raw_code: word ? word.text : null, meaning: reason ? null : entry.meaning, uncertain: !!reason,
+    performance_usable: !reason && entry.performance_usable !== false && !noPerformanceMeaning(entry.meaning),
+    x: period.cx, source_field: context.cellLabel ? context.cellLabel.text : 'Payment History',
+    ...(location ? { location, source_x0: word.x0, source_x1: word.x1, source_y0: word.y0,
+      ...(context.cellLabel ? { row_label_location: sourceLocation(context.cellLabel, context.page) } : {}) } : {}),
+    ...(entry ? { legend_location: entry.location || null, printed_definition: entry } : {}),
+    ...(reason ? { reason } : {}) };
+}
+
 /* A vertical grid: each row below the heading is "PERIOD CODE" on the SAME line (period at left, code at right). */
-function verticalGrid(rows, startIndex) {
+function verticalGrid(rows, startIndex, page, suppliedLegend, suppliedEnd) {
   /* C4: the legend row is searched only WITHIN this grid's section — from the heading down to the next account
      line — so another account's legend is never borrowed. */
-  let legendRow = null;
-  for (let j = startIndex + 1; j < rows.length; j++) {
-    const t = rowText(rows[j]);
-    if (ACCOUNT_RE.test(t)) break;                 // the next account's section begins here
-    if (/[A-Z0-9]{1,4}\s*=/.test(t)) { legendRow = rows[j]; break; }
+  let end = suppliedEnd || rows.length;
+  for (let j = startIndex + 1; j < end; j++) {
+    if (ACCOUNT_RE.test(rowText(rows[j])) || HEADER_RE.test(rowText(rows[j]))) { end = j; break; }
   }
-  const legendResult = legendRow ? parseLegend(rowText(legendRow)) : { legend: [], transformed: [] };
+  const legendResult = suppliedLegend || sectionLegend(rows, startIndex, end, page);
   const pairs = [];
-  for (let j = startIndex + 1; j < rows.length; j++) {
+  for (let j = startIndex + 1; j < end; j++) {
     const t = rowText(rows[j]);
     if (ACCOUNT_RE.test(t)) break;                 // the next account's section begins here
-    if (/[A-Z0-9]{1,4}\s*=/.test(t)) continue; // legend row
+    if (legendResult.keyRows.has(j)) continue;
     const w = rows[j].words;
     if (w.length === 2 && MONTH_RE.test(w[0].text) && CODE_RE.test(w[1].text)) {
-      const codeWord = w[1];
-      const code = codeWord.text.toUpperCase();
-      const map = new Map(legendResult.legend.map((l) => [l.code, l.meaning]));
-      const trust = wordTrust(codeWord);
-      const known = map.has(code);
-      if (!trust.trusted) {
-        pairs.push({ period: w[0].text, code: null, meaning: null, uncertain: true, raw_code: code, source_x0: codeWord.x0, source_x1: codeWord.x1, source_y0: codeWord.y0, reason: trust.reason });
-      } else {
-        pairs.push({ period: w[0].text, code, meaning: known ? map.get(code) : null, uncertain: !known, source_x0: codeWord.x0, source_x1: codeWord.x1, source_y0: codeWord.y0 });
-      }
+      const period = groupHeaderPeriods([w[0]], headingYear(rows[startIndex]))[0];
+      pairs.push(readCell(period, w[1], legendResult.legend, { page, heading: rows[startIndex] }));
     } else {
       break; // the run of "PERIOD CODE" rows ends
     }
@@ -214,15 +318,34 @@ function assembleGrids(pages) {
       if (!HEADER_RE.test(heading)) continue;
 
       // 1) Horizontal: a heading row of periods + a separate cell row.
-      let legendResult = { legend: [], transformed: [] };
-      let headerRow = null, cellRow = null;
+      let end = rows.length;
       for (let j = i + 1; j < rows.length; j++) {
         const t = rowText(rows[j]);
-        if (ACCOUNT_RE.test(t)) break; // C4: the next account's section begins here — do not borrow its legend/cells
-        if (!legendResult.legend.length && /[A-Z0-9]{1,4}\s*=/.test(t)) legendResult = parseLegend(t);
-        else if (!headerRow && isHeaderRow(rows[j].words)) headerRow = rows[j];
-        else if (headerRow && !cellRow && isCellRow(rows[j].words)) cellRow = rows[j];
-        if (legendResult.legend.length && headerRow && cellRow) break;
+        if (ACCOUNT_RE.test(t) || HEADER_RE.test(t)) { end = j; break; }
+      }
+      const legendResult = sectionLegend(rows, i, end, page);
+      let headerRow = null, cellRow = null, headerLabel = null, cellLabel = null;
+      let periodAmbiguous = false;
+      const ratingRows = [];
+      for (let j = i + 1; j < end; j++) {
+        if (legendResult.keyRows.has(j)) continue;
+        const category = labelledRow(rows[j].words, 'Category:');
+        const rating = labelledRow(rows[j].words, 'Rating:');
+        if (category || isHeaderRow(rows[j].words)) {
+          if (headerRow) periodAmbiguous = true;
+          else { headerRow = { ...rows[j], words: category ? category.words : rows[j].words }; headerLabel = category && category.label; }
+        } else if (headerRow && rating) {
+          ratingRows.push(rating);
+        } else if (headerRow && !cellRow && isCellRow(rows[j].words)) cellRow = rows[j];
+      }
+      if (ratingRows.length) {
+        cellRow = { words: ratingRows.flatMap((r) => r.words) };
+        cellLabel = ratingRows[0].label;
+        // Two competing Rating rows are ambiguous even if only one happens to have a readable code.
+        if (ratingRows.length > 1) periodAmbiguous = true;
+      } else if (headerLabel) {
+        // A labelled financial table needs its explicit Rating row; numeric amounts are not performance codes.
+        cellRow = null;
       }
 
       let accountText = null;
@@ -231,11 +354,12 @@ function assembleGrids(pages) {
       let legend = legendResult.legend;
 
       if (headerRow && cellRow) {
-        cells = zipHeaderToCells(headerRow.words, cellRow.words, legend);
+        cells = zipHeaderToCells(headerRow.words, cellRow.words, legend, { page, heading: rows[i],
+          year: headingYear(rows[i]), headerLabel, cellLabel, periodAmbiguous });
         layout = 'HORIZONTAL';
       } else {
         // 2) Vertical: "PERIOD CODE" rows.
-        const v = verticalGrid(rows, i);
+        const v = verticalGrid(rows, i, page, legendResult, end);
         if (v.pairs.length) {
           cells = v.pairs;
           legend = v.legend;
