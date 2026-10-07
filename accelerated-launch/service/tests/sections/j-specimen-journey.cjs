@@ -63,9 +63,9 @@ async function recordIndependence(t, check, caseId, result) {
   const locations = records.map((r) => `${r.location && r.location.page}:${r.location && r.location.line}`);
   check.equal(new Set(locations).size, locations.length, 'each account is located at its own page and line');
 
-  const readable = records.filter((r) => r.status === 'RESOLVED');
+  const readable = records.filter((r) => r.kind === 'COLLECTION_ACCOUNT' && r.status === 'RESOLVED');
   const accountObservations = result.observations.filter((o) => o.account_number_in_report !== null);
-  check.equal(accountObservations.length, readable.length, 'one comparison was attempted for every readable account');
+  check.equal(accountObservations.length, readable.length, 'one statutory comparison was attempted for every accepted readable collection account');
 
   const citedPages = accountObservations.map((o) => o.evidence && o.evidence.page);
   check.ok(citedPages.every((p) => Number.isInteger(p)), 'and every comparison cites the page it came from');

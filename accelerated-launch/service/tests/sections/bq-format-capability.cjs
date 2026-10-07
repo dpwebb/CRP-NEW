@@ -144,10 +144,10 @@ async function run(service, check) {
   check.equal(commonErrors.presentationCapability('US-CONSUMER-DISCLOSURE').checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], false, 'the US reader supports no account-dates field');
   const capGB = commonErrors.presentationCapability('FAM-GB-EXP-CONSUMER');
   check.equal(capGB.checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], true, 'the GB reader maps Started/Settled to account-dates');
-  check.equal(capGB.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false,
-    'but NOT a payment-history check: its retained status-history cells carry no printed period and no printed legend, so they are not a usable field');
-  check.deepEqual(capGB.retained_fields_without_a_usable_check.map((r) => r.field), ['account.paymentHistoryCells'],
-    'and the retained-but-unusable field is named separately from an absent one');
+  check.equal(capGB.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
+    'the GB reader maps own ongoing history periods with reviewed issuer definitions');
+  check.deepEqual(capGB.retained_fields_without_a_usable_check.map((r) => r.field), [],
+    'usable dated GB history is no longer classified as always unusable');
   check.equal(commonErrors.presentationCapability(auFamily.FAMILY_ID).checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
     'the AU reader supports source-linked payment history from the account grid and its own legend');
   check.equal(commonErrors.presentationCapability('FAM-TU-CA-CONSUMER').checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
@@ -171,8 +171,8 @@ async function run(service, check) {
     ['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', 'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY', 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'],
     'the TransUnion Canada slice supports exactly account-dates, balance/past-due and payment-history');
   check.deepEqual(supportedBy('FAM-GB-EXP-CONSUMER'),
-    ['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'],
-    'and the GB slice exactly account-dates: its retained status-history cells are NOT a usable payment-history check');
+    ['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'],
+    'the GB slice supports account dates and issuer-defined ongoing history');
   check.ok(supportedBy('FAM-TU-CA-CONSUMER').length > supportedBy('FAM-AU-EQX-CONSUMER').length,
     'while the Australian reader has a smaller source-supported field surface');
   const capTU = commonErrors.presentationCapability('FAM-TU-CA-CONSUMER');

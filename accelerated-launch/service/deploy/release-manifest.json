@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-07T20:55:09.838Z",
+  "generated_at": "2026-10-07T22:34:42.070Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 62,
-      "digest": "1B6EF63FC5679222BF3830D2C5BF46FC282F8803DA3EFF447E0FADF767EA18CE",
+      "digest": "2419DE757C3B54BB74A5B3544813E46466A804FF05A940B03CB57E26D96A835E",
       "files": [
         {
           "file": "accelerated-launch/service/account-identity.cjs",
@@ -39,7 +39,7 @@
         },
         {
           "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
-          "sha256": "007DAE35C3CB6F7D9C67962214B6B84F5782F780654152E6DDF0A5E54997EC34"
+          "sha256": "8749FA4CE48ECD3D7F01B15ADFCA2E9953A49C24390061BF785C1435BCD922E6"
         },
         {
           "file": "accelerated-launch/service/case-status.cjs",
@@ -59,7 +59,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
-          "sha256": "3C57D225B03050D4F54487C3C63AAAE9D34B2F45658196CF95131C09661394B7"
+          "sha256": "FDBE30A90DD433FCC5497D8285A4429C48B7F22C21E436E76957CC53A6F907D2"
         },
         {
           "file": "accelerated-launch/service/common-error-scope.cjs",
@@ -67,7 +67,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "E24E1EB057A06BCACE041A48BEF1C82CACE946E5A93E6D254C70941489CFD487"
+          "sha256": "5A705665BFC716CD3ED379795146F84C097ED77A47CDE7D6D5AB592604238E9D"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -99,7 +99,7 @@
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
-          "sha256": "BD52A71BB5116E217128EE313AFA84315D5A5F1871D94296D899660298169647"
+          "sha256": "8E72A94CCA09B2B572442DAB93FF53318AEBF9BAB6B34BC0DF749B751F052FB4"
         },
         {
           "file": "accelerated-launch/service/evidence-validator.cjs",
@@ -135,7 +135,7 @@
         },
         {
           "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
-          "sha256": "F2F6718E81231670A361DF71375BC7040794A308770B1C79C5941C75A5C73263"
+          "sha256": "8F24D46D3CB1EFACCD1BF5E777BADF48649D36374BC58A8E420BF65BA2F1382C"
         },
         {
           "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
@@ -143,11 +143,11 @@
         },
         {
           "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
-          "sha256": "8575433EE79FEA66A352570712D50AFF22925CAB0BB8319EF500466B3097A858"
+          "sha256": "6B3D3449D846EBAC35A779A188D17F64366666C43139A3B4FCD920EF61A8BD5B"
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
-          "sha256": "97E4598E049EA801F621EB1526144BB92654205BAC521BE250400BD7418D4D3D"
+          "sha256": "996FDA70930FBA587CC7A05B9AC85093C71C6AD45EF61E096A8EECFDC275D297"
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
@@ -155,11 +155,11 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "5F1D55E6D613396535CC92A7B7C3E5A7841A840951A165B4337F9C1B26120B9A"
+          "sha256": "99432B4877B84A075E236C6A7C8D6270470A0747D280E74D0CE2FC17903CC1BE"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "547C11AA5EBC2FC83E7E906551D223DCAA1E57FF3FD78628148314C26BE5855B"
+          "sha256": "03F69F1EFF807A1291ABE2D1FF981C7F2E9468933629B18B3CF584A48343F86F"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -175,11 +175,11 @@
         },
         {
           "file": "accelerated-launch/service/ocr/local-ocr.cjs",
-          "sha256": "1B4B4B62DCD965AFD63A3B87D461F3389ACB7106972C52C41C600D28C40353FE"
+          "sha256": "060B72AE6800BA92C111880DCC8A7C2695AC4C2C4D79A1C026B1D01AAA6D4FAE"
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "3FB6A0B52B3239899F7C78467465789C42A1CF73B4861607570612E68FDFCF54"
+          "sha256": "1C4A26EEE43F6029542CED6615B75DCF03CFBF619BFAB236D441FE423FCA587C"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -219,11 +219,11 @@
         },
         {
           "file": "accelerated-launch/service/report-code-definitions.cjs",
-          "sha256": "12A3A20AF732F0552C34C35838A8435E504DC52153F6755E95F7F80B5F5D5150"
+          "sha256": "667F049067D609EA1EEA332004B8EC869399B2E811BC551B737D22180CBACB67"
         },
         {
           "file": "accelerated-launch/service/report-fact-sources.cjs",
-          "sha256": "5F509DEB4747045BF70BBEBA6F9E3B55CC2A7F470E9047FB1BF7339EB6960E75"
+          "sha256": "3827382A24956CD62EB1AC86EC37E7939F0D218A6DE8A6C27F857C7B7A2B3AAF"
         },
         {
           "file": "accelerated-launch/service/results.cjs",
@@ -344,7 +344,7 @@
     {
       "id": "RULE_CONFIGURATION_TOP_LEVEL",
       "file_count": 9,
-      "digest": "E2FCFA72330FD0FC94A2CE3A39555E116361969FD112D4E80539EA1E3091F792",
+      "digest": "A94055DA71E4792080479DAFA865515D802A3DD0C2D084791479D7A86A269989",
       "files": [
         {
           "file": "accelerated-launch/benchmark-ingestion.cjs",
@@ -356,7 +356,7 @@
         },
         {
           "file": "accelerated-launch/coverage-matrix.json",
-          "sha256": "AD83360300BBEFCF4FD26759EEBD074293BC70EFF31947FC1634E1D84F4F4D09"
+          "sha256": "10A363E0EFC3666B8AF8B0E1C1CFA771335598D4FE69EB2D3A40BAFD69F79349"
         },
         {
           "file": "accelerated-launch/jurisdiction-router.cjs",
@@ -387,11 +387,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "7A8FC974390BE989223324D6B5521C1A48D956D30CBB716F2B68011EDEF30D25",
+      "digest": "A5E46AF7D53FE084D9FF72F8212DC474F52A41BBB45F898DCB551A76C07B0C9F",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "B9AC1BEF83AAADC90B0C77C6990AD907C899382903B08D6D3CD875678275A719"
+          "sha256": "33AC58DB25CC21F6C1E3B07F3364D0F398D76752B24653DD33418461B553E7AD"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -408,6 +408,6 @@
       ]
     }
   ],
-  "manifest_digest": "A9740D383AB0BF94051587E79A85D31A85B1195ED32FB48E62CE2FBEB25593F3",
+  "manifest_digest": "75B49048A5905781359CD3A32EF4EC4A1F09E90EE08F351156E11938297E2148",
   "total_file_count": 92
 }

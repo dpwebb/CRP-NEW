@@ -126,8 +126,9 @@ async function run(service, check) {
   for (const field of ['account.balance', 'account.status', 'account.pastDueAmount', 'tradeline.lastPaymentDate',
     'tradeline.firstDelinquencyDate', 'account.masked_identifier', 'reportedAccount.firstReported'])
     check.equal(joint.facts[field], undefined, `${field} is not invented from default/update/satisfied captions`);
-  check.ok(joint.facts['account.paymentHistoryCells'].every((cell) => cell.period === null && cell.meaning === null
-    && cell.uncertain === true && cell.location?.line === 9), 'undated history has its own location but no guessed period or meaning');
+  check.ok(joint.facts['account.paymentHistoryCells'].every((cell) => cell.period === null && cell.meaning
+    && cell.code_definition && cell.uncertain === true && cell.location?.line === 9),
+  'default history retains a published meaning and own location but does not guess a reporting period');
 
   const current = read(['FICTIONAL BANK CREDIT CARD', 'Balance Satisfied', 'Current Balance £100 Credit Limit £0']);
   check.equal(current.extraction.records[0].printed.Balance.raw, 'Satisfied', 'the distinct satisfied reading remains in printed facts');
@@ -208,8 +209,9 @@ async function run(service, check) {
     check.equal(sourceForField(row, 'liability.openedDate')?.source_field, 'Started', 'each actual Started caption is sourced');
     check.equal(sourceForField(row, 'account.reported_identity')?.raw_value, row.facts['account.reported_identity'],
       'each actual account keeps its own lender/type heading source');
-    check.ok(row.facts['account.paymentHistoryCells'].every((cell) => cell.uncertain && cell.period === null
-      && cell.meaning === null && cell.location?.page > 0), 'actual raw history is located and remains undecoded');
+    check.ok(row.facts['account.paymentHistoryCells'].every((cell) => cell.location?.page > 0
+      && (cell.period ? cell.period_location?.anchor?.trusted && cell.period_definition
+        : cell.uncertain === true)), 'actual history remains located and requires its own supported period evidence');
   }
   check.equal(sourceForField(accounts[2], 'liability.closedDate')?.source_field, 'Settled', 'actual settlement uses Settled');
   check.equal(accounts[2].printed.Settled.printed_times_in_record, 1,

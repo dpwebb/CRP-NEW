@@ -95,8 +95,10 @@ async function run(service, check) {
     'every credit account preserves its printed status history verbatim');
   const gbCells = gbAccounts.flatMap((r) => r.facts['account.paymentHistoryCells'] || []);
   check.equal(gbCells.length, 32, 'and every printed status-history character becomes one raw cell');
-  check.ok(gbCells.every((c) => c.meaning === null && c.period === null && c.uncertain === true),
-    'no cell is decoded: the artifact prints NO status-code legend and NO period, so no code is guessed and no cell is ever a missed payment');
+  check.equal(gbCells.filter((c) => c.period).length, 18,
+    'only the two ongoing accounts use their own period-to anchors and published history order');
+  check.ok(gbCells.filter((c) => !c.period).every((c) => c.uncertain === true),
+    'settled and default histories remain unusable for period comparisons');
   check.equal(gbAccounts[2].facts['account.responsibility'], 'JOINT', 'the printed `JOINT ACCOUNT` marker is mapped');
   check.equal(gbAccounts[0].facts['account.responsibility'], undefined, 'and its absence is never read as INDIVIDUAL');
   check.equal(gbAccounts[0].facts['account.masked_identifier'], undefined,
@@ -109,15 +111,15 @@ async function run(service, check) {
   const gbCap = commonErrors.presentationCapability(gbFamily.FAMILY_ID);
   check.equal(gbCap.all_factual_checks['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT'].field_ready,
     true, 'the GB reader can structurally supply type, balance and credit limit');
-  check.equal(gbCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false,
-    'the GB reader reports NO usable payment-history check: retained uncertain cells are not a usable field');
-  check.deepEqual(gbCap.retained_fields_without_a_usable_check.map((r) => r.field), ['account.paymentHistoryCells'],
-    'and names the retained-but-unusable field instead of claiming the check');
+  check.equal(gbCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
+    'the GB reader structurally supports source-defined ongoing payment history');
+  check.deepEqual(gbCap.retained_fields_without_a_usable_check.map((r) => r.field), [],
+    'ongoing source-supported history is no longer classified as always unusable');
   const gbFormatCap = commonErrors.formatCapability(gbReal);
-  check.equal(gbFormatCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'].supported, false,
-    'the per-report capability also refuses the claim for retained uncertain cells');
-  check.deepEqual(gbFormatCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'].retained_but_not_usable_fields, ['account.paymentHistoryCells'],
-    'naming them retained-but-not-usable rather than absent');
+  check.equal(gbFormatCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'].supported, true,
+    'the per-report capability measures the usable ongoing cells');
+  check.deepEqual(gbFormatCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'].retained_but_not_usable_fields, [],
+    'the supported field is not counted as wholly unusable');
   check.equal(gbCap.checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'], false,
     'nor the balance/past-due pair: this presentation prints no past-due and no payment amount');
   check.equal(gbCap.checks['COMMON-ERROR-DUPLICATE-REPORTING'], false,
@@ -136,7 +138,7 @@ async function run(service, check) {
     'while no masked reference is invented: the artifact prints none, so the confident duplicate path stays closed');
   check.ok(commonErrors.runCommonErrorChecks({ extraction: gbReal }).summary.potential_issue === 0,
     'and mapping the printed identity forces no new potential issue on the real example');
-  evidence.gb_material = 'GB balance/current-balance/credit-limit/default/status-history and the printed JOINT ACCOUNT marker reach the shared fact vocabulary with raw readings; every status-history cell is uncertain (no printed legend) and no issue is forced';
+  evidence.gb_material = 'GB own amounts, heading, joint marker and history reach shared facts; ongoing periods use own period-to dates and published issuer definitions, settled/default periods remain unresolved, and no issue is forced';
 
   /* ---- BLOCKER-REPORT-DATA-TO-ISSUE-001 (AU slice): the AU liability record's printed credit limit, account type
      and credited provider now reach the shared facts, and the repayment-history EVIDENCE the artifact prints as

@@ -53,6 +53,7 @@ function sourceForField(record, field) {
       || record.source_file_id && direct.location.file_id && record.source_file_id !== direct.location.file_id) return null;
     return { raw_value: direct.raw_value, normalized_value: value, location: direct.location,
       source_field: direct.source_field || field, record_index: record.record_index,
+      ...(direct.privacy_redacted ? { privacy_redacted: true } : {}),
       precision: direct.precision || direct.uncertainty && direct.uncertainty.precision || record.facts[`${field}Precision`] || null };
   }
   if (!label) return null;

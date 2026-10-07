@@ -409,7 +409,9 @@ function issueLines(issue) {
     for (const f of (issue.source_facts || [])) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(f.field === 'account.paymentHistoryDefinition' ? externalDefinitionLine(f, '  ')
+      lines.push(f.field === 'account.paymentHistoryDefinition' && f.code_definition || f.period_definition ? externalDefinitionLine(f, '  ')
+        : f.omitted_value ? `  Printed caption without a value: ${f.source_field} (${pageLine})`
+        : f.privacy_redacted ? `  Creditor identity matched from the report (${pageLine})`
         : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
     }
   } else {
@@ -434,7 +436,9 @@ function issueLines(issue) {
     for (const f of (issue.source_facts || [])) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(f.field === 'account.paymentHistoryDefinition' ? externalDefinitionLine(f, '  ')
+      lines.push(f.field === 'account.paymentHistoryDefinition' && f.code_definition || f.period_definition ? externalDefinitionLine(f, '  ')
+        : f.omitted_value ? `  Printed caption without a value: ${f.source_field} (${pageLine})`
+        : f.privacy_redacted ? `  Creditor identity matched from the report (${pageLine})`
         : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
     }
     const loc = issue.location && issue.location.page != null ? issue.location
@@ -493,18 +497,23 @@ function correspondenceLines(packet, row, selected) {
 function evidenceFacts(issue) {
   const out = [];
   const seen = new Set();
-  const push = (field, raw, normalized, location, provenance, definition) => {
-    if (raw == null && normalized == null) return;
+  const push = (field, raw, normalized, location, provenance, definition, periodDefinition, privacyRedacted, omitted) => {
+    if (raw == null && normalized == null && !omitted) return;
     const loc = location || {};
     const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}|${JSON.stringify(provenance || null)}`;
     if (seen.has(key)) return;
     seen.add(key);
-    out.push({ field: field || null, raw, normalized, location: location || null, code_definition: definition || null });
+    out.push({ field: field || null, raw, normalized, location: location || null,
+      code_definition: definition || null, period_definition: periodDefinition || null,
+      ...(omitted ? { omitted_value: true } : {}),
+      ...(privacyRedacted ? { privacy_redacted: true } : {}) });
   };
   for (const f of (issue.source_facts || [])) {
-    push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location,
+    push(f.source_field || f.field, f.privacy_redacted ? 'Creditor identity matched from the report' : f.raw_value,
+      f.privacy_redacted ? null : f.normalized_value, f.location,
       f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null,
-      f.field === 'account.paymentHistoryDefinition' ? f.code_definition : null);
+      f.field === 'account.paymentHistoryDefinition' ? f.code_definition : null,
+      f.period_definition, f.privacy_redacted, f.omitted_value);
   }
   if (issue.source) {
     push(issue.source.source_field || (issue.record && issue.record.source_field), issue.source.raw_value, issue.source.normalized_value, issue.source.location || issue.location);
@@ -520,14 +529,18 @@ function evidenceFacts(issue) {
 }
 
 function externalDefinitionLine(fact, indent) {
+  if (fact.period_definition) {
+    const source = fact.period_definition.source;
+    return `${indent}Published history-period definition: most recent month first; one calendar month per cell; ${source.publisher}, ${source.title}, ${source.section} (version ${source.version}); ${source.url}`;
+  }
   const definition = fact.code_definition, source = definition.source;
   return `${indent}Published code definition: ${definition.code} = ${definition.meaning}; ${source.publisher}, ${source.title}, ${source.section} (version ${source.version}); ${source.url}`;
 }
 
 function evidenceLines(selected) {
   const lines = [];
-  lines.push(selected.some((issue) => (issue.source_facts || []).some((fact) => fact.field === 'account.paymentHistoryDefinition'))
-    ? 'EVIDENCE REFERENCES (report readings and published code definitions)' : 'EVIDENCE REFERENCES (from your report)');
+  lines.push(selected.some((issue) => (issue.source_facts || []).some((fact) => fact.code_definition || fact.period_definition))
+    ? 'EVIDENCE REFERENCES (report readings and published definitions)' : 'EVIDENCE REFERENCES (from your report)');
   lines.push('='.repeat(72));
   let n = 0;
   for (const issue of selected) {
@@ -560,7 +573,9 @@ function evidenceLines(selected) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
       const label = f.field ? `${f.field}: ` : '';
-      lines.push(f.code_definition ? externalDefinitionLine(f, '     ')
+      lines.push(f.code_definition || f.period_definition ? externalDefinitionLine(f, '     ')
+        : f.omitted_value ? `     Printed caption without a value: ${f.field} (${pageLine})`
+        : f.privacy_redacted ? `     Creditor identity matched from the report (${pageLine})`
         : `     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null ? `, normalized to ${f.normalized}` : ', not normalized'}`);
     }
     lines.push('');

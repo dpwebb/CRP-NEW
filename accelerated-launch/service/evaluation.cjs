@@ -295,7 +295,10 @@ function evaluateCase(context) {
     /* An adapter that declares the kinds of record it is written for runs ONLY on those records. A record of
        another kind restricts that check and leaves the checks written for it untouched. */
     const kinds = Array.isArray(config.record_kinds) ? config.record_kinds : null;
-    const candidates = kinds ? extraction.records.filter((r) => kinds.includes(r.kind)) : extraction.records;
+    // PR-01 ordinary tables are admitted for the common-error checklist only. The existing
+    // statutory adapter contract remains unchanged, including its TransUnion support.
+    const statutoryRecords = extraction.records.filter((r) => r.kind !== 'CA_EQUIFAX_ORDINARY_ACCOUNT');
+    const candidates = kinds ? statutoryRecords.filter((r) => kinds.includes(r.kind)) : statutoryRecords;
     if (!candidates.length) {
       base.unavailable_checks.push(Object.assign({
         adapter_id: entry.adapter_id,

@@ -1081,9 +1081,11 @@ function comparisonFactList(issue) {
   const facts = (issue && issue.source_facts) || [];
   if (!facts.length) return '';
   return facts.map((f) => {
+    if (f.omitted_value) return `<span class="evidence">${esc(f.source_field)}: caption printed without a value.</span>`;
+    if (f.privacy_redacted) return `<span class="evidence">Creditor identity matched from the report.</span>`;
     if (f.definition_source) {
       const source = f.definition_source;
-      return `<span class="evidence">Published code definition: ${esc(f.source_field)} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)} (version ${esc(source.version)}): ${esc(source.url)}</span>`;
+      return `<span class="evidence">${source.kind === 'HISTORY_PERIOD' ? 'Published history-period definition' : 'Published code definition'}: ${esc(f.source_field)} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)} (version ${esc(source.version)}): ${esc(source.url)}</span>`;
     }
     return `<span class="evidence">${esc(f.source_field || 'field')}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → normalized <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
   }).join('');

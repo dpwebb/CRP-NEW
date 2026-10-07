@@ -198,6 +198,7 @@ function sourceFactsFor(record, fields) {
       source_field: src.source_field || null,
       raw_value: raw,
       normalized_value: src.normalized_value != null ? src.normalized_value : null,
+      ...(src.privacy_redacted ? { privacy_redacted: true } : {}),
       location: src.location || null
     });
   }
@@ -214,9 +215,9 @@ function accountIdentityFor(record) {
   const name = record.facts['account.reported_identity'];
   const src = factSourcesForRecord(record)['account.reported_identity'] || {};
   return {
-    name,
+    name: src.privacy_redacted ? `Account entry ${record.record_index}` : name,
     source_field: src.source_field || null,
-    raw_value: src.raw_value != null ? src.raw_value : name,
+    raw_value: src.privacy_redacted ? null : src.raw_value != null ? src.raw_value : name,
     location: src.location || null
   };
 }
@@ -227,7 +228,7 @@ function recordRefFor(record) {
   return {
     kind_label: record.kind_label || null,
     source_field: record.source_field || null,
-    account_name: (record.facts && record.facts['account.reported_identity']) || null
+    account_name: (accountIdentityFor(record) || {}).name || null
   };
 }
 
@@ -266,6 +267,9 @@ const POTENTIAL_WORDING = Object.freeze({
       const e = i.evidence || {};
       const readings = e.first_code != null && e.second_code != null && e.first_meaning && e.second_meaning
         ? `: "${e.first_code}" (${e.first_meaning}) and "${e.second_code}" (${e.second_meaning})` : '';
+      if ((i.source_facts || []).some((fact) => fact.period_definition)) {
+        return `Using the account's printed period-to date and Experian's published history order, ${recordLabel(i)} has two conflicting payment-history cells for ${e.period}${readings}.`;
+      }
       return `This report prints ${recordLabel(i)} with the same payment-history period (${e.period}) twice with two different cells${readings}.`;
     },
     uncertainty: 'The same period has two different meanings. The report does not show which cell needs correction; a printing duplication may explain the conflict.',
@@ -331,7 +335,8 @@ const POTENTIAL_WORDING = Object.freeze({
   'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': {
     explain: (i) => {
       const e = i.evidence || {};
-      const codes = (e.write_off_codes || []).map((c) => `${c.period || ''}${c.code ? ` (${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''})` : ''}`.trim());
+      const codes = (e.write_off_codes || []).map((c) => c.literal_statement ? c.meaning_as_the_report_prints_it
+        : `${c.period || ''}${c.code ? ` (${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''})` : ''}`.trim());
       return `This report prints ${entryLabel(i)} with a write-off (${codes.join('; ')}) while its "Charge Off Date" caption prints with no date at all, so the entry shows no date for the write-off event.`;
     },
     uncertainty: 'The report prints the write-off in the account history and leaves the charge-off caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
@@ -340,10 +345,12 @@ const POTENTIAL_WORDING = Object.freeze({
   'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': {
     explain: (i) => {
       const e = i.evidence || {};
-      const codes = (e.closure_codes || []).map((c) => `${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''}${c.period ? ` (${c.period})` : ''}`);
-      return `This report states that ${entryLabel(i)} is closed or cancelled (${codes.join('; ')}) while its "Closed Date" caption prints with no date at all, so the entry shows no closure date.`;
+      const codes = (e.closure_codes || []).map((c) => c.literal_statement ? c.meaning_as_the_report_prints_it
+        : `${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''}${c.period ? ` (${c.period})` : ''}`);
+      const caption = (i.source_facts || []).find((fact) => fact.omitted_value)?.source_field || 'Closed Date';
+      return `This report states that ${entryLabel(i)} is closed or cancelled (${codes.join('; ')}) while its "${caption}" caption prints with no date at all, so the entry shows no closure date.`;
     },
-    uncertainty: 'The report prints the closure in the account history and leaves the closed-date caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
+    uncertainty: 'The report states the closure and leaves the closed-date caption empty rather than printing a date. The bureau should verify the underlying closure date and whether the report needs correction.',
     request: 'please confirm the date this account was closed and have that date printed on this entry'
   },
 
@@ -926,13 +933,16 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         issue.citation = assessment.citation;
         issue.source_version = assessment.source_version;
         issue.rule_assessment = assessment;
-        issue.source_facts = assessment.required_facts.filter((f) => f.source.omitted_value !== true).map((f) => ({
+        issue.source_facts = assessment.required_facts.map((f) => ({
           field: f.field, source_field: f.role === 'earlier_report' || f.role === 'current_report'
             ? `${f.role === 'earlier_report' ? 'Earlier' : 'Current'} report ${f.source.report_reference_date}: ${f.source.source_field}`
             : assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
             ? `Account ${f.source.record_index}: ${f.source.source_field}` : f.source.source_field,
           raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
+          ...(f.source.omitted_value ? { omitted_value: true, state: f.source.state } : {}),
           ...(f.source.code_definition ? { code_definition: f.source.code_definition } : {}),
+          ...(f.source.period_definition ? { period_definition: f.source.period_definition } : {}),
+          ...(f.source.privacy_redacted ? { privacy_redacted: true } : {}),
           ...(f.source.period_location ? { period_location: f.source.period_location } : {}),
           location: f.source.location, ...(f.source.report_reference_date ? {
             role: f.role, source_result_id: f.source.source_result_id, source_file_id: f.source.source_file_id,
@@ -1421,8 +1431,10 @@ function publicIssue(issue) {
     if (issue.source_facts && issue.source_facts.length) {
       out.source_facts = issue.source_facts.map((f) => ({
         source_field: f.source_field,
-        raw_value: f.raw_value,
-        normalized_value: f.normalized_value,
+        raw_value: consumerFactValue(f, 'raw_value'),
+        normalized_value: consumerFactValue(f, 'normalized_value'),
+        ...(f.omitted_value ? { omitted_value: true, state: f.state } : {}),
+        ...(f.privacy_redacted ? { privacy_redacted: true } : {}),
         location: publicFactLocation(f.location), ...publicDefinitionSource(f)
       }));
     }
@@ -1438,11 +1450,20 @@ function publicIssue(issue) {
       ? { earlier_anchor: issue.evidence.earlier_anchor, current_anchor: issue.evidence.current_anchor,
         earlier_report_date: issue.evidence.earlier_report_date, current_report_date: issue.evidence.current_report_date }
       : issue.evidence || null;
+    if (out.evidence && (issue.source_facts || []).some((fact) => fact.privacy_redacted)) {
+      out.evidence = { ...out.evidence };
+      if (Object.hasOwn(out.evidence, 'corroborated_identity')) {
+        delete out.evidence.corroborated_identity;
+        out.evidence.account_identity_matched = true;
+      }
+    }
     if (issue.source_facts && issue.source_facts.length) {
       out.source_facts = issue.source_facts.map((f) => ({
         source_field: f.source_field,
-        raw_value: f.raw_value,
-        normalized_value: f.normalized_value,
+        raw_value: consumerFactValue(f, 'raw_value'),
+        normalized_value: consumerFactValue(f, 'normalized_value'),
+        ...(f.omitted_value ? { omitted_value: true, state: f.state } : {}),
+        ...(f.privacy_redacted ? { privacy_redacted: true } : {}),
         location: publicFactLocation(f.location), ...publicDefinitionSource(f)
       }));
     }
@@ -1453,18 +1474,24 @@ function publicIssue(issue) {
   return projectConsumerIssue(out, consumerLabel(issue));
 }
 
+function consumerFactValue(fact, key) {
+  return fact.privacy_redacted ? 'Creditor identity matched from the report' : fact[key];
+}
+
 function publicFactLocation(location) {
   if (!location) return null;
-  if (location.source_kind === 'EXTERNAL_REPORT_CODE_DEFINITION') return {
+  if (['EXTERNAL_REPORT_CODE_DEFINITION', 'EXTERNAL_REPORT_PERIOD_DEFINITION'].includes(location.source_kind)) return {
     section: location.section, url: location.url, source_kind: location.source_kind
   };
   return { section: location.section || null, page: location.page, line: location.line };
 }
 
 function publicDefinitionSource(fact) {
-  if (fact.field !== 'account.paymentHistoryDefinition' || !fact.code_definition) return {};
-  const { publisher, title, url, section, version } = fact.code_definition.source;
-  return { definition_source: { publisher, title, url, section, version } };
+  const period = fact.field === 'account.paymentHistoryPeriodDefinition';
+  const definition = period ? fact.period_definition : fact.field === 'account.paymentHistoryDefinition' && fact.code_definition;
+  if (!definition) return {};
+  const { publisher, title, url, section, version } = definition.source;
+  return { definition_source: { publisher, title, url, section, version, ...(period ? { kind: 'HISTORY_PERIOD' } : {}) } };
 }
 
 function publicIssues(ctx) {

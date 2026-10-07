@@ -33,7 +33,8 @@ function validatedDefinition(cell, record) {
     || cell.period_location?.year?.trusted !== true || cell.uncertain || cell.reason) return null;
   if (typeof cell.raw_code !== 'string' || cell.raw_code.toUpperCase() !== cell.code) return null;
   if (!expected || !actual || actual.code !== expected.code || actual.meaning !== expected.meaning
-    || cell.meaning !== expected.meaning || actual.performance_usable !== expected.performance_usable
+    || cell.meaning !== expected.meaning || cell.performance_usable !== expected.performance_usable
+    || actual.performance_usable !== expected.performance_usable
     || !actual.source || Object.keys(SOURCE).some((key) => actual.source[key] !== SOURCE[key])) return null;
   return expected;
 }
@@ -103,7 +104,8 @@ function validatedGbDefinition(cell, record) {
   const actual = cell?.code_definition;
   if (!expected || !actual || cell.uncertain || cell.reason || cell.location?.trusted !== true
     || cell.raw_code !== cell.code || actual.code !== expected.code || actual.meaning !== expected.meaning
-    || cell.meaning !== expected.meaning || actual.performance_usable !== expected.performance_usable
+    || cell.meaning !== expected.meaning || cell.performance_usable !== expected.performance_usable
+    || actual.performance_usable !== expected.performance_usable
     || actual.account_type !== expected.account_type || !sameSource(actual.source, expected.source)) return null;
   const anchor = cell.period_location?.anchor;
   const derivation = cell.period_derivation;
@@ -114,6 +116,7 @@ function validatedGbDefinition(cell, record) {
     || !Number.isInteger(cell.code_index) || derivation.ordinal !== cell.code_index
     || typeof cell.raw_history !== 'string' || !/^[0-9A-Z?]{1,12}$/.test(cell.raw_history)
     || cell.raw_history[cell.code_index - 1] !== cell.raw_code
+    || cell.raw_period !== `reporting period to ${derivation.anchor_raw}; most recent first; position ${cell.code_index}`
     || cell.period !== gbPeriodAt(derivation.anchor_date, cell.code_index)) return null;
   const update = record.printed?.['File updated for the period to'];
   const locatedUpdate = update?.location;

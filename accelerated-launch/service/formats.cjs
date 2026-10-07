@@ -371,7 +371,7 @@ function extractWithSharedAdapter(model, options) {
        `factual-checks.cjs` have printed facts to compare, without any statutory relation being named. */
     evidence_readings: {
       sections_printed: [],
-      records_found: raw.last_payment_facts.length,
+      records_found: raw.last_payment_facts.length + (factualView.ordinary_records || []).length,
       factual_view: factualView
     }
   });
@@ -388,6 +388,8 @@ function carriesReportEvidence(record) {
 
 /** The per-record fact object a rule adapter reads. It contains ONLY this record's own values. */
 function factsForRecord(record) {
+  // Ordinary PR-01 tables extend checklist facts, not the accepted statutory anchor contract.
+  if (record && record.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT') return {};
   /* PR-01's new shared checklist fields do not enlarge the historical statutory
      anchor surface. That adapter continues to receive only its own resolved
      last-payment fact, even when the independent delinquency check can run. */
@@ -799,6 +801,18 @@ function normalizeExtraction(raw, factualView) {
           : require('./report-amount.cjs').printedAmount(reading.raw);
         if (normalized != null && normalized !== '') retain(field, { ...reading, normalized });
       }
+      // A collection identifier remains bound to its own measured block. The factual
+      // reader returns only a masked identifier and a privacy-preserving creditor key.
+      for (const field of ['account.masked_identifier', 'account.reported_identity']) {
+        const identity = viewRecord && viewRecord.shared_identity;
+        const value = identity && identity.facts && identity.facts[field];
+        const source = identity && identity.fact_sources && identity.fact_sources[field];
+        if (value == null || !source || source.raw_value == null || !source.location
+          || source.trusted === false || source.location.trusted === false
+          || source.reason || source.caption_count !== 1) continue;
+        facts[field] = value;
+        sources[field] = { ...source, record_index: record.record_index };
+      }
       if (Object.keys(facts).length) Object.assign(record, {
         facts, printed, fact_sources: sources, shared_facts_status: FACT_STATUS.RESOLVED
       });
@@ -807,8 +821,20 @@ function normalizeExtraction(raw, factualView) {
         source_report_reference_date: sharedReference.normalized_value
       });
     }
+    for (const ordinary of factualView.ordinary_records || []) {
+      const recordIndex = records.length + 1;
+      const sources = Object.fromEntries(Object.entries(ordinary.fact_sources || {})
+        .map(([field, source]) => [field, source ? { ...source, record_index: recordIndex } : null]));
+      records.push({ ...ordinary, record_index: recordIndex, fact_sources: sources,
+        location: ordinary.location || ordinary.boundary,
+        reader_family_id: 'CA-EQUIFAX-CONSUMER-FILE-FACTS',
+        source_bureau: 'Equifax',
+        ...(sharedReference ? { report_reference_date: { ...sharedReference },
+          source_report_reference_date: sharedReference.normalized_value } : {}) });
+    }
   }
-  return { reference_date: raw.request_date, records, summary: raw.last_payment_fact_summary };
+  return { reference_date: raw.request_date, records, summary: { ...raw.last_payment_fact_summary,
+    records_read: records.length, ordinary_account_count: (factualView && factualView.ordinary_records || []).length } };
 }
 
 module.exports = {

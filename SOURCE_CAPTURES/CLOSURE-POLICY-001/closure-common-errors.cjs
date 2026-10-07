@@ -19,7 +19,8 @@ const ids = ['al-common-errors', 'ct-owner-common-error-scope', 'cw-common-error
   'da-common-error-reader-repairs', 'db-common-error-surface-repairs', 'dc-consumer-violation-term',
   'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging',
   'dh-ca-reader-completion', 'di-au-reader-completion', 'dj-gb-reader-completion', 'dk-reader-completion-integration',
-  'dl-general-caption-sources', 'dm-au-role-packet-evidence', 'dn-us-dated-history'];
+  'dl-general-caption-sources', 'dm-au-role-packet-evidence', 'dn-us-dated-history',
+  'do-gb-history-definitions', 'dp-us-cell-recovery', 'dq-ca-printed-account-fields', 'dr-reader-evidence-delivery'];
 const tests = ids.map((id) => {
   const section = run.sections.find((row) => row.id === id);
   if (!section || !section.completed || section.failed || section.skipped.length || !section.passed) {
@@ -45,6 +46,7 @@ sourceFiles.push('accelerated-launch/service/report-amount.cjs', 'accelerated-la
   'accelerated-launch/service/report-code-definitions.cjs',
   'accelerated-launch/service/format-families/au-equifax-consumer.cjs',
   'accelerated-launch/service/format-families/gb-experian-consumer.cjs');
+sourceFiles.push('accelerated-launch/service/ocr/local-ocr.cjs');
 const checklist = require(path.join(root, 'accelerated-launch/service/common-error-checklist.cjs')).CHECKS;
 const remaining = {
   re_aging: 'Owned same-bureau fixed-obligation first-delinquency changes have a sourced verification mapping. Reader layouts without corroborated identity, sourced anchors or report dates remain gaps. Ordinary later delinquency does not establish re-aging or its absence.',

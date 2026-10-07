@@ -21,8 +21,8 @@
         "support_state": "SUPPORTED_EXACT_SPECIMEN", "presentation_id": "PR-01", "admission_path": "EXACT_SPECIMEN_DIGEST",
         "evidence": { "artifacts": ["LEG-CONSUMER-EQ-CA"], "currency": "SUPPORTED_PRESENTATION_FOR_ONE_SELECTED_UNIT", "present_day": true },
         "reading": { "native_or_scan": "native text on every page (22/22)" },
-        "extraction_fields": ["Request Date", "collection account Last Payment Date"],
-        "compatible_assessments": ["CA-NS six-year last-payment statutory limb (bound to PR-01 only)", "4 report-fact consistency checks (CA-FACT-*)"],
+        "extraction_fields": ["Request Date", "collection Last Payment Date and First Delinquency", "own masked account identifiers and privacy-preserving creditor identity", "ordinary Overview account balance, credit limit, past due, responsibility, opened/last-payment/closed dates", "literal account Notes closure statements"],
+        "compatible_assessments": ["active common-error checklist paths supported by each account's own fields and explicit blank captions", "CA-NS checklist reporting-period support (bound to PR-01 only)", "4 report-fact consistency checks (CA-FACT-*)"],
         "boundary": "one pinned specimen; no Equifax Canada format family is admitted"
       },
       {
@@ -51,8 +51,8 @@
         "support_state": "SUPPORTED_FAMILY", "presentation_id": "US-CONSUMER-DISCLOSURE", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
         "evidence": { "artifacts": ["PUB-001"], "currency": "EVIDENCED_FROM_ONE_CAPTURED_OFFICIAL_CONSUMER_SAMPLE", "present_day": false, "vintage_note": "dated 2015" },
         "reading": { "native_or_scan": "scanned/image-only (zero native text), read by local OCR" },
-        "extraction_fields": ["account name/status", "date opened", "date of status", "first reported", "adverse rating date"],
-        "compatible_assessments": ["FCRA-605A-4-US-NATIONAL-7Y (reports APPLICABILITY_UNRESOLVED on the evidence on hand)"],
+        "extraction_fields": ["account name/identifier/type/responsibility/status", "date opened", "date of status", "first reported", "adverse rating date", "own balance/past-due/credit-limit/payment amounts", "own dated payment-history cells with published issuer definitions and bounded local OCR recovery"],
+        "compatible_assessments": ["active common-error checklist paths supported by each account's own source-linked fields; no out-of-checklist statutory findings"],
         "boundary": "one captured official consumer sample evidences the structure; subscriber eSolutions samples are refused as out-of-channel"
       },
       {
@@ -72,8 +72,8 @@
         "support_state": "HISTORICAL_EVIDENCE_ONLY", "presentation_id": "FAM-GB-EXP-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
         "evidence": { "artifacts": ["PUB-009"], "currency": "HISTORICAL_DEMONSTRATION_EVIDENCE_ONLY", "present_day": false, "vintage_note": "1 June 2007, marked fictitious on its own face" },
         "reading": { "native_or_scan": "native text on every page (9/9)" },
-        "extraction_fields": ["application/electoral/public-record/credit-account dates", "previous searches", "retention policy statements"],
-        "compatible_assessments": ["2 report-fact consistency checks (GB-FACT-*)", "1 printed-policy observation (GB-PRINTED-RETENTION-POLICY-ON-ITEM)", "no statutory unit"],
+        "extraction_fields": ["application/electoral/public-record/credit-account dates", "previous searches", "retention policy statements", "own lender/type/joint heading and balance/credit-limit", "ongoing payment-history periods from own period-to caption and published issuer ordering; type-specific published code meanings"],
+        "compatible_assessments": ["active common-error account-date and source-supported ongoing payment-history paths", "2 report-fact consistency checks (GB-FACT-*)", "1 printed-policy observation (GB-PRINTED-RETENTION-POLICY-ON-ITEM)"],
         "boundary": "present-day GB support is NOT claimed; the 2007 example evidences structure only"
       },
       {

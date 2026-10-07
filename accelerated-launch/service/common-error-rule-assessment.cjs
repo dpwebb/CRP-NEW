@@ -100,7 +100,8 @@ function paymentHistorySources(issue, record) {
   const first = inPeriod.find((c) => c.code === e.first_code && c.meaning === e.first_meaning);
   const second = inPeriod.find((c) => c !== first && c.code === e.second_code && c.meaning === e.second_meaning);
   if (!first || !second || String(first.meaning).trim().toUpperCase() === String(second.meaning).trim().toUpperCase()) return null;
-  if ([first, second].some((cell) => (cell.code_definition || record.reader_family_id === 'FAM-US-EXP-CONSUMER')
+  if ([first, second].some((cell) => (cell.code_definition
+    || ['FAM-US-EXP-CONSUMER', 'FAM-GB-EXP-CONSUMER'].includes(record.reader_family_id))
     && !validatedDefinition(cell, record))) return null;
   return [first, second].flatMap((cell, index) => {
     const role = index === 0 ? 'first_printed_cell' : 'second_printed_cell';
@@ -118,6 +119,19 @@ function paymentHistorySources(issue, record) {
         source_field: `Experian published meaning of ${cell.code}`, record_index: record.record_index,
         location: { url: definition.source.url, section: definition.source.section,
           source_kind: definition.source.source_kind }, code_definition: definition } });
+    if (definition && cell.period_definition && cell.period_location && cell.period_location.anchor) {
+      const anchor = cell.period_location.anchor;
+      facts.push({ field: 'account.paymentHistoryPeriodAnchor', role: `${role}_period_anchor`, source: {
+        raw_value: anchor.raw_value, normalized_value: anchor.normalized_value,
+        source_field: cell.period_derivation.anchor_field, location: anchor, record_index: record.record_index } });
+      const period = cell.period_definition;
+      facts.push({ field: 'account.paymentHistoryPeriodDefinition', role: `${role}_period_definition`, source: {
+        raw_value: 'Most recent month first; one calendar month per history cell',
+        normalized_value: 'Most recent month first; one calendar month per history cell',
+        source_field: 'Published payment-history order', record_index: record.record_index,
+        location: { url: period.source.url, section: period.source.section, source_kind: period.source.source_kind },
+        period_definition: period } });
+    }
     if (cell.raw_symbol && cell.legend && cell.legend.location && cell.legend.raw_value != null) {
       facts.push({ field: 'account.paymentHistoryLegend', role: `${role}_legend`,
         source: { raw_value: cell.legend.raw_value, normalized_value: cell.meaning,
@@ -184,7 +198,8 @@ function completenessSources(issue, record) {
   const spec = COMPLETENESS[issue.check_id];
   if (!spec) return null;
   const caption = record.printed && record.printed[spec.caption];
-  if (!caption || caption.state !== 'LABEL_PRINTED_WITHOUT_VALUE' || !caption.location) return null;
+  if (!caption || caption.state !== 'LABEL_PRINTED_WITHOUT_VALUE' || !caption.location
+    || caption.trusted === false || caption.location.trusted === false) return null;
   const e = issue.evidence || {};
   const events = spec.evidence.flatMap((key) => Array.isArray(e[key]) ? e[key] : []);
   const sameLocation = (a, b) => a && b && a.page === b.page && a.line === b.line;
@@ -192,7 +207,7 @@ function completenessSources(issue, record) {
   const rows = Array.isArray(record.monthly_rows) ? record.monthly_rows : [];
   const legend = record.account_material && record.account_material.narrative_legend || {};
   const event = events.find((item) => {
-    if (!item || !item.code || !item.location) return false;
+    if (!item || !item.location || !item.code && !item.literal_statement) return false;
     const meaning = item.meaning_as_the_report_prints_it || item.meaning;
     if (!meaning) return false;
     const rating = Array.isArray(history) && history.some((cell) => cell.code === item.code
@@ -201,16 +216,23 @@ function completenessSources(issue, record) {
     const narrative = rows.some((row) => Array.isArray(row.narrative_codes)
       && row.narrative_codes.includes(item.code) && legend[item.code] === meaning
       && sameLocation(row.location, item.location));
-    return rating || narrative;
+    const literal = item.literal_statement && (record.report_status_statements || []).some((statement) =>
+      statement && statement.trusted === true && statement.caption_count === 1 && !statement.reason
+      && statement.location && statement.location.trusted === true
+      && statement.raw_value === meaning && statement.meaning === meaning
+      && statement.source_field === item.source_field
+      && JSON.stringify(statement.location) === JSON.stringify(item.location));
+    return rating || narrative || literal;
   });
   if (!event) return null;
   return [
     { field: spec.caption, role: 'printed_caption_without_value', source: {
       omitted_value: true, state: caption.state, raw_value: null, normalized_value: null,
-      source_field: spec.caption, location: caption.location, record_index: record.record_index } },
+      source_field: caption.label || spec.caption, location: caption.location, record_index: record.record_index } },
     { field: 'account.reported_event', role: 'report_defined_event', source: {
-      raw_value: event.code, normalized_value: event.code,
-      source_field: event.meaning_as_the_report_prints_it || event.meaning,
+      raw_value: event.literal_statement ? event.meaning_as_the_report_prints_it : event.code,
+      normalized_value: event.literal_statement ? event.meaning_as_the_report_prints_it : event.code,
+      source_field: event.literal_statement ? event.source_field : event.meaning_as_the_report_prints_it || event.meaning,
       location: event.location, record_index: record.record_index } }
   ];
 }
@@ -239,6 +261,8 @@ function assess(issue, record, evaluation, extraction) {
     && (source.omitted_value === true || field === 'account.paymentHistoryCells'
       || field === 'account.paymentHistoryDefinition' && paymentHistory && source.code_definition
         && source.normalized_value === source.code_definition.meaning
+      || field === 'account.paymentHistoryPeriodAnchor' && paymentHistory
+      || field === 'account.paymentHistoryPeriodDefinition' && paymentHistory && source.period_definition
       || field === 'account.paymentHistoryLegend' && paymentHistory
         && source.raw_value === source.normalized_value
       || field === 'account.reported_event' || String(source.normalized_value) === String(
@@ -282,7 +306,8 @@ function assess(issue, record, evaluation, extraction) {
 function hasUnusableDecisiveSource(issue, record, extraction) {
   if (!record) return true;
   if (issue.check_id === 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'
-    && record.reader_family_id === 'FAM-US-EXP-CONSUMER' && !paymentHistorySources(issue, record)) return true;
+    && ['FAM-US-EXP-CONSUMER', 'FAM-GB-EXP-CONSUMER'].includes(record.reader_family_id)
+    && !paymentHistorySources(issue, record)) return true;
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'
     && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && record.report_reference_date && !reportReference(record)) return true;
   const rejected = (row, fields) => Boolean(row && fields && fields.some((field) =>

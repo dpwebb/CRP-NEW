@@ -41,6 +41,12 @@ const FACTUAL_IDS = [
 ];
 const NS_ADAPTER = 'CA-NS-CRA-S10-3-C-LIMB-1';
 const DATE_CHECK = 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE';
+const COMMON_CHECKS = [
+  'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY',
+  DATE_CHECK,
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
+];
 const OTHER_TWELVE = CA_REGIONS.filter((r) => r !== 'CA-NS');
 
 /* ------------------------------------------------------------------ synthetic structural views (no report) */
@@ -129,11 +135,14 @@ function assertFactualSurface(check, result, label, expectStatutory) {
   check.equal(result.checks_performed, result.observations.length + result.report_consistency_checks.length
     + result.common_errors.length + result.detected_report_information.length,
     `${label}: the performed count includes every comparison that actually ran`);
-  check.deepEqual(result.common_errors.map((c) => c.check_name), [DATE_CHECK],
-    `${label}: the already-read dates run exactly the shared date check`);
-  check.equal(result.common_errors[0].state, 'NOT_DETECTED', `${label}: the specimen date check is benign`);
-  check.deepEqual(result.common_errors[0].source_records, [], `${label}: benign dates create no issue matches`);
-  check.equal(result.assessment.common_error_checks_performed, 1, `${label}: the summary counts that completed common check`);
+  check.deepEqual(result.common_errors.map((c) => c.check_name), COMMON_CHECKS,
+    `${label}: recovered own-account facts run exactly the four supported checklist checks`);
+  const dateCheck = result.common_errors.find((c) => c.check_name === DATE_CHECK);
+  check.equal(dateCheck?.state, 'NOT_DETECTED', `${label}: the specimen date check is benign`);
+  check.deepEqual(dateCheck?.source_records, [], `${label}: benign dates create no issue matches`);
+  check.equal(result.common_errors.find((c) => c.check_name === COMMON_CHECKS[3])?.source_records.length, 1,
+    `${label}: one sourced closure with an explicitly blank own date creates an issue match`);
+  check.equal(result.assessment.common_error_checks_performed, 4, `${label}: the summary counts all four completed common checks`);
   check.equal(result.report_consistency_checks.length, 4, `${label}: all four Canadian factual checks ran`);
   check.deepEqual(result.report_consistency_checks.map((c) => c.check_name).length, 4, `${label}: each is reported at case level`);
   check.deepEqual([...new Set(result.report_consistency_checks.map((c) => c.check_class))], ['REPORT_FACT_CONSISTENCY'],
@@ -205,14 +214,17 @@ function everyCaRegion(check, extraction) {
       `${region}: and they are exactly the four named Canadian factual checks`);
     check.equal(factual.summary.statutory_checks_named, 0, `${region}: no statutory check is among them`);
     const common = evaluated.common_errors.performed;
-    check.deepEqual(common.map((c) => c.check_id), [DATE_CHECK], `${region}: exactly the shared date check ran`);
-    check.equal(common[0].state, 'NOT_DETECTED', `${region}: the date check remains benign`);
-    check.deepEqual(common[0].source_records, [], `${region}: the benign comparison creates no issue matches`);
+    check.deepEqual(common.map((c) => c.check_id), COMMON_CHECKS, `${region}: exactly the four source-supported shared checks ran`);
+    const dateCheck = common.find((c) => c.check_id === DATE_CHECK);
+    check.equal(dateCheck?.state, 'NOT_DETECTED', `${region}: the date check remains benign`);
+    check.deepEqual(dateCheck?.source_records, [], `${region}: the benign date comparison creates no issue matches`);
+    check.equal(common.find((c) => c.check_id === COMMON_CHECKS[3])?.source_records.length, 1,
+      `${region}: the ordinary-account blank closure date remains in the shared checklist scope`);
     check.equal(evaluated.checks_performed, statutory.length + factual.performed.length
       + common.length + evaluated.detected_report_information.performed.length,
       `${region}: the performed count is exactly what ran`);
     if (region === 'CA-NS') {
-      check.equal(statutory.length, 2, 'CA-NS: its last-payment limb still runs once per readable entry');
+      check.equal(statutory.length, 2, 'CA-NS: its last-payment limb still runs once per accepted collection entry');
       check.deepEqual([...new Set(statutory.map((r) => r.check.adapter_id))].sort(),
         ['CA-NS-CRA-S10-3-C-LIMB-1'],
         'CA-NS: and it is the collection last-payment adapter within the active common-error scope');
@@ -432,7 +444,7 @@ async function run(t, check) {
   const ns = await journeyFor(t, check, owner, specimen, 'CA-NS');
   assertFactualSurface(check, ns.result, 'CA-NS', true);
   check.equal(ns.result.observations.length, 2,
-    'CA-NS: its last-payment limb produces one comparison per readable entry; the bankruptcy limb waits for a public-record discharge date');
+    'CA-NS: its last-payment limb produces one comparison per accepted collection entry; ordinary tables do not expand statutory admission');
   check.match(ns.result.assessment.plain, /common-error checklist using the report facts/, 'CA-NS: the assessment describes one checklist for the supported checks');
 
   const perRegion = everyCaRegion(check, on.stored);

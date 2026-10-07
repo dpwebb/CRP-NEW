@@ -552,9 +552,12 @@ const USABLE_FIELD_PREDICATES = Object.freeze({
 });
 
 function performanceCellUsable(cell, record) {
+  const external = cell && (cell.code_definition
+    || ['FAM-US-EXP-CONSUMER', 'FAM-GB-EXP-CONSUMER'].includes(record.reader_family_id));
+  const definition = external && validatedDefinition(cell, record);
   return Boolean(cell && cell.code != null && String(cell.meaning || '').trim()
     && cell.uncertain !== true && cell.performance_usable !== false
-    && (!(cell.code_definition || record.reader_family_id === 'FAM-US-EXP-CONSUMER') || validatedDefinition(cell, record)));
+    && (!external || definition && definition.performance_usable === true));
 }
 
 function usableField(record, field) {
@@ -633,11 +636,13 @@ function formatCapability(extraction) {
 
 /** The normalized fields a presentation's READER can structurally produce, independent of any one report. This is
  *  the capability boundary: what a family reader prints/reads, not what a specific report happened to include.
- *  GB reads no `facts` (its values live in the `printed` map), so it supplies none of these fields; the TU-CA
- *  reader now supplies its ordinary-account facts, so it declares them here by its own measured labels. */
+ *  Each reader declares only its mapped, source-linked fields. Availability on one account is measured
+ *  separately; it cannot borrow a decisive field from another account. */
 const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   'PR-01': Object.freeze(['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate', 'report.referenceDate',
-    'account.status', 'account.balance', 'account.amount']),
+    'account.status', 'account.balance', 'account.amount', 'account.masked_identifier',
+    'account.reported_identity', 'account.responsibility', 'account.creditLimit',
+    'liability.openedDate', 'liability.closedDate', 'account.pastDueAmount']),
   'GENERAL-BUREAU-REPORT': Object.freeze([
     'report.referenceDate',
     'account.balance', 'account.amount', 'account.pastDueAmount', 'account.paymentAmount', 'account.status',
@@ -660,7 +665,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   ]),
   'FAM-GB-EXP-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit', 'account.type',
-    'account.responsibility', 'account.reported_identity'
+    'account.responsibility', 'account.reported_identity', 'account.paymentHistoryCells'
   ]),
   'FAM-TU-CA-CONSUMER': Object.freeze([
     'report.referenceDate',
@@ -677,12 +682,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
  * would overstate what the consumer's assessment can do.
  */
 const PRESENTATION_RETAINED_NOT_USABLE = Object.freeze({
-  'FAM-GB-EXP-CONSUMER': Object.freeze([
-    Object.freeze({
-      field: 'account.paymentHistoryCells',
-      reason: 'THE_ARTIFACT_PRINTS_THE_STATUS_HISTORY_WITH_NO_REPORTING_PERIOD_AND_NO_STATUS_CODE_LEGEND'
-    })
-  ]),
+  'FAM-GB-EXP-CONSUMER': Object.freeze([]),
   'FAM-AU-EQX-CONSUMER': Object.freeze([])
 });
 
@@ -752,7 +752,8 @@ function printedCaption(record, label) {
 /** A caption the report ITSELF prints but leaves without a value. A label the report never prints is not this. */
 function captionPrintedWithoutValue(record, label) {
   const field = printedCaption(record, label);
-  return Boolean(field && field.state === 'LABEL_PRINTED_WITHOUT_VALUE');
+  return Boolean(field && field.state === 'LABEL_PRINTED_WITHOUT_VALUE'
+    && field.trusted !== false && field.location && field.location.trusted !== false);
 }
 
 /** The monthly cells whose manner-of-payment meaning the report itself prints as a bad debt placed for collection. */
@@ -764,9 +765,18 @@ function adverseRatingCells(record) {
 
 /** The codes this account prints whose OWN printed meaning matches the pattern. */
 function codesMeaning(record, pattern) {
-  return [...printedNarrativeCodes(record).entries()]
+  const codes = [...printedNarrativeCodes(record).entries()]
     .map(([code, row]) => ({ code, row, meaning: printedMeaning(record, code) }))
     .filter((e) => e.meaning && pattern.test(e.meaning));
+  // Literal account notes need no code legend. Keep the actual own printed phrase
+  // distinct from a decoded narrative code, and require its measured reading.
+  const statements = (record && record.report_status_statements || []).filter((item) =>
+    item && item.trusted === true && item.caption_count === 1 && !item.reason
+    && item.location && item.location.trusted === true && item.raw_value
+    && item.raw_value === item.meaning && pattern.test(item.meaning))
+    .map((item) => ({ code: null, row: { location: item.location },
+      meaning: item.meaning, literal_statement: true, source_field: item.source_field }));
+  return codes.concat(statements);
 }
 
 function codeEvidence(entries) {
@@ -774,7 +784,8 @@ function codeEvidence(entries) {
     code: e.code,
     meaning_as_the_report_prints_it: e.meaning,
     period: e.row ? e.row.period : null,
-    location: e.row ? e.row.location : null
+    location: e.row ? e.row.location : null,
+    ...(e.literal_statement ? { literal_statement: true, source_field: e.source_field } : {})
   }));
 }
 
