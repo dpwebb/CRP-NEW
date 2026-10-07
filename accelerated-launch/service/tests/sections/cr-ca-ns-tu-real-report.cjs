@@ -176,8 +176,8 @@ async function runRealReport(service, check, evidence) {
   await service.pay(actor, 'report_once', caseId);
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
   const publicIssues = view.result.issues;
-  check.equal(view.assessment_summary.distinct_total, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports every distinct supported issue, including a period that has ended since');
-  check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
+  check.equal(view.assessment_summary.distinct_total, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports the two historical-period concerns and the later-expiry concern');
+  check.equal(view.assessment_summary.by_confidence.potential, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
     'and none of them is asserted as a violation or a probable violation');
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
@@ -185,8 +185,16 @@ async function runRealReport(service, check, evidence) {
     'and the teaser title never claims a violation');
   const byAccount = {};
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
-  check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 1, 'ROGERS COMMUNICATIONS CANADA INC': 1 },
-    'the seven issues sit on the accounts the report shows them on');
+  check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 2, 'ROGERS COMMUNICATIONS CANADA INC': 2 },
+    'the issues stay associated with the accounts the report shows them on');
+  const reportingPeriod = publicIssues.filter((i) => i.reporting_period_concern === true);
+  check.equal(reportingPeriod.length, 2, 'the two older closed debt entries receive historical reporting-period concerns');
+  check.ok(reportingPeriod.every((i) => i.confidence === 'POTENTIAL' && /correct or remove/.test(i.explanation)),
+    'the old debt information supports a direct correction request without claiming proof of a violation');
+  check.ok(reportingPeriod.every((i) => i.source_evidence.page && i.source_evidence.line && i.account_identity.name),
+    'both concerns preserve the account association and recorded report location');
+  check.ok(reportingPeriod.every((i) => i.explanation.includes(i.account_identity.name)),
+    'each reporting-period card names its tradeline in the explanation');
 
   /* The court-limitation items: two adverse debts whose printed dates may be outside the Nova Scotia time
      limit, counted from the LATEST printed date that can bear that relation, with the unknowns explicit. */
@@ -275,8 +283,9 @@ async function runSubscriberPacket(service, check, evidence, real) {
   await service.request('POST', `/api/cases/${caseId}/evaluate`, { token: sub.token });
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: sub.token })).json.view;
   const publicIssues = view.result.issues;
-  check.equal(view.result.issues.length, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'a subscriber sees the same supported issues on the real report');
-  const chosen = view.result.issues[0];
+  check.equal(view.result.issues.length, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'a subscriber sees the same supported issues on the real report');
+  const chosen = view.result.issues.find((i) => i.reporting_period_concern === true);
+  check.ok(chosen, 'the subscriber can select a historically old debt-information concern');
   const packetView = await service.request('GET', `/api/cases/${caseId}/packet`, { token: sub.token });
   check.equal(packetView.status, 200, 'the subscriber can open the packet flow for this report');
   const selected = await service.request('POST', `/api/cases/${caseId}/packet/select`, { token: sub.token, body: { issue_ids: [chosen.issue_id] } });
@@ -288,6 +297,10 @@ async function runSubscriberPacket(service, check, evidence, real) {
   check.equal(approved.status, 200, 'and approve the packet it built');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: sub.token });
   check.equal(download.status, 200, 'and download the approved packet');
+  check.ok(download.text.includes(chosen.request_wording), 'the approved correspondence carries the selected reporting-period verification request');
+  check.ok(download.text.includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
+  check.ok(/remove or correct this debt information/i.test(download.text), 'the packet asks for correction of the aged debt information');
+  check.ok(!/positive account|negative account|adverse debt/i.test(download.text), 'the packet assigns no positive or negative account value');
   evidence.real_report.packet = { selected_issue: chosen.issue_id, account: chosen.account_identity.name };
   void real;
 }

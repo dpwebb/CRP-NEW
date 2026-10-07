@@ -219,7 +219,7 @@ function runLimitationControls(check, evidence) {
   /* 5. A satisfactory old account is not adverse merely because it is old. */
   const old = limitation.runLimitationAssessment({ country: 'CA', region: 'CA-NS', assessment_clock: clockAt('2026-01-10'), extraction: extractionOf([satisfactoryBlock()]) });
   check.equal(old.performed.length, 0, 'an aged, zero-balance, non-derogatory account is not assessed');
-  check.equal(old.withheld[0].reason, 'NOT_AN_ADVERSE_DEBT', 'because it does not read as an adverse debt at all');
+  check.equal(old.withheld[0].reason, 'NO_PRINTED_OUTSTANDING_CLAIM', 'because the report prints no outstanding claim indicator');
   check.ok(!/non derogatory/i.test(String(old.withheld[0].plain)), 'and nothing about it is called adverse');
 
   /* 6. THE RUN DATE DECIDES, THE REPORT DATE DOES NOT: the same entry on the SAME printed report date is inside

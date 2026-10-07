@@ -238,7 +238,7 @@ async function messagingAndRelease(t, check, evidence) {
   check.ok(!/Nova Scotia selection only/.test(uiJs), 'and the stale Nova Scotia-only claim is gone from the UI');
   check.ok(!/for <em>one<\/em> report/.test(uiJs), 'and so is the stale one-presentation claim');
   check.ok(/no payment provider is connected/.test(uiJs), 'and the UI states the payment position plainly');
-  check.ok(/probable violations and potential errors/.test(uiJs), 'consumer wording states the supported issue assessment promise');
+  check.ok(/reporting issues/.test(uiJs) && !/probable violations and potential errors/.test(uiJs), 'consumer wording states the issue assessment promise without confidence tiers');
   check.ok(/choose the ones you want to dispute/.test(uiJs), 'consumer wording connects assessment to consumer-selected packets');
   /* OWNER-CONSUMER-LANGUAGE-001 (footer-only disclaimer): exactly one in the main-page footer, none elsewhere. */
   const disclaimerMatches = html.match(/Credit Regulator Pro provides credit-report information, not legal advice\./g) || [];

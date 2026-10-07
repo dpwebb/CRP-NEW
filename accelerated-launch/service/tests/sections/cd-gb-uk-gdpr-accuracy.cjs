@@ -173,7 +173,7 @@ async function run(service, check) {
   check.match(gb.explanation, /cannot both be right/, 'its explanation states what the report prints');
   check.match(gb.uncertainty, /Which of the two printed values is inaccurate is not established/, 'and names the specific uncertainty');
   check.match(gb.uncertainty, /benign explanation/, 'including the benign alternative rather than treating the conflict as proof');
-  check.match(gb.uncertainty, /not an established violation/, 'and never asserting an established violation');
+  check.match(gb.uncertainty, /supports a verification request/, 'and requests verification of the conflict');
   check.match(gb.uncertainty, /Articles 5\(1\)\(d\) and 16/, 'naming the recorded provision in the consumer wording');
   check.equal((gb.source_facts || []).length, 2, 'with both printed readings as its decisive facts');
 
@@ -213,7 +213,7 @@ async function run(service, check) {
   check.equal((dl.text.match(/Request \(verification\): /g) || []).length, 1, 'with exactly one request for the one issue');
   check.ok(dl.text.includes('Rowan Ellis'), 'carrying the consumer-supplied correspondence details');
   check.ok(!/is an established reporting issue/i.test(dl.text), 'never asserting an established reporting issue for a probable one');
-  check.ok(/not an established violation/.test(dl.text), 'while stating plainly that it is not an established violation');
+  check.ok(/supports a verification request/.test(dl.text), 'while stating the supported verification action');
 
   /* ---- 3. Benign controls. ---- */
   const consistent = await assess(service, owner, 'GB-ENG', ['Fictional Creditor  Balance $100  Opened 01/01/2018  Closed 01/01/2020']);

@@ -429,7 +429,7 @@ function demonstrationDownload(store, actor, caseId) {
 function assessmentReportBody(rendered, producedAt) {
   const lines = [];
   lines.push('CRP ASSESSMENT REPORT');
-  lines.push('COMPLIANCE FINDINGS AND REPORT OBSERVATIONS');
+  lines.push('REPORTING ISSUES AND REPORT FACTS');
   lines.push('='.repeat(72));
   lines.push(`Selection: ${rendered.jurisdiction.country}/${rendered.jurisdiction.region}`);
   lines.push(`Produced: ${producedAt}`);
@@ -442,7 +442,7 @@ function assessmentReportBody(rendered, producedAt) {
     lines.push(`Evidence policy: ${rendered.policy.policy_id} v${rendered.policy.version} (${rendered.policy.digest})`);
   }
   lines.push('');
-  lines.push('FINDINGS AND REPORT OBSERVATIONS');
+  lines.push('REPORTING ISSUES AND REPORT FACTS');
   lines.push('');
   lines.push(`CHECKS PERFORMED (${rendered.checks_performed})`);
   for (const o of (rendered.observations || []).filter(o => o.assessment_completed !== false)) {
@@ -482,9 +482,9 @@ function assessmentReportBody(rendered, producedAt) {
   const commonErrors = rendered.common_errors || [];
   if (commonErrors.length) {
     lines.push('');
-    lines.push('DATA-CONSISTENCY ASSESSMENTS (potential issues or review observations, never legal findings)');
+    lines.push('REPORT FACTS REVIEWED');
     for (const ce of commonErrors) {
-      const stateLabel = ce.state === 'POTENTIAL_ISSUE' ? 'potential issue' : ce.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING' ? 'review observation' : String(ce.state || 'not detected').toLowerCase().replace(/_/g, ' ');
+      const stateLabel = ce.state === 'POTENTIAL_ISSUE' ? 'item to review' : ce.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING' ? 'report detail to review' : String(ce.state || 'not detected').toLowerCase().replace(/_/g, ' ');
       lines.push(`- ${ce.check_name || '(unnamed common-error check)'} — ${stateLabel}`);
       if (ce.detail) lines.push(`  ${ce.detail}`);
       for (const sr of (ce.source_records || [])) {

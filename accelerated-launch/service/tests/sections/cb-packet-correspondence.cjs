@@ -215,7 +215,7 @@ async function run(service, check) {
   const partialDl = await service.request('GET', `/api/cases/${multiCase.case_id}/packet-download`, { token: multiOwner.token });
   check.equal(partialDl.status, 200, 'the partially selected packet downloads');
   check.ok(!partialDl.text.includes(`credit account ${other.account_number_in_report}`), 'and never includes the unselected issue');
-  check.ok(/potential, verification/.test(partialDl.text), 'stating the POTENTIAL verification classification, never an established violation');
+  check.ok(/ - verification/.test(partialDl.text) && !/potential, verification/.test(partialDl.text), 'the packet states the requested action without a confidence tier');
 
 
   /* ---- 8. Probable verification: the correspondence preserves the qualification and adds no citation. ---- */
@@ -238,7 +238,7 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${probCase.case_id}/packet/approve`, { token: probOwner.token });
   const probDl = await service.request('GET', `/api/cases/${probCase.case_id}/packet-download`, { token: probOwner.token });
   check.equal(probDl.status, 200, 'the probable packet downloads');
-  check.ok(/probable, verification/.test(probDl.text), 'the evidence reference states the PROBABLE verification classification');
+  check.ok(/ - verification/.test(probDl.text) && !/probable, verification/.test(probDl.text), 'the evidence reference states the requested action without a confidence tier');
   check.ok(/Recorded rule: /.test(probDl.text), 'and the recorded rule identity of the proposed rule');
   check.ok(/not shown to be absent/.test(probDl.text), 'preserving the specific uncertainty, never an absent exception');
   check.ok(!/established violation|definite breach/i.test(probDl.text), 'and never turning a probable issue into a categorical allegation');
@@ -256,7 +256,7 @@ async function run(service, check) {
   check.equal(unpaidWrite.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal');
 
   /* ---- 10. The definite correction, the sending control and the classification on the real download. ---- */
-  check.ok(/definite, correction/.test(dl.text), 'the definite evidence reference states the DEFINITE correction classification');
+  check.ok(/ - correction/.test(dl.text) && !/definite, correction/.test(dl.text), 'the evidence reference states the requested correction without a confidence tier');
   check.ok(/Request \(correction\): /.test(dl.text), 'with a correction request, never a mere verification');
   check.ok(/to review, edit and send yourself/.test(dl.text), 'the document says the consumer reviews, edits and sends it');
   check.ok(/This service supplies no address and sends nothing/.test(dl.text), 'and that this service supplies no address and sends nothing');

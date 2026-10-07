@@ -163,7 +163,7 @@ async function run(service, check) {
   opened = await openCasePage(prob.email, prob.password, prob.caseId, ['Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026', 'Account 30 days past due as of Jun 2015']);
   page = opened.page;
   const probBlock = await page.locator('#packet-block').innerText();
-  check.ok(/PROBABLE REPORTING ISSUE/.test(probBlock), 'the qualified probable retention issue renders as probable');
+  check.ok(/Reporting issue/.test(probBlock), 'the issue appears for selection without a confidence tier label');
   check.ok(/entry older than the ordinary reporting period|not shown to be absent/.test(probBlock), 'with the affirmative concern and the exception uncertainty');
   check.ok(!/ESTABLISHED REPORTING ISSUE/.test(probBlock), 'never an established issue');
   await page.close();
@@ -270,8 +270,8 @@ async function run(service, check) {
   await freePage.waitForTimeout(1200);
   const summaryText = await freePage.locator('#panel').innerText();
   check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 1/.test(summaryText), 'the browser shows the distinct issue count to a free account');
-  check.ok(/violations: 0/.test(summaryText) && /potential issues: 1/.test(summaryText), 'and the three category counts');
-  check.ok(/Potential issue/.test(summaryText), 'with the teaser confidence label');
+  check.ok(!/violations:|potential issues:/.test(summaryText), 'without confidence tier counts');
+  check.ok(/Reporting issue/.test(summaryText), 'with a single consumer issue label');
   check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Annual/.test(summaryText), 'and the purchase choices with their recorded prices');
   check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
@@ -300,7 +300,7 @@ async function run(service, check) {
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
-  check.ok(/Check: /.test(unlockedText) && /Download my assessment/.test(unlockedText), 'a verified payment unlocks that report for the consumer in the browser');
+  check.ok(/Reporting issues for your review/.test(unlockedText) && /Download my assessment/.test(unlockedText), 'a verified payment unlocks the issue list for the consumer in the browser');
   check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
   await freePage.close();
 
@@ -338,8 +338,8 @@ async function run(service, check) {
   check.equal((limSummary.match(/Reporting issues found:\s*(\d+)/) || [])[1] || null, '1',
     'the free summary counts the court-limitation concern exactly once');
   check.ok(/time limit for a court claim/.test(limSummary), 'and the teaser names the court time limit, not a broken rule');
-  check.ok(/violations: 0/.test(limSummary) && /potential issues: 1/.test(limSummary),
-    'with the concern counted as a potential issue and no violation claimed');
+  check.ok(!/violations:|potential issues:/.test(limSummary),
+    'without a confidence tier count or violation claim');
   /* OWNER correction (SOL assessment date): the free summary states the date the SERVER assessed the report. */
   check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(limSummary), 'the free summary shows the date the report was assessed');
   check.ok(!/id="packet-block"/.test(await limPage.content()), 'while the complete findings and the packet stay locked');

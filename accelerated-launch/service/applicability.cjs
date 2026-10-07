@@ -398,10 +398,10 @@ function ordinaryAccountBothDatesPresent(ctx) {
  * Both are report-authored values on this record. Nothing here invents a date, forces the United States
  * adverse-rating shape onto this reader, or reads a meaning the report's own legend does not print.
  *
- * A count that could not be read is NOT a zero, and a missing field is not a satisfactory account:
+ * A count that could not be read is not a zero. Zero counts do not classify the whole account:
  *   • APPLICABLE   — a printed delinquent count above zero, or a printed past-due amount above zero.
- *   • NOT_APPLICABLE — the counts and the past-due amount are printed and every one of them is zero, which is
- *                      the report's own statement that this account was not delinquent.
+ *   • APPLICABILITY_UNRESOLVED — zero counts and zero past due only describe those printed values; they cannot
+ *                                establish that no other relevant debt information is reported.
  *   • APPLICABILITY_UNRESOLVED — anything else (unreadable or absent values). Nothing is inferred.
  */
 function adverseDebtEvidenceOnThisRecord(ctx) {
@@ -440,10 +440,10 @@ function adverseDebtEvidenceOnThisRecord(ctx) {
   }
 
   if (counts && readableCounts === 3 && delinquent.length === 0 && pastDueReadable && !pastDueAdverse) {
-    return state(APPLICABILITY_STATE.NOT_APPLICABLE, rule_id,
-      'THE_RECORD_PRINTS_A_SATISFACTORY_PAYMENT_HISTORY_AND_NO_PAST_DUE_AMOUNT',
-      'This account prints no delinquent month-count and no past-due amount, which is the report own statement that it was not delinquent, so this limit has no unfavourable information of this account to apply to.',
-      { printed_delinquency_counts: counts ? { 30: counts['30'], 60: counts['60'], 90: counts['90'] } : null, printed_past_due: pastDue });
+    return state(APPLICABILITY_STATE.APPLICABILITY_UNRESOLVED, rule_id,
+      'NO_PRINTED_DELINQUENCY_OR_PAST_DUE_INDICATOR',
+      'The printed delinquency counts and past-due amount are zero. Those values do not classify the account or settle whether other relevant debt information is reported.',
+      { printed_delinquency_counts: { 30: counts['30'], 60: counts['60'], 90: counts['90'] }, printed_past_due: pastDue });
   }
 
   return state(APPLICABILITY_STATE.APPLICABILITY_UNRESOLVED, rule_id,

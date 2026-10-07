@@ -332,16 +332,21 @@ const POTENTIAL_WORDING = Object.freeze({
   'RETENTION-PERIOD-ENDED-SINCE-THE-REPORT': {
     explain: (i) => {
       const r = i.retention_review || {};
+      const historical = r.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT';
       const period = r.anchor_precision === 'MONTH_LEVEL' && r.period_ends_from
         ? `The period appears to end somewhere between ${r.period_ends_from} and ${r.period_ends_on}, because the date it counts from is printed only to the month.`
         : `The period appears to have ended on ${r.period_ends_on}.`;
-      const issued = r.report_issued
+      const issued = historical
+        ? `Your report was issued on ${r.report_issued}, after that apparent end date.`
+        : r.report_issued
         ? `Your uploaded report was issued on ${r.report_issued}, which was before that date, so this entry was still inside its period then.`
         : 'Your uploaded report does not state a date of its own, so the earlier position cannot be established from it.';
-      return `This entry prints "${r.anchor_label || 'its event date'}" as ${r.anchor_printed_date || r.anchor_iso || 'the printed date'}, and the reporting period that applies to it is ${r.period_years} years. ${period} ${issued} This entry may now be too old to report. An older report shows what was reported at the time; it does not show what is on your file today.`;
+      const account = i.account_identity && i.account_identity.name ? `${i.account_identity.name} on your report` : 'this entry on your report';
+      return `${account} prints "${r.anchor_label || 'its event date'}" as ${r.anchor_printed_date || r.anchor_iso || 'the printed date'}, and the reporting period that applies to it is ${r.period_years} years. ${period} ${issued} ${historical ? 'This debt information appears to exceed the recorded reporting period. Ask the credit bureau to correct or remove it.' : 'This entry may now be too old to report. An older report shows what was reported at the time; it does not show what is on your file today.'}`;
     },
     uncertainty: (i) => {
       const r = i.retention_review || {};
+      const historical = r.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT';
       const extra = r.historical_position_not_established
         ? ' The report we have does not state its own date, so whether the entry was already outside its period then cannot be established, and it is not claimed either way.'
         : ' The report we have was issued before the period ended, so it cannot show the position now.';
@@ -350,9 +355,13 @@ const POTENTIAL_WORDING = Object.freeze({
       const exception = r.exception_material_unknown && r.exception_specific_uncertainty
         ? ` One condition this period depends on is not settled by your report: ${r.exception_specific_uncertainty} If it applies to this entry, the entry may still be reported for longer, so ask the credit bureau to check it as part of the same request.`
         : '';
-      return `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}${exception}`;
+      return historical
+        ? `The printed last-payment date and the six-year period support a correction request. The bureau should verify the payment date and correct or remove the debt information if the recorded period applies.${exception}`
+        : `Check whether this entry is still on your current credit file. If it has already been removed, there is nothing to do. If it is still there, the credit bureau can confirm whether its reporting period has expired. This is a question to verify, not a statement that a rule was broken: it is about your file today, not about a fault in the report you uploaded.${extra}${exception}`;
     },
-    request: 'Please verify whether this entry remains on my current file and whether its reporting period has expired.'
+    request: (i) => i.retention_review && i.retention_review.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT'
+      ? 'Please verify the last-payment date and remove or correct this debt information if it has exceeded the reporting period.'
+      : 'Please verify whether this entry remains on my current file and whether its reporting period has expired.'
   }
 });
 
@@ -377,12 +386,12 @@ const LIMITATION_WORDING = Object.freeze({
       ? ` The report itself was issued on ${e.report_reference_date}${e.report_age_days ? `, about ${e.report_age_days} days before it was checked` : ''}.`
       : '';
     if (['CA-BC', 'CA-ON', 'CA-MB'].includes(e.jurisdiction)) {
-      return `This report shows an adverse debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. ${e.jurisdiction_label}'s ordinary two-year court-claim period runs from discovery of the claim, not automatically from this printed date. The printed date makes the timing worth verifying; it does not establish when the claim was discovered or that a court claim is out of time.${reportPart}`;
+      return `This report shows a debt with a printed claim indicator on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. ${e.jurisdiction_label}'s ordinary two-year court-claim period runs from discovery of the claim, not automatically from this printed date. The printed date makes the timing worth verifying; it does not establish when the claim was discovered or that a court claim is out of time.${reportPart}`;
     }
     if (String(e.start_is || '').startsWith('ACCRUAL_')) {
       const scope = e.jurisdiction === 'AU-ACT' ? 'an ordinary cause of action'
         : ['CA-NT', 'CA-NU'].includes(e.jurisdiction) ? 'an action to recover money' : 'a simple-contract claim';
-      return `This report shows an adverse debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. In ${e.jurisdiction_label}, the ordinary six-year period for ${scope} runs from when the cause of action arose, not automatically from this printed date. The date makes the timing worth verifying; it does not establish legal accrual or that an action is out of time.${reportPart}`;
+      return `This report shows a debt with a printed claim indicator on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. In ${e.jurisdiction_label}, the ordinary six-year period for ${scope} runs from when the cause of action arose, not automatically from this printed date. The date makes the timing worth verifying; it does not establish legal accrual or that an action is out of time.${reportPart}`;
     }
     return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was checked on ${e.assessed_on}.${reportPart} The dates suggest this debt may be outside the time limit for a court claim.`;
   },
@@ -680,9 +689,13 @@ function describeWording(issue) {
  * unverified fact or an exception the report cannot establish is named as exactly that.
  */
 function describe(issue) {
-  const described = describeWording(issue);
-  if (issue.confidence !== CONFIDENCE.PROBABLE) return described;
-  return Object.assign({}, described, { uncertainty: `${PROBABLE_LEAD} ${described.uncertainty}` });
+  const wording = describeWording(issue);
+  /* The specific uncertainty matters to the consumer; the engine's confidence tier does not. */
+  const uncertainty = String(wording.uncertainty || '')
+    .replace(/\s*This is a probable reporting issue(?: under a governed rule, to be verified)?,? not an established (?:one|violation)\./gi, '')
+    .replace(/\s*This is an established reporting issue under a governed rule\./gi, '')
+    .replace(/makes what the report shows a probable reporting issue to verify, not an established violation\./gi, 'supports a verification request.');
+  return Object.assign({}, wording, { uncertainty });
 }
 
 /** Whether one issue is eligible for a consumer correction packet (issue-specific, not a blanket flag). A
@@ -991,7 +1004,8 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
      both citations rather than inflating the count. */
   const groups = new Map();
   for (const entry of performed) {
-    if (!entry.current_review_warranted) continue;
+    if (!entry.current_review_warranted && entry.state !== 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT') continue;
+    if (entry.exceptions && entry.exceptions.established_defeating) continue;
     const key = `${entry.record_index}|${entry.anchor_iso}|${entry.at_assessment_date ? entry.at_assessment_date.period_ends_on : ''}`;
     if (!groups.has(key)) groups.set(key, { entry, citations: [], rule_refs: [], materials: [] });
     const group = groups.get(key);
@@ -1064,7 +1078,7 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
     /* The rule's own uncertainty and the conditional verification request are delivered on this card, so the
        qualified concern can never reach a consumer without them. */
     issue.uncertainty = issue.uncertainty || RETENTION_CURRENT_REVIEW_WORDING.uncertainty(issue);
-    issue.request_wording = issue.request_wording || RETENTION_CURRENT_REVIEW_WORDING.request;
+    issue.request_wording = issue.request_wording || RETENTION_CURRENT_REVIEW_WORDING.request(issue);
     issue.request_type = issue.request_type || REQUEST_TYPE.VERIFICATION;
     issues.push(issue);
   }
@@ -1131,7 +1145,8 @@ function publicIssue(issue) {
      end, so the consumer can see what the report said then and what the position appears to be now. */
   if (issue.retention_review) {
     const r = issue.retention_review;
-    out.later_expiry_concern = true;
+    if (r.state === 'ALREADY_OUTSIDE_AT_REPORT_AND_ASSESSMENT') out.reporting_period_concern = true;
+    else out.later_expiry_concern = true;
     /* The qualified concern carries its own uncertainty and its conditional verification request on the public
        card, exactly as the limitation item does. */
     out.uncertainty = issue.uncertainty || null;

@@ -163,7 +163,7 @@ async function run(service, check) {
   check.match(ontario.explanation, /cannot both be right/, 'its explanation states what the report prints');
   check.match(ontario.uncertainty, /Which of the two printed values is unreliable is not established/, 'and names the specific uncertainty');
   check.match(ontario.uncertainty, /benign explanation/, 'including the benign alternative rather than treating the conflict as proof');
-  check.match(ontario.uncertainty, /not an established violation/, 'and never asserting an established violation');
+  check.match(ontario.uncertainty, /supports a verification request/, 'and requests verification of the conflict');
   check.match(ontario.uncertainty, /any credit information based on evidence that is not the best evidence reasonably available/, 'stating the provision own words rather than an unrecorded gloss');
   check.match(ontario.uncertainty, /Consumer Reporting Act \(Ontario\), R\.S\.O\. 1990, c\. C\.33, s\. 9\(3\)\(a\)/, 'with the cited provision named in the consumer wording');
   check.equal((ontario.source_facts || []).length, 2, 'with both printed readings as its decisive facts');
@@ -220,7 +220,7 @@ async function run(service, check) {
   check.ok(!/opened date later than its closed date/.test(dl.text), 'and never the unselected factual card wording as a second issue');
   check.ok(!/is an established reporting issue/i.test(dl.text), 'never asserting an established reporting issue for a probable one');
   check.ok(!/ESTABLISHED REPORTING ISSUE/.test(dl.text), 'and never presenting it as an established issue');
-  check.ok(/not an established violation/.test(dl.text), 'while stating plainly that it is not an established violation');
+  check.ok(/supports a verification request/.test(dl.text), 'while stating the supported verification action');
 
 
   /* ---- 3. Benign controls: no fire where the report is consistent, elsewhere, or where a reading is missing. ---- */

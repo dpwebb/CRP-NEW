@@ -41,10 +41,10 @@ async function run(service, check) {
   check.equal(posIssues[0].request_type, 'VERIFICATION', 'as a verification request (never a correction)');
   check.ok(/cannot be determined from your report/.test(posIssues[0].explanation), 'stating the exception cannot be determined');
   check.ok(/credit transaction involving \$150,000/.test(posIssues[0].uncertainty), 'naming the benign alternative (a permitted use)');
-  check.ok(/not an established one/.test(posIssues[0].uncertainty), 'staying probable, never established');
+  check.ok(/cannot be established from the report itself/.test(posIssues[0].uncertainty), 'the specific exception remains unresolved');
   /* OWNER correction (Batch 25): the consumer text leads with the approved probable sentence and then the
      exception this report cannot establish — never a claim that a value was unreadable. */
-  check.ok(posIssues[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'the probable issue leads with the approved sentence');
+  check.ok(!posIssues[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'the generic confidence tier lead is omitted');
   check.ok(!/could not be read|not readable|unreadable/i.test(posIssues[0].uncertainty), 'and the unestablished exception is never described as a reading failure');
   check.ok(/cannot be established from the report itself/.test(posIssues[0].uncertainty), 'followed by the specific exception uncertainty');
 

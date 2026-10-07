@@ -47,14 +47,13 @@ function plainStatement(machine, check, recordIndex, recordNoun) {
         headline: `More than ${years} years have passed since the date this rule measures from on ${where}, and your report states that date's correspondence to the actual court event is unverified.`,
         detail:
           'The comparison runs from the date your report prints. Your report also says that date has not been ' +
-          'verified against the court event, so the actual event date cannot be established from this report. ' +
-          'This is a probable reporting issue, not an established one.'
+          'verified against the court event, so the actual event date cannot be established from this report.'
       };
     }
     if (finding && finding.classification === 'VIOLATION') {
       return {
         headline: `More than ${years} years have passed since the date this rule measures from on ${where}.`,
-        detail: 'Every report-determinable fact is resolved, and this is an established reporting issue under a governed retention rule.'
+        detail: 'The printed date exceeds the reporting period recorded for this rule.'
       };
     }
     return {
@@ -259,7 +258,7 @@ function renderResultSet(input) {
       assessment_completed: Boolean(row.machine && row.machine.state === 'EVALUATED'),
       is_a_finding: Boolean(finding),
       classification: finding ? finding.classification : null,
-      consumer_label: finding ? (finding.classification === 'VIOLATION' ? 'Reporting issue' : 'Probable reporting issue') : null,
+      consumer_label: finding ? 'Reporting issue' : null,
       decisive_fact_unavailable: finding ? (finding.decisive_fact_unavailable || null) : null,
       /* OWNER-GAP-FINDING-002-RESOURCE-001: the structured, source-linked decisive-facts-unavailable entries
          (identity, report-reading evidence and source location), surfaced beside a PROBABLE finding. */
@@ -538,6 +537,7 @@ const TEASER_TITLE = Object.freeze({
      because the useful next step is to verify dates the report does not show, and its title never claims that
      the bureau broke a reporting rule. */
   LIMITATION: 'A debt may be outside the time limit for a court claim',
+  REPORTING_PERIOD_REVIEW: 'Debt information may have been too old to include in a consumer report',
   /* OWNER dual-date retention (Batch 33): the period appears to have ended since the report was issued. Ranked
      with the additions — the useful next step is to check the current file — and never titled as a finding. */
   LATER_EXPIRY: 'An entry may now be too old to report'
@@ -545,8 +545,8 @@ const TEASER_TITLE = Object.freeze({
 
 const TEASER_CONFIDENCE_LABEL = Object.freeze({
   DEFINITE: 'Reporting issue',
-  PROBABLE: 'Probable reporting issue',
-  POTENTIAL: 'Potential issue'
+  PROBABLE: 'Reporting issue',
+  POTENTIAL: 'Reporting issue'
 });
 
 /** The factual COMPLETENESS items: an event the report prints whose own caption carries no date. They name no
@@ -567,6 +567,10 @@ function isLaterExpiryConcern(issue) {
   return Boolean(issue) && issue.later_expiry_concern === true;
 }
 
+function isReportingPeriodConcern(issue) {
+  return Boolean(issue) && issue.reporting_period_concern === true;
+}
+
 function severityRankOf(issue) {
   if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
   if (issue.basis_type === 'CONTENT_FINDING') {
@@ -583,12 +587,14 @@ function severityRankOf(issue) {
   /* OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued ranks
      with the additions too — the next step is to check the current file, not to treat the old report as wrong. */
   if (isLaterExpiryConcern(issue)) return 1;
+  if (isReportingPeriodConcern(issue)) return 1;
   return 2;
 }
 
 function teaserTitleFor(issue, rank) {
   if (isLimitationConcern(issue)) return TEASER_TITLE.LIMITATION;
   if (isLaterExpiryConcern(issue)) return TEASER_TITLE.LATER_EXPIRY;
+  if (isReportingPeriodConcern(issue)) return TEASER_TITLE.REPORTING_PERIOD_REVIEW;
   if (isCompletenessItem(issue)) return TEASER_TITLE.FACTUAL_COMPLETENESS;
   if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
   if (issue.basis_type === 'CONTENT_FINDING') {

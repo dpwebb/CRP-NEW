@@ -485,7 +485,7 @@ function evidenceLines(selected) {
     n += 1;
     const kind = issue.request_type === issues.REQUEST_TYPE.CORRECTION ? 'correction' : 'verification';
     const heading = issue.label || (issue.record && issue.record.kind_label) || 'a reporting matter';
-    lines.push(`  ${n}. ${heading} - ${String(issue.confidence || '').toLowerCase()}, ${kind}`);
+    lines.push(`  ${n}. ${heading} - ${kind}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
       lines.push(`     Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
     }

@@ -157,7 +157,7 @@ async function run(service, check) {
   check.equal(probables[0].request_type, 'VERIFICATION', 'with a verification (not correction) request');
   check.equal(probables[0].eligible, true, 'and it is packet-eligible');
   check.ok(probables[0].uncertainty.includes('cannot be established'), 'retaining its specific uncertainty');
-  check.ok(probables[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'leading with the approved probable sentence before its specific uncertainty');
+  check.ok(!probables[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'the generic confidence tier lead is omitted before the specific uncertainty');
   check.ok(probables[0].decisive_fact_unavailable, 'naming the decisive unavailable fact');
 
   const pOwner = await service.unpaidAccount('b1-prob@example.test');
@@ -177,7 +177,7 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${pCase.case_id}/packet/approve`, { token: pOwner.token });
   const pDl = await service.request('GET', `/api/cases/${pCase.case_id}/packet-download`, { token: pOwner.token });
   check.equal(pDl.status, 200, 'the probable issue downloads');
-  check.ok(/probable reporting issue/.test(pDl.text), 'as a probable (not definite) reporting issue');
+  check.ok(/reporting issue/i.test(pDl.text), 'as a reporting issue with its evidence and request');
   check.ok(/verify the event date/.test(pDl.text), 'with a verification request');
   check.ok(!/established reporting issue/.test(pDl.text), 'never asserting a definite breach');
 

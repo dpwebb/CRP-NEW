@@ -186,8 +186,8 @@ async function run(service, check) {
   const benign = evaluateFor(extractionFor([tuBlock(BENIGN_OLD)]));
   check.equal(abResults(benign).length, 0, 'an OLD last payment on a satisfactory account does not run the limb at all');
   check.equal(abFindings(benign).length, 0, 'so it raises no Alberta issue merely because its payment is old');
-  check.ok((benign.not_applicable_checks || []).some((r) => r.adapter_id === AB),
-    'and the record is filed as NOT APPLICABLE from the report own statement that it was not delinquent');
+  check.ok((benign.unresolved_applicability || []).some((r) => r.adapter_id === AB),
+    'and zero printed counts leave the rule condition unresolved without classifying the account');
 
   const unreadable = evaluateFor(extractionFor([tuBlock(UNREADABLE_RATING)]));
   check.equal(abResults(unreadable).length, 0, 'a rating this build cannot read as a value raises no Alberta issue');
@@ -202,8 +202,8 @@ async function run(service, check) {
     'adverse information printed on ANOTHER account is not borrowed by the account that prints none');
   check.ok(abResults(notBorrowedEval).length >= 1,
     'while the account that does print adverse information still runs its own comparison');
-  check.ok((notBorrowedEval.not_applicable_checks || []).filter((r) => r.adapter_id === AB).length >= 1,
-    'and the satisfactory account is filed as not applicable rather than being made applicable by its neighbour');
+  check.ok((notBorrowedEval.unresolved_applicability || []).filter((r) => r.adapter_id === AB).length >= 1,
+    'and the account with no printed indicator stays unresolved rather than borrowing its neighbour evidence');
 
   const revolving = evaluateFor(extractionFor([tuBlock(REVOLVING)]));
   const revolvingFinding = abFindings(revolving)[0];
@@ -244,7 +244,7 @@ async function run(service, check) {
   check.equal(issue.eligible, true, 'and it is selectable');
   check.equal(issue.request_type, 'VERIFICATION', 'as a verification request, never a correction demand');
   check.match(String(issue.uncertainty), /debt was incurred/, 'with the timing uncertainty stated in the consumer wording');
-  check.match(String(issue.uncertainty), /probable|not an established violation/i, 'and the probable qualification stated plainly');
+  check.match(String(issue.uncertainty), /whether a recorded exception applies cannot be established/i, 'and the material exception is stated plainly');
   check.equal(JSON.stringify(issue.supported_bases || []).includes(AB), false, 'with no internal adapter id leaked to the consumer');
 
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: stranger.token, body: { issue_ids: [issue.issue_id] } })).status, 403,

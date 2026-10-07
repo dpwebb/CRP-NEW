@@ -422,15 +422,15 @@ async function run(t, check) {
   check.ok(/id="view-results"/.test(panel.innerHTML) && !/Your report is ready to review/.test(panel.innerHTML), 'and offers the results without the pre-check wording');
   vm.runInContext('state.step = 3; render();', ctx);
   check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
-  check.ok(/violations: <b>0<\/b> · probable violations: <b>0<\/b> · potential issues: <b>1<\/b>/.test(panel.innerHTML), 'and the three category counts');
-  check.ok(/Potential issue/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and its confidence label');
+  check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
+  check.ok(/Reporting issue/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and a single issue label');
   check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$5\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
   check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
   check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');
 
   /* The ONE-TIME unlocked state: complete findings, the download, and no packet. */
   vm.runInContext('state.view = ONE_TIME_VIEW; state.step = 3; render();', ctx);
-  check.ok(/Check: <b>/.test(panel.innerHTML), 'a one-time unlock shows the complete findings');
+  check.ok(/We did not find a reporting issue/.test(panel.innerHTML), 'a one-time unlock shows the result of its issue assessment');
   check.ok(/id="download-assessment"/.test(panel.innerHTML), 'and offers the assessment download');
   check.ok(/Dispute packets, report history and subsequent-report comparison are part of a subscription\./.test(panel.innerHTML), 'and explains that packets need a subscription');
   check.ok(!/id="packet-block"/.test(panel.innerHTML), 'with no packet block for a one-time unlock');

@@ -261,7 +261,7 @@ function coverage(region) {
   return `<div class="note">
     <strong>${esc(region.label)} (${esc(region.value)})</strong> — ${esc(avail.plain)}
     <br><span class="evidence">Upload your report. We check its readable information for reporting issues,
-    probable violations and potential errors under the requirements relevant to your selection.
+    under the requirements relevant to your selection.
     Review the issues, choose the ones you want to dispute, and create your packet to send to the bureau.</span>
   </div>`;
 }
@@ -576,15 +576,14 @@ function startCheckout(planCode) {
  */
 function freeSummaryBlock(view) {
   const summary = view.assessment_summary || {};
-  const by = summary.by_confidence || {};
   const teaser = summary.teaser || null;
   const total = Number(summary.distinct_total || 0);
   const counts = total > 0
-    ? `<p class="evidence">Reporting issues found: <b>${total}</b> — violations: <b>${by.violation || 0}</b> · probable violations: <b>${by.probable_violation || 0}</b> · potential issues: <b>${by.potential || 0}</b></p>`
+    ? `<p class="evidence">Reporting issues found: <b>${total}</b></p>`
     : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
   const preview = teaser
     ? `<div class="obs">
-      <span class="pill">${esc(teaser.confidence_label || 'Reporting issue')}</span>
+      <span class="pill">Reporting issue</span>
       <h3>${esc(teaser.title || '')}</h3>
       <p>${esc(teaser.explanation || '')}</p>
       <p class="evidence">One issue is previewed here. The complete assessment, the report facts and the next steps for every issue are part of the unlock or a subscription.</p>
@@ -604,7 +603,7 @@ function freeSummaryBlock(view) {
     <button class="primary" id="buy-report_once">Unlock this report — ${esc(planPrice('report_once'))}</button>
     <button class="secondary" id="buy-monthly">Monthly — ${esc(planPrice('monthly'))}</button>
     <button class="secondary" id="buy-annual">Annual — ${esc(planPrice('annual'))}</button>
-    <p class="evidence">Unlocking this report gives you its complete assessment: every violation, probable violation and potential issue, the report facts and explanations behind them, the next steps that apply, and the assessment download for that report. Dispute packets, report history and comparison are part of a subscription.</p>
+    <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and the assessment download for that report. Dispute packets, report history and comparison are part of a subscription.</p>
   </div>`;
 }
 
@@ -654,6 +653,7 @@ function renderResults(panel) {
 }
 
 function resultBlock(result, demo) {
+  if (!demo) return `${assessmentDateLine(result)}${issuesSection(result)}`;
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
       <span class="pill ${demo ? 'demo' : o.is_a_finding ? 'finding' : ''}">${demo ? 'DEMONSTRATION — NOT REPORT SUPPORT' : (o.is_a_finding ? esc(o.consumer_label || 'FINDING') : 'OBSERVATION — NOT A LEGAL FINDING')}</span>
@@ -707,19 +707,19 @@ function assessmentDateLine(holder) {
 /* OWNER-POTENTIAL-ISSUE-001: supported potential reporting issues, rendered as review cards (never NOT_DETECTED,
    never failed-check diagnostics). Each states what the report says, why it merits attention and its uncertainty. */
 function issuesSection(result) {
-  const issues = (result.issues || []).filter((i) => i.confidence === 'POTENTIAL');
-  if (!issues.length) return '';
+  const issues = result.issues || [];
   const cards = issues.map((i) => `
     <div class="obs issue">
-      <span class="pill potential">POTENTIAL REPORTING ISSUE — FOR YOUR REVIEW</span>
+      <span class="pill potential">Reporting issue</span>
+      ${i.account_identity && i.account_identity.name ? `<p class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></p>` : ''}
       <h3>${esc(i.explanation)}</h3>
       <p class="evidence">Why it merits attention: ${esc(i.uncertainty)}</p>
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.retention_review ? `<p class="evidence">${i.retention_review.report_issued ? `Report issued: <b>${esc(i.retention_review.report_issued)}</b> · ` : 'Report issued: <b>not stated</b> · '}Assessed on: <b>${esc(i.retention_review.assessed_on || '')}</b> · the reporting period appears to end ${i.retention_review.period_appears_to_end_from ? `somewhere between <b>${esc(i.retention_review.period_appears_to_end_from)}</b> and <b>${esc(i.retention_review.period_appears_to_end_on)}</b>` : `<b>${esc(i.retention_review.period_appears_to_end_on || '')}</b>`}${i.retention_review.arose_through_later_passage_of_time ? ' · this arose through the passage of time since your report was issued' : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
-      <p class="evidence">A factual discrepancy like this supports a verification request; it is not, by itself, an established legal violation.</p>
+      ${i.retention_review || i.limitation_concern ? '' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
     </div>`).join('');
-  return `<h2>Potential reporting issues for your review</h2>${cards}`;
+  return issues.length ? `<h2>Reporting issues for your review</h2>${cards}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
 }
 
 /* ------------------------------------------------------------------ optional clarification (BLOCKER-CLARIFY-001) */
@@ -938,10 +938,8 @@ function renderReview(panel) {
 
 /* OWNER-POTENTIAL-ISSUE-001: the correction-packet selection/review/edit/approve/download flow, wired into the
    Wizzard review step. Consumer wording is kept separate from the report facts. */
-function confidencePill(c) {
-  if (c === 'DEFINITE') return 'ESTABLISHED REPORTING ISSUE';
-  if (c === 'PROBABLE') return 'PROBABLE REPORTING ISSUE';
-  return 'POTENTIAL REPORTING ISSUE';
+function confidencePill() {
+  return 'Reporting issue';
 }
 
 /* OWNER-PACKET-CORRESPONDENCE-001: the consumer-visible name of each necessary correspondence detail. */
@@ -961,7 +959,8 @@ function renderPacketBlock(pv) {
   const rows = issues.map((i) => `
     <label class="issue-select">
       <input type="checkbox" data-check-issue="${esc(i.issue_id)}" ${(packet.selected_issue_ids || []).includes(i.issue_id) ? 'checked' : ''}>
-      <span class="pill">${confidencePill(i.confidence)}</span>
+      <span class="pill">${confidencePill()}</span>
+      ${i.account_identity && i.account_identity.name ? `<span class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></span>` : ''}
       <strong>${esc(i.explanation)}</strong>
       <span class="evidence">Why: ${esc(i.uncertainty)}</span>
       ${i.report_identity ? `<span class="evidence">Report: <b>${esc(i.report_identity.bureau || 'a report')}</b>${i.report_identity.reference_date ? ` · reference date <b>${esc(i.report_identity.reference_date)}</b>` : ''}</span>` : ''}

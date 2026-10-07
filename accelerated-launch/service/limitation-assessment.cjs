@@ -337,29 +337,25 @@ function labelledDates(record) {
 }
 
 /**
- * The report's own words for an adverse action. A meaning that says only "non derogatory" is NOT adverse: the
- * negation is read before the term, so an account the report calls satisfactory is never treated as adverse.
+ * Only the report's explicit collection, write-off or charge-off meaning can support a claim indicator.
+ * A generic payment rating or a closure description does not establish an outstanding claim.
  */
-function meaningIsAdverse(meaning) {
-  const text = String(meaning || '');
-  if (!text) return false;
-  if (/bad debt|placed for collection|turned over to collection|collection agency|write-?off|charge-?off/i.test(text)) return true;
-  return /derogatory/i.test(text) && !/non[-\s]?derogatory/i.test(text);
+function meaningDescribesClaim(meaning) {
+  return /bad debt|placed for collection|turned over to collection|collection agency|write-?off|charge-?off/i.test(String(meaning || ''));
 }
 
-/** The manner-of-payment cells whose meaning the report itself prints as adverse. Never a guessed meaning. */
-function adverseRatingEvidence(record) {
+/** Payment cells whose own printed legend describes collection or write-off. */
+function claimRatingEvidence(record) {
   const facts = (record && record.facts) || {};
   const cells = Array.isArray(facts['account.paymentHistoryCells']) ? facts['account.paymentHistoryCells'] : [];
-  return cells.filter((c) => meaningIsAdverse(c && c.meaning));
+  return cells.filter((c) => meaningDescribesClaim(c && c.meaning));
 }
 
 /**
- * The narrative codes this account prints whose OWN printed legend describes an adverse action. A CLOSURE is
- * deliberately NOT adverse here: "Account closed/rating non derogatory" and "Closed at consumer's request" are
- * closures, and a satisfactory old account is never treated as adverse merely because it is old.
+ * The narrative codes this account prints whose own legend describes collection or write-off.
+ * A closure code alone does not establish an outstanding claim.
  */
-function adverseNarrativeEvidence(record) {
+function claimNarrativeEvidence(record) {
   const material = (record && record.account_material) || {};
   const legend = material.narrative_legend && typeof material.narrative_legend === 'object' ? material.narrative_legend : {};
   const rows = Array.isArray(record && record.monthly_rows) ? record.monthly_rows : [];
@@ -368,7 +364,7 @@ function adverseNarrativeEvidence(record) {
     for (const code of row.narrative_codes || []) {
       const key = Object.keys(legend).find((k) => k.toUpperCase() === String(code).toUpperCase());
       const meaning = key ? String(legend[key]) : null;
-      if (meaningIsAdverse(meaning)) {
+      if (meaningDescribesClaim(meaning)) {
         out.push({ code: String(code).toUpperCase(), meaning, period: row.period || null, location: row.location || null });
       }
     }
@@ -376,15 +372,15 @@ function adverseNarrativeEvidence(record) {
   return out;
 }
 
-/** Whether the entry is an ADVERSE DEBT at all. A satisfactory old account is never adverse merely because old. */
-function adverseDebtView(record) {
+/** The exact printed facts that may support an outstanding court claim, without account valence. */
+function printedClaimView(record) {
   const facts = (record && record.facts) || {};
   const indicators = [];
-  const ratings = adverseRatingEvidence(record);
+  const ratings = claimRatingEvidence(record);
   if (ratings.length) {
-    indicators.push({ kind: 'PRINTED_ADVERSE_PAYMENT_RATING', count: ratings.length, example: ratings[ratings.length - 1] });
+    indicators.push({ kind: 'PRINTED_COLLECTION_OR_WRITE_OFF_RATING', count: ratings.length, example: ratings[ratings.length - 1] });
   }
-  const narratives = adverseNarrativeEvidence(record);
+  const narratives = claimNarrativeEvidence(record);
   if (narratives.length) {
     indicators.push({ kind: 'PRINTED_COLLECTION_OR_WRITE_OFF_NARRATIVE', count: narratives.length, example: narratives[narratives.length - 1] });
   }
@@ -407,7 +403,7 @@ function adverseDebtView(record) {
     indicators.push({ kind: 'PRINTED_DEFAULTED_DATE', value: record.printed.Defaulted.raw || record.printed.Defaulted.normalized });
   }
   return {
-    is_adverse_debt: indicators.length > 0,
+    has_printed_claim_indicator: indicators.length > 0,
     indicators,
     amounts: { balance, past_due: pastDue }
   };
@@ -466,14 +462,14 @@ function referenceDateOf(extraction) {
  */
 function assessRecord(record, params, clock) {
   const recordIndex = record && Number.isInteger(record.record_index) ? record.record_index : null;
-  const adverse = adverseDebtView(record);
-  if (!adverse.is_adverse_debt) {
+  const claim = printedClaimView(record);
+  if (!claim.has_printed_claim_indicator) {
     return {
       withheld: true,
-      reason: 'NOT_AN_ADVERSE_DEBT',
+      reason: 'NO_PRINTED_OUTSTANDING_CLAIM',
       record_index: recordIndex,
-      plain: 'This entry does not read as an unpaid or adverse debt, so the court time limit was not applied to it.',
-      missing_prerequisite: 'an adverse-debt indicator printed on this entry (an adverse rating, a collection or charge-off action, an amount past due or an adverse status)'
+      plain: 'This entry does not print an outstanding amount, amount past due, collection, charge-off or default claim, so the court time limit was not applied to it.',
+      missing_prerequisite: 'a printed indicator of an outstanding claim (an amount past due, a collection or charge-off action, or a default status)'
     };
   }
   const dates = labelledDates(record);
@@ -482,7 +478,7 @@ function assessRecord(record, params, clock) {
       withheld: true,
       reason: 'NO_PRINTED_START_DATE',
       record_index: recordIndex,
-      adverse_indicators: adverse.indicators,
+      claim_indicators: claim.indicators,
       plain: 'This entry reads as an unpaid debt but prints no date from which the court time limit could be counted, so nothing was concluded from a missing date.',
       missing_prerequisite: 'a printed date that can start the clock (a first-delinquency, collection, charge-off, original-listing or last-payment date)'
     };
@@ -504,8 +500,8 @@ function assessRecord(record, params, clock) {
     withheld: false,
     record_index: recordIndex,
     kind: record && record.kind ? record.kind : null,
-    adverse_indicators: adverse.indicators,
-    amounts: adverse.amounts,
+    claim_indicators: claim.indicators,
+    amounts: claim.amounts,
     jurisdiction: {
       region_code: params.region_code,
       label: params.jurisdiction_label,
@@ -644,10 +640,10 @@ module.exports = {
   parametersFor,
   recordedJurisdictions,
   labelledDates,
-  adverseDebtView,
-  adverseRatingEvidence,
-  adverseNarrativeEvidence,
-  meaningIsAdverse,
+  printedClaimView,
+  claimRatingEvidence,
+  claimNarrativeEvidence,
+  meaningDescribesClaim,
   daysBetweenIso,
   addYearsIso,
   yearsBetween,

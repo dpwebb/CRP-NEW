@@ -106,7 +106,7 @@ async function run(t, check) {
 
   /* Step 3: the potential issue card renders (never NOT_DETECTED, never failed-check diagnostics). */
   vm.runInContext('state.caseId = "case_stub"; state.view = __VIEW; state.step = 3; render();', ctx);
-  check.ok(/Potential reporting issues for your review/.test(panel.innerHTML), 'the results step renders the potential-issue section');
+  check.ok(/Reporting issues for your review/.test(panel.innerHTML), 'the results step renders the unified issue section');
   check.ok(/opened date later than its closed date/.test(panel.innerHTML), 'and states what the report says');
   check.ok(/not, by itself, an established legal violation/.test(panel.innerHTML), 'and its specific uncertainty');
   check.ok(!/NOT_DETECTED/.test(panel.innerHTML), 'and never surfaces a NOT_DETECTED diagnostic as a card');
@@ -117,7 +117,7 @@ async function run(t, check) {
   const packetBlock = panel.children.get('#packet-block');
   check.ok(packetBlock, 'the review step mounts the correction-packet block');
   check.ok(/Correction packet/.test(packetBlock.innerHTML), 'with a correction-packet heading');
-  check.ok(/POTENTIAL REPORTING ISSUE/.test(packetBlock.innerHTML), 'with the confidence label');
+  check.ok(/Reporting issue/.test(packetBlock.innerHTML), 'with a single consumer issue label');
   check.ok(/opened date later than its closed date/.test(packetBlock.innerHTML), 'with the issue explanation');
   check.ok(/data-check-issue=/.test(packetBlock.innerHTML), 'with a per-issue selection checkbox');
   check.ok(/packet-wording/.test(packetBlock.innerHTML), 'with a consumer wording textarea kept separate from the report facts');

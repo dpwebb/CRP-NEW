@@ -27,7 +27,7 @@ const GRANTS = Object.freeze({
   report_once: Object.freeze({
     headline: 'Unlock this report',
     grants: Object.freeze([
-      'the complete assessment of the report already uploaded for this case, including every violation, probable violation and potential issue that was found',
+      'the complete assessment of the report already uploaded for this case, including every reporting issue that was found',
       'the report facts and the plain-English explanations behind those issues, and the next steps that apply to them',
       'the complete assessment download for that report',
       'this unlock covers that one report only: it does not include dispute packets or the subscriber features'

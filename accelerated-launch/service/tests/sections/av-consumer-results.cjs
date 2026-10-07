@@ -82,7 +82,7 @@ async function run(t, check) {
   check.ok(!/readable|could not be read/i.test(`${probablePlain.headline} ${probablePlain.detail}`), 'a probable finding never calls its uncertainty a reading failure');
   check.match(probablePlain.headline, /unverified/, 'and names its own specific uncertainty (an unverified correspondence)');
   const definitePlain = results.plainStatement(Object.assign({}, probableMachine, { finding: { classification: 'VIOLATION' } }), null, 1, 'account');
-  check.ok(/established reporting issue/.test(definitePlain.detail), 'a definite finding keeps its established wording');
+  check.ok(/printed date exceeds the reporting period/.test(definitePlain.detail), 'the finding states the decisive date comparison without a tier label');
   check.ok(!/probable/i.test(definitePlain.detail), 'and never carries the probable lead');
 
   evidence.prioritization = 'deterministic evidence-backed ordering; no arbitrary rank/score field';

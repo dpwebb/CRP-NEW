@@ -39,7 +39,7 @@ const PROBABLE_LINES = [
 ];
 
 /* A minimal node:vm context (mirroring k-ui-smoke.cjs) to render the consumer UI card for a finding. */
-function renderUIFinding(observation) {
+function renderUIFinding(renderedResult) {
   const nodes = new Map();
   const element = (id) => {
     if (!nodes.has(id)) nodes.set(id, { id, innerHTML: '', textContent: '', className: '', value: '', disabled: false, style: {}, dataset: {}, files: [], onclick: null, onchange: null, scrollIntoView() {}, querySelectorAll: () => [], querySelector: () => null });
@@ -59,22 +59,7 @@ function renderUIFinding(observation) {
   ctx.window.location = { assign: () => {} };
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', '..', 'ui', 'app.js'), 'utf8'), ctx);
-  const result = {
-    support: 'ACTUAL_REPORT_EVIDENCE',
-    presentation_evidence: true,
-    jurisdiction: { country: 'US', region: 'US-CA' },
-    checks_performed: 1,
-    observations: [observation],
-    report_consistency_checks: [],
-    unresolved_report_fields: [{plain:'INTERNAL_INCOMPLETE_READING',raw_reading:'INTERNAL_UNACCEPTED_VALUE'}],
-    checks_not_run: [],
-    checks_unresolved: [{plain:'INTERNAL_UNCOMPLETED_CHECK'}],
-    checks_not_applicable: [],
-    checks_not_examinable: [],
-    assessment: { plain: 'This assessment contains one recorded rule comparison.' },
-    qualifications: ['These are observations from your report, not legal findings.'],
-    disclaimer: 'This assessment covers the checks listed in this report.'
-  };
+  const result = renderedResult;
   vm.runInContext('state.view = { case: { country: "US", region: "US-CA" }, result: ' + JSON.stringify(result) + ', assessment_access: { complete_assessment: true, complete_assessment_via: "SUBSCRIPTION", assessment_download: true, dispute_packet: true, purchase_choices: [] }, assessment_summary: { result_id: "res_aw", created_at: "2026-10-05T00:00:00.000Z", distinct_total: 0, by_confidence: { violation: 0, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ["REMOVE_ENTRY", "ADD_CONTENT", "INCONSISTENCY"] } }; state.step = 3; render();', ctx);
   return nodes.get('panel').innerHTML;
 }
@@ -97,13 +82,13 @@ async function run(t, check) {
   /* 3. uncertainty — a VIOLATION is established (resolved); a PROBABLE names the unavailable decisive fact. */
   check.equal(vFinding.classification, 'VIOLATION', 'the established internal classification is explicit');
   check.equal(vFinding.consumer_label, 'Reporting issue', 'the consumer label is the plain reporting-issue wording');
-  check.ok(vFinding.detail.indexOf('established reporting issue') !== -1, 'the established explanation agrees with the classification');
+  check.ok(/printed date exceeds the reporting period/.test(vFinding.detail), 'the explanation states the decisive date comparison');
   check.equal(vFinding.decisive_facts_unavailable, null, 'a resolved finding has no unavailable decisive fact');
 
   const probable = render(PROBABLE_LINES);
   const pFinding = probable.observations.find((o) => o.is_a_finding && o.check_name && o.check_name.indexOf('1785.13') !== -1);
   check.equal(pFinding.classification, 'PROBABLE_VIOLATION', 'the probable internal classification is explicit');
-  check.equal(pFinding.consumer_label, 'Probable reporting issue', 'the probable consumer label preserves the uncertainty wording');
+  check.equal(pFinding.consumer_label, 'Reporting issue', 'the consumer label uses the same issue wording');
   check.ok(Array.isArray(pFinding.decisive_facts_unavailable) && pFinding.decisive_facts_unavailable.length > 0, 'a probable finding names its unavailable decisive fact');
   check.equal(pFinding.decisive_facts_unavailable[0].identity, 'publicRecord.bankruptcyOrderForReliefDate.historical_correspondence', 'the unavailable decisive fact is named exactly');
   check.ok(pFinding.qualification.indexOf('probable reporting issue') !== -1, 'the probable qualification says probable');
@@ -120,9 +105,9 @@ async function run(t, check) {
   check.ok(vBody.indexOf(vFinding.check_name) !== -1, 'the report carries the same rule citation');
   check.ok(vBody.indexOf(vFinding.rule_source_version) !== -1, 'the report carries the same source version');
   check.ok(vBody.indexOf('January 1, 2011') !== -1 && vBody.indexOf('2011-01-01') !== -1, 'the report carries the same raw fact and normalization');
-  check.ok(/established reporting issue/.test(vBody), 'the report agrees with the VIOLATION classification');
+  check.ok(/printed date exceeds the reporting period/.test(vBody), 'the report carries the decisive date comparison without a confidence tier');
   const pBody = journey.assessmentReportBody(probable, '2026-10-03T00:00:00.000Z');
-  check.ok(/probable/.test(pBody) && /unverified/.test(pBody), 'the report agrees with the PROBABLE classification and its material unknown');
+  check.ok(/unverified/.test(pBody) && !/probable reporting issue/.test(pBody), 'the report carries the material unknown without a confidence tier');
 
   /* 5. Missing/conflicting evidence never produces a misleading explanation. */
   const withheld = render([
@@ -136,22 +121,22 @@ async function run(t, check) {
   check.ok(withheld.observations.every((o) => !o.qualification || o.qualification.indexOf('established reporting issue') === -1), 'a withheld check never claims an established reporting issue');
 
   /* 6. The on-screen card renders the classification, source fact, rule version and decisive fact. */
-  const ui = renderUIFinding(vFinding);
+  const ui = renderUIFinding(violation);
   check.ok(/Reporting issue/.test(ui), 'the on-screen card labels the consumer reporting-issue wording');
-  check.ok(/Rule version/.test(ui), 'the on-screen card shows the rule version');
-  check.ok(/Source fact/.test(ui) && /January 1, 2011/.test(ui) && /2011-01-01/.test(ui), 'the on-screen card shows the raw fact and normalization');
-  const pui = renderUIFinding(pFinding);
-  check.ok(/Probable reporting issue/.test(pui), 'the on-screen card labels the probable consumer wording');
-  check.ok(/Decisive fact unavailable/.test(pui), 'the on-screen card names the unavailable decisive fact');
-  check.ok(pui.indexOf(issues.PROBABLE_LEAD) !== -1, 'the on-screen card shows the approved probable lead sentence');
+  check.ok(/January 1, 2011|2011-01-01/.test(ui), 'the on-screen card shows the decisive printed date');
+  check.ok(!/output level|Check:/.test(ui), 'the on-screen card omits internal check distinctions');
+  const pui = renderUIFinding(probable);
+  check.ok(/Reporting issue/.test(pui), 'the on-screen card uses the same consumer issue label');
+  check.ok(/unverified|cannot be established/.test(pui), 'the on-screen card names the material uncertainty');
+  check.ok(pui.indexOf(issues.PROBABLE_LEAD) === -1, 'the on-screen card omits the generic confidence tier lead');
   check.ok(!/could not be read|not readable/i.test(pui), 'and the card never calls the uncertainty a reading failure');
   check.ok(!/not legal advi[cs]e/i.test(ui+pui+vBody+pBody), 'owner imperative: finding UI and reports have no legal-advice disclaimer');
   check.ok(!/INTERNAL_INCOMPLETE_READING|INTERNAL_UNCOMPLETED_CHECK|INTERNAL_UNACCEPTED_VALUE/.test(ui+pui), 'owner imperative: incomplete finding qualifications stay internal');
   check.ok(!/LIMITATIONS AND QUALIFICATIONS|READING WAS INCOMPLETE|COULD NOT BE READ CONFIDENTLY/.test(vBody+pBody), 'owner imperative: downloaded reports omit incomplete-check qualification sections');
   check.ok(!/PROBABLE VIOLATION\s*—\s*NOT A LEGAL FINDING/.test(pui), 'owner imperative: probable finding is not labelled a non-finding');
   const incomplete = { ...vFinding, assessment_completed: false, headline: 'INTERNAL_UNFINISHED_COMPARISON' };
-  const emptyUI = renderUIFinding(incomplete);
-  check.ok(!/INTERNAL_UNFINISHED_COMPARISON/.test(emptyUI) && /No findings available/.test(emptyUI) && !/fully compliant|no violations/i.test(emptyUI), 'owner imperative: incomplete comparison stays internal and empty results do not assert compliance');
+  const emptyUI = renderUIFinding({ ...violation, issues: [], observations: [incomplete] });
+  check.ok(!/INTERNAL_UNFINISHED_COMPARISON/.test(emptyUI) && /did not find a reporting issue/.test(emptyUI) && !/fully compliant|no violations/i.test(emptyUI), 'owner imperative: incomplete comparison stays internal and empty results do not assert compliance');
 
   evidence.report_fact = 'exact raw printed value, normalization and owning page/line location are surfaced';
   evidence.rule_basis = 'the applicable citation and the admitted source-version digest are surfaced';
