@@ -37,6 +37,7 @@
  */
 
 const { FACT_STATUS } = require('../../../internal-validation/ca-ns-last-payment-six-year/constants.cjs');
+const { gbDefinitionForCode, gbPeriodDefinition, gbPeriodAt } = require('../report-code-definitions.cjs');
 
 const FAMILY_ID = 'FAM-GB-EXP-CONSUMER';
 
@@ -112,9 +113,36 @@ function readable(text) {
 function documentLines(model) {
   const lines = [];
   for (const page of model.pages) {
-    page.lines.forEach((text, index) => lines.push({ page: page.page, line: index + 1, text }));
+    const normalized = (text) => readable(String(text).replace(/&amp;/g, '&').replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'"))
+      .trim().replace(/\s+/g, ' ');
+    const rows = [];
+    for (const word of (page.word_boxes || []).slice().sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0)) {
+      if (![word.x0, word.y0, word.x1, word.y1].every(Number.isFinite)) continue;
+      let row = rows.find((entry) => Math.abs(entry.y0 - word.y0) <= 2);
+      if (!row) { row = { y0: word.y0, words: [] }; rows.push(row); }
+      row.words.push(word);
+    }
+    const used = new Set();
+    page.lines.forEach((text, index) => {
+      const matches = rows.filter((entry) => normalized(entry.words.slice()
+        .sort((a, b) => a.x0 - b.x0).map((word) => word.text).join(' ')) === normalized(text));
+      const occurrences = page.lines.filter((line) => normalized(line) === normalized(text)).length;
+      const row = occurrences === matches.length ? matches.find((entry) => !used.has(entry)) : null;
+      if (row) used.add(row);
+      lines.push({ page: page.page, line: index + 1, text,
+        trusted: !(page.word_boxes || []).length || !normalized(text) || Boolean(row)
+          && row.words.every((word) => word.trusted !== false),
+        ...(row ? { x0: Math.min(...row.words.map((word) => word.x0)), y0: Math.min(...row.words.map((word) => word.y0)),
+          x1: Math.max(...row.words.map((word) => word.x1)), y1: Math.max(...row.words.map((word) => word.y1)) } : {}) });
+    });
   }
   return lines;
+}
+
+function readingLocation(entry, label) {
+  return { page: entry.page, line: entry.line, label, trusted: entry.trusted !== false,
+    ...(Number.isFinite(entry.x0) ? { x0: entry.x0, y0: entry.y0, x1: entry.x1, y1: entry.y1 } : {}) };
 }
 
 function isHeading(text) {
@@ -259,7 +287,7 @@ const FAMILY_CONTRACT = Object.freeze({
     'The artifact\'s own face states that its information is fictitious and that it is issued for training and educational purposes. It is admitted as CONSUMER-FORMAT STRUCTURE evidence only: no data on it is treated as any person\'s data, and it establishes no presentation evidence about any consumer.',
     'It evidences ONE bureau\'s GB consumer presentation. No TransUnion GB or Equifax GB layout is admitted or claimed.',
     'PR-01\'s digest gate is untouched and still governs the Canadian presentation, and the Australian and United States families are untouched. This contract is an additional admissions path, not a relaxation of any other.',
-    'BLOCKER-REPORT-DATA-TO-ISSUE-001: this reader maps the printed material it ALREADY reads (balance, current balance, credit limit, default amount, status history, and the printed `JOINT ACCOUNT` marker) to the shared ordinary-account fact vocabulary. It does NOT read the creditor/type line or decode the status-history codes: the artifact prints its creditor name and account type in at least three different arrangements on its own items (so the two are not separable without a cell-width assumption), and it prints NO status-code legend (its prose points to a separate leaflet), so every status-history cell is marked uncertain and no code is guessed. No balance/past-due comparison can run on this presentation: it prints no past-due and no payment amount.'
+    'BLOCKER-REPORT-DATA-TO-ISSUE-001: printed account facts reach the shared vocabulary. Status-history meanings use separately pinned Experian definitions, including CURRENT ACCOUNT-specific meanings. Only ongoing histories with a usable own reporting-period caption acquire calculated months under the published newest-first order; both sources remain explicit. Settled/default timelines and unknown/untrusted readings remain unresolved. No balance/past-due comparison can run on the accepted sample: it prints no past-due or payment amount.'
   ]
 });
 
@@ -326,7 +354,7 @@ function labeledTokens(lines, labels, dateLabels = []) {
           const nextIsLabel = ordered.some((candidate) => valueText.startsWith(candidate)
             && (valueText.length === candidate.length || /\s/.test(valueText.charAt(candidate.length))));
           let end = valueText.length;
-          const completeValue = ['Balance', 'Current Balance', 'Credit Limit', 'Default'].includes(label)
+          const completeValue = ['Balance', 'Current Balance', 'Credit Limit', 'Default', 'Status history'].includes(label)
             || dateLabels.includes(label);
           if (completeValue) {
             for (const nextLabel of ordered) {
@@ -343,7 +371,7 @@ function labeledTokens(lines, labels, dateLabels = []) {
           }
           const token = nextIsLabel ? '' : completeValue
             ? valueText.slice(0, end).trim() : (valueText.match(/\S+/) || [''])[0];
-          out.push({ label, page: entry.page, line: entry.line, token, value_present: token.length > 0 });
+          out.push({ ...entry, label, token, value_present: token.length > 0 });
           i += label.length + (offset === -1 ? 1 : offset + token.length);
           continue;
         }
@@ -373,7 +401,7 @@ function multiWordValues(lines, label, labels) {
       if (next !== -1 && (next === 0 || /\s/.test(text.charAt(next - 1))) && next < cut) cut = next;
     }
     const value = text.slice(at + label.length, cut).trim();
-    out.push({ label, page: entry.page, line: entry.line, token: value, value_present: value.length > 0 });
+    out.push({ ...entry, label, token: value, value_present: value.length > 0 });
   }
   return out;
 }
@@ -385,7 +413,7 @@ function printedValue(label, hits, pageUnread, isDate) {
   }
   if (!hits.length) return { label, state: 'NOT_PRINTED', raw: null, normalized: null, reason: 'LABEL_NOT_PRINTED_ON_THIS_RECORD', location: null };
   const hit = hits[0];
-  const location = { page: hit.page, line: hit.line, label };
+  const location = readingLocation(hit, label);
   if (!hit.value_present) {
     return { label, state: 'LABEL_PRINTED_WITHOUT_VALUE', raw: null, normalized: null, reason: 'LABEL_PRINTED_WITHOUT_VALUE', location };
   }
@@ -415,21 +443,36 @@ function amountOf(raw) {
 
 /**
  * The printed status-history characters of one credit account, as raw cells. The artifact does NOT print its
- * status-code legend: its own prose directs the reader to a separate explanatory leaflet. So NO cell is given a
- * meaning, no cell is given a period (the artifact prints none), and every cell is marked UNCERTAIN. An unread
- * or unlistable code is never decoded by guessing and is never treated as a missed payment.
+ * status-code legend: its own prose directs the reader to a separate explanatory leaflet. The reviewed issuer
+ * guide supplies external meanings and ordering. An ongoing item's own reporting-period caption supplies its
+ * latest month; each earlier month is calculated by the published ordering. Both sources accompany each cell.
+ * Settled/default histories retain meanings but no guessed month, and unknown/untrusted codes remain unresolved.
  */
-function statusHistoryCells(raw, location) {
+function statusHistoryCells(raw, location, printed, accountType) {
   if (raw === undefined || raw === null) return [];
-  return Array.from(String(raw)).flatMap((code, index) => /[A-Za-z0-9]/.test(code) ? [{
-    period: null,
-    code,
-    meaning: null,
-    uncertain: true,
-    location: location ? { ...location } : null,
-    source_field: 'Status history',
-    code_index: index + 1
-  }] : []);
+  const text = String(raw), shape = /^[0-9A-Z?]{1,12}$/.test(text);
+  const update = valueOf(printed['File updated for the period to']);
+  // The guide places settled codes before settlement; an update is not that boundary.
+  // A default code describes a default, not the beginning of a monthly repayment episode.
+  const ongoing = printed.Settled.state === 'NOT_PRINTED' && printed.Defaulted.state === 'NOT_PRINTED'
+    && printed.Default.state === 'NOT_PRINTED'
+    && !printed.Balance.readings.some((reading) => /^Satisfied$/i.test(String(reading.raw || '')));
+  const usableAnchor = ongoing && update && update.normalized && update.location?.trusted === true;
+  return Array.from(text).map((code, index) => {
+    const definition = gbDefinitionForCode(code, accountType);
+    const period = shape && usableAnchor ? gbPeriodAt(update.normalized, index + 1) : null;
+    const reason = !shape ? 'MALFORMED_STATUS_HISTORY_READING' : location?.trusted !== true ? 'UNTRUSTED_HISTORY_READING'
+      : !definition ? 'CODE_NOT_DEFINED_BY_REVIEWED_ISSUER_GUIDE' : !period ? 'OWN_HISTORY_PERIOD_NOT_ESTABLISHED' : null;
+    return { period, code, raw_code: code, raw_history: text, code_index: index + 1,
+      meaning: definition?.meaning || null, code_definition: definition,
+      performance_usable: Boolean(period && !reason && definition?.performance_usable),
+      uncertain: Boolean(reason), reason, location: location ? { ...location } : null, source_field: 'Status history',
+      ...(period ? { raw_period: `reporting period to ${update.raw}; most recent first; position ${index + 1}`,
+        period_location: { anchor: { ...update.location, raw_value: update.raw, normalized_value: update.normalized } },
+        period_definition: gbPeriodDefinition(),
+        period_derivation: { kind: 'OWN_UPDATE_MONTH_AND_PUBLISHED_ORDER',
+          anchor_field: update.label, anchor_date: update.normalized, anchor_raw: update.raw, ordinal: index + 1 } } : {}) };
+  });
 }
 
 /**
@@ -437,7 +480,7 @@ function statusHistoryCells(raw, location) {
  * solely held one. Absence is NEVER read as `INDIVIDUAL`: only the printed marker is mapped.
  */
 function headingReading(label, entries, pageUnread) {
-  const hits = entries.map((entry) => ({ page: entry.page, line: entry.line,
+  const hits = entries.map((entry) => ({ ...entry,
     token: readable(entry.text).trim().replace(/\s+/g, ' '), value_present: true }));
   return { ...printedValue(label, hits, pageUnread, false), printed_times_in_record: hits.length };
 }
@@ -551,7 +594,8 @@ function buildRecord(kind, region, index, unread) {
       : tokens.filter((t) => t.label === label);
     printed[label] = Object.assign(
       printedValue(label, hits, pageUnread, dateFields.includes(label)),
-      { printed_times_in_record: hits.length }
+      { printed_times_in_record: hits.length,
+        readings: hits.map((hit) => ({ raw: hit.token, location: readingLocation(hit, label) })) }
     );
   }
   /* OWNER-POTENTIAL-ISSUE-001 ordinary-field batch: map the fields this family already reads (Started/Settled on a
@@ -602,12 +646,6 @@ function buildRecord(kind, region, index, unread) {
       const defaultAmount = amountOf(defaulted.raw);
       if (defaultAmount !== undefined) retain('account.defaultAmount', defaultAmount, defaulted);
     }
-    const history = valueOf(printed['Status history']);
-    if (history) {
-      retain('account.statusHistoryRaw', history.raw, history);
-      const cells = statusHistoryCells(history.raw, history.location);
-      if (cells.length) retain('account.paymentHistoryCells', cells, history);
-    }
     printed['account.responsibility'] = headingReading('JOINT ACCOUNT', region.filter((entry) =>
       readable(entry.text).trim().toUpperCase() === 'JOINT ACCOUNT'), pageUnread);
     const joint = valueOf(printed['account.responsibility']);
@@ -637,9 +675,18 @@ function buildRecord(kind, region, index, unread) {
         normalized: type, reason: null, printed_times_in_record: 1, location: { ...identity.location } };
       retain('account.type', type, printed['account.type']);
     }
+    const history = valueOf(printed['Status history']);
+    if (history) retain('account.statusHistoryRaw', history.raw, history);
+    const historyReadings = pageUnread ? [] : tokens.filter((token) => token.label === 'Status history' && token.value_present)
+      .map((token) => ({ raw: token.token, location: readingLocation(token, 'Status history') }));
+    printed['Status history'].readings = historyReadings;
+    const cells = historyReadings.flatMap((reading) => statusHistoryCells(reading.raw, reading.location,
+      printed, facts['account.type']));
+    if (cells.length) facts['account.paymentHistoryCells'] = cells;
   }
   return {
     record_index: index,
+    reader_family_id: FAMILY_ID,
     kind,
     kind_label: kind === 'GB_CREDIT_ACCOUNT' ? 'credit account' : (kind === 'GB_PUBLIC_RECORD' ? 'public record' : 'previous search'),
     section: kind === 'GB_CREDIT_ACCOUNT' ? 'Credit account information'
