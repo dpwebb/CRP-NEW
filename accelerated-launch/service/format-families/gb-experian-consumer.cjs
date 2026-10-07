@@ -310,6 +310,9 @@ function labeledTokens(lines, labels) {
   const out = [];
   for (const entry of lines) {
     const text = readable(entry.text);
+    // The captured account's policy paragraph begins with the word Settled. It is explanatory
+    // prose, not a second settlement-date caption on that account.
+    if (/^Settled accounts are kept on file\b/.test(text.trim())) continue;
     let i = 0;
     while (i < text.length) {
       const atBoundary = i === 0 || /\s/.test(text.charAt(i - 1));
@@ -319,7 +322,10 @@ function labeledTokens(lines, labels) {
         if (label) {
           const after = text.slice(i + label.length);
           const offset = after.search(/\S/);
-          const token = offset === -1 ? '' : (after.slice(offset).match(/\S+/) || [''])[0];
+          const valueText = offset === -1 ? '' : after.slice(offset);
+          const nextIsLabel = ordered.some((candidate) => valueText.startsWith(candidate)
+            && (valueText.length === candidate.length || /\s/.test(valueText.charAt(candidate.length))));
+          const token = nextIsLabel ? '' : (valueText.match(/\S+/) || [''])[0];
           out.push({ label, page: entry.page, line: entry.line, token, value_present: token.length > 0 });
           i += label.length + (offset === -1 ? 1 : offset + token.length);
           continue;
@@ -377,7 +383,8 @@ function printedValue(label, hits, pageUnread, isDate) {
 /** The lines of one item, from its own printed number to the next item number in the same region. */
 /** A printed VALUE reading, or null: a label that is not printed, is blank or could not be read maps nothing. */
 function valueOf(field) {
-  return field && field.state === 'VALUE' && field.raw ? field : null;
+  return field && field.state === 'VALUE' && field.raw && !field.reason
+    && field.printed_times_in_record === 1 ? field : null;
 }
 
 /**
@@ -398,22 +405,27 @@ function amountOf(raw) {
  * meaning, no cell is given a period (the artifact prints none), and every cell is marked UNCERTAIN. An unread
  * or unlistable code is never decoded by guessing and is never treated as a missed payment.
  */
-function statusHistoryCells(raw) {
+function statusHistoryCells(raw, location) {
   if (raw === undefined || raw === null) return [];
-  return String(raw).replace(/[^A-Za-z0-9]/g, '').split('').map((code) => ({
+  return Array.from(String(raw)).flatMap((code, index) => /[A-Za-z0-9]/.test(code) ? [{
     period: null,
     code,
     meaning: null,
-    uncertain: true
-  }));
+    uncertain: true,
+    location: location ? { ...location } : null,
+    source_field: 'Status history',
+    code_index: index + 1
+  }] : []);
 }
 
 /**
  * The artifact prints `JOINT ACCOUNT` as its own line on a jointly held credit account and prints nothing on a
  * solely held one. Absence is NEVER read as `INDIVIDUAL`: only the printed marker is mapped.
  */
-function jointMarkerPrinted(region) {
-  return region.some((entry) => readable(entry.text).trim().toUpperCase() === 'JOINT ACCOUNT');
+function headingReading(label, entries, pageUnread) {
+  const hits = entries.map((entry) => ({ page: entry.page, line: entry.line,
+    token: readable(entry.text).trim().replace(/\s+/g, ' '), value_present: true }));
+  return { ...printedValue(label, hits, pageUnread, false), printed_times_in_record: hits.length };
 }
 
 function itemRegions(model, heading, prefix) {
@@ -532,38 +544,60 @@ function buildRecord(kind, region, index, unread) {
      credit account) to the account lifecycle facts the account-dates check compares. Values are taken only from the
      printed reading; a missing or unresolved label maps nothing and never stops an independent check. */
   const facts = {};
+  const factSources = {};
+  /* Bind every shared fact to its OWN caption or heading, rather than locating a source by an equal
+     value. Started/Settled are the report's lifecycle captions; amounts and headings have their own
+     raw readings and locations even when they share a date or numeric value with another field. */
+  const retain = (field, value, reading) => {
+    facts[field] = value;
+    factSources[field] = { raw_value: reading.raw, normalized_value: value,
+      source_field: reading.label, location: { ...reading.location }, record_index: index,
+      status: FACT_STATUS.RESOLVED, reason: null, caption_count: reading.printed_times_in_record,
+      precision: dateFields.includes(reading.label) ? 'DAY' : null };
+  };
   if (kind === 'GB_CREDIT_ACCOUNT') {
-    if (printed.Started && printed.Started.normalized) facts['liability.openedDate'] = printed.Started.normalized;
-    if (printed.Settled && printed.Settled.normalized) facts['liability.closedDate'] = printed.Settled.normalized;
+    const started = valueOf(printed.Started), settled = valueOf(printed.Settled);
+    if (started && started.normalized) retain('liability.openedDate', started.normalized, started);
+    if (settled && settled.normalized) retain('liability.closedDate', settled.normalized, settled);
     /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (GB slice): this reader ALREADY reads the account's printed balance,
        current balance, credit limit, default amount and status history — and dropped them before the shared
        checks, so a GB report reached only the account-dates check. Map them now, keeping each printed raw
        reading. A presented reading the artifact does not print stays unmapped; nothing here is inferred. */
-    const balanceSource = valueOf(printed.Balance) || valueOf(printed['Current Balance']);
+    const balances = [valueOf(printed.Balance), valueOf(printed['Current Balance'])].filter(Boolean);
+    const numericBalances = balances.filter((reading) => amountOf(reading.raw) !== undefined);
+    const numericBalance = numericBalances.length && numericBalances.every((reading) =>
+      amountOf(reading.raw) === amountOf(numericBalances[0].raw)) ? numericBalances[0] : null;
+    // A printed nonnumeric Balance (such as Satisfied) cannot hide a separate Current Balance.
+    // Conflicting numeric captions, or a repeated balance caption, do not choose a current amount.
+    const repeatedBalance = [printed.Balance, printed['Current Balance']]
+      .some((reading) => reading.printed_times_in_record > 1);
+    const balanceSource = (!repeatedBalance && numericBalance) || balances[0];
     if (balanceSource) {
-      facts['account.balanceRaw'] = balanceSource.raw;
-      const balance = amountOf(balanceSource.raw);
-      if (balance !== undefined) facts['account.balance'] = balance;
+      retain('account.balanceRaw', balanceSource.raw, balanceSource);
+      if (!repeatedBalance && numericBalance) retain('account.balance', amountOf(numericBalance.raw), numericBalance);
     }
     const limit = valueOf(printed['Credit Limit']);
     if (limit) {
-      facts['account.creditLimitRaw'] = limit.raw;
+      retain('account.creditLimitRaw', limit.raw, limit);
       const creditLimit = amountOf(limit.raw);
-      if (creditLimit !== undefined) facts['account.creditLimit'] = creditLimit;
+      if (creditLimit !== undefined) retain('account.creditLimit', creditLimit, limit);
     }
     const defaulted = valueOf(printed.Default);
     if (defaulted) {
-      facts['account.defaultAmountRaw'] = defaulted.raw;
+      retain('account.defaultAmountRaw', defaulted.raw, defaulted);
       const defaultAmount = amountOf(defaulted.raw);
-      if (defaultAmount !== undefined) facts['account.defaultAmount'] = defaultAmount;
+      if (defaultAmount !== undefined) retain('account.defaultAmount', defaultAmount, defaulted);
     }
     const history = valueOf(printed['Status history']);
     if (history) {
-      facts['account.statusHistoryRaw'] = history.raw;
-      const cells = statusHistoryCells(history.raw);
-      if (cells.length) facts['account.paymentHistoryCells'] = cells;
+      retain('account.statusHistoryRaw', history.raw, history);
+      const cells = statusHistoryCells(history.raw, history.location);
+      if (cells.length) retain('account.paymentHistoryCells', cells, history);
     }
-    if (jointMarkerPrinted(region)) facts['account.responsibility'] = 'JOINT';
+    printed['account.responsibility'] = headingReading('JOINT ACCOUNT', region.filter((entry) =>
+      readable(entry.text).trim().toUpperCase() === 'JOINT ACCOUNT'), pageUnread);
+    const joint = valueOf(printed['account.responsibility']);
+    if (joint) retain('account.responsibility', 'JOINT', joint);
     /* BATCH-22 (BLOCKER-REPORT-DATA-TO-ISSUE-001, GB slice): the artifact PRINTS each credit account's heading —
        the lender name followed by the account type — on the line above its fields, and this reader already used
        that line to open the block but dropped the name. It is mapped now, so a GB account can take part in the
@@ -572,22 +606,22 @@ function buildRecord(kind, region, index, unread) {
        official example (CURRENT ACCOUNT / CREDIT CARD / LOAN / RENTAL — five accounts across those four forms).
        A block whose heading does not carry one of those printed forms maps no identity. */
     const GB_ACCOUNT_HEADING_FORMS = ['CURRENT ACCOUNT', 'CREDIT CARD', 'LOAN', 'RENTAL'];
-    const headingEntry = region.find((l) => {
+    const headingEntries = region.filter((l) => {
       const text = String(readable(l.text)).trim().replace(/\s+/g, ' ');
       return GB_ACCOUNT_HEADING_FORMS.some((form) => new RegExp('\\s' + form + '$').test(text));
     });
-    const headingLine = headingEntry && String(readable(headingEntry.text)).trim().replace(/\s+/g, ' ');
-    if (headingLine) {
-      facts['account.reported_identity'] = headingLine;
-      facts['account.reported_identityRaw'] = headingLine;
-      /* The heading's exact CREDIT CARD suffix is an account-type reading even when the
-         lender/type boundary cannot be separated for identity matching. Other forms are
-         not assigned revolving semantics. */
-      if (/\sCREDIT CARD$/.test(headingLine)) {
-        facts['account.type'] = 'CREDIT CARD';
-        printed['account.type'] = { label: 'Account type', state: 'VALUE', raw: 'CREDIT CARD',
-          normalized: 'CREDIT CARD', location: { page: headingEntry.page, line: headingEntry.line } };
-      }
+    printed['account.reported_identity'] = headingReading('Lender and account type heading', headingEntries, pageUnread);
+    const identity = valueOf(printed['account.reported_identity']);
+    if (identity) {
+      const headingLine = identity.raw;
+      retain('account.reported_identity', headingLine, identity);
+      retain('account.reported_identityRaw', headingLine, identity);
+      /* Retain the exact printed type suffix. CURRENT ACCOUNT, LOAN and RENTAL do not
+         acquire revolving semantics from this mapping. */
+      const type = GB_ACCOUNT_HEADING_FORMS.find((form) => headingLine.endsWith(` ${form}`));
+      printed['account.type'] = { label: 'Account type in lender heading', state: 'VALUE', raw: type,
+        normalized: type, reason: null, printed_times_in_record: 1, location: { ...identity.location } };
+      retain('account.type', type, printed['account.type']);
     }
   }
   return {
@@ -597,10 +631,12 @@ function buildRecord(kind, region, index, unread) {
     section: kind === 'GB_CREDIT_ACCOUNT' ? 'Credit account information'
       : (kind === 'GB_PUBLIC_RECORD' ? 'Public record information' : 'Previous searches'),
     boundary: { page: first.page, line: first.line },
+    location: { page: first.page, line: first.line },
     end: { page: last.page, line: last.line },
     page_read_failure: pageUnread,
     printed,
-    facts
+    facts,
+    fact_sources: factSources
   };
 }
 
