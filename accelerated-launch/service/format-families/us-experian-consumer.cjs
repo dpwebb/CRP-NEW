@@ -30,8 +30,8 @@
  *   • A LOW-CONFIDENCE READING IS UNRESOLVED, NOT ABSENT AND NOT GUESSED. When the local OCR reads a token
  *     below its recorded floor, or reads a token that is not a possible value, the fact is UNRESOLVED with
  *     the raw reading preserved beside it. It is never repaired from a neighbouring field.
- *   • AN UNREAD CELL IS NOT EVIDENCE. The account-history payment grid is graphical. This module reads no
- *     cell from it. It reads only the report's own printed annotation beside it.
+ *   • AN UNREAD CELL IS NOT EVIDENCE. Account-history cells retain their own printed year, month, code and
+ *     physical trust. Published code definitions are external evidence, never a fabricated report legend.
  */
 
 const { FACT_STATUS } = require('../../../internal-validation/ca-ns-last-payment-six-year/constants.cjs');
@@ -886,6 +886,138 @@ function accountBlocks(model) {
   return blocks;
 }
 
+const HISTORY_MONTHS = Object.freeze({ JAN: 1, FEB: 2, MAR: 3, APR: 4, MAY: 5, JUN: 6,
+  JUL: 7, AUG: 8, SEP: 9, SEPT: 9, OCT: 10, NOV: 11, DEC: 12 });
+const historyCenter = (word) => (word.x0 + word.x1) / 2;
+const historyMiddle = (word) => (word.y0 + word.y1) / 2;
+function historyTrust(word) {
+  return require('../payment-history-grid.cjs').wordTrust(word).trusted;
+}
+function historyLocation(word, page, trusted = historyTrust(word)) {
+  return word ? { page, x0: word.x0, y0: word.y0, x1: word.x1, y1: word.y1, trusted } : null;
+}
+function historyYearReading(word) {
+  const text = String(word.text || '');
+  return /^\d{4}$/.test(text) || /^[A-Za-z0-9[\]_.?+-]{4,6}$/.test(text)
+    && (text.match(/\d/g) || []).length >= 2;
+}
+
+/** This family's three-row grid prints sparse year headings above month and code cells. A year
+ * applies only from its own aligned column to the next printed year, within this account and grid.
+ * Do not infer a year from the report date, repair an OCR month/code, or shift cells past a blank. */
+function accountHistoryCells(block, model) {
+  const allRows = wordRows(model);
+  const cells = [];
+  const headings = block.lines.filter((line) => /^Account\s+history$/i.test(line.text.trim()));
+  for (const heading of headings) {
+    const after = block.lines.filter((line) => line.page === heading.page && line.y0 > heading.y0);
+    const stop = after.find((line) => /^(?:Account\s+history|Payment\s+history\s+guide)$/i.test(line.text.trim()));
+    const ownEnd = Math.max(...block.lines.filter((line) => line.page === heading.page && Number.isFinite(line.y1)).map((line) => line.y1));
+    const end = stop ? stop.y0 : ownEnd + 0.1;
+    const headingRow = allRows.find((row) => row.page === heading.page && Math.abs(row.y0 - heading.y0) < 2
+      && /^Account\s+history$/i.test(normalizedLine(row.words.map((word) => word.text).join(' '))));
+    const headingTrusted = Boolean(headingRow && headingRow.words.every(historyTrust));
+    const rows = allRows.filter((row) => row.page === heading.page && row.y0 > heading.y0 && row.y0 < end);
+    const monthRows = rows.filter((row) => row.words.some((word) => HISTORY_MONTHS[String(word.text).toUpperCase()])
+      && row.words.every((word) => /^[A-Za-z_]{2,5}$/.test(word.text)));
+    let priorMonth = heading.y0;
+    let priorCodeRows = new Set();
+    for (let position = 0; position < monthRows.length; position += 1) {
+      const monthRow = monthRows[position];
+      const months = monthRow.words.slice().sort((a, b) => a.x0 - b.x0);
+      const nextMonth = monthRows[position + 1];
+      const yearRows = rows.filter((row) => row.y0 > priorMonth && row.y0 < monthRow.y0
+        // The preceding code band belongs to its own month row. Remaining readings in this band
+        // are year evidence, including damaged tokens that must stop sparse-year propagation.
+        && row.words.length && !priorCodeRows.has(row));
+      priorMonth = monthRow.y0;
+      // Separate lines at the same height can be one sparse header. Two different header rows are ambiguous.
+      const yearWords = yearRows.flatMap((row) => row.words);
+      const yearAmbiguous = yearRows.length > 1 && Math.max(...yearRows.map((row) => row.y0))
+        - Math.min(...yearRows.map((row) => row.y0)) > 2;
+      const centers = months.map(historyCenter);
+      const toleranceAt = (index) => {
+        const gaps = [centers[index] - centers[index - 1], centers[index + 1] - centers[index]]
+          .filter((gap) => Number.isFinite(gap) && gap > 0);
+        return gaps.length ? Math.min(...gaps) * 0.45 : Math.max(6, (months[index].x1 - months[index].x0) * 0.75);
+      };
+      const slotOf = (word) => {
+        const distances = centers.map((center, index) => ({ index, distance: Math.abs(center - historyCenter(word)) }))
+          .sort((a, b) => a.distance - b.distance);
+        const nearest = distances[0];
+        return nearest && nearest.distance <= toleranceAt(nearest.index)
+          && (!distances[1] || Math.abs(nearest.distance - distances[1].distance) > 0.1) ? nearest.index : null;
+      };
+      const yearsAt = new Map();
+      const unmappedYears = [];
+      for (const year of yearWords) {
+        const index = slotOf(year);
+        if (index == null) { unmappedYears.push(year); continue; }
+        if (!yearsAt.has(index)) yearsAt.set(index, []);
+        yearsAt.get(index).push(year);
+      }
+      const nextYear = rows.find((row) => row.y0 > monthRow.y0 && row.words.length
+        && row.words.some((word) => historyYearReading(word)));
+      const cellEnd = Math.min(nextMonth ? nextMonth.y0 : end, nextYear ? nextYear.y0 : end);
+      const monthMiddle = Math.max(...months.map(historyMiddle));
+      const candidateEntries = rows.filter((row) => row !== monthRow && row.y0 < cellEnd
+        && row.y1 > monthRow.y1 && !monthRows.includes(row)).flatMap((row) => row.words.map((word) => ({ row, word })))
+        .filter(({ word }) => historyMiddle(word) > monthMiddle + 1
+          && /^[A-Za-z0-9[\]_.+-]{1,6}$/.test(word.text));
+      // A three-row grid has one code band immediately below its month row. Do not consume a
+      // later malformed year header as another code row, then hide it from the next dated band.
+      const firstCodeMiddle = Math.min(...candidateEntries.map(({ word }) => historyMiddle(word)));
+      const codeHeights = candidateEntries.map(({ word }) => word.y1 - word.y0)
+        .filter((height) => Number.isFinite(height) && height > 0).sort((a, b) => a - b);
+      const codeTolerance = Math.max(2, (codeHeights[Math.floor(codeHeights.length / 2)] || 8) * 0.75);
+      const codeEntries = candidateEntries.filter(({ word }) => historyMiddle(word) - firstCodeMiddle <= codeTolerance);
+      const candidates = codeEntries.map(({ word }) => word);
+      priorCodeRows = new Set(codeEntries.map(({ row }) => row));
+      const codesAt = new Map();
+      const unaligned = [];
+      for (const word of candidates) {
+        const index = slotOf(word);
+        if (index == null) { unaligned.push(word); continue; }
+        if (!codesAt.has(index)) codesAt.set(index, []);
+        codesAt.get(index).push(word);
+      }
+      let activeYears = null;
+      months.forEach((month, index) => {
+        if (yearsAt.has(index)) activeYears = yearsAt.get(index);
+        const year = activeYears && activeYears.length === 1 ? activeYears[0] : null;
+        const yearValid = Boolean(year && /^\d{4}$/.test(year.text) && Number(year.text) > 0);
+        const unmappedYear = unmappedYears.some((word) => historyCenter(word) <= centers[index]
+          && (!year || historyCenter(word) > historyCenter(year)));
+        const monthNumber = HISTORY_MONTHS[String(month.text).toUpperCase()];
+        const codes = codesAt.get(index) || [];
+        const code = codes.length === 1 ? codes[0] : null;
+        const normalizedCode = code ? String(code.text).toUpperCase() : null;
+        const definition = code ? require('../report-code-definitions.cjs').definitionForCode(normalizedCode) : null;
+        const reason = !headingTrusted ? 'HISTORY_HEADING_NOT_READABLE'
+          : yearAmbiguous || unmappedYear || activeYears && activeYears.length > 1 ? 'AMBIGUOUS_YEAR_HEADING'
+            : !year ? 'YEAR_NOT_PRINTED_FOR_CELL' : !yearValid || !historyTrust(year) ? 'YEAR_NOT_READABLE'
+              : !monthNumber ? 'UNKNOWN_MONTH' : !historyTrust(month) ? 'MONTH_NOT_READABLE'
+                : codes.length > 1 ? 'AMBIGUOUS_CODE_CELL' : !code ? 'CODE_CELL_NOT_READABLE'
+                  : !historyTrust(code) ? 'CODE_NOT_READABLE' : !definition ? 'UNKNOWN_HISTORY_CODE' : null;
+        const period = yearValid && !yearAmbiguous && !unmappedYear && historyTrust(year) && monthNumber && historyTrust(month)
+          ? `${year.text}-${String(monthNumber).padStart(2, '0')}` : null;
+        cells.push({ period, raw_period: year ? `${month.text} ${year.text}` : null,
+          code: normalizedCode, raw_code: code ? code.text : codes.map((word) => word.text).join(' ') || null,
+          meaning: !reason && definition ? definition.meaning : null,
+          uncertain: Boolean(reason), performance_usable: !reason && Boolean(definition && definition.performance_usable),
+          location: code ? historyLocation(code, heading.page, !reason) : null,
+          period_location: { month: historyLocation(month, heading.page), year: historyLocation(year, heading.page) },
+          source_field: 'Account history', code_definition: !reason ? definition : null, reason });
+      });
+      for (const word of unaligned) cells.push({ period: null, raw_period: null,
+        code: word.text, raw_code: word.text, meaning: null, uncertain: true, performance_usable: false,
+        location: historyLocation(word, heading.page, false), period_location: { month: null, year: null },
+        source_field: 'Account history', code_definition: null, reason: 'UNALIGNED_CODE_CELL' });
+    }
+  }
+  return cells;
+}
+
 /**
  * The report's own printed annotation of this account's most recent adverse payment rating, read from the
  * `Payment history guide` line inside the record. It is the account's own statement of the date of the
@@ -1009,6 +1141,8 @@ function buildAccountRecord(block, index, model) {
 
   const facts = {};
   const factSources = {};
+  const history = accountHistoryCells(block, model);
+  if (history.length) facts['account.paymentHistoryCells'] = history;
   for (const [field, reading] of [
     ['account.reported_identity', sharedName], ['account.masked_identifier', sharedNumber],
     ['account.type', sharedType], ['account.responsibility', sharedResponsibility], ['account.status', sharedStatus]
@@ -1059,6 +1193,7 @@ function buildAccountRecord(block, index, model) {
   return {
     record_index: index,
     kind: 'REPORTED_ACCOUNT',
+    reader_family_id: FAMILY_ID,
     kind_label: 'reported account',
     /* Extraction status: was this record readable at all? Applicability is a SEPARATE field, resolved by the
        shared evaluation contract, and comparison outcome is a third field. None is read as another. */
@@ -1434,5 +1569,6 @@ module.exports = {
   locateInquiries,
   accountBlocks,
   locateAdverseRating,
+  accountHistoryCells,
   squash
 };
