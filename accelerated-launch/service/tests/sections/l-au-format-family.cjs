@@ -116,7 +116,8 @@ function realEvidence(check, checkSkip) {
     "the second record prints the report's own repayment status");
   check.equal(liabilities[0].printed.current_repayment_status.raw, null,
     'and the first prints none');
-  check.deepEqual(liabilities[0].facts, {
+  check.deepEqual(Object.fromEntries(Object.entries(liabilities[0].facts)
+    .filter(([field]) => field !== 'account.paymentHistoryCells')), {
     'liability.openedDate': '2013-04-11',
     'account.reported_identity': 'EXPRESS BANK',
     'account.type': 'CREDIT CARD',
@@ -125,6 +126,10 @@ function realEvidence(check, checkSkip) {
     'liability.accountReference': 'EPB0075',
     'liability.accountReferenceRaw': 'EPB0075'
   }, 'a liability record supplies only the facts it actually prints: its dates plus the credited provider, the account type, the credit limit and the account reference the entry prints as a labelled value');
+  const cells = liabilities[0].facts['account.paymentHistoryCells'];
+  check.equal(cells.length, 36, 'the first account retains its three printed years of repayment symbols');
+  check.ok(cells.every((cell) => cell.location.page === 6 && cell.legend.location.page === 6
+    && cell.meaning === cell.legend.raw_value), 'each decoded symbol uses that account’s own printed legend and page');
   check.deepEqual(x.evidence_readings.boundary_anomalies, [], 'with no record-boundary anomaly');
 
   const enquiries = x.records.filter((r) => r.kind === 'CREDIT_ENQUIRY');
@@ -175,7 +180,11 @@ function syntheticBehaviour(check) {
   check.equal(unresolved.reason, 'ORIGINAL_LISTING_BLOCK_NOT_PRINTED');
   check.equal(unresolved.normalized_value, null, 'the current-listing date is never substituted');
   check.equal(unresolved.current_listing_date, '20 Jul 2015', 'it is still read and reported separately');
-  check.deepEqual(unresolved.facts, {}, 'and no fact is supplied to any rule');
+  check.deepEqual(unresolved.facts, {
+    'overdue.currentListingAmount': 1000, 'account.reported_identity': 'SOME BANK',
+    'account.type': 'CREDIT CARD', 'overdue.currentListingDate': '2015-07-20',
+    'overdue.currentListingStatus': 'Outstanding'
+  }, 'independent current-listing readings are retained without an original-date anchor or current liability balance');
 
   /* Two original-listing dates in one record are ambiguous: not averaged, not preferred. */
   const doubled = auFamily.extract(familyModel({ overdueLines: overdueRecord({ duplicateOriginalDate: true }) }), SYNTHETIC_ADMISSION);

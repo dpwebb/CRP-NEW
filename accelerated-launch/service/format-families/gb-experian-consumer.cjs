@@ -305,7 +305,7 @@ function normalizePrintedDate(token) {
  * comparison, so `Current Balance` is never read as `Balance` and `Defaulted` is never read as `Default`.
  * A label is only recognised at a word boundary, so a label named inside prose is not a record's field.
  */
-function labeledTokens(lines, labels) {
+function labeledTokens(lines, labels, dateLabels = []) {
   const ordered = labels.slice().sort((a, b) => b.length - a.length);
   const out = [];
   for (const entry of lines) {
@@ -325,7 +325,24 @@ function labeledTokens(lines, labels) {
           const valueText = offset === -1 ? '' : after.slice(offset);
           const nextIsLabel = ordered.some((candidate) => valueText.startsWith(candidate)
             && (valueText.length === candidate.length || /\s/.test(valueText.charAt(candidate.length))));
-          const token = nextIsLabel ? '' : (valueText.match(/\S+/) || [''])[0];
+          let end = valueText.length;
+          const completeValue = ['Balance', 'Current Balance', 'Credit Limit', 'Default'].includes(label)
+            || dateLabels.includes(label);
+          if (completeValue) {
+            for (const nextLabel of ordered) {
+              let at = valueText.indexOf(nextLabel);
+              while (at !== -1) {
+                if ((at === 0 || /\s/.test(valueText.charAt(at - 1)))
+                  && (at + nextLabel.length === valueText.length || /\s/.test(valueText.charAt(at + nextLabel.length)))) {
+                  end = Math.min(end, at);
+                  break;
+                }
+                at = valueText.indexOf(nextLabel, at + 1);
+              }
+            }
+          }
+          const token = nextIsLabel ? '' : completeValue
+            ? valueText.slice(0, end).trim() : (valueText.match(/\S+/) || [''])[0];
           out.push({ label, page: entry.page, line: entry.line, token, value_present: token.length > 0 });
           i += label.length + (offset === -1 ? 1 : offset + token.length);
           continue;
@@ -392,11 +409,8 @@ function valueOf(field) {
  * A word such as `Satisfied` is a printed reading, not a number, and is never coerced to zero.
  */
 function amountOf(raw) {
-  if (raw === undefined || raw === null) return undefined;
-  const text = String(raw).replace(/[£,\s]/g, '');
-  if (!/^\d+(\.\d+)?$/.test(text)) return undefined;
-  const value = Number(text);
-  return Number.isFinite(value) ? value : undefined;
+  const value = require('../report-amount.cjs').printedAmount(raw);
+  return value == null ? undefined : value;
 }
 
 /**
@@ -529,7 +543,7 @@ function buildRecord(kind, region, index, unread) {
   const last = region[region.length - 1];
   for (let p = first.page; p <= last.page; p += 1) if (unread.has(p)) pageUnread = true;
 
-  const tokens = labeledTokens(region, labels);
+  const tokens = labeledTokens(region, labels, dateFields);
   const printed = {};
   for (const label of labels) {
     const hits = MULTI_WORD_FIELDS[kind].includes(label)

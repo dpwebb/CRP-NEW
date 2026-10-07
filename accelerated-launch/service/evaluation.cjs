@@ -28,6 +28,7 @@ const reaging = require('./reaging.cjs');
 const limitationAssessment = require('./limitation-assessment.cjs');
 const paymentHistoryAnalysis = require('./payment-history-analysis.cjs');
 const { activeAdapter } = require('./common-error-scope.cjs');
+const { reportReference } = require('./report-fact-sources.cjs');
 
 const CASE_LEVEL_ANCHOR_MODES = Object.freeze(['NOT_REPORT_EVIDENCED']);
 const REGISTERED_PRESENTATIONS = new Set(EXTRACTION_ADAPTERS.map((a) => a.presentation_id).concat(['GENERAL-BUREAU-REPORT']));
@@ -323,8 +324,8 @@ function evaluateCase(context) {
         });
         continue;
       }
-      const recordContext = record.report_segment_id ? Object.assign({}, ctx, {
-        referenceDate: record.report_reference_date && record.report_reference_date.status === 'RESOLVED' ? record.report_reference_date.normalized_value : null
+      const recordContext = record.report_segment_id || Object.hasOwn(record, 'report_reference_date') ? Object.assign({}, ctx, {
+        referenceDate: (reportReference(record) || {}).normalized_value || null
       }) : ctx;
       const machine = runOne(entry.adapter_id, recordContext, factsForRecord(record), factSourcesForRecord(record));
       if (machine.state === RESULT_STATE.REFUSED) {

@@ -41,7 +41,7 @@ function sourceForField(record, field) {
   }
   const value = record.facts && record.facts[field];
   const label = PRINTED_LABEL[field];
-  if (value == null || !label) return null;
+  if (value == null) return null;
   // A reader's exact field association is authoritative, including an explicit unreadable/duplicate reading.
   if (record.fact_sources && Object.hasOwn(record.fact_sources, field)) {
     const direct = record.fact_sources[field];
@@ -55,6 +55,7 @@ function sourceForField(record, field) {
       source_field: direct.source_field || field, record_index: record.record_index,
       precision: direct.precision || direct.uncertainty && direct.uncertainty.precision || record.facts[`${field}Precision`] || null };
   }
+  if (!label) return null;
   const printed = record.printed || {};
   const reading = Object.entries(printed).find(([key, p]) => p && (field === 'account.amount'
     ? label.test(key) : label.test(`${key} ${p.label || ''}`))

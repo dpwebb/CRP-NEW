@@ -140,7 +140,7 @@ async function run(service, check) {
   check.equal(capAUReader.checks['COMMON-ERROR-DUPLICATE-REPORTING'], false, 'nor duplicate (its account number is an unmasked bureau reference, never a masked identifier)');
   check.equal(capAUReader.checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'], false, 'nor balance/past-due (no amount pair)');
   check.equal(capAUReader.checks['COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY'], false, 'nor responsibility (no responsibility label)');
-  check.equal(capAUReader.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false, 'nor payment-history (no graphical payment-history cell read)');
+  check.equal(capAUReader.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true, 'payment history is supported through own printed grid and legend images');
   check.equal(commonErrors.presentationCapability('US-CONSUMER-DISCLOSURE').checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], false, 'the US reader supports no account-dates field');
   const capGB = commonErrors.presentationCapability('FAM-GB-EXP-CONSUMER');
   check.equal(capGB.checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], true, 'the GB reader maps Started/Settled to account-dates');
@@ -148,8 +148,8 @@ async function run(service, check) {
     'but NOT a payment-history check: its retained status-history cells carry no printed period and no printed legend, so they are not a usable field');
   check.deepEqual(capGB.retained_fields_without_a_usable_check.map((r) => r.field), ['account.paymentHistoryCells'],
     'and the retained-but-unusable field is named separately from an absent one');
-  check.equal(commonErrors.presentationCapability(auFamily.FAMILY_ID).checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false,
-    'the AU reader likewise reports no payment-history check: its grid cells are vector graphics and are not read');
+  check.equal(commonErrors.presentationCapability(auFamily.FAMILY_ID).checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
+    'the AU reader supports source-linked payment history from the account grid and its own legend');
   check.equal(commonErrors.presentationCapability('FAM-TU-CA-CONSUMER').checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
     'while the TransUnion Canada cells ARE usable: they carry a printed period and a printed legend');
   check.ok(/not what one specimen happened to print/i.test(capGB.basis),
@@ -174,7 +174,7 @@ async function run(service, check) {
     ['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'],
     'and the GB slice exactly account-dates: its retained status-history cells are NOT a usable payment-history check');
   check.ok(supportedBy('FAM-TU-CA-CONSUMER').length > supportedBy('FAM-AU-EQX-CONSUMER').length,
-    'while the Australian reader, which reads no amount or history field, supports strictly less');
+    'while the Australian reader has a smaller source-supported field surface');
   const capTU = commonErrors.presentationCapability('FAM-TU-CA-CONSUMER');
   check.equal(capTU.checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], true, 'the TU-CA reader maps Opened/Closed Date to account-dates');
   check.equal(capTU.checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'], true, 'and now supplies the printed monthly balance/past-due amount pair');

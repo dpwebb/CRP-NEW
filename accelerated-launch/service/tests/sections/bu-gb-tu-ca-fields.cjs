@@ -86,8 +86,8 @@ async function run(service, check) {
     'the exact credit-card suffix on the second heading supplies revolving account type');
   check.ok(gbAccounts[1].printed['account.type']?.location?.page > 0,
     'the type keeps its own heading location');
-  check.equal(gbAccounts[0].facts['account.type'], undefined,
-    'a current-account heading is not presumed to be revolving');
+  check.equal(gbAccounts[0].facts['account.type'], 'CURRENT ACCOUNT',
+    'the current-account type is retained literally without revolving semantics');
   check.equal(gbAccounts[0].facts['account.balanceRaw'], '\u00a3344', 'with the printed raw reading kept beside the number');
   check.deepEqual(gbAccounts.map((r) => r.facts['account.defaultAmount']), [undefined, undefined, undefined, 548, 1021],
     'and the printed default amount where the account prints one');
@@ -140,7 +140,8 @@ async function run(service, check) {
 
   /* ---- BLOCKER-REPORT-DATA-TO-ISSUE-001 (AU slice): the AU liability record's printed credit limit, account type
      and credited provider now reach the shared facts, and the repayment-history EVIDENCE the artifact prints as
-     TEXT is recorded. The CELLS are vector graphics and are NOT read. Real PUB-012, read read-only. ---- */
+     TEXT is recorded. Embedded image cells are decoded only against their own positioned account legend.
+     Real PUB-012, read read-only. ---- */
   const auSpecimen = path.resolve(__dirname, '..', '..', '..', '..', 'SOURCE_CAPTURES', 'REPORT_FORMAT_BASELINE_2026-09-30', 'PUB-012.pdf');
   check.ok(fs.existsSync(auSpecimen), 'the captured AU example PUB-012 is present');
   const auReal = formats.extractWithSharedAdapter(formats.buildPdfDocumentModel(auSpecimen), { mode: 'REPORT', country: 'AU' });
@@ -159,18 +160,18 @@ async function run(service, check) {
   check.deepEqual(auHistory.period_years, [2014, 2015, 2016], 'with the printed year captions');
   check.ok(auHistory.legend_lines.length >= 4 && auHistory.legend_lines.every((l) => l.location && l.location.page),
     "and the artifact's own legend verbatim, with its page/line");
-  check.equal(auHistory.cells_readable, false, 'and the record states plainly that no grid cell is readable');
-  check.ok(auLiabilities.every((r) => !r.facts['account.paymentHistoryCells']),
-    'no cell is emitted, because the artifact prints none as text');
+  check.equal(auHistory.cells_readable, true, 'the own legend resolves the embedded repayment symbols');
+  check.deepEqual(auLiabilities.map((r) => (r.facts['account.paymentHistoryCells'] || []).length), [36, 36, 0],
+    'each full own-account grid supplies 36 cells and the incomplete continuation supplies none');
   check.equal(commonErrors.runCommonErrorChecks({ extraction: auReal }).summary.potential_issue, 0,
     'the real AU example forces NO potential issue');
   const auCap = commonErrors.presentationCapability(auFamily.FAMILY_ID);
-  check.equal(auCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false,
-    'and the AU reader reports NO usable payment-history check');
-  check.deepEqual(auCap.retained_fields_without_a_usable_check.map((r) => r.field), ['account.paymentHistoryCells'],
-    'naming the retained-but-unusable field instead');
+  check.equal(auCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], true,
+    'the AU reader can compare source-defined dated repayment cells');
+  check.deepEqual(auCap.retained_fields_without_a_usable_check.map((r) => r.field), [],
+    'the live capability inventory no longer repeats the false unreadable-grid claim');
   check.ok(/READER can structurally produce/.test(auCap.basis), 'with the capability basis stated as the reader surface, not one specimen\'s fields');
-  evidence.au_material = 'AU Credit Limit / Type Of Account / Credit Provider reach the shared facts; the repayment-history period captions and the artifact\'s own legend are recorded while the vector-graphic cells are not read; no issue is forced';
+  evidence.au_material = 'AU Credit Limit / Type Of Account / Credit Provider and 72 embedded repayment symbols reach the shared facts with their own period captions and printed account legends; no issue is forced';
 
   /* ---- Creditor/account NAME in issue review, correspondence, the downloaded packet, and APPROVAL BINDING. ---- */
   const auPositive = auExtraction([

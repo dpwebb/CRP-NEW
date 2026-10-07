@@ -277,4 +277,5 @@ async function run(t, check) {
     packet_journey: 'US family upload, assessment, VIOLATION selection, correspondence, approval and download' };
 }
 
-module.exports = { run, id: 'df-us-common-error-reader', title: 'US consumer captions retained as sourced checklist facts and approved packet' };
+module.exports = { run, id: 'df-us-common-error-reader', title: 'US consumer captions retained as sourced checklist facts and approved packet',
+  fixtures: { disclosure, read, offered } };

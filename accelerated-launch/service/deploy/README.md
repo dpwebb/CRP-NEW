@@ -45,6 +45,15 @@ Until a provider is authorized and provisioned, **every checkout is refused** wi
 `PAYMENT_PROVIDER_NOT_CONFIGURED`, **no entitlement can be activated**, and no region can be launch-ready.
 A mock payment is not working billing, and this build does not pretend otherwise.
 
+## Reader runtime prerequisites
+
+The deployed runtime must provide the existing local Poppler tools (`pdfinfo`, `pdftotext`, `pdftoppm`) and
+`pdftohtml` on PATH, plus the configured local OCR engine. The AU reader uses `pdftohtml -xml -hidden -zoom 1`
+to match positioned embedded repayment glyphs to the same report's printed legend. Temporary exports stay
+local and are removed after reading. Missing or unreadable glyph/legend evidence remains unresolved; it is
+not a code mapping or a compliance result. Verify this prerequisite on the staging host before claiming the
+graphical reader journey there. Local passing tests do not verify a deployed host's tools.
+
 ## Rolling back
 
 The service writes only inside `CRP_LOCAL_SERVICE_DATA`: `state.json`, `state.json.bak`, `store.lock` and

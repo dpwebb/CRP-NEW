@@ -8,6 +8,7 @@
 const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
 const reaging = require('./reaging.cjs');
+const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
@@ -390,7 +391,7 @@ function paymentHistoryConsistency(records) {
       if (!period) continue;
       /* C3: an unresolved cell (low-confidence code, unknown meaning, or no cell) is never compared as a
          delinquency. Only a cell with a resolved code participates in a same-period contradiction. */
-      if (!c || c.code == null || !String(c.meaning || '').trim() || c.uncertain === true) continue;
+      if (!c || c.code == null || !String(c.meaning || '').trim() || c.uncertain === true || c.performance_usable === false) continue;
       if (!byPeriod.has(period)) { byPeriod.set(period, c); continue; }
       const prior = byPeriod.get(period);
       if (prior.meaning && c.meaning && String(prior.meaning).trim().toUpperCase() !== String(c.meaning).trim().toUpperCase()) {
@@ -540,24 +541,22 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
 /**
  * A field is USABLE only when it can support the comparison its check actually makes. RETAINED-BUT-UNUSABLE values
  * (for example status-history characters kept with no printed period and no printed legend, or cells that are
- * vector graphics) are NOT a usable field: they are kept for the consumer's own record, but they can never take
+ * graphics without a uniquely matched own-report legend) are NOT a usable field: they are retained, but cannot take
  * part in the comparison. Recording them as a capability would overstate what the check can do.
  */
 const USABLE_FIELD_PREDICATES = Object.freeze({
   'account.paymentHistoryCells': (value) => Array.isArray(value)
-    && value.some((c) => c && c.code != null && c.uncertain !== true && String(c.period || '').trim())
+    && value.some((c) => c && c.code != null && c.uncertain !== true && c.performance_usable !== false
+      && String(c.meaning || '').trim() && String(c.period || '').trim())
 });
 
 function usableField(record, field) {
   if (field === 'report.referenceDate') {
-    const date = record && record.report_reference_date;
-    if (!date || date.status && date.status !== 'RESOLVED') return false;
-    if (date.raw_value != null && date.raw != null && date.raw_value !== date.raw
-      || date.normalized_value != null && date.normalized != null && date.normalized_value !== date.normalized) return false;
-    return (date.raw_value ?? date.raw) != null && Boolean(date.normalized_value ?? date.normalized) && Boolean(date.location);
+    return Boolean(record && reportReference(record));
   }
   const value = (record && record.facts) ? record.facts[field] : undefined;
   if (value === undefined || value === null) return false;
+  if (record.fact_sources && Object.hasOwn(record.fact_sources, field) && !sourceForField(record, field)) return false;
   const predicate = USABLE_FIELD_PREDICATES[field];
   return predicate ? predicate(value) : true;
 }
@@ -628,7 +627,8 @@ function formatCapability(extraction) {
  *  GB reads no `facts` (its values live in the `printed` map), so it supplies none of these fields; the TU-CA
  *  reader now supplies its ordinary-account facts, so it declares them here by its own measured labels. */
 const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
-  'PR-01': Object.freeze(['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate', 'report.referenceDate']),
+  'PR-01': Object.freeze(['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate', 'report.referenceDate',
+    'account.status', 'account.balance', 'account.amount']),
   'GENERAL-BUREAU-REPORT': Object.freeze([
     'report.referenceDate',
     'account.balance', 'account.amount', 'account.pastDueAmount', 'account.paymentAmount', 'account.status',
@@ -640,9 +640,10 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   ]),
   'FAM-AU-EQX-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate', 'enquiry.date',
-    'account.creditLimit', 'account.type', 'account.reported_identity'
+    'account.creditLimit', 'account.type', 'account.reported_identity', 'account.paymentHistoryCells'
   ]),
   'US-CONSUMER-DISCLOSURE': Object.freeze([
+    'report.referenceDate',
     'account.reported_identity', 'account.masked_identifier', 'account.type', 'account.responsibility',
     'account.status', 'liability.openedDate',
     'reportedAccount.status', 'reportedAccount.dateOpened', 'reportedAccount.firstReported', 'reportedAccount.adverseRatingDate',
@@ -650,7 +651,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   ]),
   'FAM-GB-EXP-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit', 'account.type',
-    'account.responsibility'
+    'account.responsibility', 'account.reported_identity'
   ]),
   'FAM-TU-CA-CONSUMER': Object.freeze([
     'report.referenceDate',
@@ -673,12 +674,7 @@ const PRESENTATION_RETAINED_NOT_USABLE = Object.freeze({
       reason: 'THE_ARTIFACT_PRINTS_THE_STATUS_HISTORY_WITH_NO_REPORTING_PERIOD_AND_NO_STATUS_CODE_LEGEND'
     })
   ]),
-  'FAM-AU-EQX-CONSUMER': Object.freeze([
-    Object.freeze({
-      field: 'account.paymentHistoryCells',
-      reason: 'THE_REPAYMENT_HISTORY_CELLS_ARE_DRAWN_AS_VECTOR_GRAPHICS_AND_ARE_NOT_READ'
-    })
-  ])
+  'FAM-AU-EQX-CONSUMER': Object.freeze([])
 });
 
 /** Which tracked issue types a presentation's READER can structurally support, from its declared USABLE

@@ -34,6 +34,7 @@ const tuCaFamily = require('./format-families/tu-ca-consumer.cjs');
 const caFormatScope = require('./format-families/ca-consumer-format-scope.cjs');
 const caFacts = require('./ca-consumer-file-facts.cjs');
 const generalIntake = require('./general-intake.cjs');
+const { sourceForField } = require('./report-fact-sources.cjs');
 
 /**
  * B4 continuation — the service's own PDF model builder.
@@ -391,10 +392,19 @@ function factsForRecord(record) {
      anchor surface. That adapter continues to receive only its own resolved
      last-payment fact, even when the independent delinquency check can run. */
   if (record && record.kind === 'COLLECTION_ACCOUNT' && record.shared_facts_status === FACT_STATUS.RESOLVED) {
+    if (record.fact_sources && Object.hasOwn(record.fact_sources, 'tradeline.lastPaymentDate')
+      && !sourceForField(record, 'tradeline.lastPaymentDate')) return {};
     return record.status === FACT_STATUS.RESOLVED && record.normalized_value
       ? { 'tradeline.lastPaymentDate': record.normalized_value } : {};
   }
-  if (record && record.facts && typeof record.facts === 'object') return Object.assign({}, record.facts);
+  if (record && record.facts && typeof record.facts === 'object') {
+    const facts = Object.assign({}, record.facts);
+    // Keep legacy readings, but an explicit rejected field source cannot supply a rule anchor.
+    for (const field of Object.keys(record.fact_sources || {})) {
+      if (Object.hasOwn(facts, field) && !sourceForField(record, field)) delete facts[field];
+    }
+    return facts;
+  }
   const facts = {};
   if (record && record.status === 'RESOLVED' && record.normalized_value) {
     facts['tradeline.lastPaymentDate'] = record.normalized_value;
@@ -765,7 +775,8 @@ function normalizeExtraction(raw, factualView) {
         && entry.boundary.page === boundary.boundary.page && entry.boundary.line === boundary.boundary.line);
       const facts = {}, printed = {}, sources = {};
       const retain = (field, reading) => {
-        if (!reading || reading.raw == null || !reading.normalized || !reading.location) return;
+        if (!reading || reading.raw == null || reading.normalized == null || !reading.location
+          || reading.trusted === false || reading.location.trusted === false) return;
         facts[field] = reading.normalized;
         printed[reading.label] = { ...reading, status: FACT_STATUS.RESOLVED };
         sources[field] = { raw_value: reading.raw, normalized_value: reading.normalized,
@@ -778,6 +789,16 @@ function normalizeExtraction(raw, factualView) {
       const delinquency = viewRecord && viewRecord.printed && viewRecord.printed['First Delinquency'];
       if (delinquency && delinquency.state === 'VALUE' && delinquency.printed_times_in_record === 1)
         retain('tradeline.firstDelinquencyDate', delinquency);
+      for (const [label, field] of [['Status', 'account.status'], ['Balance', 'account.balance'],
+        ['Amount', 'account.amount']]) {
+        const reading = viewRecord && viewRecord.printed && viewRecord.printed[label];
+        if (!reading || reading.state !== 'VALUE' || reading.printed_times_in_record !== 1
+          || reading.raw == null || reading.reason) continue;
+        const normalized = label === 'Status'
+          ? String(reading.raw).trim().replace(/\s+/g, ' ').toUpperCase()
+          : require('./report-amount.cjs').printedAmount(reading.raw);
+        if (normalized != null && normalized !== '') retain(field, { ...reading, normalized });
+      }
       if (Object.keys(facts).length) Object.assign(record, {
         facts, printed, fact_sources: sources, shared_facts_status: FACT_STATUS.RESOLVED
       });

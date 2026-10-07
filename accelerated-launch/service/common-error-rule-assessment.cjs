@@ -94,17 +94,27 @@ function paymentHistorySources(issue, record) {
   const e = issue.evidence || {};
   const cells = (record.facts && record.facts['account.paymentHistoryCells']) || [];
   if (!Array.isArray(cells)) return null;
-  const inPeriod = cells.filter((c) => c && c.period === e.period && c.uncertain !== true
+  const inPeriod = cells.filter((c) => c && c.period === e.period && c.uncertain !== true && c.performance_usable !== false
     && c.code != null && c.meaning && c.location && c.raw_period);
   const first = inPeriod.find((c) => c.code === e.first_code && c.meaning === e.first_meaning);
   const second = inPeriod.find((c) => c !== first && c.code === e.second_code && c.meaning === e.second_meaning);
   if (!first || !second || String(first.meaning).trim().toUpperCase() === String(second.meaning).trim().toUpperCase()) return null;
-  return [first, second].map((cell, index) => ({
-    field: 'account.paymentHistoryCells', role: index === 0 ? 'first_printed_cell' : 'second_printed_cell',
-    source: { raw_value: cell.code, normalized_value: cell.code,
-      source_field: `Payment history ${cell.raw_period}`, location: cell.location,
-      record_index: record.record_index }
-  }));
+  return [first, second].flatMap((cell, index) => {
+    const role = index === 0 ? 'first_printed_cell' : 'second_printed_cell';
+    const facts = [{ field: 'account.paymentHistoryCells', role,
+      source: { raw_value: cell.raw_symbol ? 'Graphical repayment symbol' : cell.code, normalized_value: cell.code,
+        source_field: `Payment history ${cell.raw_period}`, location: cell.location,
+        record_index: record.record_index,
+        ...(cell.raw_symbol ? { raw_symbol: cell.raw_symbol } : {}),
+        ...(cell.legend ? { legend: cell.legend } : {}) } }];
+    if (cell.raw_symbol && cell.legend && cell.legend.location && cell.legend.raw_value != null) {
+      facts.push({ field: 'account.paymentHistoryLegend', role: `${role}_legend`,
+        source: { raw_value: cell.legend.raw_value, normalized_value: cell.meaning,
+          source_field: 'Report-defined repayment symbol meaning', location: cell.legend.location,
+          record_index: record.record_index, raw_symbol: cell.legend.raw_symbol || null } });
+    }
+    return facts;
+  });
 }
 
 function pairedRecordSources(issue, record, extraction) {
@@ -175,7 +185,8 @@ function completenessSources(issue, record) {
     const meaning = item.meaning_as_the_report_prints_it || item.meaning;
     if (!meaning) return false;
     const rating = Array.isArray(history) && history.some((cell) => cell.code === item.code
-      && cell.meaning === meaning && cell.uncertain !== true && sameLocation(cell.location, item.location));
+      && cell.meaning === meaning && cell.uncertain !== true && cell.performance_usable !== false
+      && sameLocation(cell.location, item.location));
     const narrative = rows.some((row) => Array.isArray(row.narrative_codes)
       && row.narrative_codes.includes(item.code) && legend[item.code] === meaning
       && sameLocation(row.location, item.location));
@@ -215,6 +226,8 @@ function assess(issue, record, evaluation, extraction) {
     && source.record_index === (record_index == null ? record.record_index : record_index)
     && source.location && (source.raw_value != null || source.omitted_value === true)
     && (source.omitted_value === true || field === 'account.paymentHistoryCells'
+      || field === 'account.paymentHistoryLegend' && paymentHistory
+        && source.raw_value === source.normalized_value
       || field === 'account.reported_event' || String(source.normalized_value) === String(
         field === 'report.referenceDate' ? (reportReference(record) || {}).normalized_value :
         record_index == null || record_index === record.record_index ? record.facts[field]

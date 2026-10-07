@@ -83,6 +83,10 @@ const SECTION_FILES = [
   'dg-owned-reaging.cjs',
   'de-tu-ca-common-error-sources.cjs',
   'df-us-common-error-reader.cjs',
+  'dh-ca-reader-completion.cjs',
+  'di-au-reader-completion.cjs',
+  'dj-gb-reader-completion.cjs',
+  'dk-reader-completion-integration.cjs',
   /* OWNER-ACCEPT-009 — BLOCKER-FDT-001: incomplete-reading detection, bounded recovery, consequential
      limitations, corrected duplicate semantics, and the reproducible benchmark. */
   'am-fdt-recovery.cjs',
@@ -917,7 +921,9 @@ async function main() {
       { id: 'ct-owner-common-error-scope', passed: Boolean(ownerCommonErrorsSection) && ownerCommonErrorsSection.failed === 0 },
       ...['cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs',
         'da-common-error-reader-repairs', 'db-common-error-surface-repairs',
-        'dc-consumer-violation-term', 'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging'].map((id) => ({ id, passed: clean(id) }))
+        'dc-consumer-violation-term', 'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging',
+        'dh-ca-reader-completion', 'di-au-reader-completion', 'dj-gb-reader-completion',
+        'dk-reader-completion-integration'].map((id) => ({ id, passed: clean(id) }))
     ]
   };
   fs.writeFileSync(path.join(OUT_DIR, 'common-errors-evidence.json'), `${JSON.stringify(commonErrorsEvidence, null, 2)}\n`, 'utf8');

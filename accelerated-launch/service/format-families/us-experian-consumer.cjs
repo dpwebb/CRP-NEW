@@ -615,7 +615,7 @@ function blockEntries(model, startY, endY, anchors, headerY0, pages) {
   /* A printed control begins at a `+` token and runs to the end of its printed row. It is recorded as a
      control and is never allowed into a column's text. */
   const splitControl = (words) => {
-    const index = words.findIndex((w) => String(w.text).startsWith('+'));
+    const index = words.findIndex((w, i) => printedControl(words.slice(i).map((word) => word.text).join(' ')));
     return index === -1
       ? { fields: words, control: [] }
       : { fields: words.slice(0, index), control: words.slice(index) };
@@ -702,7 +702,7 @@ function scanBand(entries) {
   let i = 0;
   while (i < entries.length) {
     const entry = entries[i];
-    if (entry.text.trim().startsWith('+')) {
+    if (printedControl(entry.text)) {
       controls.push({ text: entry.text.trim(), location: { page: entry.page || null, y0: entry.y0 } });
       i += 1;
       continue;
@@ -746,7 +746,7 @@ function scanBand(entries) {
     while (k < entries.length) {
       const candidate = entries[k];
       /* A printed control interrupts nothing and becomes no value. */
-      if (candidate.text.trim().startsWith('+')) {
+      if (printedControl(candidate.text)) {
         controls.push({ text: candidate.text.trim(), location: { page: candidate.page || null, y0: candidate.y0 } });
         k += 1;
         continue;
@@ -770,19 +770,42 @@ function scanBand(entries) {
   return { fields, controls, unlabelled };
 }
 
-/** Strip leading punctuation OCR attaches to a value (`—06/2015` is the same printed value as `06/2015`). */
+/** Preserve sign-like monetary prefixes; date normalization handles its own leading punctuation. */
 function sanitizeValue(raw) {
-  return String(raw == null ? '' : raw).replace(/^[^A-Za-z0-9$]+/, '').trim();
+  const text = String(raw == null ? '' : raw).trim();
+  // Sign-like symbols on money must not be removed and turn credit into debt.
+  if (/^[−–—]\s*(?:[$£€]|\d)/.test(text)) return text;
+  return text.replace(/^[^A-Za-z0-9$£€(+\-]+/, '').trim();
 }
 
-/** A printed amount read as a finite number, or null when the reading carries no amount. Only the LEADING printed
- *  number is used (a value like "$273 as of 06/03/2015" is the balance $273 plus a date annotation, never one number
- *  "27306032015"); nothing is inferred from a later token. */
+/** A complete printed monetary value, optionally followed by the measured as-of date annotation. */
 function printedAmount(raw) {
-  const m = /[\d][\d,]*(?:\.\d+)?/.exec(String(raw == null ? '' : raw));
-  if (!m) return null;
-  const n = Number(m[0].replace(/,/g, ''));
-  return Number.isFinite(n) ? n : null;
+  return require('../report-amount.cjs').printedAmount(raw, { allowAsOf: true });
+}
+
+function sharedReportReference(model, reference) {
+  if (!reference || reference.status !== FACT_STATUS.RESOLVED || !reference.location) return null;
+  const line = documentLines(model).find((entry) => entry.page === reference.location.page
+    && entry.line === reference.location.line);
+  const row = line && wordRows(model).find((entry) => entry.page === line.page
+    && normalizedLine(entry.words.map((word) => word.text).join(' ')) === normalizedLine(line.text));
+  const text = row && row.words.map((word) => word.text).join(' ');
+  const start = text ? text.indexOf(reference.raw_value) : -1;
+  let offset = 0;
+  const tokens = row && row.words.filter((word) => {
+    const first = offset;
+    offset += String(word.text).length + 1;
+    return start !== -1 && first < start + reference.raw_value.length && offset - 1 > start;
+  });
+  const trusted = Boolean(tokens && tokens.length && tokens.every((word) => word.trusted !== false));
+  return { ...reference, precision: 'DAY', trusted,
+    status: trusted ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: trusted ? null : 'REPORT_DATE_SOURCE_NOT_READABLE', location: { ...reference.location, trusted } };
+}
+
+function printedControl(raw) {
+  const text = String(raw || '').trim();
+  return text.startsWith('+') && !/^\+\s*(?:[$£€]\s*)?\d/.test(text);
 }
 
 /** One printed field of a record: its raw reading, its location, and whether the reading is trusted. */
@@ -827,7 +850,7 @@ function dateFieldOf(fields, label) {
   if (field.reason === 'LABEL_NOT_PRINTED_ON_THIS_RECORD' || field.reason === 'LABEL_PRINTED_WITHOUT_VALUE') {
     return Object.assign(field, { status: FACT_STATUS.EXTRACTION_UNRESOLVED, normalized_value: null });
   }
-  const { normalized, precision, reason } = normalizePrintedDate(field.raw);
+  const { normalized, precision, reason } = normalizePrintedDate(String(field.raw || '').replace(/^—\s*(?=\d{1,2}\/)/, ''));
   if (!normalized) return Object.assign(field, { status: FACT_STATUS.EXTRACTION_UNRESOLVED, normalized_value: null, reason });
   if (field.trusted !== true) return Object.assign(field, { status: FACT_STATUS.EXTRACTION_UNRESOLVED, normalized_value: null, precision });
   return Object.assign(field, { status: FACT_STATUS.RESOLVED, normalized_value: normalized, precision });
@@ -1268,7 +1291,11 @@ function extract(model, admission) {
 
   const negativeAccounts = accounts.filter((a) => a.section_path === 'Potentially negative items');
   const records = accounts.concat(inquiries.rows_printed);
-  records.forEach((record, position) => { record.record_index = position + 1; });
+  const sharedReference = sharedReportReference(model, referenceDate);
+  records.forEach((record, position) => {
+    record.record_index = position + 1;
+    if (sharedReference) record.report_reference_date = { ...sharedReference, location: { ...sharedReference.location } };
+  });
 
   const resolvedCount = records.filter((r) => r.status === FACT_STATUS.RESOLVED).length;
 

@@ -435,8 +435,9 @@ function issueLines(issue) {
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
       lines.push(`  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
     }
-    if (issue.location) {
-      const loc = issue.location;
+    const loc = issue.location && issue.location.page != null ? issue.location
+      : (issue.source_facts || []).map((fact) => fact.location).find((location) => location && location.page != null);
+    if (loc) {
       lines.push(`  Source: ${loc.section ? loc.section + ', ' : ''}page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}`);
     }
   }
