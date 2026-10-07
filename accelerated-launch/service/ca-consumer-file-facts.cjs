@@ -174,7 +174,24 @@ function hitsIn(region, label) {
     if (text.slice(0, at).trim() !== '') continue;
     const after = text.slice(at + label.length);
     if (after.length > 0 && !/^\s/.test(after)) continue;
-    const token = (after.match(/\S+/) || [''])[0];
+    /* A status is a phrase: PAID AS AGREED is not PAID, and SETTLED IN FULL is not SETTLED.
+       Keep its complete caption value, ending before another measured caption on the same line. */
+    let cut = after.length;
+    if (label === 'Status') {
+      for (const nextLabel of COLLECTION_LABELS) {
+        if (nextLabel === label) continue;
+        let nextAt = after.indexOf(nextLabel);
+        while (nextAt !== -1) {
+          if ((nextAt === 0 || /\s/.test(after.charAt(nextAt - 1)))
+            && (nextAt + nextLabel.length === after.length || /\s/.test(after.charAt(nextAt + nextLabel.length)))) {
+            cut = Math.min(cut, nextAt);
+            break;
+          }
+          nextAt = after.indexOf(nextLabel, nextAt + 1);
+        }
+      }
+    }
+    const token = label === 'Status' ? after.slice(0, cut).trim() : (after.match(/\S+/) || [''])[0];
     hits.push({ label, page: entry.page, line: entry.line, token, value_present: token.length > 0 });
   }
   return hits;

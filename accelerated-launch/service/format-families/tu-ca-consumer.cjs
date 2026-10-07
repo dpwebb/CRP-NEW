@@ -345,7 +345,8 @@ function leadingPrintedDate(raw) {
 
 /**
  * One printed value, in the same vocabulary the Canadian reader already uses, plus a sixth state this
- * presentation needs and Equifax does not: a PRINTED PARTIAL DATE. The states are never collapsed.
+ * presentation needs and Equifax does not: a PRINTED PARTIAL DATE. Repeated date captions keep every reading
+ * as ambiguous rather than choosing the first occurrence. These states are never collapsed.
  */
 function printedValue(label, hits, pageUnread, isDate) {
   if (pageUnread) {
@@ -353,6 +354,11 @@ function printedValue(label, hits, pageUnread, isDate) {
   }
   if (!hits.length) {
     return { label, state: 'NOT_PRINTED', raw: null, normalized: null, reason: 'LABEL_NOT_PRINTED_ON_THIS_RECORD', location: null };
+  }
+  if (isDate && hits.length > 1) {
+    return { label, state: 'VALUE_AMBIGUOUS_PRINTED_FORM', raw: null, normalized: null,
+      reason: 'REPEATED_DATE_CAPTION_ON_ONE_RECORD', location: { page: hits[0].page, line: hits[0].line, label },
+      printed_readings: hits.map((hit) => printedValue(label, [hit], false, true)) };
   }
   const hit = hits[0];
   const location = { page: hit.page, line: hit.line, label };
@@ -680,17 +686,26 @@ function narrativeLegend(region) {
  * anywhere on a line (this presentation prints its legend beside a second column of prose), and the meaning is
  * taken only when the report itself prints it. No code is ever decoded by guessing.
  */
-function printedLegend(model, heading, codeShape, { before = false, span = 24 } = {}) {
+function printedLegendReadings(model, heading, codeShape, { before = false, span = 24 } = {}) {
   const lines = documentLines(model);
   const at = lines.findIndex((l) => readable(l.text).trim().toUpperCase() === heading);
-  if (at === -1) return {};
-  const legend = {};
+  if (at === -1) return [];
+  const readings = [];
   const re = new RegExp(`(?:^|\\s)(${codeShape})\\s+-\\s+([A-Za-z][^\\n]*)$`);
   const start = before ? Math.max(0, at - span) : at + 1;
   const end = before ? at - 1 : Math.min(lines.length - 1, at + span);
   for (let i = start; i <= end; i += 1) {
     const match = re.exec(readable(lines[i].text));
-    if (match && !Object.prototype.hasOwnProperty.call(legend, match[1])) legend[match[1]] = match[2].trim();
+    if (match) readings.push({ code: match[1], meaning: match[2].trim(), raw: match[0].trim(),
+      location: { page: lines[i].page, line: lines[i].line, label: heading } });
+  }
+  return readings;
+}
+
+function printedLegend(model, heading, codeShape, options) {
+  const legend = {};
+  for (const reading of printedLegendReadings(model, heading, codeShape, options)) {
+    if (!Object.prototype.hasOwnProperty.call(legend, reading.code)) legend[reading.code] = reading.meaning;
   }
   return legend;
 }
@@ -753,7 +768,7 @@ function narrativeCodesOf(raw) {
 }
 
 
-function buildTradeline(region, index, unread, mopLegend) {
+function buildTradeline(region, index, unread, mopLegend, mopLegendReadings) {
   const first = region[0];
   const last = region[region.length - 1];
   const pageUnread = unread.has(first.page);
@@ -771,21 +786,20 @@ function buildTradeline(region, index, unread, mopLegend) {
      reading; a missing or unresolved label maps nothing and never stops an independent check. */
   const facts = {};
   const factSources = {};
-  if (printed['Opened Date'] && printed['Opened Date'].normalized) facts['liability.openedDate'] = printed['Opened Date'].normalized;
-  if (printed['Closed Date'] && printed['Closed Date'].normalized) facts['liability.closedDate'] = printed['Closed Date'].normalized;
-  /* BATCH-8: map the block’s own printed Last Payment Date into the SHARED fact vocabulary the statutory
-     checks already consume. Before this line the reader read the printed label into its own `printed` map and
-     mapped only the opened and closed dates, so no recorded rule keyed on a last payment date could reach a
-     TransUnion Canada tradeline. The shared bridge derives this fact’s source — raw printed value,
-     page/line location and normalization — from the same `printed` entry, so nothing is invented here. */
-  if (printed['Last Payment Date'] && printed['Last Payment Date'].normalized) facts['tradeline.lastPaymentDate'] = printed['Last Payment Date'].normalized;
-
-  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): the two remaining decisive printed dates of this
-     layout are mapped into the SAME shared fact vocabulary, from the printed reading only. An explicit blank
-     maps NOTHING — the reading's own five-state entry stays in `printed`, so a check can still tell a caption
-     the report prints without a value from a label the report never prints, and no date is ever invented. */
-  if (printed['First Delinquency Date'] && printed['First Delinquency Date'].normalized) facts['tradeline.firstDelinquencyDate'] = printed['First Delinquency Date'].normalized;
-  if (printed['Charge Off Date'] && printed['Charge Off Date'].normalized) facts['tradeline.chargeOffDate'] = printed['Charge Off Date'].normalized;
+  /* Every existing shared date keeps its own caption source. Equal date values cannot borrow another
+     caption's location; blanks, partial dates and repeated captions remain unresolved in `printed`. */
+  for (const [field, caption] of [
+    ['liability.openedDate', 'Opened Date'], ['liability.closedDate', 'Closed Date'],
+    ['tradeline.lastPaymentDate', 'Last Payment Date'],
+    ['tradeline.firstDelinquencyDate', 'First Delinquency Date'], ['tradeline.chargeOffDate', 'Charge Off Date']
+  ]) {
+    const reading = printed[caption];
+    if (!reading || reading.state !== 'VALUE' || !reading.normalized || !reading.location) continue;
+    facts[field] = reading.normalized;
+    factSources[field] = { raw_value: reading.raw, normalized_value: reading.normalized,
+      source_field: caption, location: { ...reading.location }, status: FACT_STATUS.RESOLVED,
+      caption_count: reading.printed_times_in_record, record_index: index };
+  }
 
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 first slice: read the block's printed MATERIAL fields through its own
      captions and its table's own header, and map them to the SAME fact vocabulary the shared checks already
@@ -841,10 +855,15 @@ function buildTradeline(region, index, unread, mopLegend) {
       }
     }
     if (material.rows.length) {
+      facts['account.paymentHistoryLegend'] = mopLegendReadings.map((reading) => ({
+        ...reading, location: { ...reading.location }
+      }));
       facts['account.paymentHistoryCells'] = material.rows.map((row) => {
         const code = row.cells.mop ? row.cells.mop.trim() : null;
         const meaning = code && Object.prototype.hasOwnProperty.call(mopLegend, code) ? mopLegend[code] : null;
-        return { period: row.period, raw_period: row.raw_period, code, meaning, uncertain: code !== null && meaning === null, location: row.location };
+        const noRating = meaning !== null && /\bunknown\b|too new to rate|\b(?:unrated|not rated|no (?:current )?rating)\b/i.test(meaning);
+        return { period: row.period, raw_period: row.raw_period, code, meaning,
+          uncertain: code !== null && (meaning === null || noRating), location: row.location };
       });
     }
   }
@@ -930,11 +949,18 @@ function buildInquiryRow(sectionName, line, pageUnread) {
 function locateRecords(model) {
   const unread = new Set(unreadPages(model));
   const lines = documentLines(model);
-  const mopLegend = mannerOfPaymentLegend(model);
+  const mopLegendReadings = printedLegendReadings(model, MOP_LEGEND_HEADING, '[0-9X]')
+    .filter((reading) => !unread.has(reading.location.page));
+  const mopLegend = {};
+  for (const reading of mopLegendReadings) {
+    // A definition on an unread page or conflicting meanings for one code cannot decode a history cell.
+    const meanings = new Set(mopLegendReadings.filter((item) => item.code === reading.code).map((item) => item.meaning));
+    if (meanings.size === 1) mopLegend[reading.code] = reading.meaning;
+  }
   const tradelines = tradelineRegions(lines).map((region) => ({
     sort: { page: region[0].page, line: region[0].line },
     kinds: [TRADELINE_KIND],
-    build: (index) => buildTradeline(region, index, unread, mopLegend)
+    build: (index) => buildTradeline(region, index, unread, mopLegend, mopLegendReadings)
   }));
   const inquiries = [];
   for (const heading of INQUIRY_SECTIONS) {
