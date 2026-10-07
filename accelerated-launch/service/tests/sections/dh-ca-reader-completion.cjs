@@ -8,6 +8,7 @@ const common = require('../../common-errors.cjs');
 const issues = require('../../issues.cjs');
 const packets = require('../../packets.cjs');
 const fixtures = require('../../../../internal-validation/ca-ns-last-payment-six-year/tests/fixtures.cjs');
+const { extractFacts } = require('../../../../internal-validation/ca-ns-last-payment-six-year/extraction.cjs');
 const ADMISSION = { admitted: true, presentation_evidence: false,
   state: 'SYNTHETIC_STRUCTURAL_TEST_INPUT_NOT_A_REPORT' };
 const HISTORY = 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY';
@@ -93,6 +94,36 @@ async function run(t, check) {
   unreadModel.read_errors = [{ stage: 'pdftotext', page: 16 }];
   check.deepEqual(ca.read(unreadModel).records, [], 'an unread collection section supplies no resolved status phrase');
 
+  // Money values must reach the strict shared bridge without truncating signs or damaged trailing text.
+  for (const [rawValue, expected] of [['$ 100', 100], ['$ -100', -100], ['( $ 100 )', -100],
+    ['100 garbage', undefined], ['$ 1,00', undefined]]) {
+    const lines = fixtures.recordLines({ extraLines: ['Status PAID IN FULL'] })
+      .map((line) => /^(?:Balance|Amount)(?:\s|$)/.test(line) ? `${line.split(' ')[0]} ${rawValue}` : line);
+    const model = fixtures.specimen({ records: [lines] }), view = ca.read(model);
+    const extraction = { presentation_id: 'PR-01', ...formats.normalizeExtraction(
+      extractFacts(model, null, { synthetic_test_input: true }), view) };
+    const evaluation = { country: 'CA', region: 'CA-MB', results: [],
+      common_errors: common.runCommonErrorChecks({ extraction }) };
+    const ctx = { extraction, evaluation, findings: issues.issuesFor({ extraction, evaluation }) };
+    for (const [caption, field] of [['Balance', 'account.balance'], ['Amount', 'account.amount']]) {
+      check.equal(view.records[0].printed[caption].raw, rawValue, 'the complete money reading reaches validation');
+      check.equal(extraction.records[0].facts[field], expected, 'only the complete valid reading maps its signed amount');
+    }
+    const paid = findings(ctx, 'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID');
+    check.equal(paid.length, expected > 0 ? 1 : 0, 'credit or damaged balances cannot produce the paid-in-full violation');
+    if (expected > 0) {
+      check.equal(issues.publicIssue(paid[0]).consumer_label, 'VIOLATION', 'a valid spaced monetary value supports the existing breach');
+      check.equal(paid[0].source_facts.find((fact) => fact.field === 'account.balance').raw_value, rawValue,
+        'the violation retains the complete amount source');
+      check.ok(approvedPacket(ctx, paid[0]).includes(rawValue), 'the approved packet retains the spaced printed amount');
+    }
+  }
+  for (const caption of ['Balance', 'Amount']) {
+    const record = ca.read(fixtures.specimen({ records: [fixtures.recordLines({})
+      .map((line) => line.startsWith(`${caption} `) ? `${caption} $ 100 Status PAID IN FULL` : line)] })).records[0];
+    check.equal(record.printed[caption].raw, '$ 100', 'a following measured caption is not monetary trailing text');
+  }
+
   // The TU legend keeps its own location and definition, including a report-defined Unknown/non-rating code.
   const history = read([block({ rows: [{ period: 'Oct 2025', mop: '1' }, { period: 'Oct 2025', mop: '9' }] })]);
   const record = history.extraction.records[0];
@@ -169,8 +200,8 @@ async function run(t, check) {
   check.equal(partial.printed['Last Payment Date'].state, 'VALUE_PRINTED_WITHOUT_A_DAY', 'a partial date retains the existing precision boundary');
   check.equal(partial.fact_sources['tradeline.lastPaymentDate'], undefined, 'the source mapping does not invent a day');
   return { inputs: 'fictional downstream PR-01/TU-CA layout models; no admission change or private specimen dependency',
-    repaired: ['full PR-01 status phrase', 'TU sourced legend and unknown-rating handling',
+    repaired: ['complete PR-01 status and money caption values', 'TU sourced legend and unknown-rating handling',
       'TU duplicate date ambiguity and exact own-caption date sources'] };
 }
 
-module.exports = { run, id: 'dh-ca-reader-completion', title: 'Canadian complete status and sourced history/date ambiguity controls' };
+module.exports = { run, id: 'dh-ca-reader-completion', title: 'Canadian complete status/money and sourced history/date ambiguity controls' };

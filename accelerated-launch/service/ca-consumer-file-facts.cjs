@@ -174,10 +174,11 @@ function hitsIn(region, label) {
     if (text.slice(0, at).trim() !== '') continue;
     const after = text.slice(at + label.length);
     if (after.length > 0 && !/^\s/.test(after)) continue;
-    /* A status is a phrase: PAID AS AGREED is not PAID, and SETTLED IN FULL is not SETTLED.
-       Keep its complete caption value, ending before another measured caption on the same line. */
+    /* Status phrases and money readings require their complete caption value. A leading token can
+       turn PAID AS AGREED into PAID, lose a spaced currency/sign, or hide damaged trailing text. */
+    const completeValue = ['Status', 'Balance', 'Amount'].includes(label);
     let cut = after.length;
-    if (label === 'Status') {
+    if (completeValue) {
       for (const nextLabel of COLLECTION_LABELS) {
         if (nextLabel === label) continue;
         let nextAt = after.indexOf(nextLabel);
@@ -191,7 +192,7 @@ function hitsIn(region, label) {
         }
       }
     }
-    const token = label === 'Status' ? after.slice(0, cut).trim() : (after.match(/\S+/) || [''])[0];
+    const token = completeValue ? after.slice(0, cut).trim() : (after.match(/\S+/) || [''])[0];
     hits.push({ label, page: entry.page, line: entry.line, token, value_present: token.length > 0 });
   }
   return hits;
