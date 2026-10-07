@@ -1,11 +1,7 @@
 'use strict';
 /**
- * at-gap-finding-002.cjs — OWNER-GAP-FINDING-002-RESOURCE-001 (owner decision + scoped candidate). A reliably read
- * bankruptcy record that prints an Order for Relief date more than ten years before its report date AND expressly
- * states the printed date's correspondence to the actual court order is unverified/unavailable derives
- * PROBABLE_VIOLATION (never VIOLATION) for the US-CA rule. The qualifier is read and associated by the extractor —
- * never asserted directly in runAdapter — and an ordinary entry, a generic disclaimer, a cross-record qualifier, an
- * in-period date, a low-confidence qualifier or an arbitrary list does not trigger it.
+ * at-gap-finding-002.cjs — the historical bankruptcy qualifier stays parseable, while the
+ * out-of-checklist US-CA public-record adapter cannot emit a runtime finding.
  */
 
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
@@ -34,12 +30,7 @@ async function run(t, check) {
     'Order for Relief: January 1, 2011',
     'Historical verification for TEST-BK-001: the Order for Relief date above is the reported date; its correspondence to the actual court order is unverified and cannot be established from this disclosure.'
   ]);
-  check.equal(positive.classification, 'PROBABLE_VIOLATION', 'the scoped candidate derives PROBABLE, never VIOLATION');
-  check.equal(positive.decisive_fact_unavailable, 'publicRecord.bankruptcyOrderForReliefDate.historical_correspondence', 'the decisive issue is named exactly');
-  const d = positive.decisive_facts[0];
-  check.equal(d.decisive, true, 'the decisive fact is marked decisive');
-  check.equal(d.unavailable_from_resolved_reading, true, 'the decisive fact is unavailable from a resolved reading');
-  check.ok(d.source && d.source.location && d.source.location.page === 1, 'the decisive fact is source-linked');
+  check.equal(positive, null, 'a source-linked bankruptcy qualifier does not activate a retired public-record rule');
 
   /* 2. In-period asserted date. */
   check.equal(caFinding([
@@ -57,7 +48,7 @@ async function run(t, check) {
     'Bankruptcy Public Record: TEST-BK-003',
     'Order for Relief: January 1, 2011'
   ]);
-  check.equal(ordinary.classification, 'VIOLATION', 'an ordinary expired order-for-relief date without the qualifier stays VIOLATION');
+  check.equal(ordinary, null, 'ordinary bankruptcy evidence does not activate a retired rule');
 
   /* 4. A generic disclaimer is not the trigger. */
   const generic = caFinding([
@@ -67,7 +58,7 @@ async function run(t, check) {
     'Order for Relief: January 1, 2011',
     'Information in this report may be incomplete or inaccurate.'
   ]);
-  check.equal(generic.classification, 'VIOLATION', 'a generic disclaimer is not the unverified-correspondence trigger');
+  check.equal(generic, null, 'a generic disclaimer does not activate a retired rule');
 
   /* 5. A qualifier naming a different record does not attach. */
   const cross = caFinding([
@@ -77,7 +68,7 @@ async function run(t, check) {
     'Order for Relief: January 1, 2011',
     'Historical verification for TEST-BK-999: its correspondence to the actual court order is unverified.'
   ]);
-  check.equal(cross.classification, 'VIOLATION', 'a qualifier naming a different record does not make THIS date probable');
+  check.equal(cross, null, 'a qualifier naming a different record does not activate a retired rule');
 
   /* 6. Conflicting order-for-relief dates are withheld. */
   check.equal(caFinding([
@@ -112,10 +103,10 @@ async function run(t, check) {
   });
   check.equal(ruleAdapters.classifyEvaluation(arbitrary, 'violation'), null, 'an arbitrary decisive-fact list is refused');
 
-  evidence.positive = 'the scoped unverified-order-for-relief candidate derives PROBABLE with a source-linked, named decisive fact';
+  evidence.positive = 'bankruptcy candidate retired from runtime; source extraction remains bounded';
   evidence.negative = 'in-period date, absent qualifier, generic disclaimer, cross-record qualifier, conflicting dates, low-confidence qualifier and arbitrary lists all fail to derive PROBABLE';
   return evidence;
 }
 
-module.exports = { run, id: 'at-gap-finding-002', title: 'GAP-FINDING-002: the scoped unverified order-for-relief candidate derives PROBABLE (and only that trigger)' };
+module.exports = { run, id: 'at-gap-finding-002', title: 'Retired bankruptcy candidate is absent from runtime assessment' };
 

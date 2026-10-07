@@ -210,7 +210,8 @@ function syntheticBehaviour(check) {
   check.equal(overdueRecords[1].status, 'EXTRACTION_UNRESOLVED');
   check.equal(mixed.summary.by_kind.OVERDUE_ACCOUNT.status, 'RESOLVED', 'one unusable record does not disable the kind');
 
-  /* The adapters run on their own record kind, through the shared evaluator and nothing else. */
+  /* The enquiry date is still extracted, but only the overdue retention rule belongs to the
+     active common-error checklist. The retired enquiry rule must not run. */
   const evaluation = require('../../evaluation.cjs');
   const evaluated = evaluation.evaluateCase({
     country: 'AU',
@@ -228,12 +229,12 @@ function syntheticBehaviour(check) {
       summary: good.summary
     }
   });
-  check.equal(evaluated.results.length, 2, 'one observation per record kind, and no more');
+  check.equal(evaluated.results.length, 1, 'only the checklist-backed overdue comparison runs');
   check.deepEqual(evaluated.results.map((r) => r.machine.anchor.field).sort(),
-    ['enquiry.date', 'overdue.originalListingDate'], 'each kind was measured from its own field');
+    ['overdue.originalListingDate'], 'the active comparison uses the overdue record’s own date');
   check.ok(evaluated.results.every((r) => r.machine.finding_emitted === false), 'none of them is a finding');
   check.ok(evaluated.results.every((r) => r.machine.packet_eligible === true),
-    'both demonstrated AU findings now record the reconciled packet permission (no finding here, so no packet is offered)');
+    'the supported AU comparison retains packet permission (no finding here, so no packet is offered)');
 
   return { records: good.records.length };
 }

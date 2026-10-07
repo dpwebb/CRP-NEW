@@ -20,8 +20,8 @@ const ACCEPTANCE = Object.freeze({
 
 /* The acceptance thresholds are now ALIGNED with the Owner-approved PROSPECTIVE criteria: >=95% recovery of
    readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported
-   legal findings. */
-const THRESHOLD_AUTHORITY = 'ALIGNED with the Owner-approved PROSPECTIVE criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported legal findings';
+   violations. */
+const THRESHOLD_AUTHORITY = 'ALIGNED with the Owner-approved PROSPECTIVE criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported violations';
 
 /* OWNER-APPROVED PROSPECTIVE criteria (OWNER-ACCEPT-009). These apply to the NEXT acceptance run, and the
    earlier provisional results are NOT retroactively relabelled as accepted. */
@@ -30,7 +30,7 @@ const PROSPECTIVE_CRITERIA = Object.freeze({
   independent_held_out_set: 'an independent held-out set covers every required recovery scenario',
   zero_incorrect_decisive_facts: true,
   zero_cross_record_or_bureau_borrowing: true,
-  zero_unsupported_legal_findings: true,
+  zero_unsupported_violations: true,
   min_recovery_of_readable_assessment_required_facts: 0.95,
   account_for_every_remaining_miss: true,
   withhold_unreadable_or_conflicting_decisive_facts: true,

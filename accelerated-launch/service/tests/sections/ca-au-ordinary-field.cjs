@@ -134,7 +134,7 @@ async function run(service, check) {
   check.ok(/15 Nov 2013 Secured or Partially Secured/.test(dl.text), 'the packet states the full printed value');
   check.ok(/normalized to 2013-11-15/.test(dl.text), 'and its normalization');
   check.ok(/Request \(verification\)/.test(dl.text), 'with the verification request line');
-  check.ok(/not, by itself, an established legal violation/.test(dl.text), 'and never asserts an established violation');
+  check.ok(/which date needs correction/.test(dl.text), 'and states the date uncertainty without a legal-finding category');
 
   evidence.positive = { issue: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', confidence: 'POTENTIAL', packet_bytes: (dl.text || '').length };
   evidence.benign = 'the real PUB-012 record and the no-closure control both raise no issue';

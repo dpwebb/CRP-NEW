@@ -61,7 +61,7 @@ async function run(t, check) {
 
   /* 3. Classification equivalence: equivalent spellings supply the same decisive fact and the same finding. */
   const classes = ['January 1, 2011', 'Jan 1, 2011', '1 January 2011', 'January 1st, 2011'].map((f) => caClassification(f));
-  check.deepEqual(classes.map((f) => (f ? f.classification : null)), ['VIOLATION', 'VIOLATION', 'VIOLATION', 'VIOLATION'], 'equivalent spellings yield the same bankruptcy classification');
+  check.deepEqual(classes.map((f) => (f ? f.classification : null)), [null, null, null, null], 'equivalent spellings do not activate the retired bankruptcy rule');
 
   /* 4. Invalid calendar dates remain unresolved, never rolled into a valid day. */
   check.equal(n('February 30, 2021').normalized, null, 'February 30 stays unresolved');
@@ -89,7 +89,7 @@ async function run(t, check) {
   check.equal(orf.raw, 'January 1, 2011', 'the raw printed value survives');
   check.equal(orf.normalized, '2011-01-01', 'the normalized value survives');
   check.ok(orf.location && orf.location.line === 4, 'and the owning source line survives');
-  check.ok(/Source fact: printed "January 1, 2011" \(page 1, line 4\)/.test(bp.body), 'the generated report traces the finding to the raw value and source line');
+  check.ok(!/Source fact: printed "January 1, 2011"/.test(bp.body), 'the report does not present a finding under the retired bankruptcy rule');
 
   /* 8. OCR-confidence gates stay effective for a written month-name date. */
   const low = generalIntake.buildRecords([{

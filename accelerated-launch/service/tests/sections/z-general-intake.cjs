@@ -165,12 +165,13 @@ async function run(t, check) {
   const auClosedEval = evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction: auClosedExt });
   check.ok(auClosedEval.results.some((r) => r.check.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y'), 'AU Privacy Act s.20W item 1 now runs on a general AU report with a closure date');
 
-  /* AU enquiry (item 3) and default/overdue (item 4) — positive, negative and missing-fact cases. */
+  /* Enquiry extraction remains available, but the out-of-checklist retention limb is retired. */
   const auEnquiry = makeSyntheticModel({ pages: [['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Enquiry  Enquiry Date 20/05/2022']] });
   const auEnquiryExt = formats.extractWithSharedAdapter(auEnquiry, { mode: 'REPORT', country: 'AU' });
   check.equal(auEnquiryExt.records[0].kind, 'CREDIT_ENQUIRY', 'a general AU enquiry yields a credit-enquiry record');
   const auEnquiryEval = evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction: auEnquiryExt });
-  check.ok(auEnquiryEval.results.some((r) => r.check.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y' && r.machine.state === 'EVALUATED'), 'AU s.20W item 3 (enquiry, 5y) now evaluates on a general AU report');
+  check.ok(!auEnquiryEval.results.some((r) => r.check.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y'),
+    'AU enquiry retention is not an active common-error statutory comparison');
 
   const auOverdue = makeSyntheticModel({ pages: [['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Overdue Account  Original Listing 15/03/2021']] });
   const auOverdueExt = formats.extractWithSharedAdapter(auOverdue, { mode: 'REPORT', country: 'AU' });

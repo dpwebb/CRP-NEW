@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** The statutory expansion finish order is historical only. Do not use it to add or require out-of-checklist violation checks. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # Version 1 finish order — execution, not another inventory cycle
 
 Current scheduling authority: `CRP_OWNER_VERSION_1_SEVEN_DAY_EXECUTION_001.md`. Its October 5–11 execution procedure and single work register supersede any conflicting sequence in this historical finish order. Reuse completed work; do not maintain a second active queue here.

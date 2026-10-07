@@ -35,21 +35,10 @@ async function run(t, check) {
   const collectionMissing = runEngine('US', 'US-NY', ['Experian  Consumer Credit Report', 'Report Date: 12 June 2026', 'Collection  Date Placed 01/01/2022']);
   check.equal(row(collectionMissing, 'FCRA-605A-4-US-NATIONAL-7Y').machine.state, 'UNRESOLVED', 'D2: a collection-placement date is never substituted for the delinquency');
 
-  /* ===== D3: US-NY satisfied-judgment limb ===== */
-  const satisfiedWithin = runEngine('US', 'US-NY', ['Experian  Consumer Credit Report', 'Report Date: 12 June 2026', 'Judgment  Date of Entry: 01/01/2010 Date Satisfied 01/01/2011']);
-  const s1 = row(satisfiedWithin, 'US-NY-GBL-380J-F1-II-JUDGMENT-5Y');
-  check.equal(s1.machine.state, 'EVALUATED', 'D3: satisfied-within-five-years evaluates');
-  check.equal(s1.machine.outcome, 'PERIOD_EXCEEDED', 'D3: entry 2010 + 5 years is exceeded by 2026');
-  check.equal(s1.machine.anchor.condition_met, true, 'D3: the satisfaction condition is met');
-  check.equal(s1.machine.finding && s1.machine.finding.classification, 'PROBABLE_VIOLATION', 'D3/ACCEPT-008: the § 380-j(f)(2) use exception is off-report and unresolved, so a qualified PROBABLE (no VIOLATION) is preserved');
-
-  const satisfiedAfter = runEngine('US', 'US-NY', ['Experian  Consumer Credit Report', 'Report Date: 12 June 2026', 'Judgment  Date of Entry: 01/01/2010 Date Satisfied 01/01/2020']);
-  check.ok(satisfiedAfter.unavailable_checks.some((c) => c.adapter_id === 'US-NY-GBL-380J-F1-II-JUDGMENT-5Y' && /CONDITION_NOT_MET/.test(c.reason)),
-    'D3: satisfaction after five years does not satisfy the condition');
-
-  const satisfiedMissing = runEngine('US', 'US-NY', ['Experian  Consumer Credit Report', 'Report Date: 12 June 2026', 'Judgment  Date of Entry: 01/01/2010']);
-  check.equal(row(satisfiedMissing, 'US-NY-GBL-380J-F1-II-JUDGMENT-5Y').machine.state, 'UNRESOLVED', 'D3: a missing satisfaction date is unresolved, never substituted');
-
+  /* The satisfied-judgment adapter is historical source material outside the active checklist. */
+  const retiredJudgment = runEngine('US', 'US-NY', ['Experian Consumer Credit Report', 'Report Date: 12 June 2026', 'Judgment Date of Entry: 01/01/2010 Date Satisfied 01/01/2011']);
+  check.equal(row(retiredJudgment, 'US-NY-GBL-380J-F1-II-JUDGMENT-5Y'), undefined,
+    'a source-linked satisfied judgment cannot activate the retired public-record adapter');
   /* ===== D4: classification bounds ===== */
   const noBreach = ruleAdapters.runAdapter('FCRA-605A-5-US-NATIONAL-7Y', { country: 'US', region: 'US-NY', presentation: 'GENERAL-BUREAU-REPORT', facts: { 'reportedAccount.adverseRatingDate': '2024-06-01' }, referenceDate: '2026-10-01' });
   check.equal(noBreach.finding, null, 'D4: a not-exceeded period emits no finding');
@@ -63,7 +52,7 @@ async function run(t, check) {
   check.equal(incompleteObservation.finding, null, 'D4/ACCEPT-004: an incomplete observation emits no finding (no auto-probable from the SOL gap)');
 
   evidence.d2 = 'collection 180-day rule';
-  evidence.d3 = 'satisfied-judgment condition';
+  evidence.d3 = 'satisfied-judgment adapter retired from active assessment';
   evidence.d4 = 'per-rule classification';
   return evidence;
 }

@@ -265,9 +265,9 @@ async function draftBoundaryAndRelease(t, check, evidence) {
   check.equal(policy.json.check_classes.report_fact_consistency.is_a_statutory_check, false, 'a factual observation is not');
   check.equal(policy.json.check_classes.printed_policy_observation.is_a_statutory_check, false, 'and neither is a policy observation');
   check.ok(/never counted as a rule check/.test(policy.json.check_classes.never_summed), 'and the three are never summed');
-  check.ok(results.SET_QUALIFICATIONS.some((line) => /more than one kind of check/.test(line)), 'the result set carries the same separation');
-  check.ok(results.SET_QUALIFICATIONS.some((line) => /never mixed together/.test(line)),
-    'and says the three are not substituted for each other');
+  check.ok(results.SET_QUALIFICATIONS.some((line) => /defined reporting rule or requirement/.test(line)), 'the result set states the violation rule');
+  check.ok(results.SET_QUALIFICATIONS.some((line) => /statute may provide additional context/.test(line)),
+    'and says statutes provide context without becoming a mandatory gate');
   check.ok(results.SET_QUALIFICATIONS.some((line) => /neither one ran, and neither one passed/i.test(line)),
     'and that a check which did not run is neither performed nor passed');
 

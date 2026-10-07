@@ -446,6 +446,10 @@ function detectMissingPages(pages) {
 }
 
 function labelForDate(textBefore) {
+  const tail = String(textBefore || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$/.test(tail)) return 'FIRST DELINQUENCY DATE';
+  if (/(?:DATE OF )?LAST PAYMENT(?: DATE)?$/.test(tail)) return 'LAST PAYMENT DATE';
+  if (/(?:DATE )?FIRST REPORTED(?: DATE)?$/.test(tail)) return 'FIRST REPORTED';
   const words = String(textBefore || '').trim().split(/[\s:]+/).filter(Boolean);
   if (!words.length) return 'Date';
   const last = words[words.length - 1];
@@ -634,7 +638,7 @@ const ADJUDICATION_LABELS = Object.freeze(['ADJUDICATED', 'ADJUDICATION']);
 const JUDGMENT_ENTRY_LABELS = Object.freeze(['ENTRY', 'ENTERED']);
 const TAX_LIEN_PAID_LABELS = Object.freeze(['PAID', 'RELEASED', 'SATISFIED']);
 const JUDGMENT_SATISFACTION_LABELS = Object.freeze(['SATISFIED', 'SATISFACTION']);
-const COLLECTION_DELINQUENCY_LABELS = Object.freeze(['DELINQUENCY', 'DOFD']);
+const COLLECTION_DELINQUENCY_LABELS = Object.freeze(['DELINQUENCY', 'FIRST DELINQUENCY DATE', 'DOFD']);
 /* OWNER-CANDIDATE-006 (A): a generic "Delinquency"/"Delinquent" trailing word is NOT sufficient — the particular
    date must be explicitly bound to the commencement-of-delinquency meaning: "Date of First Delinquency" or "DOFD"
    (Date of First Delinquency). "Date Delinquent", "Delinquency Date" and a bare "Delinquency: <date>" do not carry
@@ -853,12 +857,24 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
     } else if (OPENED_LABELS.includes(up)) {
       facts['liability.openedDate'] = d.normalized;
       facts['liability.openedDatePrecision'] = d.precision || null;
+      if (d.precision === 'DAY' && (currentKind === 'GENERAL_ACCOUNT' || currentKind === 'REPORTED_ACCOUNT')) {
+        facts['reportedAccount.dateOpened'] = d.normalized;
+      }
       canonicalPrinted['opened_date'] = {
         label: 'opened_date', state: 'VALUE', status: 'RESOLVED', raw: d.raw, normalized: d.normalized, reason: null,
         location: null, kind: 'date', precision: d.precision || null,
         anchor_precision: d.precision || null, comparison_anchor: d.normalized,
         ambiguous: d.ambiguous === true ? true : undefined, alternative_normalized: d.alternative || null
       };
+      if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
+    } else if (currentKind === 'GENERAL_ACCOUNT' && d.precision === 'DAY'
+      && ['FIRST REPORTED', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
+      const field = up === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
+        : up === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate';
+      facts[field] = d.normalized;
+      canonicalPrinted[field] = { label: up, state: 'VALUE', status: 'RESOLVED',
+        raw: d.raw, normalized: d.normalized, reason: null, location: null,
+        kind: 'date', precision: d.precision };
       if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
     } else if (OVERDUE_LABELS.includes(up)) {
       facts['overdue.originalListingDate'] = d.normalized;
@@ -901,7 +917,7 @@ const ACCOUNT_NUMBER_LABEL_RE = /\b(?:ACCOUNT|ACCT)\s*(?:NUMBER|NO\.?|#|ID)\b/i;
    account number, never a consumer name) and is used ONLY to decide whether two records with identical dates and
    source report are corroborated as the SAME account. A name the report prints is report-supported; an account
    number is never retained. */
-const IDENTITY_LABEL_STRIP = /\b(OPENED|CLOSED|BALANCE|LIMIT|CREDIT LIMIT|DATE OPENED|DATE CLOSED|DATE PAID|PAYMENT|PAST DUE|OVERDUE|STATUS|ACCOUNT|TRADELINE|REPORT DATE|CREDIT REPORT|CONSUMER|REPORT|DATE|OF|ON|INDIVIDUAL|JOINT|JOINTLY|AUTHORIZED USER|AUTHORISED USER|CO-SIGNER|CO-BORROWER|RESPONSIBILITY)\b/gi;
+const IDENTITY_LABEL_STRIP = /\b(OPENED|CLOSED|BALANCE|LIMIT|CREDIT LIMIT|DATE OPENED|DATE CLOSED|DATE PAID|PAYMENT|PAST DUE|OVERDUE|STATUS|ACCOUNT|TRADELINE|REPORT DATE|CREDIT REPORT|CONSUMER|REPORT|DATE|OF|ON|INDIVIDUAL|JOINT|JOINTLY|AUTHORIZED USER|AUTHORISED USER|CO-SIGNER|CO-BORROWER|RESPONSIBILITY|TYPE|CREDIT CARD|REVOLVING|LINE OF CREDIT|FIRST|LAST|REPORTED|DELINQUENCY)\b/gi;
 
 function accountIdentityToken(text) {
   let t = String(text || '');
@@ -989,6 +1005,8 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   }
   const masked = maskedIdentifierToken(line.text);
   if (masked) canonical.facts['account.masked_identifier'] = masked;
+  const accountType = /\b(?:ACCOUNT\s+TYPE|TYPE\s+OF\s+ACCOUNT)\s*[:\-]?\s*(CREDIT\s+CARD|REVOLVING|LINE\s+OF\s+CREDIT)\b/i.exec(String(line.text || ''));
+  if (trusted && accountType) canonical.facts['account.type'] = accountType[1].toUpperCase().replace(/\s+/g, ' ');
   if (trusted) {
     const resp = responsibilityOf(line.text);
     if (resp) {
@@ -1005,6 +1023,49 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     const field = canonical.canonicalPrinted[key];
     if (field.location === null) field.location = lineLocation(line);
     printed[key] = field;
+  }
+  /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
+     The fact map alone is not a printed reading: it must carry its own raw token and location. */
+  const status = canonical.facts['account.status'];
+  if (status) {
+    const at = String(line.text || '').toUpperCase().indexOf(status);
+    if (at >= 0) printed.Status = { label: 'Status', state: 'VALUE',
+      raw: String(line.text).slice(at, at + status.length), normalized: status,
+      location: lineLocation(line), kind: 'status' };
+  }
+  if (trusted && masked) {
+    const rawMask = /[*#Xx·•]{2,}[\s\-]?\d{3,4}|(?:ENDING|LAST)\s*\d{3,4}/i.exec(String(line.text || ''));
+    if (rawMask) printed['account.masked_identifier'] = { label: 'Masked account number',
+      state: 'VALUE', raw: rawMask[0], normalized: masked,
+      location: lineLocation(line), kind: 'identifier' };
+  }
+  const reportedIdentity = canonical.facts['account.reported_identity'];
+  if (trusted && reportedIdentity) {
+    const at = String(line.text || '').toUpperCase().indexOf(reportedIdentity);
+    if (at >= 0) printed['account.reported_identity'] = { label: 'Creditor or account name',
+      state: 'VALUE', raw: String(line.text).slice(at, at + reportedIdentity.length),
+      normalized: reportedIdentity, location: lineLocation(line), kind: 'account_identity' };
+  }
+  const responsibility = canonical.facts['account.responsibility'];
+  if (trusted && responsibility && canonical.facts['account.responsibilityRaw']) {
+    printed['account.responsibility'] = { label: 'Responsibility', state: 'VALUE',
+      raw: canonical.facts['account.responsibilityRaw'], normalized: responsibility,
+      location: lineLocation(line), kind: 'responsibility' };
+  }
+  if (trusted && accountType) printed['account.type'] = { label: 'Account type', state: 'VALUE',
+    raw: accountType[1], normalized: canonical.facts['account.type'],
+    location: lineLocation(line), kind: 'account_type' };
+  for (const [field, label] of [['account.balance', 'Balance'], ['account.pastDueAmount', 'Past Due'],
+    ['account.creditLimit', 'Credit Limit']]) {
+    const raw = canonical.facts[`${field}Raw`];
+    if (raw == null || canonical.facts[field] == null) continue;
+    printed[label] = { label, state: 'VALUE', raw, normalized: canonical.facts[field],
+      location: lineLocation(line), kind: 'amount' };
+  }
+  if (canonical.facts['account.amount'] != null && canonical.facts['account.amountRaw'] != null) {
+    printed['account.amount'] = { label: 'Amount', state: 'VALUE',
+      raw: canonical.facts['account.amountRaw'], normalized: canonical.facts['account.amount'],
+      location: lineLocation(line), kind: 'amount' };
   }
   return { printed, resolved, canonical };
 }
@@ -1286,6 +1347,7 @@ function buildRecords(pages, convention) {
          dollar amount: it is still a report-supported fact worth reading (and never a missed-payment guess). */
       const hasPaymentHistory = PAYMENT_HISTORY_HEADER_RE.test(up);
       const hasResponsibility = responsibilityOf(line.text) !== null;
+      const hasAccountType = /\b(?:ACCOUNT\s+TYPE|TYPE\s+OF\s+ACCOUNT)\s*[:\-]?\s*(?:CREDIT\s+CARD|REVOLVING|LINE\s+OF\s+CREDIT)\b/i.test(line.text);
       /* OWNER-GAP-FINDING-002-RESOURCE-001: a public-record header and an explicit historical-verification line
          are value lines too — the header starts the record, the verification line is a record-owned fact. */
       const hasPublicRecordHeader = PUBLIC_RECORD_HEADER_RE.test(up) && recordKind(line.text) === 'GENERAL_PUBLIC_RECORD';
@@ -1305,7 +1367,7 @@ function buildRecords(pages, convention) {
         || (current && current.kind === 'GENERAL_PUBLIC_RECORD'
           && (JUDGMENT_CONTENT_LINE_RE.test(up) || CRIMINAL_CONTENT_LINE_RE.test(up)
             || JUDGMENT_TRUNCATION_MARKERS.test(up)));
-      const hasValue = hasDate || facts.amounts.length > 0 || hasPaymentHistory || hasResponsibility
+      const hasValue = hasDate || facts.amounts.length > 0 || hasPaymentHistory || hasResponsibility || hasAccountType
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
         || hasStatus || hasIdentifier || hasPublicRecordContent;
       if (!hasValue) continue;
@@ -1313,7 +1375,8 @@ function buildRecords(pages, convention) {
       const kind = recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
-      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(up) && !ACCOUNT_NUMBER_LABEL_RE.test(up);
+      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(up)
+        && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType;
 
       /* OWNER-CANDIDATE-002: a judgment-content line (Judgment context, creditor/amount/assignee, case/docket,
          date of entry) continues the OPEN public record — it is a field of the judgment, not a new account and

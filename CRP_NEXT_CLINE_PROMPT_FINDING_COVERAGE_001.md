@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** This Cline handoff is retired. Cline is stopped, and its statutory finding-coverage assignment is outside the active common-error violation scope. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # Next task — finding coverage inventory and repair plan
 
 ## Additional owner directive — dispute-packet readiness

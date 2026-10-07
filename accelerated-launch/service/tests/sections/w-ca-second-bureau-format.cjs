@@ -214,11 +214,10 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
     'while every record that prints no such date is recorded as an unread row, never as a comparison');
   check.deepEqual(ns.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
     'so its assessment names the statutory, factual and common-error classes');
-  check.ok(ns.unavailable_checks.length > 0, 'and every recorded limb is reported as not run against this format rather than silently dropped');
-  check.ok(ns.unavailable_checks.every((row) => typeof row.plain === 'string' && row.plain.length > 0),
-    'each of them saying in words why it was not run');
-  check.ok(ns.unavailable_checks.some((row) => /format|kind of entry/i.test(row.plain)),
-    'and a limb that still cannot run on this format says so in words');
+  check.equal(ns.unavailable_checks.length, 0,
+    'retired out-of-checklist limbs are absent instead of appearing as unavailable checks');
+  check.ok(ns.results.every((row) => row.check.adapter_id === 'CA-NS-CRA-S10-3-C-LIMB-1'),
+    'every active statutory comparison here belongs to the collection reporting-period checklist item');
 
   const nsEquifax = specimens.equifax
     ? evaluation.evaluateCase({

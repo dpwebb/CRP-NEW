@@ -19,6 +19,7 @@ const records = require('../../../adapters/applicability-records.json');
 const config = require('../../../adapters/adapter-configs.json');
 const { selectJurisdiction } = require('../../../jurisdiction-router.cjs');
 const matrix = require('../../../launch-matrix.json');
+const evaluation = require('../../evaluation.cjs');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 
@@ -318,14 +319,23 @@ async function surfaceAvailability(t, check) {
   const byCountry = {};
   for (const region of surface.regions) byCountry[region.country] = (byCountry[region.country] || 0) + 1;
   check.deepEqual(byCountry, { CA: 13, US: 57, GB: 4, AU: 8 }, 'and the four country batches account for exactly those 82');
-  check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 82,
-    'eighty-two of them ran or can run a recorded rule comparison of some kind');
+  const activeRuleRegions = canonicalRegions().filter((r) => evaluation.applicableAdapters(r.region).confirmed.length > 0);
+  check.equal(activeRuleRegions.length, 78,
+    '78 selections currently have a confirmed checklist-related statutory support adapter; the shared checklist remains all 82');
+  check.deepEqual(canonicalRegions().filter((r) => !activeRuleRegions.some((a) => a.region === r.region))
+    .map((r) => r.region), ['CA-MB', 'CA-NB', 'CA-NL', 'CA-PE'],
+    'four Canadian selections use report-data rules without a province-specific active statutory adapter');
+  for (const region of surface.regions) {
+    const hasActiveStatutorySupport = evaluation.applicableAdapters(region.value).confirmed.length > 0;
+    check.equal(region.assessment_kinds.includes('STATUTORY_RULE_COMPARISON'), hasActiveStatutorySupport,
+      `${region.value}: public rule-comparison label matches the active checklist-related adapter scope`);
+    if (!hasActiveStatutorySupport) check.ok(region.assessment_kinds.includes('REPORT_FACT_CONSISTENCY'),
+      `${region.value}: factual support remains available without a statutory adapter`);
+  }
   check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('REPORT_FACT_CONSISTENCY')).length, 17,
     'seventeen of them ran factual checks about what their report prints: the thirteen Canadian and four British');
   check.equal(surface.regions.filter((r) => r.assessment_kinds.includes('PRINTED_POLICY_OBSERVATION')).length, 4,
     'and four of them ran a printed policy observation: the four British');
-  check.equal(surface.regions.filter((r) => !r.assessment_kinds.includes('STATUTORY_RULE_COMPARISON')).length, 0,
-    'no promised region is left without a statutory evaluation recorded');
   check.equal(surface.regions.filter((r) => r.availability.state !== 'SUPPORTED').length, 0,
     'no region is left without a registered format path any more');
   check.equal(counts.SUPPORTED + (counts.FORMAT_AVAILABLE_NO_CHECK || 0) + (counts.NO_REPORT_FORMAT || 0), 82,

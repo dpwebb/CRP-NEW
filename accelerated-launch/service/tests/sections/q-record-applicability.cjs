@@ -178,8 +178,8 @@ function realEvidence(check, checkSkip) {
     check.equal(out.au.applicable, 0,
       'and the real sample produces no APPLICABLE liability record, which the limits state plainly');
     check.ok(e.results.every((r) => r.machine.state === 'EVALUATED'),
-      'the two pre-existing AU limbs still run unchanged on the same sample');
-    check.equal(e.results.length, 6, 'and still produce exactly six comparisons');
+      'the checklist-related AU retention limbs run on the same sample');
+    check.equal(e.results.length, 2, 'and still produce exactly two checklist-related comparisons');
   } else {
     checkSkip('the captured AU sample', 'THE_CAPTURED_ARTIFACT_PUB-012_IS_NOT_PRESENT');
   }
@@ -202,8 +202,8 @@ function realEvidence(check, checkSkip) {
       'and its outcome is the arithmetic comparison, not an applicability statement');
     check.equal(e.not_applicable_checks.length, 0,
       'no limb is NOT_APPLICABLE: the reassessed limbs find no entry of their kind and are reported unavailable instead');
-    check.equal(e.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 7,
-      'seven public-record and collection limbs find no entry of their kind and are reported unavailable');
+    check.equal(e.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 2,
+      'two checklist-related limbs find no entry of their kind and are reported unavailable');
     check.equal(e.unresolved_applicability.length, 5,
       'the two unreadable adverse accounts stay unresolved under the federal rule, and all three adverse accounts stay unresolved under the fail-closed California rule (no event-date context)');
     check.ok(e.unresolved_applicability.every((c) => c.adapter_id === ADVERSE_ADAPTER || c.adapter_id === CA_ADVERSE_ADAPTER),

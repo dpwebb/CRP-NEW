@@ -92,7 +92,7 @@ function runAcceptance() {
     document_count: HELD_OUT.length, page_count: HELD_OUT.length,
     expected_decisive_fact_denominator: local.expected_decisive,
     recovered: local.recovered, incorrect_decisive_facts: local.incorrect,
-    cross_record_or_bureau_borrowing: local.borrowed, unsupported_legal_findings: local.unsupported_findings,
+    cross_record_or_bureau_borrowing: local.borrowed, unsupported_violations: local.unsupported_findings,
     record_collapse_errors: local.record_collapse_errors, withhold_errors: local.withheld_errors,
     recovery_rate: Number(local.recovery_rate.toFixed(4)), every_miss_accounted: true, per_case: local.cases,
     deployed: { build_id: deployed ? deployed.build_id : null, useful_recovery: deployed_useful, bounded_unsuccessful_recovery: deployed_unsuccessful, purchased_download_status: deployed && deployed.download ? deployed.download.status : null }

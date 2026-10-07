@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** The requirement for independent statutory violation coverage across jurisdictions is retired. Read finding coverage as demonstrated active common-error checks and their upload-to-packet paths across the promised 82 jurisdictions. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # BLOCKER-FINDING-COVERAGE-001 — consumer promise coverage
 
 Latest owner sequencing: `CRP_OWNER_REPORT_DATA_TO_ISSUE_BLOCKER_001.md` supersedes the older priority below. Relevant ordinary-report parsing and functional assessment must advance together through existing packets. Isolated statutory counts do not take precedence over material printed account information. Finding coverage remains independently OPEN.

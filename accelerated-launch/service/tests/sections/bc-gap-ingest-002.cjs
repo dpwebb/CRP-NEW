@@ -2,8 +2,8 @@
 /**
  * bc-gap-ingest-002.cjs — GAP-INGEST-002 multi-line account/collection/public-record boundaries through the full
  * local pipeline. Proves wrapped account names, status/identifier continuation lines, adjacent (repeated/similar)
- * accounts, continuation dates, accurate source locations, withheld conflicting readings, and a completed finding
- * traced to its source record, plus the HTTP upload -> evaluate -> view path and cross-account refusal.
+ * accounts, continuation dates, accurate source locations, withheld conflicting readings, and a checklist violation
+ * traced to its two source dates, plus the HTTP upload -> evaluate -> view path and cross-account refusal.
  */
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
@@ -81,11 +81,19 @@ async function run(t, check) {
   const conflictRec = conflictPipeline.assembled.extraction.records[0];
   check.ok(!conflictRec.facts['publicRecord.bankruptcyOrderForReliefDate'], 'conflicting order-for-relief dates are withheld, never silently overwritten');
 
-  /* 8. A completed finding is traced to its source record in the generated report. */
-  const bk = fileRow('bk', 'sha-bk', ['Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026', 'Bankruptcy Public Record: TEST-BK-001', 'Order for Relief: January 1, 2011'], 'US');
-  const bkPipeline = pipeline([bk], 'US', 'US-CA');
-  check.equal(bkPipeline.assembled.extraction.records[0].facts['publicRecord.bankruptcyOrderForReliefDate'], '2011-01-01', 'the order-for-relief continuation reaches the public record');
-  check.ok(/Source fact: printed "January 1, 2011" \(page 1, line 4\)/.test(bkPipeline.body), 'the generated report traces the completed finding to its source record and line');
+  /* 8. A completed common-error violation keeps both dates on its owning record. */
+  const dated = fileRow('dated', 'sha-dated', [
+    'Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026',
+    'Creditor A  Balance $100', 'Opened 01/01/2020', 'Closed 01/01/2019'
+  ], 'US');
+  const datedPipeline = pipeline([dated], 'US', 'US-CA');
+  const issue = datedPipeline.rendered.issues.find((i) => i.rule_assessment);
+  check.ok(issue, 'the multiline report creates a source-linked chronology violation');
+  check.equal(issue.rule_assessment.classification, 'PROBABLE_VIOLATION');
+  check.deepEqual(issue.source_facts.map((f) => f.location.line), [4, 5],
+    'each decisive date retains its own continuation line');
+  check.ok(datedPipeline.body.includes('2020-01-01') && datedPipeline.body.includes('2019-01-01'),
+    'the assessment report carries the same two account dates');
 
   /* 9. HTTP upload -> evaluate -> view preserves the association, and cross-account access is refused. */
   const owner = await t.account('ingest2-owner@example.test');

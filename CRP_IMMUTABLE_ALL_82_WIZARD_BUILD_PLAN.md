@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** The active version 1 violation scope is the common-error checklist. Earlier clauses requiring separate legal findings, independent statutory checks, or statute gates are retired; other product and release safeguards remain in force. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # CRP Immutable All-82 Wizard Build Plan
 
 Plan ID: CRP-ALL82-WIZARD-1

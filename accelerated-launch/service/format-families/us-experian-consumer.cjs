@@ -596,7 +596,7 @@ function blockEntries(model, startY, endY, anchors, headerY0) {
 
     if (!anchors.length) {
       entries.push({
-        band: 0, y0: row.y0, y1: row.y1, in_header_row: inHeaderRow,
+        page: row.page, band: 0, y0: row.y0, y1: row.y1, in_header_row: inHeaderRow,
         text: fields.map((w) => w.text).join(' '), words: fields
       });
       continue;
@@ -610,7 +610,7 @@ function blockEntries(model, startY, endY, anchors, headerY0) {
     for (const [band, words] of buckets) {
       words.sort((a, b) => a.x0 - b.x0);
       entries.push({
-        band,
+        page: row.page, band,
         y0: Math.min(...words.map((w) => w.y0)),
         y1: Math.max(...words.map((w) => w.y1)),
         in_header_row: inHeaderRow,
@@ -949,9 +949,11 @@ function buildAccountRecord(block, index, model) {
     /* What the record PRINTED. An applicability rule reads these and decides; the family decides nothing. */
     printed: {
       status: { raw: status.raw, status: status.reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED, reason: status.reason },
-      date_opened: { raw: dateOpened.raw, normalized: dateOpened.normalized_value, status: dateOpened.status, reason: dateOpened.reason },
+      date_opened: { label: 'Date opened', raw: dateOpened.raw, normalized: dateOpened.normalized_value,
+        status: dateOpened.status, reason: dateOpened.reason, location: dateOpened.location, precision: dateOpened.precision || null },
       date_of_status: { raw: dateOfStatus.raw, normalized: dateOfStatus.normalized_value, status: dateOfStatus.status, reason: dateOfStatus.reason },
-      first_reported: { raw: firstReported.raw, normalized: firstReported.normalized_value, status: firstReported.status, reason: firstReported.reason },
+      first_reported: { label: 'First reported', raw: firstReported.raw, normalized: firstReported.normalized_value,
+        status: firstReported.status, reason: firstReported.reason, location: firstReported.location, precision: firstReported.precision || null },
       adverse_payment_rating_date: adverse,
       recent_balance: { label: 'Recent balance', raw: balance.raw, normalized: balanceAmount != null ? balanceAmount : null, status: balance.reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED, reason: balance.reason, location: balance.location },
       past_due_amount: { label: 'Past due amount', raw: pastDue.raw, normalized: pastDueAmount != null ? pastDueAmount : null, status: pastDue.reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED, reason: pastDue.reason, location: pastDue.location },

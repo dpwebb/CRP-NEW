@@ -1,8 +1,8 @@
 'use strict';
 /**
- * bi-us-ca-tax-lien.cjs — OWNER-CANDIDATE-005: California paid-tax-lien obsolescence, Civ. Code § 1785.13(a)(4).
- * Verifies the FINDING (internal VIOLATION + consumer "Reporting issue"), not only the arithmetic, plus the
- * negative/boundary/uncertainty controls and the corrected source identity.
+ * bi-us-ca-tax-lien.cjs — historical paid-tax-lien arithmetic and current checklist scope.
+ * The source date remains extractable, while this independent public-record statutory adapter
+ * is absent from runtime assessment and consumer results.
  */
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const formats = require('../../formats.cjs');
@@ -82,14 +82,12 @@ async function run(t, check) {
   const view = (await t.request('GET', `/api/cases/${caseRow.case_id}`, { token: owner.token })).json.view;
   const findings = (view.result.findings || []).concat(view.result.observations || []);
   const row = findings.find((o) => o.check_name && /1785\.13\(a\)\(4\)/.test(o.check_name));
-  check.ok(row, 'the paid-tax-lien check ran on the US-CA report');
-  check.equal(row.is_a_finding, true, 'the paid-tax-lien result is a finding');
-  check.equal(row.consumer_label, 'Reporting issue', 'its consumer label is "Reporting issue"');
-  check.equal(row.rule_source_version, SOURCE_DIGEST, 'the consumer result carries the corrected source digest');
-  check.ok(row.rule_source && row.rule_source.raw_value, 'the consumer result carries the payment-date source evidence');
+  check.equal(row, undefined, 'the paid-tax-lien rule is retired from active common-error assessment');
+  check.equal(findings.some((o) => o.rule_source_version === SOURCE_DIGEST), false,
+    'the retired rule source does not enter consumer results');
 
-  evidence.rule = 'US-CA Civ. Code § 1785.13(a)(4) paid tax lien 7y: internal VIOLATION + consumer Reporting issue verified end-to-end with corrected source identity';
+  evidence.rule = 'paid-tax-lien date remains extractable, while the out-of-checklist adapter is absent from consumer results';
   return evidence;
 }
 
-module.exports = { run, id: 'bi-us-ca-tax-lien', title: 'OWNER-CANDIDATE-005: California paid-tax-lien obsolescence (finding verified)' };
+module.exports = { run, id: 'bi-us-ca-tax-lien', title: 'California paid-tax-lien adapter is absent from active consumer results' };

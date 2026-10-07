@@ -52,7 +52,7 @@ const SECTION_FILES = [
   'y-ingest-coverage-matrix.cjs',
   /* B6-INGEST-002 — the general bureau-report intake path and its unrelated/unreadable refusals. */
   'z-general-intake.cjs',
-  /* ACCEPT-001 — the four connected statutory checks: exceeded, not-exceeded, missing and equiv-layout. */
+  /* ACCEPT-001: active checklist retention comparisons and retired enquiry guard. */
   'ab-acceptance-statutory.cjs',
   /* OWNER-EVIDENCE-001 — the immutable reported-fact policy and the enforced bankruptcy discharge date. */
   'ac-evidence-policy.cjs',
@@ -70,8 +70,11 @@ const SECTION_FILES = [
   'aj-ingest-dates.cjs',
   /* OWNER-ACCEPT-009 — GAP-INGEST-008/-009/-010: partial native-text recovery, bureau segmentation, upload limits. */
   'ak-ingest-008-009-010.cjs',
-  /* OWNER-ACCEPT-009 — BLOCKER-COMMON-ERRORS-001: data-consistency checks, never a legal finding. */
+  /* OWNER-ACCEPT-009 — BLOCKER-COMMON-ERRORS-001: data-consistency checks feed report-data violation rules. */
   'al-common-errors.cjs',
+  'ct-owner-common-error-scope.cjs',
+  'cw-common-error-rule-assessment.cjs',
+  'cx-all82-required-report-data.cjs',
   /* OWNER-ACCEPT-009 — BLOCKER-FDT-001: incomplete-reading detection, bounded recovery, consequential
      limitations, corrected duplicate semantics, and the reproducible benchmark. */
   'am-fdt-recovery.cjs',
@@ -521,7 +524,7 @@ async function main() {
     regionSupport[region].presentation_id = us.presentation_id;
     regionSupport[region].evidence = `${us.evidenced_artifact_id} — the captured official consumer-channel sample, read read-only by local OCR`;
   }
-  /* The Australian rows run only recorded rule comparisons, and they say so. */
+  /* The Australian rows report only currently active checklist-related comparisons. */
   for (const region of (au.regions_with_a_working_assessment || [])) {
     if (!regionSupport[region]) continue;
     regionSupport[region].assessment_kinds = ['STATUTORY_RULE_COMPARISON'];
@@ -539,8 +542,8 @@ async function main() {
   }
 
   /* B3 continuation: Canada. All thirteen selections run the same four factual checks on the same admitted
-     presentation. Twelve of them have no recorded statutory limb at all, so their assessment is factual
-     only — and each region row says which classes ran. CA-NS keeps its statutory evaluation untouched. */
+     presentation. Current statutory support is limited to active checklist-related adapters;
+     each region row states the classes actually run. */
   for (const [region, row] of Object.entries(caFacts.regions || {})) {
     if (!regionSupport[region]) continue;
     regionSupport[region].executable_checks = row.statutory_checks_performed;
@@ -623,13 +626,12 @@ async function main() {
          the three classes, each with the checks that actually ran and the regions they ran for. */
       assessment_classes: {
         statutory_rule_comparisons: {
-          executed_check_ids: ['AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y',
-            'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y',
+          executed_check_ids: ['AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y',
             'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y',
             'FCRA-605A-5-US-NATIONAL-7Y',
             'CA-NS-CRA-S10-3-C-LIMB-1'],
           withheld_check_ids: [],
-          recorded_but_not_executed_check_ids: ['CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'],
+          recorded_but_not_executed_check_ids: [],
           regions: ['CA-NS'].concat(us.regions_with_a_working_assessment || [],
             (family.real_evidence && !family.real_evidence.skipped) ? ['AU-ACT', 'AU-NSW', 'AU-NT', 'AU-QLD', 'AU-SA', 'AU-TAS', 'AU-VIC', 'AU-WA'] : [])
         },
@@ -648,18 +650,12 @@ async function main() {
       },
       local_ocr: us.local_ocr || null,
       regions_with_a_working_assessment: Object.keys(regionSupport).filter((r) => regionSupport[r].working_assessment).sort(),
-      executable_check_ids: ['AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y',
-        'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y',
+      executable_check_ids: ['AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y',
         'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y',
         'FCRA-605A-5-US-NATIONAL-7Y',
         'CA-NS-CRA-S10-3-C-LIMB-1'],
       executable_check_ids_withheld: [],
-      recorded_but_not_executed_check_ids: ['CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'],
-      /* A limb that was NOT applied is neither a withheld limb nor a performed comparison. The CA-NS
-         bankruptcy limb is now recorded as SINGLE_FIELD on the clearly labelled discharge date
-         (OWNER-EVIDENCE-001 v1.0), so it is no longer withheld for an unprinted anchor; it simply did not
-         run because no admitted presentation prints that date. It is reported here so the count of executed
-         checks can never absorb it. */
+      recorded_but_not_executed_check_ids: [],
       applicability_states: applicabilityStates.states || null,
       applicability_states_rule_ids: applicabilityStates.rule_ids || null,
       response_drafts_available: 0,
@@ -727,7 +723,7 @@ async function main() {
       'The Australian family is evidenced from one captured public sample; that sample proves its structure, not every current file.',
       'The recorded Australian limb (Privacy Act 1988 (Cth) s. 20W item 1, consumer credit liability information) is BOUND. The captured sample prints no closed liability record, so it resolves as NOT_APPLICABLE on one record and APPLICABILITY_UNRESOLVED on two; the APPLICABLE branch is exercised only on synthetic input, which establishes no real closed-account presentation evidence.',
       'A synthetic demonstration exercises the interface; it evidences no report format and counts as nothing.',
-      'Canada: all thirteen canonical selections run the same four factual report-fact checks on the same admitted presentation. Twelve of them have NO recorded statutory limb, so their assessment is factual only and each region row says so; CA-NS keeps its statutory evaluation unchanged and separate.',
+      'Canada: all thirteen canonical selections retain factual report checks and the shared common-error checklist. Province-specific statute support is optional and limited to active checklist-related adapters.',
       'Canada: no PIPEDA provision and no national applicability relation is named, invented or implied by the factual checks. The unresolved country-wide PIPEDA record remains unresolved and does not block the factual assessment.',
       'Canada: a factual check compares two things the presentation prints. It draws no conclusion from a difference it finds, and a difference is not a finding.',
       'The United Kingdom family is evidenced by structure from ONE captured official consumer report example, dated 1 June 2007 and marked on its own face as fictitious. It therefore evidences STRUCTURE ONLY: its currency for present-day GB consumer files is NOT established, it evidences one bureau only, and that vintage is a named remaining blocker.',
@@ -810,6 +806,7 @@ async function main() {
   const acceptance = fdtAcceptance.runAcceptance();
   const fdtSection = byId.get('am-fdt-recovery');
   const commonErrorsSection = byId.get('al-common-errors');
+  const ownerCommonErrorsSection = byId.get('ct-owner-common-error-scope');
   const reportUseSection = byId.get('bg-report-use');
 
   /* The deployed recovery/download evidence (produced against the served staging build) is what proves the
@@ -834,7 +831,7 @@ async function main() {
       recovery_rate: acceptance.recovery_rate,
       incorrect_decisive_facts: acceptance.incorrect_decisive_facts,
       cross_record_or_bureau_borrowing: acceptance.cross_record_or_bureau_borrowing,
-      unsupported_legal_findings: acceptance.unsupported_legal_findings
+      unsupported_violations: acceptance.unsupported_violations
     },
     benchmark: {
       missed_fact_rate: benchResult.metrics.missed_fact_rate,
@@ -890,7 +887,11 @@ async function main() {
         'duplicate-reporting (identity + additional compatible fact)',
         'similar-entries-worth-reviewing',
         're-aging (adverse-after-first-report)',
-        'reported-dates-out-of-order'
+        'reported-dates-out-of-order',
+        'paid-or-settled-status-with-past-due',
+        'last-payment-or-first-delinquency-date-conflict',
+        'linked-original-and-collection-both-due',
+        'owner-list-of-19-across-82-jurisdictions-with-out-of-checklist-statutory-checks-retired'
       ],
       distinct_amounts_extracted: ['account.balance', 'account.pastDueAmount', 'account.paymentAmount', 'account.creditLimit', 'account.currency'],
       payment_history: 'printed grid with periods, a code->meaning legend and raw cells; blank cells and unlisted codes are never guessed',
@@ -901,7 +902,8 @@ async function main() {
       real_browser_clarification: 'no real-browser demonstration of the consumer clarification interface (node:vm only; endpoint responses are not browser usability evidence)'
     },
     tests: [
-      { id: 'al-common-errors', passed: Boolean(commonErrorsSection) && commonErrorsSection.failed === 0 }
+      { id: 'al-common-errors', passed: Boolean(commonErrorsSection) && commonErrorsSection.failed === 0 },
+      { id: 'ct-owner-common-error-scope', passed: Boolean(ownerCommonErrorsSection) && ownerCommonErrorsSection.failed === 0 }
     ]
   };
   fs.writeFileSync(path.join(OUT_DIR, 'common-errors-evidence.json'), `${JSON.stringify(commonErrorsEvidence, null, 2)}\n`, 'utf8');

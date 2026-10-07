@@ -70,10 +70,10 @@ async function run(service, check) {
   const defExt = formats.extractWithSharedAdapter(makeSyntheticModel({ pages: [['Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026', 'Bankruptcy Public Record: TEST-BK', 'Order for Relief: January 1, 2011']] }), { mode: 'REPORT', country: 'US' });
   const defRes = evaluation.evaluateCase({ country: 'US', region: 'US-CA', extraction: defExt });
   const defRow = defRes.results.find((r) => r.check.adapter_id === 'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y');
-  check.equal(defRow.machine.finding.classification, 'VIOLATION', 'an ordinary expired order-for-relief stays a definite VIOLATION');
+  check.equal(defRow, undefined, 'an expired bankruptcy public record cannot activate a retired statutory adapter');
 
   evidence.qualified = 'period exceeded + unresolved exception -> PROBABLE verification request, never VIOLATION';
-  evidence.definite_preserved = 'the strict definite classifier is unchanged';
+  evidence.definite_preserved = 'out-of-checklist bankruptcy adapter is absent from runtime';
   return evidence;
 }
 

@@ -68,17 +68,18 @@ function auExtraction(liabilityLines) {
 /** The three classifications, each measured on a real admitted/uploaded path. */
 async function makeCorrectionCase(service, check) {
   const owner = await service.unpaidAccount(`cb-correction-${crypto.randomBytes(4).toString('hex')}@example.test`);
-  const caseRow = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'US', region: 'US-CA' } })).json.case;
+  const caseRow = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'AU', region: 'AU-NSW' } })).json.case;
   await payReportOnce(service, owner, caseRow.case_id);
-  const pdf = buildPdf({ pages: [{ lines: [
-    'Experian  Consumer Credit Report', 'Report Date: June 12, 2026',
-    'Tax Lien  Date Paid 01/01/2018'
-  ] }] });
+  const pdf = buildPdf({ pages: [
+    { lines: ['CASE SUBJECT', 'Report Date: 1 January 2026', 'Reference: 0000'] },
+    { lines: [auFamily.PUBLISHER_NAME + '   Page 2 of 3   ' + auFamily.PUBLISHER_ABN, '', 'Personal Information', '', 'Credit Overview', '', 'Summary'] },
+    { lines: [auFamily.PUBLISHER_NAME + '   Page 3 of 3   ' + auFamily.PUBLISHER_ABN, '', 'Consumer Credit Information', 'Publically Available Consumer Information', 'Consumer Credit Liability Information', 'Credit Provider  SOME BANK', 'Type Of Account  Credit Card', 'Opened Date  1 January 2018', 'Closed Date  1 January 2019'] }
+  ] });
   await service.request('POST', `/api/cases/${caseRow.case_id}/files`, { token: owner.token, body: uploadBody(pdf, 'cb-taxlien.pdf') });
   await service.request('POST', `/api/cases/${caseRow.case_id}/evaluate`, { token: owner.token });
   const view = (await service.request('GET', `/api/cases/${caseRow.case_id}/packet`, { token: owner.token })).json.view;
   const definite = (view.eligible_issues || []).find((i) => i.confidence === 'DEFINITE' && i.request_type === 'CORRECTION');
-  check.ok(definite, 'the paid-tax-lien case offers a DEFINITE correction issue');
+  check.ok(definite, 'the AU liability case offers an in-list DEFINITE correction issue');
   check.ok(definite.citation, 'with its recorded rule identity');
   return { owner, caseId: caseRow.case_id, definite };
 }
@@ -127,8 +128,8 @@ async function run(service, check) {
   check.ok(preview.includes(`Your reference: ${DETAILS.account_reference}`), 'including the optional reference when supplied');
   check.ok(/\n\s*\d+\. \S/.test(preview), 'with one numbered request per selected issue');
   check.ok(/Recorded rule: /.test(preview), 'and the recorded rule identity for the correction request');
-  check.ok(/printed "01\/01\/2018"/.test(preview), 'with the raw printed reading');
-  check.ok(/normalized to 2018-01-01/.test(preview), 'and its normalized value');
+  check.ok(/printed "1 January 2019"/.test(preview), 'with the raw printed reading');
+  check.ok(/normalized to 2019-01-01/.test(preview), 'and its normalized value');
   check.ok(/\(page \d+(, line \d+)?\)/.test(preview), 'and the source location');
 
   /* ---- 4. Approve and download: the actual correspondence and evidence. ---- */
@@ -142,7 +143,7 @@ async function run(service, check) {
   check.ok(dl.text.includes(`From: ${DETAILS.consumer_name}`) && dl.text.includes(`Reply to: ${DETAILS.contact}`), 'with the consumer-supplied details');
   check.ok(/^ISSUES AND THE FACTS THEY CAME FROM$/m.test(dl.text), 'and the per-issue factual basis');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(dl.text), 'and the organized evidence-reference section');
-  check.ok(/public record 1/.test(dl.text), 'naming the record the finding concerns');
+  check.ok(/SOME BANK|credit account 1|liability 1/i.test(dl.text), 'naming the record the finding concerns');
   check.ok(!/not legal advi/i.test(dl.text), 'with no legal-advice disclaimer anywhere in the packet');
   check.ok(!/has been (submitted|sent|filed)|we have sent|was submitted to/i.test(dl.text), 'and no claim that anything was submitted or sent');
   check.ok(!/Dear Sir|Sincerely|Signature|sign here/i.test(dl.text), 'with no invented salutation, signature or signing request');
@@ -200,7 +201,9 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${multiCase.case_id}/evaluate`, { token: multiOwner.token });
   const multiView = (await service.request('GET', `/api/cases/${multiCase.case_id}/packet`, { token: multiOwner.token })).json.view;
   check.equal(multiView.eligible_issues.length, 2, 'two contradictory accounts offer two selectable issues');
-  check.equal(multiView.eligible_issues.every((i) => i.confidence === 'POTENTIAL' && i.request_type === 'VERIFICATION'), true, 'each a POTENTIAL verification request, needing no citation');
+  check.equal(multiView.eligible_issues.every((i) => i.confidence === 'PROBABLE'
+    && i.rule_assessment && i.request_type === 'VERIFICATION'), true,
+  'each a source-linked probable violation with a verification request and no statute prerequisite');
   const only = multiView.eligible_issues[0];
   const other = multiView.eligible_issues[1];
   await service.request('POST', `/api/cases/${multiCase.case_id}/packet/select`, { token: multiOwner.token, body: { issue_ids: [only.issue_id] } });
@@ -276,4 +279,5 @@ module.exports = {
   id: 'cb-packet-correspondence',
   title: 'OWNER-PACKET-CORRESPONDENCE-001: recipient type, consumer-supplied correspondence details and organized correspondence/evidence across definite, probable and potential issues'
 };
+
 

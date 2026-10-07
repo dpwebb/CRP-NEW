@@ -119,7 +119,7 @@ async function runHttpControls(service, check, evidence) {
   check.ok(!/CA-NS-CRA|CCRAA-1785|"adapter_id"/.test(JSON.stringify(card)), 'while no internal adapter or rule identifier is exposed');
   check.equal(later.view.assessment_summary.teaser.title, 'An entry may now be too old to report', 'the free teaser names the later-expiry concern');
   check.ok(later.view.result.retention_dual_date.summary.inside_at_report_outside_at_assessment >= 1, 'the dual-date summary records the entry, once per limb that measures it');
-  check.equal(later.view.result.retention_dual_date.summary.legal_findings_emitted, 0, 'and emits no legal finding');
+  check.equal(later.view.result.retention_dual_date.summary.rule_violations_emitted, 0, 'the date-comparison stage emits no rule violation on its own');
   check.ok(!/"adapter_id"/.test(JSON.stringify(later.view.result.retention_dual_date)), 'and the rendered comparison exposes no internal identifiers either');
   check.ok(/may now be too old to report/.test(String(card.explanation)), 'the explanation says plainly what the dates suggest');
   check.ok(/still on your current credit file/.test(String(card.uncertainty)), 'the uncertainty asks about the current file: ' + String(card.uncertainty).slice(0, 200));

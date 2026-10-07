@@ -101,6 +101,7 @@ function issueContent(issue) {
     request_wording: issue.request_wording || null,
     citation: issue.citation || null,
     source_version: issue.source_version || null,
+    rule_assessment: issue.rule_assessment || null,
     period_years: issue.period_years != null ? issue.period_years : null,
     content_inclusion: issue.content_inclusion || null,
     check_id: issue.check_id || null,
@@ -384,6 +385,9 @@ function issueLines(issue) {
     lines.push(`  Rule: ${issue.citation}`);
     if (issue.source_version) lines.push(`  Rule version: ${issue.source_version}`);
     if (issue.label) lines.push(`  Finding: ${issue.label}`);
+    for (const basis of issue.supported_bases || []) {
+      if (basis.rule_assessment) lines.push(`  ${basis.classification === 'PROBABLE_VIOLATION' ? 'Probable violation' : 'Potential violation'} of report-data requirement: ${basis.rule_assessment.requirement}`);
+    }
     if (issue.record_index != null) lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
       lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
@@ -395,6 +399,16 @@ function issueLines(issue) {
     }
   } else {
     lines.push(`  Issue: ${issue.label}`);
+    if (issue.rule_assessment) lines.push(`  ${issue.classification === 'PROBABLE_VIOLATION' ? 'Probable violation' : 'Potential violation'} of report-data requirement: ${issue.rule_assessment.requirement}`);
+    if (issue.rule_assessment && issue.citation) lines.push(`  Supporting statute: ${issue.citation} (source version ${issue.source_version})`);
+    if (issue.rule_assessment) {
+      for (const fact of issue.rule_assessment.required_facts || []) {
+        if (fact.source && fact.source.omitted_value === true) {
+          const loc = fact.source.location || {};
+          lines.push(`  Printed caption without a value: ${fact.source.source_field} (page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''})`);
+        }
+      }
+    }
     lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
       lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
@@ -517,7 +531,7 @@ function packetDocumentBody(store, actor, caseId) {
   const identity = reportIdentity(row) || {};
   const lines = [];
   lines.push('CRP CORRECTION PACKET');
-  lines.push('Source-supported factual correction and verification requests');
+  lines.push('Source-supported reporting issue correction and verification requests');
   lines.push('='.repeat(72));
   lines.push(`Produced: ${nowIso()}`);
   lines.push(`Report: ${identity.bureau || 'a supported report'}${identity.reference_date ? ` (reference date ${identity.reference_date})` : ''}`);

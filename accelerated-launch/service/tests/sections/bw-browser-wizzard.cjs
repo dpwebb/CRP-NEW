@@ -115,7 +115,7 @@ async function run(service, check) {
   check.equal(await page.locator('[data-check-issue]').count(), 1, 'the common potential issue renders as one selectable card');
   const potBlock = await page.locator('#packet-block').innerText();
   check.ok(/opened date later than its closed date/.test(potBlock), 'with readable evidence and the affirmative concern');
-  check.ok(/not, by itself, an established legal violation/.test(potBlock), 'with clear uncertainty, never a definite breach');
+  check.ok(/which date needs correction/.test(potBlock), 'with specific uncertainty about the correction');
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
   check.ok(/Who this correspondence goes to/.test(potBlock), 'the consumer review states who the correspondence is addressed to');
   check.ok(/consumer reporting agency that issued this report/.test(potBlock), 'as a recipient TYPE, with no invented address');

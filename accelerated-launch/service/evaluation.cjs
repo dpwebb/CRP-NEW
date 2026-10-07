@@ -26,6 +26,7 @@ const { runDetectedReportInformation, CHECK_CLASS } = require('./content-assessm
 const { runCommonErrorChecks, CHECK_CLASS: COMMON_ERROR_CLASS } = require('./common-errors.cjs');
 const limitationAssessment = require('./limitation-assessment.cjs');
 const paymentHistoryAnalysis = require('./payment-history-analysis.cjs');
+const { activeAdapter } = require('./common-error-scope.cjs');
 
 const CASE_LEVEL_ANCHOR_MODES = Object.freeze(['NOT_REPORT_EVIDENCED']);
 const REGISTERED_PRESENTATIONS = new Set(EXTRACTION_ADAPTERS.map((a) => a.presentation_id).concat(['GENERAL-BUREAU-REPORT']));
@@ -68,6 +69,7 @@ function applicableAdapters(region) {
   const confirmed = [];
   const unconfirmed = [];
   for (const entry of entries) {
+    if (!activeAdapter(entry.adapter_id)) continue;
     if (entry.confirmed === true) confirmed.push(entry);
     else unconfirmed.push(entry);
   }
@@ -120,7 +122,7 @@ function collectRetentionDates(results) {
     report_date_missing_but_assessment_compared: 0,
     not_comparable: 0,
     current_review_warranted: 0,
-    legal_findings_emitted: 0
+    rule_violations_emitted: 0
   };
   for (const row of results || []) {
     const dual = row && row.machine ? row.machine.retention_dates : null;

@@ -336,7 +336,7 @@ function runControls(check, evidence) {
 
   /* An adverse entry that prints its delinquency date is never given a missing-anchor item. */
   const anchored = tuExtraction(tuAccountBlock({
-    creditor: 'ANCHORED ADVERSE CONTROL', narrative: 'TC / CG', mop: '9', firstDelinquency: 'Aug 09, 2020',
+    creditor: 'ANCHORED ADVERSE CONTROL', narrative: 'TC / CG', mop: '9', firstDelinquency: 'Aug 09, 2021',
     legend: 'CG-Account cancelled by credit grantor with derogatory rating, TC-Third party collection/account turned over to collection agency', legendEnding: '\r'
   }));
   check.deepEqual(ids(issuesFor(anchored)), [CLOSURE_ITEM],

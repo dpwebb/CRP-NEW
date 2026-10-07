@@ -26,7 +26,7 @@ const AU_REGIONS = applicability.relations
   .find((r) => r.relation_id === 'AU-PRIVACY-ACT-1988-CTH-CREDIT-REPORTING').region_rows
   .map((row) => row.region);
 
-const EXECUTABLE_AU_CHECKS = ['AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y', 'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y'];
+const EXECUTABLE_AU_CHECKS = ['AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y'];
 
 async function uploadSample(t, check, owner, caseId, bytes) {
   const upload = await t.request('POST', `/api/cases/${caseId}/files`, {
@@ -81,25 +81,24 @@ async function deepJourney(t, check, specimenPath, specimenDigest, bytes) {
   const result = evaluated.json.result;
   check.equal(result.support, 'ACTUAL_REPORT_EVIDENCE', 'the result is report support, not a demonstration');
   check.equal(result.presentation_evidence, true);
-  check.equal(result.checks_performed, 6, 'every recorded limb of both date-anchored kinds produced a comparison');
+  check.equal(result.checks_performed, 2, 'the two overdue entries receive checklist-backed comparisons');
 
   const enquiries = result.observations.filter((o) => o.measures_from === 'Enquiry Date');
   const overdues = result.observations.filter((o) => o.measures_from === 'Original Listing > Date');
-  check.equal(enquiries.length, 4, 'the enquiry limb ran once per enquiry, on its own date');
+  check.equal(enquiries.length, 0, 'the retired enquiry retention rule produces no observation');
   check.equal(overdues.length, 2, 'the default limb ran once per overdue account, on its own original listing date');
-  check.equal(enquiries.length + overdues.length, result.observations.length, 'and nothing else ran');
+  check.equal(overdues.length, result.observations.length, 'and no out-of-checklist rule ran');
 
   check.ok(result.observations.every((o) => o.is_a_finding === false), 'no observation is a finding on a not-exceeded sample');
   check.ok(result.observations.every((o) => o.output_level === 'violation'), 'each carries its recorded ceiling (violation-class rule, no breach found here)');
   check.ok(result.observations.every((o) => o.evidence && o.evidence.page && o.evidence.line), 'each names its page and line');
   check.ok(result.observations.every((o) => o.evidence.section), 'and the section it came from');
   check.ok(result.observations.every((o) => o.evidence.printed_value), 'and the value it was printed as');
-  check.equal(new Set(result.observations.map((o) => `${o.evidence.page}:${o.evidence.line}`)).size, 6,
-    'six observations cite six distinct printed locations');
+  check.equal(new Set(result.observations.map((o) => `${o.evidence.page}:${o.evidence.line}`)).size, 2,
+    'both observations cite distinct printed locations');
   check.ok(result.observations.every((o) => !/Date will be Deleted/.test(o.measures_from)),
     "the report's own deletion date is never used as the rule's anchor");
   check.ok(overdues.every((o) => /overdue account/.test(o.headline)), 'an overdue comparison names the kind of entry it came from');
-  check.ok(enquiries.every((o) => /enquiry/.test(o.headline)), 'and an enquiry comparison names its kind');
   check.equal(result.checks_unresolved.length, 0, 'nothing was left unresolved on this sample');
   /* The third Australian limb is bound, and on this real sample it resolves to applicability states rather
      than to a comparison: one record prints an explicit status, two print neither. */
@@ -108,15 +107,15 @@ async function deepJourney(t, check, specimenPath, specimenDigest, bytes) {
   check.equal(result.checks_applicability_unresolved.length, 2,
     'and leaves two of its records unresolved, because the sample states nothing about them');
   check.equal(result.checks_applicability_unresolved.length + result.checks_not_applicable.length
-    + result.checks_performed, 9,
-    'every readable record of every kind is accounted for exactly once');
+    + result.checks_performed, 5,
+    'all overdue and liability records under active checklist rules are accounted for');
   check.ok(result.checks_not_applicable.every((c) => c.applicability === 'NOT_APPLICABLE'),
     'and each carries its applicability state, not a comparison outcome');
   check.equal(result.applicability_summary.NOT_APPLICABLE, 1);
   check.equal(result.applicability_summary.APPLICABILITY_UNRESOLVED, 2);
   check.equal(result.comprehensive_legal_check, false);
-  check.ok(/They are not findings that a rule was broken/.test(JSON.stringify(result.qualifications)),
-  'and the qualifications say in words that a difference we report is not a finding that a rule was broken');
+  check.ok(/A violation is shown when report evidence supports a breach of a defined reporting rule or requirement/.test(JSON.stringify(result.qualifications)),
+  'and the qualifications state the source-linked violation standard');
 
   const draftBefore = await t.request('GET', `/api/cases/${caseId}/response-draft`, { token: owner.token });
   check.equal(draftBefore.status, 409, 'a draft is refused before review');
@@ -164,9 +163,9 @@ function everyAuRegion(check, extraction) {
       unavailable: evaluated.unavailable_checks.length,
       unresolved: evaluated.unresolved_checks.length
     };
-    check.equal(performed.length, 6, `${region}: every recorded limb produces a comparison`);
-    check.deepEqual(perRegion[region].check_ids, EXECUTABLE_AU_CHECKS.slice().sort(), `${region}: and exactly the two recorded AU adapters ran`);
-    check.deepEqual(perRegion[region].anchors, ['enquiry.date', 'overdue.originalListingDate'], `${region}: each on its own field`);
+    check.equal(performed.length, 2, `${region}: both overdue entries produce a comparison`);
+    check.deepEqual(perRegion[region].check_ids, EXECUTABLE_AU_CHECKS.slice().sort(), `${region}: only the checklist-backed AU adapter runs`);
+    check.deepEqual(perRegion[region].anchors, ['overdue.originalListingDate'], `${region}: each uses its own overdue date`);
     check.equal(perRegion[region].unavailable, 0, `${region}: nothing was held back`);
     check.equal(perRegion[region].unresolved, 0, `${region}: and nothing was left unresolved`);
     check.ok(evaluated.results.every((r) => r.machine.packet_eligible === true), `${region}: the demonstrated AU findings are packet eligible`);

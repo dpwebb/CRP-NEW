@@ -53,7 +53,7 @@ const POTENTIAL_ISSUE = {
   issue_id: '24ae89ec96e01afc', confidence: 'POTENTIAL', basis_type: 'FACTUAL_CONSISTENCY',
   request_type: 'VERIFICATION', eligible: true,
   explanation: 'This report prints credit account 1 with an opened date later than its closed date (2020-01-01 after 2019-01-01).',
-  uncertainty: 'A factual inconsistency in the report: one of the two printed dates is likely wrong. It is not, by itself, an established legal violation, and a benign explanation may exist.',
+  uncertainty: 'The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.',
   account_number_in_report: 1, record_kind: 'credit account', check_kind: 'an account with contradictory dates',
   evidence: { opened: '2020-01-01', closed: '2019-01-01' },
   source_location: { section: null, page: 1, line: 3 }
@@ -108,7 +108,7 @@ async function run(t, check) {
   vm.runInContext('state.caseId = "case_stub"; state.view = __VIEW; state.step = 3; render();', ctx);
   check.ok(/Reporting issues for your review/.test(panel.innerHTML), 'the results step renders the unified issue section');
   check.ok(/opened date later than its closed date/.test(panel.innerHTML), 'and states what the report says');
-  check.ok(/not, by itself, an established legal violation/.test(panel.innerHTML), 'and its specific uncertainty');
+  check.ok(/which date needs correction/.test(panel.innerHTML), 'and its specific uncertainty');
   check.ok(!/NOT_DETECTED/.test(panel.innerHTML), 'and never surfaces a NOT_DETECTED diagnostic as a card');
 
   /* Step 4: the correction-packet selection/review/edit/approve/download flow renders. */

@@ -52,7 +52,7 @@ function validateImplementationEvidence(evidence, opts) {
   const a = evidence.acceptance || {}, b = evidence.benchmark || {};
   if (options.acceptance) {
     if (options.acceptance.min_recovery_rate != null && (!Number.isFinite(a.recovery_rate) || a.recovery_rate < options.acceptance.min_recovery_rate || a.recovery_rate > 1)) failures.push('implementation recovery benchmark did not pass');
-    for (const [gate, metric] of [['zero_incorrect_decisive_facts', 'incorrect_decisive_facts'], ['zero_cross_record_or_bureau_borrowing', 'cross_record_or_bureau_borrowing'], ['zero_unsupported_legal_findings', 'unsupported_legal_findings']]) if (options.acceptance[gate] && a[metric] !== 0) failures.push(`implementation acceptance ${metric} did not pass`);
+    for (const [gate, metric] of [['zero_incorrect_decisive_facts', 'incorrect_decisive_facts'], ['zero_cross_record_or_bureau_borrowing', 'cross_record_or_bureau_borrowing'], ['zero_unsupported_violations', 'unsupported_violations']]) if (options.acceptance[gate] && a[metric] !== 0) failures.push(`implementation acceptance ${metric} did not pass`);
   }
   if (options.benchmark) {
     for (const metric of ['missed_fact_rate', 'incorrect_reading_rate']) if (!Number.isFinite(b[metric]) || b[metric] < 0 || (options.benchmark[metric] != null && b[metric] > options.benchmark[metric])) failures.push(`implementation benchmark ${metric} did not pass`);
@@ -173,7 +173,7 @@ function validateCapabilityEvidence(evidence, opts) {
 
   // OWNER-ACCEPT-010 FDT alignment: enforce the Owner-approved prospective acceptance criteria from the evidence's
   // `acceptance` record (>=95% recovery of readable required facts; zero incorrect decisive facts; zero
-  // cross-record/bureau borrowing; zero unsupported legal findings).
+  // cross-record/bureau borrowing; zero unsupported violations).
   if (options.acceptance) {
     const a = evidence.acceptance || {};
     if (options.acceptance.min_recovery_rate != null) {
@@ -183,7 +183,7 @@ function validateCapabilityEvidence(evidence, opts) {
     }
     if (options.acceptance.zero_incorrect_decisive_facts && a.incorrect_decisive_facts !== 0) failures.push('acceptance reports incorrect decisive facts');
     if (options.acceptance.zero_cross_record_or_bureau_borrowing && a.cross_record_or_bureau_borrowing !== 0) failures.push('acceptance reports cross-record/bureau borrowing');
-    if (options.acceptance.zero_unsupported_legal_findings && a.unsupported_legal_findings !== 0) failures.push('acceptance reports unsupported legal findings');
+    if (options.acceptance.zero_unsupported_violations && a.unsupported_violations !== 0) failures.push('acceptance reports unsupported violations');
   }
 
   return { passed: failures.length === 0, failures, detail: failures.length ? failures.join('; ') : 'evidence is complete, current-release and identity-bound' };

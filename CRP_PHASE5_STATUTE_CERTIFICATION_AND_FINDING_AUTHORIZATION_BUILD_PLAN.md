@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** The statute-certification and legal-finding authorization workflow is historical only. It does not authorize version 1 violations outside the active common-error checklist or block listed report-data checks pending statute certification. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # CRP Phase 5 — Statute Certification and Finding Authorization Build Plan
 
 **Status:** Approved Build Plan — Rank 5  

@@ -93,7 +93,6 @@ function entry(checkId, label, matches, plain, detectedPlain, benignExplanations
     check_class: CHECK_CLASS,
     label,
     state,
-    is_legal_finding: false,
     output_ceiling: 'observation',
     benign_explanations_considered: benignExplanations,
     source_records: matches,
@@ -244,7 +243,7 @@ function runPaymentHistoryAnalysis(context) {
     check_class: CHECK_CLASS,
     performed: [],
     withheld_candidates: WITHHELD_CANDIDATES.map((c) => Object.assign({}, c)),
-    summary: { records: records.length, analyses: 0, potential_issue: 0, not_detected: 0, withheld_candidates: WITHHELD_CANDIDATES.length, legal_findings_emitted: 0 }
+    summary: { records: records.length, analyses: 0, potential_issue: 0, not_detected: 0, withheld_candidates: WITHHELD_CANDIDATES.length, rule_violations_emitted: 0 }
   };
   if (!records.length) return base;
   const performed = [ratingContradictsNarrative(records), paymentContradictsNoPaymentNarrative(records), anchorAfterTheHistoryShowsIt(records)].filter(Boolean);

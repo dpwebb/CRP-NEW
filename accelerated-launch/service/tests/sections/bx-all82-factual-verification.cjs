@@ -59,7 +59,11 @@ async function run(service, check) {
     const issue = (pv.eligible_issues || []).find((i) => i.eligible && /opened date later than its closed date/.test(i.explanation || ''))
       || (pv.eligible_issues || []).find((i) => i.eligible
         && (i.supported_bases || []).some((b) => b.basis_type === 'FACTUAL_CONSISTENCY' && b.check_kind === 'an account with contradictory dates'));
-    if (!issue) { missing.push(label); continue; }
+    if (!issue || !issue.rule_assessment
+      || issue.rule_assessment.classification !== 'PROBABLE_VIOLATION'
+      || issue.rule_assessment.requirement !== 'An account cannot close before it opened.') {
+      missing.push(label); continue;
+    }
     /* A region whose own content issue carries the factual observation as a supported base is recorded, so the
        one-issue delivery is measured rather than assumed. */
     if ((issue.supported_bases || []).some((b) => b.basis_type === 'FACTUAL_CONSISTENCY')) mergedRegions.push(label);
@@ -68,7 +72,9 @@ async function run(service, check) {
     await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
     const approval = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: actor.token });
     const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: actor.token });
-    const contentOk = dl.status === 200 && dl.text.includes(issue.explanation) && /Selected issues: 1\b/.test(dl.text) && !/established reporting issue/.test(dl.text);
+    const contentOk = dl.status === 200 && dl.text.includes(issue.explanation)
+      && dl.text.includes(issue.rule_assessment.requirement)
+      && /Selected issues: 1\b/.test(dl.text) && !/established reporting issue/.test(dl.text);
     const identity = pv.report_identity || {};
     const version = approval.json.view.packet.approved_version;
     const assocOk = contentOk && dl.text.includes(opened) && dl.text.includes(version)
@@ -90,7 +96,7 @@ async function run(service, check) {
   }
 
   check.equal(regions.length, 82, 'the 82 canonical regions are enumerated');
-  check.equal(surfaced.length, 82, 'every jurisdiction runs the factual observation through select -> approve -> entitled download, whether it is offered as its own issue or as a supported base of the region own issue');
+  check.equal(surfaced.length, 82, 'every jurisdiction runs the source-linked violation through select -> approve -> entitled download, whether it is offered as its own issue or as a supported base of the region own issue');
   check.deepEqual(missing, [], 'with no jurisdiction lacking the journey');
   check.deepEqual([...presentations], ['GENERAL-BUREAU-REPORT'], 'all through the same jurisdiction-agnostic general intake');
   check.equal(contentMatched, 82, 'every downloaded packet matches the selected approved issue content');

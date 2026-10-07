@@ -1,17 +1,13 @@
 'use strict';
 /**
- * bl-us-ca-correction-packet.cjs — OWNER-CA-CORRECTION-PACKET-001: the bounded California correction packet.
- *
- * Positive: a demonstrated California VIOLATION finding is selectable, editable (wording kept separate from
- * report facts), approvable, and downloads as a coherent packet bound to the approved version.
- *
- * Refusals: cross-account access, invalid finding selection, approve without selection, altered selection
- * invalidating approval, re-evaluation invalidating approval (stale), download without entitlement, and the
- * absence of any legal-advice disclaimer in the packet.
+ * California checklist-violation packet: sourced chronology evidence, consumer selection,
+ * verification wording, review, approval, download, and refusal paths. The historical tax-lien
+ * and bankruptcy adapters remain in the catalog but are retired from runtime issue creation.
  */
 const crypto = require('node:crypto');
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const issues = require('../../issues.cjs');
+const { activeAdapter } = require('../../common-error-scope.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
 const TAX_LIEN = 'US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y';
@@ -69,12 +65,12 @@ async function makeCase(service, actor) {
   return (await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
 }
 
-async function uploadAndEvaluateTaxLien(service, actor, caseId) {
+async function uploadAndEvaluateChronology(service, actor, caseId) {
   const pdf = buildPdf({ pages: [{ lines: [
     'Experian  Consumer Credit Report', 'Report Date: June 12, 2026',
-    'Tax Lien  Date Paid 01/01/2018'
+    'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'
   ] }] });
-  const up = await service.request('POST', `/api/cases/${caseId}/files`, { token: actor.token, body: uploadBody(pdf, 'usca-taxlien.pdf') });
+  const up = await service.request('POST', `/api/cases/${caseId}/files`, { token: actor.token, body: uploadBody(pdf, 'usca-chronology.pdf') });
   const ev = await service.request('POST', `/api/cases/${caseId}/evaluate`, { token: actor.token });
   return { up, ev };
 }
@@ -83,12 +79,10 @@ async function uploadAndEvaluateTaxLien(service, actor, caseId) {
 async function run(service, check) {
   const evidence = {};
 
-  /* ---- 1. Per-finding authorization: the three California rules record packet_eligible; the fail-closed
-     (a)(8) rule stays false. (OWNER-POTENTIAL-ISSUE-001 additionally enabled the CA-NS content finding and the
-     three AU findings, and that reconciliation is exercised in by-packet-reconciliation.) ---- */
-  check.equal(engineRun(TAX_LIEN, { 'publicRecord.taxLienPaidDate': '2018-01-01' }).packet_eligible, true, 'tax-lien rule records packet_eligible true');
-  check.equal(engineRun(BANKRUPTCY, { 'publicRecord.bankruptcyOrderForReliefDate': '2010-01-01' }).packet_eligible, true, 'bankruptcy rule records packet_eligible true');
-  check.equal(engineRun(COLLECTION, { 'collection.delinquencyDate': '2018-01-01' }).packet_eligible, true, 'collection rule records packet_eligible true');
+  /* ---- 1. The retired California adapters stay outside runtime while collection reporting remains active. ---- */
+  check.equal(activeAdapter(TAX_LIEN), false, 'the tax-lien adapter is retired from runtime');
+  check.equal(activeAdapter(BANKRUPTCY), false, 'the bankruptcy adapter is retired from runtime');
+  check.equal(activeAdapter(COLLECTION), true, 'collection retention remains checklist-related');
   const adverse = ruleAdapters.ADAPTERS.find((a) => a.adapter_id === 'US-CA-CCRAA-1785-13-A-8-ADVERSE-7Y');
   check.equal(adverse.output_permission.packet_eligible, false, 'the fail-closed (a)(8) rule stays packet_eligible false');
 
@@ -104,16 +98,16 @@ async function run(service, check) {
   const ownerCase = await makeCase(service, owner);
   const caseId = ownerCase.case_id;
   await payReportOnce(service, owner, caseId);
-  const ownerUpload = await uploadAndEvaluateTaxLien(service, owner, caseId);
+  const ownerUpload = await uploadAndEvaluateChronology(service, owner, caseId);
   check.equal(ownerUpload.up.status, 201, 'the paid upload succeeds');
   check.equal(ownerUpload.ev.status, 201, 'and the evaluation succeeds');
 
   const view = (await service.request('GET', `/api/cases/${caseId}/packet`, { token: owner.token })).json.view;
   check.ok(view.eligible_issues.length >= 1, 'eligible findings are listed');
-  const finding = view.eligible_issues.find((i) => i.citation && /1785\.13\(a\)\(4\)/.test(i.citation));
-  check.ok(finding, 'and the paid-tax-lien violation is among them');
-  check.equal(finding.normalized_value, '2018-01-01', 'with its normalized printed date');
-  check.ok(finding.printed_value, 'and its raw printed value');
+  const finding = view.eligible_issues.find((i) => i.rule_assessment && i.request_type === 'VERIFICATION');
+  check.ok(finding, 'and the source-linked chronology violation is among them');
+  check.ok(finding.source_facts.some((f) => f.normalized_value === '2020-01-01'), 'with the normalized opened date');
+  check.ok(finding.source_facts.some((f) => f.raw_value === '01/01/2019'), 'and its raw closed date');
   check.ok(finding.issue_id, 'with an opaque finding id (no adapter id leaks)');
   check.ok(!JSON.stringify(finding).includes('US-CA-CCRAA'), 'and the consumer view never exposes the internal adapter id');
 
@@ -135,9 +129,9 @@ async function run(service, check) {
 
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(download.status, 200, 'the approved packet downloads');
-  check.ok(/1785\.13\(a\)\(4\)/.test(download.text), 'and states the rule citation');
-  check.ok(download.text.includes('01/01/2018'), 'and the printed date it measured from');
-  check.ok(download.text.includes('Request (correction)'), 'and a factual correction request');
+  check.ok(/opened date later than its closed date/.test(download.text), 'and states the chronology breach');
+  check.ok(download.text.includes('01/01/2020'), 'and the printed date it measured from');
+  check.ok(download.text.includes('Request (verification)'), 'and a factual verification request');
   check.ok(download.text.includes('Please verify this entry and correct it if it is out of date.'), 'and the consumer wording, kept in its own section');
   check.ok(download.text.includes(approvedVersion), 'and is bound to the approved version');
   check.ok(!/not legal advi/i.test(download.text), 'with no legal-advice disclaimer');
@@ -190,7 +184,7 @@ async function run(service, check) {
   check.equal(noEntCheckout.json.checkout, undefined, 'and no checkout is created for it');
   const noEntCase = await makeCase(service, noEnt);
   const noEntCaseId = noEntCase.case_id;
-  await uploadAndEvaluateTaxLien(service, noEnt, noEntCaseId);
+  await uploadAndEvaluateChronology(service, noEnt, noEntCaseId);
   const noEntViewRefusal = await service.request('GET', `/api/cases/${noEntCaseId}/packet`, { token: noEnt.token });
   check.equal(noEntViewRefusal.status, 402, 'the packet view is refused without a subscription');
   const noEntView = { eligible_issues: [] };
@@ -201,13 +195,13 @@ async function run(service, check) {
   check.equal(noEntDownload.status, 402, 'downloading without a subscription is refused');
   check.equal(noEntDownload.json.error.code, 'SUBSCRIPTION_REQUIRED', 'with the subscription refusal, because a packet needs a subscription');
 
-  evidence.rules = 'three California rules packet-eligible (VIOLATION-only); positive packet path and refusals verified';
+  evidence.rules = 'California common-error violation path and retired tax-lien/bankruptcy guards; packet approvals and refusals verified';
   return evidence;
 }
 
 module.exports = {
   run,
   id: 'bl-us-ca-correction-packet',
-  title: 'OWNER-CA-CORRECTION-PACKET-001: bounded California correction packet (select/review/edit/approve/download)'
+  title: 'California checklist violation packet (select/review/edit/approve/download)'
 };
 

@@ -15,16 +15,17 @@
 const { COMPARISON_OUTCOME } = require('../adapters/evaluation-primitives.cjs');
 const { readSupportQualification } = require('./coverage-matrix.cjs');
 const issues = require('./issues.cjs');
+const { checklistFor } = require('./common-error-checklist.cjs');
 
 const SET_QUALIFICATIONS = Object.freeze([
-  'These come from your own report. They are not findings that a rule was broken.',
+  'These checks read your report. A violation is shown when report evidence supports a breach of a defined reporting rule or requirement.',
   'Only the checks named below were run against your report.',
   'No check of every possible legal issue was made, and none is implied.',
   /* B6-INGEST-001: generated from the registry so the count of named presentations can never drift. */
   readSupportQualification(),
   'A check can also be reported as not applicable to your report, or as unresolved. Neither one ran, and neither one passed.',
-  'We run more than one kind of check. A rule check compares a rule for where you live with what your report prints. A factual check compares two things your report prints. The two are never mixed together.',
-  'A factual check never says that a rule was or was not broken, and a difference it finds is not a finding.',
+  'A report-data rule can support a violation from source-linked report facts. An applicable statute may provide additional context.',
+  'The report evidence and the rule determine whether an issue is definite, probable or potential.',
   'A date comparison is arithmetic. On its own it does not show that anything was reported unlawfully.'
 ]);
 
@@ -60,13 +61,13 @@ function plainStatement(machine, check, recordIndex, recordNoun) {
       headline: `More than ${years} years have passed since the date this rule measures from on ${where}.`,
       detail:
         'This is a comparison of two dates printed on your report. It is not a statement that anything was ' +
-        'reported unlawfully, and it is not a legal finding.'
+        'reported unlawfully, and this check identified no violation.'
     };
   }
   if (machine.state === 'EVALUATED' && machine.outcome === COMPARISON_OUTCOME.PERIOD_NOT_EXCEEDED) {
     return {
       headline: `${years} years have not yet passed since the date this rule measures from on ${where}.`,
-      detail: 'This is a comparison of two dates printed on your report. It is not a legal finding.'
+      detail: 'This is a comparison of two dates printed on your report. This check identified no violation.'
     };
   }
   if (machine.state === 'WITHHELD') {
@@ -98,7 +99,7 @@ function plainStatement(machine, check, recordIndex, recordNoun) {
         detail: 'This is a reporting issue under a governed report-content rule: the judgment entry is complete and readable, and it omits content the rule requires.'
       };
     }
-    return { headline: `A judgment on ${where} was assessed for required content.`, detail: 'This is an observation about a judgment entry on your report. It is not a legal finding.' };
+    return { headline: `A judgment on ${where} was assessed for required content.`, detail: 'This check identified no violation from the judgment entry.' };
   }
   if (machine.state === 'EVALUATED' && machine.outcome === 'CONTENT_INCLUDED') {
     const finding = machine.finding || null;
@@ -109,7 +110,7 @@ function plainStatement(machine, check, recordIndex, recordNoun) {
         detail: 'This is a reporting issue under a governed report-content rule: the report includes content the rule prohibits.'
       };
     }
-    return { headline: `A criminal charge on ${where} was assessed for prohibited content.`, detail: 'This is an observation about a criminal-charge entry on your report. It is not a legal finding.' };
+    return { headline: `A criminal charge on ${where} was assessed for prohibited content.`, detail: 'This check identified no violation from the criminal-charge entry.' };
   }
   return { headline: check ? `This check returned ${machine.state}.` : 'This check returned no usable result.', detail: null };
 }
@@ -258,7 +259,7 @@ function renderResultSet(input) {
       assessment_completed: Boolean(row.machine && row.machine.state === 'EVALUATED'),
       is_a_finding: Boolean(finding),
       classification: finding ? finding.classification : null,
-      consumer_label: finding ? 'Reporting issue' : null,
+      consumer_label: finding ? (finding.classification === 'VIOLATION' ? 'Violation' : 'Probable violation') : null,
       decisive_fact_unavailable: finding ? (finding.decisive_fact_unavailable || null) : null,
       /* OWNER-GAP-FINDING-002-RESOURCE-001: the structured, source-linked decisive-facts-unavailable entries
          (identity, report-reading evidence and source location), surfaced beside a PROBABLE finding. */
@@ -410,6 +411,8 @@ function renderResultSet(input) {
   assessment_clock_basis: evaluation.assessment_clock ? (evaluation.assessment_clock.assessment_clock_basis || null) : null,
     detected_report_information: detectedRendered,
     common_errors: commonRendered,
+    // Stable primary checklist across all 82 selections. Only PERFORMED means the check ran.
+    common_error_checklist: checklistFor(evaluation),
     /* OWNER-POTENTIAL-ISSUE-001: the unified selectable issues (definite/probable/potential) for the packet. */
     issues: issues.publicIssues({ evaluation, extraction }),
     unresolved_report_fields: unresolvedFields,
@@ -473,13 +476,13 @@ function assessmentPlain(kinds, statutoryCount, factualCount) {
   const rules = `${statutoryCount} rule${statutoryCount === 1 ? '' : 's'}`;
   const facts = `${factualCount} factual check${factualCount === 1 ? '' : 's'} about what your report prints`;
   if (has('STATUTORY_RULE_COMPARISON') && factual) {
-    return `We ran ${rules} for where you live, and ${facts}. We report them separately because they are different.`;
+    return `We reviewed your report against the common-error checklist using ${facts} and ${rules} applicable to your jurisdiction.`;
   }
   if (factual) {
-    return `We ran ${facts}. No rule for where you live was compared, so nothing here says whether a rule was broken.`;
+    return `We reviewed your report against the common-error checklist using ${facts}.`;
   }
   if (has('STATUTORY_RULE_COMPARISON')) {
-    return `We ran ${rules} for where you live. We did not run any factual check about what your report prints.`;
+    return `We reviewed your report against the common-error checklist using ${rules} applicable to your jurisdiction.`;
   }
   return 'We could not run a check for your selection, so this report says nothing about whether anything in it is wrong.';
 }
@@ -626,7 +629,12 @@ function teaserFor(issue) {
     severity: SEVERITY_ORDER[rank],
     title: teaserTitleFor(issue, rank),
     confidence: issue.confidence,
-    confidence_label: TEASER_CONFIDENCE_LABEL[issue.confidence] || null,
+    confidence_label: issue.rule_assessment
+      ? (issue.rule_assessment.classification === 'PROBABLE_VIOLATION' ? 'Probable violation'
+        : issue.rule_assessment.classification === 'POTENTIAL_VIOLATION' ? 'Potential violation' : 'Violation')
+      : (issue.basis_type === 'STATUTORY_RETENTION' || issue.basis_type === 'CONTENT_FINDING')
+        ? (issue.confidence === 'DEFINITE' ? 'Violation' : 'Probable violation')
+        : TEASER_CONFIDENCE_LABEL[issue.confidence] || null,
     explanation: firstSentence(redactIdentifiers(issue.explanation, issue))
   };
 }

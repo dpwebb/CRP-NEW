@@ -583,7 +583,7 @@ function freeSummaryBlock(view) {
     : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
   const preview = teaser
     ? `<div class="obs">
-      <span class="pill">Reporting issue</span>
+      <span class="pill">${esc(teaser.confidence_label || 'Reporting issue')}</span>
       <h3>${esc(teaser.title || '')}</h3>
       <p>${esc(teaser.explanation || '')}</p>
       <p class="evidence">One issue is previewed here. The complete assessment, the report facts and the next steps for every issue are part of the unlock or a subscription.</p>
@@ -653,10 +653,14 @@ function renderResults(panel) {
 }
 
 function resultBlock(result, demo) {
-  if (!demo) return `${assessmentDateLine(result)}${issuesSection(result)}`;
+  if (!demo) {
+    const checklist = (result.common_error_checklist || []).map((item) =>
+      `<li>${esc(item.label)}</li>`).join('');
+    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We use this checklist for every jurisdiction. A reporting issue appears when the applicable rule and your report support one. A jurisdiction-specific statute may provide additional support for a listed check.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
+  }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
-      <span class="pill ${demo ? 'demo' : o.is_a_finding ? 'finding' : ''}">${demo ? 'DEMONSTRATION — NOT REPORT SUPPORT' : (o.is_a_finding ? esc(o.consumer_label || 'FINDING') : 'OBSERVATION — NOT A LEGAL FINDING')}</span>
+      <span class="pill ${demo ? 'demo' : o.is_a_finding ? 'finding' : ''}">${demo ? 'DEMONSTRATION — NOT REPORT SUPPORT' : (o.is_a_finding ? esc(o.consumer_label || 'FINDING') : 'REPORT OBSERVATION')}</span>
       <h3>${esc(o.headline)}</h3>
       ${o.detail ? `<p>${esc(o.detail)}</p>` : ''}
       <p class="evidence">Check: <b>${esc(o.check_name || 'not named')}</b>
@@ -710,14 +714,14 @@ function issuesSection(result) {
   const issues = result.issues || [];
   const cards = issues.map((i) => `
     <div class="obs issue">
-      <span class="pill potential">Reporting issue</span>
+      <span class="pill potential">${issueLabel(i)}</span>
       ${i.account_identity && i.account_identity.name ? `<p class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></p>` : ''}
       <h3>${esc(i.explanation)}</h3>
       <p class="evidence">Why it merits attention: ${esc(i.uncertainty)}</p>
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.retention_review ? `<p class="evidence">${i.retention_review.report_issued ? `Report issued: <b>${esc(i.retention_review.report_issued)}</b> · ` : 'Report issued: <b>not stated</b> · '}Assessed on: <b>${esc(i.retention_review.assessed_on || '')}</b> · the reporting period appears to end ${i.retention_review.period_appears_to_end_from ? `somewhere between <b>${esc(i.retention_review.period_appears_to_end_from)}</b> and <b>${esc(i.retention_review.period_appears_to_end_on)}</b>` : `<b>${esc(i.retention_review.period_appears_to_end_on || '')}</b>`}${i.retention_review.arose_through_later_passage_of_time ? ' · this arose through the passage of time since your report was issued' : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
-      ${i.retention_review || i.limitation_concern ? '' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
+      ${i.rule_assessment ? `<p class="evidence">${esc(i.rule_assessment.requirement)}${i.citation ? ` Supporting statute: ${esc(i.citation)}.` : ''}</p>` : i.retention_review || i.limitation_concern ? '' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
     </div>`).join('');
   return issues.length ? `<h2>Reporting issues for your review</h2>${cards}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
 }
@@ -938,7 +942,14 @@ function renderReview(panel) {
 
 /* OWNER-POTENTIAL-ISSUE-001: the correction-packet selection/review/edit/approve/download flow, wired into the
    Wizzard review step. Consumer wording is kept separate from the report facts. */
-function confidencePill() {
+function issueLabel(issue) {
+  const classification = issue && issue.rule_assessment && issue.rule_assessment.classification;
+  const governedRule = issue && (issue.basis_type === 'STATUTORY_RETENTION'
+    || issue.basis_type === 'CONTENT_FINDING');
+  if (!classification && !governedRule) return 'Reporting issue';
+  if (classification === 'VIOLATION' || (issue && issue.confidence === 'DEFINITE')) return 'Violation';
+  if (classification === 'PROBABLE_VIOLATION' || (issue && issue.confidence === 'PROBABLE')) return 'Probable violation';
+  if (classification === 'POTENTIAL_VIOLATION') return 'Potential violation';
   return 'Reporting issue';
 }
 
@@ -959,7 +970,7 @@ function renderPacketBlock(pv) {
   const rows = issues.map((i) => `
     <label class="issue-select">
       <input type="checkbox" data-check-issue="${esc(i.issue_id)}" ${(packet.selected_issue_ids || []).includes(i.issue_id) ? 'checked' : ''}>
-      <span class="pill">${confidencePill()}</span>
+      <span class="pill">${issueLabel(i)}</span>
       ${i.account_identity && i.account_identity.name ? `<span class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></span>` : ''}
       <strong>${esc(i.explanation)}</strong>
       <span class="evidence">Why: ${esc(i.uncertainty)}</span>

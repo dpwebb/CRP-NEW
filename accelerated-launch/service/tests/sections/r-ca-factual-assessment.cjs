@@ -145,7 +145,7 @@ function assertFactualSurface(check, result, label, expectStatutory) {
   check.equal(result.assessment.statutory_checks_performed, result.observations.length, `${label}: and no factual check is counted as statutory`);
   if (!expectStatutory) {
     check.equal(result.assessment.statutory_checks_performed, 0, `${label}: no statutory comparison ran for this selection`);
-    check.match(result.assessment.plain, /No rule for where you live was compared/, `${label}: and the assessment says so in plain words`);
+    check.match(result.assessment.plain, /common-error checklist using \d+ factual checks/, `${label}: the assessment names the shared checklist and the checks that ran`);
   }
   check.equal(result.comprehensive_legal_check, false, `${label}: no comprehensive legal check is implied`);
   for (const observation of result.observations) {
@@ -202,11 +202,11 @@ function everyCaRegion(check, extraction) {
       check.equal(statutory.length, 2, 'CA-NS: its last-payment limb still runs once per readable entry');
       check.deepEqual([...new Set(statutory.map((r) => r.check.adapter_id))].sort(),
         ['CA-NS-CRA-S10-3-C-LIMB-1'],
-        'CA-NS: and it is the last-payment adapter; the bankruptcy limb waits for a public-record discharge date on this collection specimen');
+        'CA-NS: and it is the collection last-payment adapter within the active common-error scope');
       check.deepEqual([...new Set(statutory.map((r) => r.record_index))], [1, 2],
         'CA-NS: each collection entry carries its own comparison');
-      check.ok(evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
-        'CA-NS: the bankruptcy limb is recorded but not run, because the specimen prints no public-record discharge date');
+      check.ok(!evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
+        'CA-NS: the out-of-checklist bankruptcy adapter is absent from active assessment, including unavailable checks');
       check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY'],
         'CA-NS: and its assessment names both classes, because the last-payment limb ran');
     } else {
@@ -420,7 +420,7 @@ async function run(t, check) {
   assertFactualSurface(check, ns.result, 'CA-NS', true);
   check.equal(ns.result.observations.length, 2,
     'CA-NS: its last-payment limb produces one comparison per readable entry; the bankruptcy limb waits for a public-record discharge date');
-  check.match(ns.result.assessment.plain, /and \d+ factual checks about what your report prints/, 'CA-NS: and its assessment states both classes ran');
+  check.match(ns.result.assessment.plain, /common-error checklist using \d+ factual checks.*and \d+ rules/, 'CA-NS: the assessment states the factual checks and applicable rules within one checklist');
 
   const perRegion = everyCaRegion(check, on.stored);
   check.equal(Object.keys(perRegion).length, 13, 'all thirteen canonical Canadian selections were evaluated');

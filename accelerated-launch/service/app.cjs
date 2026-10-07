@@ -209,6 +209,14 @@ function loadJurisdictionSurface() {
         working_assessment: regionalRules.length > 0 || row.working_assessment === true,
         supported_format_families: [...new Set(regionalRules.flatMap((a) => Array.isArray(a.presentation_required) ? a.presentation_required : [a.presentation_required]).filter(Boolean).concat(row.supported_format_families || []))]
       });
+      /* The saved matrix predates the common-error statutory retirement. Its
+         historical class label cannot advertise a rule that no active adapter
+         for this selection can run. Keep its independent factual classes. */
+      const assessmentKinds = (row.assessment_kinds || [])
+        .filter((kind) => kind !== 'STATUTORY_RULE_COMPARISON' || regionalRules.length > 0);
+      if (regionalRules.length > 0 && !assessmentKinds.includes('STATUTORY_RULE_COMPARISON')) {
+        assessmentKinds.push('STATUTORY_RULE_COMPARISON');
+      }
       return {
         value: r.region_code,
         country: r.country_code,
@@ -219,8 +227,8 @@ function loadJurisdictionSurface() {
         executable_checks: currentRow.executable_checks,
         factual_checks: typeof row.factual_checks === 'number' ? row.factual_checks : 0,
         policy_observations: typeof row.policy_observations === 'number' ? row.policy_observations : 0,
-        assessment_kinds: row.assessment_kinds || [],
-        working_assessment: row.working_assessment === true,
+        assessment_kinds: assessmentKinds,
+        working_assessment: currentRow.working_assessment,
         applicability_state: row.applicability_state || null,
         availability: availabilityFor(currentRow)
       };

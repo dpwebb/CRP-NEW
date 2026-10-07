@@ -107,7 +107,7 @@ async function run(service, check) {
   const pastDueIssues = pastDue.iss.filter((i) => i.check_id === 'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY');
   check.equal(pastDueIssues.length, 1, 'past-due > balance produces one potential issue');
   check.equal(pastDueIssues[0].reason, 'PAST_DUE_EXCEEDS_BALANCE', 'with the past-due reason');
-  check.equal(pastDueIssues[0].classification, null, 'and never a legal classification');
+  check.equal(pastDueIssues[0].classification, 'PROBABLE_VIOLATION', 'and the sourced balance conflict is a probable violation');
   check.equal(pastDueIssues[0].request_type, 'VERIFICATION', 'with a verification request');
   check.ok(/past-due amount/.test(pastDueIssues[0].explanation), 'explaining the discrepancy');
 
@@ -121,7 +121,7 @@ async function run(service, check) {
   const dup = pipeline(DUP);
   const dupIssues = dup.iss.filter((i) => i.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING');
   check.equal(dupIssues.length, 1, 'a corroborated potential duplicate produces one issue');
-  check.equal(dupIssues[0].classification, null, 'and never a legal classification');
+  check.equal(dupIssues[0].classification, 'POTENTIAL_VIOLATION', 'the source-linked duplicate concern is a potential violation');
   check.ok(/may be the same account reported twice/.test(dupIssues[0].explanation), 'with qualified potential-duplicate wording');
   check.ok(/unconfirmed/.test(dupIssues[0].uncertainty), 'stating the duplication is unconfirmed');
 
@@ -132,7 +132,7 @@ async function run(service, check) {
   const resp = pipeline(RESP);
   const respIssues = resp.iss.filter((i) => i.check_id === 'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY');
   check.equal(respIssues.length, 1, 'conflicting responsibility labels on the same corroborated account produce one issue');
-  check.equal(respIssues[0].classification, null, 'and never a legal classification');
+  check.equal(respIssues[0].classification, 'PROBABLE_VIOLATION', 'the two located responsibility labels support a probable violation');
   check.ok(/two different responsibility labels/.test(respIssues[0].explanation), 'explaining the conflict');
   check.ok(/joint account|authorized-user/.test(respIssues[0].uncertainty), 'with the benign alternatives');
 
@@ -154,7 +154,7 @@ async function run(service, check) {
   check.equal(dl.status, 200, 'the balance/past-due packet downloads');
   check.ok(/past-due amount/.test(dl.text), 'with the factual verification request');
   check.ok(/verify the balance/.test(dl.text), 'and the recorded request wording');
-  check.ok(/not, by itself, an established legal violation/.test(dl.text), 'stating it is not an established legal violation');
+  check.ok(/Probable violation of report-data requirement:/.test(dl.text), 'stating the breached report-data requirement');
   check.ok(!/established reporting issue/.test(dl.text), 'never asserting a definite reporting issue');
 
   /* ---- 5. HTTP end-to-end: potential duplicate through the packet path (qualified wording). ---- */

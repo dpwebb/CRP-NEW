@@ -18,7 +18,6 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const FORBIDDEN = [
-  /\bviolat/i,
   /\bguarantee/i,
   /you are owed/i,
   /\bmust remove\b/i,

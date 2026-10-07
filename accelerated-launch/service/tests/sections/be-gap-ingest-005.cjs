@@ -103,13 +103,14 @@ async function run(t, check) {
   check.equal(usConv.convention, 'MM/DD/YYYY', 'the decision convention is recorded');
 
   /* 8. Equivalent resolved dates produce equivalent evaluation outcomes. */
-  check.equal(caClassification('13/05/2011').classification, 'VIOLATION', 'the DD/MM spelling yields a completed finding');
-  check.equal(caClassification('05/13/2011').classification, 'VIOLATION', 'and the MM/DD spelling yields the same completed finding');
+  check.equal(caClassification('13/05/2011'), null, 'the DD/MM spelling does not activate a retired bankruptcy rule');
+  check.equal(caClassification('05/13/2011'), null, 'the MM/DD spelling follows the same active scope');
 
   /* 9. An unambiguous date keeps its reading regardless of any nearby date. */
   const stable = fileRow('stable', 'sha-s', ['Experian Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026', 'Bankruptcy Public Record: TEST-BK-002', 'Order for Relief: 05/13/2011'], 'US');
   const stableP = pipeline([stable], 'US', 'US-CA');
-  check.ok(/Source fact: printed "05\/13\/2011"/.test(stableP.body), 'an unambiguous date keeps its reading and report trace without any convention');
+  check.equal(stableP.assembled.extraction.records[0].facts['publicRecord.bankruptcyOrderForReliefDate'], '2011-05-13', 'an unambiguous date keeps its extracted reading');
+  check.ok(!/Source fact: printed "05\/13\/2011"/.test(stableP.body), 'the retired bankruptcy rule creates no report finding');
 
   /* 10. A representative case reaches the real HTTP upload -> evaluate -> view path. */
   const owner = await t.account('ingest5-owner@example.test');

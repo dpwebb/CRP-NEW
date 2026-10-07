@@ -572,12 +572,22 @@ function buildRecord(kind, region, index, unread) {
        official example (CURRENT ACCOUNT / CREDIT CARD / LOAN / RENTAL — five accounts across those four forms).
        A block whose heading does not carry one of those printed forms maps no identity. */
     const GB_ACCOUNT_HEADING_FORMS = ['CURRENT ACCOUNT', 'CREDIT CARD', 'LOAN', 'RENTAL'];
-    const headingLine = region
-      .map((l) => String(readable(l.text)).trim().replace(/\s+/g, ' '))
-      .find((text) => GB_ACCOUNT_HEADING_FORMS.some((form) => new RegExp('\\s' + form + '$').test(text)));
+    const headingEntry = region.find((l) => {
+      const text = String(readable(l.text)).trim().replace(/\s+/g, ' ');
+      return GB_ACCOUNT_HEADING_FORMS.some((form) => new RegExp('\\s' + form + '$').test(text));
+    });
+    const headingLine = headingEntry && String(readable(headingEntry.text)).trim().replace(/\s+/g, ' ');
     if (headingLine) {
       facts['account.reported_identity'] = headingLine;
       facts['account.reported_identityRaw'] = headingLine;
+      /* The heading's exact CREDIT CARD suffix is an account-type reading even when the
+         lender/type boundary cannot be separated for identity matching. Other forms are
+         not assigned revolving semantics. */
+      if (/\sCREDIT CARD$/.test(headingLine)) {
+        facts['account.type'] = 'CREDIT CARD';
+        printed['account.type'] = { label: 'Account type', state: 'VALUE', raw: 'CREDIT CARD',
+          normalized: 'CREDIT CARD', location: { page: headingEntry.page, line: headingEntry.line } };
+      }
     }
   }
   return {

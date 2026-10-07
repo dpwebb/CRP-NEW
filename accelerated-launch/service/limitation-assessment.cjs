@@ -565,7 +565,7 @@ function runLimitationAssessment(context) {
     recorded_jurisdictions: recordedJurisdictions(),
     performed: [],
     withheld: [],
-    summary: { records: 0, assessed: 0, may_be_outside: 0, within: 0, withheld: 0, legal_findings_emitted: 0, report_date_used_for_the_comparison: false, report_reference_date: null }
+    summary: { records: 0, assessed: 0, may_be_outside: 0, within: 0, withheld: 0, rule_violations_emitted: 0, report_date_used_for_the_comparison: false, report_reference_date: null }
   };
   const records = (extraction && Array.isArray(extraction.records)) ? extraction.records : [];
   if (!records.length) {

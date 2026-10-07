@@ -370,7 +370,7 @@ function runPaymentHistoryControls(check, evidence) {
     'every candidate that was refused keeps its reason and its missing prerequisite');
   check.ok(conflict.withheld_candidates.some((c) => c.candidate === 'CUMULATIVE_COUNTS_VERSUS_THE_VISIBLE_MONTHS'),
     'including the cumulative-counts comparison, refused because the two are not comparable');
-  check.equal(conflict.summary.legal_findings_emitted, 0, 'and the analyses emit no legal finding');
+  check.equal(conflict.summary.rule_violations_emitted, 0, 'the analysis stage emits no rule violation on its own');
   evidence.payment_history = { analyses: conflict.summary.analyses, potential: conflict.summary.potential_issue, withheld: conflict.withheld_candidates.length };
 }
 

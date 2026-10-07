@@ -115,8 +115,8 @@ async function realJourney(t, check, owner, bytes, region) {
   check.equal(evaluated.status, 201, `${region}: the case evaluates`);
   const result = evaluated.json.result;
   check.equal(result.observations.length, 0, `${region}: no statutory comparison runs, because none is recorded for GB`);
-  check.equal(result.checks_performed, result.report_consistency_checks.length + 1,
-    `${region}: the performed count is the three factual checks plus the account-dates common-error check`);
+  check.equal(result.checks_performed, result.report_consistency_checks.length + 2,
+    `${region}: the performed count includes the account-dates and revolving balance/limit checks`);
   check.equal(result.report_consistency_checks.length, 3, `${region}: all three GB checks ran`);
   check.ok(result.report_consistency_checks.every((c) => c.is_a_finding === false), `${region}: none is a finding`);
   check.deepEqual([...new Set(result.report_consistency_checks.map((c) => c.check_class))].sort(),
@@ -124,7 +124,7 @@ async function realJourney(t, check, owner, bytes, region) {
     `${region}: and exactly one of them is a printed policy observation`);
   const policy = result.report_consistency_checks.find((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION');
   check.match(policy.qualification, /not a finding that a rule was broken/, `${region}: the policy comparison says on its face that it is not a finding`);
-  check.match(result.assessment.plain, /No rule for where you live was compared/,
+  check.match(result.assessment.plain, /common-error checklist using \d+ factual checks/,
     `${region}: and the assessment says no rule for this place was compared`);
   check.deepEqual(result.assessment.kinds, ['REPORT_FACT_CONSISTENCY', 'PRINTED_POLICY_OBSERVATION', 'COMMON_ERROR']);
   check.equal(result.report_consistency_checks.filter((c) => c.agreement === 'A_DIFFERENCE_WAS_FOUND').length, 1,

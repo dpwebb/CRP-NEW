@@ -231,7 +231,9 @@ async function run(service, check) {
   const elsewhere = await assess(service, owner, 'CA', 'CA-NS', ['Fictional Creditor  Balance $100  Opened 01/01/2020  Closed 01/01/2019']);
   const elsewhereView = (await service.request('GET', `/api/cases/${elsewhere.caseId}/packet`, { token: owner.token })).json.view;
   check.equal(ontarioIssue(elsewhereView), null, 'the same printed conflict outside Ontario raises no Ontario issue');
-  check.ok((elsewhereView.eligible_issues || []).some((i) => i.confidence === 'POTENTIAL'), 'while the shared factual observation is still offered there');
+  check.ok((elsewhereView.eligible_issues || []).some((i) => i.rule_assessment
+    && i.rule_assessment.classification === 'PROBABLE_VIOLATION'),
+  'while the shared report-data violation is still offered there');
 
   const otherCountry = await assess(service, owner, 'US', 'US-CA', ['Fictional Creditor  Balance $100  Opened 01/01/2020  Closed 01/01/2019']);
   const otherCountryView = (await service.request('GET', `/api/cases/${otherCountry.caseId}/packet`, { token: owner.token })).json.view;

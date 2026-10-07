@@ -2,10 +2,11 @@
 /**
  * common-errors.cjs — BLOCKER-COMMON-ERRORS-001. Data-consistency checks across the ASSEMBLED records of one
  * report. Each check records a factual discrepancy or a potential issue with its source-linked evidence and a
- * plain explanation; NONE of these is a legal finding. A factual inconsistency alone never becomes a
- * VIOLATION or PROBABLE_VIOLATION, and none of these checks changes a record's resolved facts.
+ * plain explanation. A separate source-linked report-data rule assesses whether the
+ * discrepancy is a violation; these checks never change a record's resolved facts.
  */
 const CHECK_CLASS = 'COMMON_ERROR';
+const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
 function later(a, b) { const x = iso(a); const y = iso(b); return x && y && x > y; }
@@ -29,7 +30,6 @@ function entry(checkId, label, matches, plain, detectedPlain, state) {
     check_class: CHECK_CLASS,
     label,
     state: s,
-    is_legal_finding: false,
     output_ceiling: 'observation',
     source_records: matches,
     plain: matches.length ? detectedPlain : plain
@@ -51,7 +51,7 @@ function contradictoryAccountDates(records) {
   }
   return entry('COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', 'an account with contradictory dates', matches,
     'No account with a contradictory opened/closed date was detected in the records we could read.',
-    'This report prints at least one account whose opened date is later than its closed date. That is a factual inconsistency in the report, not a legal conclusion.');
+    'This report prints at least one account whose opened date is later than its closed date. The printed dates conflict.');
 }
 
 /* 2. Two records of the same kind with identical identifying dates AND the same source report may be the same
@@ -190,7 +190,7 @@ function reportedDatesOutOfOrder(records) {
   }
   return entry('COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'a reported account with out-of-order dates', matches,
     'No reported account with an out-of-order opened/first-reported date was detected.',
-    'This report prints a reported account whose opened date is later than its first-reported date. That is a factual inconsistency, not a legal conclusion.');
+    'This report prints a reported account whose opened date is later than its first-reported date. The printed dates conflict.');
 }
 
 /* 3. A printed status that says the account is OPEN while the same record prints a closure date is
@@ -211,7 +211,7 @@ function accountStatusDateContradiction(records) {
   }
   return entry('COMMON-ERROR-STATUS-DATE-CONTRADICTION', 'an account whose status contradicts its closure date', matches,
     'No account with an open status and a printed closure date was detected.',
-    'This report prints an account whose status says it is open while the same record prints a closure date. That is a factual inconsistency in the report, not a legal conclusion.');
+    'This report prints an account whose status says it is open while the same record prints a closure date. The printed dates conflict.');
 }
 
 /* 3b. OWNER-ACCEPT-009 item 3: balance/payment consistency. A printed past-due amount or payment amount that
@@ -236,7 +236,110 @@ function balancePaymentConsistency(records) {
   if (!matches.length) return null;
   return entry('COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY', 'a balance/payment inconsistency', matches,
     'No printed past-due or payment amount exceeding its printed balance was detected.',
-    'This report prints a past-due or payment amount larger than the balance it sits next to. That is a factual inconsistency in the report, not a legal conclusion, and no arithmetic is inferred beyond the printed amounts.');
+    'This report prints a past-due or payment amount larger than the balance it sits next to. The printed amounts conflict, and no arithmetic is inferred beyond them.');
+}
+
+/* The report's own revolving-account fields: a positive balance beside an explicitly
+   printed zero limit warrants verification. A blank limit is not treated as zero. */
+function revolvingBalanceWithZeroLimit(records) {
+  const matches = [];
+  let applicable = false;
+  for (const r of records) {
+    const f = r.facts || {};
+    const type = String(f['account.type'] || '').toUpperCase();
+    if (!/REVOLVING|CREDIT CARD|LINE OF CREDIT/.test(type)) continue;
+    const balance = nval(f['account.balance']);
+    const limit = nval(f['account.creditLimit']);
+    if (balance === undefined || limit === undefined) continue;
+    applicable = true;
+    if (balance > 0 && limit === 0) matches.push(match(r, 'POSITIVE_REVOLVING_BALANCE_WITH_ZERO_LIMIT', { balance, credit_limit: limit, type: f['account.type'] }));
+  }
+  if (!applicable) return null;
+  return entry('COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT', 'revolving balance with a zero credit limit', matches,
+    'No revolving account printed both a positive balance and a zero credit limit.',
+    'This report prints a positive revolving balance beside an explicit zero credit limit. Verify the limit and balance; the report alone does not establish a scoring effect.');
+}
+
+/* A record's own final-payment wording conflicts with an amount still due. A settled
+   balance alone is insufficient: a partial settlement may explain it. */
+function paidOrSettledShownUnpaid(records) {
+  const matches = [];
+  let applicable = false;
+  for (const r of records) {
+    const f = r.facts || {};
+    const status = String(f['account.status'] || '').toUpperCase().trim();
+    const pastDue = nval(f['account.pastDueAmount']);
+    const balance = nval(f['account.balance']);
+    if (['PAID', 'PAID IN FULL', 'SETTLED', 'SETTLED IN FULL'].includes(status)
+      && (pastDue !== undefined || balance !== undefined)) applicable = true;
+    if (applicable && ['PAID', 'PAID IN FULL', 'SETTLED', 'SETTLED IN FULL'].includes(status)
+      && pastDue !== undefined && pastDue > 0) {
+      matches.push(match(r, 'FINAL_PAYMENT_STATUS_WITH_PAST_DUE', { status, past_due: pastDue }));
+    }
+    else if (['PAID', 'PAID IN FULL'].includes(status) && balance !== undefined && balance > 0) {
+      matches.push(match(r, 'PAID_IN_FULL_WITH_POSITIVE_BALANCE', { status, balance }));
+    }
+  }
+  if (!applicable) return null;
+  return entry('COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID', 'paid or settled account still showing an amount past due', matches,
+    'No final-payment status beside a positive amount due was detected.',
+    'This entry prints a paid or settled status beside a positive amount due. Please verify which printed value describes this account now.');
+}
+
+/* A date can be questioned from report evidence only when it conflicts with another printed
+   date. The check does not infer an actual last payment or first delinquency from age alone. */
+function paymentOrDelinquencyDateConflict(records) {
+  const matches = [];
+  let applicable = false;
+  for (const r of records) {
+    const f = r.facts || {};
+    const opened = iso(f['liability.openedDate']);
+    const lastPayment = iso(f['tradeline.lastPaymentDate']);
+    const firstDelinquency = iso(f['tradeline.firstDelinquencyDate']);
+    const reportDate = iso(r.source_report_reference_date)
+      || iso(r.report_reference_date && r.report_reference_date.normalized_value);
+    for (const [field, value] of [['last_payment', lastPayment], ['first_delinquency', firstDelinquency]]) {
+      if (!value) continue;
+      if (opened || reportDate) applicable = true;
+      if (opened && value < opened) matches.push(match(r, 'DATE_BEFORE_ACCOUNT_OPENED', { field, value, opened }));
+      else if (reportDate && value > reportDate) matches.push(match(r, 'DATE_AFTER_REPORT_ISSUED', { field, value, report_date: reportDate }));
+    }
+  }
+  if (!applicable) return null;
+  return entry('COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', 'last-payment or first-delinquency date worth correcting', matches,
+    'No printed last-payment or first-delinquency date conflicted with the account-opening or report date.',
+    'This entry prints a last-payment or first-delinquency date before the account opened or after the report was issued. Please verify the dates on this entry.');
+}
+
+/* Both sides must be printed in the same report and linked by the account identifier and
+   creditor. This remains a review item: a collection and original account may both be listed. */
+function collectionAndOriginalBothDue(records) {
+  const matches = [];
+  let applicable = false;
+  const originals = records.filter((r) => r.status === 'RESOLVED' && r.kind !== 'GENERAL_COLLECTION');
+  for (const collection of records) {
+    if (collection.status !== 'RESOLVED' || collection.kind !== 'GENERAL_COLLECTION') continue;
+    const id = identityKey(collection);
+    const amount = nval((collection.facts || {})['account.balance']) ?? nval((collection.facts || {})['account.amount']);
+    if (!id || amount === undefined) continue;
+    for (const original of originals) {
+      const otherAmount = nval((original.facts || {})['account.balance']) ?? nval((original.facts || {})['account.amount']);
+      if (identityKey(original) !== id || otherAmount === undefined) continue;
+      if (collection.source_bureau !== original.source_bureau
+        || collection.source_report_reference_date !== original.source_report_reference_date) continue;
+      applicable = true;
+      // Masked account digits and a creditor name can collide. A matching printed amount
+      // supplies the extra corroboration needed before presenting this as a linked pair.
+      if (amount <= 0 || otherAmount <= 0 || amount !== otherAmount) continue;
+      matches.push(match(collection, 'LINKED_COLLECTION_AND_ORIGINAL_BOTH_DUE', {
+        original_record: original.record_index, collection_amount: amount, original_amount: otherAmount
+      }));
+    }
+  }
+  if (!applicable) return null;
+  return entry('COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', 'collection and original account both showing amounts due', matches,
+    'No linked collection and original-account pair with positive printed amounts was detected.',
+    'A collection entry and its linked original account both print amounts due in the same report. They may describe one obligation in two places; please verify whether either amount is inaccurate.');
 }
 
 /* 3c. OWNER-ACCEPT-009 item 2 (corrected): payment-history consistency. A history cell and a printed account
@@ -262,11 +365,10 @@ function paymentHistoryConsistency(records) {
       if (!period) continue;
       /* C3: an unresolved cell (low-confidence code, unknown meaning, or no cell) is never compared as a
          delinquency. Only a cell with a resolved code participates in a same-period contradiction. */
-      if (c && c.code == null) continue;
-      if (c && c.uncertain === true) continue;
+      if (!c || c.code == null || !String(c.meaning || '').trim() || c.uncertain === true) continue;
       if (!byPeriod.has(period)) { byPeriod.set(period, c); continue; }
       const prior = byPeriod.get(period);
-      if (String(prior.code || '') !== String(c.code || '')) {
+      if (prior.meaning && c.meaning && String(prior.meaning).trim().toUpperCase() !== String(c.meaning).trim().toUpperCase()) {
         matches.push(match(r, 'SAME_PERIOD_CONTRADICTORY_CELLS', { period, first_code: prior.code, first_meaning: prior.meaning || null, second_code: c.code, second_meaning: c.meaning || null }));
       }
     }
@@ -274,7 +376,7 @@ function paymentHistoryConsistency(records) {
   if (!matches.length) return null;
   return entry('COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY', 'a payment-history inconsistency', matches,
     'No payment-history period printed twice with contradictory cells was detected.',
-    'This report prints the same payment-history period twice with two different cells. That is a factual inconsistency in the report for the same reporting period, not a legal conclusion. A printed status or summary without a period is never compared against a history cell, a blank or unreadable cell is never treated as a missed payment, and a code without a printed legend is never decoded by guessing.');
+    'This report prints the same payment-history period twice with two different cells. The printed cells conflict for the same reporting period. A printed status or summary without a period is never compared against a history cell, a blank or unreadable cell is never treated as a missed payment, and a code without a printed legend is never decoded by guessing.');
 }
 
 /* 3d. OWNER-ACCEPT-009 item 3 (corrected): account-responsibility consistency. Only the SAME report-supported
@@ -305,7 +407,7 @@ function responsibilityInconsistency(records) {
   if (!matches.length) return null;
   return entry('COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY', 'an account-responsibility inconsistency', matches,
     'No account reported with conflicting responsibility labels in the same snapshot was detected.',
-    'This report prints the same account (same masked identifier and creditor, same bureau and report date, corroborated by a matching balance/limit/status) with two different responsibility labels. That is a factual inconsistency in the report, not a legal conclusion; a joint account, an authorized-user role, a changed responsibility over time and a masked-identifier collision are never treated as a conflict, and a name or address alone never becomes identity theft or incorrect ownership.');
+    'This report prints the same account (same masked identifier and creditor, same bureau and report date, corroborated by a matching balance/limit/status) with two different responsibility labels. The printed responsibility labels conflict; a joint account, an authorized-user role, a changed responsibility over time and a masked-identifier collision are never treated as a conflict, and a name or address alone never becomes identity theft or incorrect ownership.');
 }
 
 /* 3e. OWNER-ACCEPT-009 item 5 (reconciled): report-internal identity review. Two printed identity fields of the
@@ -351,7 +453,7 @@ function adverseAfterFirstReport(records) {
   }
   return entry('COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'a potential re-aging signal', matches,
     'No adverse event dated after its first-reported date was detected.',
-    'This report prints an adverse payment-rating event dated after the account was first reported. That is a potential re-aging signal (the adverse event and the first-report date contradict each other on the report). A later update or payment date alone is not treated as re-aging, and this is never a legal finding by itself.');
+    'This report prints an adverse payment-rating event dated after the account was first reported. That is a potential re-aging signal (the adverse event and the first-report date contradict each other on the report). A later update or payment date alone is not treated as re-aging, and this signal alone does not establish a violation.');
 }
 
 /** The normalized fact fields each of the six selectable issue types requires. A check is runnable on a
@@ -364,6 +466,60 @@ const ISSUE_TYPE_FIELD_REQUIREMENTS = Object.freeze({
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': ['account.balance', 'account.pastDueAmount'],
   'COMMON-ERROR-DUPLICATE-REPORTING': ['account.masked_identifier', 'account.reported_identity'],
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': ['account.masked_identifier', 'account.reported_identity', 'account.responsibility']
+});
+
+/* Full factual-check inventory. `field_sets` are alternatives; every field in one set must
+ * occur on the same account. The relation and report-structure notes remain explicit because
+ * field availability alone cannot establish a duplicate, an omission, or an identity conflict. */
+const FACTUAL_CHECK_CAPABILITY = Object.freeze({
+  'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': { field_sets: [['liability.openedDate', 'liability.closedDate']] },
+  'COMMON-ERROR-STATUS-DATE-CONTRADICTION': { field_sets: [['account.status', 'liability.closedDate']] },
+  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': { field_sets: [
+    ['account.balance', 'account.pastDueAmount'], ['account.amount', 'account.pastDueAmount'],
+    ['account.balance', 'account.paymentAmount'], ['account.amount', 'account.paymentAmount']
+  ] },
+  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': { field_sets: [['account.type', 'account.balance', 'account.creditLimit']] },
+  'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': { field_sets: [['account.paymentHistoryCells']],
+    additional_evidence: 'TWO_DECODED_CELLS_IN_ONE_PERIOD' },
+  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': { field_sets: [[
+    'account.masked_identifier', 'account.reported_identity', 'account.responsibility'
+  ]], additional_evidence: 'TWO_CORROBORATED_ACCOUNTS_IN_ONE_REPORT_SNAPSHOT' },
+  'COMMON-ERROR-DUPLICATE-REPORTING': { field_sets: [[
+    'account.masked_identifier', 'account.reported_identity', 'liability.openedDate'
+  ], ['account.masked_identifier', 'account.reported_identity', 'liability.closedDate'],
+  ['account.masked_identifier', 'account.reported_identity', 'overdue.originalListingDate']],
+  additional_evidence: 'TWO_SAME_KIND_RECORDS_WITH_COMPATIBLE_DATES_AND_THIRD_FACT' },
+  'COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING': { field_sets: [['liability.openedDate'],
+    ['liability.closedDate'], ['overdue.originalListingDate']],
+  additional_evidence: 'TWO_SIMILAR_RECORDS_IN_ONE_REPORT_SNAPSHOT' },
+  'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': { field_sets: [[
+    'reportedAccount.dateOpened', 'reportedAccount.firstReported'
+  ]] },
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [[
+    'reportedAccount.adverseRatingDate', 'reportedAccount.firstReported'
+  ]] },
+  'COMMON-ERROR-IDENTITY-REVIEW': { field_sets: [], additional_evidence: 'TWO_IDENTITY_FIELDS_OF_SAME_ROLE' },
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': { field_sets: [],
+    additional_evidence: 'PRINTED_BLANK_CAPTION_AND_REPORT_DEFINED_ADVERSE_EVENT' },
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': { field_sets: [],
+    additional_evidence: 'PRINTED_BLANK_CAPTION_AND_REPORT_DEFINED_WRITE_OFF' },
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': { field_sets: [],
+    additional_evidence: 'PRINTED_BLANK_CAPTION_AND_REPORT_DEFINED_CLOSURE' },
+  /* Checklist umbrella for the three source-proven omission rules above. Each child owns its
+   * violation and packet; this row must not create a second allegation for the same blank. */
+  'COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING': { field_sets: [],
+    additional_evidence: 'SOURCE_LINKED_BLANK_REQUIRED_FIELD_AND_SAME_RECORD_TRIGGER' },
+  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': { field_sets: [[
+    'account.status', 'account.pastDueAmount'
+  ], ['account.status', 'account.balance']] },
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': { field_sets: [[
+    'liability.openedDate', 'tradeline.lastPaymentDate'
+  ], ['liability.openedDate', 'tradeline.firstDelinquencyDate']],
+  additional_evidence: 'OR_DATE_COMPARED_WITH_SOURCED_REPORT_REFERENCE_DATE' },
+  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': { field_sets: [[
+    'account.masked_identifier', 'account.reported_identity', 'account.balance'
+  ], ['account.masked_identifier', 'account.reported_identity', 'account.amount']],
+  additional_evidence: 'CORROBORATED_COLLECTION_AND_ORIGINAL_PAIR_IN_ONE_REPORT' }
 });
 
 /**
@@ -384,6 +540,24 @@ function usableField(record, field) {
   return predicate ? predicate(value) : true;
 }
 
+function fullCapabilityRows(presentationId, fieldAvailable, performed) {
+  const rows = {};
+  for (const { check_id: id } of PRODUCT_CHECKLIST) {
+    if (id === 'LIMITATION-PERIOD-COURT-CLAIM') continue;
+    const spec = FACTUAL_CHECK_CAPABILITY[id];
+    if (!spec) throw new Error(`Missing factual capability specification: ${id}`);
+    const scopeAdmitted = !spec.presentation_scope || spec.presentation_scope.includes(presentationId);
+    rows[id] = {
+      field_sets: spec.field_sets.map((set) => [...set]),
+      field_ready: spec.field_sets.length ? scopeAdmitted && spec.field_sets.some(fieldAvailable) : null,
+      reader_scope_admitted: scopeAdmitted,
+      additional_evidence: spec.additional_evidence || null,
+      ...(performed ? { detector_performed: performed.has(id) } : {})
+    };
+  }
+  return rows;
+}
+
 /** Which of the six issue types a presentation's records can actually supply USABLE fields for. Exact and
  *  source-linked: it names the absent fields AND the retained-but-unusable ones separately, and never fabricates
  *  a capability. A field a single report happens not to print is reported as absent for THAT report and is never
@@ -392,26 +566,34 @@ function formatCapability(extraction) {
   const records = (extraction && Array.isArray(extraction.records)) ? extraction.records : [];
   const fields = new Set();
   const usable = new Set();
+  const usableByRecord = [];
   for (const r of records) {
+    const onRecord = new Set();
     for (const f of Object.keys((r && r.facts) || {})) {
       fields.add(f);
-      if (usableField(r, f)) usable.add(f);
+      if (usableField(r, f)) { usable.add(f); onRecord.add(f); }
     }
+    usableByRecord.push(onRecord);
   }
   const checks = {};
   for (const [checkId, reqs] of Object.entries(ISSUE_TYPE_FIELD_REQUIREMENTS)) {
     const absent = reqs.filter((f) => !fields.has(f));
     const unusable = reqs.filter((f) => fields.has(f) && !usable.has(f));
+    const onOneRecord = usableByRecord.some((onRecord) => reqs.every((f) => onRecord.has(f)));
     checks[checkId] = {
-      supported: absent.length === 0 && unusable.length === 0,
+      supported: onOneRecord,
       missing_fields: absent,
-      retained_but_not_usable_fields: unusable
+      retained_but_not_usable_fields: unusable,
+      not_on_same_record: !onOneRecord && absent.length === 0 && unusable.length === 0
     };
   }
   return {
     presentation_id: (extraction && extraction.presentation_id) || null,
     family_id: (extraction && extraction.family_id) || null,
-    checks
+    checks,
+    all_factual_checks: fullCapabilityRows(extraction && extraction.presentation_id,
+      (set) => usableByRecord.some((onRecord) => set.every((f) => onRecord.has(f))),
+      new Set(runCommonErrorChecks({ extraction }).performed.map((item) => item.check_id)))
   };
 }
 
@@ -423,7 +605,10 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   'GENERAL-BUREAU-REPORT': Object.freeze([
     'account.balance', 'account.amount', 'account.pastDueAmount', 'account.paymentAmount', 'account.status',
     'account.responsibility', 'account.masked_identifier', 'account.reported_identity', 'account.paymentHistoryCells',
-    'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate'
+    'account.creditLimit', 'account.type',
+    'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate',
+    'reportedAccount.dateOpened', 'reportedAccount.firstReported', 'reportedAccount.adverseRatingDate',
+    'tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'
   ]),
   'FAM-AU-EQX-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate', 'enquiry.date',
@@ -434,13 +619,14 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'account.balance', 'account.pastDueAmount', 'account.creditLimit', 'account.paymentAmount'
   ]),
   'FAM-GB-EXP-CONSUMER': Object.freeze([
-    'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit',
+    'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit', 'account.type',
     'account.responsibility'
   ]),
   'FAM-TU-CA-CONSUMER': Object.freeze([
     'liability.openedDate', 'liability.closedDate', 'account.reported_identity', 'account.type',
     'account.responsibility', 'account.balance', 'account.pastDueAmount', 'account.paymentAmount',
-    'account.amount', 'account.creditLimit', 'account.paymentHistoryCells'
+    'account.amount', 'account.creditLimit', 'account.paymentHistoryCells',
+    'tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'
   ])
 });
 
@@ -476,6 +662,7 @@ function presentationCapability(presentationId) {
   return {
     presentation_id: presentationId,
     checks,
+    all_factual_checks: fullCapabilityRows(presentationId, (required) => required.every((f) => set.has(f))),
     retained_fields_without_a_usable_check: (PRESENTATION_RETAINED_NOT_USABLE[presentationId] || []).map((row) => Object.assign({}, row)),
     basis: 'This records what the READER can structurally produce from the presentation it is evidenced on, not what one specimen happened to print. A field a single report does not print is NOT evidence that the presentation never prints it, and a retained-but-unusable value is NOT a usable check.'
   };
@@ -562,7 +749,7 @@ function codeEvidence(entries) {
    is named, no omission is established, no date is invented, and an aged but satisfactory account never reaches
    this check. */
 function adverseEntryWithoutADelinquencyAnchor(records) {
-  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+  const relevant = (r) => Boolean(r) && r.status === 'RESOLVED'
     && captionPrintedWithoutValue(r, 'First Delinquency Date')
     && (adverseRatingCells(r).length > 0 || codesMeaning(r, /collection/i).length > 0);
   if (!records.some(relevant)) return null;
@@ -592,7 +779,7 @@ function adverseEntryWithoutADelinquencyAnchor(records) {
 /* 12. A write-off the report's OWN legend defines, printed on an entry whose charge-off caption carries no date.
    The report says the debt was written off and gives the reader no charge-off date for it. */
 function writeOffWithoutAChargeOffDate(records) {
-  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+  const relevant = (r) => Boolean(r) && r.status === 'RESOLVED'
     && captionPrintedWithoutValue(r, 'Charge Off Date')
     && codesMeaning(r, /write-?off/i).length > 0;
   if (!records.some(relevant)) return null;
@@ -616,7 +803,7 @@ function writeOffWithoutAChargeOffDate(records) {
    the report's own printed meaning counts: `Closed at consumer's request` is a closure, and a code the report
    does not define is never treated as one. A printed product type of OPEN is never read as a lifecycle status. */
 function closureStatedWithoutAClosedDate(records) {
-  const relevant = (r) => Boolean(r) && r.kind === 'TU_CA_TRADELINE'
+  const relevant = (r) => Boolean(r) && r.status === 'RESOLVED'
     && captionPrintedWithoutValue(r, 'Closed Date')
     && codesMeaning(r, /closed|cancell?ed/i).length > 0;
   if (!records.some(relevant)) return null;
@@ -644,13 +831,17 @@ function runCommonErrorChecks(context) {
      supplies the widest surface; the format-family readers supply the subset their own labels actually print. */
   const records = (extraction && Array.isArray(extraction.records)) ? extraction.records : [];
   if (!records.length) {
-    return { performed: [], summary: { total: 0, potential_issue: 0, not_detected: 0, legal_findings_emitted: 0 } };
+    return { performed: [], summary: { total: 0, potential_issue: 0, not_detected: 0 } };
   }
   const identity = extraction.identity_groups || null;
   const performed = [
     contradictoryAccountDates(records),
     accountStatusDateContradiction(records),
     balancePaymentConsistency(records),
+    revolvingBalanceWithZeroLimit(records),
+    paidOrSettledShownUnpaid(records),
+    paymentOrDelinquencyDateConflict(records),
+    collectionAndOriginalBothDue(records),
     paymentHistoryConsistency(records),
     responsibilityInconsistency(records),
     duplicateReporting(records),
@@ -671,11 +862,10 @@ function runCommonErrorChecks(context) {
       total: performed.length,
       potential_issue: performed.filter((c) => c.state === 'POTENTIAL_ISSUE').length,
       similar_entries_worth_reviewing: performed.filter((c) => c.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING').length,
-      not_detected: performed.filter((c) => c.state === 'NOT_DETECTED').length,
-      legal_findings_emitted: 0
+      not_detected: performed.filter((c) => c.state === 'NOT_DETECTED').length
     }
   };
 }
 
-module.exports = { CHECK_CLASS, runCommonErrorChecks, formatCapability, presentationCapability, PRESENTATION_FIELD_CAPABILITY, PRESENTATION_RETAINED_NOT_USABLE, USABLE_FIELD_PREDICATES, usableField, ISSUE_TYPE_FIELD_REQUIREMENTS, contradictoryAccountDates, accountStatusDateContradiction, balancePaymentConsistency, paymentHistoryConsistency, responsibilityInconsistency, identityDiscrepancy, duplicateReporting, similarEntriesWorthReviewing, reportedDatesOutOfOrder, adverseAfterFirstReport, adverseEntryWithoutADelinquencyAnchor, writeOffWithoutAChargeOffDate, closureStatedWithoutAClosedDate };
+module.exports = { CHECK_CLASS, runCommonErrorChecks, formatCapability, presentationCapability, PRESENTATION_FIELD_CAPABILITY, PRESENTATION_RETAINED_NOT_USABLE, USABLE_FIELD_PREDICATES, usableField, ISSUE_TYPE_FIELD_REQUIREMENTS, FACTUAL_CHECK_CAPABILITY, contradictoryAccountDates, accountStatusDateContradiction, balancePaymentConsistency, revolvingBalanceWithZeroLimit, paidOrSettledShownUnpaid, paymentOrDelinquencyDateConflict, collectionAndOriginalBothDue, paymentHistoryConsistency, responsibilityInconsistency, identityDiscrepancy, duplicateReporting, similarEntriesWorthReviewing, reportedDatesOutOfOrder, adverseAfterFirstReport, adverseEntryWithoutADelinquencyAnchor, writeOffWithoutAChargeOffDate, closureStatedWithoutAClosedDate };
 

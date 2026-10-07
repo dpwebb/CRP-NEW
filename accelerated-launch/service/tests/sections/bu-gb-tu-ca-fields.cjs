@@ -82,6 +82,12 @@ async function run(service, check) {
     'each maps its printed balance, and a printed `Satisfied` maps NO number (it is never coerced to zero)');
   check.deepEqual(gbAccounts.map((r) => r.facts['account.creditLimit']), [360, 1300, undefined, undefined, undefined],
     'and its printed credit limit where the artifact prints one');
+  check.equal(gbAccounts[1].facts['account.type'], 'CREDIT CARD',
+    'the exact credit-card suffix on the second heading supplies revolving account type');
+  check.ok(gbAccounts[1].printed['account.type']?.location?.page > 0,
+    'the type keeps its own heading location');
+  check.equal(gbAccounts[0].facts['account.type'], undefined,
+    'a current-account heading is not presumed to be revolving');
   check.equal(gbAccounts[0].facts['account.balanceRaw'], '\u00a3344', 'with the printed raw reading kept beside the number');
   check.deepEqual(gbAccounts.map((r) => r.facts['account.defaultAmount']), [undefined, undefined, undefined, 548, 1021],
     'and the printed default amount where the account prints one');
@@ -97,7 +103,12 @@ async function run(service, check) {
     'no account identifier is invented: the artifact prints none inside the account block');
   check.equal(commonErrors.runCommonErrorChecks({ extraction: gbReal }).summary.potential_issue, 0,
     'the real GB example forces NO potential issue');
+  check.equal(commonErrors.runCommonErrorChecks({ extraction: gbReal }).performed
+    .find((c) => c.check_id === 'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT')?.state,
+  'NOT_DETECTED', 'the captured GB credit card has a positive limit, so the new check finds no violation');
   const gbCap = commonErrors.presentationCapability(gbFamily.FAMILY_ID);
+  check.equal(gbCap.all_factual_checks['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT'].field_ready,
+    true, 'the GB reader can structurally supply type, balance and credit limit');
   check.equal(gbCap.checks['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'], false,
     'the GB reader reports NO usable payment-history check: retained uncertain cells are not a usable field');
   check.deepEqual(gbCap.retained_fields_without_a_usable_check.map((r) => r.field), ['account.paymentHistoryCells'],
@@ -234,8 +245,8 @@ async function run(service, check) {
     'with NO masked identifier, the supported balance/past-due issue is still produced — the boundary does not block independent assessment');
   check.equal(noMaskIssues.filter((i) => i.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING').length, 0,
     'and the identity-keyed duplicate check simply produces no match rather than suppressing the others');
-  check.equal(commonErrors.runCommonErrorChecks({ extraction: noMaskExtraction }).summary.legal_findings_emitted, 0,
-    'and no legal finding is emitted');
+  check.equal(Object.hasOwn(commonErrors.runCommonErrorChecks({ extraction: noMaskExtraction }).summary,
+    'legal_findings_emitted'), false, 'and the common-error summary has no legal-finding category');
 
   const matchPair = (a, b) => comparison.matchRecords({ kind: 'TU_CA_TRADELINE', ...a }, { kind: 'TU_CA_TRADELINE', ...b });
   check.equal(matchPair({ facts: { 'account.reported_identity': 'FAMILY CREDITOR' } }, { facts: { 'account.reported_identity': 'FAMILY CREDITOR' } }).state,

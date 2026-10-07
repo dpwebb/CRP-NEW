@@ -112,8 +112,9 @@ async function run(service, check) {
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/evaluate`, { token: owner.token })).status, 201, 'evaluation succeeds');
 
   const realView = (await service.request('GET', `/api/cases/${c.case_id}`, { token: owner.token })).json.view;
-  const potential = (realView.result.issues || []).find((i) => i.confidence === 'POTENTIAL');
-  check.ok(potential, 'the real result carries the potential issue');
+  const potential = (realView.result.issues || []).find((i) => i.rule_assessment
+    && i.rule_assessment.classification === 'PROBABLE_VIOLATION');
+  check.ok(potential, 'the real result carries the probable report-data violation');
   const issueId = potential.issue_id;
 
   const dom = makeContext(`http://127.0.0.1:${service.port}`, owner.token);

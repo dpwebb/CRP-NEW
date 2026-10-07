@@ -108,6 +108,8 @@ function realEvidence(check, checkSkip, reader) {
   check.ok(account, 'the negative-items account is read');
   check.equal(account.printed.status.raw, 'Open.', 'its printed status is read verbatim');
   check.equal(account.printed.date_opened.normalized, '2013-11', 'its printed opening date is read');
+  check.ok(account.printed.date_opened.location && account.printed.date_opened.location.page > 0,
+    'the opening date keeps its own source location');
   check.equal(account.location.columns_found, 5, 'all five printed column anchors are found in its header row');
   const adverse = account.printed.adverse_payment_rating_date;
   check.equal(adverse.status, 'RESOLVED', 'its printed adverse payment rating is read');
@@ -121,6 +123,8 @@ function realEvidence(check, checkSkip, reader) {
   check.equal(firstReported.status, 'EXTRACTION_UNRESOLVED', 'a value that is not a possible date stays unresolved');
   check.equal(firstReported.raw, '42/2013', 'with the raw reading preserved beside it');
   check.equal(firstReported.normalized, null);
+  check.ok(firstReported.location && firstReported.location.page > 0,
+    'the unresolved first-reported reading keeps its location without becoming a fact');
   check.ok(!account.printed.fields.some((f) => String(f.raw_value) === 'Dispute'),
     'a printed control never becomes a field value');
   check.ok(account.printed.unlabelled_lines.length > 0,
@@ -159,13 +163,13 @@ function realEvaluation(check) {
     "against the report's own printed reference date");
   check.equal(evaluation.results[0].machine.finding_emitted, false, 'and it is not a finding');
   check.equal(evaluation.results[0].machine.packet_eligible, false);
-  check.equal(evaluation.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 7,
-    'seven public-record and collection limbs find no entry of their kind on this disclosure and are reported unavailable');
+  check.equal(evaluation.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 2,
+    'the two active collection limbs find no collection entry and are reported unavailable');
   check.equal(evaluation.unresolved_applicability.length, 5,
     'and the three adverse accounts are left unresolved under the fail-closed California rule (plus the two unreadable ones under the federal rule)');
   check.equal(evaluation.not_applicable_checks.length + evaluation.results.length
-    + evaluation.unresolved_applicability.length + evaluation.unavailable_checks.length, 13,
-    'so all thirteen United States limb resolutions are accounted for');
+    + evaluation.unresolved_applicability.length + evaluation.unavailable_checks.length, 8,
+    'so all eight active United States limb resolutions are accounted for');
 
   const records = require('../../../adapters/applicability-records.json');
   const relation = records.relations.find((r) => r.relation_id === US_RELATION);

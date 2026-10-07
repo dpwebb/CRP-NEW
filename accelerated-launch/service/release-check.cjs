@@ -818,13 +818,13 @@ function readBlockerEvidence(filename) {
    rejects missing required criteria, arbitrary substitute criteria, and references that do not bind to the target
    release. FDT criteria, thresholds and metric definitions are ALIGNED with the Owner-approved PROSPECTIVE
    criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero
-   cross-record/bureau borrowing and zero unsupported legal findings. */
+   cross-record/bureau borrowing and zero unsupported violations. */
 const FDT_REQUIRED_CRITERIA = [
   'freeze_before_run',
   'independent_held_out_set',
   'zero_incorrect_decisive_facts',
   'zero_cross_record_or_bureau_borrowing',
-  'zero_unsupported_legal_findings',
+  'zero_unsupported_violations',
   'min_recovery_of_readable_assessment_required_facts',
   'account_for_every_remaining_miss',
   'withhold_unreadable_or_conflicting_decisive_facts',
@@ -859,7 +859,7 @@ CHECKS.push(
         baseDir: path.join(OUT_DIR),
         requiredCriteria: FDT_REQUIRED_CRITERIA,
         benchmark: { missed_fact_rate: FDT_MAX_MISSED_FACT_RATE, incorrect_reading_rate: FDT_MAX_INCORRECT_READING_RATE, require_baseline: true },
-        acceptance: { min_recovery_rate: FDT_MIN_RECOVERY_RATE, zero_incorrect_decisive_facts: true, zero_cross_record_or_bureau_borrowing: true, zero_unsupported_legal_findings: true }
+        acceptance: { min_recovery_rate: FDT_MIN_RECOVERY_RATE, zero_incorrect_decisive_facts: true, zero_cross_record_or_bureau_borrowing: true, zero_unsupported_violations: true }
       });
       return { ...verdict, passed: verdict.passed, detail: `BLOCKER-FDT-001: ${verdict.detail}`, affected_regions: EXPECTED_MARKETS.slice() };
     }
@@ -974,16 +974,18 @@ for (const blocker of OWNER_CONSUMER_INCONSISTENCIES) {
   });
 }
 
-/* October 4 owner directive: substantive coverage is independent of classifier/infrastructure closure. */
+/* The October 7 owner scope limits version 1 violation coverage to the active
+   common-error checklist. Historical out-of-checklist statutory adapters are not
+   release prerequisites; source-proven checks and packets remain prerequisites. */
 CHECKS.push({
   id: 'BLOCKER-FINDING-COVERAGE-001', category: 'FINDING_COVERAGE', blocks_launch: true,
-  why: 'The promised substantive finding coverage must be executable and tested; limited adapter coverage does not fulfill the all-82 consumer promise',
+  why: 'The active common-error checklist must be executable from source-linked report data and tested through consumer-selected packets across the 82 selections',
   run() {
     let evidence = null;
     try { evidence = JSON.parse(read(path.join(OUT_DIR, 'finding-coverage-evidence.json')) || 'null'); } catch (_) {}
     const verdict = validateCapabilityEvidence(evidence, {
       targetBuildId: process.env.CRP_BUILD_ID || null, baseDir: OUT_DIR,
-      requiredCriteria: ['promise_inventory', 'rule_mapping', 'executable_findings', 'material_questions', 'behavioral_coverage', 'end_to_end_journey']
+      requiredCriteria: ['promise_inventory', 'check_mapping', 'executable_findings', 'material_questions', 'behavioral_coverage', 'end_to_end_journey']
     });
     return { ...verdict, passed: verdict.passed, affected_regions: EXPECTED_MARKETS.slice(), detail: `BLOCKER-FINDING-COVERAGE-001: ${verdict.detail}` };
   }

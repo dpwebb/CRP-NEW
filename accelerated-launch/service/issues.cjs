@@ -8,17 +8,19 @@
  *   - PROBABLE   (existing PROBABLE_VIOLATION findings)  -> verification request
  *   - POTENTIAL  (supported factual discrepancies)       -> verification request
  *
- * Legal findings keep their exact existing meaning; this module never promotes an observation or a factual
- * discrepancy into a VIOLATION or PROBABLE_VIOLATION. A POTENTIAL issue is a concrete, source-linked
- * discrepancy with a named uncertainty and a benign alternative — it supports a factual verification request
- * without asserting a proven breach.
+ * Definite and probable findings keep their existing guarded meanings. A common-error issue may additionally
+ * carry a separately evaluated PROBABLE_VIOLATION basis when an admitted jurisdictional accuracy duty and
+ * two source-linked contradictory readings support that qualified concern. A sourced blank-caption concern
+ * may be POTENTIAL_VIOLATION. The factual verification path remains available without either legal basis.
  */
 
 const crypto = require('node:crypto');
 const { factSourcesForRecord } = require('./formats.cjs');
+const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
 const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
+const { activeAdapter, activeRuleRef } = require('./common-error-scope.cjs');
 const REQUEST_TYPE = Object.freeze({ CORRECTION: 'CORRECTION', VERIFICATION: 'VERIFICATION' });
 
 /**
@@ -81,11 +83,16 @@ function sourceFactFor(entry, label, record) {
 /** The common-error checks whose positives become selectable POTENTIAL issues (Batch 1 + ordinary-account batch). */
 const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+  'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY',
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY',
+  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT',
   'COMMON-ERROR-DUPLICATE-REPORTING',
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY',
+  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID',
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE',
+  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE',
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness checks over an entry's own printed
      material and the meanings the report itself prints for its codes. Each is a POTENTIAL verification item. */
   'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
@@ -157,11 +164,16 @@ function reportIdentityFor(record) {
 /** The relevant fact fields whose printed source the packet states (raw + normalized + location). */
 const EVIDENCE_FACT_FIELDS = Object.freeze({
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': ['liability.openedDate', 'liability.closedDate'],
+  'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': ['reportedAccount.dateOpened', 'reportedAccount.firstReported'],
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': ['account.status', 'liability.closedDate'],
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': [],
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': ['account.balance', 'account.amount', 'account.pastDueAmount'],
+  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': ['account.type', 'account.balance', 'account.creditLimit'],
   'COMMON-ERROR-DUPLICATE-REPORTING': ['account.masked_identifier', 'account.reported_identity', 'account.amount', 'liability.openedDate', 'liability.closedDate'],
-  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': ['account.masked_identifier', 'account.reported_identity', 'account.responsibility', 'account.amount']
+  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': ['account.masked_identifier', 'account.reported_identity', 'account.responsibility', 'account.amount'],
+  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': ['account.status', 'account.pastDueAmount', 'account.balance'],
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': ['liability.openedDate', 'tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'],
+  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': ['account.masked_identifier', 'account.reported_identity', 'account.balance', 'account.amount']
 });
 
 /** Per-field source-linked provenance for a record's relevant facts, raw reading kept beside normalized.
@@ -233,22 +245,22 @@ function contentFindingFacts(requiredFacts) {
 const POTENTIAL_WORDING = Object.freeze({
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': {
     explain: (i) => `This report prints ${recordLabel(i)} with an opened date later than its closed date (${(i.evidence || {}).opened} after ${(i.evidence || {}).closed}).`,
-    uncertainty: 'A factual inconsistency in the report: one of the two printed dates is likely wrong. It is not, by itself, an established legal violation, and a benign explanation (for example, a later correction of one date) may exist.',
+    uncertainty: 'The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.',
     request: 'please verify the opened and closed dates for this account and correct the inconsistency'
   },
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': {
     explain: (i) => `This report prints ${recordLabel(i)} whose status says it is open while the same record prints a closure date (${(i.evidence || {}).closed}).`,
-    uncertainty: 'A factual inconsistency in the report: an open status and a printed closure date cannot both describe the same account at the same time. It is not, by itself, an established legal violation, and a benign explanation may exist.',
+    uncertainty: 'The open status and closure date conflict. The report does not show which field needs correction.',
     request: 'please verify the status and the closure date for this account and correct the inconsistency'
   },
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': {
     explain: (i) => `This report prints ${recordLabel(i)} with the same payment-history period (${(i.evidence || {}).period}) twice with two different cells.`,
-    uncertainty: 'A factual inconsistency for the same reporting period: the same period is printed twice with different meanings. It is not, by itself, an established legal violation, and a benign explanation (for example, a printing duplication) may exist.',
+    uncertainty: 'The same period has two different meanings. The report does not show which cell needs correction; a printing duplication may explain the conflict.',
     request: 'please verify the payment-history cells for this period and correct the inconsistency'
   },
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': {
     explain: (i) => `This report prints ${recordLabel(i)} with a past-due amount (${(i.evidence || {}).past_due}) larger than its balance (${(i.evidence || {}).balance}).`,
-    uncertainty: 'A past-due amount cannot exceed the balance it is part of. It is not, by itself, an established legal violation, and a benign explanation (for example, a reporting or rounding error) may exist.',
+    uncertainty: 'The past-due amount exceeds the current balance. The report does not show which amount needs correction; a reporting or rounding error may explain it.',
     request: 'please verify the balance and the past-due amount for this account and correct the inconsistency'
   },
   'COMMON-ERROR-DUPLICATE-REPORTING': {
@@ -258,8 +270,32 @@ const POTENTIAL_WORDING = Object.freeze({
   },
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': {
     explain: (i) => `This report prints the same corroborated account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) with two different responsibility labels (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in the same reporting snapshot.`,
-    uncertainty: 'A joint account, an authorized-user role, a changed responsibility over time, or a masked-identifier collision can produce different labels. It is not, by itself, an established legal violation.',
+    uncertainty: 'A joint account, an authorized-user role, a changed responsibility over time, or a masked-identifier collision can produce different labels. The report does not resolve which applies.',
     request: 'please verify the responsibility on this account and correct the inconsistency'
+  },
+  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': {
+    explain: (i) => `This report prints ${recordLabel(i)} as ${String((i.evidence || {}).type || 'revolving credit')} with a balance of ${(i.evidence || {}).balance} and an explicit credit limit of zero.`,
+    uncertainty: 'The printed fields need verification. A zero limit may reflect a closed or restricted line; the report does not establish how a lender scored this account.',
+    request: 'please verify the credit limit and balance for this account and correct either field if inaccurate'
+  },
+  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': {
+    explain: (i) => i.reason === 'PAID_IN_FULL_WITH_POSITIVE_BALANCE'
+      ? `This report describes ${recordLabel(i)} as ${(i.evidence || {}).status || 'paid in full'} but also prints a current balance of ${(i.evidence || {}).balance}.`
+      : `This report describes ${recordLabel(i)} as ${(i.evidence || {}).status || 'paid or settled'} but also prints ${(i.evidence || {}).past_due} past due.`,
+    uncertainty: 'The report does not establish which printed value is current. Verify the payment or settlement and the amount due.',
+    request: (i) => i.reason === 'PAID_IN_FULL_WITH_POSITIVE_BALANCE'
+      ? 'please verify the paid-in-full status and current balance, and correct any inaccurate value'
+      : 'please verify the paid or settled status and past-due amount, and correct any inaccurate value'
+  },
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': {
+    explain: (i) => `This report prints a ${(i.evidence || {}).field === 'last_payment' ? 'last-payment' : 'first-delinquency'} date of ${(i.evidence || {}).value} for ${recordLabel(i)}, which conflicts with another printed date on this entry or report.`,
+    uncertainty: 'The report shows a date conflict. It does not establish the correct date without the account history.',
+    request: 'please verify the last-payment or first-delinquency date against the account history and correct it if inaccurate'
+  },
+  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': {
+    explain: (i) => `This report prints a collection entry and linked original account with amounts due (${(i.evidence || {}).collection_amount} and ${(i.evidence || {}).original_amount}).`,
+    uncertainty: 'Both entries may describe one obligation; their presence alone does not prove double collection or an incorrect balance.',
+    request: 'please verify how the original account and collection balances relate and correct any duplicate or inaccurate amount'
   },
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness items read from an entry's own
      printed material and the meanings the report itself prints for its codes. Each is a potential issue to
@@ -667,7 +703,7 @@ function describeWording(issue) {
   }
   const policy = POTENTIAL_WORDING[issue.check_id] || {
     explain: (i) => `This report prints a factual discrepancy on ${recordLabel(i)}.`,
-    uncertainty: 'A factual inconsistency in the report. It is not, by itself, an established legal violation.',
+    uncertainty: 'The report does not show which printed value needs correction.',
     request: 'please verify and correct this entry'
   };
   /* OWNER Batch 33 correction: a policy entry may state its uncertainty or its request as a FUNCTION of the issue
@@ -709,7 +745,9 @@ function isEligible(issue) {
     if (issue.confidence === CONFIDENCE.DEFINITE) return issue.packet_eligible === true;
     return issue.confidence === CONFIDENCE.PROBABLE;
   }
-  return issue.confidence === CONFIDENCE.POTENTIAL;
+  return Boolean(issue.confidence === CONFIDENCE.POTENTIAL
+    || (issue.basis_type === BASIS_TYPE.FACTUAL_CONSISTENCY
+      && issue.rule_assessment && ['VIOLATION', 'PROBABLE_VIOLATION', 'POTENTIAL_VIOLATION'].includes(issue.classification)));
 }
 
 
@@ -769,7 +807,7 @@ function statutoryIssues(extraction, results) {
 }
 
 /** The three in-scope common-error positives -> POTENTIAL issues. */
-function potentialIssues(extraction, commonErrors) {
+function potentialIssues(extraction, commonErrors, evaluation) {
   const issues = [];
   const performed = commonErrors && Array.isArray(commonErrors.performed) ? commonErrors.performed : [];
   for (const entry of performed) {
@@ -795,6 +833,25 @@ function potentialIssues(extraction, commonErrors) {
         account_identity: accountIdentityFor(record),
         source_facts: sourceFactsFor(record, EVIDENCE_FACT_FIELDS[entry.check_id] || [])
       };
+      if (entry.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' && sr.evidence && sr.evidence.original_record != null) {
+        const original = recordFor(extraction, sr.evidence.original_record);
+        if (original) issue.source_facts.push(...sourceFactsFor(original, EVIDENCE_FACT_FIELDS[entry.check_id]));
+      }
+      const assessment = commonErrorRuleAssessment.assess(issue, record, evaluation, extraction);
+      if (entry.check_id === 'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER' && !assessment) continue;
+      if (assessment) {
+        issue.classification = assessment.classification;
+        if (assessment.classification === 'PROBABLE_VIOLATION') issue.confidence = CONFIDENCE.PROBABLE;
+        issue.citation = assessment.citation;
+        issue.source_version = assessment.source_version;
+        issue.rule_assessment = assessment;
+        issue.source_facts = assessment.required_facts.filter((f) => f.source.omitted_value !== true).map((f) => ({
+          field: f.field, source_field: assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
+            ? `Account ${f.source.record_index}: ${f.source.source_field}` : f.source.source_field,
+          raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
+          location: f.source.location
+        }));
+      }
       issue.eligible = isEligible(issue);
       Object.assign(issue, describe(issue));
       issues.push(issue);
@@ -810,6 +867,7 @@ function potentialIssues(extraction, commonErrors) {
    source facts stay on the issue as provenance, the internal classifications stay distinct, and the factual
    check keeps running (it is only the duplicate CARD that is suppressed, and only for the overlapping record). */
 const FACTUAL_OVERLAP = Object.freeze({
+  'FCRA-607B-US-NATIONAL-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'GB-UK-GDPR-ART5-1-D-ART16-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'CA-NT-PIPEDA-SCH1-4-6-ACCURACY': 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
@@ -851,6 +909,8 @@ function mergeOverlappingFactualIssues(statutory, factual) {
       label: match.label || null,
       issue_id: match.issue_id,
       confidence: match.confidence,
+      classification: match.classification,
+      rule_assessment: match.rule_assessment || null,
       evidence: match.evidence || null,
       source_facts: match.source_facts || [],
       location: match.location || null
@@ -979,10 +1039,16 @@ function issuesFor(ctx) {
   const evaluation = ctx && ctx.evaluation;
   const extraction = ctx && ctx.extraction;
   if (!evaluation) return [];
-  const statutory = statutoryIssues(extraction, evaluation.results);
-  const factual = potentialIssues(extraction, evaluation.common_errors);
+  const statutory = statutoryIssues(extraction, (evaluation.results || [])
+    .filter((row) => row && row.machine && row.machine.finding
+      && activeAdapter((row.check && row.check.adapter_id) || row.machine.adapter_id)));
+  const factual = potentialIssues(extraction, evaluation.common_errors, evaluation);
   const paymentHistory = paymentHistoryIssues(extraction, evaluation.payment_history_analysis);
-  const retentionReview = retentionCurrentReviewIssues(extraction, evaluation.retention_dual_date, statutory);
+  const scopedRetention = evaluation.retention_dual_date ? {
+    ...evaluation.retention_dual_date,
+    performed: (evaluation.retention_dual_date.performed || []).filter((row) => activeRuleRef(row.rule))
+  } : null;
+  const retentionReview = retentionCurrentReviewIssues(extraction, scopedRetention, statutory);
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
   return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation);
 }
@@ -1096,7 +1162,8 @@ function publicBases(bases) {
     if (b.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
       return { basis_type: b.basis_type, kind: 'court_enforcement_time_limit', citation: b.citation || null };
     }
-    return { basis_type: b.basis_type, kind: 'what_the_report_prints', check_kind: b.label || null };
+    return { basis_type: b.basis_type, kind: 'what_the_report_prints', check_kind: b.label || null,
+      requirement: b.rule_assessment ? b.rule_assessment.requirement : null };
   });
 }
 
@@ -1210,7 +1277,12 @@ function publicIssue(issue) {
     out.content_kind = issue.label || null;
     /* A merged issue carries every base its finding rests on, so the consumer sees one issue with its
        supported bases rather than the same discrepancy twice. */
-    if (issue.supported_bases && issue.supported_bases.length) out.supported_bases = publicBases(issue.supported_bases);
+    if (issue.supported_bases && issue.supported_bases.length) {
+      out.supported_bases = publicBases(issue.supported_bases);
+      const dataRule = issue.supported_bases.find((b) => b.rule_assessment);
+      if (dataRule) out.rule_assessment = { classification: dataRule.classification,
+        requirement: dataRule.rule_assessment.requirement };
+    }
     out.content_included = (issue.content_inclusion && issue.content_inclusion.included) ? issue.content_inclusion.included.slice() : null;
     if (issue.source_facts && issue.source_facts.length) {
       out.source_facts = issue.source_facts.map((f) => ({
@@ -1222,6 +1294,12 @@ function publicIssue(issue) {
     }
   } else {
     out.check_kind = issue.label || null;
+    if (issue.rule_assessment) {
+      out.citation = issue.citation;
+      out.rule_source_version = issue.source_version;
+      out.rule_assessment = { classification: issue.classification,
+        requirement: issue.rule_assessment.requirement };
+    }
     out.evidence = issue.evidence || null;
     if (issue.source_facts && issue.source_facts.length) {
       out.source_facts = issue.source_facts.map((f) => ({

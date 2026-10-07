@@ -1,8 +1,9 @@
 'use strict';
 /**
- * ab-acceptance-statutory.cjs — ACCEPT-001 item 2: for EACH of the four connected statutory checks,
+ * ab-acceptance-statutory.cjs — ACCEPT-001 item 2: for each active checklist-related retention check,
  * demonstrate exceeded, not-exceeded, missing/ambiguous and equiv-layout cases, via the engine and the
- * consumer journey. Checks: FCRA-605A-5, AU-ITEM1-LIABILITY-2Y, AU-ITEM3-ENQUIRY-5Y, AU-ITEM4-DEFAULT-5Y.
+ * consumer journey. Checks: FCRA-605A-5, AU-ITEM1-LIABILITY-2Y, AU-ITEM4-DEFAULT-5Y.
+ * The enquiry limb is retired from version 1 runtime scope.
  */
 
 const formats = require('../../formats.cjs');
@@ -41,11 +42,9 @@ async function run(t, check) {
   check.equal(outcomeOf(runEngine('AU', 'AU-NSW', ['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Credit Provider X  Balance $500']), 'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y'),
     null, 'AU liability: no closure date runs no comparison');
 
-  /* AU enquiry (item 3, 5y) */
-  check.deepEqual(outcomeOf(runEngine('AU', 'AU-NSW', ['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Enquiry  Enquiry Date 20/05/2021']), 'AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y'),
-    { state: 'EVALUATED', outcome: 'PERIOD_EXCEEDED' }, 'AU enquiry: >5y is PERIOD_EXCEEDED');
-  check.deepEqual(outcomeOf(runEngine('AU', 'AU-NSW', ['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Enquiry  Enquiry Date 20/05/2022']), 'AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y'),
-    { state: 'EVALUATED', outcome: 'PERIOD_NOT_EXCEEDED' }, 'AU enquiry: <5y is PERIOD_NOT_EXCEEDED');
+  /* An enquiry-only record must not execute the retired out-of-checklist limb. */
+  check.equal(outcomeOf(runEngine('AU', 'AU-NSW', ['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Enquiry  Enquiry Date 20/05/2021']), 'AU-PRIVACY-ACT-1988-S20W-ITEM3-ENQUIRY-5Y'),
+    null, 'AU enquiry retention is retired from the common-error runtime');
 
   /* AU default (item 4, 5y) */
   check.deepEqual(outcomeOf(runEngine('AU', 'AU-NSW', ['Equifax  Consumer Credit File', 'Report Date: 12 June 2026', 'Overdue Account  Original Listing 15/03/2021']), 'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y'),
@@ -67,7 +66,7 @@ async function run(t, check) {
   check.equal(evaluate.json.result.assessment.performed_by_kind.STATUTORY_RULE_COMPARISON, 1, 'one statutory comparison was performed on the uploaded report');
   check.ok(JSON.stringify(evaluate.json.result).includes('FCRA'), 'and it is the FCRA adverse-item comparison');
 
-  evidence.engine = { checks: ['FCRA-605A-5', 'AU-ITEM1-LIABILITY-2Y', 'AU-ITEM3-ENQUIRY-5Y', 'AU-ITEM4-DEFAULT-5Y'], cases: ['exceeded', 'not-exceeded', 'missing', 'equiv-layout'] };
+  evidence.engine = { checks: ['FCRA-605A-5', 'AU-ITEM1-LIABILITY-2Y', 'AU-ITEM4-DEFAULT-5Y'], cases: ['exceeded', 'not-exceeded', 'missing', 'equiv-layout'] };
   evidence.journey = { uploaded: true, statutory_comparisons: evaluate.json.result.assessment.performed_by_kind.STATUTORY_RULE_COMPARISON };
   return evidence;
 }
@@ -75,5 +74,5 @@ async function run(t, check) {
 module.exports = {
   run,
   id: 'ab-acceptance-statutory',
-  title: 'Four connected statutory checks: exceeded, not-exceeded, missing-fact and equiv-layout, via the engine and the consumer journey'
+  title: 'Three checklist-related retention checks: exceeded, not-exceeded, missing-fact and equiv-layout, via the engine and the consumer journey'
 };

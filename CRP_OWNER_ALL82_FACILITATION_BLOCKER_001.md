@@ -1,3 +1,5 @@
+> **October 7 common-error scope retirement.** The all-82 consumer journey remains required. Its references to jurisdiction-specific substantive or statutory violation paths are retired where they exceed the active common-error checklist. Governing authority: `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Historical text below is retained for provenance.
+
 # BLOCKER-ALL82-FACILITATION-001 — usable consumer journeys in all 82 jurisdictions
 
 Date: October 4, 2026 (America/Halifax). Authority: explicit owner request to make facilitation coverage across all 82 jurisdictions a production blocker.

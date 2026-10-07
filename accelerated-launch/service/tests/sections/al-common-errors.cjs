@@ -22,7 +22,7 @@ async function run(t, check) {
     rec({ facts: { 'liability.openedDate': '2020-02-01', 'liability.closedDate': '2019-01-01' } })
   ]);
   check.equal(contradictory.state, 'POTENTIAL_ISSUE', 'an account opened after its closed date is a potential issue');
-  check.equal(contradictory.is_legal_finding, false, 'and it is never a legal finding');
+  check.equal(Object.hasOwn(contradictory, 'is_legal_finding'), false, 'the check has no legal-finding category');
 
   /* ------------------------------------------------------------------ legitimate lookalike: opened before closed */
   const okDates = commonErrors.contradictoryAccountDates([
@@ -102,7 +102,7 @@ async function run(t, check) {
   /* ------------------------------------------------------------------ missing facts: not applicable, never a finding */
   const missing = commonErrors.runCommonErrorChecks({ extraction: { records: [rec({ facts: {} })] } });
   check.equal(missing.performed.length, 0, 'checks without their facts are not performed, not invented');
-  check.equal(missing.summary.legal_findings_emitted, 0, 'and none emits a legal finding');
+  check.equal(Object.hasOwn(missing.summary, 'legal_findings_emitted'), false, 'the summary has no legal-finding category');
 
   /* ------------------------------------------------------------------ status/date contradiction (open status + closed date) */
   const statusContra = commonErrors.accountStatusDateContradiction([
@@ -149,6 +149,22 @@ async function run(t, check) {
     rec({ facts: { 'account.paymentHistoryCells': [ { period: '2024-01', code: 'OK', meaning: 'Paid as agreed' }, { period: '2024-01', code: '30', meaning: '30 days late' } ] } })
   ]);
   check.equal(payHistQualifying.state, 'POTENTIAL_ISSUE', 'the same period printed twice with different cells is a genuine contradiction');
+  const equivalentCodes = commonErrors.paymentHistoryConsistency([
+    rec({ facts: { 'account.paymentHistoryCells': [
+      { period: '2024-01', code: 'OK', meaning: 'Paid as agreed' },
+      { period: '2024-01', code: 'C', meaning: 'Paid as agreed' }
+    ] } })
+  ]);
+  check.equal(equivalentCodes, null, 'different codes with the same printed meaning are not contradictory payment states');
+  const unresolvedThenConflict = commonErrors.paymentHistoryConsistency([
+    rec({ facts: { 'account.paymentHistoryCells': [
+      { period: '2024-01', code: 'X', meaning: null, uncertain: true },
+      { period: '2024-01', code: 'OK', meaning: 'Paid as agreed' },
+      { period: '2024-01', code: '30', meaning: '30 days late' }
+    ] } })
+  ]);
+  check.equal(unresolvedThenConflict?.state, 'POTENTIAL_ISSUE',
+    'an undecoded first cell cannot hide a later pair with contradictory printed meanings');
   const payHistStaleStatus = commonErrors.paymentHistoryConsistency([
     rec({ facts: { 'account.status': 'CHARGED OFF', 'account.paymentHistoryCells': [ { period: '2024-01', code: 'OK', meaning: 'Paid as agreed' }, { period: '2024-02', code: 'OK', meaning: 'Paid as agreed' } ] } })
   ]);
@@ -253,7 +269,7 @@ async function run(t, check) {
   const ev = evaluation.evaluateCase({ country: 'US', region: 'US-NY', extraction: ext });
   check.ok(ev.common_errors && ev.common_errors.performed.length >= 1, 'the common-error checks run through assessment');
   check.ok(ev.common_errors.performed.some((c) => c.check_id === 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY' && c.state === 'POTENTIAL_ISSUE'), 'and the contradictory account is flagged');
-  check.ok(ev.common_errors.performed.every((c) => c.is_legal_finding === false), 'and none of them is a legal finding');
+  check.ok(ev.common_errors.performed.every((c) => !Object.hasOwn(c, 'is_legal_finding')), 'the checks do not classify legal findings');
   check.ok(!ev.results.some((r) => r.machine && r.machine.finding_emitted === true), 'no VIOLATION/PROBABLE_VIOLATION is emitted from a factual inconsistency');
 
   /* ------------------------------------------------------------------ rendered result exposes the common_errors bucket */
@@ -264,8 +280,8 @@ async function run(t, check) {
 
   evidence.qualifying = { contradictory: contradictory.state, duplicate: dup.state, re_aging: reAge.state, status_date: statusContra.state };
   evidence.lookalikes = { ok_dates: okDates.state, not_duplicate: notDup === null, similar_only: similarOnly.state, closed_with_balance: closedWithBalance === null };
-  evidence.legal_findings_emitted = ev.common_errors.summary.legal_findings_emitted;
+  evidence.rule_assessment_is_separate = true;
   return evidence;
 }
 
-module.exports = { run, id: 'al-common-errors', title: 'BLOCKER-COMMON-ERRORS-001: data-consistency checks, never a legal finding' };
+module.exports = { run, id: 'al-common-errors', title: 'BLOCKER-COMMON-ERRORS-001: data-consistency checks feeding report-data rules' };

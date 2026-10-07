@@ -129,7 +129,8 @@ async function run(t, check) {
 
   const viewBefore = (await t.request('GET', `/api/cases/${caseRow.case_id}`, { token: owner.token })).json.view;
   check.ok(Array.isArray(viewBefore.clarification_questions), 'the view carries a clarification-questions array');
-  check.ok((viewBefore.clarification_questions || []).some((c) => c.id === 'report-use'), 'the report-use question IS surfaced (an answer can now remove the surfaced probable issue)');
+  check.equal((viewBefore.clarification_questions || []).some((c) => c.id === 'report-use'), false,
+    'no report-use question is surfaced for the retired bankruptcy adapter');
 
   /* Review, then submit a statement directly (no surfaced question) to prove the storage machinery is retained. */
   await t.request('POST', `/api/cases/${caseRow.case_id}/review`, { token: owner.token });
@@ -140,11 +141,11 @@ async function run(t, check) {
     { question_id: 'report-use', answer: 'credit_transaction' },
     { question_id: 'report-use-amount', purpose: 'credit_transaction', answer: 'below_50k' }
   ] } })).json;
-  check.equal(clarify.reassessed, true, 'a report-use statement is stored and reassessed (it can now remove the surfaced probable issue)');
+  check.equal(clarify.reassessed, false, 'a stored report-use statement does not reassess an out-of-checklist rule');
 
   const viewAfter = (await t.request('GET', `/api/cases/${caseRow.case_id}`, { token: owner.token })).json.view;
   check.ok(!(viewAfter.result.observations || []).some((o) => o.is_a_finding === true && o.classification === 'VIOLATION'), 'after a below-threshold statement the exception is still unresolved (no violation unlocked)');
-  check.equal(viewAfter.reviewed, false, 'the reassessment invalidates the prior review so the consumer re-reviews');
+  check.equal(viewAfter.reviewed, true, 'without a material reassessment the prior review remains valid');
   const stored = viewAfter.clarifications.find((c) => c.question_id === 'report-use' && !c.superseded);
   check.ok(stored && stored.report_identity && stored.report_identity.bureau === 'Experian', 'the statement binds the report identity (bureau) server-side');
   check.ok(stored && stored.report_identity && stored.report_identity.reference_date === '2026-06-12', 'the statement binds the report reference date server-side');
@@ -289,7 +290,8 @@ async function run(t, check) {
   await t.request('POST', `/api/cases/${realCase.case_id}/review`, { token: realOwner.token });
   const realView = (await t.request('GET', `/api/cases/${realCase.case_id}`, { token: realOwner.token })).json.view;
   check.equal(realView.reviewed, true, 'the consumer reviewed the result');
-  check.ok((realView.clarification_questions || []).some((c) => c.id === 'report-use'), 'the real service surfaces the report-use question (an answer can remove the probable issue)');
+  check.equal((realView.clarification_questions || []).some((c) => c.id === 'report-use'), false,
+    'the real service does not surface report-use for a retired public-record rule');
 
   const realFetch = async (path, options) => {
     const method = (options && options.method) || 'GET';
@@ -316,7 +318,8 @@ async function run(t, check) {
   vm.runInContext(appSource, realCtx);
   vm.runInContext('state.caseId = ' + JSON.stringify(realCase.case_id) + '; state.view = ' + JSON.stringify(realView) + '; state.step = 3; render();', realCtx);
   check.equal(realEl('footer-disclaimer').hidden, true, 'the wizard hides the footer disclaimer on the results step (real view)');
-  check.ok(/data-question="report-use"/.test(realNodes.get('panel').innerHTML), 'the wizard renders the report-use question when the service surfaces it');
+  check.ok(!/data-question="report-use"/.test(realNodes.get('panel').innerHTML),
+    'the wizard does not render a report-use question that the service did not surface');
 
   evidence.combination = 'multiple-use flags, conflicting amounts and mismatched-purpose amounts fail closed';
   evidence.negation_only = 'a single-purpose statement resolves only the purpose it names and never unlocks a violation';

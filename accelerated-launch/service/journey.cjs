@@ -445,6 +445,27 @@ function assessmentReportBody(rendered, producedAt) {
   lines.push('REPORTING ISSUES AND REPORT FACTS');
   lines.push('');
   lines.push(`CHECKS PERFORMED (${rendered.checks_performed})`);
+  const reportIssues = (rendered.issues || []).filter((issue) => issue.eligible === true);
+  if (reportIssues.length) {
+    lines.push('');
+    lines.push('REPORTING ISSUES');
+    for (const issue of reportIssues) {
+      const classification = issue.rule_assessment && issue.rule_assessment.classification;
+      const label = classification === 'PROBABLE_VIOLATION' ? 'Probable reporting issue'
+        : classification ? 'Reporting issue'
+          : issue.confidence === 'PROBABLE' ? 'Probable reporting issue' : 'Reporting issue to verify';
+      lines.push(`- ${label}${issue.check_kind ? `: ${issue.check_kind}` : ''}`);
+      if (issue.explanation) lines.push(`  ${issue.explanation}`);
+      if (issue.rule_assessment && issue.rule_assessment.requirement) {
+        lines.push(`  Reporting rule: ${issue.rule_assessment.requirement}`);
+      }
+      for (const fact of issue.source_facts || []) {
+        const loc = fact.location || {};
+        const where = loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
+        lines.push(`  Source: ${fact.source_field || 'report field'} — ${fact.raw_value == null ? 'value omitted' : `printed "${fact.raw_value}"`} (${where})`);
+      }
+    }
+  }
   for (const o of (rendered.observations || []).filter(o => o.assessment_completed !== false)) {
     lines.push(`- ${o.headline || '(a recorded rule comparison)'}`);
     if (o.check_name) lines.push(`  Rule: ${o.check_name}`);
@@ -477,15 +498,15 @@ function assessmentReportBody(rendered, producedAt) {
   }
   /* BLOCKER-COMMON-ERRORS-001 / OWNER-ACCEPT-009: render every performed common-error assessment with its
      outcome, plain explanation, source locations and uncertainty — never only an aggregate count, and never a
-     legal finding. A payment-history issue names its account reference, period, conflicting readings and the
+     legal determination. A payment-history issue names its account reference, period, conflicting readings and the
      printed legend basis (the meanings are the legend's own words). */
-  const commonErrors = rendered.common_errors || [];
+  const commonErrors = (rendered.common_errors || []).filter((ce) =>
+    ce.state === 'POTENTIAL_ISSUE' || ce.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING');
   if (commonErrors.length) {
     lines.push('');
     lines.push('REPORT FACTS REVIEWED');
     for (const ce of commonErrors) {
-      const stateLabel = ce.state === 'POTENTIAL_ISSUE' ? 'item to review' : ce.state === 'SIMILAR_ENTRIES_WORTH_REVIEWING' ? 'report detail to review' : String(ce.state || 'not detected').toLowerCase().replace(/_/g, ' ');
-      lines.push(`- ${ce.check_name || '(unnamed common-error check)'} — ${stateLabel}`);
+      lines.push(`- ${ce.label || 'Report detail to review'}`);
       if (ce.detail) lines.push(`  ${ce.detail}`);
       for (const sr of (ce.source_records || [])) {
         const loc = sr.location ? `page ${sr.location.page}, line ${sr.location.line}` : 'source location not recorded';

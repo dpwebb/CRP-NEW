@@ -61,13 +61,13 @@ async function run(service, check) {
   const ext = extract(LINES);
   const ev = evaluation.evaluateCase({ country: 'US', region: 'US-CA', extraction: ext });
   const all = issues.issuesFor({ evaluation: ev, extraction: ext });
-  const potentials = all.filter((i) => i.confidence === 'POTENTIAL');
-  check.equal(potentials.length, 1, 'one supported potential issue is produced');
-  check.equal(potentials[0].classification, null, 'a potential issue is never a VIOLATION/PROBABLE classification');
-  check.equal(potentials[0].basis_type, 'FACTUAL_CONSISTENCY', 'and it is a factual consistency issue, not a statutory one');
-  check.equal(potentials[0].request_type, 'VERIFICATION', 'with a verification (not correction) request');
-  check.equal(potentials[0].eligible, true, 'and it is packet-eligible for a verification request');
-  check.equal(all.filter((i) => i.confidence === 'DEFINITE' || i.confidence === 'PROBABLE').length, 0, 'no definite/probable finding is manufactured from the discrepancy');
+  const potentials = all.filter((i) => i.check_id === 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY');
+  check.equal(potentials.length, 1, 'one supported report-data violation is produced');
+  check.equal(potentials[0].classification, 'PROBABLE_VIOLATION', 'the sourced chronology breach is classified');
+  check.equal(potentials[0].basis_type, 'FACTUAL_CONSISTENCY', 'and its basis is the report data');
+  check.equal(potentials[0].request_type, 'VERIFICATION', 'with a verification request');
+  check.equal(potentials[0].eligible, true, 'and it is packet-eligible');
+  check.equal(all.filter((i) => i.confidence === 'DEFINITE').length, 0, 'no definite conclusion is manufactured');
   check.equal(potentials[0].record_index, 1, 'the discrepancy is on account 1 (opened after closed)');
   check.ok(all.every((i) => i.record_index !== 2), 'the benign account (opened before closed) is never flagged');
 
@@ -81,24 +81,24 @@ async function run(service, check) {
 
   const view = (await service.request('GET', `/api/cases/${c.case_id}`, { token: owner.token })).json.view;
   const result = view.result;
-  const cards = (result.issues || []).filter((i) => i.confidence === 'POTENTIAL');
-  check.equal(cards.length, 1, 'the result surfaces exactly one potential issue card');
+  const cards = (result.issues || []).filter((i) => i.rule_assessment);
+  check.equal(cards.length, 1, 'the result surfaces exactly one report-data violation card');
   check.ok(cards[0].explanation.includes('opened date later than its closed date'), 'the card states what the report says');
-  check.ok(cards[0].uncertainty.includes('not, by itself, an established legal violation'), 'the card states the specific uncertainty');
+  check.ok(cards[0].uncertainty.includes('which date needs correction'), 'the card states the specific uncertainty');
   /* OWNER correction (Batch 25): the approved probable lead belongs to PROBABLE issues only, so a potential
      issue keeps its own wording and the classes stay distinct. */
-  check.ok(!cards[0].uncertainty.includes(issues.PROBABLE_LEAD), 'a potential issue never carries the probable lead sentence');
-  check.ok(!/probable reporting issue/.test(cards[0].uncertainty), 'and is never worded as a probable issue');
+  check.ok(!cards[0].uncertainty.includes(issues.PROBABLE_LEAD), 'the uncertainty is issue-specific');
+  check.ok(!/legal finding/.test(cards[0].uncertainty), 'the consumer sees no legal-finding category');
   check.ok((result.issues || []).every((i) => i.confidence !== 'NOT_DETECTED'), 'NOT_DETECTED entries are never surfaced as issue cards');
   const benignLines = ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2018  Closed 01/01/2020'];
   const benignExt = extract(benignLines);
   const benignEv = evaluation.evaluateCase({ country: 'US', region: 'US-CA', extraction: benignExt });
   check.ok((benignEv.common_errors.performed || []).filter((c) => c.state === 'NOT_DETECTED').length >= 1, 'a benign account produces a NOT_DETECTED common-error entry');
-  check.equal(issues.issuesFor({ evaluation: benignEv, extraction: benignExt }).filter((i) => i.confidence === 'POTENTIAL').length, 0, 'and NOT_DETECTED is never surfaced as an issue card');
+  check.equal(issues.issuesFor({ evaluation: benignEv, extraction: benignExt }).filter((i) => i.check_id === 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY').length, 0, 'and NOT_DETECTED is never surfaced as an issue card');
 
   const pv = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
   check.equal(pv.eligible_issues.length, 1, 'exactly one eligible issue (the potential discrepancy) is offered');
-  check.equal(pv.eligible_issues[0].confidence, 'POTENTIAL', 'and it is a potential (verification) issue');
+  check.equal(pv.eligible_issues[0].confidence, 'PROBABLE', 'and it is a probable violation for verification');
   check.ok(!/COMMON-ERROR|US-CA-CCRAA/.test(JSON.stringify(pv.eligible_issues[0])), 'the consumer view never exposes internal check/adapter ids');
   const issueId = pv.eligible_issues[0].issue_id;
 
@@ -136,53 +136,21 @@ async function run(service, check) {
   check.equal(bad.status, 400, 'an unknown issue id is refused');
   check.equal(bad.json.error.code, 'INVALID_FINDING_SELECTION', 'with the invalid-selection code');
 
-  /* ---- 6. PROBABLE path: the supported probable verification issue reaches selection and download through the
-     real PDF upload path. The historical-verification qualifier is word-wrapped exactly as the OCR fixture wraps it
-     (the synthetic PDF builder clips very long single lines, so the qualifier is split at its natural break), and the
-     general intake associates it with the public record — no store injection. ---- */
-  const PROB_LINES = [
+  /* A bankruptcy-only entry cannot create an out-of-checklist statutory issue. */
+  const bankruptcyOnly = [
     'Experian Consumer Credit Report - FICTIONAL TEST FIXTURE',
     'Report Date: June 12, 2026',
     'Bankruptcy Public Record: TEST-BK-001',
-    'Order for Relief: January 1, 2011',
-    'Historical verification for TEST-BK-001: the Order for Relief date above is the reported date;',
-    'its correspondence to the actual court order is unverified and cannot be established from this disclosure.'
+    'Order for Relief: January 1, 2011'
   ];
-  const probExt = extract(PROB_LINES);
-  const probEv = evaluation.evaluateCase({ country: 'US', region: 'US-CA', extraction: probExt });
-  const probables = issues.issuesFor({ evaluation: probEv, extraction: probExt }).filter((i) => i.confidence === 'PROBABLE' && i.adapter_id === 'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y');
-  check.equal(probables.length, 1, 'a supported probable issue is produced');
-  check.equal(probables[0].classification, 'PROBABLE_VIOLATION', 'retaining its PROBABLE_VIOLATION classification');
-  check.equal(probables[0].basis_type, 'STATUTORY_RETENTION', 'as a statutory retention issue');
-  check.equal(probables[0].request_type, 'VERIFICATION', 'with a verification (not correction) request');
-  check.equal(probables[0].eligible, true, 'and it is packet-eligible');
-  check.ok(probables[0].uncertainty.includes('cannot be established'), 'retaining its specific uncertainty');
-  check.ok(!probables[0].uncertainty.startsWith(issues.PROBABLE_LEAD), 'the generic confidence tier lead is omitted before the specific uncertainty');
-  check.ok(probables[0].decisive_fact_unavailable, 'naming the decisive unavailable fact');
-
-  const pOwner = await service.unpaidAccount('b1-prob@example.test');
-  const pCase = (await service.request('POST', '/api/cases', { token: pOwner.token, body: { country: 'US', region: 'US-CA' } })).json.case;
-  await payReportOnce(service, pOwner, pCase.case_id);
-  const pPdf = buildPdf({ pages: [{ lines: PROB_LINES }] });
-  const pUp = await service.request('POST', `/api/cases/${pCase.case_id}/files`, { token: pOwner.token, body: uploadBody(pPdf, 'bankruptcy.pdf') });
-  check.equal(pUp.status, 201, 'the bankruptcy public-record report uploads');
-  const pEval = await service.request('POST', `/api/cases/${pCase.case_id}/evaluate`, { token: pOwner.token });
-  check.equal(pEval.status, 201, 'and evaluates through the upload path');
-  const pPv = (await service.request('GET', `/api/cases/${pCase.case_id}/packet`, { token: pOwner.token })).json.view;
-  const pProbable = pPv.eligible_issues.find((i) => i.confidence === 'PROBABLE');
-  check.ok(pProbable, 'the probable issue is offered for selection');
-  check.ok(pProbable.uncertainty.includes('cannot be established'), 'with its specific uncertainty in the review');
-  await service.request('POST', `/api/cases/${pCase.case_id}/packet/select`, { token: pOwner.token, body: { issue_ids: [pProbable.issue_id] } });
-  await service.request('POST', `/api/cases/${pCase.case_id}/packet/correspondence`, { token: pOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
-  await service.request('POST', `/api/cases/${pCase.case_id}/packet/approve`, { token: pOwner.token });
-  const pDl = await service.request('GET', `/api/cases/${pCase.case_id}/packet-download`, { token: pOwner.token });
-  check.equal(pDl.status, 200, 'the probable issue downloads');
-  check.ok(/reporting issue/i.test(pDl.text), 'as a reporting issue with its evidence and request');
-  check.ok(/verify the event date/.test(pDl.text), 'with a verification request');
-  check.ok(!/established reporting issue/.test(pDl.text), 'never asserting a definite breach');
+  const retiredExt = extract(bankruptcyOnly);
+  const retiredEv = evaluation.evaluateCase({ country: 'US', region: 'US-CA', extraction: retiredExt });
+  check.ok(!issues.issuesFor({ evaluation: retiredEv, extraction: retiredExt })
+    .some((i) => i.adapter_id === 'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y'),
+  'the retired bankruptcy adapter cannot create a consumer issue');
 
   evidence.potential_issue = 'a supported factual discrepancy reaches the consumer as a POTENTIAL verification issue, selectable and downloadable, never a definite finding';
-  evidence.probable_issue = 'a supported PROBABLE_VIOLATION reaches selection and download through the real upload path as a verification request, retaining its specific uncertainty';
+  evidence.retired_statutory = 'bankruptcy-only content cannot create an out-of-checklist statutory issue';
   return evidence;
 }
 

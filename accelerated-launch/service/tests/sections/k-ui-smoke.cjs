@@ -112,7 +112,7 @@ const DEMONSTRATION_RESULT = {
   checks_not_run: [],
   checks_unresolved: [],
   eligibility: { draft_eligible: false, reason: 'NO_ELIGIBLE_RESULT_IN_THIS_BATCH' },
-  qualifications: ['These are observations from your report, not legal findings.', 'Only the checks named below were run against your report.'],
+  qualifications: ['A violation is shown when report evidence supports a breach of a defined reporting rule or requirement.', 'Only the checks named below were run against your report.'],
   comprehensive_legal_check: false,
   disclaimer: 'This assessment covers the checks listed in this report.'
 };

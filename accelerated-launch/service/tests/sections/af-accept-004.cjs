@@ -177,52 +177,25 @@ async function run(t, check) {
   check.equal(emitted.classification, 'VIOLATION', 'emitFinding returns the derived finding through the single guarded path');
 
 
-  /* Real pipeline (extraction -> evaluation -> render), not a manually constructed object. */
+  /* The direct classifier remains a unit-level historical primitive. Runtime assessment must
+     exclude public-record adapters that are outside the active common-error checklist. */
   const fullReport = runEngine('US-NY', [
-    'Experian  Consumer Credit Report',
-    'Report Date: 12 June 2026',
-    'Bankruptcy  Date of Order for Relief: 01/01/2010',
-    'Judgment  Date of Entry: 01/01/2010'
+    'Experian Consumer Credit Report', 'Report Date: 12 June 2026',
+    'Bankruptcy Date of Order for Relief: 01/01/2010', 'Judgment Date of Entry: 01/01/2010'
   ]);
-  const pBk = pipelineRow(fullReport, 'FCRA-605A-1-US-NATIONAL-10Y');
-  check.equal(pBk.machine.state, 'EVALUATED', 'pipeline: the federal bankruptcy limb evaluates');
-  check.equal(pBk.machine.finding && pBk.machine.finding.classification, 'PROBABLE_VIOLATION', 'pipeline: the unresolved § 1681c(b) use exception blocks VIOLATION');
-  const pJd = pipelineRow(fullReport, 'FCRA-605A-2-US-NATIONAL-7Y');
-  check.equal(pJd.machine.state, 'EVALUATED', 'pipeline: the judgment limb evaluates');
-  check.equal(pJd.machine.outcome, 'PERIOD_EXCEEDED', 'pipeline: the judgment minimum is exceeded');
-  check.equal(pJd.machine.finding, null, 'pipeline: the SOL-incomplete judgment emits no finding');
-
-  /* A NY state limb records the § 380-j(f)(2) use exception -> no VIOLATION through the same pipeline. */
-  const nyReport = runEngine('US-NY', [
-    'Experian  Consumer Credit Report',
-    'Report Date: 12 June 2026',
-    'Bankruptcy  Date of Adjudication: 01/01/2010'
-  ]);
-  const pNy = pipelineRow(nyReport, 'US-NY-GBL-380J-F1-I-BANKRUPTCY-14Y');
-  check.equal(pNy.machine.state, 'EVALUATED', 'pipeline: the NY bankruptcy limb evaluates');
-  check.equal(pNy.machine.finding && pNy.machine.finding.classification, 'PROBABLE_VIOLATION', 'pipeline: the unresolved § 380-j(f)(2) use exception blocks VIOLATION');
-
-  /* A CA state limb (no cross-referenced exception) does derive VIOLATION. */
+  check.equal(pipelineRow(fullReport, 'FCRA-605A-1-US-NATIONAL-10Y'), undefined,
+    'federal bankruptcy does not enter active runtime assessment');
+  check.equal(pipelineRow(fullReport, 'FCRA-605A-2-US-NATIONAL-7Y'), undefined,
+    'federal judgment does not enter active runtime assessment');
   const caReport = runEngine('US-CA', [
-    'Experian  Consumer Credit Report',
-    'Report Date: 12 June 2026',
-    'Bankruptcy  Date of Order for Relief: 01/01/2010'
+    'Experian Consumer Credit Report', 'Report Date: 12 June 2026',
+    'Bankruptcy Date of Order for Relief: 01/01/2010'
   ]);
-  const pCa = pipelineRow(caReport, 'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y');
-  check.equal(pCa.machine.state, 'EVALUATED', 'pipeline: the CA bankruptcy limb evaluates');
-  check.equal(pCa.machine.finding.classification, 'VIOLATION', 'pipeline: a resolved CA state breach derives VIOLATION');
-
-  const omittedJudgment = runEngine('US-NY', [
-    'Experian  Consumer Credit Report',
-    'Report Date: 12 June 2026',
-    'Bankruptcy  Date of Order for Relief: 01/01/2010'
-  ]);
-  const pJdMissing = pipelineAny(omittedJudgment, 'FCRA-605A-2-US-NATIONAL-7Y');
-  check.ok(pJdMissing.every((r) => !r.machine.finding), 'pipeline: an omitted judgment entry emits no finding');
-
+  check.equal(pipelineRow(caReport, 'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y'), undefined,
+    'California bankruptcy does not enter active runtime assessment');
   evidence.classification = 'derived-from-complete-record, capped-by-ceiling';
-  evidence.federal_exception = 'FCRA § 1681c(b) unresolved use exception blocks VIOLATION';
-  evidence.ny_violation = 'US-NY-14Y derives VIOLATION (no recorded exception)';
+  evidence.federal_exception = 'historical direct adapter retained; runtime public-record adapter retired';
+  evidence.ny_violation = 'public-record statutory adapters excluded from runtime';
   return evidence;
 }
 

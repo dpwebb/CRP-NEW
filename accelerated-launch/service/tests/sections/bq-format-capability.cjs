@@ -103,6 +103,36 @@ async function run(service, check) {
   /* ---- 5. Reader capability: the structural field surface each presentation CAN produce (not one report's). ---- */
   const capGeneral = commonErrors.presentationCapability('GENERAL-BUREAU-REPORT');
   check.ok(Object.values(capGeneral.checks).every((c) => c === true), 'the general-intake reader can structurally supply every one of the six issue types');
+  const factualIds = require('../../common-error-checklist.cjs').CHECKS
+    .map((row) => row.check_id).filter((id) => id.startsWith('COMMON-ERROR-'));
+  check.equal(factualIds.length, 18, 'the product checklist has 18 factual rows including the omission umbrella');
+  check.deepEqual(Object.keys(capGeneral.all_factual_checks).sort(), factualIds.sort(),
+    'the full reader inventory accounts for every factual check');
+  check.equal(capGeneral.all_factual_checks['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT'].field_ready,
+    true, 'the general reader structurally supplies type, balance and credit limit');
+  check.equal(capGeneral.all_factual_checks['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER'].field_ready,
+    true, 'the general reader now parses exact opened and first-reported labels');
+  check.equal(capGeneral.all_factual_checks['COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'].field_ready,
+    true, 'the general reader now parses exact last-payment and first-delinquency labels');
+  check.equal(capGeneral.all_factual_checks['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE'].reader_scope_admitted,
+    true, 'a reader may use the omission rule only if it supplies the blank caption and report-defined event');
+  check.equal(commonErrors.presentationCapability('US-CONSUMER-DISCLOSURE')
+    .all_factual_checks['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER'].field_ready,
+  true, 'the US reader has the two reported-date fields');
+  check.equal(commonErrors.presentationCapability('FAM-TU-CA-CONSUMER')
+    .all_factual_checks['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE'].reader_scope_admitted,
+  true, 'the TransUnion Canada reader retains its source-proven omission path');
+  const splitFields = commonErrors.formatCapability({ presentation_id: 'GENERAL-BUREAU-REPORT', records: [
+    { facts: { 'account.balance': 100 } }, { facts: { 'account.pastDueAmount': 120 } }
+  ] });
+  check.equal(splitFields.checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'].supported, false,
+    'fields on different accounts do not imply a runnable same-account comparison');
+  check.equal(splitFields.checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'].not_on_same_record, true,
+    'the capability result identifies the missing same-account pairing');
+  check.equal(splitFields.all_factual_checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'].field_ready,
+    false, 'the full inventory also requires the compared fields on one account');
+  check.equal(splitFields.all_factual_checks['COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'].detector_performed,
+    false, 'a field gap is not reported as a performed check');
 
   const capAUReader = commonErrors.presentationCapability(auFamily.FAMILY_ID);
   check.equal(capAUReader.checks['COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY'], true, 'the AU reader supports account-dates');

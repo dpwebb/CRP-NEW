@@ -230,7 +230,9 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${outsideCase.case_id}/evaluate`, { token: owner.token });
   const outsideView = (await service.request('GET', `/api/cases/${outsideCase.case_id}/packet`, { token: owner.token })).json.view;
   check.equal(gbIssue(outsideView), null, 'the same printed conflict outside GB raises no GB issue');
-  check.ok((outsideView.eligible_issues || []).some((i) => i.confidence === 'POTENTIAL'), 'while the shared factual observation is still offered there');
+  check.ok((outsideView.eligible_issues || []).some((i) => i.rule_assessment
+    && i.rule_assessment.classification === 'PROBABLE_VIOLATION'),
+  'while the shared report-data violation is still offered there');
 
   const oneDate = await assess(service, owner, 'GB-ENG', ['Fictional Creditor  Balance $100  Opened 01/01/2020']);
   const oneDateView = (await service.request('GET', `/api/cases/${oneDate.caseId}/packet`, { token: owner.token })).json.view;
