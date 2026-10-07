@@ -163,14 +163,14 @@ async function run(service, check) {
   const history = { extraction: historyExtraction,
     evaluation: engine.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: historyExtraction }) };
   const historyIssue = issues.publicIssues(history).find((i) => i.check_kind === 'a payment-history inconsistency');
-  check.equal(historyIssue.confidence, 'POTENTIAL', 'record-level history evidence does not manufacture an exact cell-source rule violation');
+  check.equal(historyIssue.confidence, 'PROBABLE', 'both inline cells now carry their actual printed source line into the report-data rule');
   check.match(historyIssue.explanation, /"OK" \(Paid as agreed\).*"30" \(30 days late\)/,
     'the unified consumer wording preserves both codes and their report-defined meanings');
   const historyReport = journey.assessmentReportBody(results.renderResultSet(history), 'fictional');
   check.match(historyReport, /"OK" \(Paid as agreed\).*"30" \(30 days late\)/,
     'the assessment retains the supported history readings without raw diagnostics');
-  check.match(historyReport, /Report entry location: page 1, line 3/,
-    'the assessment identifies the available entry location without inventing history-cell locations');
+  check.match(historyReport, /Source: Payment history 2024-01.*printed "OK" \(page 1, line 4\)/,
+    'the assessment identifies the actual inline history source instead of substituting the account heading');
   check.match(approve(history).body, /"OK" \(Paid as agreed\).*"30" \(30 days late\)/,
     'the reviewed and approved packet uses the same supported history readings');
 

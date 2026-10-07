@@ -83,6 +83,7 @@ function sourceFactFor(entry, label, record) {
 
 /** The common-error checks whose positives become selectable POTENTIAL issues (Batch 1 + ordinary-account batch). */
 const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL',
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
@@ -244,6 +245,11 @@ function contentFindingFacts(requiredFacts) {
 
 /** Recorded issue-specific request wording (recorded before enabling each path — never blanket). */
 const POTENTIAL_WORDING = Object.freeze({
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': {
+    explain: (i) => `The same obligation prints a first-delinquency date of ${i.evidence.earlier_anchor} in the earlier report dated ${i.evidence.earlier_report_date}, and ${i.evidence.current_anchor} in the current report dated ${i.evidence.current_report_date}. The original delinquency date has moved forward.`,
+    uncertainty: 'The reports do not establish whether the earlier date was corrected or whether a separate delinquency episode applies. Verify the original delinquency against the account history.',
+    request: 'please verify the original first-delinquency date against the account history, correct an unsupported date change, and ensure the reporting period has not been restarted'
+  },
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': {
     explain: (i) => `This report prints ${recordLabel(i)} with an opened date later than its closed date (${(i.evidence || {}).opened} after ${(i.evidence || {}).closed}).`,
     uncertainty: 'The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.',
@@ -911,7 +917,8 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         if (original) issue.source_facts.push(...sourceFactsFor(original, EVIDENCE_FACT_FIELDS[entry.check_id]));
       }
       const assessment = commonErrorRuleAssessment.assess(issue, record, evaluation, extraction);
-      if (entry.check_id === 'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER' && !assessment) continue;
+      if (!assessment && commonErrorRuleAssessment.hasUnusableDecisiveSource(issue, record, extraction)) continue;
+      if (['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL'].includes(entry.check_id) && !assessment) continue;
       if (assessment) {
         issue.classification = assessment.classification;
         if (assessment.classification === 'PROBABLE_VIOLATION') issue.confidence = CONFIDENCE.PROBABLE;
@@ -919,10 +926,14 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         issue.source_version = assessment.source_version;
         issue.rule_assessment = assessment;
         issue.source_facts = assessment.required_facts.filter((f) => f.source.omitted_value !== true).map((f) => ({
-          field: f.field, source_field: assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
+          field: f.field, source_field: f.role === 'earlier_report' || f.role === 'current_report'
+            ? `${f.role === 'earlier_report' ? 'Earlier' : 'Current'} report ${f.source.report_reference_date}: ${f.source.source_field}`
+            : assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
             ? `Account ${f.source.record_index}: ${f.source.source_field}` : f.source.source_field,
           raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
-          location: f.source.location
+          location: f.source.location, ...(f.source.report_reference_date ? {
+            role: f.role, source_result_id: f.source.source_result_id, source_file_id: f.source.source_file_id,
+            bureau: f.source.bureau, report_reference_date: f.source.report_reference_date } : {})
         }));
         const dateField = issue.evidence && issue.evidence.field === 'first_delinquency'
           ? 'tradeline.firstDelinquencyDate' : issue.evidence && issue.evidence.field === 'last_payment'
@@ -1406,7 +1417,10 @@ function publicIssue(issue) {
       out.rule_assessment = { classification: issue.classification,
         requirement: issue.rule_assessment.requirement };
     }
-    out.evidence = issue.evidence || null;
+    out.evidence = issue.check_id === 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL' && issue.evidence
+      ? { earlier_anchor: issue.evidence.earlier_anchor, current_anchor: issue.evidence.current_anchor,
+        earlier_report_date: issue.evidence.earlier_report_date, current_report_date: issue.evidence.current_report_date }
+      : issue.evidence || null;
     if (issue.source_facts && issue.source_facts.length) {
       out.source_facts = issue.source_facts.map((f) => ({
         source_field: f.source_field,

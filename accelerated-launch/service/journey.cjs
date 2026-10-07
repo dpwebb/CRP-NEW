@@ -203,10 +203,32 @@ function evaluateCase(store, actor, caseId, options) {
     region: caseRow.region,
     extraction,
     assessment_clock: clock,
+    prior_reports: ownedPriorReports(store, actor, caseRow, provenance.file_ids),
     consumer_statements: options && Array.isArray(options.consumer_statements) ? options.consumer_statements : null
   });
   const stored = persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock);
   return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered, stored.evaluation) };
+}
+
+/** Assessment-only history input, constructed from owned persisted report evidence, never request data. */
+function ownedPriorReports(store, actor, caseRow, currentFiles) {
+  const state = store.state();
+  const rows = state.results.filter((row) => row.account_id === actor.account_id && !row.demonstration
+    && formats.carriesReportEvidence(row.extraction)
+    && state.cases.some((priorCase) => priorCase.case_id === row.case_id && priorCase.account_id === actor.account_id
+      && priorCase.country === caseRow.country)
+    && (row.file_ids || []).length && !(row.file_ids || []).some((id) => currentFiles.includes(id))
+    && row.file_ids.every((id) => state.files.some((file) => file.file_id === id
+      && file.account_id === actor.account_id && file.case_id === row.case_id && !file.demonstration
+      && formats.carriesReportEvidence(file.extraction))));
+  // Repeated assessments of identical files are one snapshot, not independent corroborations.
+  const seen = new Set();
+  return rows.filter((row) => {
+    const key = [...row.file_ids].sort().join('|');
+    if (seen.has(key)) return false;
+    seen.add(key); return true;
+  }).map((row) => ({ result_id: row.result_id, case_id: row.case_id,
+    extraction: { records: row.extraction.records } }));
 }
 
 /** The "Assessed on" value for a stored result: the run stamp, never a freshly computed date. */
@@ -353,6 +375,7 @@ function recordClarification(store, actor, caseId, resultId, answers) {
       region: caseRow.region,
       extraction,
       assessment_clock: reassessmentClock,
+      prior_reports: row.evaluation && row.evaluation.reaging_baselines || [],
       consumer_statements: boundReportUse
     });
   }

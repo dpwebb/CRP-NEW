@@ -255,6 +255,7 @@ function documentLines(model) {
           usedNativeRows.add(row);
           line.x0 = row.x0; line.y0 = row.y0; line.y1 = row.y1;
           line.x1 = Math.max(...row.words.map((word) => word.x1));
+          line.trusted = row.words.every((word) => word.trusted !== false);
         }
       }
       lines.push(line);

@@ -883,7 +883,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
     } else if (OPENED_LABELS.includes(up)) {
       facts['liability.openedDate'] = d.normalized;
       facts['liability.openedDatePrecision'] = d.precision || null;
-      if (d.precision === 'DAY' && (currentKind === 'GENERAL_ACCOUNT' || currentKind === 'REPORTED_ACCOUNT')) {
+      if (d.precision === 'DAY' && ['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind)) {
         facts['reportedAccount.dateOpened'] = d.normalized;
       }
       canonicalPrinted['opened_date'] = {
@@ -893,7 +893,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
         ambiguous: d.ambiguous === true ? true : undefined, alternative_normalized: d.alternative || null
       };
       if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
-    } else if (currentKind === 'GENERAL_ACCOUNT' && d.precision === 'DAY'
+    } else if (['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && d.precision === 'DAY'
       && ['FIRST REPORTED', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
       const field = up === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
         : up === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate';
@@ -1043,8 +1043,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     }
     const ph = paymentHistoryFacts(line.text);
     if (ph) {
-      canonical.facts['account.paymentHistoryLegend'] = ph.legend;
-      canonical.facts['account.paymentHistoryCells'] = ph.cells;
+      canonical.facts['account.paymentHistoryLegend'] = ph.legend.map((item) => ({ ...item, location: lineLocation(line) }));
+      canonical.facts['account.paymentHistoryCells'] = ph.cells.map((cell) => ({ ...cell,
+        raw_period: cell.period, location: lineLocation(line) }));
     }
   }
   for (const key of Object.keys(canonical.canonicalPrinted)) {

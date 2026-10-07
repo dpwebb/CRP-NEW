@@ -111,6 +111,20 @@ async function run(t, check) {
   check.equal(account.fact_sources['liability.openedDate'].uncertainty.precision, 'MONTH', 'the alias retains month precision without inventing a day');
   check.equal(account.facts['liability.closedDate'], undefined, 'Date of status does not become a closure date');
   check.equal(account.facts['tradeline.firstDelinquencyDate'], undefined, 'the reader does not invent a first delinquency');
+  const adverseInput = [{ extras: [{ label: 'Payment history guide', value: '30 days past due as of Jun 2019', x: 40 }] }];
+  const adverse = read(t, adverseInput).extraction.records[0];
+  check.equal(adverse.facts['reportedAccount.adverseRatingDate'], '2019-06', 'a readable native adverse annotation reaches its existing comparison anchor');
+  check.equal(adverse.facts['reportedAccount.adverseRatingDatePrecision'], 'MONTH', 'the adverse month keeps its recorded precision');
+  check.equal(adverse.printed.adverse_payment_rating_date.raw_value, '30 days past due as of Jun 2019', 'the exact annotation is retained');
+  check.equal(adverse.printed.adverse_payment_rating_date.location.confidence, undefined, 'native trust does not invent a confidence score');
+  check.equal(adverse.facts['tradeline.firstDelinquencyDate'], undefined, 'an adverse annotation is still not a first-delinquency anchor');
+  for (const amend of [(model) => {
+    const line = family.documentLines(model).find((entry) => entry.text.trim() === '30 days past due as of Jun 2019');
+    lowValue(model, '30 days past due as of Jun 2019', line.y0);
+  }, (model) => { model.pages[0].word_boxes = []; }]) {
+    check.equal(read(t, adverseInput, amend).extraction.records[0].facts['reportedAccount.adverseRatingDate'], undefined,
+      'untrusted words or absent measured geometry never supply a native adverse anchor');
+  }
   const escapedName = read(t, [{ name: 'Cedar & Pine Bank' }]).extraction.records[0];
   check.equal(escapedName.facts['account.reported_identity'], 'Cedar & Pine Bank', 'native XML escaping does not alter the printed account name');
   check.equal(escapedName.fact_sources['account.reported_identity'].raw_value, 'Cedar & Pine Bank', 'the name source preserves the actual printed ampersand');

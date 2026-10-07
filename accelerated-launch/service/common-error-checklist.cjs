@@ -12,7 +12,7 @@ const CHECKS = Object.freeze([
   ['COMMON-ERROR-DUPLICATE-REPORTING', 'Potential duplicate reporting'],
   ['COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING', 'Similar entries worth reviewing'],
   ['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'Opened date after first-reported date'],
-  ['COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'Adverse-entry timing after first reporting'],
+  ['COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'Re-aging: original delinquency date moved forward'],
   ['COMMON-ERROR-IDENTITY-REVIEW', 'Identity fields worth reviewing'],
   ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'Adverse entry without a delinquency anchor'],
   ['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE', 'Write-off without a charge-off date'],

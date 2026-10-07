@@ -80,6 +80,9 @@ const SECTION_FILES = [
   'cy-common-error-predicate-repairs.cjs',
   'cz-common-error-packet-repairs.cjs',
   'dc-consumer-violation-term.cjs',
+  'dg-owned-reaging.cjs',
+  'de-tu-ca-common-error-sources.cjs',
+  'df-us-common-error-reader.cjs',
   /* OWNER-ACCEPT-009 — BLOCKER-FDT-001: incomplete-reading detection, bounded recovery, consequential
      limitations, corrected duplicate semantics, and the reproducible benchmark. */
   'am-fdt-recovery.cjs',
@@ -420,6 +423,8 @@ async function main() {
     for (const f of previous) fs.copyFileSync(path.join(OUT_DIR, f), path.join(archive, f));
   }
   const formats = require('../formats.cjs');
+  // Refresh configured reader gaps from the live shared checklist, separately from passing delivery evidence.
+  require('../finding-coverage.cjs').main();
   const adapters = require('../../adapters/rule-adapters.cjs');
   const capabilities = {
     scope: 'CONFIGURED_CAPABILITY_SEPARATE_FROM_TESTED_DELIVERY',
@@ -892,6 +897,7 @@ async function main() {
         'duplicate-reporting (identity + additional compatible fact)',
         'similar-entries-worth-reviewing',
         'reported-dates-out-of-order',
+        'owned-same-bureau-fixed-obligation-first-delinquency-anchor-change',
         'paid-or-settled-status-with-past-due',
         'last-payment-or-first-delinquency-date-conflict',
         'linked-original-and-collection-both-due',
@@ -902,7 +908,7 @@ async function main() {
       responsibility: 'printed individual/joint/authorized-user responsibility, preserved as distinct roles, never identity theft'
     },
     remaining: {
-      re_aging: 'Source-linked evidence of an improperly changed delinquency or retention anchor needs a supported mapping. Ordinary later delinquency does not establish re-aging or its absence.',
+      re_aging: 'The owned same-bureau fixed-obligation first-delinquency mapping is supported. Readers without corroborated identity, sourced anchors or report dates remain explicit gaps. Ordinary later delinquency does not establish re-aging or its absence.',
       responsibility_image_or_ocr: 'no deployed image/OCR demonstration of the responsibility check (payment-history grid is demonstrated via native and OCR positions)',
       real_browser_clarification: 'no real-browser demonstration of the consumer clarification interface (node:vm only; endpoint responses are not browser usability evidence)'
     },
@@ -911,7 +917,7 @@ async function main() {
       { id: 'ct-owner-common-error-scope', passed: Boolean(ownerCommonErrorsSection) && ownerCommonErrorsSection.failed === 0 },
       ...['cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs',
         'da-common-error-reader-repairs', 'db-common-error-surface-repairs',
-        'dc-consumer-violation-term'].map((id) => ({ id, passed: clean(id) }))
+        'dc-consumer-violation-term', 'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging'].map((id) => ({ id, passed: clean(id) }))
     ]
   };
   fs.writeFileSync(path.join(OUT_DIR, 'common-errors-evidence.json'), `${JSON.stringify(commonErrorsEvidence, null, 2)}\n`, 'utf8');

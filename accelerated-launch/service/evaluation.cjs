@@ -24,6 +24,7 @@ const { APPLICABILITY_STATE, resolveApplicability } = require('./applicability.c
 const { runFactualChecks } = require('./factual-checks.cjs');
 const { runDetectedReportInformation, CHECK_CLASS } = require('./content-assessments.cjs');
 const { runCommonErrorChecks, CHECK_CLASS: COMMON_ERROR_CLASS } = require('./common-errors.cjs');
+const reaging = require('./reaging.cjs');
 const limitationAssessment = require('./limitation-assessment.cjs');
 const paymentHistoryAnalysis = require('./payment-history-analysis.cjs');
 const { activeAdapter } = require('./common-error-scope.cjs');
@@ -187,6 +188,8 @@ function evaluateCase(context) {
     /* BLOCKER-COMMON-ERRORS-001: common-error data-consistency checks, in their own bucket. Each is a potential
        issue with source-linked evidence — never a VIOLATION and never a legal conclusion. */
     common_errors: null,
+    // Selected owned snapshots are frozen at assessment time; reads never select a new baseline.
+    reaging_baselines: [],
     /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation assessment and the payment-history
        analysis, each in its own bucket and never counted as a statutory check. */
     limitation_assessment: null,
@@ -347,7 +350,9 @@ function evaluateCase(context) {
   const factualPerformed = base.factual_checks ? base.factual_checks.performed : [];
   base.detected_report_information = runDetectedReportInformation({ country: context.country, region: context.region, extraction });
   const detectedPerformed = base.detected_report_information ? base.detected_report_information.performed : [];
-  base.common_errors = runCommonErrorChecks({ country: context.country, region: context.region, extraction });
+  base.reaging_baselines = reaging.freezeBaselines(extraction, Array.isArray(context.prior_reports) ? context.prior_reports : []);
+  base.common_errors = runCommonErrorChecks({ country: context.country, region: context.region, extraction,
+    prior_reports: base.reaging_baselines });
   const commonPerformed = base.common_errors ? base.common_errors.performed : [];
   /* The court-limitation assessment and the payment-history analysis run on the same admitted report evidence.
      `checks_performed` keeps its existing meaning (statutory, factual, detected and common-error checks);

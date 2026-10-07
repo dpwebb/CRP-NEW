@@ -5,73 +5,8 @@
 const { ADAPTERS, adaptersForRegion } = require('../adapters/rule-adapters.cjs');
 const APPLICABILITY = require('../adapters/applicability-records.json');
 
-const PRINTED_LABEL = Object.freeze({
-  'account.status': /status/i,
-  'liability.closedDate': /clos(?:ed|ure).*date|date.*clos/i,
-  'liability.openedDate': /open(?:ed|ing)?.*date|date.*open/i,
-  'reportedAccount.dateOpened': /open(?:ed|ing)?.*date|date.*open/i,
-  'reportedAccount.firstReported': /first.*report|report.*first/i,
-  'account.balance': /balance/i,
-  'account.type': /account.*type|type.*account/i,
-  'account.amount': /^(?:account\.amount|amount|balance)$/i,
-  'account.creditLimit': /credit.*limit|limit.*credit/i,
-  'account.masked_identifier': /account.*number|masked.*identifier/i,
-  'account.reported_identity': /creditor|lender|account.*name|reported.*identity/i,
-  'account.responsibility': /responsib|ownership/i,
-  'account.pastDueAmount': /past.?due/i,
-  'tradeline.lastPaymentDate': /last.*payment/i,
-  'tradeline.firstDelinquencyDate': /first.*delinquen/i
-});
-
-function reportReference(record) {
-  const date = record && record.report_reference_date;
-  if (!date || date.status && date.status !== 'RESOLVED') return null;
-  if (date.raw_value != null && date.raw != null && date.raw_value !== date.raw
-    || date.normalized_value != null && date.normalized != null && date.normalized_value !== date.normalized) return null;
-  const raw = date.raw_value ?? date.raw;
-  const normalized = date.normalized_value ?? date.normalized;
-  return raw != null && normalized && date.location
-    ? { ...date, raw_value: raw, normalized_value: normalized } : null;
-}
-
-function sourceForField(record, field) {
-  if (field === 'report.referenceDate') {
-    const date = reportReference(record);
-    if (!date) return null;
-    return { raw_value: date.raw_value, normalized_value: date.normalized_value,
-      location: date.location, source_field: date.source_field || 'Report date',
-      record_index: record.record_index };
-  }
-  const value = record.facts && record.facts[field];
-  const label = PRINTED_LABEL[field];
-  if (value == null || !label) return null;
-  const printed = record.printed || {};
-  const reading = Object.entries(printed).find(([key, p]) => p && (field === 'account.amount'
-    ? label.test(key) : label.test(`${key} ${p.label || ''}`))
-    && p.raw != null && p.location && String(p.normalized) === String(value));
-  if (reading) {
-    return { raw_value: reading[1].raw, normalized_value: value, location: reading[1].location,
-      source_field: reading[1].label || reading[0], record_index: record.record_index };
-  }
-  const direct = record.fact_sources && record.fact_sources[field];
-  if (direct && direct.raw_value != null && direct.location
-    && String(direct.normalized_value) === String(value)) {
-    return { raw_value: direct.raw_value, normalized_value: value,
-      location: direct.location, source_field: direct.source_field || field,
-      record_index: record.record_index };
-  }
-  /* The TU-CA table keeps numeric cell readings in its own row rather than the caption map. Use
-     that row's raw cell and location; never substitute the account block's aggregate raw text. */
-  const cell = field === 'account.balance' ? 'balance'
-    : field === 'account.pastDueAmount' ? 'past_due' : null;
-  const row = cell && Array.isArray(record.monthly_rows) ? record.monthly_rows[0] : null;
-  const raw = row && row.cells ? row.cells[cell] : null;
-  if (raw == null || !row.location) return null;
-  const number = Number(String(raw).replace(/[^0-9.-]/g, ''));
-  return Number.isFinite(number) && number === value
-    ? { raw_value: raw, normalized_value: value, location: row.location,
-      source_field: cell, record_index: record.record_index } : null;
-}
+const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const reaging = require('./reaging.cjs');
 
 const RULE_BY_REGION = Object.freeze({
   'CA-ON': 'CA-ON-CRA-S9-3-A-RELIABLE-EVIDENCE-BASIS',
@@ -88,6 +23,7 @@ const RULE_BY_REGION = Object.freeze({
 });
 
 const REPORT_RULES = Object.freeze({
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': 'The original delinquency anchor for the same continuing obligation must not be replaced by a later date without a supported correction or a new delinquency episode.',
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': 'An account cannot close before it opened.',
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': 'An account cannot first be reported before it opened.',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': 'An account cannot be both open and closed on the same report.',
@@ -200,7 +136,8 @@ function pairedRecordSources(issue, record, extraction) {
   } else {
     const shared = ['account.amount', 'account.creditLimit', 'account.status']
       .find((field) => record.facts[field] != null
-        && String(record.facts[field]) === String(other.facts[field]));
+        && String(record.facts[field]) === String(other.facts[field])
+        && sourceForField(record, field) && sourceForField(other, field));
     if (!shared) return null;
     additional = [shared];
   }
@@ -265,14 +202,16 @@ function assess(issue, record, evaluation, extraction) {
     else if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED') requirement = 'A payment or first delinquency cannot predate the opening of its account.';
   }
   if (!requirement) return null;
+  const historical = reaging.validatedSources(issue, extraction, evaluation.reaging_baselines);
+  if (issue.check_id === reaging.CHECK_ID && !historical) return null;
   const omission = completenessSources(issue, record);
   const paymentHistory = omission ? null : paymentHistorySources(issue, record);
   const paired = omission || paymentHistory ? null : pairedRecordSources(issue, record, extraction);
   const fields = omission || paymentHistory || paired ? null : decisiveFields(issue, record);
-  const required = omission || paymentHistory || paired || (fields && fields.length >= 2
+  const required = historical || omission || paymentHistory || paired || (fields && fields.length >= 2
     ? fields.map((field) => ({ field, source: sourceForField(record, field) })) : null);
   if (!required || required.length < 2) return null;
-  if (!required.every(({ field, source, record_index }) => source
+  if (!historical && !required.every(({ field, source, record_index }) => source
     && source.record_index === (record_index == null ? record.record_index : record_index)
     && source.location && (source.raw_value != null || source.omitted_value === true)
     && (source.omitted_value === true || field === 'account.paymentHistoryCells'
@@ -291,6 +230,7 @@ function assess(issue, record, evaluation, extraction) {
     && candidate.source_entry_id && candidate.source_version && candidate.citation
     ? candidate : null;
   const classification = omission || ['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT',
+    'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL',
     'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER',
     'COMMON-ERROR-DUPLICATE-REPORTING',
     'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE'].includes(issue.check_id)
@@ -306,10 +246,38 @@ function assess(issue, record, evaluation, extraction) {
     source_version: rule ? rule.source_version : null,
     jurisdiction: evaluation.region,
     required_facts: required,
-    unresolved: omission
+    unresolved: historical ? 'The reports do not establish whether the earlier date was corrected or whether a separate delinquency episode applies.' : omission
       ? 'The report does not establish whether the missing date is necessary for this information to be complete for its use or whether the underlying file contains it.'
       : 'The report does not establish which printed value is inaccurate or the source records and procedures used to prepare it.'
   };
 }
 
-module.exports = { assess, RULE_BY_REGION, REPORT_RULES };
+/** Preserve supported legacy verification paths, but never offer a decisive reading the reader explicitly rejected. */
+function hasUnusableDecisiveSource(issue, record, extraction) {
+  if (!record) return true;
+  if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'
+    && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && record.report_reference_date && !reportReference(record)) return true;
+  const rejected = (row, fields) => Boolean(row && fields && fields.some((field) =>
+    row.fact_sources && Object.hasOwn(row.fact_sources, field) && !sourceForField(row, field)));
+  const fields = decisiveFields(issue, record);
+  if (fields) return rejected(record, fields);
+  const paired = ['COMMON-ERROR-DUPLICATE-REPORTING', 'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY',
+    'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE'];
+  if (!paired.includes(issue.check_id)) return false;
+  const e = issue.evidence || {};
+  const index = e.duplicate_of_record ?? e.other_record ?? e.original_record;
+  const other = extraction && (extraction.records || []).find((row) => row.record_index === index);
+  const identity = ['account.masked_identifier', 'account.reported_identity'];
+  if (rejected(record, identity) || rejected(other, identity)) return true;
+  if (issue.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING') {
+    const shared = ['account.amount', 'account.creditLimit', 'account.status'].filter((field) =>
+      record.facts[field] != null && other && String(record.facts[field]) === String((other.facts || {})[field]));
+    return shared.length > 0 && shared.every((field) => rejected(record, [field]) || rejected(other, [field]));
+  }
+  const extra = issue.check_id === 'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY' ? ['account.responsibility']
+    : issue.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' ? ['account.balance', 'account.amount']
+      : ['account.amount', 'account.creditLimit', 'account.status'];
+  return rejected(record, extra) || rejected(other, extra);
+}
+
+module.exports = { assess, hasUnusableDecisiveSource, RULE_BY_REGION, REPORT_RULES };

@@ -16,7 +16,8 @@ if (run.mode !== 'FULL_CURRENT_PRODUCT' || run.totals.failed || run.totals.skipp
 }
 const ids = ['al-common-errors', 'ct-owner-common-error-scope', 'cw-common-error-rule-assessment',
   'cx-all82-required-report-data', 'cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs',
-  'da-common-error-reader-repairs', 'db-common-error-surface-repairs', 'dc-consumer-violation-term'];
+  'da-common-error-reader-repairs', 'db-common-error-surface-repairs', 'dc-consumer-violation-term',
+  'de-tu-ca-common-error-sources', 'df-us-common-error-reader', 'dg-owned-reaging'];
 const tests = ids.map((id) => {
   const section = run.sections.find((row) => row.id === id);
   if (!section || !section.completed || section.failed || section.skipped.length || !section.passed) {
@@ -35,9 +36,12 @@ const sourceFiles = ['accelerated-launch/service/common-error-checklist.cjs',
   'accelerated-launch/service/issues.cjs', 'accelerated-launch/service/results.cjs',
   'accelerated-launch/service/journey.cjs', 'accelerated-launch/service/packets.cjs',
   'accelerated-launch/service/app.cjs', 'accelerated-launch/service/ui/app.js'];
+sourceFiles.push('accelerated-launch/service/reaging.cjs', 'accelerated-launch/service/report-fact-sources.cjs',
+  'accelerated-launch/service/account-identity.cjs', 'accelerated-launch/service/format-families/tu-ca-consumer.cjs',
+  'accelerated-launch/service/format-families/us-experian-consumer.cjs');
 const checklist = require(path.join(root, 'accelerated-launch/service/common-error-checklist.cjs')).CHECKS;
 const remaining = {
-  re_aging: 'A supported mapping for source-linked evidence of an improperly changed delinquency or retention anchor is still required. Ordinary later delinquency does not establish re-aging or its absence.',
+  re_aging: 'Owned same-bureau fixed-obligation first-delinquency changes have a sourced verification mapping. Reader layouts without corroborated identity, sourced anchors or report dates remain gaps. Ordinary later delinquency does not establish re-aging or its absence.',
   reader_coverage: 'These passing paths do not establish every field mapping or every checklist item for every report layout.',
   staging_journey: 'Current served-release common-error upload-to-selected-approved-packet evidence is pending.'
 };

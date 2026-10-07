@@ -414,6 +414,14 @@ function factSourcesForRecord(record) {
   const printedEntries = (record.printed && typeof record.printed === 'object') ? record.printed : null;
   for (const field of Object.keys(record.facts)) {
     const value = record.facts[field];
+    const direct = record.fact_sources && record.fact_sources[field];
+    if (record.fact_sources && Object.hasOwn(record.fact_sources, field)) {
+      sources[field] = direct ? { ...direct, record_index: record.record_index,
+        normalization: { from: direct.raw_value, to: direct.normalized_value } } : {
+        raw_value: null, normalized_value: null, location: null, record_index: record.record_index,
+        uncertainty: { status: 'EXTRACTION_UNRESOLVED', reason: 'FIELD_SOURCE_UNAVAILABLE' } };
+      continue;
+    }
     let printed = null;
     if (printedEntries) {
       printed = Object.values(printedEntries).find((p) => p && (

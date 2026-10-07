@@ -1,14 +1,18 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-07T15:11:06.371Z",
+  "generated_at": "2026-10-07T16:46:15.912Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
-      "file_count": 57,
-      "digest": "35173ABE3757C7C7E8C657452792E7E62F2CED664C954AC8C92916B8BBF2B684",
+      "file_count": 60,
+      "digest": "A830A4A74F24A60DD8281853AFE5E877C11F78FA0329667DE785EEE319E0AA97",
       "files": [
+        {
+          "file": "accelerated-launch/service/account-identity.cjs",
+          "sha256": "43AEB9E46A677D4107DA839FB6DCBD400018707F21D56AEF4B3D868BB8DD75A0"
+        },
         {
           "file": "accelerated-launch/service/accounts.cjs",
           "sha256": "3CE5F6756674EE2D358B4651AF601DD09A147E47382B8D0E9BBD2142127F9442"
@@ -51,11 +55,11 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "353F949B2D1A85B3E1AFCFD9CA9749828BF0398A04437F7D6BA2DE030107A582"
+          "sha256": "D004DC40F5DD87F126CAF0E7825F708152DEDB5DB976246FF3B40ACF644F1E41"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
-          "sha256": "CF34386961FF871E7B94A971EF26A510054685BA036225A714EA6FD03E87467E"
+          "sha256": "D9252CB5C1872A1787B4DDC9826CE5AEDEB1E3D648F6526896861925CCD5CF5B"
         },
         {
           "file": "accelerated-launch/service/common-error-scope.cjs",
@@ -63,11 +67,11 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "82A2A44790CBF2EEDB4A336A328D697ADFC927334880CFB0BAB89BADED55E4AD"
+          "sha256": "A6665E4432FEBBC10EC43CAF3586FDDC8D001DAC896DCF92AC9F1E01C51937DB"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
-          "sha256": "23FEBDB75CC54236F2E7D22464E24A3F92DCBC14769259B1BC0900F789E39634"
+          "sha256": "568A7F12D9761A03FE9122659CBDCBC5B02FD48C84545BD31B0C5F49ADC6CA64"
         },
         {
           "file": "accelerated-launch/service/content-assessments.cjs",
@@ -95,7 +99,7 @@
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
-          "sha256": "DED792BC4D58823F0ADBAF6F57576DDE885EA20C677AABC40EDE389B47EBD19E"
+          "sha256": "7099292588902AC5F6FFEBF2CAF35BFE1DAE49507BC7ABA180C87C5233EED70C"
         },
         {
           "file": "accelerated-launch/service/evidence-validator.cjs",
@@ -135,27 +139,27 @@
         },
         {
           "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
-          "sha256": "585024B498FBC6D27B382EC3762D81BC2A308AE45A4590BCD052CAB708544357"
+          "sha256": "8E0B3A7499EAC86A1B9057C0715B14F5B4D7B91405128FECDBEC26E29620639D"
         },
         {
           "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
-          "sha256": "8D23BB0BD742FC9372052235B40288C1F3A89767782A981CA5019191BBAA2635"
+          "sha256": "ADE10A228767CA271479AE6A227670023C0493A6557D642548B6C559F9932AF4"
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
-          "sha256": "59229C882B0EEB9EBFE314EB6BB48189B8A0C43C64BF97F4F5934A13A8DB199F"
+          "sha256": "341DA5367693A21D1504A2C71188E20DA3952D742C861EABED0FEF02EB562AE2"
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "0219E226D90C4D97FC07F091ADCCE945198FC100B523D725204F898FE6EB5AB7"
+          "sha256": "4B24D692ED8A9765858B620AF2F8803E0AE27F542501F6B2F2767A5082B9C29A"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "E5E088EBCF75DBE5D32B70762E3B166288D031300180AC1D4F28DD407DC280F5"
+          "sha256": "E624ED445E0654641ED6FADD84C52E3CCC50F35B45C44DB43299555FAC3769E8"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "C4B21E3914270409E7FCBADE55BC2378C077E114DDFE07B6AFA57D51669961E3"
+          "sha256": "3EA7624E807D29949D4695219817A1A69F49C141219126513BBE026AB28FDFEF"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -175,7 +179,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "11E6D234C0582EACE3E4BAF2E0C89E67192657F1F0A86F8A228F3186BDDA0184"
+          "sha256": "8BB78498CC6BC7375A8D6FEC3FDC6F92AE472FE5341F030F585E97718D793997"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -202,8 +206,16 @@
           "sha256": "003FDA7F9CBE2481F5075253654B302E6BAC4DB99297C641003DEC56116CE5C6"
         },
         {
+          "file": "accelerated-launch/service/reaging.cjs",
+          "sha256": "BD0E22CFD4EB812F325ABDFE05F478F6423845A313C041C63C9E3F2C4775A582"
+        },
+        {
           "file": "accelerated-launch/service/release-check.cjs",
           "sha256": "AA86934C84C2D2FD8800EDB7F93386760AA1D481E2246BE872ABC20E51D82391"
+        },
+        {
+          "file": "accelerated-launch/service/report-fact-sources.cjs",
+          "sha256": "8A43D2D5F3E408D598D4C2E3AC930E6C5B4286B01126BB143613C3CFC8032CC5"
         },
         {
           "file": "accelerated-launch/service/results.cjs",
@@ -388,6 +400,6 @@
       ]
     }
   ],
-  "manifest_digest": "B2C3A60A9B004DC3D4B32CD284E956C1C024379EAF6D1A34CA947E1082875B3E",
-  "total_file_count": 87
+  "manifest_digest": "83AFA775581E588F71C8E9C9F046CB160818FE6C31077B71EE4E677368677B7C",
+  "total_file_count": 90
 }

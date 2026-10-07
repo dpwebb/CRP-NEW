@@ -490,16 +490,17 @@ function correspondenceLines(packet, row, selected) {
 function evidenceFacts(issue) {
   const out = [];
   const seen = new Set();
-  const push = (field, raw, normalized, location) => {
+  const push = (field, raw, normalized, location, provenance) => {
     if (raw == null && normalized == null) return;
     const loc = location || {};
-    const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}`;
+    const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}|${JSON.stringify(provenance || null)}`;
     if (seen.has(key)) return;
     seen.add(key);
     out.push({ field: field || null, raw, normalized, location: location || null });
   };
   for (const f of (issue.source_facts || [])) {
-    push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location);
+    push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location,
+      f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null);
   }
   if (issue.source) {
     push(issue.source.source_field || (issue.record && issue.record.source_field), issue.source.raw_value, issue.source.normalized_value, issue.source.location || issue.location);

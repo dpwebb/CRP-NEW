@@ -118,8 +118,10 @@ async function run(t, check) {
     'all three decisive readings have locations');
   const packet = approveAndDownload(positive, zeroIssue, check);
   record.fact_sources['account.creditLimit'].location.line += 1;
-  check.throws(() => packets.packetDownload(packet.store, packet.actor, packet.caseId),
-    (error) => error.code === 'PACKET_APPROVAL_STALE', 'changed numeric provenance invalidates reviewed approval');
+  let changedSourceError = null;
+  try { packets.packetDownload(packet.store, packet.actor, packet.caseId); }
+  catch (error) { changedSourceError = error.code; }
+  check.equal(changedSourceError, 'PACKET_APPROVAL_STALE', 'changed numeric provenance invalidates reviewed approval');
 
   const benign = read([accountBlock({ rows: [{ balance: '100', credit_limit: '300', past_due: '0' }] })]);
   check.deepEqual(selected(benign, ZERO_LIMIT), [], 'a positive limit produces no zero-limit issue');

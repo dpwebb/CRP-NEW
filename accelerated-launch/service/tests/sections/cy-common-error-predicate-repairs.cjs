@@ -162,10 +162,10 @@ async function run(t, check) {
   check.equal(checklistFor(laterDelinquency.evaluation).find((item) => item.check_id === 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL').state,
     'NOT_PERFORMED', 'the promised checklist item remains with its supported-evidence gap');
   const reAgingCapability = common.formatCapability(laterDelinquency.extraction).all_factual_checks['COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL'];
-  check.equal(reAgingCapability.field_ready, null,
+  check.equal(reAgingCapability.field_ready, false,
     'ordinary date availability is not advertised as re-aging detectability');
-  check.match(reAgingCapability.additional_evidence, /IMPROPERLY_CHANGED_DELINQUENCY_OR_RETENTION_ANCHOR.*MAPPING_PENDING/,
-    'internal capability names the missing affirmative anchor-change evidence mapping');
+  check.match(reAgingCapability.additional_evidence, /OWNED_EARLIER_SAME_BUREAU_FIXED_OBLIGATION.*FORWARD_ANCHOR_CHANGE/,
+    'internal capability names the separate owned report evidence required for the supported mapping');
   return { scope: 'ordinary-report status, precision, paired evidence and benign comparison repairs',
     re_aging_boundary: 'A later adverse event alone establishes neither re-aging nor its absence.' };
 }

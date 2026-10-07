@@ -7,6 +7,7 @@
  */
 const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
+const reaging = require('./reaging.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
@@ -468,10 +469,11 @@ function adverseAfterFirstReport() {
   return null;
 }
 
-/** The normalized fact fields each of the six selectable issue types requires. A check is runnable on a
+/** The normalized fact fields the tracked selectable issue types require. A check is runnable on a
  *  presentation only when its records actually carry these fields — never by presentation NAME. Missing fields
  *  are a gap, never an inference. */
 const ISSUE_TYPE_FIELD_REQUIREMENTS = Object.freeze({
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': ['account.masked_identifier', 'account.reported_identity', 'tradeline.firstDelinquencyDate'],
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': ['liability.openedDate', 'liability.closedDate'],
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': ['account.status', 'liability.closedDate'],
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': ['account.paymentHistoryCells'],
@@ -506,8 +508,9 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': { field_sets: [[
     'reportedAccount.dateOpened', 'reportedAccount.firstReported'
   ]] },
-  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [],
-    additional_evidence: 'SOURCE_LINKED_EVIDENCE_OF_IMPROPERLY_CHANGED_DELINQUENCY_OR_RETENTION_ANCHOR_REQUIRED_MAPPING_PENDING' },
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [[
+    'account.masked_identifier', 'account.reported_identity', 'tradeline.firstDelinquencyDate', 'report.referenceDate'
+  ]], additional_evidence: 'OWNED_EARLIER_SAME_BUREAU_FIXED_OBLIGATION_UNIQUE_IDENTITY_FORWARD_ANCHOR_CHANGE_WITHOUT_RESET_EVIDENCE' },
   'COMMON-ERROR-IDENTITY-REVIEW': { field_sets: [], additional_evidence: 'TWO_IDENTITY_FIELDS_OF_SAME_ROLE' },
   'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': { field_sets: [],
     additional_evidence: 'PRINTED_BLANK_CAPTION_AND_REPORT_DEFINED_ADVERSE_EVENT' },
@@ -577,7 +580,7 @@ function fullCapabilityRows(presentationId, fieldAvailable, performed) {
   return rows;
 }
 
-/** Which of the six issue types a presentation's records can actually supply USABLE fields for. Exact and
+/** Which tracked issue types a presentation's records can actually supply USABLE fields for. Exact and
  *  source-linked: it names the absent fields AND the retained-but-unusable ones separately, and never fabricates
  *  a capability. A field a single report happens not to print is reported as absent for THAT report and is never
  *  read as a structural statement about the presentation. */
@@ -640,6 +643,8 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'account.creditLimit', 'account.type', 'account.reported_identity'
   ]),
   'US-CONSUMER-DISCLOSURE': Object.freeze([
+    'account.reported_identity', 'account.masked_identifier', 'account.type', 'account.responsibility',
+    'account.status', 'liability.openedDate',
     'reportedAccount.status', 'reportedAccount.dateOpened', 'reportedAccount.firstReported', 'reportedAccount.adverseRatingDate',
     'account.balance', 'account.pastDueAmount', 'account.creditLimit', 'account.paymentAmount'
   ]),
@@ -648,6 +653,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'account.responsibility'
   ]),
   'FAM-TU-CA-CONSUMER': Object.freeze([
+    'report.referenceDate',
     'liability.openedDate', 'liability.closedDate', 'account.reported_identity', 'account.type',
     'account.responsibility', 'account.balance', 'account.pastDueAmount', 'account.paymentAmount',
     'account.amount', 'account.creditLimit', 'account.paymentHistoryCells',
@@ -675,7 +681,7 @@ const PRESENTATION_RETAINED_NOT_USABLE = Object.freeze({
   ])
 });
 
-/** Which of the six issue types a presentation's READER can structurally support, from its declared USABLE
+/** Which tracked issue types a presentation's READER can structurally support, from its declared USABLE
  *  field surface. */
 function presentationCapability(presentationId) {
   const fields = PRESENTATION_FIELD_CAPABILITY[presentationId] || [];
@@ -872,7 +878,7 @@ function runCommonErrorChecks(context) {
     duplicateReporting(records),
     similarEntriesWorthReviewing(records),
     reportedDatesOutOfOrder(records),
-    adverseAfterFirstReport(records),
+    reaging.evaluate(extraction, context.prior_reports),
     identityDiscrepancy(identity),
     /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three factual COMPLETENESS checks over the entry's
        own printed material and the meanings the report itself prints for its codes. Each returns null when its
