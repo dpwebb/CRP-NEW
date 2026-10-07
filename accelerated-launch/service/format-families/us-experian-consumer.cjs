@@ -194,12 +194,48 @@ function textLayerFor(model) {
 
 /* ------------------------------------------------------------------ lines and sections */
 
+/* Poppler's native words carry exact bounding boxes rather than OCR line keys.
+   Use those boxes in the same column reader; no confidence score is invented. */
+function nativeWordText(text) {
+  const entities = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+  return String(text).replace(/&(amp|lt|gt|quot|apos|#x[0-9a-f]+|#\d+);/gi, (raw, entity) => {
+    if (entity[0] !== '#') return entities[entity.toLowerCase()];
+    const code = entity[1].toLowerCase() === 'x' ? parseInt(entity.slice(2), 16) : Number(entity.slice(1));
+    return Number.isInteger(code) && code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : raw;
+  });
+}
+
+function nativeWordRows(page) {
+  if (!Array.isArray(page.word_boxes)) return [];
+  const rows = [];
+  const words = page.word_boxes.filter((word) => [word.x0, word.y0, word.x1, word.y1].every(Number.isFinite))
+    .map((word) => ({ ...word, text: nativeWordText(word.text) }))
+    .sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
+  for (const word of words) {
+    let row = rows.find((candidate) => Math.abs(candidate.y0 - word.y0) <= 2);
+    if (!row) {
+      row = { page: page.page, y0: word.y0, y1: word.y1, x0: word.x0, words: [] };
+      rows.push(row);
+    }
+    row.words.push(word);
+    row.y0 = Math.min(row.y0, word.y0);
+    row.y1 = Math.max(row.y1, word.y1);
+    row.x0 = Math.min(row.x0, word.x0);
+  }
+  for (const row of rows) row.words.sort((a, b) => a.x0 - b.x0);
+  return rows;
+}
+
+function normalizedLine(text) { return String(text).trim().replace(/\s+/g, ' '); }
+
 /** Every line of the resolved text layer, in document order, with its page, index and coordinate evidence. */
 function documentLines(model) {
   const layer = textLayerFor(model);
   const lines = [];
   for (const page of layer.pages) {
     const evidence = Array.isArray(page.line_evidence) ? page.line_evidence : null;
+    const nativeRows = evidence ? [] : nativeWordRows(page);
+    const usedNativeRows = new Set();
     (page.lines || []).forEach((text, index) => {
       const line = { page: page.page, line: index + 1, text: String(text) };
       if (evidence && evidence[index]) {
@@ -210,6 +246,16 @@ function documentLines(model) {
         line.y1 = evidence[index].y1;
         line.confidence = evidence[index].confidence;
         line.trusted = evidence[index].trusted;
+      } else if (!evidence && normalizedLine(text)) {
+        /* Associate a layout line only with an identical ordered word row. A
+           line without matching source geometry receives no guessed position. */
+        const row = nativeRows.find((candidate) => !usedNativeRows.has(candidate)
+          && normalizedLine(candidate.words.map((word) => word.text).join(' ')) === normalizedLine(text));
+        if (row) {
+          usedNativeRows.add(row);
+          line.x0 = row.x0; line.y0 = row.y0; line.y1 = row.y1;
+          line.x1 = Math.max(...row.words.map((word) => word.x1));
+        }
       }
       lines.push(line);
     });
@@ -250,7 +296,10 @@ function wordRows(model) {
   const layer = textLayerFor(model);
   const rows = [];
   for (const page of layer.pages) {
-    if (!Array.isArray(page.word_evidence)) continue;
+    if (!Array.isArray(page.word_evidence)) {
+      rows.push(...nativeWordRows(page));
+      continue;
+    }
     const byLine = new Map();
     for (const word of page.word_evidence) {
       const key = `${page.page}:${word.line_key}`;
@@ -531,7 +580,7 @@ function columnAnchors(model, headerRow) {
   for (const row of wordRows(model)) {
     /* Only the header label's own printed band. The row that FOLLOWS carries the values and would break a
        label printed across two OCR line groups into a non-contiguous run. */
-    if (Math.abs(row.y0 - headerRow.y0) > 6) continue;
+    if (row.page !== headerRow.page || Math.abs(row.y0 - headerRow.y0) > 6) continue;
     words.push(...row.words);
   }
   if (!words.length) return [];
@@ -555,11 +604,12 @@ function columnAnchors(model, headerRow) {
  * sit in. With no column anchors (a text layer without word coordinates) the whole line is one band, and the
  * reader falls back to line-level label/value pairing.
  */
-function blockEntries(model, startY, endY, anchors, headerY0) {
+function blockEntries(model, startY, endY, anchors, headerY0, pages) {
   const entries = [];
   const controls = [];
-  const lower = Number.isFinite(startY) ? startY : 0;
-  const upper = Number.isFinite(endY) ? endY : Number.POSITIVE_INFINITY;
+  if (!Number.isFinite(startY) || !Number.isFinite(endY)) return { entries, controls };
+  const lower = startY;
+  const upper = endY;
 
   /* A printed control begins at a `+` token and runs to the end of its printed row. It is recorded as a
      control and is never allowed into a column's text. */
@@ -581,10 +631,11 @@ function blockEntries(model, startY, endY, anchors, headerY0) {
   };
 
   for (const row of wordRows(model)) {
-    if (row.y0 < lower || row.y0 > upper) continue;
+    if (row.page < pages.start || row.page > pages.end) continue;
+    if (row.page === pages.start && row.y0 < lower || row.page === pages.end && row.y0 > upper) continue;
     /* The header row prints the labels. It carries no values, so every entry on it is tagged and skipped
        when a value is collected. */
-    const inHeaderRow = Number.isFinite(headerY0) && Math.abs(row.y0 - headerY0) <= 6;
+    const inHeaderRow = row.page === pages.start && Number.isFinite(headerY0) && Math.abs(row.y0 - headerY0) <= 6;
     const { fields, control } = splitControl(row.words);
     if (control.length) {
       controls.push({
@@ -669,9 +720,10 @@ function scanBand(entries) {
     if (!matched) {
       const inline = inlineSplit(entry.text);
       if (inline) {
+        const reading = readingFrom([entry]);
         fields.push({
           label: inline.label, kind: 'INLINE',
-          value: { raw: inline.value, untrusted: [], trusted: true },
+          value: { raw: inline.value, untrusted: reading.untrusted, trusted: reading.trusted },
           entry, valueParts: []
         });
         i += 1;
@@ -796,11 +848,12 @@ function accountBlocks(model) {
       headerIndexes.forEach((index, position) => {
         const end = position + 1 < headerIndexes.length ? headerIndexes[position + 1] : region.lines.length;
         const body = region.lines.slice(index, end);
+        const lastPositionedLine = body.filter((line) => Number.isFinite(line.y1)).at(-1);
         blocks.push({
           section: heading,
           header: region.lines[index],
           startY: region.lines[index].y0,
-          endY: body[body.length - 1].y1,
+          endY: lastPositionedLine ? lastPositionedLine.y1 : body[body.length - 1].y1,
           lines: body
         });
       });
@@ -867,9 +920,37 @@ function locateAdverseRating(lines) {
   });
 }
 
+/* Shared checklist fields must come from one readable caption on this record. The
+   older presentation facts remain available on their existing extraction terms. */
+function sharedCaption(reading, label, normalize = (raw) => raw) {
+  const reason = reading.count > 1 ? 'MULTIPLE_VALUES_FOR_PRINTED_CAPTION' : reading.reason;
+  const resolved = reading.count === 1 && reading.trusted === true && reason == null && reading.raw != null;
+  return { label, raw: reading.raw, normalized: resolved ? normalize(reading.raw) : null,
+    status: resolved ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: reason || (resolved ? null : 'PRINTED_CAPTION_NOT_READABLE'),
+    location: reading.location, trusted: resolved, caption_count: reading.count };
+}
+
+function normalizedCaptionText(raw) {
+  return String(raw).trim().replace(/\s+/g, ' ').toUpperCase().replace(/\.+$/, '');
+}
+
+function accountFactSource(reading, value, label, index) {
+  const count = reading.count ?? reading.caption_count;
+  const reason = count > 1 ? 'MULTIPLE_VALUES_FOR_PRINTED_CAPTION' : reading.reason;
+  return { raw_value: reading.raw, normalized_value: value, location: reading.location,
+    source_field: label, record_index: index,
+    normalization: { from: reading.raw, to: value },
+    uncertainty: { status: reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : reading.status || FACT_STATUS.RESOLVED,
+      reason: reason || null, precision: reading.precision || null },
+    trusted: reading.trusted === true && count === 1 && reason == null, caption_count: count };
+}
+
 function buildAccountRecord(block, index, model) {
+  const lastLine = block.lines.filter((line) => Number.isFinite(line.y1)).at(-1) || block.lines[block.lines.length - 1];
   const anchors = columnAnchors(model, block.header);
-  const blocked = blockEntries(model, block.startY, block.endY, anchors, block.header.y0);
+  const blocked = blockEntries(model, block.startY, block.endY, anchors, block.header.y0,
+    { start: block.header.page, end: lastLine.page });
   const entries = blocked.entries;
   const fields = [];
   const controls = blocked.controls.slice();
@@ -882,22 +963,42 @@ function buildAccountRecord(block, index, model) {
   }
 
   const name = fieldOf(fields, 'Account name');
+  const number = fieldOf(fields, 'Account number');
+  const type = fieldOf(fields, 'Type');
+  const responsibility = fieldOf(fields, 'Responsibility');
   const status = fieldOf(fields, 'Status');
   const dateOpened = dateFieldOf(fields, 'Date opened');
   const dateOfStatus = dateFieldOf(fields, 'Date of status');
   const firstReported = dateFieldOf(fields, 'First reported');
   const adverse = locateAdverseRating(block.lines);
-  const lastLine = block.lines[block.lines.length - 1];
   /* OWNER-POTENTIAL-ISSUE-001 ordinary-field batch: the additional printed fields this family already reads, mapped
      to the account facts the shared common-error checks compare. */
   const balance = fieldOf(fields, 'Recent balance');
   const pastDue = fieldOf(fields, 'Past due amount');
   const creditLimit = fieldOf(fields, 'Credit limit or original amount');
   const monthlyPayment = fieldOf(fields, 'Monthly payment');
+  const sharedName = sharedCaption(name, 'Account name');
+  const sharedNumber = sharedCaption(number, 'Account number');
+  const sharedType = sharedCaption(type, 'Type', normalizedCaptionText);
+  const sharedResponsibility = sharedCaption(responsibility, 'Responsibility', normalizedCaptionText);
+  const sharedStatus = sharedCaption(status, 'Status', normalizedCaptionText);
 
   const facts = {};
+  const factSources = {};
+  for (const [field, reading] of [
+    ['account.reported_identity', sharedName], ['account.masked_identifier', sharedNumber],
+    ['account.type', sharedType], ['account.responsibility', sharedResponsibility], ['account.status', sharedStatus]
+  ]) {
+    if (reading.status !== FACT_STATUS.RESOLVED) continue;
+    facts[field] = reading.normalized;
+    factSources[field] = accountFactSource(reading, reading.normalized, reading.label, index);
+  }
   if (status.raw) facts['reportedAccount.status'] = status.raw;
   if (dateOpened.normalized_value) facts['reportedAccount.dateOpened'] = dateOpened.normalized_value;
+  if (dateOpened.count === 1 && dateOpened.trusted === true && dateOpened.status === FACT_STATUS.RESOLVED) {
+    facts['liability.openedDate'] = dateOpened.normalized_value;
+    factSources['liability.openedDate'] = accountFactSource(dateOpened, dateOpened.normalized_value, 'Date opened', index);
+  }
   if (firstReported.normalized_value) facts['reportedAccount.firstReported'] = firstReported.normalized_value;
   if (adverse.comparison_anchor) facts['reportedAccount.adverseRatingDate'] = adverse.comparison_anchor;
   if (adverse.anchor_precision) facts['reportedAccount.adverseRatingDatePrecision'] = adverse.anchor_precision;
@@ -911,6 +1012,18 @@ function buildAccountRecord(block, index, model) {
   if (creditLimitAmount != null) facts['account.creditLimit'] = creditLimitAmount;
   const paymentAmount = printedAmount(monthlyPayment.raw);
   if (paymentAmount != null) facts['account.paymentAmount'] = paymentAmount;
+  /* Key provenance by fact, because equal printed values may belong to different
+     captions (a zero credit limit and a zero payment are still distinct sources). */
+  for (const [field, reading, label] of [
+    ['reportedAccount.status', status, 'Status'],
+    ['reportedAccount.dateOpened', dateOpened, 'Date opened'],
+    ['reportedAccount.firstReported', firstReported, 'First reported'],
+    ['account.balance', balance, 'Recent balance'], ['account.pastDueAmount', pastDue, 'Past due amount'],
+    ['account.creditLimit', creditLimit, 'Credit limit or original amount'],
+    ['account.paymentAmount', monthlyPayment, 'Monthly payment']
+  ]) {
+    if (facts[field] != null) factSources[field] = accountFactSource(reading, facts[field], label, index);
+  }
 
   const readableFields = fields.map((f) => ({
     label: f.label,
@@ -948,7 +1061,11 @@ function buildAccountRecord(block, index, model) {
     },
     /* What the record PRINTED. An applicability rule reads these and decides; the family decides nothing. */
     printed: {
-      status: { raw: status.raw, status: status.reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED, reason: status.reason },
+      account_name: sharedName,
+      account_number: sharedNumber,
+      type: sharedType,
+      responsibility: sharedResponsibility,
+      status: { ...sharedStatus, status: status.reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED, reason: status.reason },
       date_opened: { label: 'Date opened', raw: dateOpened.raw, normalized: dateOpened.normalized_value,
         status: dateOpened.status, reason: dateOpened.reason, location: dateOpened.location, precision: dateOpened.precision || null },
       date_of_status: { raw: dateOfStatus.raw, normalized: dateOfStatus.normalized_value, status: dateOfStatus.status, reason: dateOfStatus.reason },
@@ -965,7 +1082,8 @@ function buildAccountRecord(block, index, model) {
       controls: controls.map((c) => c.text),
       unlabelled_lines: unlabelled.map((u) => u.text)
     },
-    facts
+    facts,
+    fact_sources: factSources
   };
 }
 
