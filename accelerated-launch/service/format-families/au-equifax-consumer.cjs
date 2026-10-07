@@ -597,8 +597,8 @@ function buildOverdueRecord(entry, index) {
     facts: (() => {
       const facts = { 'overdue.originalListingDate': normalized };
       /* BATCH-23 (AU slice): the printed `Account Number` and `Amount`, taken from THIS record's own entry. The
-         reference is the BUREAU'S OWN LISTING REFERENCE — it is not a masked account identifier and it does not
-         identify the underlying creditor account, so it opens no matching path; it exists so the consumer and the
+         reference is the own printed account reference. It does not establish a masked or continuing-account
+         identity, so it opens no matching path; it exists so the consumer and the
          packet can point at the exact entry. The amount is parsed from the record's own printed figure with the
          raw reading kept beside it. A label printed more than once or without a value maps nothing. */
       const references = fieldsIn(fields, 'Account Number');
@@ -926,9 +926,9 @@ function buildLiabilityRecord(entry, index, model) {
      credited provider's name and the credit limit — reach the shared fact vocabulary, each with its raw reading.
      Each positioned repayment glyph keeps its own period, account and printed legend meaning. */
   if (provider.value) facts['account.reported_identity'] = provider.value;
-  /* BATCH-23 (AU slice): the printed `Account Number` is the BUREAU'S OWN LISTING REFERENCE for this entry. It is
-     mapped as a reference only — never as a masked account identifier, and never treated as identifying the
-     underlying creditor account — so it opens no matching path and the confident duplicate/responsibility checks
+  /* BATCH-23 (AU slice): the own printed `Account Number` is retained as this entry's account reference. It is
+     mapped as a locator only; it does not establish a masked or continuing-account identity,
+     so it opens no matching path and the confident duplicate/responsibility checks
      stay closed. It is what lets a consumer and a dispute packet point at the exact entry. */
   const accountReference = liField(fields, 'Account Number');
   if (accountReference.present && accountReference.value) {
