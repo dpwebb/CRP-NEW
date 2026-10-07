@@ -16,7 +16,7 @@
  *   • A DOCUMENT IS NOT MATCHED BY ITS NAME OR ITS PRODUCER. Admission is a conjunction of measured
  *     structural predicates; a lookalike fails on the predicate it fails, and the failure is reported.
  *   • AN UNREAD CELL IS NOT EVIDENCE. The family prints repayment history as a graphical grid. This module
- *     reads no cell from it, records none, and therefore binds no rule to it.
+ *     reads a cell only when its positioned glyph matches this account's own printed legend.
  *   • A RECORD NEVER BORROWS A FIELD. An overdue account's anchor is its OWN `Original Listing > Date`. If
  *     the record prints no original-listing block, the anchor is UNRESOLVED and is never taken from the
  *     current-listing date, a neighbouring record, another page or the summary totals.
@@ -28,6 +28,13 @@
  */
 
 const { FACT_STATUS } = require('../../../internal-validation/ca-ns-last-payment-six-year/constants.cjs');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
+const { printedAmount } = require('../report-amount.cjs');
+const GLYPH_CACHE = new WeakMap();
 
 const FAMILY_ID = 'FAM-AU-EQX-CONSUMER';
 
@@ -122,7 +129,27 @@ const FAMILY_CONTRACT = Object.freeze({
 function documentLines(model) {
   const lines = [];
   for (const page of model.pages) {
-    page.lines.forEach((text, index) => lines.push({ page: page.page, line: index + 1, text }));
+    const rows = [];
+    for (const word of (page.word_boxes || []).slice().sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0)) {
+      if (![word.x0, word.y0, word.x1, word.y1].every(Number.isFinite)) continue;
+      let row = rows.find((r) => Math.abs(r.y0 - word.y0) <= 2);
+      if (!row) { row = { y0: word.y0, words: [] }; rows.push(row); }
+      row.words.push(word);
+    }
+    const used = new Set();
+    const normalized = (text) => xmlText(text).trim().replace(/\s+/g, ' ');
+    page.lines.forEach((text, index) => {
+      const entry = { page: page.page, line: index + 1, text };
+      const row = rows.find((r) => !used.has(r) && normalized(r.words.slice().sort((a, b) => a.x0 - b.x0)
+        .map((w) => w.text).join(' ')) === normalized(text));
+      if (row) {
+        used.add(row);
+        Object.assign(entry, { x0: Math.min(...row.words.map((w) => w.x0)), y0: Math.min(...row.words.map((w) => w.y0)),
+          x1: Math.max(...row.words.map((w) => w.x1)), y1: Math.max(...row.words.map((w) => w.y1)),
+          trusted: row.words.every((w) => w.trusted !== false) });
+      }
+      lines.push(entry);
+    });
   }
   return lines;
 }
@@ -416,7 +443,7 @@ function locateOverdueRecords(model) {
       found.push({
         sort: { page: region.lines[start.status].page, line: region.lines[start.status].line },
         boundary: region.lines[start.status],
-        lines: region.lines.slice(start.marker + 1, end)
+        lines: region.lines.slice(start.marker + 1, end).filter((line) => line.page === region.lines[start.status].page)
       });
     });
   }
@@ -439,7 +466,7 @@ function taggedFields(lines, labels) {
     const label = ordered.find((candidate) => marker === candidate
       || (marker.startsWith(candidate) && /\s/.test(marker.charAt(candidate.length))));
     if (!label) continue;
-    fields.push({ label, block, page: entry.page, line: entry.line, value: marker.slice(label.length).trim() });
+    fields.push({ ...entry, label, block, value: marker.slice(label.length).trim() });
   }
   return { fields, markers };
 }
@@ -501,17 +528,57 @@ function buildOverdueRecord(entry, index) {
     note: "report_printed_deletion_date is THE REPORT'S OWN statement. It is reported beside the comparison and is never substituted for the rule's arithmetic."
   };
   const base = { boundary, end, section_path: section, printed_extra: printedExtra, current_listing_date: currentDates.length ? currentDates[0].value : null };
+  // Listing amounts retain their printed sub-block meaning. Neither is a current account balance.
+  const ownReadings = {}, ownFacts = {}, ownSources = {};
+  const retain = (key, label, block, field, normalize = (value) => value) => {
+    const hits = fieldsIn(fields, label, block);
+    const hit = hits[0], value = hit && hit.value || null;
+    const normalized = value ? normalize(value) : null;
+    const reason = hits.length > 1 ? 'LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD'
+      : !hit ? 'LABEL_NOT_PRINTED_ON_THIS_RECORD' : !value ? 'LABEL_PRINTED_WITHOUT_VALUE'
+        : normalized == null ? 'VALUE_MALFORMED_PRINTED_FORM' : null;
+    const location = hit ? { page: hit.page, line: hit.line, label, section, block,
+      ...(Number.isFinite(hit.x0) ? { x0: hit.x0, y0: hit.y0, x1: hit.x1, y1: hit.y1 } : {}),
+      ...(hit.trusted === false ? { trusted: false } : {}) } : null;
+    const reading = { label, raw: value, normalized: normalized ?? null, location, caption_count: hits.length,
+      status: reason ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.RESOLVED,
+      reason, trusted: !(location && location.trusted === false) };
+    ownReadings[key] = reading;
+    if (field) {
+      ownSources[field] = { raw_value: value, normalized_value: reading.normalized, source_field: `${block} Listing > ${label}`,
+        location, caption_count: hits.length, trusted: reading.trusted, status: reading.status, reason };
+      if (!reason && reading.trusted) ownFacts[field] = normalized;
+    }
+  };
+  retain('current_listing_amount', 'Amount', 'CURRENT', 'overdue.currentListingAmount', amountOf);
+  retain('original_listing_amount', 'Amount', 'ORIGINAL', 'overdue.originalListingAmount', amountOf);
+  retain('current_listing_provider', 'Credit Provider', 'CURRENT', 'account.reported_identity');
+  retain('current_listing_account_type', 'Account Type', 'CURRENT', 'account.type', (value) => value.toUpperCase());
+  retain('current_listing_date', 'Date', 'CURRENT', 'overdue.currentListingDate', (value) => normalizePrintedDate(value).normalized);
+  retain('original_listing_date', 'Date', 'ORIGINAL', 'overdue.originalListingDate', (value) => normalizePrintedDate(value).normalized);
+  retain('current_listing_account_reference', 'Account Number', 'CURRENT', 'overdue.accountReference');
+  const statusValue = valueAfterLabel(entry.boundary.text.trim(), 'Status');
+  ownReadings.current_listing_status = { label: 'Status', raw: statusValue, normalized: statusValue,
+    status: statusValue ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: statusValue ? null : 'LABEL_PRINTED_WITHOUT_VALUE', location: { ...entry.boundary, label: 'Status', section },
+    trusted: entry.boundary.trusted !== false, caption_count: 1 };
+  if (statusValue && entry.boundary.trusted !== false) ownFacts['overdue.currentListingStatus'] = statusValue;
+  ownSources['overdue.currentListingStatus'] = { source_field: 'Status', raw_value: statusValue, normalized_value: statusValue,
+    location: ownReadings.current_listing_status.location, status: ownReadings.current_listing_status.status,
+    reason: ownReadings.current_listing_status.reason, trusted: ownReadings.current_listing_status.trusted, caption_count: 1 };
+  const finish = (record) => ({ ...record, printed: ownReadings,
+    facts: { ...(record.facts || {}), ...ownFacts }, fact_sources: ownSources });
 
   /* An anchor is never taken from the current-listing block, a neighbouring record or another page. */
-  if (!sawOriginal) return unresolvedRecord('OVERDUE_ACCOUNT', index, 'ORIGINAL_LISTING_BLOCK_NOT_PRINTED', base);
-  if (originalDates.length === 0) return unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_NOT_PRINTED_ON_RECORD', base);
-  if (originalDates.length > 1) return unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD', base);
+  if (!sawOriginal) return finish(unresolvedRecord('OVERDUE_ACCOUNT', index, 'ORIGINAL_LISTING_BLOCK_NOT_PRINTED', base));
+  if (originalDates.length === 0) return finish(unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_NOT_PRINTED_ON_RECORD', base));
+  if (originalDates.length > 1) return finish(unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD', base));
   const anchor = originalDates[0];
-  if (!anchor.value) return unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_PRINTED_WITHOUT_VALUE', Object.assign({}, base, { location: { page: anchor.page, line: anchor.line } }));
+  if (!anchor.value) return finish(unresolvedRecord('OVERDUE_ACCOUNT', index, 'LABEL_PRINTED_WITHOUT_VALUE', Object.assign({}, base, { location: { page: anchor.page, line: anchor.line } })));
   const { normalized, reason } = normalizePrintedDate(anchor.value);
-  if (!normalized) return unresolvedRecord('OVERDUE_ACCOUNT', index, reason, Object.assign({}, base, { raw_value: anchor.value }));
+  if (!normalized) return finish(unresolvedRecord('OVERDUE_ACCOUNT', index, reason, Object.assign({}, base, { raw_value: anchor.value })));
 
-  return Object.assign(base, {
+  return finish(Object.assign(base, {
     record_index: index,
     kind: 'OVERDUE_ACCOUNT',
     kind_label: 'overdue account',
@@ -544,7 +611,7 @@ function buildOverdueRecord(entry, index) {
       }
       return facts;
     })()
-  });
+  }));
 }
 
 /* ------------------------------------------------------------------ extraction */
@@ -578,29 +645,147 @@ function kindSummary(kind, sectionPrinted, records) {
  * A printed AU money amount as a number, only when the whole value is a printed amount; otherwise undefined.
  */
 function amountOf(raw) {
-  if (raw === undefined || raw === null) return undefined;
-  const text = String(raw).replace(/[$,A\s]/g, '');
-  if (!/^\d+(\.\d+)?$/.test(text)) return undefined;
-  const value = Number(text);
-  return Number.isFinite(value) ? value : undefined;
+  return printedAmount(raw) ?? undefined;
 }
 
 const MONTH_CAPTIONS = Object.freeze(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
 
-/**
- * The REPAYMENT-HISTORY evidence this presentation prints as TEXT.
- *
- * THE GRID ITSELF IS NOT READABLE, AND THIS IS MEASURED, NOT ASSUMED. On the evidenced sample the grid is drawn
- * as VECTOR GRAPHICS: `pdftotext -bbox` on the grid page returns the month captions (y≈418) and the year
- * captions (y≈437/458/479) and then nothing until the legend (y≈500) — no text object exists where the cells
- * are — and `pdfimages -list` shows no grid image either. `pdfimages` alone therefore could not decide this and
- * is not what decides it. Because no cell is readable, NO cell is invented and no payment-history comparison can
- * run on this presentation.
- *
- * What IS printed as text — and is read here — is the period the grid covers (its printed month captions and
- * year labels) and the artifact's own legend block, kept verbatim with its page/line.
- */
-function repaymentHistoryEvidence(lines) {
+function xmlText(raw) {
+  const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+  return String(raw).replace(/&(amp|lt|gt|quot|apos|#x[0-9a-f]+|#\d+);/gi, (raw, entity) => {
+    if (entity[0] !== '#') return named[entity.toLowerCase()];
+    const code = entity[1].toLowerCase() === 'x' ? parseInt(entity.slice(2), 16) : Number(entity.slice(1));
+    return Number.isInteger(code) && code >= 0 && code <= 0x10ffff ? String.fromCodePoint(code) : raw;
+  });
+}
+
+/* Read only this PDF's positioned images. Their identity is compared with the
+   same account's own printed legend; no universal image-to-code map is used. */
+function repaymentGlyphs(model) {
+  const result = { pages: [], reason: null };
+  if (!model.path || !fs.existsSync(model.path)) return { pages: [], reason: 'SOURCE_FILE_NOT_AVAILABLE_FOR_GLYPH_READING' };
+  const digest = () => crypto.createHash('sha256').update(fs.readFileSync(model.path)).digest('hex');
+  let sourceDigest;
+  try { sourceDigest = digest(); }
+  catch { return { pages: [], reason: 'SOURCE_FILE_NOT_AVAILABLE_FOR_GLYPH_READING' }; }
+  if (!model.sha256 || sourceDigest !== String(model.sha256).toLowerCase()) {
+    return { pages: [], reason: 'SOURCE_FILE_DOES_NOT_MATCH_THE_NATIVE_TEXT_READING' };
+  }
+  const cached = GLYPH_CACHE.get(model);
+  if (cached && cached.path === model.path && cached.digest === sourceDigest) return cached.reading;
+  const tempRoot = path.resolve(os.tmpdir());
+  let directory;
+  try {
+    directory = fs.mkdtempSync(path.join(tempRoot, 'crp-au-repayment-'));
+    const prefix = path.join(directory, 'owned-report');
+    execFileSync('pdftohtml', ['-xml', '-hidden', '-zoom', '1', model.path, prefix], {
+      timeout: 30000, maxBuffer: 2 * 1024 * 1024, stdio: ['ignore', 'ignore', 'ignore'] });
+    if (digest() !== sourceDigest) throw new Error('SOURCE_CHANGED_WHILE_READING');
+    const xml = fs.readFileSync(`${prefix}.xml`, 'utf8');
+    const attributes = (source) => Object.fromEntries([...source.matchAll(/([\w]+)="([^"]*)"/g)].map((m) => [m[1], xmlText(m[2])]));
+    for (const page of xml.matchAll(/<page\b([^>]*)>([\s\S]*?)<\/page>/g)) {
+      const number = Number(attributes(page[1]).number);
+      const images = [];
+      for (const match of page[2].matchAll(/<image\b([^>]*)\/>/g)) {
+        const a = attributes(match[1]), file = path.resolve(directory, a.src || '');
+        const relative = path.relative(directory, file);
+        if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) continue;
+        const image = { page: number, x0: Number(a.left), y0: Number(a.top),
+          x1: Number(a.left) + Number(a.width), y1: Number(a.top) + Number(a.height) };
+        if (![image.x0, image.y0, image.x1, image.y1].every(Number.isFinite) || !fs.existsSync(file)) continue;
+        images.push({ ...image, hash: crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex') });
+      }
+      const text = [...page[2].matchAll(/<text\b([^>]*)>([\s\S]*?)<\/text>/g)].map((match) => {
+        const a = attributes(match[1]);
+        return { text: xmlText(match[2].replace(/<[^>]*>/g, '')), page: number,
+          x0: Number(a.left), y0: Number(a.top), x1: Number(a.left) + Number(a.width), y1: Number(a.top) + Number(a.height) };
+      });
+      result.pages.push({ page: number, images, text });
+    }
+  } catch {
+    result.reason = 'POSITIONED_REPAYMENT_GLYPH_READING_UNAVAILABLE';
+  } finally {
+    if (directory) {
+      const target = path.resolve(directory), relative = path.relative(tempRoot, target);
+      if (!relative || relative.startsWith('..') || path.isAbsolute(relative) || path.dirname(target) !== tempRoot
+        || !path.basename(target).startsWith('crp-au-repayment-')) throw new Error('UNSAFE_GLYPH_TEMP_CLEANUP_PATH');
+      fs.rmSync(target, { recursive: true, force: true });
+    }
+  }
+  GLYPH_CACHE.set(model, { path: model.path, digest: sourceDigest, reading: result });
+  return result;
+}
+
+function historyCells(model, lines) {
+  const empty = (reason) => ({ cells: [], reason });
+  if (!model || model.synthetic === true) return empty('NO_SOURCE_FILE_FOR_POSITIONED_REPAYMENT_GLYPHS');
+  const reading = repaymentGlyphs(model);
+  if (reading.reason) return empty(reading.reason);
+  const cells = [];
+  for (const number of [...new Set(lines.map((line) => line.page))]) {
+    const page = reading.pages.find((p) => p.page === number);
+    if (!page) continue;
+    const ownLines = lines.filter((line) => line.page === number);
+    const firstLine = ownLines[0];
+    const native = model.pages.find((p) => p.page === number);
+    const normalized = (text) => String(text).trim().replace(/\s+/g, ' ');
+    const ownLegends = ownLines.filter((line) => normalized(line.text) === 'Legend');
+    if (ownLegends.length !== 1 || ownLegends[0].trusted === false || !Number.isFinite(ownLegends[0].y0)
+      || firstLine.trusted === false || !Number.isFinite(firstLine.y0)) continue;
+    const boundary = page.text.find((t) => normalized(t.text) === 'Credit Provider'
+      && Math.abs(t.y0 - firstLine.y0) < 4 && Math.abs(t.x0 - firstLine.x0) < 4);
+    const legend = page.text.find((t) => normalized(t.text) === 'Legend' && Math.abs(t.y0 - ownLegends[0].y0) < 4);
+    if (!boundary || !legend) continue;
+    const monthLines = ownLines.filter((line) => normalized(line.text) === MONTH_CAPTIONS.join(' '));
+    if (monthLines.length !== 1 || !Number.isFinite(monthLines[0].y0) || monthLines[0].trusted === false) continue;
+    const months = (native.word_boxes || []).filter((word) => MONTH_CAPTIONS.includes(word.text)
+      && Math.abs(word.y0 - monthLines[0].y0) < 2 && word.y0 > boundary.y0 && word.y1 < legend.y0);
+    if (months.length !== 12 || new Set(months.map((word) => word.text)).size !== 12
+      || months.some((word) => word.trusted === false)) continue;
+    months.sort((a, b) => a.x0 - b.x0);
+    if (months.some((word, index) => word.text !== MONTH_CAPTIONS[index])) continue;
+    const years = (native.word_boxes || []).filter((word) => /^(19|20)\d{2}$/.test(word.text)
+      && word.y0 > Math.max(...months.map((m) => m.y1)) && word.y1 < legend.y0 && word.x1 < months[0].x0
+      && word.trusted !== false);
+    if (!years.length) continue;
+    const meanings = page.text.filter((t) => t.y0 > legend.y0 && t.y0 < legend.y0 + 100
+      && ownLines.some((line) => line.page === t.page && line.trusted !== false && Number.isFinite(line.y0)
+        && Math.abs(line.y0 - t.y0) < 8 && normalized(line.text).includes(normalized(t.text)))
+      && normalized(t.text) && !/^Equifax Australia|^Page\s|^Legend$/.test(normalized(t.text)));
+    const legendGlyphs = [];
+    for (const meaning of meanings) {
+      const candidates = page.images.filter((image) => image.x1 <= meaning.x0 + 3 && meaning.x0 - image.x1 < 24
+        && Math.abs((image.y0 + image.y1) / 2 - (meaning.y0 + meaning.y1) / 2) < 12);
+      if (candidates.length !== 1) continue;
+      legendGlyphs.push({ hash: candidates[0].hash, meaning: normalized(meaning.text),
+        location: { page: number, x0: candidates[0].x0, y0: candidates[0].y0,
+          x1: meaning.x1, y1: Math.max(meaning.y1, candidates[0].y1) } });
+    }
+    const distance = (a, b) => Math.abs(a - b);
+    for (const image of page.images.filter((i) => i.y0 > Math.max(...months.map((m) => m.y1)) - 12 && i.y1 < legend.y0)) {
+      const centerX = (image.x0 + image.x1) / 2, centerY = (image.y0 + image.y1) / 2;
+      const column = months.filter((m) => distance(centerX, (m.x0 + m.x1) / 2) < 12);
+      const row = years.filter((y) => distance(centerY, (y.y0 + y.y1) / 2) < 10);
+      if (column.length !== 1 || row.length !== 1) continue;
+      const matching = legendGlyphs.filter((g) => g.hash === image.hash);
+      const distinct = [...new Set(matching.map((g) => g.meaning))];
+      const meaning = distinct.length === 1 ? distinct[0] : null;
+      const yearLine = ownLines.find((line) => normalized(line.text) === row[0].text && Math.abs(line.y0 - row[0].y0) < 4);
+      const location = { page: number, line: yearLine ? yearLine.line : firstLine.line,
+        x0: image.x0, y0: image.y0, x1: image.x1, y1: image.y1,
+        geometry_source: 'pdftohtml -xml -zoom 1' };
+      cells.push({ period: `${row[0].text}-${String(MONTH_CAPTIONS.indexOf(column[0].text) + 1).padStart(2, '0')}`,
+        raw_period: `${column[0].text} ${row[0].text}`, code: meaning, meaning,
+        raw_symbol: { kind: 'SOURCE_IMAGE', sha256: image.hash, location },
+        legend: matching.length ? { raw_value: meaning, location: matching[0].location } : null,
+        uncertain: !meaning, reason: meaning ? null : 'GLYPH_NOT_UNIQUELY_DEFINED_BY_THIS_ACCOUNT_LEGEND', location });
+    }
+  }
+  return { cells, reason: cells.length ? null : 'NO_UNAMBIGUOUS_OWN_ACCOUNT_GRID_AND_LEGEND' };
+}
+
+/** Native period captions and the account's own legend associate its positioned graphical cells. */
+function repaymentHistoryEvidence(lines, model) {
   const months = [];
   const years = [];
   const legend = [];
@@ -622,12 +807,14 @@ function repaymentHistoryEvidence(lines) {
       legend.push({ text, location: { page: entry.page, line: entry.line } });
     }
   }
+  const reading = historyCells(model, lines);
   return {
     period_months: months.map((m) => m.month),
     period_years: years.map((y) => y.year),
     legend_lines: legend,
-    cells_readable: false,
-    reason: 'THE_REPAYMENT_HISTORY_CELLS_ARE_DRAWN_AS_VECTOR_GRAPHICS_CARRYING_NO_TEXT_OBJECT',
+    cells: reading.cells,
+    cells_readable: reading.cells.length > 0 && reading.cells.every((cell) => !cell.uncertain),
+    reason: reading.reason || (reading.cells.some((cell) => cell.uncertain) ? 'SOME_GLYPHS_NOT_DEFINED_BY_OWN_ACCOUNT_LEGEND' : null),
     locations: {
       first_month: months.length ? months[0].location : null,
       first_year: years.length ? years[0].location : null
@@ -649,7 +836,7 @@ function readLiabilityFields(lines) {
     const label = ordered.find((candidate) => marker === candidate
       || (marker.startsWith(candidate) && /\s/.test(marker.charAt(candidate.length))));
     if (!label) continue;
-    fields.push({ label, page: entry.page, line: entry.line, value: marker.slice(label.length).trim() });
+    fields.push({ ...entry, label, value: marker.slice(label.length).trim() });
   }
   return fields;
 }
@@ -663,7 +850,9 @@ function liField(fields, label) {
     present: true,
     count: hits.length,
     value: hits[0].value || null,
-    location: { page: hits[0].page, line: hits[0].line, label },
+    location: { page: hits[0].page, line: hits[0].line, label,
+      ...(Number.isFinite(hits[0].x0) ? { x0: hits[0].x0, y0: hits[0].y0, x1: hits[0].x1, y1: hits[0].y1 } : {}),
+      ...(hits[0].trusted === false ? { trusted: false } : {}) },
     reason: hits[0].value ? (hits.length > 1 ? 'LABEL_PRINTED_MORE_THAN_ONCE_IN_RECORD' : null) : 'LABEL_PRINTED_WITHOUT_VALUE'
   };
 }
@@ -689,14 +878,14 @@ function locateLiabilityRecords(model) {
       found.push({
         sort: { page: region.lines[start].page, line: region.lines[start].line },
         boundary: region.lines[start],
-        lines: region.lines.slice(start, end)
+        lines: region.lines.slice(start, end).filter((line) => line.page === region.lines[start].page)
       });
     });
   }
   return { records: found, anomalies };
 }
 
-function buildLiabilityRecord(entry, index) {
+function buildLiabilityRecord(entry, index, model) {
   const fields = readLiabilityFields(entry.lines);
   const boundary = entry.lines[0];
   const section = 'Consumer Credit Liability Information';
@@ -710,7 +899,7 @@ function buildLiabilityRecord(entry, index) {
   const status = liField(fields, 'Current Repayment Status');
   const accountType = liField(fields, 'Type Of Account');
   const creditLimit = liField(fields, 'Credit Limit');
-  const repaymentHistory = repaymentHistoryEvidence(entry.lines);
+  const repaymentHistory = repaymentHistoryEvidence(entry.lines, model);
 
   const openedDate = opened.value ? normalizeDateWithTrailingClassification(opened.value) : { normalized: null, reason: opened.reason };
   const closedDate = closed.value ? normalizeDateWithTrailingClassification(closed.value) : { normalized: null, reason: closed.reason };
@@ -725,8 +914,7 @@ function buildLiabilityRecord(entry, index) {
   if (closedDate.precision) facts['liability.closedDatePrecision'] = closedDate.precision;
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (AU slice): the two facts this record prints as a labelled value — the
      credited provider's name and the credit limit — reach the shared fact vocabulary, each with its raw reading.
-     The repayment-history EVIDENCE the record prints as text is recorded; NO cell is emitted, because the cells
-     are vector graphics and nothing readable exists to put in them. */
+     Each positioned repayment glyph keeps its own period, account and printed legend meaning. */
   if (provider.value) facts['account.reported_identity'] = provider.value;
   /* BATCH-23 (AU slice): the printed `Account Number` is the BUREAU'S OWN LISTING REFERENCE for this entry. It is
      mapped as a reference only — never as a masked account identifier, and never treated as identifying the
@@ -742,6 +930,39 @@ function buildLiabilityRecord(entry, index) {
     facts['account.creditLimitRaw'] = creditLimit.value;
     const limit = amountOf(creditLimit.value);
     if (limit !== undefined) facts['account.creditLimit'] = limit;
+  }
+  if (repaymentHistory.cells.length) facts['account.paymentHistoryCells'] = repaymentHistory.cells;
+  const reopenedDate = reopened.value ? normalizeDateWithTrailingClassification(reopened.value) : { normalized: null, reason: reopened.reason };
+  if (reopenedDate.normalized && !reopened.reason && reopened.location.trusted !== false) facts['liability.reopenedDate'] = reopenedDate.normalized;
+  // Repayment performance is retained literally; it is not a lifecycle status.
+  if (status.value && !status.reason && status.location.trusted !== false) facts['liability.currentRepaymentStatus'] = status.value;
+  const printedReading = (field, normalized, normalizationReason) => ({ label: field.location && field.location.label,
+    raw: field.value, normalized: normalized ?? null, caption_count: field.count,
+    status: field.value && normalized != null && !field.reason && !normalizationReason ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: field.reason || normalizationReason || null, location: field.location,
+    trusted: !(field.location && field.location.trusted === false) });
+  const printed = {};
+  for (const label of LIABILITY_LABELS) {
+    const field = liField(fields, label);
+    printed[label] = printedReading(field, field.value);
+  }
+  printed.credit_provider = printedReading(provider, provider.value);
+  printed.account_type = printedReading(accountType, accountType.value && accountType.value.toUpperCase());
+  printed.opened_date = printedReading(opened, openedDate.normalized, openedDate.reason);
+  printed.closed_date = { ...printedReading(closed, closedDate.normalized, closedDate.reason),
+    comparison_anchor: closedDate.normalized || null, anchor_precision: closedDate.precision || 'DAY' };
+  printed.re_opened_date = printedReading(reopened, reopenedDate.normalized, reopenedDate.reason);
+  printed.current_repayment_status = printedReading(status, status.value);
+  printed.credit_limit = printedReading(creditLimit, amountOf(creditLimit.value), creditLimit.value && amountOf(creditLimit.value) === undefined ? 'VALUE_MALFORMED_PRINTED_AMOUNT' : null);
+  const factSources = {};
+  for (const [field, reading] of Object.entries({ 'account.reported_identity': printed.credit_provider,
+    'account.type': printed.account_type, 'account.creditLimit': printed.credit_limit,
+    'liability.openedDate': printed.opened_date, 'liability.closedDate': printed.closed_date,
+    'liability.reopenedDate': printed.re_opened_date, 'liability.currentRepaymentStatus': printed.current_repayment_status,
+    'liability.accountReference': printed['Account Number'] })) {
+    factSources[field] = { source_field: reading.label, raw_value: reading.raw, normalized_value: reading.normalized,
+      status: reading.status, reason: reading.reason, trusted: reading.trusted, caption_count: reading.caption_count,
+      location: reading.location };
   }
 
   return {
@@ -762,46 +983,8 @@ function buildLiabilityRecord(entry, index) {
     },
     /* What the record PRINTS, each with its own presence distinction. A label printed without a value and a
        label not printed at all are different readings and are never collapsed. */
-    printed: {
-      credit_provider: provider.value,
-      account_type: accountType.value,
-      opened_date: {
-        raw: opened.value, normalized: openedDate.normalized,
-        status: openedDate.normalized ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
-        reason: openedDate.reason || null, location: opened.location
-      },
-      closed_date: {
-        raw: closed.value, normalized: closedDate.normalized,
-        status: closedDate.normalized ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
-        reason: closedDate.reason || null, location: closed.location,
-        /* GAP-INGEST-006: the comparison anchor is the month itself; no day is invented. */
-        comparison_anchor: closedDate.normalized || null,
-        anchor_precision: closedDate.precision || 'DAY'
-      },
-      re_opened_date: {
-        raw: reopened.value, status: reopened.value ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
-        reason: reopened.reason || null, location: reopened.location
-      },
-      current_repayment_status: {
-        raw: status.value, status: status.value ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
-        reason: status.reason || null, location: status.location
-      },
-      credit_limit: {
-        raw: creditLimit.value, status: creditLimit.value ? FACT_STATUS.RESOLVED : FACT_STATUS.EXTRACTION_UNRESOLVED,
-        reason: creditLimit.reason || null, location: creditLimit.location
-      },
-      /* The repayment-history evidence the artifact prints as TEXT (its period captions and its own legend).
-         The CELLS are vector graphics and are not read; `cells_readable` states that rather than leaving it out. */
-      repayment_history: {
-        period_months: repaymentHistory.period_months,
-        period_years: repaymentHistory.period_years,
-        legend_lines: repaymentHistory.legend_lines,
-        cells_readable: repaymentHistory.cells_readable,
-        reason: repaymentHistory.reason,
-        locations: repaymentHistory.locations
-      }
-    },
-    facts
+    printed: { ...printed, repayment_history: repaymentHistory },
+    facts, fact_sources: factSources
   };
 }
 
@@ -840,7 +1023,7 @@ function extract(model, admission) {
   const records = merged.map((entry, position) => {
     if (entry.kind === 'CREDIT_ENQUIRY') return buildEnquiryRecord(entry, position + 1);
     if (entry.kind === 'OVERDUE_ACCOUNT') return buildOverdueRecord(entry, position + 1);
-    return buildLiabilityRecord(entry, position + 1);
+    return buildLiabilityRecord(entry, position + 1, model);
   });
 
   const enquiries = records.filter((r) => r.kind === 'CREDIT_ENQUIRY');
