@@ -121,6 +121,7 @@ async function run(t, check) {
   check.equal(cells[0]?.raw_period, 'Jan 2015', 'the period keeps the printed month/year');
   check.ok(cells[0]?.raw_symbol?.sha256 && cells[0].location.x0 != null && cells[0].legend?.location.page === 3,
     'cell glyph and own legend retain exact geometry');
+  check.equal(cells[0]?.legend?.raw_symbol?.sha256, cells[0]?.raw_symbol?.sha256, 'the retained own legend glyph proves the exact image match');
   check.equal(offered(ordinary.extraction).findings.some((issue) => [HISTORY, DATES].includes(issue.check_id)), false,
     'a consistent normal native history/date reading offers no false breach');
   for (const [field, label, raw, value] of [['account.reported_identity', 'Credit Provider', 'Cedar Bank', 'Cedar Bank'],
@@ -216,8 +217,12 @@ async function run(t, check) {
   const found = offered(positive.extraction), issue = found.findings.find((i) => i.check_id === HISTORY);
   check.ok(issue?.eligible === true, 'two own cells disagreeing for the same printed period produce a selectable issue');
   check.equal(found.public.find((i) => i.issue_id === issue?.issue_id)?.consumer_label, 'VIOLATION', 'the history breach uses VIOLATION');
-  check.ok(issue?.rule_assessment?.required_facts?.length === 2 && issue.rule_assessment.required_facts.every((f) => f.source?.location?.page === 3),
-    'the shared checklist assessment uses the two exact printed cell sources');
+  check.ok(issue?.rule_assessment?.required_facts?.length === 4 && issue.rule_assessment.required_facts.every((f) => f.source?.location?.page === 3),
+    'the shared checklist assessment uses both exact cell and own-legend sources');
+  check.equal(issue?.rule_assessment?.required_facts?.filter((f) => f.field === 'account.paymentHistoryCells')
+    .every((f) => f.source.raw_value === 'Graphical repayment symbol'), true, 'a graphical symbol is not misrepresented as printed cell text');
+  check.deepEqual(issue?.rule_assessment?.required_facts?.filter((f) => f.field === 'account.paymentHistoryLegend').map((f) => f.source.raw_value),
+    [ON_TIME, OVERDUE], 'the separate legend facts retain the actual printed meanings');
   const differentPeriods = read(t, [{ years: ['2014', '2015'], contradiction: true }]).extraction;
   check.equal(offered(differentPeriods).findings.some((i) => i.check_id === HISTORY), false, 'different years may legitimately report different repayment performance');
   check.equal(offered(read(t, [{ years: ['2015', '2015'] }]).extraction).findings.some((i) => i.check_id === HISTORY), false,
@@ -245,6 +250,32 @@ async function run(t, check) {
     check.equal(downloaded.status, 200, 'the approved history packet downloads');
     check.ok(downloaded.text.includes('Cedar Bank') && downloaded.text.includes('Jan 2015') && downloaded.text.includes(ON_TIME)
       && downloaded.text.includes(OVERDUE), 'the downloaded packet states both printed meanings and their own disputed period/account');
+    check.ok(downloaded.text.includes('Graphical repayment symbol') && downloaded.text.includes('Report-defined repayment symbol meaning'),
+      'the downloaded packet locates the graphical cell and its separate printed legend honestly');
+    check.equal(downloaded.text.includes(positive.extraction.records[0].facts['account.paymentHistoryCells'][0].raw_symbol.sha256), false,
+      'the private image-match hash is not consumer packet wording');
+    for (const [name, change] of [
+      ['own legend geometry', (cell) => { cell.legend.location.x0 += 1; }],
+      ['own legend glyph', (cell) => { cell.legend.raw_symbol.sha256 = '0'.repeat(64); }],
+      ['cell glyph', (cell) => { cell.raw_symbol.sha256 = '0'.repeat(64); }]
+    ]) {
+      const row = t.service.store.state().results.find((r) => r.case_id === caseId);
+      const saved = JSON.parse(JSON.stringify(row.extraction.records[0].facts['account.paymentHistoryCells']));
+      t.service.store.update((state) => {
+        const current = state.results.find((r) => r.case_id === caseId);
+        change(current.extraction.records[0].facts['account.paymentHistoryCells'][0]);
+      });
+      const changedView = (await t.request('GET', `/api/cases/${caseId}/packet`, { token: owner.token })).json.view;
+      check.equal(changedView.packet.approval_stale, true, `${name} is material to the approved packet`);
+      const staleDownload = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
+      check.equal(staleDownload.status, 409, `changed ${name} requires another review before download`);
+      check.equal(staleDownload.json.error.code, 'PACKET_APPROVAL_STALE', `${name} invalidates the existing approval`);
+      t.service.store.update((state) => {
+        state.results.find((r) => r.case_id === caseId).extraction.records[0].facts['account.paymentHistoryCells'] = saved;
+      });
+      check.equal((await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token })).status, 200,
+        'restoring identical material source evidence restores the approved version');
+    }
   }
 
   const sample = process.env.CRP_AU_EQUIFAX_PUBLIC_SPECIMEN || path.join(ROOT, 'SOURCE_CAPTURES', 'REPORT_FORMAT_BASELINE_2026-09-30', 'PUB-012.pdf');

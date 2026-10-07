@@ -757,9 +757,14 @@ function historyCells(model, lines) {
       const candidates = page.images.filter((image) => image.x1 <= meaning.x0 + 3 && meaning.x0 - image.x1 < 24
         && Math.abs((image.y0 + image.y1) / 2 - (meaning.y0 + meaning.y1) / 2) < 12);
       if (candidates.length !== 1) continue;
+      const captionLine = ownLines.find((line) => line.trusted !== false && Math.abs(line.y0 - meaning.y0) < 8
+        && normalized(line.text).includes(normalized(meaning.text)));
       legendGlyphs.push({ hash: candidates[0].hash, meaning: normalized(meaning.text),
-        location: { page: number, x0: candidates[0].x0, y0: candidates[0].y0,
-          x1: meaning.x1, y1: Math.max(meaning.y1, candidates[0].y1) } });
+        location: { page: number, line: captionLine.line, x0: candidates[0].x0, y0: candidates[0].y0,
+          x1: meaning.x1, y1: Math.max(meaning.y1, candidates[0].y1) },
+        raw_symbol: { kind: 'SOURCE_IMAGE', sha256: candidates[0].hash,
+          location: { page: number, line: captionLine.line, x0: candidates[0].x0, y0: candidates[0].y0,
+            x1: candidates[0].x1, y1: candidates[0].y1, geometry_source: 'pdftohtml -xml -zoom 1' } } });
     }
     const distance = (a, b) => Math.abs(a - b);
     for (const image of page.images.filter((i) => i.y0 > Math.max(...months.map((m) => m.y1)) - 12 && i.y1 < legend.y0)) {
@@ -777,7 +782,8 @@ function historyCells(model, lines) {
       cells.push({ period: `${row[0].text}-${String(MONTH_CAPTIONS.indexOf(column[0].text) + 1).padStart(2, '0')}`,
         raw_period: `${column[0].text} ${row[0].text}`, code: meaning, meaning,
         raw_symbol: { kind: 'SOURCE_IMAGE', sha256: image.hash, location },
-        legend: matching.length ? { raw_value: meaning, location: matching[0].location } : null,
+        legend: matching.length ? { raw_value: meaning, location: matching[0].location,
+          raw_symbol: matching[0].raw_symbol } : null,
         uncertain: !meaning, reason: meaning ? null : 'GLYPH_NOT_UNIQUELY_DEFINED_BY_THIS_ACCOUNT_LEGEND', location });
     }
   }
