@@ -141,14 +141,12 @@ function banner() {
   const inDemo = state.view && state.view.result && state.view.result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
   if (inDemo) {
     node.className = 'banner demo';
-    node.innerHTML = '<strong>INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT.</strong> ' +
-      'The content below came from a synthetic model built in memory. It evidences no report format, it counts ' +
-      'as nothing, and no response draft can follow from it.';
+    node.innerHTML = '<strong>INTERACTIVE DEMONSTRATION</strong> These results are examples, not results from your report. You cannot create a dispute packet from this sample.';
   } else {
     node.className = 'banner';
     node.innerHTML = surface && surface.preview_mode
       ? '<strong>Staging preview · test payments only.</strong> Use test cards and public samples, never real cards or private reports.'
-      : '<strong>Preview build · not released for consumer use.</strong> Supported reports and limits are explained below. ' + esc(surface && surface.entitlement ? surface.entitlement.plain : 'Payment status is unavailable; no payment provider is connected until configuration is reported.');
+      : '<strong>Preview · not open to the public yet.</strong> Payments are unavailable in this preview.';
   }
 }
 
@@ -156,6 +154,12 @@ function banner() {
  * B4: what this account may do, and what the payment capability actually is. Both come from the service, so the
  * page can never claim more access than the service will honour.
  */
+function readableDate(value) {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) : '';
+}
+function planName(code) { return ({ report_once: 'One report', monthly: 'Monthly subscription', annual: 'Yearly subscription' })[code] || 'Subscription'; }
+function paymentSentence(pay) { return pay?.is_a_working_payment ? 'You pay only after choosing a plan and completing checkout.' : 'Payments are unavailable right now.'; }
 function access() {
   const ent = state.entitlement || null;
   const pay = state.payment || null;
@@ -163,16 +167,16 @@ function access() {
   const parts = [];
   if (ent) {
     parts.push(ent.entitled
-      ? `<strong>Your access:</strong> active${ent.plan_code ? ` (${esc(ent.plan_code)})` : ''}${ent.expires_at ? `, until ${esc(ent.expires_at)}` : ''}.`
+      ? `<strong>Your plan:</strong> ${esc(planName(ent.plan_code))}${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
       : 'Upload and check your report for free. Unlock the full assessment with a one-time purchase, or choose a subscription for dispute packets and full access.');
   } else {
-    parts.push('Access state is not reported by this build.');
+    parts.push('Your plan details are unavailable. Try again.');
   }
-  parts.push(pay ? `<strong>Payment:</strong> ${esc(pay.plain)}` : 'Payment capability is not reported by this build.');
+  parts.push(esc(paymentSentence(pay)));
   /* A credit message appears only where it bears on a purchase decision (the billing view), never as a
      standing "not eligible" line on the report screen. */
   if (credit && credit.eligible) {
-    parts.push(`<strong>Upgrade credit:</strong> CAD ${(credit.credit_cents / 100).toFixed(2)} off your first monthly or annual invoice${credit.expires_at ? `, expiring ${esc(credit.expires_at)}` : ''}.`);
+    parts.push(`<strong>Upgrade credit:</strong> CAD ${(credit.credit_cents / 100).toFixed(2)} off your first monthly or yearly bill${credit.expires_at ? `, until ${esc(readableDate(credit.expires_at))}` : ''}.`);
   }
   return `<div class="note">${parts.join('<br>')}</div>`;
 }
@@ -723,20 +727,19 @@ function renderReport(panel) {
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
     <button class="primary" id="upload">Upload selected files</button>
     <button class="secondary" id="retry-upload" ${batch.some(x => x.status === 'pending') ? '' : 'disabled'}>Retry pending files</button>
-    <div class="note">PDF, PNG and JPEG: 10 MB per file, 8 files per case, 40 MB stored per account.
+    <details><summary>File limits and help</summary><div class="note">PDF, PNG and JPEG: 10 MB per file, 8 files per report, 40 MB stored per account.
     Images are limited to 25 million pixels and 12,000 pixels per side. Scanned PDFs are read up to 40 pages per file; split longer scans into complete page ranges of at most 40 pages within the 8-file limit. HEIC/HEIF, TIFF and ZIP are not supported; export images as PNG/JPEG or combine them into a PDF.
     For an oversized report, export a smaller readable PDF or split at page boundaries into parts under 10 MB, keeping every page in order and the report header and date with each part.
     For more than 8 screenshots, combine pages into a PDF. Delete an unneeded case to free account storage.
-    Plausible bureau reports are read where possible; recognition does not prove authenticity or complete extraction.</div>
+    Keep the report header, date and every page.</div></details>
     <div id="upload-progress" role="status" aria-live="polite">${batch.map(x => esc(x.file.name) + ': ' + esc(x.message || x.status)).join('<br>')}</div>
     <h2>Files on this case</h2>
     ${files.length ? files.map(fileCard).join('') : '<p class="lede">No file has been uploaded for this case yet.</p>'}
-    <h2>Exercise the experience with fictional input</h2>
-    <p class="lede">This builds a synthetic model in memory. It is labelled, it evidences no report format, and it
-    counts as nothing. It exists so the interface can be reviewed.</p>
-    <label for="scenario">Demonstration scenario</label>
+    <h2>Try a sample report</h2>
+    <p class="lede">These results are examples, not results from your report.</p>
+    <label for="scenario">Sample</label>
     <select id="scenario">${(view.demonstration_scenarios || []).map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
-    <button class="secondary" id="demo">Run the demonstration</button>`;
+    <button class="secondary" id="demo">Try the sample</button>`;
 
   const caseId = state.caseId, ensureAccount = accountContext(), sequence = renderSequence;
   const ensureReport = () => { ensureAccount(); if (state.caseId !== caseId || state.step !== STEP.REPORT || sequence !== renderSequence) throw cancelledAction(); };
@@ -806,13 +809,11 @@ function fileCard(file) {
         ? `<p class="evidence">Recognised as <b>${esc(file.recognised_as || 'a bureau credit report')}</b> and stored for this case.</p>`
         : '<p class="evidence">Accepted and stored for this case. We read it in the general way and use the facts we could read from it.</p>')
       : `<p class="evidence">${esc(refusalMessage(extraction.refusal_reason || file.refusal_reason))}</p>`);
-  const failed = (file.format_predicates || []).filter((p) => !p.passed).map((p) => `<li>${esc(p.detail)}</li>`);
   return `<div class="obs">
     <span class="pill ${file.demonstration ? 'demo' : ''}">${file.demonstration ? 'DEMONSTRATION INPUT — NOT A REPORT' : 'STORED PRIVATELY'}</span>
     <h3>${esc(file.original_filename)}</h3>
-    <p class="evidence">${esc(file.stored_bytes)} bytes stored · container: <b>${esc(file.container)}</b></p>
+    <p class="evidence">File size: ${esc((Number(file.stored_bytes || 0) / 1024 / 1024).toFixed(2))} MB.</p>
     ${file.demonstration ? '' : detection}
-    ${failed.length ? `<details><summary>What the format check measured</summary><ul class="plain">${failed.join('')}</ul></details>` : ''}
   </div>`;
 }
 
@@ -926,7 +927,7 @@ function oneTimeNextStepsBlock() {
 }
 
 function renderResults(panel) {
-  if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
+  if (!state.view) { panel.innerHTML = `${notices()}<h1>Upload your report first</h1>`; return; }
   const view = state.view;
   const access = view.assessment_access || {};
   const result = view.result;
@@ -935,12 +936,12 @@ function renderResults(panel) {
   panel.innerHTML = `
     <h1>Results</h1>
     ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
-    <p class="lede">Case for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
+    <p class="lede">Your report for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
     ${notices()}
     <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
     ${summary
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
-      : '<div class="note">No result set exists for this case yet. Run the checks above to see your results.</div>'}
+      : '<div class="note">Your report has not been checked yet. Select Check my report.</div>'}
     ${summary && access.complete_assessment && result && !demo
       ? (access.dispute_packet ? `${clarificationBlock(view)}${(result.issues || []).some(issue => issue.eligible) ? '<button class="primary" id="create-packet">Create my dispute packet</button>' : ''}<button class="secondary" id="download-assessment">Download my assessment</button>` : oneTimeNextStepsBlock())
       : ''}`;
@@ -965,7 +966,7 @@ function resultBlock(result, demo) {
   if (!demo) {
     const checklist = (result.common_error_checklist || []).map((item) =>
       `<li>${esc(item.label)}</li>`).join('');
-    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We use this checklist for every jurisdiction. A VIOLATION appears when the applicable rule and your report support a breach. A jurisdiction-specific statute may provide additional support for a listed check.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
+    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We check for common reporting errors using the rules for where you live. When your report breaks a rule we check, we label the issue VIOLATION.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
@@ -1024,7 +1025,7 @@ function issuesSection(result) {
   const cards = issues.map((i) => `
     <div class="obs issue">
       <span class="pill potential">${issueLabel(i)}</span>
-      ${i.account_identity && i.account_identity.name ? `<p class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></p>` : ''}
+      ${i.account_identity && i.account_identity.name ? `<p class="evidence">Account: <b>${esc(i.account_identity.name)}</b></p>` : ''}
       <h3>${esc(i.explanation)}</h3>
       <p class="evidence">Why it merits attention: ${esc(i.uncertainty)}</p>
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
@@ -1195,7 +1196,7 @@ function wireClarification(panel, view) {
 /* ------------------------------------------------------------------ step 4: review and download */
 
 function renderReview(panel) {
-  if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
+  if (!state.view) { panel.innerHTML = `${notices()}<h1>Upload your report first</h1>`; return; }
   const view = state.view;
   /* OWNER-PURCHASE-FLOW-001: the dispute packet is a subscriber feature. A one-time unlock gives the complete
      assessment and its download; packet selection, correspondence, approval and download need a subscription. */
@@ -1205,9 +1206,7 @@ function renderReview(panel) {
       <h1>Review and download</h1>
       <p class="lede">Dispute packets are part of a subscription.</p>
       ${notices()}
-      <div class="note">Your one-time unlock gives you the complete assessment of this report and its download.
-      Selecting issues, reviewing and editing the correspondence, approving the packet and downloading it are part
-      of a subscription.</div>
+      <div class="note">A one-time purchase includes the full assessment and its download. A subscription also includes dispute packets.</div>
       <button class="primary" id="go-billing">See subscription plans</button>`;
     el('go-billing').onclick = () => run(async () => { state.step = STEP.BILLING; });
     return;
@@ -1295,7 +1294,7 @@ function renderPacketBlock(pv) {
     <h2>Correction packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
-    <h3>Who this correspondence goes to</h3>
+    <h3>Where to mail your letter</h3>
     <p class="evidence">Check the bureau address. Choose the documents you will mail with your letter.</p>
     ${packetSupportingDocuments(pv)}
     <div class="row">
@@ -1306,18 +1305,18 @@ function renderPacketBlock(pv) {
       <label for="packet-reference">Your own reference (optional)</label>
       <input id="packet-reference" value="${esc(correspondence.account_reference || '')}">
     </div>
-    ${missing.length ? `<p class="note stop">Add ${missing.map(correspondenceFieldLabel).join(' and ')} before approving: correspondence without them cannot be sent.</p>` : ''}
+    ${missing.length ? `<p class="note stop">Add ${missing.map(correspondenceFieldLabel).join(' and ')} before you approve the letter.</p>` : ''}
     <label for="packet-wording">Your own words (optional)</label>
     <textarea id="packet-wording" placeholder="Add anything else you want the bureau to know.">${esc(packet.wording || '')}</textarea>
     <div class="row">
       <button class="primary" id="packet-save">Save and review packet</button>
     </div>
-    ${packet.approved ? `<p class="evidence">Approved version: <b>${esc(packet.approved_version)}</b></p>` : ''}
+    ${packet.approved ? '<p class="evidence">Your packet is approved.</p>' : ''}
     ${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}
     <div class="packet-review">
       <h3>Read your full packet</h3>
       <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read the letter and report facts below. Check your chosen documents too.' : 'Choose at least one issue, then select Save and review packet.'}</p>
-      <pre id="packet-preview">${esc(packet.correspondence_preview || 'Select at least one issue to see the correspondence and its evidence.')}</pre>
+      <pre id="packet-preview">${esc(packet.correspondence_preview || 'Choose at least one issue to see the letter and report facts.')}</pre>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${packet.selected_count && packet.correspondence_preview ? '' : 'disabled'}>I have read this packet and checked its attachments</label>
       <button class="primary" id="packet-approve" disabled>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print letter and evidence</button>
@@ -1473,17 +1472,25 @@ function historyOption(r) {
   return `${bureau} · ${date}`;
 }
 
+function readableFactLabel(field) {
+  return ({ 'account.masked_identifier': 'Account number', 'account.reported_identity': 'Account name',
+    'account.first_delinquency': 'First missed payment date', 'account.last_payment': 'Last payment date',
+    'account.closed_date': 'Closed date', 'account.opened_date': 'Opened date', 'account.status': 'Account status',
+    'account.current_balance': 'Current balance', 'account.past_due_amount': 'Past-due amount',
+    'account.responsibility': 'Who is responsible', 'report.reference_date': 'Report date' })[field] ||
+    String(field || 'Report field').replace(/^(account|report|history)\./, '').replace(/[_.]/g, ' ');
+}
 function comparisonFactList(issue) {
   const facts = (issue && issue.source_facts) || [];
   if (!facts.length) return '';
   return facts.map((f) => {
-    if (f.omitted_value) return `<span class="evidence">${esc(f.source_field)}: caption printed without a value.</span>`;
+    if (f.omitted_value) return `<span class="evidence">${esc(readableFactLabel(f.source_field))}: label printed without a value.</span>`;
     if (f.privacy_redacted) return `<span class="evidence">Creditor identity matched from the report.</span>`;
     if (f.definition_source) {
       const source = f.definition_source;
-      return `<span class="evidence">${source.kind === 'HISTORY_PERIOD' ? 'Published history-period definition' : 'Published code definition'}: ${esc(f.source_field)} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)} (version ${esc(source.version)}): ${esc(source.url)}</span>`;
+      return `<span class="evidence">${source.kind === 'HISTORY_PERIOD' ? 'What the payment period means' : 'What the payment code means'}: ${esc(readableFactLabel(f.source_field))} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)}: ${esc(source.url)}</span>`;
     }
-    return `<span class="evidence">${esc(f.source_field || 'field')}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → normalized <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
+    return `<span class="evidence">${esc(readableFactLabel(f.source_field))}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → read as <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
   }).join('');
 }
 
@@ -1770,8 +1777,8 @@ function renderBillingView(data) {
   const plansList = (data.plan_catalog && data.plan_catalog.plans) || [];
 
   const accessLine = ent.entitled
-    ? `You hold a recorded purchase: state <b>${esc(ent.state)}</b>${ent.plan_code ? ` (${esc(ent.plan_code)})` : ''}${ent.expires_at ? `, access until ${esc(ent.expires_at)}` : ''}.`
-    : 'No active purchase is recorded against this account. Reading what you already have, and deleting it, stay available.';
+    ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
+    : 'You have no active paid plan. You can still read and delete your saved files.';
 
   const renewalLine = ent.access_via === 'ONE_TIME_CREDIT'
     ? 'This purchase is one-time. It does not renew, and no recurring payment will be taken.'
@@ -1779,7 +1786,7 @@ function renderBillingView(data) {
       ? (ent.cancel_at_period_end
         ? 'Renewal is cancelled. Access continues until your recorded expiry.'
         : `This purchase renews automatically (${esc(ent.plan_code || 'subscription')}) while active.`)
-      : 'No recurring purchase is recorded.';
+      : 'You have no renewing subscription.';
 
   const cancelBlock = ent.entitled && ent.access_via === 'SUBSCRIPTION'
     ? (ent.cancel_at_period_end
@@ -1788,7 +1795,7 @@ function renderBillingView(data) {
     : '';
 
   const creditLine = credit.eligible
-    ? `An upgrade credit of <b>CAD ${(credit.credit_cents / 100).toFixed(2)}</b> is available toward a first monthly or annual invoice${credit.expires_at ? `, expiring ${esc(credit.expires_at)}` : ''}.`
+    ? `You can save <b>CAD ${(credit.credit_cents / 100).toFixed(2)}</b> on your first subscription bill${credit.expires_at ? `, until ${esc(readableDate(credit.expires_at))}` : ''}.`
     : 'No upgrade credit is currently available.';
 
   const planCards = plansList.map((p) => `
@@ -1807,7 +1814,7 @@ function renderBillingView(data) {
     <h3>Plans and prices</h3>
     <p class="evidence">Prices are in CAD and shown before you buy. A one-time purchase does not renew. A subscription renews automatically until you cancel it, and cancelling stops the next charge while your recorded access continues to its expiry.</p>
     ${planCards}
-    <p class="evidence">${esc(pay.plain || data.plain || '')}</p>
+    <p class="evidence">${esc(paymentSentence(pay))}</p>
     <h3>Upgrade credit</h3>
     <p class="evidence">${creditLine}</p>`;
 
