@@ -455,6 +455,7 @@ async function runConsumerPath(service, check, evidence) {
   const correspondence = await service.request('POST', `/api/cases/${paymentCaseId}/packet/correspondence`,
     { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
   check.equal(correspondence.status, 200, 'and review the correspondence with fictional contact details');
+  await service.preparePostalPacket(actor, paymentCaseId);
   const paymentApproval = await service.request('POST', `/api/cases/${paymentCaseId}/packet/approve`, { token: actor.token });
   check.equal(paymentApproval.status, 200, 'the selected correspondence can be approved');
   const paymentDownload = await service.request('GET', `/api/cases/${paymentCaseId}/packet-download`, { token: actor.token });
@@ -484,6 +485,7 @@ async function runConsumerPath(service, check, evidence) {
   check.equal((await service.request('POST', `/api/cases/${onId}/packet/correspondence`,
     { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
     200, 'reviews the correspondence');
+  await service.preparePostalPacket(actor, onId);
   check.equal((await service.request('POST', `/api/cases/${onId}/packet/approve`, { token: actor.token })).status,
     200, 'approves that selection');
   check.equal((await service.request('GET', `/api/cases/${onId}/packet-download`, { token: actor.token })).status,
@@ -514,6 +516,7 @@ async function runConsumerPath(service, check, evidence) {
   check.equal((await service.request('POST', `/api/cases/${mbId}/packet/correspondence`,
     { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
     200, 'reviews the Manitoba correspondence');
+  await service.preparePostalPacket(actor, mbId);
   check.equal((await service.request('POST', `/api/cases/${mbId}/packet/approve`, { token: actor.token })).status,
     200, 'approves the Manitoba selection');
   check.equal((await service.request('GET', `/api/cases/${mbId}/packet-download`, { token: actor.token })).status,

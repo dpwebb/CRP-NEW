@@ -41,6 +41,7 @@ async function run(t,check){
  check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/correspondence`,
   {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
   200,'Ontario correspondence is reviewed');
+ await t.preparePostalPacket(actor, ca.case_id);
  check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/approve`,{token:actor.token})).status,
   200,'the Ontario selection is approved');
  check.equal((await t.request('GET',`/api/cases/${ca.case_id}/packet-download`,{token:actor.token})).status,
@@ -61,6 +62,7 @@ async function run(t,check){
  check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/correspondence`,
   {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
   200,'Manitoba correspondence is reviewed');
+ await t.preparePostalPacket(actor, mb.case_id);
  check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/approve`,{token:actor.token})).status,
   200,'the Manitoba selection is approved');
  check.equal((await t.request('GET',`/api/cases/${mb.case_id}/packet-download`,{token:actor.token})).status,
@@ -81,6 +83,7 @@ async function run(t,check){
  check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/correspondence`,
   {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
   200,'British Columbia correspondence is reviewed');
+ await t.preparePostalPacket(actor, bc.case_id);
  check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/approve`,{token:actor.token})).status,
   200,'the British Columbia selection is approved');
  check.equal((await t.request('GET',`/api/cases/${bc.case_id}/packet-download`,{token:actor.token})).status,
@@ -101,6 +104,7 @@ async function run(t,check){
  check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/correspondence`,
   {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
   200,'Northwest Territories correspondence is reviewed');
+ await t.preparePostalPacket(actor, nt.case_id);
  check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/approve`,{token:actor.token})).status,
   200,'the territory selection is approved');
  check.equal((await t.request('GET',`/api/cases/${nt.case_id}/packet-download`,{token:actor.token})).status,
@@ -121,6 +125,7 @@ async function run(t,check){
  check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/correspondence`,
   {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
   200,'Nunavut correspondence is reviewed');
+ await t.preparePostalPacket(actor, nu.case_id);
  check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/approve`,{token:actor.token})).status,
   200,'the Nunavut selection is approved');
  check.equal((await t.request('GET',`/api/cases/${nu.case_id}/packet-download`,{token:actor.token})).status,

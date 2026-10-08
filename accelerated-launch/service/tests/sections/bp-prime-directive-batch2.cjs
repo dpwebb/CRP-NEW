@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bp-prime-directive-batch2.cjs — OWNER-POTENTIAL-ISSUE-001 ordinary-account batch: balance/past-due
  * discrepancies, corroborated potential duplicate reporting, and conflicting account responsibility labels,
@@ -48,6 +49,7 @@ async function httpPacket(service, actor, lines, filename, matcher) {
   if (!issue) return { case_id: caseRow.case_id, up, ev, pv, issue: null };
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issue.issue_id] } });
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(actor, caseRow.case_id);
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: actor.token });
   const dl = await service.request('GET', `/api/cases/${caseRow.case_id}/packet-download`, { token: actor.token });
   return { case_id: caseRow.case_id, up, ev, pv, issue, dl };
@@ -149,13 +151,14 @@ async function run(service, check) {
   check.ok(balIssue.source_facts && balIssue.source_facts.some((f) => f.raw_value), 'with the printed balance/past-due raw provenance carried through');
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [balIssue.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the balance/past-due packet downloads');
-  check.ok(/past-due amount/.test(dl.text), 'with the factual verification request');
-  check.ok(/verify the balance/.test(dl.text), 'and the recorded request wording');
-  check.ok(/VIOLATION of report-data requirement:/.test(dl.text), 'stating the breached report-data requirement');
-  check.ok(!/established reporting issue/.test(dl.text), 'never asserting a definite reporting issue');
+  check.ok(/past-due amount/.test(comparableText(dl.text)), 'with the factual verification request');
+  check.ok(/verify the balance/.test(comparableText(dl.text)), 'and the recorded request wording');
+  check.ok(/VIOLATION/.test(comparableText(dl.text)) && comparableText(dl.text).includes(`Reporting rule: ${balIssue.rule_assessment.requirement}`), 'stating the violation and its breached report-data requirement');
+  check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite reporting issue');
 
   /* ---- 5. HTTP end-to-end: potential duplicate through the packet path (qualified wording). ---- */
   const dupOwner = await service.unpaidAccount('b2-dup@example.test');
@@ -165,9 +168,9 @@ async function run(service, check) {
   check.ok(dupRun.issue, 'the potential duplicate is offered for selection');
   check.ok(dupRun.issue.uncertainty.includes('unconfirmed'), 'with qualified potential-duplicate wording in the review');
   check.equal(dupRun.dl.status, 200, 'the potential-duplicate packet downloads');
-  check.ok(/reported twice/.test(dupRun.dl.text), 'with the qualified potential-duplicate request');
-  check.ok(/verify whether/.test(dupRun.dl.text), 'and the recorded verification wording');
-  check.ok(!/established reporting issue/.test(dupRun.dl.text), 'never asserting a definite finding');
+  check.ok(/reported twice/.test(comparableText(dupRun.dl.text)), 'with the qualified potential-duplicate request');
+  check.ok(/verify whether/.test(comparableText(dupRun.dl.text)), 'and the recorded verification wording');
+  check.ok(!/established reporting issue/.test(comparableText(dupRun.dl.text)), 'never asserting a definite finding');
 
   /* ---- 6. HTTP end-to-end: responsibility conflict through the packet path. ---- */
   const respOwner = await service.unpaidAccount('b2-resp@example.test');
@@ -177,8 +180,8 @@ async function run(service, check) {
   check.ok(respRun.issue, 'the responsibility conflict is offered for selection');
   check.ok(respRun.issue.uncertainty.includes('joint account'), 'with the benign alternatives in the review');
   check.equal(respRun.dl.status, 200, 'the responsibility packet downloads');
-  check.ok(/responsibility labels/.test(respRun.dl.text), 'with the factual verification request');
-  check.ok(/verify the responsibility/.test(respRun.dl.text), 'and the recorded request wording');
+  check.ok(/responsibility labels/.test(comparableText(respRun.dl.text)), 'with the factual verification request');
+  check.ok(/verify the responsibility/.test(comparableText(respRun.dl.text)), 'and the recorded request wording');
 
   /* ---- 7. Editing wording after approval invalidates the approval (download refused, not the older packet). ---- */
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [balIssue.issue_id] } });

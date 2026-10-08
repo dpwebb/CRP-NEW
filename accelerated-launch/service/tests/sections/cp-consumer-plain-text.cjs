@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * cp-consumer-plain-text.cjs — the one coordinated plain-text correction across the consumer surface.
  *
@@ -181,12 +182,13 @@ async function run(service, check) {
   check.deepEqual(plainProblems(`${issue.headline || ''} ${issue.explanation || ''}`), [], 'and the issue card itself is written in plain words');
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issue.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Jordan Avery', contact: 'jordan.avery@example.test' } } });
+  await service.preparePostalPacket(actor, c.case_id);
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: actor.token });
   const download = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: actor.token });
   check.equal(download.status, 200, 'the approved packet downloads');
-  check.ok(download.text.includes(issue.explanation), "and it keeps the selected finding's own words");
-  check.deepEqual(RETIRED_WORDING.filter((re) => re.test(download.text)).map(String), [], 'and carries none of the retired wording');
-  check.ok(!/not legal advice/i.test(download.text), 'and never repeats the legal-advice disclaimer');
+  check.ok(comparableText(download.text).includes(issue.explanation), "and it keeps the selected finding's own words");
+  check.deepEqual(RETIRED_WORDING.filter((re) => re.test(comparableText(download.text))).map(String), [], 'and carries none of the retired wording');
+  check.ok(!/not legal advice/i.test(comparableText(download.text)), 'and never repeats the legal-advice disclaimer');
   check.ok(!/not legal advice/i.test(JSON.stringify(result)), 'the results surface carries no legal-advice disclaimer either');
   check.ok(!/not legal advice/i.test(JSON.stringify(view)), 'and neither does the review and packet view');
 

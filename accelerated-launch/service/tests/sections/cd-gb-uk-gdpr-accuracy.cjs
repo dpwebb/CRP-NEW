@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * cd-gb-uk-gdpr-accuracy.cjs — CRP_VERSION_1_FINISH_ORDER_001: the GB accuracy/rectification issue (UK GDPR,
  * Articles 5(1)(d) and 16; source entry CRP-LSRC-0407; legacy atomic rule uk.accuracy_duty.gdpr5), delivered to a
@@ -198,22 +199,24 @@ async function run(service, check) {
   const selected = (await service.request('GET', `/api/cases/${paid.caseId}/packet`, { token: owner.token })).json.view;
   check.equal(selected.packet.selected_count, 1, 'the consumer selects the one coherent issue for this conflict');
   await service.request('POST', `/api/cases/${paid.caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: DETAILS } });
+  await service.preparePostalPacket(owner, paid.caseId);
   const approved = await service.request('POST', `/api/cases/${paid.caseId}/packet/approve`, { token: owner.token });
   check.equal(approved.status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${paid.caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.ok(dl.text.includes(gb.explanation), 'the downloaded correspondence carries the reviewed issue');
-  check.ok(dl.text.includes(`Recorded rule: ${CITATION}`), 'naming the recorded rule behind the finding');
-  check.ok(/Request \(verification\): /.test(dl.text), 'with a verification request, never a correction demand');
-  check.ok(/rectify whichever is inaccurate/.test(dl.text), 'asking for rectification of the inaccurate value');
-  check.ok(/OPENED: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading under its report caption in the evidence references');
-  check.ok(/CLOSED: printed "01\/01\/2019"/.test(dl.text), 'with the raw printed closed reading under its report caption');
-  check.ok(/normalized to 2020-01-01/.test(dl.text), 'with its normalization');
-  check.ok(/Also rests on: what the report prints — an account with contradictory dates/.test(dl.text), 'naming its second supported base in plain language');
-  check.equal((dl.text.match(/Request \(verification\): /g) || []).length, 1, 'with exactly one request for the one issue');
-  check.ok(dl.text.includes('Rowan Ellis'), 'carrying the consumer-supplied correspondence details');
-  check.ok(!/is an established reporting issue/i.test(dl.text), 'never asserting an established reporting issue for a probable one');
-  check.ok(/supports a verification request/.test(dl.text), 'while stating the supported verification action');
+  check.ok(comparableText(dl.text).includes(gb.explanation), 'the downloaded correspondence carries the reviewed issue');
+  check.ok(comparableText(dl.text).includes(`Recorded rule: ${CITATION}`), 'naming the recorded rule behind the finding');
+  check.ok(/- verification/.test(comparableText(dl.text)) && !/- correction/.test(comparableText(dl.text)), 'with a verification request, never a correction demand');
+  check.ok(/rectify whichever is inaccurate/.test(comparableText(dl.text)), 'asking for rectification of the inaccurate value');
+  check.ok(/OPENED: printed "01\/01\/2020"/.test(comparableText(dl.text)), 'and the raw printed opened reading under its report caption in the evidence references');
+  check.ok(/CLOSED: printed "01\/01\/2019"/.test(comparableText(dl.text)), 'with the raw printed closed reading under its report caption');
+  check.ok(/read as 2020-01-01/.test(comparableText(dl.text)), 'with its normalization');
+  check.ok(/Reporting rule: An account cannot close before it opened\./.test(comparableText(dl.text)), 'naming its factual rule in plain language');
+  const letter = dl.text.split('EVIDENCE REFERENCES')[0];
+  check.equal((letter.match(/^\s*\d+\.\s+/gm) || []).length, 1, 'with exactly one numbered request for the one issue');
+  check.ok(comparableText(dl.text).includes('Rowan Ellis'), 'carrying the consumer-supplied correspondence details');
+  check.ok(!/is an established reporting issue/i.test(comparableText(dl.text)), 'never asserting an established reporting issue for a probable one');
+  check.ok(/supports a verification request/.test(comparableText(dl.text)), 'while stating the supported verification action');
 
   /* ---- 3. Benign controls. ---- */
   const consistent = await assess(service, owner, 'GB-ENG', ['Fictional Creditor  Balance $100  Opened 01/01/2018  Closed 01/01/2020']);

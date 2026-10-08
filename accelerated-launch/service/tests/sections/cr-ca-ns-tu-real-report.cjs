@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * cr-ca-ns-tu-real-report.cjs — BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report core repair), October 6 2026.
  *
@@ -293,14 +294,15 @@ async function runSubscriberPacket(service, check, evidence, real) {
   await service.request('POST', `/api/cases/${caseId}/packet/correspondence`, {
     token: sub.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } }
   });
+  await service.preparePostalPacket(sub, caseId);
   const approved = await service.request('POST', `/api/cases/${caseId}/packet/approve`, { token: sub.token });
   check.equal(approved.status, 200, 'and approve the packet it built');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: sub.token });
   check.equal(download.status, 200, 'and download the approved packet');
-  check.ok(download.text.includes(chosen.request_wording), 'the approved correspondence carries the selected reporting-period verification request');
-  check.ok(download.text.includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
-  check.ok(/remove or correct this debt information/i.test(download.text), 'the packet asks for correction of the aged debt information');
-  check.ok(!/positive account|negative account|adverse debt/i.test(download.text), 'the packet assigns no positive or negative account value');
+  check.ok(comparableText(download.text).includes(chosen.request_wording), 'the approved correspondence carries the selected reporting-period verification request');
+  check.ok(comparableText(download.text).includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
+  check.ok(/remove or correct this debt information/i.test(comparableText(download.text)), 'the packet asks for correction of the aged debt information');
+  check.ok(!/positive account|negative account|adverse debt/i.test(comparableText(download.text)), 'the packet assigns no positive or negative account value');
   evidence.real_report.packet = { selected_issue: chosen.issue_id, account: chosen.account_identity.name };
   void real;
 }

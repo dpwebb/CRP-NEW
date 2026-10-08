@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bt-ordinary-field-coverage.cjs — OWNER-POTENTIAL-ISSUE-001 / Branch A semantic correction.
  *
@@ -138,10 +139,11 @@ async function run(service, check) {
   check.ok(sel, 'the lifecycle-open status/closure issue is offered for selection');
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [sel.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the retained positive downloads');
-  check.ok(/status says it is open/.test(dl.text), 'with the factual verification request');
+  check.ok(/status says it is open/.test(comparableText(dl.text)), 'with the factual verification request');
 
   evidence.au_repayment_status_benign = 'the AU "Current Repayment Status" sentence beside a closure date is benign; the raw reading and location are preserved and the sentence is never mapped to the lifecycle status fact';
   evidence.lifecycle_open_positive = 'a lifecycle-open status (Status: Open) beside a closure date remains a selectable verification issue through the upload path';

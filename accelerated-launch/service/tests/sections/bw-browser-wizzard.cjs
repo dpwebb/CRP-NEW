@@ -13,6 +13,7 @@
  */
 const fs = require('node:fs');
 const crypto = require('node:crypto');
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const PLAYWRIGHT = 'C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -60,6 +61,7 @@ async function run(service, check) {
     return evidence;
   }
 
+  try {
   async function openCasePage(email, password, caseId, lines) {
     const context = await browser.newContext();
     const page = await context.newPage();
@@ -160,7 +162,7 @@ async function run(service, check) {
   check.ok(/opened date later than its closed date/.test(potBlock), 'with readable evidence and the affirmative concern');
   check.ok(/which date needs correction/.test(potBlock), 'with specific uncertainty about the correction');
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
-  check.ok(/Who this correspondence goes to/.test(potBlock), 'the consumer review states who the correspondence is addressed to');
+  check.ok(/Where to mail your letter/.test(potBlock), 'the consumer review states where to mail the letter');
   check.ok(/Equifax checklist/.test(potBlock), 'with the sourced bureau checklist');
   check.ok(/Read your full packet/.test(potBlock), 'and shows the full current packet for review');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
@@ -181,10 +183,10 @@ async function run(service, check) {
   const dl1 = await downloadText(page);
   check.equal(dl1.status, 200, 're-approving the changed version re-enables download');
   check.ok(/^CRP-(?:correction|dispute)-packet-case_.+\.(?:pdf|zip)$/.test(dl1.filename), 'the browser wrote the actual printable packet file');
-  check.ok(/opened date later than its closed date/.test(dl1.text), 'and the packet matches the selected approved content');
+  check.ok(/opened date later than its closed date/.test(comparableText(dl1.text)), 'and the packet matches the selected approved content');
   check.ok(dl1.text.includes('CHANGED WORDS AFTER APPROVAL'), 'carrying the changed wording');
   check.ok(dl1.text.includes('01/01/2020'), 'and the printed raw reading');
-  check.ok(/Please check and correct|CORRESPONDENCE TO SEND/i.test(dl1.text) && /Report facts|EVIDENCE REFERENCES/i.test(dl1.text), 'and the organized correspondence and evidence sections');
+  check.ok(/CREDIT REPORT DISPUTE/.test(comparableText(dl1.text)) && /EVIDENCE REFERENCES/.test(comparableText(dl1.text)), 'and the organized correspondence and evidence sections');
   check.ok(dl1.text.includes('Dana Whitfield') && dl1.text.includes('changed-reply@example.test'), 'carrying the correspondence details the consumer approved');
   check.ok(!dl1.text.includes('dana.whitfield@example.test'), 'and not the detail that was replaced before approval');
   check.ok(!/not legal advi/i.test(dl1.text), 'with no legal-advice disclaimer');
@@ -265,7 +267,7 @@ async function run(service, check) {
   await page.locator('#password').fill(hist.password);
   await page.locator('#signin').click();
   await page.waitForSelector('#open');
-  await page.locator('#steps button').filter({ hasText: 'Report history' }).click();
+  await page.locator('#steps button').filter({ hasText: 'Saved reports' }).click();
   await page.waitForSelector('#history-body');
   await page.waitForSelector('#compare');
   await page.waitForTimeout(400);
@@ -313,7 +315,7 @@ async function run(service, check) {
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(800);
   const bareResults = await freePage.locator('#panel').innerText();
-  check.ok(/Run the checks above to see your results\./.test(bareResults), 'an unassessed report guides the consumer to run the checks');
+  check.ok(/Your report has not been checked yet\. Select Check my report\./.test(bareResults), 'an unassessed report guides the consumer to check the report');
   check.ok(!/buy-report_once/.test(await freePage.content()), 'and offers no purchase for a report with no completed assessment');
   await freePage.locator('#steps button[data-step="2"]').click();
   await freePage.waitForTimeout(600);
@@ -419,7 +421,7 @@ async function run(service, check) {
   const genDownload = await downloadText(genPage);
   check.equal(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).length, 3, 'real browser downloads exactly three selected original support documents alongside its printable correspondence and any bureau forms');
   check.ok(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).every(entry => entry.bytes.includes(Buffer.from('FICTIONAL SUPPORT DOCUMENT'))), 'browser packet preserves the uploaded fictional source bytes');
-  check.ok(/may be outside the time limit for a court claim/.test(genDownload.text),
+  check.ok(/may be outside the time limit for a court claim/.test(comparableText(genDownload.text)),
     'the downloaded packet asks whether the debt is outside the time limit for a court claim');
   check.ok(!/violation|ESTABLISHED REPORTING ISSUE/i.test(genDownload.text), 'while claiming no reporting violation');
   evidence.limitation_browser = { summary: 'the free summary names the court time limit', packet: genDownload.filename };
@@ -488,17 +490,18 @@ async function run(service, check) {
   await saveReadApprove(dualOpened.page);
   await dualOpened.page.waitForTimeout(700);
   const dualDownload = await downloadText(dualOpened.page);
-  check.ok(/remains on my current file/.test(dualDownload.text), 'and the downloaded packet asks whether the entry remains on the current file');
-  check.ok(/whether its reporting period has expired/.test(dualDownload.text), 'and whether its reporting period has expired');
+  check.ok(/remains on my current file/.test(comparableText(dualDownload.text)), 'and the downloaded packet asks whether the entry remains on the current file');
+  check.ok(/whether its reporting period has expired/.test(comparableText(dualDownload.text)), 'and whether its reporting period has expired');
   check.ok(!/established reporting issue/i.test(dualDownload.text), 'without claiming anything is still being reported');
   evidence.dual_date_browser = { free_summary: 'the teaser names an entry that may now be too old to report', packet: dualDownload.filename };
   await dualOpened.page.close();
 
-  await browser.close();
-
   evidence.browser = 'real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service';
   evidence.fixtures = 'all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report';
   return evidence;
+  } finally {
+    await browser.close();
+  }
 }
 
 module.exports = { run, id: 'bw-browser-wizzard', title: 'OWNER-POTENTIAL-ISSUE-001: real-browser Wizzard acceptance (potential/probable/partial-selection/edit-after-approval/benign)' };

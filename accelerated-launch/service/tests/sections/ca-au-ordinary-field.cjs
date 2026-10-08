@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * ca-au-ordinary-field.cjs — OWNER-ORDINARY-FIELD-001: one concrete ordinary-account field improvement on an
  * existing family reader, verified through the real Issue -> Wizzard -> selected-packet path.
@@ -128,15 +129,16 @@ async function run(service, check) {
   check.ok(offered, 'the Wizzard offers the issue for selection');
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [offered.issue_id] } });
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, caseRow.case_id);
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${caseRow.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the selected packet downloads');
-  check.ok(/15 Nov 2013 Secured or Partially Secured/.test(dl.text), 'the packet states the full printed value');
-  check.ok(/normalized to 2013-11-15/.test(dl.text), 'and its normalization');
-  check.ok(/Request \(verification\)/.test(dl.text), 'with the verification request line');
-  check.ok(/which date needs correction/.test(dl.text), 'and states the date uncertainty without a legal-finding category');
+  check.ok(/15 Nov 2013 Secured or Partially Secured/.test(comparableText(dl.text)), 'the packet states the full printed value');
+  check.ok(/read as 2013-11-15/.test(comparableText(dl.text)), 'and its normalized reading');
+  check.ok(/ - verification/.test(comparableText(dl.text)), 'with the verification request label');
+  check.ok(/which date needs correction/.test(comparableText(dl.text)), 'and states the date uncertainty without a legal-finding category');
 
-  evidence.positive = { issue: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', confidence: 'POTENTIAL', packet_bytes: (dl.text || '').length };
+  evidence.positive = { issue: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', confidence: 'POTENTIAL', packet_bytes: (comparableText(dl.text) || '').length };
   evidence.benign = 'the real PUB-012 record and the no-closure control both raise no issue';
   evidence.provenance = 'the full printed value is kept as the raw reading with its page/line; the normalization is kept beside it';
   return evidence;

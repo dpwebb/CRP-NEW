@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bz-report-history.cjs — BLOCKER-SUBSCRIPTION-VALUE-001: owned report history and evidence-based comparison.
  *
@@ -185,6 +186,7 @@ async function run(t, check) {
   const issueId = pvBefore.eligible_issues.find((i) => i.eligible).issue_id;
   await t.request('POST', `/api/cases/${C.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issueId] } });
   await t.request('POST', `/api/cases/${C.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await t.preparePostalPacket(actor, C.case_id);
   await t.request('POST', `/api/cases/${C.case_id}/packet/approve`, { token: actor.token });
   const approved = (await t.request('GET', `/api/cases/${C.case_id}/packet`, { token: actor.token })).json.view;
   check.equal(approved.packet.approved, true, 'a packet on the changed case is approved');
@@ -200,7 +202,7 @@ async function run(t, check) {
   const afterDownload = await t.request('GET', `/api/cases/${C.case_id}/packet-download`, { token: actor.token });
   check.equal(afterDownload.status, 200, 'the packet download still works after the comparison');
   const stripProduced = (s) => String(s).replace(/Produced: [^\n]*\n/, '');
-  check.equal(stripProduced(afterDownload.text), stripProduced(beforeDownload.text), 'with identical content (the generation timestamp aside)');
+  check.equal(stripProduced(comparableText(afterDownload.text)), stripProduced(comparableText(beforeDownload.text)), 'with identical content (the generation timestamp aside)');
 
   /* 14. Current issue selection still works on the comparison\'s later report (a reviewed packet). */
   const laterPv = (await t.request('GET', `/api/cases/${C.case_id}/packet`, { token: actor.token })).json.view;

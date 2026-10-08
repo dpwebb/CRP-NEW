@@ -219,6 +219,7 @@ async function run(service, check) {
   check.ok(issue, 'the subscriber sees a selectable issue');
   check.equal((await service.request('POST', `/api/cases/${subCase.case_id}/packet/select`, { token: sub.token, body: { issue_ids: [issue.issue_id] } })).status, 200, 'and can select it');
   await service.request('POST', `/api/cases/${subCase.case_id}/packet/correspondence`, { token: sub.token, body: { correspondence: { consumer_name: 'Fictional Tester', contact: 'fictional@example.test' } } });
+  await service.preparePostalPacket(sub, subCase.case_id);
   check.equal((await service.request('POST', `/api/cases/${subCase.case_id}/packet/approve`, { token: sub.token })).status, 200, 'and approve the packet');
   check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/packet-download`, { token: sub.token })).status, 200, 'and download it');
   await service.request('POST', `/api/cases/${subCase.case_id}/packet/select`, { token: sub.token, body: { issue_ids: [issue.issue_id] } });

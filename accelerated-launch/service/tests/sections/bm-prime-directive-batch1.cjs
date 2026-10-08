@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bm-prime-directive-batch1.cjs — OWNER-POTENTIAL-ISSUE-001 / Batch 1: the complete common-issue consumer
  * journey. A fictional report with one supported uncertain discrepancy (an account opened after it was closed)
@@ -105,20 +106,21 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [issueId] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/wording`, { token: owner.token, body: { wording: 'Please confirm the correct opened and closed dates.' } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
   const approved = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   check.equal(approved.status, 200, 'approval succeeds');
   const approvedVersion = approved.json.view.packet.approved_version;
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the approved packet downloads');
-  check.ok(/opened date later than its closed date/.test(dl.text), 'the request agrees with the reviewed facts');
-  check.ok(/verify the opened and closed dates/.test(dl.text), 'with the recorded verification request wording');
-  check.ok(/Request \(verification\)/.test(dl.text), 'and is labelled a verification request');
-  check.ok(!/Request \(correction\)/.test(dl.text), 'no correction request is asserted');
-  check.ok(!/established reporting issue/.test(dl.text), 'no definite reporting issue is asserted for a potential discrepancy');
-  check.ok(dl.text.includes('Please confirm the correct opened and closed dates.'), 'and the consumer wording, in its own section');
-  check.ok(dl.text.includes(approvedVersion), 'bound to the approved version');
-  check.ok(!/not legal advi/i.test(dl.text), 'with no legal-advice disclaimer');
+  check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'the request agrees with the reviewed facts');
+  check.ok(/verify the opened and closed dates/.test(comparableText(dl.text)), 'with the recorded verification request wording');
+  check.ok(/ - verification/.test(comparableText(dl.text)), 'and is labelled a verification request');
+  check.ok(!/ - correction/.test(comparableText(dl.text)), 'no correction request is asserted');
+  check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'no definite reporting issue is asserted for a potential discrepancy');
+  check.ok(comparableText(dl.text).includes('Please confirm the correct opened and closed dates.'), 'and the consumer wording, in its own section');
+  check.equal(dl.headers.get('x-crp-packet-version'), approvedVersion, 'actual downloadable bytes are bound to the approved version by the response header');
+  check.ok(!/not legal advi/i.test(comparableText(dl.text)), 'with no legal-advice disclaimer');
 
 
   /* ---- 3. Cross-account refusal. ---- */

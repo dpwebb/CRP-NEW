@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bv-admission-and-upload.cjs — OWNER-POTENTIAL-ISSUE-001: admission contracts, fictional upload fixtures, and the
  * US balance/past-due field mapping.
@@ -97,10 +98,11 @@ async function run(service, check) {
   check.ok(sel.source_facts.some((f) => f.raw_value === '1 January 2020'), 'with the printed opened date as raw provenance');
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/select`, { token: auOwner.token, body: { issue_ids: [sel.issue_id] } });
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/correspondence`, { token: auOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(auOwner, auCase.case_id);
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/approve`, { token: auOwner.token });
   const auDl = await service.request('GET', `/api/cases/${auCase.case_id}/packet-download`, { token: auOwner.token });
   check.equal(auDl.status, 200, 'the AU packet downloads');
-  check.ok(auDl.text.includes('1 January 2020'), 'with the printed raw reading');
+  check.ok(comparableText(auDl.text).includes('1 January 2020'), 'with the printed raw reading');
 
   /* ---- 3. GB actual upload -> account-dates issue -> entitled packet. ---- */
   const gbOwner = await service.unpaidAccount('bv-gb@example.test');
@@ -113,10 +115,11 @@ async function run(service, check) {
   check.ok(sel.source_facts.some((f) => f.raw_value === '19/10/06'), 'with the printed Started reading as raw provenance');
   await service.request('POST', `/api/cases/${gbCase.case_id}/packet/select`, { token: gbOwner.token, body: { issue_ids: [sel.issue_id] } });
   await service.request('POST', `/api/cases/${gbCase.case_id}/packet/correspondence`, { token: gbOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(gbOwner, gbCase.case_id);
   await service.request('POST', `/api/cases/${gbCase.case_id}/packet/approve`, { token: gbOwner.token });
   const gbDl = await service.request('GET', `/api/cases/${gbCase.case_id}/packet-download`, { token: gbOwner.token });
   check.equal(gbDl.status, 200, 'the GB packet downloads');
-  check.ok(gbDl.text.includes('19/10/06'), 'with the printed raw reading');
+  check.ok(comparableText(gbDl.text).includes('19/10/06'), 'with the printed raw reading');
 
   /* ---- 4. US balance/past-due mapping: BALANCE-PAYMENT-INCONSISTENCY (downstream synthetic record -> packet). ---- */
   const usExtraction = { presentation_id: 'US-CONSUMER-DISCLOSURE', family_id: 'FAM-US-EXP-CONSUMER', records: [{ record_index: 1, kind: 'REPORTED_ACCOUNT', kind_label: 'reported account', status: 'RESOLVED', facts: { 'account.balance': 100, 'account.pastDueAmount': 150 }, printed: { recent_balance: { label: 'Recent balance', raw: '$100', normalized: 100, location: { page: 1, line: 1 } }, past_due_amount: { label: 'Past due amount', raw: '$150', normalized: 150, location: { page: 1, line: 2 } } } }] };
@@ -135,10 +138,11 @@ async function run(service, check) {
   check.ok(sel, 'the US balance/payment issue is offered for selection (downstream fixture)');
   await service.request('POST', `/api/cases/${usCase.case_id}/packet/select`, { token: usOwner.token, body: { issue_ids: [sel.issue_id] } });
   await service.request('POST', `/api/cases/${usCase.case_id}/packet/correspondence`, { token: usOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(usOwner, usCase.case_id);
   await service.request('POST', `/api/cases/${usCase.case_id}/packet/approve`, { token: usOwner.token });
   const usDl = await service.request('GET', `/api/cases/${usCase.case_id}/packet-download`, { token: usOwner.token });
   check.equal(usDl.status, 200, 'the US balance/payment packet downloads');
-  check.ok(usDl.text.includes('$150'), 'with the printed past-due amount as evidence');
+  check.ok(comparableText(usDl.text).includes('$150'), 'with the printed past-due amount as evidence');
 
   evidence.au_gb_upload = 'AU and GB fictional, structurally faithful PDFs run the real upload path (not store injection) to the entitled packet';
   evidence.us_balance_payment = 'US-Experian Recent balance / Past due amount map to account facts enabling BALANCE-PAYMENT-INCONSISTENCY (downstream synthetic record)';

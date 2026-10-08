@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /* Public AU and GB structural specimens through the real local upload, assessment and packet route. */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -95,11 +96,12 @@ async function run(t, check) {
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/correspondence`,
       { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
     200, `${region}: correspondence is reviewed`);
+    await t.preparePostalPacket(actor, caseId);
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: actor.token })).status,
       200, `${region}: the selection is approved`);
     const download = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });
     check.equal(download.status, 200, `${region}: an entitled packet downloads`);
-    check.ok(download.text.includes('Fictional Consumer'), `${region}: the packet uses reviewed correspondence`);
+    check.ok(comparableText(download.text).includes('Fictional Consumer'), `${region}: the packet uses reviewed correspondence`);
   }
   return { exact_regions: ['AU-ACT', 'AU-QLD', 'GB-ENG', 'GB-WLS', 'GB-NIR'], public_samples_only: true };
 }

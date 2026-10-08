@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * cc-ca-on-ordinary-report.cjs — OWNER-CA-ORDINARY-REPORT-001: the strongest supported Canadian ordinary-report
  * compliance issue, implemented on ALREADY-EXTRACTED facts and delivered through the complete consumer path.
@@ -201,26 +202,28 @@ async function run(service, check) {
   check.equal(selected.packet.selected_count, 1, 'the consumer selects the one coherent issue for this conflict');
   check.equal(selected.eligible_issues.length, 1, 'with no second card left to select');
   await service.request('POST', `/api/cases/${paid.caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: DETAILS } });
+  await service.preparePostalPacket(owner, paid.caseId);
   const approved = await service.request('POST', `/api/cases/${paid.caseId}/packet/approve`, { token: owner.token });
   check.equal(approved.status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${paid.caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.ok(dl.text.includes(ontario.explanation), 'the downloaded correspondence carries the reviewed issue');
-  check.ok(dl.text.includes(CITATION), 'and the recorded Ontario provision');
-  check.ok(dl.text.includes(`Recorded rule: ${CITATION}`), 'as the recorded rule behind the finding');
-  check.ok(/Request \(verification\): /.test(dl.text), 'with a verification request, never a correction demand');
-  check.ok(dl.text.includes('any credit information based on evidence that is not the best evidence reasonably available'), 'and the provision own words in the reviewed issue');
-  check.ok(/Also rests on: what the report prints — an account with contradictory dates/.test(dl.text), 'naming its second supported base in plain language');
-  check.equal((dl.text.match(/Request \(verification\): /g) || []).length, 1, 'with exactly one request for the one issue, so the conflict is never demanded twice');
-  check.equal(dl.text.includes('please verify the opened and closed dates for this account and correct the inconsistency'), false, 'and the duplicate factual request wording never appears');
-  check.ok(/OPENED: printed "01\/01\/2020"/.test(dl.text), 'and the raw printed opened reading under its report caption in the evidence references');
-  check.ok(/CLOSED: printed "01\/01\/2019"/.test(dl.text), 'and the raw printed closed reading under its report caption');
-  check.ok(/normalized to 2020-01-01/.test(dl.text), 'with its normalization');
-  check.ok(dl.text.includes('Dana Whitfield'), 'carrying the consumer-supplied correspondence details');
-  check.ok(!/opened date later than its closed date/.test(dl.text), 'and never the unselected factual card wording as a second issue');
-  check.ok(!/is an established reporting issue/i.test(dl.text), 'never asserting an established reporting issue for a probable one');
-  check.ok(!/ESTABLISHED REPORTING ISSUE/.test(dl.text), 'and never presenting it as an established issue');
-  check.ok(/supports a verification request/.test(dl.text), 'while stating the supported verification action');
+  check.ok(comparableText(dl.text).includes(ontario.explanation), 'the downloaded correspondence carries the reviewed issue');
+  check.ok(comparableText(dl.text).includes(CITATION), 'and the recorded Ontario provision');
+  check.ok(comparableText(dl.text).includes(`Recorded rule: ${CITATION}`), 'as the recorded rule behind the finding');
+  check.ok(/- verification/.test(comparableText(dl.text)) && !/- correction/.test(comparableText(dl.text)), 'with a verification request, never a correction demand');
+  check.ok(comparableText(dl.text).includes('any credit information based on evidence that is not the best evidence reasonably available'), 'and the provision own words in the reviewed issue');
+  check.ok(/Reporting rule: An account cannot close before it opened\./.test(comparableText(dl.text)), 'naming its factual rule in plain language');
+  const letter = dl.text.split('EVIDENCE REFERENCES')[0];
+  check.equal((letter.match(/^\s*\d+\.\s+/gm) || []).length, 1, 'with exactly one numbered request for the one issue, so the conflict is never demanded twice');
+  check.equal(comparableText(dl.text).includes('please verify the opened and closed dates for this account and correct the inconsistency'), false, 'and the duplicate factual request wording never appears');
+  check.ok(/OPENED: printed "01\/01\/2020"/.test(comparableText(dl.text)), 'and the raw printed opened reading under its report caption in the evidence references');
+  check.ok(/CLOSED: printed "01\/01\/2019"/.test(comparableText(dl.text)), 'and the raw printed closed reading under its report caption');
+  check.ok(/read as 2020-01-01/.test(comparableText(dl.text)), 'with its normalization');
+  check.ok(comparableText(dl.text).includes('Dana Whitfield'), 'carrying the consumer-supplied correspondence details');
+  check.ok(!/opened date later than its closed date/.test(comparableText(dl.text)), 'and never the unselected factual card wording as a second issue');
+  check.ok(!/is an established reporting issue/i.test(comparableText(dl.text)), 'never asserting an established reporting issue for a probable one');
+  check.ok(!/ESTABLISHED REPORTING ISSUE/.test(comparableText(dl.text)), 'and never presenting it as an established issue');
+  check.ok(/supports a verification request/.test(comparableText(dl.text)), 'while stating the supported verification action');
 
 
   /* ---- 3. Benign controls: no fire where the report is consistent, elsewhere, or where a reading is missing. ---- */

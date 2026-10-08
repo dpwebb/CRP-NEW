@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * ck-ca-territories-pipeda-accuracy.cjs — BATCH-17: the three territorial PIPEDA accuracy outcomes.
  *
@@ -128,11 +129,12 @@ async function run(service, check) {
   check.equal((await view()).packet.selected_count, 1, 'the consumer selects it');
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: DETAILS } });
   check.match(JSON.stringify(await view()), /Northern Fictional Consumer/, 'the reviewed correspondence carries the consumer-supplied details');
+  await service.preparePostalPacket(owner, c.case_id);
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token })).status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.match(dl.text, /clause 4\.6/, 'naming the recorded principle behind the issue');
-  check.match(dl.text, /cannot both be right/, 'carrying the printed conflict the verification asks about');
+  check.match(comparableText(dl.text), /clause 4\.6/, 'naming the recorded principle behind the issue');
+  check.match(comparableText(dl.text), /cannot both be right/, 'carrying the printed conflict the verification asks about');
   const changed = extractionFor(BENIGN);
   inject(service, owner, c.case_id, evaluateFor(changed, 'CA-NT'), changed);
   const stale = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
@@ -150,4 +152,3 @@ module.exports = {
   id: 'ck-ca-territories-pipeda-accuracy',
   title: 'BATCH-17: territorial PIPEDA Schedule 1 clause 4.6 accuracy outcomes through the complete packet path'
 };
-

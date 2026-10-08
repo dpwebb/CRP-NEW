@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * ch-ca-ab-debt-six-year.cjs — BATCH-10: the Alberta reporting-period rule, end to end.
  *
@@ -255,13 +256,14 @@ async function run(service, check) {
   check.equal((await packetOf(service, owner, c.case_id)).json.view.packet.selected_count, 1, 'the consumer selects the Alberta issue');
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: DETAILS } });
   check.match(JSON.stringify((await packetOf(service, owner, c.case_id)).json.view), /Ada Fictional/, 'the reviewed correspondence carries the consumer-supplied details');
+  await service.preparePostalPacket(owner, c.case_id);
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token })).status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.match(dl.text, /Alta\. Reg\. 193\/99, s\. 4\(b\)/, 'naming the recorded rule behind the issue');
-  check.ok(dl.text.includes('Mar 01, 2015'), 'carrying the printed last payment reading as evidence');
-  check.match(dl.text, /Request \(verification\): /, 'with a verification request');
-  check.match(dl.text, /debt was incurred/, 'and the timing uncertainty preserved in the downloaded packet');
+  check.match(comparableText(dl.text), /Alta\. Reg\. 193\/99, s\. 4\(b\)/, 'naming the recorded rule behind the issue');
+  check.ok(comparableText(dl.text).includes('Mar 01, 2015'), 'carrying the printed last payment reading as evidence');
+  check.match(comparableText(dl.text), / - verification/, 'with a verification request');
+  check.match(comparableText(dl.text), /debt was incurred/, 'and the timing uncertainty preserved in the downloaded packet');
 
   /* Stale approval: the approval is bound to the reviewed content, so evidence that changes afterwards must not
      silently yield a packet that differs from what was approved. */

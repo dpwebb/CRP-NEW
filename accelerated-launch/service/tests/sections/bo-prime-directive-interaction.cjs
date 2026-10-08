@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bo-prime-directive-interaction.cjs — OWNER-POTENTIAL-ISSUE-001 / Batch 1 interaction coverage against the
  * ACTUAL TestService. It drives the real `ui/app.js` handlers (select an issue, save selection + wording,
@@ -141,7 +142,7 @@ async function run(service, check) {
   const panelEl = dom.elementById('panel');
   const block = panelEl.querySelector('#packet-block');
   check.ok(/Correction packet/.test(block.innerHTML), 'the packet block renders against the real service');
-  check.ok(/Who this correspondence goes to/.test(block.innerHTML), 'the packet block shows the correspondence section in the consumer review');
+  check.ok(/Where to mail your letter/.test(block.innerHTML), 'the packet block shows the mail destination in the consumer review');
   check.ok(/Equifax/.test(block.innerHTML), 'and shows the sourced bureau recipient');
   check.ok(/id="packet-preview"/.test(block.innerHTML), 'and mounts the correspondence/evidence review from the service view');
 
@@ -178,7 +179,7 @@ async function run(service, check) {
   dom.elementById('packet-preview-reviewed').onchange();
   await dom.elementById('packet-approve').onclick();
   if (vm.runInContext('state.error', ctx)) throw new Error('Approval failed: ' + vm.runInContext('state.error', ctx));
-  await waitFor(() => block.innerHTML.includes('Approved version:'));
+  await waitFor(() => block.innerHTML.includes('Your packet is approved.'));
   await waitFor(() => dom.calls.some((x) => /POST .*packet\/approve/.test(x)));
   check.ok(dom.calls.some((x) => /POST .*packet\/approve/.test(x)), 'the approve endpoint is called');
   check.ok(dom.calls.some((x) => /POST .*packet\/wording/.test(x)), 'the wording endpoint is called');
@@ -194,14 +195,14 @@ async function run(service, check) {
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the matching packet downloads');
-  check.ok(/opened date later than its closed date/.test(dl.text), 'and agrees with the reviewed facts');
-  check.ok(dl.text.includes('Changed wording (unsaved before approve).'), 'and carries the wording the consumer saw at approval, not the earlier saved wording');
-  check.ok(!dl.text.includes('First wording.'), 'and not the older saved wording');
-  check.ok(/CORRESPONDENCE TO SEND|Please check and correct/i.test(dl.text), 'and an organized, sendable correspondence section');
-  check.ok(dl.text.includes('Dana Whitfield') && dl.text.includes('dana.whitfield@example.test'), 'carrying the consumer-supplied correspondence details');
-  check.ok(/EVIDENCE REFERENCES|Report facts/i.test(dl.text), 'and an organized evidence-reference section');
-  check.ok(/printed "/.test(dl.text) && /normalized to/.test(dl.text), 'with the raw printed reading and the normalized value for the selected issue');
-  check.ok(!/not legal advi/i.test(dl.text), 'with no legal-advice disclaimer');
+  check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'and agrees with the reviewed facts');
+  check.ok(comparableText(dl.text).includes('Changed wording (unsaved before approve).'), 'and carries the wording the consumer saw at approval, not the earlier saved wording');
+  check.ok(!comparableText(dl.text).includes('First wording.'), 'and not the older saved wording');
+  check.ok(/CREDIT REPORT DISPUTE/.test(comparableText(dl.text)), 'and an organized, sendable correspondence section');
+  check.ok(comparableText(dl.text).includes('Dana Whitfield') && comparableText(dl.text).includes('dana.whitfield@example.test'), 'carrying the consumer-supplied correspondence details');
+  check.ok(/EVIDENCE REFERENCES|Report facts/i.test(comparableText(dl.text)), 'and an organized evidence-reference section');
+  check.ok(/printed "/.test(comparableText(dl.text)) && /read as/.test(comparableText(dl.text)), 'with the raw printed reading and the normalized value for the selected issue');
+  check.ok(!/not legal advi/i.test(comparableText(dl.text)), 'with no legal-advice disclaimer');
 
   /* Editing the wording after approval disables the download (no silent older-version download while the changed
      wording remains visible). */

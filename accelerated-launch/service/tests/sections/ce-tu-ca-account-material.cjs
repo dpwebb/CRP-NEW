@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * ce-tu-ca-account-material.cjs — BLOCKER-REPORT-DATA-TO-ISSUE-001, first slice: TransUnion Canada ordinary
  * accounts.
@@ -222,11 +223,12 @@ async function run(service, check) {
   check.ok(sel, 'the supported balance/past-due issue is offered for selection in the packet');
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [sel.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the approved packet downloads');
-  check.ok(/past-due amount \(500\) larger than its balance \(100\)/.test(dl.text), 'with the supported factual verification request');
-  check.ok(dl.text.indexOf('500') !== -1, 'and the printed past-due reading as evidence');
+  check.ok(/past-due amount \(500\) larger than its balance \(100\)/.test(comparableText(dl.text)), 'with the supported factual verification request');
+  check.ok(comparableText(dl.text).indexOf('500') !== -1, 'and the printed past-due reading as evidence');
 
   evidence.synthetic_material_issue =
     "a synthetic past-due-exceeds-balance block, read through the reader's measured column rule, becomes one selectable " +

@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bs-prime-directive-delivery.cjs — the consumer delivery of the newly qualified retention path (Branch B) and the
  * AU contradictory-date issue (Branch A) through the complete fictional upload -> extraction -> issue -> Wizzard
@@ -102,15 +103,16 @@ async function run(service, check) {
 
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [qual.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, c.case_id);
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the qualified probable packet downloads');
-  check.ok(/entry older than the ordinary reporting period/.test(dl.text), 'with the affirmative concern in the packet');
-  check.ok(/not shown to be absent/.test(dl.text), 'with the exception uncertainty');
-  check.ok(/verify whether an exception/.test(dl.text), 'with the verification request');
-  check.ok(!/established reporting issue/.test(dl.text), 'never asserting a definite breach');
-  check.ok(dl.text.indexOf(issues.PROBABLE_LEAD) === -1, 'the downloaded packet omits the generic confidence tier sentence');
-  check.ok(!/could not be read|not readable/i.test(dl.text), 'and never describes the exception uncertainty as a reading failure');
+  check.ok(/entry older than the ordinary reporting period/.test(comparableText(dl.text)), 'with the affirmative concern in the packet');
+  check.ok(/not shown to be absent/.test(comparableText(dl.text)), 'with the exception uncertainty');
+  check.ok(/verify whether an exception/.test(comparableText(dl.text)), 'with the verification request');
+  check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite breach');
+  check.ok(comparableText(dl.text).indexOf(issues.PROBABLE_LEAD) === -1, 'the downloaded packet omits the generic confidence tier sentence');
+  check.ok(!/could not be read|not readable/i.test(comparableText(dl.text)), 'and never describes the exception uncertainty as a reading failure');
 
   /* ---- 2. AU contradictory-date issue: store-injected extraction -> Wizzard -> entitled download, preserving raw readings + locations. ---- */
   const auOwner = await service.unpaidAccount('bs-au@example.test');
@@ -142,11 +144,12 @@ async function run(service, check) {
   check.ok(auSel.source_facts && auSel.source_facts.some((f) => f.location && f.location.page === 3), 'and the source page location');
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/select`, { token: auOwner.token, body: { issue_ids: [auSel.issue_id] } });
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/correspondence`, { token: auOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(auOwner, auCase.case_id);
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/approve`, { token: auOwner.token });
   const auDl = await service.request('GET', `/api/cases/${auCase.case_id}/packet-download`, { token: auOwner.token });
   check.equal(auDl.status, 200, 'the AU contradictory-date packet downloads');
-  check.ok(/1 January 2020/.test(auDl.text), 'with the printed opened date');
-  check.ok(/opened date later than its closed date/.test(auDl.text), 'and the factual verification request');
+  check.ok(/1 January 2020/.test(comparableText(auDl.text)), 'with the printed opened date');
+  check.ok(/opened date later than its closed date/.test(comparableText(auDl.text)), 'and the factual verification request');
 
   /* ---- 3. Controls: applicable exception, in-period, missing evidence, cross-account, edited wording. ---- */
   const rOwner = await service.unpaidAccount('bs-ru@example.test');

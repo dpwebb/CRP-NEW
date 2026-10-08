@@ -1,4 +1,5 @@
 'use strict';
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 /**
  * bx-all82-factual-verification.cjs — OWNER-ALL82-001: the jurisdiction-agnostic factual-verification consumer
  * journey exercised across all 82 canonical regions. The six common-error potential issues run on the
@@ -70,16 +71,18 @@ async function run(service, check) {
     /* The complete shared journey: select -> approve -> entitled download. */
     await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issue.issue_id] } });
     await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+    await service.preparePostalPacket(actor, c.case_id);
     const approval = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: actor.token });
     const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: actor.token });
-    const contentOk = dl.status === 200 && dl.text.includes(issue.explanation)
-      && dl.text.includes(issue.rule_assessment.requirement)
-      && /Selected issues: 1\b/.test(dl.text) && !/established reporting issue/.test(dl.text);
+    const contentOk = dl.status === 200 && comparableText(dl.text).includes(comparableText(issue.explanation))
+      && comparableText(dl.text).includes(comparableText(issue.rule_assessment.requirement))
+      && approval.json.view.packet.selected_count === 1 && /- verification/.test(comparableText(dl.text))
+      && !/established reporting issue/.test(comparableText(dl.text));
     const identity = pv.report_identity || {};
     const version = approval.json.view.packet.approved_version;
-    const assocOk = contentOk && dl.text.includes(opened) && dl.text.includes(version)
+    const assocOk = contentOk && comparableText(dl.text).includes(opened) && dl.headers.get('x-crp-packet-version') === version
       && String(dl.headers.get('content-disposition')).includes(c.case_id)
-      && /Report: /.test(dl.text) && (!identity.reference_date || dl.text.includes(identity.reference_date));
+      && /Report: /.test(comparableText(dl.text)) && (!identity.reference_date || comparableText(dl.text).includes(identity.reference_date));
     if (r === regions[0]) {
       check.equal((await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: stranger.token })).status, 403, 'a stranger cannot download the approved regional packet');
       const other = (await service.request('POST', '/api/cases', { token: actor.token, body: { country: r.country, region: r.region } })).json.case;
