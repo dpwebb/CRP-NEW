@@ -21,7 +21,7 @@ function makeElement(id) {
     style: {}, dataset: {}, files: [], onclick: null, onchange: null,
     scrollIntoView() {},
     __queryResults: [],
-    querySelectorAll: () => el.__queryResults,
+    querySelectorAll: (selector) => selector.startsWith('[data-check-issue]') ? el.__queryResults : [],
     querySelector: (sel) => { if (!children.has(sel)) children.set(sel, makeElement(sel)); return children.get(sel); },
     getAttribute: (n) => (el.dataset && el.dataset[n]) || null
   };
@@ -105,6 +105,10 @@ const LINES = [
 async function run(service, check) {
   const source = fs.readFileSync(UI_JS, 'utf8');
   const owner = await service.unpaidAccount('bo-inter@example.test');
+  await service.request('PUT', '/api/account/profile', { token: owner.token, body: { profile: {
+    full_name: 'Dana Whitfield', contact_email: 'dana.whitfield@example.test', date_of_birth: '1980-04-12',
+    address_line1: '10 Fictional Street', city: 'Example City', region: 'CA', postal_code: '90001'
+  } } });
   const c = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   await payReportOnce(service, owner, c.case_id);
   const pdf = buildPdf({ pages: [{ lines: LINES }] });
@@ -132,7 +136,7 @@ async function run(service, check) {
   const block = panelEl.querySelector('#packet-block');
   check.ok(/Correction packet/.test(block.innerHTML), 'the packet block renders against the real service');
   check.ok(/Who this correspondence goes to/.test(block.innerHTML), 'the packet block shows the correspondence section in the consumer review');
-  check.ok(/consumer reporting agency that issued this report/.test(block.innerHTML), 'and states the recipient TYPE rather than an invented address');
+  check.ok(/Equifax/.test(block.innerHTML), 'and shows the sourced bureau recipient');
   check.ok(/id="packet-preview"/.test(block.innerHTML), 'and mounts the correspondence/evidence review from the service view');
 
   /* --- select the issue (checkbox) + correspondence details + wording A, then SAVE (against the real service). --- */
@@ -141,13 +145,17 @@ async function run(service, check) {
   dom.elementById('packet-name').value = 'Dana Whitfield';
   dom.elementById('packet-contact').value = 'dana.whitfield@example.test';
   dom.elementById('packet-reference').value = 'CRP-REF-1';
+  dom.elementById('packet-bureau').value = 'EQUIFAX';
+  dom.elementById('packet-channel').value = 'ONLINE';
+  dom.elementById('packet-purpose').value = 'ACCOUNT';
   dom.elementById('packet-wording').value = 'First wording.';
-  dom.elementById('packet-save').onclick();
-  await waitFor(() => dom.elementById('packet-approve').onclick != null);
+  await dom.elementById('packet-save').onclick();
+  await waitFor(() => block.innerHTML.includes('First wording.'));
 
   /* --- unsaved edit: change the wording (no save), then APPROVE — approve must re-save the visible wording. --- */
   dom.elementById('packet-wording').value = 'Changed wording (unsaved before approve).';
-  dom.elementById('packet-approve').onclick();
+  await dom.elementById('packet-approve').onclick();
+  await waitFor(() => block.innerHTML.includes('Approved version:'));
   await waitFor(() => dom.calls.some((x) => /POST .*packet\/approve/.test(x)));
   check.ok(dom.calls.some((x) => /POST .*packet\/approve/.test(x)), 'the approve endpoint is called');
   check.ok(dom.calls.some((x) => /POST .*packet\/wording/.test(x)), 'the wording endpoint is called');

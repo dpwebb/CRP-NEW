@@ -90,7 +90,7 @@ function validateInput(input) {
 function checkQuota(state, actor, bytes) {
   const owned = state.files.filter((row) => row.account_id === actor.account_id);
   if (owned.filter(isAccountDocument).length >= MAX_ACCOUNT_DOCUMENTS) {
-    throw new ServiceError('FILE_COUNT_LIMIT_REACHED', { limit: MAX_ACCOUNT_DOCUMENTS });
+    throw new ServiceError('ACCOUNT_DOCUMENT_LIMIT_REACHED', { limit: MAX_ACCOUNT_DOCUMENTS });
   }
   const held = owned.reduce((total, row) => total + (Number(row.stored_bytes) || 0), 0);
   if (held + bytes > uploads.MAX_ACCOUNT_STORED_BYTES) {

@@ -261,8 +261,8 @@ async function run(service, check) {
   /* ---- 10. The definite correction, the sending control and the classification on the real download. ---- */
   check.ok(/ - correction/.test(dl.text) && !/definite, correction/.test(dl.text), 'the evidence reference states the requested correction without a confidence tier');
   check.ok(/Request \(correction\): /.test(dl.text), 'with a correction request, never a mere verification');
-  check.ok(/to review, edit and send yourself/.test(dl.text), 'the document says the consumer reviews, edits and sends it');
-  check.ok(/This service supplies no address and sends nothing/.test(dl.text), 'and that this service supplies no address and sends nothing');
+  check.ok(/Review, sign where required and submit this packet yourself/.test(dl.text), 'the document says the consumer reviews, signs and submits it');
+  check.ok(/you send this; this service sends nothing/.test(dl.text), 'and that the consumer controls sending');
   check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
   check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
 
@@ -270,7 +270,7 @@ async function run(service, check) {
   evidence.potential_verification = { case_id: multiCase.case_id, downloaded_chars: (partialDl.text || '').length };
   evidence.probable_verification = { case_id: probCase.case_id, downloaded_chars: (probDl.text || '').length };
   evidence.separation = 'the consumer-entered details live on the packet row and never in the report result, extraction or evaluation';
-  evidence.sending = 'consumer-controlled: the packet is prepared for the consumer to send; this service supplies no address and sends nothing';
+  evidence.sending = 'consumer-controlled: the packet is prepared for the consumer to submit with the relevant bureau instructions; this service sends nothing';
   return evidence;
 }
 

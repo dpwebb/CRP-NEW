@@ -124,6 +124,8 @@ async function run(t, check) {
     if (method === 'POST' && url === '/api/entitlement/cancel') return responderState.cancelFails ? { status: 409, body: { ok: false, error: { code: 'NO_ACTIVE_PURCHASE_TO_CANCEL', message: 'There is no purchase recorded for this account to cancel.' } } } : { status: 200, body: { ok: true, cancellation: { at_period_end: true, plain: 'Your purchase will not renew.' } } };
     if (method === 'POST' && url === '/api/accounts') return { status: 201, body: { ok: true, account: { account_id: 'acc_stub', email: 'stub@example.test' } } };
     if (method === 'GET' && url === '/api/cases') return { status: 200, body: { ok: true, cases: [] } };
+    if (method === 'GET' && url === '/api/account/profile') return { status: 200, body: { ok: true, profile: {} } };
+    if (method === 'GET' && url === '/api/account/documents') return { status: 200, body: { ok: true, documents: [] } };
     if (method === 'GET' && url === '/api/entitlement') return { status: 200, body: { ok: true, entitlement: { plain: 'x' }, payment: { plain: 'x' }, upgrade_credit: { eligible: false } } };
     return { status: 200, body: { ok: true } };
   });
@@ -175,6 +177,8 @@ async function run(t, check) {
   responderState.cancelFails = false;
 
   /* Sign-out clears account-specific billing state. */
+  vm.runInContext('state.step = 0; render();', ctx);
+  await tick(); await tick();
   await dom.elementById('signout').onclick();
   await tick(); await tick();
   check.equal(vm.runInContext('state.billing', ctx), null, 'billing state is cleared on sign-out');
@@ -184,6 +188,8 @@ async function run(t, check) {
   responderState.billingDeferred = new Promise((r) => { resolveBilling = r; });
   vm.runInContext('state.account = { account_id: "acc_stub", email: "stub@example.test" }; state.step = 8; render();', ctx);
   await tick();
+  vm.runInContext('state.step = 0; render();', ctx);
+  await tick(); await tick();
   await dom.elementById('signout').onclick();
   await tick();
   resolveBilling({ ok: true, ...PLANS_BODY, entitlement: { entitled: true, state: 'ACTIVE', access_via: 'SUBSCRIPTION', plan_code: 'monthly', expires_at: null, cancel_at_period_end: false }, upgrade_credit: { eligible: false, credit_cents: 595, currency: 'cad' } });
@@ -195,4 +201,3 @@ async function run(t, check) {
 }
 
 module.exports = { run, id: 'ba-consumer-billing', title: 'BLOCKER-BILLING-001: billing consumer interface and server enforcement' };
-

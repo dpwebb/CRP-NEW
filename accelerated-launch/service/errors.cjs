@@ -47,6 +47,11 @@ const STATUS_BY_CODE = Object.freeze({
   PACKET_CORRESPONDENCE_REQUIRED: 409,
   PACKET_NOT_APPROVED: 409,
   PACKET_APPROVAL_STALE: 409,
+  PACKET_SUPPORT_REQUIRED: 409,
+  PACKET_BUREAU_MISMATCH: 400,
+  PACKET_PURPOSE_MISMATCH: 400,
+  PACKET_SUBMISSION_METHOD_REQUIRED: 400,
+  ACCOUNT_DOCUMENT_LIMIT_REACHED: 409,
   TWO_RESULTS_REQUIRED: 400,
   SAME_RESULT_SELECTED: 400,
   CHECKOUT_NOT_CONFIRMED_BY_PROVIDER: 409,
@@ -60,6 +65,11 @@ const STATUS_BY_CODE = Object.freeze({
 
 /** Plain-language copy for every machine code. The consumer UI renders these and nothing rawer. */
 const MESSAGE_BY_CODE = Object.freeze({
+  PACKET_SUPPORT_REQUIRED: 'Complete the bureau checklist shown in your packet review before approving.',
+  PACKET_BUREAU_MISMATCH: 'Choose the bureau that issued the selected report. Prepare separate packets for different bureaus.',
+  PACKET_PURPOSE_MISMATCH: 'Use the checklist for the selected entries: accounts, or collections and public records. Mixed entries also need address proof.',
+  PACKET_SUBMISSION_METHOD_REQUIRED: 'Use the bureau’s online correction service for this packet.',
+  ACCOUNT_DOCUMENT_LIMIT_REACHED: 'Your account holds eight supporting documents. Remove an unneeded document before uploading another.',
   INVALID_REQUEST: 'That request could not be understood.',
   EXPLICIT_COUNTRY_AND_REGION_REQUIRED: 'Choose a country and a region before continuing.',
   UNSUPPORTED_OR_MISMATCHED_JURISDICTION: 'That country and region pair is not one of the supported selections.',
@@ -104,7 +114,7 @@ const MESSAGE_BY_CODE = Object.freeze({
   SAME_RESULT_SELECTED: 'Choose two different reports to compare.',
   CHECKOUT_NOT_CONFIRMED_BY_PROVIDER: 'The payment provider has not confirmed this purchase, so no access was granted.',
   NO_ACTIVE_PURCHASE_TO_CANCEL: 'There is no purchase recorded for this account to cancel.',
-  ACCOUNT_STORAGE_QUOTA_EXCEEDED: 'This account is already holding as much report data as it may. Delete a case to free the space.',
+  ACCOUNT_STORAGE_QUOTA_EXCEEDED: 'Your stored files have reached the account limit. Remove an unneeded document or case to free space.',
   FILE_COUNT_LIMIT_REACHED: 'This case already holds the maximum number of files. Combine pages into a PDF under 10 MiB, or remove an unneeded case. Do not split one report across cases.',
   TOO_MANY_FAILED_SIGN_INS: 'Too many failed sign-in attempts. Wait and try again.',
   PAYMENT_PROVIDER_NOT_CONFIGURED: 'No payment provider is connected to this service, so nothing can be purchased and no access can be activated.',

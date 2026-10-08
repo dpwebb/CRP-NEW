@@ -162,7 +162,7 @@ async function run(t, check) {
   const countOwner = accounts.createAccount(store, { email: 'document-count@example.test', password: 'a-long-enough-password' }).account;
   for (let i = 0; i < documents.MAX_ACCOUNT_DOCUMENTS; i++) documents.receiveDocument(store, countOwner, input(PDF));
   const beforeCountRefusal = t.blobFiles().length;
-  refusal(check, () => documents.receiveDocument(store, countOwner, input(PDF)), 'FILE_COUNT_LIMIT_REACHED', 'ninth account document is refused');
+  refusal(check, () => documents.receiveDocument(store, countOwner, input(PDF)), 'ACCOUNT_DOCUMENT_LIMIT_REACHED', 'ninth account document is refused');
   check.equal(t.blobFiles().length, beforeCountRefusal, 'file count refusal retains no blob');
   const first = documents.listDocuments(store, countOwner)[0];
   check.equal(documents.deleteDocument(store, countOwner, first.file_id).blobs_removed, 1, 'owned delete removes real bytes');

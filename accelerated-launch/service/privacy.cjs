@@ -13,10 +13,11 @@ function dashboard(store, actor) {
       })),
       result_count: state.results.filter(result => result.account_id === actor.account_id && result.case_id === row.case_id).length
     })),
+    account_documents: require('./account-documents.cjs').listDocuments(store, actor).map(file => ({ file_id: file.file_id, name: file.original_filename, stored_bytes: file.stored_bytes })),
     retention: { mode: 'UNTIL_DELETED', adjustable: false, plain: retention.policyView().policy.report_bytes },
     deletion: {
       scope: 'ACTIVE_SERVICE_DATA',
-      plain: 'Delete a case to remove its stored documents and results from the active service, or delete your account to remove all its cases and sessions.',
+      plain: 'Delete a case to remove its reports and results. Remove identification and address documents from Your account, or delete your account to remove all its contact details, documents, cases and sessions.',
       backups: 'Deletion from the active service does not establish erasure of separate backups. Backup erasure timing has not been verified.',
       external_billing: 'Deleting your account here does not delete payment records held separately by the payment provider.'
     }

@@ -14,10 +14,45 @@
  */
 
 const crypto = require('node:crypto');
+const support = require('./packet-support.cjs');
+const accountDocuments = require('./account-documents.cjs');
+const { archive } = require('./packet-archive.cjs');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
+const bureauRules = require('./bureau-dispute-requirements.cjs');
+
+function selectedBureaus(country, row, selected) {
+  const own = [...new Set(selected.map(issue => bureauRules.normalizeBureau(issue.report_identity?.bureau, country)).filter(Boolean))];
+  return own.length ? own : [bureauRules.normalizeBureau(reportIdentity(row)?.bureau, country)].filter(Boolean);
+}
+function bureauMismatch(country, row, selected, settings) {
+  return settings && selectedBureaus(country, row, selected).some(bureau => bureau !== settings.bureau);
+}
+function requireBureau(country, row, selected, settings) {
+  if (bureauMismatch(country, row, selected, settings)) throw new ServiceError('PACKET_BUREAU_MISMATCH');
+}
+function packetIdentity(row, selected) {
+  const identities = [...new Map(selected.filter(issue => issue.report_identity?.bureau).map(issue => [JSON.stringify(issue.report_identity), issue.report_identity])).values()];
+  if (!identities.length) return reportIdentity(row) || {};
+  if (identities.length === 1) return identities[0];
+  return { bureau: [...new Set(identities.map(identity => identity.bureau))].join(' / '), reference_date: [...new Set(identities.map(identity => identity.reference_date).filter(Boolean))].join(', ') };
+}
+function purposeFor(selected) {
+  const kinds = selected.map(issue => String(issue.record?.kind_label || '').toLowerCase());
+  const account = kinds.some(kind => /credit account/.test(kind));
+  const publicRecord = kinds.some(kind => /collection|judgment|bankruptcy|public record|tax lien/.test(kind));
+  return { purpose: account ? 'ACCOUNT' : publicRecord ? 'PUBLIC_RECORD' : null, mixed: account && publicRecord };
+}
+function purposeMismatch(country, selected, settings) {
+  if (!settings || country !== 'CA' || settings.bureau !== 'EQUIFAX') return false;
+  const expected = purposeFor(selected);
+  return expected.purpose && (settings.purpose !== expected.purpose || (expected.mixed && settings.identity_shows_address));
+}
+function requirePurpose(country, selected, settings) {
+  if (purposeMismatch(country, selected, settings)) throw new ServiceError('PACKET_PURPOSE_MISMATCH');
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -131,6 +166,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
     `wording:${packetRow.wording || ''}`,
     `recipient:${recipientTypeOf(packetRow)}`,
     `correspondence:${JSON.stringify(correspondenceOf(packetRow))}`,
+    `support:${JSON.stringify(packetRow.support_snapshot || null)}`,
 
     `bureau:${identity.bureau || ''}`,
     `reference:${identity.reference_date || ''}`,
@@ -152,10 +188,10 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
 }
 
 function packetView(store, actor, caseId) {
-  cases.requireOwnedCase(store, actor, caseId);
+  const owned = cases.requireOwnedCase(store, actor, caseId);
   const row = latestResult(store, caseId);
   const eligible = row ? eligibleIssues(row) : [];
-  const packet = currentPacket(store, caseId);
+  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
   const identity = row ? reportIdentity(row) : null;
 
   /* The correspondence and its organized evidence, exactly as they will appear in the download, so the consumer
@@ -163,17 +199,22 @@ function packetView(store, actor, caseId) {
   const selectedIssues = packet
     ? (packet.selected_issue_ids || []).map((id) => eligible.find((i) => i.issue_id === id)).filter(Boolean)
     : [];
+  const wrongBureau = bureauMismatch(owned.country, row, selectedIssues, packet?.support);
+  const wrongPurpose = purposeMismatch(owned.country, selectedIssues, packet?.support);
+  if (wrongBureau && packet.support_snapshot) packet.support_snapshot.missing.push('Choose the bureau that issued the selected report. Prepare separate packets for different bureaus.');
+  if (wrongPurpose && packet.support_snapshot) packet.support_snapshot.missing.push('Choose the checklist for the selected entries. Account corrections need the account checklist; collections and public records need their own checklist. Mixed entries also need address proof.');
   const approvalStale = Boolean(packet && packet.approved_version && (!row
-    || packet.result_id !== row.result_id
+    || wrongBureau || wrongPurpose || packet.result_id !== row.result_id
     || selectedIssues.length !== (packet.selected_issue_ids || []).length
     || canonicalVersion(packet, row, selectedIssues) !== packet.approved_version));
   const correspondenceMissing = missingCorrespondenceFields(packet);
   const correspondencePreview = selectedIssues.length
-    ? correspondenceLines(packet, row, selectedIssues).concat(evidenceLines(selectedIssues)).join('\n')
+    ? correspondenceLines(packet, row, selectedIssues).concat(support.lines(packet), evidenceLines(selectedIssues)).join('\n')
     : null;
   return {
     report_identity: identity,
     eligible_issues: eligible.map(issues.publicIssue),
+    support: { ...support.publicView(store, actor, owned.country, selectedBureaus(owned.country, row, selectedIssues)[0] || owned.selected_bureau || identity?.bureau, packet), suggested_purpose: purposeFor(selectedIssues.length ? selectedIssues : eligible).purpose },
     packet: {
       packet_id: packet ? packet.packet_id : null,
       result_id: packet ? packet.result_id : null,
@@ -319,6 +360,22 @@ function setCorrespondence(store, actor, caseId, details) {
   });
 }
 
+/** Consumer-selected bureau route and account documents, separate from report facts. */
+function setSupport(store, actor, caseId, input) {
+  const owned = cases.requireOwnedCase(store, actor, caseId);
+  const packet = currentPacket(store, caseId), row = latestResult(store, caseId);
+  if (!packet || !row) throw new ServiceError('PACKET_NO_SELECTION');
+  const settings = support.normalize(input, owned.country);
+  const selected = eligibleIssues(row).filter(issue => packet.selected_issue_ids.includes(issue.issue_id));
+  requireBureau(owned.country, row, selected, settings);
+  requirePurpose(owned.country, selected, settings);
+  accountDocuments.materialDocuments(store, actor, settings.document_ids);
+  store.update(state => {
+    const live = state.packets.find(item => item.packet_id === packet.packet_id);
+    live.support = settings; live.approved_version = null; live.approved_at = null; live.updated_at = nowIso();
+  });
+}
+
 /** Refuse approval or download while a necessary correspondence detail is blank. */
 function requireCorrespondence(packet) {
   const missing = missingCorrespondenceFields(packet);
@@ -328,8 +385,8 @@ function requireCorrespondence(packet) {
 
 /** Explicitly approve the current version. Requires a non-empty selection bound to the current result. */
 function approvePacket(store, actor, caseId) {
-  cases.requireOwnedCase(store, actor, caseId);
-  const packet = currentPacket(store, caseId);
+  const owned = cases.requireOwnedCase(store, actor, caseId);
+  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
   if (!packet || !packet.selected_issue_ids || !packet.selected_issue_ids.length) {
     throw new ServiceError('PACKET_NO_SELECTION');
   }
@@ -339,11 +396,14 @@ function approvePacket(store, actor, caseId) {
   const byId = new Map(eligible.map((i) => [i.issue_id, i]));
   const selected = packet.selected_issue_ids.map((id) => byId.get(id)).filter(Boolean);
   if (selected.length !== packet.selected_issue_ids.length) throw new ServiceError('PACKET_APPROVAL_STALE');
+  requireBureau(owned.country, row, selected, packet.support);
+  requirePurpose(owned.country, selected, packet.support);
   /* A usable piece of correspondence needs its necessary details before it can be approved. */
   requireCorrespondence(packet);
+  if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   return store.update((state) => {
     const live = state.packets.find((p) => p.case_id === caseId);
-    live.approved_version = canonicalVersion(live, row, selected);
+    live.approved_version = canonicalVersion(packet, row, selected);
     live.approved_at = nowIso();
     live.updated_at = nowIso();
     return live;
@@ -352,8 +412,8 @@ function approvePacket(store, actor, caseId) {
 
 /** Resolve the approved, non-stale selected issues (throws on any stale/ineligible selection). */
 function resolveSelected(store, actor, caseId) {
-  cases.requireOwnedCase(store, actor, caseId);
-  const packet = currentPacket(store, caseId);
+  const owned = cases.requireOwnedCase(store, actor, caseId);
+  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
   if (!packet || !packet.approved_version) throw new ServiceError('PACKET_NOT_APPROVED');
   requireCorrespondence(packet);
   const row = latestResult(store, caseId);
@@ -363,7 +423,10 @@ function resolveSelected(store, actor, caseId) {
   const byId = new Map(eligible.map((i) => [i.issue_id, i]));
   const selected = packet.selected_issue_ids.map((id) => byId.get(id));
   if (selected.some((i) => !i)) throw new ServiceError('PACKET_APPROVAL_STALE');
+  requireBureau(owned.country, row, selected, packet.support);
+  requirePurpose(owned.country, selected, packet.support);
   if (canonicalVersion(packet, row, selected) !== packet.approved_version) throw new ServiceError('PACKET_APPROVAL_STALE');
+  if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   return { packet, row, selected };
 }
 
@@ -473,7 +536,7 @@ function issueLines(issue) {
  * SELECTED issue and nothing else. No address, remedy, deadline, signature or submitted status is ever invented.
  */
 function correspondenceLines(packet, row, selected) {
-  const identity = reportIdentity(row) || {};
+  const identity = packetIdentity(row, selected);
   const c = correspondenceOf(packet);
   const lines = [];
   lines.push('CORRESPONDENCE TO SEND (you send this; this service sends nothing)');
@@ -598,7 +661,7 @@ function evidenceLines(selected) {
 /** Assemble the full packet document, bound to the approved version. */
 function packetDocumentBody(store, actor, caseId) {
   const { packet, row, selected } = resolveSelected(store, actor, caseId);
-  const identity = reportIdentity(row) || {};
+  const identity = packetIdentity(row, selected);
   const lines = [];
   lines.push('CRP CORRECTION PACKET');
   lines.push('Source-supported reporting issue correction and verification requests');
@@ -609,6 +672,7 @@ function packetDocumentBody(store, actor, caseId) {
   lines.push(`Selected issues: ${selected.length}`);
   lines.push('');
   lines.push(...correspondenceLines(packet, row, selected));
+  lines.push(...support.lines(packet), '');
   lines.push('ISSUES AND THE FACTS THEY CAME FROM');
   lines.push('');
   for (const issue of selected) {
@@ -623,7 +687,7 @@ function packetDocumentBody(store, actor, caseId) {
   }
   lines.push('='.repeat(72));
   lines.push('This packet states the reporting issues found in your report, the facts they came from and their uncertainty.');
-  lines.push('It is assembled locally for you to review, edit and send yourself. This service supplies no address and sends nothing: sending it is your decision.');
+  lines.push('Review, sign where required and submit this packet yourself using the bureau instructions above.');
   lines.push('');
   return lines.join('\n');
 }
@@ -632,6 +696,15 @@ function packetDocumentBody(store, actor, caseId) {
 function packetDownload(store, actor, caseId) {
   const body = packetDocumentBody(store, actor, caseId);
   const packet = currentPacket(store, caseId);
+  if (packet.support?.document_ids?.length) {
+    const entries = [{ name: '01-correspondence.txt', bytes: Buffer.from(body, 'utf8') }];
+    packet.support.document_ids.forEach((id, index) => {
+      const file = accountDocuments.getDocument(store, actor, id);
+      const ext = file.document.content_type === 'application/pdf' ? 'pdf' : file.document.content_type === 'image/png' ? 'png' : 'jpg';
+      entries.push({ name: `documents/${String(index + 1).padStart(2, '0')}-${file.document.document_type.toLowerCase()}.${ext}`, bytes: file.bytes });
+    });
+    return { filename: `CRP-dispute-packet-${caseId}.zip`, content_type: 'application/zip', body: archive(entries), approved_version: packet.approved_version, is_a_response_packet: true, is_fictional: false };
+  }
   return {
     filename: `CRP-correction-packet-${caseId}.txt`,
     content_type: 'text/plain; charset=utf-8',
@@ -647,6 +720,7 @@ module.exports = {
   selectIssues,
   setWording,
   setCorrespondence,
+  setSupport,
   approvePacket,
   packetDownload,
   eligibleIssues,

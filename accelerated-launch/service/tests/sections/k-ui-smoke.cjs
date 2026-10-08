@@ -232,6 +232,8 @@ function makeResponder() {
       return { status: 201, body: { ok: true, account: { account_id: 'acc_stub', email: 'stub@example.test' } } };
     }
     if (method === 'GET' && url === '/api/session') return { status: 200, body: { ok: true, account: { account_id: 'acc_stub', email: 'stub@example.test' }, signed_in: true } };
+    if (method === 'GET' && url === '/api/account/profile') return { status: 200, body: { ok: true, profile: { full_name: 'Fictional Consumer' } } };
+    if (method === 'GET' && url === '/api/account/documents') return { status: 200, body: { ok: true, documents: [] } };
     if (method === 'GET' && url === '/api/cases') return { status: 200, body: { ok: true, cases: [{ case_id: 'case_stub', country: 'CA', region: 'CA-NS', status: 'OPEN' }] } };
     if (method === 'GET' && url === '/api/privacy') return { status: 200, body: { ok: true, cases: [{country:'CA',region:'CA-NS',documents:[{name:'private-owned.pdf',stored_bytes:123}],result_count:1}],retention:{plain:'Kept until you delete it.'},deletion:{backups:'Backup erasure timing has not been verified.',external_billing:'Payment provider records are separate.'} } };
     if (method === 'POST' && url === '/api/cases') return { status: 201, body: { ok: true, case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS' } } };
@@ -343,6 +345,7 @@ async function run(t, check) {
 
   /* Sign-out control exists and the machine payload is never read. */
   vm.runInContext('state.step = 0; render();', ctx);
+  await tick(); await tick();
   check.ok(/Sign out/.test(panel.innerHTML), 'the sign-out control is present');
   check.ok(!/\.machine\b/.test(source), 'the UI source never touches the audit-only machine payload');
 

@@ -62,7 +62,7 @@ function read(blocks, options = {}) {
 function selected(ctx, checkId) { return ctx.findings.filter((issue) => issue.check_id === checkId); }
 
 function packetStore(ctx) {
-  const state = { cases: [{ case_id: 'fictional-tu-case', account_id: 'fictional-owner', country: 'CA', region: 'CA-MB' }],
+  const state = { accounts: [{ account_id: 'fictional-owner' }], files: [], cases: [{ case_id: 'fictional-tu-case', account_id: 'fictional-owner', country: 'CA', region: 'CA-MB' }],
     results: [{ ...ctx, case_id: 'fictional-tu-case', account_id: 'fictional-owner', result_id: 'fictional-result' }],
     packets: [] };
   return { state: () => state, update: (fn) => fn(state) };

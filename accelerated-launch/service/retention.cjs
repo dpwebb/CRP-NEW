@@ -19,6 +19,8 @@ const entitlement = require('./entitlement.cjs');
 const ORPHAN_BLOB_GRACE_MS = 5 * 60 * 1000;
 
 const POLICY = Object.freeze({
+  account_support_documents: 'Identification, address and supporting documents stay private until you remove them or delete your account. Deleting a case does not remove documents saved in your account.',
+  account_contact_details: 'Saved contact details are kept until you clear them or delete your account.',
   report_bytes:
     'A report you upload is kept, privately, on this machine until you delete the case or delete your account. ' +
     'Nothing expires it on a timer, and it is never copied into the application source tree.',

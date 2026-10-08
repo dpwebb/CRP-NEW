@@ -97,6 +97,10 @@ const SECTION_FILES = [
   'dw-us-history-completion.cjs',
   'dx-report-date-custody.cjs',
   'dy-reader-date-delivery.cjs',
+  'ea-account-profile-documents.cjs',
+  'eb-account-packet-support.cjs',
+  'ec-account-packet-ui.cjs',
+  'ed-account-browser.cjs',
   'dh-ca-reader-completion.cjs',
   'di-au-reader-completion.cjs',
   'dj-gb-reader-completion.cjs',
@@ -269,6 +273,10 @@ async function runSection(file, verbose) {
     report.section_exception = first;
     report.failures.push(`section threw: ${first}`);
     process.stdout.write(`  FAIL section threw: ${first}\n`);
+    if (err && err.cause) {
+      const { code, syscall, address, port } = err.cause;
+      process.stdout.write(`  FAIL transport cause: ${JSON.stringify({ code, syscall, address, port })}\n`);
+    }
   } finally {
     await service.close();
   }

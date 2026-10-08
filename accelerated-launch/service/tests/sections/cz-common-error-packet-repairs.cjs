@@ -23,7 +23,7 @@ function assessed(year, date = '2026-10-07', region = 'US-CA', lines = linesFor(
 }
 
 function packetStore(ctx) {
-  const state = { cases: [{ case_id: 'fictional-case', account_id: 'fictional-owner' }],
+  const state = { accounts: [{ account_id: 'fictional-owner' }], files: [], cases: [{ case_id: 'fictional-case', account_id: 'fictional-owner' }],
     results: [{ case_id: 'fictional-case', result_id: 'fictional-result', ...ctx }], packets: [] };
   return { state: () => state, update: (fn) => fn(state) };
 }

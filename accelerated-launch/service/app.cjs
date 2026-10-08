@@ -17,6 +17,8 @@ const { ServiceError, toBody } = require('./errors.cjs');
 const { PrivateStore } = require('./private-store.cjs');
 const { Logger } = require('./logger.cjs');
 const accounts = require('./accounts.cjs');
+const accountProfile = require('./account-profile.cjs');
+const accountDocuments = require('./account-documents.cjs');
 const cases = require('./cases.cjs');
 const uploads = require('./uploads.cjs');
 const formats = require('./formats.cjs');
@@ -139,6 +141,14 @@ const ROUTES = Object.freeze([
   ['POST', '/api/sessions', false, 'signIn'],
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
+  ['GET', '/api/account/profile', true, 'accountProfile'],
+  ['PUT', '/api/account/profile', true, 'saveAccountProfile'],
+  ['GET', '/api/account/documents', true, 'accountDocuments'],
+  ['POST', '/api/account/documents', true, 'uploadAccountDocument'],
+  ['GET', '/api/account/documents/:fileId', true, 'accountDocument'],
+  ['DELETE', '/api/account/documents/:fileId', true, 'deleteAccountDocument'],
+  ['POST', '/api/cases/:caseId/packet/support', true, 'packetSupport'],
+  ['POST', '/api/cases/:caseId/packet/requirements', true, 'packetRequirements'],
   ['GET', '/api/privacy', true, 'privacyDashboard'],
   ['GET', '/api/support', true, 'supportInfo'],
   ['GET', '/api/support/references/:reference', true, 'supportLookup'],
@@ -309,6 +319,17 @@ function buildHandlers(store, logger, surface) {
 
     sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true } }),
 
+    accountProfile: ({ actor }) => ({ status: 200, json: { ok: true, profile: accountProfile.getProfile(store, actor) } }),
+    saveAccountProfile: ({ actor, body }) => ({ status: 200, json: { ok: true, profile: accountProfile.setProfile(store, actor, body.profile) } }),
+    accountDocuments: ({ actor }) => ({ status: 200, json: { ok: true, documents: accountDocuments.listDocuments(store, actor) } }),
+    uploadAccountDocument: ({ actor, body }) => ({ status: 201, json: { ok: true, document: accountDocuments.receiveDocument(store, actor, body) } }),
+    accountDocument: ({ actor, params }) => {
+      const file = accountDocuments.getDocument(store, actor, params.fileId);
+      return { status: 200, text: file.bytes, content_type: file.document.content_type,
+        headers: { 'Content-Disposition': `attachment; filename="account-document-${params.fileId}.${file.document.content_type === 'application/pdf' ? 'pdf' : file.document.content_type === 'image/png' ? 'png' : 'jpg'}"` } };
+    },
+    deleteAccountDocument: ({ actor, params }) => ({ status: 200, json: { ok: true, ...accountDocuments.deleteDocument(store, actor, params.fileId) } }),
+
     privacyDashboard: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./privacy.cjs').dashboard(store, actor) } }),
     supportInfo: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').supportInfo(store, actor) } }),
     supportLookup: ({ actor, params }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').lookup(store, actor, params.reference) } }),
@@ -321,7 +342,8 @@ function buildHandlers(store, logger, surface) {
     /* ------------------------------------------------------------ jurisdiction and formats */
 
     health: () => ({ status: 200, json: { ok: true, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: surface.entitlement.payment_mode, launch_ready: false } }),
-    jurisdictions: () => ({ status: 200, json: { ok: true, surface } }),
+    jurisdictions: () => ({ status: 200, json: { ok: true, surface: { ...surface,
+      bureau_choices: Object.fromEntries(surface.countries.map(country => [country.value, require('./bureau-dispute-requirements.cjs').catalog(country.value).map(({ id, label }) => ({ id, label }))])) } } }),
 
     supportedFormats: () => ({
       status: 200,
@@ -556,6 +578,21 @@ function buildCaseHandlers(store, logger) {
       packets.approvePacket(store, actor, params.caseId);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetSupport: ({ params, actor, body }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      packets.setSupport(store, actor, params.caseId, body.support);
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+    packetRequirements: ({ params, actor, body }) => {
+      const owned = cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const support = require('./packet-support.cjs'), settings = support.normalize(body.support, owned.country);
+      accountDocuments.materialDocuments(store, actor, settings.document_ids);
+      const snapshot = support.snapshot(store, actor, owned.country, settings);
+      return { status: 200, json: { ok: true, requirements: snapshot.requirements, missing: snapshot.missing } };
     },
 
     packetDownload: ({ params, actor }) => {

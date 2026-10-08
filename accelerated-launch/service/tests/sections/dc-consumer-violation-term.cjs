@@ -23,7 +23,7 @@ function assessed(lines, region = 'US-CA', assessedOn = '2026-10-07') {
 }
 
 function storeFor(ctx, rendered = results.renderResultSet(ctx)) {
-  const state = { cases: [{ case_id: 'fictional-case', account_id: 'fictional-owner' }],
+  const state = { accounts: [{ account_id: 'fictional-owner' }], files: [], cases: [{ case_id: 'fictional-case', account_id: 'fictional-owner' }],
     results: [{ case_id: 'fictional-case', result_id: 'fictional-result', created_at: '2026-10-07T12:00:00Z',
       ...ctx, rendered }], packets: [], clarifications: [{ answer: 'unchanged fictional answer' }] };
   return { state: () => state, update: (fn) => fn(state) };

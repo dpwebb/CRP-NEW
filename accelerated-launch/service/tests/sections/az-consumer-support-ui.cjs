@@ -111,6 +111,8 @@ async function run(t, check) {
     }
     if (method === 'POST' && url === '/api/accounts') return { status: 201, body: { ok: true, account: { account_id: 'acc_stub', email: 'stub@example.test' } } };
     if (method === 'GET' && url === '/api/cases') return { status: 200, body: { ok: true, cases: [] } };
+    if (method === 'GET' && url === '/api/account/profile') return { status: 200, body: { ok: true, profile: {} } };
+    if (method === 'GET' && url === '/api/account/documents') return { status: 200, body: { ok: true, documents: [] } };
     if (method === 'GET' && url === '/api/entitlement') return { status: 200, body: { ok: true, entitlement: { plain: 'no purchase recorded' }, payment: { plain: 'no payment provider connected' }, upgrade_credit: { eligible: false } } };
     return { status: 200, body: { ok: true } };
   });
@@ -175,6 +177,8 @@ async function run(t, check) {
   responderState.supportDeferred = new Promise((r) => { resolveSupport = r; });
   vm.runInContext('state.step = 7; render();', ctx);
   await tick();
+  vm.runInContext('state.step = 0; render();', ctx);
+  await tick(); await tick();
   await dom.elementById('signout').onclick();
   await tick();
   check.equal(vm.runInContext('state.support', ctx), null, 'support state is cleared on sign-out');
@@ -187,4 +191,3 @@ async function run(t, check) {
 }
 
 module.exports = { run, id: 'az-consumer-support-ui', title: 'BLOCKER-SUPPORT-001: Support interface behavior and reference secret lifecycle' };
-

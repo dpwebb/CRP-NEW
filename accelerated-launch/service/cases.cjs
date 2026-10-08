@@ -44,12 +44,15 @@ function createCase(store, actor, input) {
   const region = typeof raw.region === 'string' ? raw.region.trim() : '';
   if (!country || !region) throw new ServiceError('EXPLICIT_COUNTRY_AND_REGION_REQUIRED');
   const selection = resolveSelection(country, region);
+  const bureau = typeof raw.bureau === 'string' ? raw.bureau : '';
+  if (bureau && !require('./bureau-dispute-requirements.cjs').catalog(selection.country).some(row => row.id === bureau)) throw new ServiceError('INVALID_REQUEST');
   return store.update((state) => {
     const created = {
       case_id: newCaseId(),
       account_id: actor.account_id,
       country: selection.country,
       region: selection.region,
+      ...(bureau ? { selected_bureau: bureau } : {}),
       jurisdiction_batch: selection.batch,
       launch_ready: selection.launchReady,
       evaluation_available: selection.evaluationAvailable,

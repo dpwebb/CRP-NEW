@@ -1,0 +1,48 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
+async function run(service, check) {
+  const actor = await service.unpaidAccount('account-browser@example.test');
+  const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  const context = await browser.newContext(), page = await context.newPage(); page.setDefaultTimeout(20000);
+  const bytes = buildPdf({ pages: [{ lines: ['FICTIONAL IDENTIFICATION COPY', 'Fictional Account Consumer'] }] });
+  const screenshot = path.join(__dirname, '..', '..', 'out', 'fictional-account-browser.png');
+  try {
+    await page.goto(service.base + '/');
+    await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
+    await page.waitForSelector('#open');
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 9', 'sign-in still opens Step2');
+    await page.locator('#country').selectOption('CA'); await page.locator('#region').selectOption('CA-NS');
+    check.deepEqual(await page.locator('#bureau option').evaluateAll(nodes => nodes.map(node => node.value).filter(Boolean)), ['EQUIFAX', 'TRANSUNION'], 'Canada offers its relevant bureaus');
+    await page.locator('#bureau').selectOption('TRANSUNION');
+    const createResponse = page.waitForResponse(response => response.url().endsWith('/api/cases') && response.request().method() === 'POST');
+    await page.locator('#open').click(); const created = await (await createResponse).json();
+    check.equal(created.case.selected_bureau, 'TRANSUNION', 'bureau choice reaches the real case');
+    await page.locator('#steps button[data-step="0"]').click(); await page.waitForSelector('#account-save');
+    check.equal(await page.locator('#signin, #create, #password').count(), 0, 'signed-in back navigation shows no authentication controls');
+    check.ok(!/Stripe is connected|Nothing is charged|No email is sent|Another account cannot/.test(await page.locator('#panel').innerText()), 'Step1 omits confusing internal copy');
+    for (const [field, value] of Object.entries({ full_name: 'Fictional Account Consumer', contact_email: 'reply@example.test', phone: '555-0100', date_of_birth: '1980-04-12', address_line1: '12 Fictional Street', city: 'Halifax', region: 'NS', postal_code: 'B3J 0A1', country: 'Canada' })) await page.locator('#account-' + field).fill(value);
+    await page.locator('#account-save').click(); await page.waitForFunction(() => document.body.innerText.includes('Contact details saved.'));
+    await page.locator('#account-document-type').selectOption('IDENTITY'); await page.locator('#account-document-kind').selectOption('PASSPORT');
+    await page.locator('#account-document-file').setInputFiles({ name: 'fictional-id.pdf', mimeType: 'application/pdf', buffer: bytes });
+    await page.locator('#account-document-upload').click(); await page.waitForSelector('a[href^="/api/account/documents/"]');
+    check.equal(await page.locator('a[href^="/api/account/documents/"]').count(), 1, 'support document uploads without any paid entitlement');
+    await page.reload(); await page.waitForSelector('#open');
+    await page.locator('#steps button[data-step="0"]').click(); await page.waitForSelector('#account-save');
+    check.equal(await page.locator('#signin, #create, #password').count(), 0, 'session reload and Step1 return still omit sign-in prompts');
+    check.equal(await page.locator('#account-full_name').inputValue(), 'Fictional Account Consumer', 'saved contact survives reload');
+    check.equal(await page.locator('#account-phone').inputValue(), '555-0100', 'saved phone survives reload');
+    check.equal(await page.locator('a[href^="/api/account/documents/"]').count(), 1, 'owned supporting upload survives reload');
+    fs.mkdirSync(path.dirname(screenshot), { recursive: true }); await page.screenshot({ path: screenshot, fullPage: true });
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('a[href^="/api/account/documents/"]').click()]);
+    check.ok(fs.readFileSync(await download.path()).equals(bytes), 'actual browser retrieves exactly the owned original ID copy');
+    await page.locator('[data-delete-document]').click(); await page.waitForFunction(() => document.body.innerText.includes('Document removed.'));
+    check.equal(await page.locator('a[href^="/api/account/documents/"]').count(), 0, 'consumer removes the supporting copy from account');
+    const removed = await service.request('DELETE', '/api/account', { token: actor.token });
+    check.equal(removed.status, 200, 'fictional browser account and contact details cleaned up');
+    return { real_browser: true, unpaid_account_contact_and_documents: true, sign_in_back_and_reload: true, jurisdiction_bureau_choice: true, screenshot };
+  } finally { await browser.close(); }
+}
+module.exports = { run, id: 'ed-account-browser', title: 'Real-browser signed-in account details, reload persistence, bureau choice and document custody' };
