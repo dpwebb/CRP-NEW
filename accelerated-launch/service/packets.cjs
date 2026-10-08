@@ -17,6 +17,7 @@ const crypto = require('node:crypto');
 const support = require('./packet-support.cjs');
 const accountDocuments = require('./account-documents.cjs');
 const { archive } = require('./packet-archive.cjs');
+const { renderPacketPdf } = require('./packet-pdf.cjs');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
@@ -160,6 +161,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
   const identity = reportIdentity(resultRow) || {};
   const ordered = [...selectedIssues].sort((a, b) => (a.issue_id < b.issue_id ? -1 : 1));
   const parts = [
+    'packet-format:print-2',
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
     `issues:${ordered.map(issueContent).join(';')}`,
@@ -209,7 +211,7 @@ function packetView(store, actor, caseId) {
     || canonicalVersion(packet, row, selectedIssues) !== packet.approved_version));
   const correspondenceMissing = missingCorrespondenceFields(packet);
   const correspondencePreview = selectedIssues.length
-    ? correspondenceLines(packet, row, selectedIssues).concat(support.lines(packet), evidenceLines(selectedIssues)).join('\n')
+    ? documentText(packet, row, selectedIssues)
     : null;
   return {
     report_identity: identity,
@@ -231,6 +233,11 @@ function packetView(store, actor, caseId) {
       correspondence_missing: correspondenceMissing,
       correspondence_ready: correspondenceMissing.length === 0,
       correspondence_preview: correspondencePreview,
+      preview_version: packet && row && selectedIssues.length ? canonicalVersion(packet, row, selectedIssues) : null,
+      attachment_manifest: attachmentManifest(packet),
+      required_form_manifest: requiredFormManifest(packet),
+      print_instructions: printingInstructions(packet),
+      print_available: Boolean(packet && packet.approved_version && !approvalStale),
       download_available: Boolean(packet && packet.approved_version && !approvalStale)
     }
   };
@@ -384,7 +391,7 @@ function requireCorrespondence(packet) {
 
 
 /** Explicitly approve the current version. Requires a non-empty selection bound to the current result. */
-function approvePacket(store, actor, caseId) {
+function approvePacket(store, actor, caseId, expectedVersion) {
   const owned = cases.requireOwnedCase(store, actor, caseId);
   const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
   if (!packet || !packet.selected_issue_ids || !packet.selected_issue_ids.length) {
@@ -401,6 +408,7 @@ function approvePacket(store, actor, caseId) {
   /* A usable piece of correspondence needs its necessary details before it can be approved. */
   requireCorrespondence(packet);
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
+  if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
   return store.update((state) => {
     const live = state.packets.find((p) => p.case_id === caseId);
     live.approved_version = canonicalVersion(packet, row, selected);
@@ -446,91 +454,6 @@ function accountLine(issue, indent) {
   return `${pad}Account: ${ai.name}${raw}${loc}`;
 }
 
-/** One issue block of the packet document: the factual basis, the uncertainty and the request. */
-function issueLines(issue) {
-  const lines = [];
-  if (issues.consumerLabel(issue)) lines.push(`  ${issues.consumerLabel(issue)}`);
-  if (issue.basis_type === issues.BASIS_TYPE.STATUTORY_RETENTION) {
-    lines.push(`  Rule: ${issue.citation}`);
-    if (issue.source_version) lines.push(`  Rule version: ${issue.source_version}`);
-    for (const basis of issue.supported_bases || []) {
-      if (basis.adapter_id === issue.adapter_id) continue;
-      lines.push(`  Additional supporting rule: ${basis.citation}`);
-      if (basis.source_version) lines.push(`  Rule version: ${basis.source_version}`);
-      if (basis.uncertainty) lines.push(`  Qualification for this rule: ${basis.uncertainty}`);
-    }
-    if (issue.record_index != null) lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
-    if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
-      lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
-    }
-    if (issue.source && issue.source.location) {
-      const loc = issue.source.location;
-      const pageLine = (loc.page != null) ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(`  Measures from: ${issue.source.source_field || (issue.record && issue.record.source_field) || 'the printed date'} — printed "${issue.source.raw_value}" (${pageLine}), normalized to ${issue.source.normalized_value}`);
-    }
-  } else if (issue.basis_type === issues.BASIS_TYPE.CONTENT_FINDING) {
-    /* A report-content finding: the printed content a recorded rule prohibits. It states the rule and the
-       decisive content facts, never a retention period. */
-    lines.push(`  Rule: ${issue.citation}`);
-    if (issue.source_version) lines.push(`  Rule version: ${issue.source_version}`);
-    if (issue.label) lines.push(`  Finding: ${issue.label}`);
-    for (const basis of issue.supported_bases || []) {
-      if (basis.rule_assessment) lines.push(`  ${issues.consumerLabel(basis) || 'Reporting rule'} of report-data requirement: ${basis.rule_assessment.requirement}`);
-    }
-    if (issue.record_index != null) lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
-    if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
-      lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
-    }
-    for (const f of (issue.source_facts || [])) {
-      const loc = f.location;
-      const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(f.field === 'account.paymentHistoryDefinition' && f.code_definition || f.period_definition ? externalDefinitionLine(f, '  ')
-        : f.omitted_value ? `  Printed caption without a value: ${f.source_field} (${pageLine})`
-        : f.privacy_redacted ? `  Creditor identity matched from the report (${pageLine})`
-        : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
-    }
-  } else {
-    lines.push(`  Issue: ${issue.label}`);
-    for (const citation of issue.retention_review && issue.retention_review.citations || []) {
-      lines.push(`  Reporting-period rule: ${citation}`);
-    }
-    if (issue.rule_assessment) lines.push(`  ${issues.consumerLabel(issue) || 'Reporting rule'} of report-data requirement: ${issue.rule_assessment.requirement}`);
-    if (issue.rule_assessment && issue.citation) lines.push(`  Supporting statute: ${issue.citation} (source version ${issue.source_version})`);
-    if (issue.rule_assessment) {
-      for (const fact of issue.rule_assessment.required_facts || []) {
-        if (fact.source && fact.source.omitted_value === true) {
-          const loc = fact.source.location || {};
-          lines.push(`  Printed caption without a value: ${fact.source.source_field} (page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''})`);
-        }
-      }
-    }
-    lines.push(`  Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
-    if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
-      lines.push(`  Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
-    }
-    for (const f of (issue.source_facts || [])) {
-      const loc = f.location;
-      const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      lines.push(f.field === 'account.paymentHistoryDefinition' && f.code_definition || f.period_definition ? externalDefinitionLine(f, '  ')
-        : f.omitted_value ? `  Printed caption without a value: ${f.source_field} (${pageLine})`
-        : f.privacy_redacted ? `  Creditor identity matched from the report (${pageLine})`
-        : `  ${f.source_field || f.field}: printed "${f.raw_value}" (${pageLine}), normalized to ${f.normalized_value}`);
-    }
-    const loc = issue.location && issue.location.page != null ? issue.location
-      : (issue.source_facts || []).map((fact) => fact.location).find((location) => location && location.page != null);
-    if (loc) {
-      lines.push(`  Source: ${loc.section ? loc.section + ', ' : ''}page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}`);
-    }
-  }
-  const account = accountLine(issue);
-  if (account) lines.push(account);
-  lines.push(`  What the report says: ${issue.explanation}`);
-  lines.push(`  Why it merits attention: ${issue.uncertainty}`);
-  lines.push(`  Request (${issue.request_type === issues.REQUEST_TYPE.CORRECTION ? 'correction' : 'verification'}): ${issue.request_wording}`);
-  lines.push('');
-  return lines;
-}
-
 /**
  * The correspondence block: who it is addressed to BY TYPE, the consumer-entered details, and one request per
  * SELECTED issue and nothing else. No address, remedy, deadline, signature or submitted status is ever invented.
@@ -539,25 +462,40 @@ function correspondenceLines(packet, row, selected) {
   const identity = packetIdentity(row, selected);
   const c = correspondenceOf(packet);
   const lines = [];
-  lines.push('CORRESPONDENCE TO SEND (you send this; this service sends nothing)');
-  lines.push('='.repeat(72));
-  lines.push(`To: ${RECIPIENT_LABEL[recipientTypeOf(packet)]}`);
+  lines.push('CREDIT REPORT DISPUTE');
+  lines.push('');
+  lines.push(`To: ${packet.support_snapshot?.requirements?.label || RECIPIENT_LABEL[recipientTypeOf(packet)]}`);
+  if (packet.support_snapshot?.requirements?.postal) lines.push(packet.support_snapshot.requirements.postal);
   lines.push(`From: ${c.consumer_name || '(not supplied yet)'}`);
   lines.push(`Reply to: ${c.contact || '(not supplied yet)'}`);
   if (c.account_reference) lines.push(`Your reference: ${c.account_reference}`);
-  lines.push(`About: ${identity.bureau || 'a supported report'}${identity.reference_date ? ` (reference date ${identity.reference_date})` : ''}`);
-  const accounts = [...new Set(selected.map((i) => i.account_identity && i.account_identity.name).filter(Boolean))];
-  if (accounts.length) lines.push(`Account(s) concerned: ${accounts.join('; ')}`);
+  lines.push(`Report: ${identity.bureau || 'a supported report'}${identity.reference_date ? ` (report date ${identity.reference_date})` : ''}`);
+  const extra = packet.support_snapshot;
+  if (extra?.settings.use_account_profile && extra.profile.date_of_birth) lines.push(`Date of birth: ${extra.profile.date_of_birth}`);
+  if (extra?.settings.use_account_profile && extra.profile.previous_address) lines.push(`Previous address: ${extra.profile.previous_address}`);
+  if (extra?.settings.identity_reference) lines.push(`${extra.requirements.country === 'US' ? 'Social Security number' : 'Identification reference'}: ${extra.settings.identity_reference}`);
+  if (extra?.settings.no_ssn_issued && extra.requirements.country === 'US') lines.push('I have never been issued a Social Security number.');
+  if (extra?.settings.other_identity_details) lines.push(extra.settings.other_identity_details);
   lines.push('');
-  lines.push('I am writing about the report identified above. Please verify or correct the following matters, which I have identified in that report:');
+  lines.push('Please check the items below in my credit report. Correct any wrong information and send me your reply.');
   lines.push('');
   let n = 0;
   for (const issue of selected) {
     n += 1;
-    lines.push(`  ${n}. ${issue.request_wording}`);
+    const account = issue.account_identity?.name;
+    lines.push(`  ${n}. ${account ? account + ': ' : ''}${issue.request_wording}`);
   }
   lines.push('');
-  lines.push('The facts each request rests on are listed under EVIDENCE REFERENCES below.');
+  if (packet.wording) {
+    lines.push('My added message:');
+    lines.push(packet.wording);
+    lines.push('');
+  }
+  lines.push('The attached evidence pages show the report details for each item.');
+  if (attachmentManifest(packet).length) lines.push(`I have included ${attachmentManifest(packet).length} supporting document${attachmentManifest(packet).length === 1 ? '' : 's'}. They are listed at the end.`);
+  lines.push('');
+  lines.push('Signature: ________________________');
+  lines.push('Date: ________________________');
   lines.push('');
   return lines;
 }
@@ -606,30 +544,44 @@ function evidenceFacts(issue) {
 function externalDefinitionLine(fact, indent) {
   if (fact.period_definition) {
     const source = fact.period_definition.source;
-    return `${indent}Published history-period definition: most recent month first; one calendar month per cell; ${source.publisher}, ${source.title}, ${source.section} (version ${source.version}); ${source.url}`;
+    return `${indent}Published history-period definition: most recent month first; one calendar month per cell; ${source.publisher}, ${source.title}, ${source.section}${sourceVersionSuffix(source.version)}; ${source.url}`;
   }
   const definition = fact.code_definition, source = definition.source;
-  return `${indent}Published code definition: ${definition.code} = ${definition.meaning}; ${source.publisher}, ${source.title}, ${source.section} (version ${source.version}); ${source.url}`;
+  return `${indent}Published code definition: ${definition.code} = ${definition.meaning}; ${source.publisher}, ${source.title}, ${source.section}${sourceVersionSuffix(source.version)}; ${source.url}`;
+}
+function sourceVersionSuffix(value) {
+  return typeof value === 'string' && value && !/^[a-f0-9]{32,128}$/i.test(value) ? ` (source version ${value})` : '';
+}
+function materialUncertainty(value) {
+  return value && !/^(?:Every|All) report-determinable fact(?:s)? (?:is|are) resolved\.?$/i.test(value.trim()) ? value : null;
+}
+function factLabel(value) {
+  if (!value || /\s/.test(value) || !/^[a-z]/.test(value) || !/[_ .]|[a-z][A-Z]/.test(value)) return value;
+  const words = value.split('.').pop().replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
 function evidenceLines(selected) {
   const lines = [];
   lines.push(selected.some((issue) => (issue.source_facts || []).some((fact) => fact.code_definition || fact.period_definition))
     ? 'EVIDENCE REFERENCES (report readings and published definitions)' : 'EVIDENCE REFERENCES (from your report)');
-  lines.push('='.repeat(72));
+  lines.push('These are the report details for the items in my letter.');
+  lines.push('');
   let n = 0;
   for (const issue of selected) {
     n += 1;
     const kind = issue.request_type === issues.REQUEST_TYPE.CORRECTION ? 'correction' : 'verification';
     const heading = issue.label || (issue.record && issue.record.kind_label) || 'a reporting matter';
     lines.push(`  ${n}. ${heading} - ${kind}`);
+    if (issues.consumerLabel(issue)) lines.push(`     ${issues.consumerLabel(issue)}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
       lines.push(`     Report: ${issue.report_identity.bureau || 'a report'}${issue.report_identity.reference_date ? ` (reference date ${issue.report_identity.reference_date})` : ''}`);
     }
     if (issue.record_index != null) lines.push(`     Record: ${(issue.record && issue.record.kind_label) || 'a record'} ${issue.record_index}`);
     const account = accountLine(issue, '     ');
     if (account) lines.push(account);
-    if (issue.citation) lines.push(`     Recorded rule: ${issue.citation}${issue.source_version ? ` (source version ${issue.source_version})` : ''}`);
+    if (issue.rule_assessment?.requirement) lines.push(`     Reporting rule: ${issue.rule_assessment.requirement}`);
+    if (issue.citation) lines.push(`     Recorded rule: ${issue.citation}${sourceVersionSuffix(issue.source_version)}`);
     for (const citation of issue.retention_review && issue.retention_review.citations || []) {
       lines.push(`     Reporting-period rule: ${citation}`);
     }
@@ -637,82 +589,96 @@ function evidenceLines(selected) {
        stated in plain language so the correspondence shows what the issue rests on, not only its recorded rule. */
     for (const b of (issue.supported_bases || [])) {
       if (b.basis_type === issues.BASIS_TYPE.FACTUAL_CONSISTENCY) {
-        lines.push(`     Also rests on: what the report prints — ${b.label || 'a factual discrepancy the report prints'}`);
+        if (!issue.rule_assessment?.requirement && b.rule_assessment?.requirement) lines.push(`     Reporting rule: ${b.rule_assessment.requirement}`);
       }
       if (b.basis_type === issues.BASIS_TYPE.STATUTORY_RETENTION && b.adapter_id !== issue.adapter_id) {
-        lines.push(`     Additional supporting rule: ${b.citation}${b.source_version ? ` (source version ${b.source_version})` : ''}`);
-        if (b.uncertainty) lines.push(`     Qualification for this rule: ${b.uncertainty}`);
+        lines.push(`     Additional supporting rule: ${b.citation}${sourceVersionSuffix(b.source_version)}`);
+        if (materialUncertainty(b.uncertainty)) lines.push(`     Qualification for this rule: ${b.uncertainty}`);
       }
     }
     for (const f of evidenceFacts(issue)) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
-      const label = f.field ? `${f.field}: ` : '';
+      const label = f.field ? `${factLabel(f.field)}: ` : '';
       lines.push(f.code_definition || f.period_definition ? externalDefinitionLine(f, '     ')
-        : f.omitted_value ? `     Printed caption without a value: ${f.field} (${pageLine})`
+        : f.omitted_value ? `     Printed caption without a value: ${factLabel(f.field)} (${pageLine})`
         : f.privacy_redacted ? `     Creditor identity matched from the report (${pageLine})`
-        : `     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null ? `, normalized to ${f.normalized}` : ', not normalized'}`);
+        : `     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null && String(f.normalized) !== String(f.raw) ? `; read as ${f.normalized}` : ''}`);
     }
+    if (issue.explanation) lines.push(`     What the report says: ${issue.explanation}`);
+    if (materialUncertainty(issue.uncertainty)) lines.push(`     What needs checking: ${issue.uncertainty}`);
     lines.push('');
   }
   return lines;
 }
 
 /** Assemble the full packet document, bound to the approved version. */
+function attachmentManifest(packet) {
+  return (packet?.support_snapshot?.documents || []).map((document, index) => {
+    const ext = document.content_type === 'application/pdf' ? 'pdf' : document.content_type === 'image/png' ? 'png' : 'jpg';
+    return { file_id: document.file_id, original_filename: document.original_filename,
+      document_type: document.document_type,
+      archive_name: `documents/${String(index + 1).padStart(2, '0')}-${document.document_type.toLowerCase()}.${ext}` };
+  });
+}
+function printingInstructions(packet) {
+  const attached = attachmentManifest(packet).length;
+  const forms = requiredFormManifest(packet);
+  return [
+    'Print this letter and all evidence pages. Sign and date the letter.',
+    ...(attached ? ['Open the documents folder in your download. Print each listed document and add it to your letter.'] : []),
+    ...forms.map(form => `Print ${form.filename} (${form.label}). Fill in the form. Sign where asked.`),
+    ...(packet?.support_snapshot?.requirements?.items || []),
+    'Keep a copy. Mail the packet to the bureau address shown in your letter.'
+  ];
+}
+function requiredFormManifest(packet) {
+  return (packet?.support_snapshot?.form_assets || []).map(form => ({
+    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256
+  }));
+}
+function documentText(packet, row, selected) {
+  const lines = [...correspondenceLines(packet, row, selected), ...evidenceLines(selected), 'PRINT AND MAIL', ''];
+  for (const item of printingInstructions(packet)) lines.push('- ' + item);
+  const attachments = attachmentManifest(packet);
+  if (attachments.length) {
+    lines.push('', 'Documents to print and include:');
+    attachments.forEach(document => lines.push(`- ${document.archive_name}: ${document.original_filename} (${document.document_type.toLowerCase().replace(/_/g, ' ')})`));
+  }
+  return lines.join('\n').replace(/\r\n?/g, '\n').replace(/\t/g, '    ');
+}
 function packetDocumentBody(store, actor, caseId) {
   const { packet, row, selected } = resolveSelected(store, actor, caseId);
-  const identity = packetIdentity(row, selected);
-  const lines = [];
-  lines.push('CRP CORRECTION PACKET');
-  lines.push('Source-supported reporting issue correction and verification requests');
-  lines.push('='.repeat(72));
-  lines.push(`Produced: ${nowIso()}`);
-  lines.push(`Report: ${identity.bureau || 'a supported report'}${identity.reference_date ? ` (reference date ${identity.reference_date})` : ''}`);
-  lines.push(`Approved version: ${packet.approved_version}`);
-  lines.push(`Selected issues: ${selected.length}`);
-  lines.push('');
-  lines.push(...correspondenceLines(packet, row, selected));
-  lines.push(...support.lines(packet), '');
-  lines.push('ISSUES AND THE FACTS THEY CAME FROM');
-  lines.push('');
-  for (const issue of selected) {
-    lines.push(...issueLines(issue));
-  }
-  lines.push(...evidenceLines(selected));
-  if (packet.wording) {
-    lines.push('YOUR OWN WORDS (added by you; kept separate from the report facts above)');
-    lines.push('');
-    lines.push(packet.wording);
-    lines.push('');
-  }
-  lines.push('='.repeat(72));
-  lines.push('This packet states the reporting issues found in your report, the facts they came from and their uncertainty.');
-  lines.push('Review, sign where required and submit this packet yourself using the bureau instructions above.');
-  lines.push('');
-  return lines.join('\n');
+  return documentText(packet, row, selected);
+}
+
+/** The same approved PDF is opened for printing and included in the download. */
+function packetPrint(store, actor, caseId) {
+  const body = packetDocumentBody(store, actor, caseId);
+  const packet = currentPacket(store, caseId), pdf = renderPacketPdf(body);
+  return { filename: `CRP-dispute-letter-${caseId}.pdf`, content_type: 'application/pdf',
+    body: pdf.bytes, approved_version: packet.approved_version, page_count: pdf.page_count,
+    is_a_response_packet: true, is_fictional: false };
 }
 
 /** The downloadable packet file, bound to the approved version. */
 function packetDownload(store, actor, caseId) {
-  const body = packetDocumentBody(store, actor, caseId);
-  const packet = currentPacket(store, caseId);
-  if (packet.support?.document_ids?.length) {
-    const entries = [{ name: '01-correspondence.txt', bytes: Buffer.from(body, 'utf8') }];
-    packet.support.document_ids.forEach((id, index) => {
+  const printed = packetPrint(store, actor, caseId);
+  const body = printed.body;
+  const owned = cases.requireOwnedCase(store, actor, caseId);
+  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
+  const forms = support.requiredForms ? support.requiredForms(packet) : [];
+  if (packet.support?.document_ids?.length || forms.length) {
+    const entries = [{ name: '01-correspondence.pdf', bytes: body }];
+    for (const form of forms) entries.push({ name: form.filename, bytes: form.bytes });
+    (packet.support?.document_ids || []).forEach((id, index) => {
       const file = accountDocuments.getDocument(store, actor, id);
       const ext = file.document.content_type === 'application/pdf' ? 'pdf' : file.document.content_type === 'image/png' ? 'png' : 'jpg';
       entries.push({ name: `documents/${String(index + 1).padStart(2, '0')}-${file.document.document_type.toLowerCase()}.${ext}`, bytes: file.bytes });
     });
     return { filename: `CRP-dispute-packet-${caseId}.zip`, content_type: 'application/zip', body: archive(entries), approved_version: packet.approved_version, is_a_response_packet: true, is_fictional: false };
   }
-  return {
-    filename: `CRP-correction-packet-${caseId}.txt`,
-    content_type: 'text/plain; charset=utf-8',
-    body,
-    approved_version: packet.approved_version,
-    is_a_response_packet: true,
-    is_fictional: false
-  };
+  return printed;
 }
 
 module.exports = {
@@ -723,6 +689,7 @@ module.exports = {
   setSupport,
   approvePacket,
   packetDownload,
+  packetPrint,
   eligibleIssues,
   canonicalVersion,
   issueContent,

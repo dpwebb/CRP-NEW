@@ -7,6 +7,7 @@ const packets = require('../../packets.cjs');
 const results = require('../../results.cjs');
 const journey = require('../../journey.cjs');
 const clock = require('../../assessment-clock.cjs');
+const { packetText, comparableText } = require('../packet-pdf-assertions.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
@@ -35,7 +36,7 @@ function approve(ctx) {
   packets.setCorrespondence(store, actor, 'fictional-case', {
     consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, 'fictional-case');
-  return { store, actor, body: packets.packetDownload(store, actor, 'fictional-case').body };
+  return { store, actor, body: packetText(packets.packetDownload(store, actor, 'fictional-case')) };
 }
 
 async function run(service, check) {
@@ -72,10 +73,11 @@ async function run(service, check) {
     'equivalent rule bases on different collection records remain distinct issues');
 
   const historicalPacket = approve(historical);
-  check.match(historicalPacket.body, /Selected issues: 1/, 'the approved packet has one request for the underlying concern');
+  const letter = historicalPacket.body.split('EVIDENCE REFERENCES')[0];
+  check.equal((letter.match(/^\s*\d+\. /gm) || []).length, 1, 'the approved letter has one request for the underlying concern');
   check.match(historicalPacket.body, /Additional supporting rule: FCRA/,
     'the packet names the federal support without a consumer confidence label');
-  check.match(historicalPacket.body, /Qualification for this rule:.*exception applies/,
+  check.match(comparableText(historicalPacket.body), /Qualification for this rule:.*exception applies/,
     'the packet preserves the federal exception uncertainty');
   const approval = historicalPacket.store.state().packets[0].approved_version;
   const federal = historical.evaluation.results.find((r) => r.machine.adapter_id === 'FCRA-605A-4-US-NATIONAL-7Y');
@@ -95,7 +97,7 @@ async function run(service, check) {
   packets.approvePacket(historicalPacket.store, historicalPacket.actor, 'fictional-case');
   check.equal(packets.packetView(historicalPacket.store, historicalPacket.actor, 'fictional-case').packet.approved,
     true, 'renewed approval restores the current packet view');
-  check.match(packets.packetDownload(historicalPacket.store, historicalPacket.actor, 'fictional-case').body,
+  check.match(packetText(packets.packetDownload(historicalPacket.store, historicalPacket.actor, 'fictional-case')),
     /changed material qualification/, 'the newly approved download matches the reviewed qualification');
 
   const review = assessed('2019', '2027-06-13');

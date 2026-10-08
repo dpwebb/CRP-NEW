@@ -7,6 +7,7 @@ const packets = require('../../packets.cjs');
 const results = require('../../results.cjs');
 const journey = require('../../journey.cjs');
 const clock = require('../../assessment-clock.cjs');
+const { packetText } = require('../packet-pdf-assertions.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 
 const HEADER = ['Equifax Consumer Credit Report - FICTIONAL TEST FIXTURE', 'Report Date: June 12, 2026'];
@@ -52,7 +53,7 @@ async function run(service, check) {
     packets.setCorrespondence(store, actor, 'fictional-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
     check.equal(packets.packetView(store, actor, 'fictional-case').eligible_issues[0].consumer_label, 'VIOLATION', 'selection cards use the same term');
     packets.approvePacket(store, actor, 'fictional-case');
-    const body = packets.packetDownload(store, actor, 'fictional-case').body;
+    const body = packetText(packets.packetDownload(store, actor, 'fictional-case'));
     check.match(body, /VIOLATION/, 'approved packets name the supported breach');
     check.equal(BAD_WORDING.test(body), false, 'packets omit probable and potential violation wording');
     check.equal(JSON.parse(packets.issueContent(original)).consumer_label, 'VIOLATION', 'the label is material content bound to approval');

@@ -5,6 +5,7 @@
  * Fictional fixtures only; entitlement comes from the test adapter.
  */
 const crypto = require('node:crypto');
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const issues = require('../../issues.cjs');
 const { activeAdapter } = require('../../common-error-scope.cjs');
@@ -132,7 +133,7 @@ async function run(service, check) {
   ] }] });
   const commonRun = await fullPacket(service, check, 'by-common@example.test', 'US', 'US-CA', commonPdf, 'fictional-chronology.pdf');
   check.equal(commonRun.issue.basis_type, issues.BASIS_TYPE.FACTUAL_CONSISTENCY);
-  check.ok(/opened date later than its closed date/.test(commonRun.text));
+  check.ok(/opened date later than its closed date/.test(comparableText(commonRun.text)));
   check.ok(!/dismissed.disposition.presence/.test(commonRun.text), 'retired content evidence is absent');
 
   /* A checklist-related AU retention finding also reaches a complete packet. */

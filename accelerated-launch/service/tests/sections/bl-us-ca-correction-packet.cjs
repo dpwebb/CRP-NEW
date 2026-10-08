@@ -5,6 +5,7 @@
  * and bankruptcy adapters remain in the catalog but are retired from runtime issue creation.
  */
 const crypto = require('node:crypto');
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const issues = require('../../issues.cjs');
 const { activeAdapter } = require('../../common-error-scope.cjs');
@@ -129,11 +130,14 @@ async function run(service, check) {
 
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(download.status, 200, 'the approved packet downloads');
-  check.ok(/opened date later than its closed date/.test(download.text), 'and states the chronology breach');
+  check.ok(/opened date later than its closed date/.test(comparableText(download.text)), 'and states the chronology breach');
   check.ok(download.text.includes('01/01/2020'), 'and the printed date it measured from');
-  check.ok(download.text.includes('Request (verification)'), 'and a factual verification request');
+  check.ok(download.text.includes(' - verification'), 'and a factual verification request');
   check.ok(download.text.includes('Please verify this entry and correct it if it is out of date.'), 'and the consumer wording, kept in its own section');
-  check.ok(download.text.includes(approvedVersion), 'and is bound to the approved version');
+  const printable = require('../../packets.cjs').packetPrint(service.service.store, owner, caseId);
+  check.equal(printable.approved_version, approvedVersion, 'the generated file remains bound to the approved version');
+  check.deepEqual(download.bytes, printable.body, 'the HTTP download is the exact approved printable file');
+  check.equal(download.text.includes(approvedVersion), false, 'the internal approval hash stays out of the letter');
   check.ok(!/not legal advi/i.test(download.text), 'with no legal-advice disclaimer');
 
   /* ---- 4. Cross-account access is refused. ---- */

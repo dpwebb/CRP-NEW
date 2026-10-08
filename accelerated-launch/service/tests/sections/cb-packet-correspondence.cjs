@@ -17,11 +17,15 @@ const crypto = require('node:crypto');
 const auFamily = require('../../format-families/au-equifax-consumer.cjs');
 const commonErrors = require('../../common-errors.cjs');
 const issues = require('../../issues.cjs');
+const fs = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
 const DETAILS = Object.freeze({
-  consumer_name: 'Dana Whitfield',
+  consumer_name: 'José François Łukasz',
   contact: 'dana.whitfield@example.test',
   account_reference: 'CRP-REF-1'
 });
@@ -121,7 +125,7 @@ async function run(service, check) {
 
   /* ---- 3. The consumer review shows the correspondence and the organized evidence. ---- */
   const preview = withDetails.json.view.packet.correspondence_preview;
-  check.ok(/^CORRESPONDENCE TO SEND \(you send this; this service sends nothing\)$/m.test(preview), 'the review shows the correspondence, stating that the consumer sends it');
+  check.ok(/^CREDIT REPORT DISPUTE$/m.test(preview), 'the review shows the sendable dispute letter');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(preview), 'and the organized evidence references');
   check.ok(/^To: the consumer reporting agency that issued this report$/m.test(preview), 'addressed by TYPE, never a fabricated address');
   check.ok(preview.includes(`From: ${DETAILS.consumer_name}`) && preview.includes(`Reply to: ${DETAILS.contact}`), 'carrying the details the consumer supplied');
@@ -129,7 +133,7 @@ async function run(service, check) {
   check.ok(/\n\s*\d+\. \S/.test(preview), 'with one numbered request per selected issue');
   check.ok(/Recorded rule: /.test(preview), 'and the recorded rule identity for the correction request');
   check.ok(/printed "1 January 2019"/.test(preview), 'with the raw printed reading');
-  check.ok(/normalized to 2019-01-01/.test(preview), 'and its normalized value');
+  check.ok(/read as 2019-01-01/.test(preview), 'and the date used for the check');
   check.ok(/\(page \d+(, line \d+)?\)/.test(preview), 'and the source location');
 
   /* ---- 4. Approve and download: the actual correspondence and evidence. ---- */
@@ -138,19 +142,30 @@ async function run(service, check) {
   check.equal(approved.json.view.packet.download_available, true, 'and the download becomes available');
   const dl = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the approved packet downloads');
-  check.ok(dl.text.startsWith('CRP CORRECTION PACKET'), 'as a readable document');
-  check.ok(/^CORRESPONDENCE TO SEND/m.test(dl.text), 'carrying the sendable correspondence');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'as a printable PDF');
+  check.ok(dl.text.startsWith('CREDIT REPORT DISPUTE'), 'carrying the sendable correspondence');
   check.ok(dl.text.includes(`From: ${DETAILS.consumer_name}`) && dl.text.includes(`Reply to: ${DETAILS.contact}`), 'with the consumer-supplied details');
-  check.ok(/^ISSUES AND THE FACTS THEY CAME FROM$/m.test(dl.text), 'and the per-issue factual basis');
+  check.equal((dl.text.match(/^EVIDENCE REFERENCES/gm) || []).length, 1, 'with one evidence appendix and no duplicate issue section');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(dl.text), 'and the organized evidence-reference section');
   check.ok(/SOME BANK|credit account 1|liability 1/i.test(dl.text), 'naming the record the finding concerns');
   check.ok(!/not legal advi/i.test(dl.text), 'with no legal-advice disclaimer anywhere in the packet');
   check.ok(!/has been (submitted|sent|filed)|we have sent|was submitted to/i.test(dl.text), 'and no claim that anything was submitted or sent');
-  check.ok(!/Dear Sir|Sincerely|Signature|sign here/i.test(dl.text), 'with no invented salutation, signature or signing request');
+  check.ok(/Signature: _+/.test(dl.text), 'with a blank signature line for the consumer to sign');
   check.ok(!/within \d+ (days|weeks)|by \d{1,2} [A-Z][a-z]+ \d{4}/.test(dl.text), 'and no invented deadline');
   check.ok(!/\b(remedy|remedies)\b/i.test(dl.text), 'and no invented remedy');
   check.ok(!/\d+ [A-Z][a-z]+ (Street|Avenue|Road|Blvd)|P\.O\. Box/i.test(dl.text), 'and no invented mailing address');
-  check.ok(dl.text.includes(preview.trim().split('\n')[0]), 'the reviewed correspondence is the downloaded correspondence');
+  check.equal(comparableText(dl.text), comparableText(preview), 'all independently extracted PDF text matches the complete preview');
+  check.equal(/Approved version:|Produced:|[a-f0-9]{64}/i.test(dl.text), false, 'the consumer letter contains no internal approval or source hash or generated timestamp');
+  const again = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
+  check.deepEqual(again.bytes, dl.bytes, 'the same approved PDF is deterministic across downloads');
+  const packetModule = require('../../packets.cjs');
+  const printFile = packetModule.packetPrint(service.service.store, owner, caseId);
+  check.deepEqual(printFile.body, dl.bytes, 'printing and downloading use the exact same approved PDF');
+  check.ok(printFile.page_count >= 2, 'the letter and evidence have separate printable pages');
+  const out = path.join(__dirname, '..', '..', 'out', 'packet-print');
+  fs.mkdirSync(out, { recursive: true });
+  fs.writeFileSync(path.join(out, 'approved-correspondence.pdf'), dl.bytes);
+  fs.writeFileSync(path.join(out, 'approved-preview.txt'), preview);
 
   /* ---- 5. Editing a correspondence detail after approval invalidates the approval. ---- */
   const edited = await service.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: { contact: 'corrected-reply@example.test' } } });
@@ -219,6 +234,31 @@ async function run(service, check) {
   check.equal(partialDl.status, 200, 'the partially selected packet downloads');
   check.ok(!partialDl.text.includes(`credit account ${other.account_number_in_report}`), 'and never includes the unselected issue');
   check.ok(/ - verification/.test(partialDl.text) && !/potential, verification/.test(partialDl.text), 'the packet states the requested action without a confidence tier');
+  const priorPreviewVersion = partial.json.view.packet.preview_version;
+  const longWording = 'My message: José François Łukasz.\n' + 'LongReference'.repeat(220) + '\n' + 'Please check my account. '.repeat(180);
+  packetModule.setWording(service.service.store, multiOwner, multiCase.case_id, longWording);
+  const longView = packetModule.packetView(service.service.store, multiOwner, multiCase.case_id);
+  check.equal(longView.packet.approved, false, 'added consumer wording invalidates the approved packet');
+  check.ok(longView.packet.correspondence_preview.includes(longWording), 'the complete preview includes every line of added wording');
+  let oldReviewCode = null;
+  try { packetModule.approvePacket(service.service.store, multiOwner, multiCase.case_id, priorPreviewVersion); }
+  catch (error) { oldReviewCode = error.code; }
+  check.equal(oldReviewCode, 'PACKET_APPROVAL_STALE', 'approval based on an earlier displayed preview is refused');
+  packetModule.approvePacket(service.service.store, multiOwner, multiCase.case_id, longView.packet.preview_version);
+  const longPrinted = packetModule.packetPrint(service.service.store, multiOwner, multiCase.case_id);
+  const longText = require('../packet-pdf-assertions.cjs').pdfText(longPrinted.body);
+  check.equal(longText.replace(/\s/g, ''), longView.packet.correspondence_preview.replace(/\s/g, ''),
+    'independent PDF extraction preserves every character of the current preview including long unbroken input');
+  check.ok(longPrinted.page_count > 2, 'long added wording paginates beyond the short packet');
+  const info = execFileSync('pdfinfo', ['-'], { input: longPrinted.body, encoding: 'utf8' });
+  check.equal(Number(/^Pages:\s+(\d+)/m.exec(info)[1]), longPrinted.page_count, 'the independent PDF reader confirms the actual page count');
+  const bbox = execFileSync('pdftotext', ['-bbox', '-', '-'], { input: longPrinted.body, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+  const words = [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">/g)];
+  check.ok(words.length > 200, 'the independent renderer reads the long packet text geometry');
+  check.ok(words.every(word => +word[1] >= 53.9 && +word[3] <= 558.1 && +word[2] >= 35 && +word[4] <= 765),
+    'all actual rendered words remain inside printable page margins without clipping');
+  fs.writeFileSync(path.join(out, 'approved-long-correspondence.pdf'), longPrinted.body);
+  fs.writeFileSync(path.join(out, 'approved-long-preview.txt'), longView.packet.correspondence_preview);
 
 
   /* ---- 8. Probable verification: the correspondence preserves the qualification and adds no citation. ---- */
@@ -243,9 +283,9 @@ async function run(service, check) {
   check.equal(probDl.status, 200, 'the probable packet downloads');
   check.ok(/ - verification/.test(probDl.text) && !/probable, verification/.test(probDl.text), 'the evidence reference states the requested action without a confidence tier');
   check.ok(/Recorded rule: /.test(probDl.text), 'and the recorded rule identity of the proposed rule');
-  check.ok(/not shown to be absent/.test(probDl.text), 'preserving the specific uncertainty, never an absent exception');
+  check.ok(/not shown to be absent/.test(comparableText(probDl.text)), 'preserving the specific uncertainty, never an absent exception');
   check.ok(!/established violation|definite breach/i.test(probDl.text), 'and never turning a probable issue into a categorical allegation');
-  check.ok(/Request \(verification\): /.test(probDl.text), 'with a verification request, never a correction demand');
+  check.ok(/please verify whether an exception/.test(comparableText(probDl.text)), 'with a verification request, never a correction demand');
 
   /* ---- 9. Ownership and entitlement are enforced on the correspondence itself. ---- */
   const stranger = await service.unpaidAccount(`cb-stranger-${crypto.randomBytes(4).toString('hex')}@example.test`);
@@ -260,10 +300,10 @@ async function run(service, check) {
 
   /* ---- 10. The definite correction, the sending control and the classification on the real download. ---- */
   check.ok(/ - correction/.test(dl.text) && !/definite, correction/.test(dl.text), 'the evidence reference states the requested correction without a confidence tier');
-  check.ok(/Request \(correction\): /.test(dl.text), 'with a correction request, never a mere verification');
-  check.ok(/Review, sign where required and submit this packet yourself/.test(dl.text), 'the document says the consumer reviews, signs and submits it');
-  check.ok(/you send this; this service sends nothing/.test(dl.text), 'and that the consumer controls sending');
-  check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
+  const reviewedCorrection = packetModule.eligibleIssues(resultRow).find(issue => issue.issue_id === correction.definite.issue_id);
+  check.ok(comparableText(dl.text).includes(comparableText(reviewedCorrection.request_wording)), 'with the selected correction request');
+  check.ok(/Sign and date the letter/.test(dl.text), 'the instructions tell the consumer to sign the letter');
+  check.ok(/Mail the packet to the bureau address/.test(dl.text), 'and the consumer controls mailing');
   check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
 
   evidence.definite_correction = { case_id: caseId, recipient_type: 'CONSUMER_REPORTING_AGENCY', downloaded_chars: (dl.text || '').length };
