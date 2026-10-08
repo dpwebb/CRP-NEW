@@ -37,7 +37,7 @@ function finding(extraction) {
 function gbFields({ name = 'Cedar & Pine Bank', mask = 'XXXX1234', state = 'Normal', balance = '£100',
   limit = '£0', opened = '2010-01-02', closed = 'N/A' } = {}) {
   return ['Organisation Name:', name, 'Account Number / suffix:', mask, 'Account State:', state,
-    'Account Type:', 'Credit Card', 'Current Balance:', balance, 'Credit Limit:', limit,
+    'Account Type:', 'Credit Card', 'Current Balance:', balance, 'Credit Limit / Overdraft Limit:', limit,
     'Regular Payment Value:', '£25', 'Account Start Date:', opened, 'Account End Date:', closed];
 }
 function gbReport(fields = gbFields()) {
@@ -58,7 +58,7 @@ async function gbFieldContract(t, check) {
   ['CEDAR PINE BANK', 'MASK-1234', 'NORMAL', 100, 0, 25, '2010-01-02'], 'exact captions map their own literal facts');
   for (const [field, label, caption, value] of [['account.reported_identity', 'Organisation Name', 3, 4],
     ['account.masked_identifier', 'Account Number / suffix', 5, 6], ['account.status', 'Account State', 7, 8],
-    ['account.balance', 'Current Balance', 11, 12], ['account.creditLimit', 'Credit Limit', 13, 14],
+    ['account.balance', 'Current Balance', 11, 12], ['account.creditLimit', 'Credit Limit / Overdraft Limit', 13, 14],
     ['account.paymentAmount', 'Regular Payment Value', 15, 16], ['liability.openedDate', 'Account Start Date', 17, 18]]) {
     const source = sourceForField(record, field);
     check.equal(source?.source_field, label, 'the field keeps its own publisher caption');
@@ -118,6 +118,22 @@ async function gbFieldContract(t, check) {
   }
   const missingLimit = gbFields(); missingLimit.splice(10, 2);
   check.equal(zeroLimitIssues(native(t, gbReport(missingLimit)).extraction).length, 0, 'missing limit cannot borrow regular payment value');
+  for (const maskState of ['trusted', 'untrusted', 'absent']) {
+    // Controlled issue-assembly regression for the existing no-assessment branch, not a layout specimen.
+    const legacy = synthetic(['Equifax Credit Report', 'Report Date: 2026-06-12', 'Creditor: Cedar Bank',
+      ...(maskState === 'absent' ? [] : ['Account Number: XXXX1234']),
+      'Account Type: Credit Card', 'Balance: 100', 'Credit Limit: 0']);
+    if (maskState === 'untrusted') legacy.records[0].fact_sources = { ...legacy.records[0].fact_sources,
+      'account.masked_identifier': { raw_value: 'XXXX1234', normalized_value: 'MASK-1234',
+        location: { page: 1, line: 4, trusted: false } } };
+    const issue = zeroLimitIssues(legacy)[0];
+    check.equal(issue?.eligible, true, 'optional identifier trust never becomes a zero-limit eligibility prerequisite');
+    check.equal(Boolean(issue?.rule_assessment), false, 'the existing no-assessment issue branch is exercised');
+    check.equal(issue?.source_facts.filter(fact => fact.field === 'account.masked_identifier').length,
+      maskState === 'trusted' ? 1 : 0, 'only a trusted own optional mask reaches issue evidence');
+    check.equal(issues.publicIssue(issue).source_facts.filter(fact => fact.source_field === 'Masked account number').length,
+      maskState === 'trusted' ? 1 : 0, 'public optional identifier evidence preserves the same trust boundary');
+  }
   const owner = await t.unpaidAccount('dl-gb-field-contract@example.test'); await t.pay(owner, 'monthly');
   let approvedDownloads = 0;
   for (const region of GB_REGIONS) {
@@ -137,7 +153,7 @@ async function gbFieldContract(t, check) {
     check.equal(selected.consumer_label, 'VIOLATION', region + ' uses the sole consumer verdict');
     const ownRecord = t.service.store.state().results.find((result) => result.case_id === id).extraction.records[0];
     const physicalFacts = ['account.type', 'account.balance', 'account.creditLimit'].map((field) => sourceForField(ownRecord, field));
-    const publicFacts = selected.source_facts.filter((fact) => ['ACCOUNT TYPE', 'CURRENT BALANCE', 'CREDIT LIMIT'].includes(fact.source_field.toUpperCase()));
+    const publicFacts = selected.source_facts.filter((fact) => ['ACCOUNT TYPE', 'CURRENT BALANCE', 'CREDIT LIMIT / OVERDRAFT LIMIT'].includes(fact.source_field.toUpperCase()));
     isolated(publicFacts.length === 3 && publicFacts.every((fact) => fact.location?.page === 1 && fact.location?.line)
       && physicalFacts.every((fact) => fact?.location?.bbox && fact?.location?.caption_location?.bbox),
     region + ' issue retains its own public references and internal physical caption/value sources');

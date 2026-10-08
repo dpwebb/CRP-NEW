@@ -339,7 +339,7 @@ const PAIRED_CAPTIONS = Object.freeze({
   'ACCOUNT TYPE': 'type', 'TYPE OF ACCOUNT': 'type',
   BALANCE: 'money', 'CURRENT BALANCE': 'money', 'RECENT BALANCE': 'money', 'LATEST BALANCE': 'money',
   'PAST DUE': 'money', 'PAST DUE AMOUNT': 'money', 'AMOUNT PAST DUE': 'money',
-  'OVERDUE AMOUNT': 'money', 'CREDIT LIMIT': 'money', 'CREDIT LINE': 'money',
+  'OVERDUE AMOUNT': 'money', 'CREDIT LIMIT': 'money', 'CREDIT LIMIT / OVERDRAFT LIMIT': 'money', 'CREDIT LINE': 'money',
   'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money', 'SCHEDULED PAYMENT': 'money', 'REGULAR PAYMENT VALUE': 'money',
   OPENED: 'date', 'DATE OPENED': 'date', 'OPENED DATE': 'date',
   CLOSED: 'date', 'CLOSED DATE': 'date', 'DATE CLOSED': 'date',
@@ -833,7 +833,7 @@ function labeledAmounts(text) {
   if (PAYMENT_HISTORY_HEADER_RE.test(src)) return out;
   const ownCaption = captionName(src.split(':')[0]);
   if (PAIRED_CAPTIONS[ownCaption] === 'date' || COLUMN_BOUNDARY_CAPTIONS[ownCaption] === 'ignored') return out;
-  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+|LATEST\s+)?BALANCE|MONTHLY\s+PAYMENT|SCHEDULED\s+PAYMENT|REGULAR\s+PAYMENT\s+VALUE|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
+  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT(?:\s*\/\s*OVERDRAFT\s+LIMIT)?|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+|LATEST\s+)?BALANCE|MONTHLY\s+PAYMENT|SCHEDULED\s+PAYMENT|REGULAR\s+PAYMENT\s+VALUE|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
   for (let index = 0; index < labels.length; index++) {
     const match = labels[index], label = match[1].toUpperCase();
     if (/\b(?:LAST|DATE OF LAST)\s*$/i.test(src.slice(0, match.index)) && /^PAYMENT$/i.test(label)) continue;

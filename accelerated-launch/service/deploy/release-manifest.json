@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T10:18:45.359Z",
+  "generated_at": "2026-10-08T11:32:56.709Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
-      "file_count": 67,
-      "digest": "FB9809823F89E558373EC9FE9F2550A0CC17BE61A6B20C98492F407D015062D0",
+      "file_count": 68,
+      "digest": "D983AD235B319C20F568E0CF57F8E32E390ACEE31533425A486D345F7A3E1AAC",
       "files": [
         {
           "file": "accelerated-launch/service/account-documents.cjs",
@@ -162,12 +162,16 @@
           "sha256": "351AACE790BAF2871A02624D3F0B4208A014F897032C589EB81B170C097422B8"
         },
         {
+          "file": "accelerated-launch/service/gb-general-field-contract.cjs",
+          "sha256": "BDD7C7DA76CEB8523DE23A767821400B330FF4C084EABCB6664052CC2B3B58D8"
+        },
+        {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "F68DF7558568E11E1777673EE2B0B0EBE189735FDE15A6AA1426177B8D3A7958"
+          "sha256": "ABCEA6DFC7C9362A20618D135B493AE618B0FE1FBDD09E2C6B09AC14DD4353B0"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "74AE97E85E2958720C1645EEE25C4CA1288349BC195E056A47C22FCBBD387E8B"
+          "sha256": "5D529588BFEEDC3FBA661470A62FCCB0486FA9C6F50B86CD6AB16F931E599AF9"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -231,7 +235,7 @@
         },
         {
           "file": "accelerated-launch/service/release-check.cjs",
-          "sha256": "65070D0F9E2637D73547E6613A49BCBCD8089F2018E208C1D5D90B71B98BE95E"
+          "sha256": "E21FF2194332B0B248A5DE581B35EB0FA073E299473232236E3B29A2CD6AB81C"
         },
         {
           "file": "accelerated-launch/service/report-amount.cjs",
@@ -428,6 +432,6 @@
       ]
     }
   ],
-  "manifest_digest": "935F0669308E8D8435B6AEB3B36E800438D37C1B86C1C796A42AD769DB4606D5",
-  "total_file_count": 97
+  "manifest_digest": "F0B8FC4E0F06D97A710A1DF38FBAFE1ECEE86A27F5FA32AD39DC59E2C89C8F0D",
+  "total_file_count": 98
 }

@@ -38,6 +38,7 @@ const plans = require('./plan-catalog.cjs');
 const formats = require('./formats.cjs');
 const caFormatScope = require('./format-families/ca-consumer-format-scope.cjs');
 const gbFamily = require('./format-families/gb-experian-consumer.cjs');
+const gbGeneralContract = require('./gb-general-field-contract.cjs');
 
 const SERVICE_DIR = __dirname;
 const LAUNCH_DIR = path.resolve(__dirname, '..');
@@ -522,6 +523,8 @@ function runReleaseCheck(options) {
       implementation_status: outcome.implementation_status || null,
       implementation_detail: outcome.implementation_detail || null,
       staging_status: outcome.staging_status || null,
+      ...(outcome.contract_id ? { contract_id: outcome.contract_id, support_scope: outcome.support_scope,
+        dedicated_experian_family_currency_validated: outcome.dedicated_experian_family_currency_validated } : {}),
       why: check.why
     };
   });
@@ -688,15 +691,19 @@ CHECKS.push(
     id: 'CURRENT_GB_SUPPORT_IS_ESTABLISHED',
     category: 'FORMAT_SUPPORT',
     blocks_launch: true,
-    why: 'a market whose only format evidence is a fictitious 2007 example has no present-day support; the gap is a current-format INTAKE artifact for the GB consumer-disclosure family reader, not a configuration, deployment, implementation or staging requirement, and saying so is the honest release position',
+    why: 'current UK support needs official consumer field/layout evidence and measured supported extraction through approved packets; historical dedicated-family evidence alone cannot establish it',
     run() {
       const currency = gbFamily.CURRENCY_EVIDENCE;
-      const validated = currency.currency_validated === true && currency.present_day_support_claimed === true;
+      const general = gbGeneralContract.validate(readBlockerEvidence('b2-evidence.json'));
+      const validated = general.passed;
       return {
         passed: validated,
+        support_scope: general.scope,
+        contract_id: general.contract_id,
+        dedicated_experian_family_currency_validated: currency.currency_validated,
         detail: validated
-          ? `current GB support is established from ${currency.validated_against || 'recorded current evidence'}`
-          : `current GB support is NOT established, and the gap is a current-format INTAKE-EVIDENCE gap (a missing required artifact), distinct from a configuration, deployment, implementation or staging requirement: the only GB format evidence held is ${currency.status} of vintage ${currency.evidence_vintage}, ${currency.current_evidence_attempts.length} targeted retrieval attempt(s) were refused at the source, and no present-day GB consumer-format artifact or layout specification is available to this build. GB intake itself is live through the general bureau-report path (a GB consumer report is read and the shared factual-verification issues are delivered); only the GB-specific consumer-disclosure family reader stays unadmitted until a current artifact is captured and measured.`,
+          ? general.detail
+          : `Current GB GENERAL field support awaits current source-bound behavioral proof: ${general.detail}. The separately admitted Experian family remains historical (${currency.evidence_vintage}); its current complete-layout currency is unestablished.`,
         affected_regions: validated ? [] : ['GB']
       };
     }

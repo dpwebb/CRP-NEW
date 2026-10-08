@@ -953,6 +953,12 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         const decisiveSource = dateField && assessment.required_facts.find((fact) => fact.field === dateField);
         if (decisiveSource) issue.location = decisiveSource.source.location;
       }
+      // The optional own masked suffix identifies this account in the packet; it is not a rule prerequisite.
+      if (entry.check_id === 'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT'
+        && !issue.source_facts.some(fact => fact.field === 'account.masked_identifier')
+        && sourceForField(record, 'account.masked_identifier')) {
+        issue.source_facts.push(...sourceFactsFor(record, ['account.masked_identifier']));
+      }
       issue.eligible = isEligible(issue);
       Object.assign(issue, describe(issue));
       issues.push(issue);

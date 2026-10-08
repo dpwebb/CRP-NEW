@@ -1,0 +1,86 @@
+{
+  "review_kind": "COORDINATOR_FIELD_CROSSWALK_FROM_PUBLIC_WEB_PDF_READER",
+  "source": {
+    "publisher": "TransUnion International UK Limited",
+    "url": "https://www.transunion.co.uk/content/dam/transunion/gb/consumer/collateral/your-credit-file-explained-v-9/Your%20credit%20file%20explained%20v9.pdf",
+    "version": "V9.0 | April 2025",
+    "retrieved_on": "2026-10-08",
+    "pages": 55,
+    "locator": "section 5.8, printed pages 15-17",
+    "capture_kind": "WEB_PDF_READER_FIELD_CROSSWALK",
+    "original_pdf_sha256": null,
+    "original_capture_result": "HTTP_403_FORBIDDEN",
+    "latest_linked_edition_verified": false,
+    "latest_linked_url": "https://www.transunion.co.uk/content/dam/transunion/gb/consumer/collateral/Your-credit-file-explained-Sep.pdf",
+    "fields": [
+      [
+        "Organisation Name",
+        "account.reported_identity",
+        "account-owning organisation"
+      ],
+      [
+        "Account Number / suffix",
+        "account.masked_identifier",
+        "retain only a readable masked suffix"
+      ],
+      [
+        "Account State",
+        "account.status",
+        "literal recognized state; no inferred payment performance"
+      ],
+      [
+        "Account Type",
+        "account.type",
+        "printed product type"
+      ],
+      [
+        "Current Balance",
+        "account.balance",
+        "balance at the organisation update"
+      ],
+      [
+        "Regular Payment Value",
+        "account.paymentAmount",
+        "scheduled amount due; not payment made"
+      ],
+      [
+        "Credit Limit / Overdraft Limit",
+        "account.creditLimit",
+        "available credit or overdraft limit"
+      ],
+      [
+        "Account Start Date",
+        "liability.openedDate",
+        "account opening"
+      ],
+      [
+        "Account End Date",
+        "liability.closedDate",
+        "closure, settlement or repayment; N/A is no date"
+      ],
+      [
+        "Account Holder Start Date",
+        null,
+        "participation start; never account opening"
+      ],
+      [
+        "Account Holder End Date",
+        null,
+        "participation end; never account closure"
+      ],
+      [
+        "Payment Start Date",
+        null,
+        "payments became due; never last payment or first delinquency"
+      ],
+      [
+        "Date Account Last Updated",
+        null,
+        "organisation update; never report reference date"
+      ]
+    ],
+    "boundary": "Current supported captions and their meanings on GENERAL intake only. No current complete bureau PDF geometry, populated specimen or TransUnion history-code interpretation is certified."
+  },
+  "not_original_pdf": true,
+  "no_original_byte_hash_claimed": true
+}

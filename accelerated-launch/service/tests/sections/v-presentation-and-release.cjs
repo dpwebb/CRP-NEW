@@ -23,6 +23,8 @@ const path = require('node:path');
 
 const formats = require('../../formats.cjs');
 const gbFamily = require('../../format-families/gb-experian-consumer.cjs');
+const gbGeneralContract = require('../../gb-general-field-contract.cjs');
+const crypto = require('node:crypto');
 const caScope = require('../../format-families/ca-consumer-format-scope.cjs');
 const results = require('../../results.cjs');
 const { PAID_ACTIONS } = require('../../entitlement.cjs');
@@ -324,12 +326,37 @@ async function draftBoundaryAndRelease(t, check, evidence) {
   /* BLOCKER CATEGORIES AND AFFECTED REGIONS, and the format-support blockage cannot be hidden by a count. */
   check.deepEqual(report.blockers_by_category.map((row) => row.category), [...new Set(CHECKS.map((c) => c.category))].sort(),
     'every category the checks declare appears in the grouped blocker report');
-  check.equal(report.format_support_blocked, true, 'format support IS blocked, and the report says so in a field of its own');
-  check.ok(report.format_support_blocked_in_regions.includes('GB'),
-    'and names the region that is unresolved, rather than only a count');
   const gbCheck = report.checks.find((row) => row.id === 'CURRENT_GB_SUPPORT_IS_ESTABLISHED');
-  check.deepEqual(gbCheck.affected_regions, ['GB'], 'the GB check reports its own affected region');
-  check.ok(/1 June 2007/.test(gbCheck.detail), 'and states the reason in terms of the evidence, not a score');
+  check.equal(report.format_support_blocked_in_regions.includes('GB'), !gbCheck.passed, 'GB format blockage follows current evidence validation');
+  check.deepEqual(gbCheck.affected_regions, gbCheck.passed ? [] : ['GB'], 'the GB gate names its unresolved region when proof is missing');
+  check.equal(gbCheck.support_scope, 'CURRENT_GENERAL_CONSUMER_FIELDS', 'current support is bounded to documented GENERAL fields');
+  check.equal(gbCheck.dedicated_experian_family_currency_validated, false, 'a current GENERAL contract never promotes the historical dedicated family');
+
+  const inventory = gbGeneralContract.currentInventory();
+  // Controlled validator input only; this is never persisted as measured product evidence.
+  const candidate = { totals: { passed: inventory.sectionIds.length, failed: 0, skipped: 0 }, execution: { mode: 'FULL_CURRENT_PRODUCT',
+    selected_sections: inventory.sectionIds, unrun_sections: [], source_drift: [], source_hashes: inventory.sources.map(file => ({ file,
+      sha256: crypto.createHash('sha256').update(fs.readFileSync(path.join(REPOSITORY_ROOT, file))).digest('hex') })) },
+    sections: inventory.sectionIds.map(id => ({ id, completed: true, failed: 0, passed: 1, skipped: [],
+      evidence: id === 'dl-general-caption-sources' ? { gb_field_contract: { id: gbGeneralContract.ID,
+        source_version: gbGeneralContract.SOURCE.version, regions: [...gbGeneralContract.REGIONS],
+        check_id: 'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT', source_isolation: true, approved_downloads: 4 } } : {} })) };
+  candidate.execution.sections = candidate.sections;
+  candidate.execution.totals = candidate.totals;
+  check.equal(gbGeneralContract.validate(candidate).passed, true, 'complete current bound proof validates the specified contract');
+  for (const alter of [p => { p.execution.mode = 'FOCUSED'; }, p => { p.execution.unrun_sections.push('missing'); },
+    p => { p.execution.source_drift.push('changed'); }, p => { p.totals.failed = 1; }, p => { p.sections[0].completed = false; },
+    p => { p.sections.find(row => row.id === 'dl-general-caption-sources').evidence.gb_field_contract.approved_downloads = 3; },
+    p => { p.sections.find(row => row.id === 'dl-general-caption-sources').evidence.gb_field_contract.regions[0] = 'GB'; },
+    p => { p.sections.find(row => row.id === 'dl-general-caption-sources').evidence.gb_field_contract.source_version = '2007'; },
+    p => { p.sections.find(row => row.id === 'dl-general-caption-sources').evidence.gb_field_contract.source_isolation = false; },
+    p => { p.execution.source_hashes[0].sha256 = 'stale'; }, p => { p.execution.source_hashes.pop(); },
+    p => { p.sections = p.sections.filter(row => gbGeneralContract.REQUIRED_SECTIONS.includes(row.id)); },
+    p => { p.execution.selected_sections.pop(); }, p => { p.execution.sections.pop(); },
+    p => { p.execution.totals = { passed: 999, failed: 0, skipped: 0 }; }]) {
+    const broken = structuredClone(candidate); alter(broken);
+    check.equal(gbGeneralContract.validate(broken).passed, false, 'missing, partial, stale or differently scoped proof cannot close UK evidence');
+  }
   const deploymentCheck = report.checks.find((row) => row.id === 'DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED');
   check.deepEqual(deploymentCheck.affected_regions, ['CA', 'AU', 'US', 'GB'], 'and the deployment blocker names every market it holds back');
   check.ok(report.blockers_by_category.some((row) => row.category === 'PAYMENT' && row.launch_blocking_checks_failed.length),
