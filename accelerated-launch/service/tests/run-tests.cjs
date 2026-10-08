@@ -94,6 +94,9 @@ const SECTION_FILES = [
   'ds-column-caption-fields.cjs',
   'dt-rating-history-rows.cjs',
   'dv-au-reference-delivery.cjs',
+  'dw-us-history-completion.cjs',
+  'dx-report-date-custody.cjs',
+  'dy-reader-date-delivery.cjs',
   'dh-ca-reader-completion.cjs',
   'di-au-reader-completion.cjs',
   'dj-gb-reader-completion.cjs',
@@ -937,7 +940,8 @@ async function main() {
         'dk-reader-completion-integration', 'dl-general-caption-sources', 'dm-au-role-packet-evidence',
         'dn-us-dated-history', 'do-gb-history-definitions', 'dp-us-cell-recovery',
         'dq-ca-printed-account-fields', 'dr-reader-evidence-delivery',
-        'ds-column-caption-fields', 'dt-rating-history-rows', 'du-column-reader-delivery', 'dv-au-reference-delivery'].map((id) => ({ id, passed: clean(id) }))
+        'ds-column-caption-fields', 'dt-rating-history-rows', 'du-column-reader-delivery', 'dv-au-reference-delivery',
+        'dw-us-history-completion', 'dx-report-date-custody', 'dy-reader-date-delivery'].map((id) => ({ id, passed: clean(id) }))
     ]
   };
   fs.writeFileSync(path.join(OUT_DIR, 'common-errors-evidence.json'), `${JSON.stringify(commonErrorsEvidence, null, 2)}\n`, 'utf8');

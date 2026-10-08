@@ -17,6 +17,7 @@ const crypto = require('node:crypto');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
+const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 
 function nowIso() {
   return new Date().toISOString();
@@ -43,9 +44,7 @@ function reportIdentity(resultRow) {
   if (!ext) return null;
   return {
     bureau: ext.bureau || null,
-    reference_date: ext.reference_date && ext.reference_date.normalized_value
-      ? ext.reference_date.normalized_value
-      : null
+    reference_date: reportDateValue(ext.reference_date)
   };
 }
 
@@ -134,7 +133,20 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
     `correspondence:${JSON.stringify(correspondenceOf(packetRow))}`,
 
     `bureau:${identity.bureau || ''}`,
-    `reference:${identity.reference_date || ''}`
+    `reference:${identity.reference_date || ''}`,
+    // Supporting report identity is material too, even when account facts alone prove the issue.
+    `reference-sources:${JSON.stringify({
+      cover: identity.reference_date ? resultRow.extraction.reference_date : null,
+      selected: ordered.map((issue) => [...new Set([
+        issue.record_index, issue.evidence?.duplicate_of_record, issue.evidence?.other_record,
+        issue.evidence?.original_record,
+        ...(issue.rule_assessment?.required_facts || []).map((fact) => fact.source?.record_index),
+        ...(issue.source_facts || []).map((fact) => fact.record_index)
+      ].filter((index) => index != null))].sort((a, b) => a - b).map((index) => ({
+        record_index: index, source: reportReference((resultRow.extraction.records || [])
+          .find((record) => record.record_index === index))
+      })))
+    })}`
   ];
   return crypto.createHash('sha256').update(parts.join('\n'), 'utf8').digest('hex');
 }

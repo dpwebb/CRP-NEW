@@ -8,7 +8,7 @@
 const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
 const reaging = require('./reaging.cjs');
-const { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference, reportDateValue, reportSnapshotKey, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { validatedDefinition } = require('./report-code-definitions.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
@@ -99,7 +99,7 @@ function identityKey(record) {
 
 function dateKey(r) {
   const f = r.facts || {};
-  return [r.kind, r.source_bureau || '', r.source_report_reference_date || '', iso(f['liability.openedDate']), iso(f['liability.closedDate']), iso(f['overdue.originalListingDate'])].join('|');
+  return [r.kind, reportSnapshotKey(r), iso(f['liability.openedDate']), iso(f['liability.closedDate']), iso(f['overdue.originalListingDate'])].join('|');
 }
 
 function groupByDateKey(records) {
@@ -320,8 +320,11 @@ function paymentOrDelinquencyDateConflict(records) {
     const opened = iso(f['liability.openedDate']);
     const lastPayment = iso(f['tradeline.lastPaymentDate']);
     const firstDelinquency = iso(f['tradeline.firstDelinquencyDate']);
-    const reportDate = iso(r.source_report_reference_date)
-      || iso(r.report_reference_date && r.report_reference_date.normalized_value);
+    const reference = r.report_reference_date;
+    const foreignReference = reference?.location?.file_id && r.source_file_id
+      && reference.location.file_id !== r.source_file_id;
+    const reportDate = Object.hasOwn(r, 'report_reference_date')
+      ? foreignReference ? null : iso(reportDateValue(reference)) : iso(r.source_report_reference_date);
     const openedRange = factDateRange(r, 'liability.openedDate');
     const reportRange = dateRange(reportDate, r.report_reference_date && r.report_reference_date.precision);
     for (const [field, value] of [['last_payment', lastPayment], ['first_delinquency', firstDelinquency]]) {
@@ -353,7 +356,7 @@ function collectionAndOriginalBothDue(records) {
       const otherAmount = nval((original.facts || {})['account.balance']) ?? nval((original.facts || {})['account.amount']);
       if (identityKey(original) !== id || otherAmount === undefined) continue;
       if (collection.source_bureau !== original.source_bureau
-        || collection.source_report_reference_date !== original.source_report_reference_date) continue;
+        || reportSnapshotKey(collection) !== reportSnapshotKey(original)) continue;
       applicable = true;
       // Masked account digits and a creditor name can collide. A matching printed amount
       // supplies the extra corroboration needed before presenting this as a linked pair.
@@ -420,7 +423,7 @@ function responsibilityInconsistency(records) {
     const id = identityKey(r);
     const resp = f['account.responsibility'];
     if (!id || !resp) continue;
-    const snapshot = `${r.source_bureau || ''}|${r.source_report_reference_date || ''}`;
+    const snapshot = reportSnapshotKey(r);
     const key = `${id}|${snapshot}`;
     const earlier = seen.get(key) || [];
     const prior = earlier.find((item) => item.resp !== resp && corroboratingThirdFact(item.record, r) === 'CONFIRMED');

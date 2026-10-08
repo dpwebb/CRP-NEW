@@ -16,6 +16,7 @@ const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
 const commonErrors = require('./common-errors.cjs');
+const { reportDateValue } = require('./report-fact-sources.cjs');
 
 const OUTCOME = Object.freeze({
   STILL_OBSERVED: 'STILL_OBSERVED',
@@ -31,7 +32,7 @@ function factsOf(record) { return (record && record.facts) || {}; }
 
 function recordReportDate(record) {
   const r = record && record.report_reference_date;
-  return r ? r.normalized_value || r.normalized || null : null;
+  return reportDateValue(r);
 }
 
 function issueCategory(issue) {
@@ -70,7 +71,7 @@ function issueView(issue) {
 
 function reportIdentityOf(extraction) {
   const ext = extraction || {};
-  const ref = ext.reference_date ? (ext.reference_date.normalized_value || ext.reference_date.normalized || null) : null;
+  const ref = reportDateValue(ext.reference_date);
   return { bureau: ext.bureau || null, report_date: ref, presentation_id: ext.presentation_id || null };
 }
 

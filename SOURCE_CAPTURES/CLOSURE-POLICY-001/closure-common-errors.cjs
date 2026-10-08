@@ -21,7 +21,8 @@ const ids = ['al-common-errors', 'ct-owner-common-error-scope', 'cw-common-error
   'dh-ca-reader-completion', 'di-au-reader-completion', 'dj-gb-reader-completion', 'dk-reader-completion-integration',
   'dl-general-caption-sources', 'dm-au-role-packet-evidence', 'dn-us-dated-history',
   'do-gb-history-definitions', 'dp-us-cell-recovery', 'dq-ca-printed-account-fields', 'dr-reader-evidence-delivery',
-  'ds-column-caption-fields', 'dt-rating-history-rows', 'du-column-reader-delivery', 'dv-au-reference-delivery'];
+  'ds-column-caption-fields', 'dt-rating-history-rows', 'du-column-reader-delivery', 'dv-au-reference-delivery',
+  'dw-us-history-completion', 'dx-report-date-custody', 'dy-reader-date-delivery'];
 const tests = ids.map((id) => {
   const section = run.sections.find((row) => row.id === id);
   if (!section || !section.completed || section.failed || section.skipped.length || !section.passed) {
@@ -49,6 +50,7 @@ sourceFiles.push('accelerated-launch/service/report-amount.cjs', 'accelerated-la
   'accelerated-launch/service/format-families/gb-experian-consumer.cjs');
 sourceFiles.push('accelerated-launch/service/ocr/local-ocr.cjs');
 sourceFiles.push('accelerated-launch/service/payment-history-grid.cjs');
+sourceFiles.push('accelerated-launch/service/multi-file-assembly.cjs');
 const checklist = require(path.join(root, 'accelerated-launch/service/common-error-checklist.cjs')).CHECKS;
 const remaining = {
   re_aging: 'Owned same-bureau fixed-obligation first-delinquency changes have a sourced verification mapping. Reader layouts without corroborated identity, sourced anchors or report dates remain gaps. Ordinary later delinquency does not establish re-aging or its absence.',

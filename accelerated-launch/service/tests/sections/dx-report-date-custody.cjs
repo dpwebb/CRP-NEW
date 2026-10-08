@@ -14,9 +14,9 @@ const { sourceForField, reportReference } = require('../../report-fact-sources.c
 const gbPdf = require('./do-gb-history-definitions.cjs').nativePdf;
 const auPdf = require('./dv-au-reference-delivery.cjs').nativePdf;
 const SPECIMENS = {
-  GB: { file: 'C:/CRP-NEW/SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-009.pdf',
+  GB: { file: path.resolve(__dirname, '../../../../SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-009.pdf'),
     hash: '5e95f3d27c4102c7772b33d0e11f3f4e0f37d253b2147e635db54e9bd328aec4', year: '2007' },
-  AU: { file: 'C:/CRP-NEW/SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf',
+  AU: { file: path.resolve(__dirname, '../../../../SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf'),
     hash: '3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a', year: '2016' }
 };
 let sequence = 0;

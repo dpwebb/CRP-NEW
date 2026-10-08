@@ -18,6 +18,7 @@
  */
 const { SUPPORT } = require('./formats.cjs');
 const { GENERAL_PRESENTATION_ID } = require('./general-intake.cjs');
+const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 
 function isAdmitted(fileRow) {
   const e = fileRow && fileRow.extraction;
@@ -42,8 +43,9 @@ function baseIdentity(fileRow) {
 function dateIdentity(fileRow) {
   const e = fileRow.extraction;
   const rd = e && e.reference_date;
-  return (rd && rd.status === 'RESOLVED' && (rd.normalized_value || rd.normalized))
-    ? (rd.normalized_value || rd.normalized)
+  if (rd?.location?.file_id && fileRow.file_id && rd.location.file_id !== fileRow.file_id) return 'DATE_UNRESOLVED';
+  return (rd && rd.status === 'RESOLVED' && reportDateValue(rd))
+    ? reportDateValue(rd)
     : 'DATE_UNRESOLVED';
 }
 
@@ -69,8 +71,8 @@ function mergeContentMarkers(into, from) {
 /** Reconcile the reference dates the included files print. One date is kept (the full reading, unchanged);
    conflicting dates are withheld rather than borrowed. */
 function reconcileReferenceDate(readings) {
-  const resolved = (readings || []).filter((rd) => rd && rd.status === 'RESOLVED' && (rd.normalized_value || rd.normalized));
-  const distinct = [...new Set(resolved.map((rd) => rd.normalized_value || rd.normalized))];
+  const resolved = (readings || []).filter((rd) => rd && rd.status === 'RESOLVED' && reportDateValue(rd));
+  const distinct = [...new Set(resolved.map(reportDateValue))];
   if (distinct.length === 1) return resolved[0];
   if (distinct.length > 1) {
     return {
@@ -225,8 +227,13 @@ function assemble(files) {
   /* GAP-INGEST-001: a record is re-indexed globally and annotated with its source file/page/line, so a fact on an
      earlier image and a fact on a later image both reach the assessment with their own provenance, and neither
      borrows from another account. */
-  function annotate(record, fileRow, sequence, index, bureau, reportReferenceDate) {
+  function annotate(record, fileRow, sequence, index, bureau) {
     const loc = record && record.location ? record.location : {};
+    const ownReference = Object.hasOwn(record, 'report_reference_date') || record.report_segment_id
+      ? record.report_reference_date : fileRow.extraction.reference_date;
+    const reference = ownReference ? JSON.parse(JSON.stringify(ownReference)) : null;
+    if (reference?.location && !reference.location.file_id) reference.location = { ...reference.location, file_id: fileRow.file_id };
+    const referenceRecord = { source_file_id: fileRow.file_id, report_reference_date: reference };
     return Object.assign({}, record, {
       record_index: index,
       source_file_id: fileRow.file_id,
@@ -234,7 +241,9 @@ function assemble(files) {
       source_page: loc.page != null ? loc.page : null,
       source_line: loc.line != null ? loc.line : null,
       source_bureau: record.report_segment_id ? (record.bureau || null) : (bureau || null),
-      source_report_reference_date: record.report_segment_id ? (record.report_reference_date && record.report_reference_date.status === 'RESOLVED' ? record.report_reference_date.normalized_value : null) : (reportReferenceDate || null),
+      ...(ownReference || Object.hasOwn(record, 'report_reference_date')
+        ? { report_reference_date: reference } : {}),
+      source_report_reference_date: reportReference(referenceRecord)?.normalized_value || null,
       source_report_segment_id: record.report_segment_id ? fileRow.file_id + ':' + record.report_segment_id : null,
       location: Object.assign({}, loc, { file_id: fileRow.file_id }),
       /* Deep-copy the mutable fact surfaces so a cross-file merge never mutates the original per-file record. */
@@ -264,9 +273,8 @@ function assemble(files) {
       if (!base) base = e;
       if (e.bureau) bureau = e.bureau;
       if (e.presentation_id) presentationId = e.presentation_id;
-      if (e.reference_date && e.reference_date.status === 'RESOLVED' && !referenceDate) referenceDate = e.reference_date;
+      if (dateIdentity(f) !== 'DATE_UNRESOLVED' && !referenceDate) referenceDate = e.reference_date;
     }
-    const referenceDateValue = referenceDate ? (referenceDate.normalized_value || referenceDate.normalized || null) : null;
     if (referenceDate) extractionReferenceDates.push(referenceDate);
 
     let groupCount = 0;
@@ -279,16 +287,17 @@ function assemble(files) {
       for (const r of (e.records || [])) {
         statIndex += 1;
         groupCount += 1;
-        groupStat.push(annotate(r, f, unique.indexOf(f), statIndex, bureau, referenceDateValue));
+        groupStat.push(annotate(r, f, unique.indexOf(f), statIndex, bureau));
       }
 
       const view = e.evidence_readings && e.evidence_readings.factual_view;
       if (view && Array.isArray(view.records)) {
         hasFactualView = true;
-        if (view.reference_date && view.reference_date.status === 'RESOLVED') factualReferenceDates.push(view.reference_date);
+        if (view.reference_date && view.reference_date.status === 'RESOLVED' && reportDateValue(view.reference_date)
+          && (!view.reference_date.location?.file_id || view.reference_date.location.file_id === f.file_id)) factualReferenceDates.push(view.reference_date);
         for (const fr of view.records) {
           factIndex += 1;
-          groupFact.push(annotate(fr, f, unique.indexOf(f), factIndex, bureau, referenceDateValue));
+          groupFact.push(annotate(fr, f, unique.indexOf(f), factIndex, bureau));
         }
       }
     }
@@ -303,7 +312,13 @@ function assemble(files) {
     return { extraction: null, files_examined: admitted.length, files_included: unique.length, included_file_ids, duplicate_files_skipped: duplicates, suspected_equivalent_files: suspectedEquivalentFiles, report_groups: reportGroups };
   }
 
-  const referenceDate = reconcileReferenceDate(extractionReferenceDates) || (base.reference_date || null);
+  let referenceDate = reconcileReferenceDate(extractionReferenceDates) || (base.reference_date || null);
+  const baseFile = unique.find((file) => file.extraction === base);
+  if (referenceDate?.status === 'RESOLVED' && (!reportDateValue(referenceDate)
+    || referenceDate === base.reference_date && baseFile && dateIdentity(baseFile) === 'DATE_UNRESOLVED')) referenceDate = {
+    ...referenceDate, status: 'EXTRACTION_UNRESOLVED', normalized_value: null, normalized: null,
+    reason: referenceDate.reason || 'REPORT_DATE_SOURCE_NOT_READABLE'
+  };
 
   let evidenceReadings = base.evidence_readings || {};
   const baseView = evidenceReadings.factual_view;
@@ -330,13 +345,13 @@ function assemble(files) {
       report_groups: reportGroups.map((g) => ({
         bureau: g.bureau,
         presentation_id: g.presentation_id,
-        reference_date: g.reference_date ? { raw: g.reference_date.raw, normalized: g.reference_date.normalized_value || g.reference_date.normalized || null, status: g.reference_date.status } : null,
+        reference_date: g.reference_date ? { raw: g.reference_date.raw, normalized: reportDateValue(g.reference_date), status: g.reference_date.status } : null,
         record_count: g.record_count,
         files_in_group: g.files_in_group
       })),
       distinct_report_dates: referenceDate && referenceDate.distinct_report_dates
         ? referenceDate.distinct_report_dates
-        : (referenceDate && referenceDate.normalized_value ? [referenceDate.normalized_value] : [])
+        : (reportDateValue(referenceDate) ? [reportDateValue(referenceDate)] : [])
     }
   });
 

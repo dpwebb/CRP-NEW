@@ -5,7 +5,7 @@
 const { ADAPTERS, adaptersForRegion } = require('../adapters/rule-adapters.cjs');
 const APPLICABILITY = require('../adapters/applicability-records.json');
 
-const { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference, reportSnapshotKey, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { validatedDefinition } = require('./report-code-definitions.cjs');
 const reaging = require('./reaging.cjs');
 
@@ -170,7 +170,7 @@ function pairedRecordSources(issue, record, extraction) {
   const other = extraction.records.find((r) => r.record_index === otherIndex);
   if (!other || other.status !== 'RESOLVED' || other.record_index === record.record_index
     || other.source_bureau !== record.source_bureau
-    || other.source_report_reference_date !== record.source_report_reference_date) return null;
+    || reportSnapshotKey(other) !== reportSnapshotKey(record)) return null;
   const fields = ['account.masked_identifier', 'account.reported_identity'];
   const sameIdentity = fields.every((field) => record.facts[field] != null
     && String(record.facts[field]) === String((other.facts || {})[field]));
@@ -330,7 +330,7 @@ function hasUnusableDecisiveSource(issue, record, extraction) {
       || (record.facts?.['account.paymentHistoryCells'] || []).some(requiresPrintedHistoryDefinition))
     && !paymentHistorySources(issue, record)) return true;
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'
-    && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && record.report_reference_date && !reportReference(record)) return true;
+    && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && Object.hasOwn(record, 'report_reference_date') && !reportReference(record)) return true;
   const rejected = (row, fields) => Boolean(row && fields && fields.some((field) =>
     row.fact_sources && Object.hasOwn(row.fact_sources, field) && !sourceForField(row, field)));
   const fields = decisiveFields(issue, record);
@@ -341,6 +341,8 @@ function hasUnusableDecisiveSource(issue, record, extraction) {
   const e = issue.evidence || {};
   const index = e.duplicate_of_record ?? e.other_record ?? e.original_record;
   const other = extraction && (extraction.records || []).find((row) => row.record_index === index);
+  if (!other || other.source_bureau !== record.source_bureau
+    || reportSnapshotKey(other) !== reportSnapshotKey(record)) return true;
   const identity = ['account.masked_identifier', 'account.reported_identity'];
   if (rejected(record, identity) || rejected(other, identity)) return true;
   if (issue.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING') {

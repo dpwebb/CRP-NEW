@@ -259,10 +259,14 @@ async function run(t, check) {
     const history = extraction.records.flatMap((record) => record.facts['account.paymentHistoryCells'] || []);
     check.ok(history.some((cell) => !cell.uncertain && cell.period && cell.code === 'OK'),
       'the actual pinned public sample contributes independently readable dated cells');
-    check.ok(history.some((cell) => cell.uncertain && cell.raw_code), 'actual OCR damage remains raw and uncertain');
+    check.equal(history.length, 56, 'the public source has 56 actual history cells without promoting border artifacts');
+    check.ok(history.every((cell) => cell.code === 'OK' || cell.code === '30'),
+      'every actual source code is readable independently of its month label');
+    check.equal(history.filter((cell) => cell.uncertain).length, 4,
+      'the four remaining conflicting or below-threshold month readings retain uncertainty');
     check.equal(common.runCommonErrorChecks({ extraction }).performed.find((entry) => entry.check_id === HISTORY)?.source_records.length || 0, 0,
       'the unchanged public sample does not force a performance contradiction');
-    publicEvidence = 'PUB-001 actual own dated cells retained; unreadable readings remain uncertain';
+    publicEvidence = 'PUB-001: 56 own history codes, 52 usable dated cells, four unresolved month readings';
   }
   return { public_evidence: publicEvidence, scope: 'own-account dated US history with external published code definitions' };
 }

@@ -17,7 +17,7 @@
 const crypto = require('node:crypto');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
-const { sourceForField } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
 const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
@@ -154,9 +154,8 @@ function entryLabel(issue) {
  *  multi-file-assembly fields to the record's own bureau/reference date. */
 function reportIdentityFor(record) {
   if (!record) return null;
-  const reference = record.source_report_reference_date
-    || (record.report_reference_date && record.report_reference_date.normalized_value)
-    || null;
+  const reference = Object.hasOwn(record, 'report_reference_date')
+    ? reportReference(record)?.normalized_value || null : record.source_report_reference_date || null;
   return {
     bureau: record.source_bureau || record.bureau || null,
     reference_date: reference,

@@ -34,7 +34,7 @@ const tuCaFamily = require('./format-families/tu-ca-consumer.cjs');
 const caFormatScope = require('./format-families/ca-consumer-format-scope.cjs');
 const caFacts = require('./ca-consumer-file-facts.cjs');
 const generalIntake = require('./general-intake.cjs');
-const { sourceForField } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
 /**
  * B4 continuation — the service's own PDF model builder.
@@ -336,6 +336,14 @@ function extractWithSharedAdapter(model, options) {
     const reader = FAMILY_READERS[supported.family_id];
     if (!reader) throw new Error(`FAMILY_EXTRACTOR_NOT_REGISTERED: ${supported.family_id}`);
     const raw = reader.extract(model, supported.admission);
+    // Each family record retains its own file's complete cover reading, including rejection.
+    // An explicit unread date must stop later global/scalar fallbacks.
+    const records = raw.records.map((record) => {
+      if (Object.hasOwn(record, 'report_reference_date') || !raw.reference_date) return record;
+      const own = { ...record, report_reference_date: JSON.parse(JSON.stringify(raw.reference_date)) };
+      own.source_report_reference_date = reportReference(own)?.normalized_value || null;
+      return own;
+    });
     return {
       presentation_id: supported.presentation_id,
       family_id: supported.family_id,
@@ -347,7 +355,7 @@ function extractWithSharedAdapter(model, options) {
       refusal: null,
       support: SUPPORT.ACTUAL_REPORT_EVIDENCE,
       reference_date: raw.reference_date,
-      records: raw.records,
+      records,
       summary: raw.summary,
       evidence_readings: raw.evidence_readings
     };

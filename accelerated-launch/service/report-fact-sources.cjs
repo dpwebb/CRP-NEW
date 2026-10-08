@@ -20,14 +20,24 @@ const PRINTED_LABEL = Object.freeze({
   'tradeline.firstDelinquencyDate': /first.*delinquen/i
 });
 
-function reportReference(record) {
-  const date = record && record.report_reference_date;
+// Shared date identities must respect the same explicit reading rejection as rule evidence.
+// Legacy line-only readings remain supported; physical readers enforce their own geometry.
+function reportDateValue(date) {
   if (!date || date.status && date.status !== 'RESOLVED') return null;
-  if (date.trusted === false || date.location && date.location.trusted === false) return null;
+  if (date.trusted === false || date.location && date.location.trusted === false || date.reason
+    || date.uncertainty && (date.uncertainty.reason
+      || date.uncertainty.status && date.uncertainty.status !== 'RESOLVED')) return null;
   if (date.raw_value != null && date.raw != null && date.raw_value !== date.raw
     || date.normalized_value != null && date.normalized != null && date.normalized_value !== date.normalized) return null;
+  return date.normalized_value ?? date.normalized ?? null;
+}
+
+function reportReference(record) {
+  const date = record && record.report_reference_date;
+  const normalized = reportDateValue(date);
+  if (!normalized) return null;
+  if (record.source_file_id && date.location?.file_id && record.source_file_id !== date.location.file_id) return null;
   const raw = date.raw_value ?? date.raw;
-  const normalized = date.normalized_value ?? date.normalized;
   return raw != null && normalized && date.location
     ? { ...date, raw_value: raw, normalized_value: normalized } : null;
 }
@@ -115,8 +125,18 @@ function validatedPrintedHistoryDefinition(cell) {
   return definition;
 }
 
+// With no usable date, only the same physical report/segment establishes a shared snapshot.
+// Rejected dates on separate uploads must never collapse into one empty-date snapshot.
+function reportSnapshotKey(record) {
+  const bureau = record.source_bureau || record.bureau || '';
+  const date = Object.hasOwn(record, 'report_reference_date')
+    ? reportReference(record)?.normalized_value : record.source_report_reference_date;
+  const ownSource = record.source_report_segment_id || record.source_file_id;
+  return `${bureau}|${date || (ownSource ? `SOURCE:${ownSource}` : '')}`;
+}
+
 function requiresPrintedHistoryDefinition(cell) {
   return Boolean(cell && (Object.hasOwn(cell, 'printed_definition') || /^Rating:?$/i.test(cell.source_field || '')));
 }
 
-module.exports = { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition };
+module.exports = { sourceForField, reportReference, reportDateValue, reportSnapshotKey, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition };
