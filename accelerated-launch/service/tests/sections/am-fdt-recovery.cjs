@@ -82,6 +82,7 @@ async function run(t, check) {
     { text: 'Closed 01/01/2022', source: 'LOCAL_OCR', trusted: true, confidence: 94, bbox: { x0: 0, y0: 40, x1: 10, y1: 44 } }
   ] }];
   const audit = fdt.recoveryAudit(before, after);
+  check.equal(audit.recovery_attempts.length, 1, 'a native page with a recovered image region records its actual OCR attempt');
   check.equal(audit.facts_added.length, 1, 'recovery records the fact it added');
   check.equal(audit.facts_added[0].text, 'Closed 01/01/2022', 'with the recovered value');
   check.equal(audit.substitution_forbidden, true, 'substitution is forbidden');
@@ -114,6 +115,11 @@ async function run(t, check) {
   check.equal(unsuccessfulAudit.recovery_attempts.length, 1, 'a performed unsuccessful OCR pass is distinguished from no attempt');
   check.equal(unsuccessfulAudit.facts_added.length, 0, 'a performed unsuccessful OCR pass creates no fact');
   check.equal(unsuccessfulAudit.recovery_pass_limit, 1, 'unsuccessful recovery retains the one-pass bound');
+  const unsuccessfulMixedAudit = fdt.recoveryAudit(before,
+    [{ page: 1, source: 'NATIVE_TEXT', recovered_with_ocr: true, lines: before[0].lines }]);
+  check.equal(unsuccessfulMixedAudit.recovery_attempts.length, 1, 'an unsuccessful mixed-page OCR pass is recorded even when the native layer remains');
+  check.equal(unsuccessfulMixedAudit.facts_added.length, 0, 'that unsuccessful pass invents no recovered fact');
+  check.equal(fdt.recoveryAudit(before, before).recovery_attempts.length, 0, 'a native page without an OCR pass never acquires an attempt');
 
   /* 3. consequential reading limitations */
   const limits = fdt.buildReadingLimitations(unreadable);

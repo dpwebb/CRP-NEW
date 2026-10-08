@@ -114,6 +114,12 @@ async function run(t, check) {
   multiPage.served_recovery.recovery_cases[0].input_page_count = 2;
   multiPage.served_recovery.recovery_cases[0].recovery.recovery_attempts = 2;
   check.equal(fdtAcceptance.validateEvidence(multiPage, fdtOptions).passed, true, 'FDT: one recovery pass on each of two actual pages remains valid');
+  const createdResults = structuredClone(stagedFdt);
+  createdResults.served_recovery.recovery_cases.forEach(row => { row.result_status = 201; });
+  check.equal(fdtAcceptance.validateEvidence(createdResults, fdtOptions).passed, true, 'FDT: actual 201 created evaluation responses count without inventing an entitled 200 read');
+  const refusedResult = structuredClone(stagedFdt);
+  refusedResult.served_recovery.recovery_cases[0].result_status = 403;
+  check.equal(fdtAcceptance.validateEvidence(refusedResult, fdtOptions).passed, false, 'FDT: a refused result response never supplies recovery proof');
   for (const [label, change] of [
     ['stale source hash', record => { record.implementation.source_files[0].sha256 = '0'.repeat(64); }],
     ['missing active positive', record => { record.acceptance.missing_expected_violations = 1; }],

@@ -44,6 +44,7 @@ async function run(t, check) {
     check.deepEqual(recovered.ext.reading_state.mixed_native_pages, [1], 'the page is reported as mixed (native + recovered region)');
     check.equal(recovered.ext.reading_state.complete, true, 'and the reading is complete once the region is recovered');
     const added = (recovered.ext.recovery_audit && recovered.ext.recovery_audit.facts_added) || [];
+    check.equal(recovered.ext.recovery_audit.recovery_attempts.length, 1, 'the actual mixed-page pipeline records its one useful OCR attempt');
     check.ok(added.some((a) => /Creditor B Opened 03\/03\/2019 Balance \$800/.test(a.text) && a.source === 'LOCAL_OCR'), 'the recovery audit names the recovered fact with its source');
 
     /* 2. fully readable native page, no duplicate extraction */
@@ -75,6 +76,8 @@ async function run(t, check) {
     check.equal(unreadable.ext.reading_state.complete, false, 'and the reading is incomplete');
     check.equal(unreadable.ext.reading_limitations.incomplete, true, 'the incomplete-review limitation is set');
     check.equal(unreadable.ext.reading_limitations.never_equates_unread_with_absence, true, 'unread content is never equated with absence');
+    check.equal(unreadable.ext.recovery_audit.recovery_attempts.length, 1, 'the actual mixed-page pipeline records its one unsuccessful OCR attempt');
+    check.equal(unreadable.ext.recovery_audit.facts_added.length, 0, 'the unreadable image produces no recovered assessment fact');
     check.ok(/could not be read completely/.test(unreadable.ext.reading_limitations.plain || ''), 'the honest incomplete-review message names the limitation');
 
     /* 5. equivalent layout with the image region in a different position */

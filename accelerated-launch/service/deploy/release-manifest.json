@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T11:32:56.709Z",
+  "generated_at": "2026-10-08T12:49:09.473Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME",
       "file_count": 68,
-      "digest": "D983AD235B319C20F568E0CF57F8E32E390ACEE31533425A486D345F7A3E1AAC",
+      "digest": "5929322E9D4136AABA8C996A8B236BD708E343CE86556283F8638C0EB19C8442",
       "files": [
         {
           "file": "accelerated-launch/service/account-documents.cjs",
@@ -27,7 +27,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "E16BB0D6EA17F68FEFEC66E867894418B79B737F34581CFC1B0E3BCEFF422F00"
+          "sha256": "EB7BAAA453DE4F8A06C5F123D9AF300BA4F424284EEF00FD1776B512EC8D8BFD"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -123,7 +123,7 @@
         },
         {
           "file": "accelerated-launch/service/fdt-acceptance.cjs",
-          "sha256": "8054E315AA862ABBA727B3CB55883BC49F39255A96203D6ED5E3152E6B2AD31D"
+          "sha256": "52150A0C5F4E4FF91EB57961B3FF819AB0F645F426EF0E4246B3D6BB705DB222"
         },
         {
           "file": "accelerated-launch/service/fdt-benchmark.cjs",
@@ -131,7 +131,7 @@
         },
         {
           "file": "accelerated-launch/service/fdt-recovery.cjs",
-          "sha256": "ACBC8AA4F315875AC72A08CC427E17CCEF2EA28B4903BAC122EA7E0969889845"
+          "sha256": "06847142B367BAB9F0C22FB53FCDE59C6B78B6CEB05D6CAEEF9010C87D400D94"
         },
         {
           "file": "accelerated-launch/service/finding-coverage.cjs",
@@ -235,7 +235,7 @@
         },
         {
           "file": "accelerated-launch/service/release-check.cjs",
-          "sha256": "E21FF2194332B0B248A5DE581B35EB0FA073E299473232236E3B29A2CD6AB81C"
+          "sha256": "344BB9C1353A7FD51F56814878813891163DEC35E318CB05E23B143C2FAD7A04"
         },
         {
           "file": "accelerated-launch/service/report-amount.cjs",
@@ -432,6 +432,6 @@
       ]
     }
   ],
-  "manifest_digest": "F0B8FC4E0F06D97A710A1DF38FBAFE1ECEE86A27F5FA32AD39DC59E2C89C8F0D",
+  "manifest_digest": "CA33814FA82BCA5B4EBD83C6C63BAD4B59D63EC17C4DFEF161F9E285BEEEE7ED",
   "total_file_count": 98
 }

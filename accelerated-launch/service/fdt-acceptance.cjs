@@ -156,7 +156,8 @@ function runAcceptance() {
 function hostedRecoveryPassed(proof, target) {
   if (!target || proof?.identity?.build_id !== target || proof?.identity?.served_build_id !== target) return false;
   const cases = proof.recovery_cases || [];
-  const measured = row => row.upload_status === 201 && row.result_status === 200
+  // The created evaluation returns its real result with 201; an owned result read returns 200.
+  const measured = row => row.upload_status === 201 && [200, 201].includes(row.result_status)
     && typeof row.case_id === 'string' && /^[a-f0-9]{64}$/i.test(row.input_sha256 || '')
     && Number.isInteger(row.input_page_count) && row.input_page_count > 0 && row.input_page_count <= MAX_RECOVERY_PAGES
     && row.recovery?.bounded === true && row.recovery.substitution_forbidden === true

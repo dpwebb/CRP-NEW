@@ -152,7 +152,7 @@ function recoveryAudit(beforePages, afterPages) {
   const facts_added = [];
   const ordinary_ingestion = [];
   for (const pg of (afterPages || [])) {
-    if (pg.source === 'LOCAL_OCR') {
+    if (pg.source === 'LOCAL_OCR' || pg.recovered_with_ocr === true) {
       attempts.push({ page: pg.page, strategy: 'LOCAL_OCR_TEXT_LAYER', bounded: true, pass_limit: MAX_RECOVERY_PASSES, page_limit: MAX_RECOVERY_PAGES });
     }
     /* A page with NO native "before" reading is image-only: its OCR content is ordinary ingestion, not a
