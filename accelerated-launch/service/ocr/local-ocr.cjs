@@ -787,14 +787,43 @@ function readPdfRegions(file, regions, options = {}) {
           const value = colors[((top + y) * width + left + x) * 3 + channel];
           values[y * rw + x] = value; histogram[value] += 1;
         }
-        return { values, mode: histogram.indexOf(Math.max(...histogram)) };
+        return { values, mode: histogram.indexOf(Math.max(...histogram)),
+          variants: physicalRegionVariants(values, rw, rh), name: ['RED', 'GREEN', 'BLUE'][channel] };
       });
+      // Luminance can make differently colored source marks indistinguishable. No
+      // candidate may suppress an opposite mark seen in another source channel.
+      const rejectedChannel = channels.find((channel) => channel.variants.physical_features?.opposite_polarity_ink);
+      if (rejectedChannel) {
+        report.regions.push({ id: region.id, page, region: { ...region }, word: null,
+          reason: 'REGION_HAS_OPPOSITE_POLARITY_INK', physical_features: {
+            ...rejectedChannel.variants.physical_features, source_channel: rejectedChannel.name }, variants: [] }); continue;
+      }
+      // Even same-polarity ink may disappear in one channel. Every accepted word must
+      // enclose the union of independently detected source ink, before OCR is consulted.
+      const sourceInkChannels = [{ name: 'GRAYSCALE', variants: candidates }, ...channels].map((channel) => ({
+        source_channel: channel.name,
+        ink_bounds_pixels: channel.variants.find((variant) => variant.preprocessing)?.preprocessing.ink_bounds_pixels,
+        foreground_bounds_pixels: channel.variants.find((variant) => variant.preprocessing)?.preprocessing.foreground_bounds_pixels
+      })).filter((channel) => channel.ink_bounds_pixels && channel.ink_bounds_pixels[2] > channel.ink_bounds_pixels[0]
+        && channel.ink_bounds_pixels[3] > channel.ink_bounds_pixels[1]);
+      const sourceInk = sourceInkChannels.length ? [
+        Math.min(...sourceInkChannels.map((channel) => channel.ink_bounds_pixels[0])),
+        Math.min(...sourceInkChannels.map((channel) => channel.ink_bounds_pixels[1])),
+        Math.max(...sourceInkChannels.map((channel) => channel.ink_bounds_pixels[2])),
+        Math.max(...sourceInkChannels.map((channel) => channel.ink_bounds_pixels[3]))] : null;
+      // Fainter independent ink is still supplied text. Core ink is kept separately for
+      // enclosure comparisons against the lower-resolution original word rectangle.
+      const sourceEnclosure = sourceInkChannels.length ? [
+        Math.min(...sourceInkChannels.map((channel) => channel.foreground_bounds_pixels[0])),
+        Math.min(...sourceInkChannels.map((channel) => channel.foreground_bounds_pixels[1])),
+        Math.max(...sourceInkChannels.map((channel) => channel.foreground_bounds_pixels[2])),
+        Math.max(...sourceInkChannels.map((channel) => channel.foreground_bounds_pixels[3]))] : null;
       // Color is kept only when the supplied cell has a chromatic background. Each channel
       // retains the source pixels; no channel is selected by the recognised text or code meaning.
       if (Math.max(...channels.map((channel) => channel.mode)) - Math.min(...channels.map((channel) => channel.mode)) >= 32) {
-        channels.forEach((channel, index) => {
-          const name = ['RED', 'GREEN', 'BLUE'][index];
-          for (const variant of physicalRegionVariants(channel.values, rw, rh).filter((variant) => variant.preprocessing
+        channels.forEach((channel) => {
+          const name = channel.name;
+          for (const variant of channel.variants.filter((variant) => variant.preprocessing
             && /^LIGHT_FOREGROUND/.test(variant.polarity))) {
             const colored = { ...variant, polarity: `${name}_${variant.polarity}`,
               preprocessing: { ...variant.preprocessing, source_channel: name } };
@@ -831,7 +860,7 @@ function readPdfRegions(file, regions, options = {}) {
           y1: (y0 + top + variant.top + word.top - pad + word.height) * 72 / dpi
         })) : [];
         // A border or neighboring glyph is not silently stripped from the reading.
-        const ink = variant.preprocessing?.ink_bounds_pixels;
+        const ink = sourceEnclosure;
         const coversInk = !ink || words.length === 1 && words[0].x0 <= (x0 + left + ink[0] + 2) * 72 / dpi
           && words[0].y0 <= (y0 + top + ink[1] + 2) * 72 / dpi
           && words[0].x1 >= (x0 + left + ink[2] - 2) * 72 / dpi
@@ -840,6 +869,7 @@ function readPdfRegions(file, regions, options = {}) {
           && words[0].y0 >= region.y0 - 0.25 && words[0].x1 <= region.x1 + 0.25
           && words[0].y1 <= region.y1 + 0.25 ? words[0] : null;
         variants.push({ polarity: variant.polarity, psm: variant.psm || 7, words, own,
+          covers_source_ink: Boolean(coversInk),
           ...(variant.preprocessing ? { preprocessing: variant.preprocessing } : {}) });
         if (paperBackground && variant.polarity === 'ORIGINAL_GRAYSCALE' && own?.trusted) break;
       }
@@ -854,11 +884,13 @@ function readPdfRegions(file, regions, options = {}) {
           // The ink enclosure comes from source pixels even if the untransformed paper
           // reading succeeds first. It is independent of the recognizer's word rectangle.
           ...(() => {
-            const ink = chosen.preprocessing?.ink_bounds_pixels
-              || candidates.find((candidate) => candidate.preprocessing)?.preprocessing.ink_bounds_pixels;
+            const ink = sourceInk;
             return ink ? { physical_ink_bounds: { x0: (x0 + left + ink[0]) * 72 / dpi,
               y0: (y0 + top + ink[1]) * 72 / dpi, x1: (x0 + left + ink[2]) * 72 / dpi,
-              y1: (y0 + top + ink[3]) * 72 / dpi } } : {};
+              y1: (y0 + top + ink[3]) * 72 / dpi }, physical_source_enclosure: {
+                x0: (x0 + left + sourceEnclosure[0]) * 72 / dpi, y0: (y0 + top + sourceEnclosure[1]) * 72 / dpi,
+                x1: (x0 + left + sourceEnclosure[2]) * 72 / dpi, y1: (y0 + top + sourceEnclosure[3]) * 72 / dpi },
+              source_ink_channels: sourceInkChannels } : {};
           })(),
           source_sha256: sourceHash,
           engine_version: oneLine(String(tesseract.stdout).split('\n')[0]) } } : null,
