@@ -235,11 +235,11 @@ async function messagingAndRelease(t, check, evidence) {
   /* THE PRIVATE UI'S OWN WORDS MUST MATCH THE REGISTRY, not the B2 era it was written in. */
   const html = fs.readFileSync(path.join(UI_DIR, 'index.html'), 'utf8');
   const uiJs = fs.readFileSync(path.join(UI_DIR, 'app.js'), 'utf8');
-  check.ok(new RegExp(`\\b${formats.listSupportedFormats().length}\\b`).test(html), 'the UI banner counts five presentations, as the registry holds');
-  check.ok(/TransUnion Canada consumer disclosure/.test(html), 'and names the second Canadian presentation it now reads');
+  check.ok(/common reporting errors/.test(html), 'the first visit explains the approved common-error scope');
+  check.ok(/File limits and help/.test(uiJs), 'upload preparation is available without a technical layout inventory');
   check.ok(!/Nova Scotia selection only/.test(uiJs), 'and the stale Nova Scotia-only claim is gone from the UI');
   check.ok(!/for <em>one<\/em> report/.test(uiJs), 'and so is the stale one-presentation claim');
-  check.ok(/no payment provider is connected/.test(uiJs), 'and the UI states the payment position plainly');
+  check.ok(/Payments are unavailable/.test(uiJs) && /completing checkout/.test(uiJs), 'the UI states payment availability and when payment occurs plainly');
   check.ok(/reporting issues/.test(uiJs) && !/probable violations and potential errors/.test(uiJs), 'consumer wording states the issue assessment promise without confidence tiers');
   check.ok(/choose (?:any|what) you want to dispute/i.test(uiJs), 'consumer wording connects assessment to consumer-selected disputes');
   /* OWNER-CONSUMER-LANGUAGE-001 (footer-only disclaimer): exactly one in the main-page footer, none elsewhere. */
