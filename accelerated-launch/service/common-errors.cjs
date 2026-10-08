@@ -11,6 +11,7 @@ const reaging = require('./reaging.cjs');
 const { sourceForField, reportReference, reportDateValue, reportSnapshotKey, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { validatedDefinition } = require('./report-code-definitions.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
+const { COLLECTION_PAIR_FIELD_SETS, isCollection, collectionPair } = require('./duplicate-account-pair.cjs');
 
 function iso(a) { return typeof a === 'string' ? a : null; }
 
@@ -79,7 +80,7 @@ function contradictoryAccountDates(records) {
     'This report prints at least one account whose opened date is later than its closed date. The printed dates conflict.');
 }
 
-/* 2. Two records of the same kind with identical identifying dates AND the same source report may be the same
+/* 2. Two ordinary records of the same kind with identical identifying dates AND the same source report may be the same
    account reported twice — but only when BOTH a report-supported masked account identifier AND the printed
    creditor/account name corroborate them as the SAME debt. Masked trailing digits can collide (two different
    accounts can share the last four digits), so the masked identifier alone is never sufficient. Matching dates
@@ -145,8 +146,22 @@ function duplicateReporting(records) {
   const groups = groupByDateKey(records);
   const matches = [];
   const candidates = new Map();
+  const collectionCandidates = [];
+  for (const record of records) {
+    if (!isCollection(record)) continue;
+    const prior = collectionCandidates.find(other => collectionPair(record, other));
+    if (prior) {
+      const pair = collectionPair(record, prior);
+      matches.push(match(record, pair.evidence.pairing_basis, {
+        duplicate_of_record: prior.record_index, ...pair.evidence
+      }));
+    }
+    collectionCandidates.push(record);
+  }
   for (const [k, list] of groups) {
     for (const r of list) {
+      // Collections cannot bypass their physical report fence using ordinary dates.
+      if (isCollection(r)) continue;
       const id = identityKey(r);
       if (!id) continue;
       const key = `${k}|${id}`;
@@ -162,7 +177,7 @@ function duplicateReporting(records) {
   if (!matches.length) return null;
   return entry('COMMON-ERROR-DUPLICATE-REPORTING', 'potential duplicate reporting', matches,
     'No two records with identical kind, dates, source report, masked account identifier AND a matching additional account fact were detected; matching dates alone never establish a duplicate.',
-    'This report prints two records with the same kind, identifying dates, source report, masked account identifier and a matching printed balance/limit/status, which may be the same account reported twice. This is a potential issue, not a finding; a shared masked identifier and creditor name with no additional compatible account fact is never described as duplicate reporting.');
+    'This report prints two entries with corroborating account references in the same report. Collection entries can also be matched by their own member and account references, or by their account reference, creditor and two fixed debt dates. Their placement dates and amounts may differ. Please verify whether one debt has been listed twice.');
 }
 
 /* 2b. Two records that share kind, bureau, report date and identifying dates but carry NO report-supported
@@ -175,6 +190,7 @@ function similarEntriesWorthReviewing(records) {
     for (let i = 0; i < list.length; i++) {
       for (let j = i + 1; j < list.length; j++) {
         const a = list[i], b = list[j];
+        if (collectionPair(a, b)) continue;
         const idA = identityKey(a), idB = identityKey(b);
         const sameId = idA && idB && idA === idB;
         if (sameId) {
@@ -505,8 +521,9 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-DUPLICATE-REPORTING': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'liability.openedDate'
   ], ['account.masked_identifier', 'account.reported_identity', 'liability.closedDate'],
-  ['account.masked_identifier', 'account.reported_identity', 'overdue.originalListingDate']],
-  additional_evidence: 'TWO_SAME_KIND_RECORDS_WITH_COMPATIBLE_DATES_AND_THIRD_FACT' },
+  ['account.masked_identifier', 'account.reported_identity', 'overdue.originalListingDate'],
+  ...COLLECTION_PAIR_FIELD_SETS],
+  additional_evidence: 'TWO_SAME_KIND_RECORDS_WITH_COMPATIBLE_DATES_AND_THIRD_FACT_OR_SOURCE_BOUND_COLLECTION_MEMBER_ACCOUNT_REFERENCES_OR_TWO_FIXED_DEBT_DATES' },
   'COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING': { field_sets: [['liability.openedDate'],
     ['liability.closedDate'], ['overdue.originalListingDate']],
   additional_evidence: 'TWO_SIMILAR_RECORDS_IN_ONE_REPORT_SNAPSHOT' },
@@ -586,7 +603,8 @@ function fullCapabilityRows(presentationId, fieldAvailable, performed) {
     const scopeAdmitted = !spec.presentation_scope || spec.presentation_scope.includes(presentationId);
     rows[id] = {
       field_sets: spec.field_sets.map((set) => [...set]),
-      field_ready: spec.field_sets.length ? scopeAdmitted && spec.field_sets.some(fieldAvailable) : null,
+      field_ready: spec.field_sets.length ? scopeAdmitted && spec.field_sets.some(set => fieldAvailable(set,
+        id === 'COMMON-ERROR-DUPLICATE-REPORTING' && COLLECTION_PAIR_FIELD_SETS.includes(set))) : null,
       reader_scope_admitted: scopeAdmitted,
       additional_evidence: spec.additional_evidence || null,
       ...(performed ? { detector_performed: performed.has(id) } : {})
@@ -618,9 +636,13 @@ function formatCapability(extraction) {
   }
   const checks = {};
   for (const [checkId, reqs] of Object.entries(ISSUE_TYPE_FIELD_REQUIREMENTS)) {
-    const absent = reqs.filter((f) => !fields.has(f));
-    const unusable = reqs.filter((f) => fields.has(f) && !usable.has(f));
-    const onOneRecord = usableByRecord.some((onRecord) => reqs.every((f) => onRecord.has(f)));
+    const memberSet = checkId === 'COMMON-ERROR-DUPLICATE-REPORTING' && COLLECTION_PAIR_FIELD_SETS[1];
+    const memberReady = memberSet && usableByRecord.some((onRecord, index) => isCollection(records[index])
+      && memberSet.every((field) => onRecord.has(field)));
+    const required = memberReady ? memberSet : reqs;
+    const absent = required.filter((f) => !fields.has(f));
+    const unusable = required.filter((f) => fields.has(f) && !usable.has(f));
+    const onOneRecord = memberReady || usableByRecord.some((onRecord) => required.every((f) => onRecord.has(f)));
     checks[checkId] = {
       supported: onOneRecord,
       missing_fields: absent,
@@ -633,7 +655,8 @@ function formatCapability(extraction) {
     family_id: (extraction && extraction.family_id) || null,
     checks,
     all_factual_checks: fullCapabilityRows(extraction && extraction.presentation_id,
-      (set) => usableByRecord.some((onRecord) => set.every((f) => onRecord.has(f))),
+      (set, collectionOnly) => usableByRecord.some((onRecord, index) => (!collectionOnly || isCollection(records[index]))
+        && set.every((f) => onRecord.has(f))),
       new Set(runCommonErrorChecks({ extraction }).performed.map((item) => item.check_id)))
   };
 }
@@ -645,12 +668,14 @@ function formatCapability(extraction) {
 const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
   'PR-01': Object.freeze(['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate', 'report.referenceDate',
     'account.status', 'account.balance', 'account.amount', 'account.masked_identifier',
-    'account.reported_identity', 'account.responsibility', 'account.creditLimit',
+    'account.reported_identity', 'account.member_reference', 'collection.agency', 'collection.assignedDate',
+    'account.responsibility', 'account.creditLimit',
     'liability.openedDate', 'liability.closedDate', 'account.pastDueAmount']),
   'GENERAL-BUREAU-REPORT': Object.freeze([
     'report.referenceDate',
     'account.balance', 'account.amount', 'account.pastDueAmount', 'account.paymentAmount', 'account.status',
     'account.responsibility', 'account.masked_identifier', 'account.reported_identity', 'account.paymentHistoryCells',
+    'account.member_reference', 'collection.agency', 'collection.assignedDate',
     'account.creditLimit', 'account.type',
     'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate',
     'reportedAccount.dateOpened', 'reportedAccount.firstReported', 'reportedAccount.adverseRatingDate',
@@ -702,7 +727,8 @@ function presentationCapability(presentationId) {
   return {
     presentation_id: presentationId,
     checks,
-    all_factual_checks: fullCapabilityRows(presentationId, (required) => required.every((f) => set.has(f))),
+    all_factual_checks: fullCapabilityRows(presentationId, (required, collectionOnly) => (!collectionOnly
+      || ['PR-01', 'GENERAL-BUREAU-REPORT'].includes(presentationId)) && required.every((f) => set.has(f))),
     retained_fields_without_a_usable_check: (PRESENTATION_RETAINED_NOT_USABLE[presentationId] || []).map((row) => Object.assign({}, row)),
     basis: 'This records what the READER can structurally produce from the presentation it is evidenced on, not what one specimen happened to print. A field a single report does not print is NOT evidence that the presentation never prints it, and a retained-but-unusable value is NOT a usable check.'
   };

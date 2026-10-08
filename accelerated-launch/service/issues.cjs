@@ -280,9 +280,15 @@ const POTENTIAL_WORDING = Object.freeze({
     request: 'please verify the balance and the past-due amount for this account and correct the inconsistency'
   },
   'COMMON-ERROR-DUPLICATE-REPORTING': {
-    explain: (i) => `The two entries (${recordLabel(i)} and account ${(i.evidence || {}).duplicate_of_record}) have matching account details. They may list the same account twice.`,
-    uncertainty: 'Similar entries may come from the original lender and a debt collector, an account transfer, or reports from different dates. Ask the bureau whether these entries list the same account twice.',
-    request: 'please verify whether these two entries are the same account reported twice and correct any duplication'
+    explain: (i) => (i.evidence || {}).pairing_basis?.startsWith('COLLECTION_')
+      ? `These two collection entries (${recordLabel(i)} and collection entry ${(i.evidence || {}).duplicate_of_record}) have matching account references. The same debt may be listed twice. The amounts printed on each entry are shown below.`
+      : `The two entries (${recordLabel(i)} and account ${(i.evidence || {}).duplicate_of_record}) have matching account details. They may list the same account twice.`,
+    uncertainty: (i) => (i.evidence || {}).pairing_basis?.startsWith('COLLECTION_')
+      ? 'The bureau needs to check whether both entries should be listed. A debt moving between collectors may explain the two entries.'
+      : 'Similar entries may come from the original lender and a debt collector, an account transfer, or reports from different dates. Ask the bureau whether these entries list the same account twice.',
+    request: (i) => (i.evidence || {}).pairing_basis?.startsWith('COLLECTION_')
+      ? 'please remove the duplicate collection entry, confirm the correct balance, and tell me the original creditor and which account this debt came from'
+      : 'please verify whether these two entries are the same account reported twice and correct any duplication'
   },
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': {
     explain: (i) => `The same account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) has two different labels for who is responsible (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in this report.`,
@@ -429,34 +435,38 @@ const RETENTION_CURRENT_REVIEW_WORDING = POTENTIAL_WORDING['RETENTION-PERIOD-END
 /**
  * BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the COURT-ENFORCEMENT LIMITATION item. It is a different
  * question from the reporting-retention rules: if the dates suggest a court claim on the debt may now be
- * outside the time limit that applies where the consumer lives, that is worth verifying. It is never a
- * deletion demand and never an allegation that a bureau broke a reporting rule.
+ * outside the time limit that applies where the consumer lives, show the timing information. This item
+ * is never a dispute candidate or an allegation that a bureau broke a reporting rule.
  */
 const LIMITATION_WORDING = Object.freeze({
   label: 'The dates suggest this debt may be outside the time limit for a court claim',
   explain: (i) => {
     const e = i.evidence || {};
-    const years = e.elapsed_years === null || e.elapsed_years === undefined ? null : Number(e.elapsed_years).toFixed(1);
     const reportPart = e.report_reference_date
       ? ` The report itself was issued on ${e.report_reference_date}${e.report_age_days ? `, about ${e.report_age_days} days before it was checked` : ''}.`
       : '';
+    const printed = `This report shows a debt on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}.`;
+    const deadline = e.screening_deadline
+      ? ` Counting ${e.basic_period_years} years from that printed date gives a screening deadline of ${e.screening_deadline}.`
+      : '';
+    const checked = ` This report was checked on ${e.assessed_on}.`;
+    const transfer = ' Selling the debt or moving it to a collection agency does not by itself give the original creditor or collector a new court deadline. The debt may still appear on a credit report because the reporting period is separate.';
     if (['CA-BC', 'CA-ON', 'CA-MB'].includes(e.jurisdiction)) {
-      return `This report shows a debt with a printed claim indicator on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. ${e.jurisdiction_label}'s ordinary two-year court-claim period runs from discovery of the claim, not automatically from this printed date. The printed date makes the timing worth verifying; it does not establish when the claim was discovered or that a court claim is out of time.${reportPart}`;
+      return `${printed} ${e.jurisdiction_label}'s ordinary two-year court-claim period starts when the claim is discovered.${deadline} The printed date does not establish when the claim was discovered or the final court deadline.${checked}${reportPart}${transfer}`;
     }
     if (String(e.start_is || '').startsWith('ACCRUAL_')) {
       const scope = e.jurisdiction === 'AU-ACT' ? 'an ordinary cause of action'
         : ['CA-NT', 'CA-NU'].includes(e.jurisdiction) ? 'an action to recover money' : 'a simple-contract claim';
-      return `This report shows a debt with a printed claim indicator on ${entryLabel(i)} and prints ${e.start_printed_value || e.start_iso} as its ${e.start_label}. About ${years} years have passed since that printed date as of the server assessment on ${e.assessed_on}. In ${e.jurisdiction_label}, the ordinary six-year period for ${scope} runs from when the cause of action arose, not automatically from this printed date. The date makes the timing worth verifying; it does not establish legal accrual or that an action is out of time.${reportPart}`;
+      return `${printed} In ${e.jurisdiction_label}, the ordinary six-year period for ${scope} starts when the right to bring the claim arose.${deadline} The printed date does not establish when that right arose or the final court deadline.${checked}${reportPart}${transfer}`;
     }
-    return `This report shows an unpaid debt on ${entryLabel(i)}. The latest date it prints that can start a court time limit is ${e.start_printed_value || e.start_iso} (${e.start_label}). In ${e.jurisdiction_label}, the time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered, so about ${years} years had passed when this report was checked on ${e.assessed_on}.${reportPart} The dates suggest this debt may be outside the time limit for a court claim.`;
+    return `${printed} In ${e.jurisdiction_label}, the usual court time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered.${deadline}${checked}${reportPart} The dates suggest this debt may be outside the time limit for a court claim.${transfer}`;
   },
   uncertainty: (i) => {
     const e = i.evidence || {};
     const unknowns = (e.unknown_conditions || []).map((u) => `• ${u}`).join(' ');
     const since = e.uncertainty_since_report ? ` ${e.uncertainty_since_report}` : '';
-    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry: an expired court time limit is not by itself a reason a bureau must remove an entry, and this is not a claim that any rule was broken. What the report does not show, and what would change the answer: ${unknowns || '• the conditions this assessment depends on'}.${since}`;
-  },
-  request: 'please verify when this debt first went into default or when you first knew about it, whether any later payment or admission restarted the time, and whether a court claim or judgment already exists on it'
+    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry. An expired court time limit alone does not require the bureau to remove a debt. A court claim filed in time, a judgment, or a qualifying payment or written acknowledgment may change the answer. The report does not establish these facts: ${unknowns || '• the conditions this assessment depends on'}.${since}`;
+  }
 });
 
 /** Recorded issue-specific request wording for a content finding. A content finding is a prohibition on
@@ -703,21 +713,12 @@ function describeWording(issue) {
     };
   }
   if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
-    /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation item keeps its own wording, its own
-       question and its explicit separation from the reporting rules. It is a verification request only. */
+    /* Court timing is information only; the latest owner direction excludes it from disputes. */
     return {
       explanation: LIMITATION_WORDING.explain(issue),
       uncertainty: LIMITATION_WORDING.uncertainty(issue),
-      request_type: REQUEST_TYPE.VERIFICATION,
-      request_wording: (issue.evidence || {}).jurisdiction === 'CA-MB'
-        ? 'please verify when this claim was discovered, whether a demand and default were required and occurred, whether a qualifying acknowledgment or part payment occurred before expiry, and whether a court claim or judgment already exists'
-        : ['CA-NT', 'CA-NU'].includes((issue.evidence || {}).jurisdiction)
-        ? 'please verify when the cause of action to recover this money arose, whether a qualifying signed promise, written acknowledgment or part payment occurred, and whether an action or judgment already exists'
-        : String((issue.evidence || {}).start_is || '').startsWith('ACCRUAL_')
-        ? 'please verify when this cause of action arose, which time limit applies to the claim, whether a qualifying acknowledgment or payment affected the period, and whether an action or judgment already exists'
-        : ['CA-BC', 'CA-ON'].includes((issue.evidence || {}).jurisdiction)
-        ? 'please verify when this claim was discovered, whether a demand was required and made, whether a qualifying acknowledgment or part payment occurred before expiry, and whether a court claim or judgment already exists'
-        : LIMITATION_WORDING.request
+      request_type: null,
+      request_wording: null
     };
   }
   const policy = POTENTIAL_WORDING[issue.check_id] || {
@@ -740,6 +741,7 @@ function describeWording(issue) {
 /** One public breach term, derived from an existing checklist assessment, never from confidence or eligibility. */
 function consumerLabel(issue) {
   if (!issue) return null;
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return 'INFORMATION';
   const classification = issue.rule_assessment && issue.rule_assessment.classification || issue.classification;
   const scopedRule = issue.rule_assessment && (!issue.check_id || CHECKLIST_IDS.has(issue.check_id));
   if (BREACH_CLASSES.has(classification) && (scopedRule || activeAdapter(issue.adapter_id))) return 'VIOLATION';
@@ -767,6 +769,12 @@ function consumerText(text) {
 /** A presentation projection for newly generated and saved issues; it does not change the assessment or facts. */
 function projectConsumerIssue(issue, label = consumerLabel(issue)) {
   const out = { ...issue, consumer_label: label };
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) {
+    out.consumer_label = 'INFORMATION';
+    out.eligible = false;
+    out.request_type = null;
+    out.request_wording = null;
+  }
   for (const field of ['explanation', 'uncertainty', 'request_wording']) {
     if (Object.hasOwn(out, field)) out[field] = consumerText(out[field]);
   }
@@ -784,9 +792,8 @@ function describe(issue) {
  *  statutory finding (retention OR content) is eligible when its per-rule permission authorizes a VIOLATION
  *  packet, or when it is a PROBABLE verification request. */
 function isEligible(issue) {
-  /* A limitation item is a qualified concern to verify: it can be selected into verification correspondence and
-     is never a correction demand and never a definite finding. */
-  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return issue.confidence !== CONFIDENCE.DEFINITE;
+  /* Court timing is informational and cannot be selected into bureau correspondence. */
+  if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return false;
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION || issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     if (issue.confidence === CONFIDENCE.DEFINITE) return issue.packet_eligible === true;
     return issue.confidence === CONFIDENCE.PROBABLE;
@@ -1127,6 +1134,7 @@ function limitationIssues(extraction, limitation) {
         report_age_days: assessment.report_age_days === undefined ? null : assessment.report_age_days,
         at_report_date: assessment.at_report_date || null,
         elapsed_years: assessment.elapsed_years,
+        screening_deadline: assessment.period_ends || null,
         unknown_conditions: assessment.unknown_conditions || [],
         uncertainty_since_report: assessment.uncertainty_since_report || null,
         acknowledgment_rule: assessment.acknowledgment_rule || null,
@@ -1136,7 +1144,8 @@ function limitationIssues(extraction, limitation) {
       record: recordRefFor(record),
       report_identity: reportIdentityFor(record),
       account_identity: accountIdentityFor(record),
-      source_facts: []
+      source_facts: start.iso && start.location ? [{ source_field: start.label || 'Printed debt date',
+        raw_value: start.printed_value || start.iso, normalized_value: start.iso, location: start.location }] : []
     };
     issue.eligible = isEligible(issue);
     Object.assign(issue, describe(issue));
@@ -1340,6 +1349,7 @@ function publicIssue(issue) {
       counted_from: e.start_printed_value || e.start_iso || null,
       counted_from_label: e.start_label || null,
       counted_from_because: e.start_basis || null,
+      screening_deadline: e.screening_deadline || null,
       /* The date the server ran this assessment: the operative date, shown as "Assessed on …". */
       assessed_on: e.assessed_on || null,
       assessment_clock_basis: e.assessment_clock_basis || null,
@@ -1484,7 +1494,9 @@ function publicIssue(issue) {
 }
 
 function consumerFactValue(fact, key) {
-  return fact.privacy_redacted ? 'Creditor identity matched from the report' : fact[key];
+  return fact.privacy_redacted ? fact.field === 'account.member_reference'
+    ? 'Member number matched from the report' : /Member Name/i.test(fact.source_field || '')
+      ? 'Reporting member matched from the report' : 'Creditor identity matched from the report' : fact[key];
 }
 
 function publicFactLocation(location) {

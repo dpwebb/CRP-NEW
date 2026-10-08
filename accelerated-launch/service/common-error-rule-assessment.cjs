@@ -1,4 +1,5 @@
 'use strict';
+const { COLLECTION_PAIR_BASIS, COLLECTION_MEMBER_PAIR_BASIS, isCollection, collectionPair } = require('./duplicate-account-pair.cjs');
 
 /* A sourced breach of a report-data rule is a product violation assessment in every
  * supported jurisdiction. A statute can supply additional context, but is never a gate. */
@@ -168,6 +169,10 @@ function pairedRecordSources(issue, record, extraction) {
       : issue.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' ? e.original_record : null;
   if (otherIndex == null || !extraction || !Array.isArray(extraction.records)) return null;
   const other = extraction.records.find((r) => r.record_index === otherIndex);
+  if (issue.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING'
+    && [COLLECTION_PAIR_BASIS, COLLECTION_MEMBER_PAIR_BASIS].includes(e.pairing_basis)) {
+    return other && collectionPair(record, other, e)?.required || null;
+  }
   if (!other || other.status !== 'RESOLVED' || other.record_index === record.record_index
     || other.source_bureau !== record.source_bureau
     || reportSnapshotKey(other) !== reportSnapshotKey(record)) return null;
@@ -257,8 +262,10 @@ function completenessSources(issue, record) {
 }
 
 function assess(issue, record, evaluation, extraction) {
+  const collectionDuplicate = issue?.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING' && isCollection(record)
+    && [COLLECTION_PAIR_BASIS, COLLECTION_MEMBER_PAIR_BASIS].includes(issue.evidence?.pairing_basis);
   if (!issue || !record || !evaluation || !evaluation.region
-    || record.status !== 'RESOLVED' && record.shared_facts_status !== 'RESOLVED') return null;
+    || !collectionDuplicate && record.status !== 'RESOLVED' && record.shared_facts_status !== 'RESOLVED') return null;
   let requirement = REPORT_RULES[issue.check_id];
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE') {
     if (issue.reason === 'DATE_AFTER_REPORT_ISSUED') requirement = 'A payment or first missed payment cannot happen after the report date.';
@@ -341,6 +348,10 @@ function hasUnusableDecisiveSource(issue, record, extraction) {
   const e = issue.evidence || {};
   const index = e.duplicate_of_record ?? e.other_record ?? e.original_record;
   const other = extraction && (extraction.records || []).find((row) => row.record_index === index);
+  if (issue.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING'
+    && [COLLECTION_PAIR_BASIS, COLLECTION_MEMBER_PAIR_BASIS].includes(e.pairing_basis)) {
+    return !other || !collectionPair(record, other, e);
+  }
   if (!other || other.source_bureau !== record.source_bureau
     || reportSnapshotKey(other) !== reportSnapshotKey(record)) return true;
   const identity = ['account.masked_identifier', 'account.reported_identity'];
