@@ -360,6 +360,11 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
   check.equal(cancelled.json.cancellation.at_period_end, true, 'and it takes effect at the recorded period end');
   check.equal(cancelled.json.cancellation.entitlement.entitled, true, 'so access continues for the time already paid for');
   check.equal(cancelled.json.cancellation.entitlement.cancel_at_period_end, true, 'and the account is marked as not renewing');
+  const canonicalCancellation = await t.postEvent({ id: 'test_evt_canonical_cancellation_' + Date.now(),
+    type: 'subscription.deleted', account_reference: subscriber.account_id, plan_code: 'monthly',
+    session_reference: failedCheckout.json.checkout.provider_reference });
+  check.equal(canonicalCancellation.status, 200, 'the synthetic adapter canonical cancellation contract is preserved');
+  check.equal(canonicalCancellation.json.event.effect, 'CANCEL_AT_PERIOD_END', 'the existing synthetic event retains its cancellation effect');
 
   const refundCheckout = await t.openCheckout(subscriber, 'monthly');
   const refunded = await t.postEvent({
@@ -403,6 +408,181 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
 }
 
 /* -------------------------------------------------------------- isolation, and the legacy price catalog */
+
+/** Actual Stripe adapter + HTTP service against a loopback provider, never a hosted grant or payment. */
+async function stripeRenewalCancellation(t, check, evidence) {
+  const { startMock, signedEvent, PRICE_IDS } = require('../test-stripe-adapter.cjs');
+  const mock = await startMock();
+  const configured = { CRP_PAYMENT_PROVIDER: 'stripe', STRIPE_SECRET_KEY: 'sk_test_cancellation_fixture',
+    STRIPE_PUBLISHABLE_KEY: 'pk_test_cancellation_fixture', STRIPE_WEBHOOK_SECRET: 'whsec_cancellation_fixture',
+    STRIPE_PRICE_REPORT_ONCE: PRICE_IDS.report_once, STRIPE_PRICE_MONTHLY: PRICE_IDS.monthly,
+    STRIPE_PRICE_ANNUAL: PRICE_IDS.annual, STRIPE_APP_ORIGINS: t.base,
+    CRP_STRIPE_API_BASE: `http://127.0.0.1:${mock.address().port}` };
+  const previous = Object.fromEntries(Object.keys(configured).map((key) => [key, process.env[key]]));
+  Object.assign(process.env, configured);
+  let sequence = 0, releaseHeld;
+  const updates = () => mock.calls.filter((call) => call.method === 'POST' && call.path.startsWith('/v1/subscriptions/'));
+  const rowFor = (actor) => t.service.store.state().entitlements.find((row) => row.account_id === actor.account_id && row.state === 'ACTIVE');
+  async function activate(label, plan = 'monthly', existingActor) {
+    sequence += 1;
+    const actor = existingActor || await t.unpaidAccount(`stripe-cancel-${label}@example.test`);
+    mock.fixture.session.id = 'cs_test_cancel_' + sequence;
+    mock.fixture.session.subscription = 'sub_cancel_' + sequence;
+    mock.fixture.session.status = 'complete'; mock.fixture.session.payment_status = 'paid';
+    mock.fixture.session.amount_total = plans.plan(plan).amount_cents;
+    mock.fixture.subscription.id = mock.fixture.session.subscription;
+    mock.fixture.subscription.cancel_at_period_end = false;
+    mock.fixture.subscription.current_period_end = Math.floor(Date.now() / 1000) + (plan === 'annual' ? 365 : 30) * 86400;
+    const checkout = await t.request('POST', '/api/billing/checkout', { token: actor.token,
+      body: { plan_code: plan, return_url: t.base + '/' } });
+    check.equal(checkout.status, 201, label + ': actual Stripe adapter opens this owned mock Checkout');
+    const signed = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_activate_' + sequence,
+      type: 'checkout.session.completed', livemode: false, created: Math.floor(Date.now() / 1000),
+      data: { object: { ...mock.fixture.session } } });
+    const granted = await t.request('POST', '/api/billing/events', { raw: signed.raw, headers: signed.headers });
+    check.equal(granted.json?.event?.accepted, true, label + ': verified mock Stripe event grants this subscription');
+    return { actor, checkout: checkout.json.checkout };
+  }
+  function holdUpdate() {
+    let started;
+    const began = new Promise((resolve) => { started = resolve; });
+    mock.fixture.updateStarted = started;
+    mock.fixture.updateGate = new Promise((resolve) => { releaseHeld = resolve; });
+    return began;
+  }
+  function releaseUpdate() { releaseHeld(); releaseHeld = null; mock.fixture.updateGate = null; mock.fixture.updateStarted = null; }
+  try {
+    const subscriber = await activate('success');
+    const original = structuredClone(rowFor(subscriber.actor));
+    const stranger = await t.unpaidAccount('stripe-cancel-stranger@example.test');
+    const writes = updates().length;
+    const wrongActor = await t.request('POST', '/api/entitlement/cancel', { token: stranger.token,
+      body: { account_id: subscriber.actor.account_id, provider_reference: subscriber.checkout.provider_reference } });
+    check.equal(wrongActor.status, 409, 'client account/reference fields cannot cancel another subscription');
+    check.equal(updates().length, writes, 'the stranger causes no provider cancellation');
+    const cancelled = await t.request('POST', '/api/entitlement/cancel', { token: subscriber.actor.token });
+    check.equal(cancelled.status, 200, 'actual provider-confirmed renewal cancellation succeeds through HTTP');
+    check.equal(mock.fixture.subscription.cancel_at_period_end, true, 'the provider subscription, not only the local row, stops renewing');
+    check.equal(cancelled.json.cancellation.entitlement.cancel_at_period_end, true, 'local success follows provider confirmation');
+    check.equal(cancelled.json.cancellation.entitlement.entitled, true, 'the paid subscription stays usable to its recorded expiry');
+    check.equal(cancelled.json.cancellation.entitlement.expires_at, original.expires_at, 'cancellation does not confiscate paid time');
+    const cancelledAt = rowFor(subscriber.actor).cancelled_at;
+    const afterFirst = updates().length;
+    check.equal((await t.request('POST', '/api/entitlement/cancel', { token: subscriber.actor.token })).status, 200,
+      'a repeated consumer cancellation is idempotent');
+    check.equal(updates().length, afterFirst, 'already-confirmed provider cancellation needs no repeated write');
+    check.equal(rowFor(subscriber.actor).cancelled_at, cancelledAt, 'repeating cancellation preserves its original time');
+
+    const deletion = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_deleted',
+      type: 'customer.subscription.deleted', livemode: false, data: { object: { ...mock.fixture.subscription, status: 'canceled' } } });
+    const deletedEvent = await t.request('POST', '/api/billing/events', { raw: deletion.raw, headers: deletion.headers });
+    check.equal(deletedEvent.json?.event?.effect, 'CANCEL_AT_PERIOD_END', 'the actual Stripe deletion event reaches the existing cancellation effect');
+
+    const failed = await activate('provider-failure');
+    const beforeFailure = JSON.stringify(rowFor(failed.actor));
+    mock.fixture.updateStatus = 503;
+    const refused = await t.request('POST', '/api/entitlement/cancel', { token: failed.actor.token });
+    check.equal(refused.status, 502, 'provider cancellation failure is returned as a retryable failure');
+    check.equal(refused.json.error.code, 'SUBSCRIPTION_CANCELLATION_FAILED', 'failure never reports cancelled renewal');
+    check.ok(/will continue to renew until cancellation is confirmed/.test(refused.json.error.message), 'consumer wording accurately states unconfirmed renewal');
+    check.equal(JSON.stringify(rowFor(failed.actor)), beforeFailure, 'provider failure leaves the entire local entitlement unchanged');
+    mock.fixture.updateStatus = 200;
+    mock.fixture.subscription.metadata.account_id = stranger.account_id;
+    const beforeMismatchWrites = updates().length;
+    check.equal((await t.request('POST', '/api/entitlement/cancel', { token: failed.actor.token })).status, 502,
+      'mismatched provider subscription metadata is refused');
+    check.equal(updates().length, beforeMismatchWrites, 'mismatch is refused before any cancellation mutation');
+    check.equal(JSON.stringify(rowFor(failed.actor)), beforeFailure, 'mismatch leaves the local entitlement unchanged');
+    mock.fixture.subscription.metadata.account_id = failed.actor.account_id;
+    process.env.CRP_PAYMENT_PROVIDER = payments.TEST_PROVIDER_ID;
+    check.equal((await t.request('POST', '/api/entitlement/cancel', { token: failed.actor.token })).status, 502,
+      'switching to the synthetic provider cannot fake cancellation of a Stripe purchase');
+    check.equal(JSON.stringify(rowFor(failed.actor)), beforeFailure, 'an unavailable Stripe cancellation keeps the local state truthful');
+    process.env.CRP_PAYMENT_PROVIDER = 'stripe';
+
+    const concurrent = await activate('concurrent');
+    const concurrentWrites = updates().length;
+    const both = await Promise.all([t.request('POST', '/api/entitlement/cancel', { token: concurrent.actor.token }),
+      t.request('POST', '/api/entitlement/cancel', { token: concurrent.actor.token })]);
+    check.ok(both.every((response) => response.status === 200), 'concurrent cancellation of the same entitlement succeeds consistently');
+    const simultaneous = updates().slice(concurrentWrites);
+    check.ok(simultaneous.length >= 1 && simultaneous.every((call) => call.idempotency_key === simultaneous[0].idempotency_key),
+      'concurrent provider writes use the same cancellation idempotency key');
+
+    const stale = await activate('expired-during-request');
+    let began = holdUpdate();
+    const delayed = t.request('POST', '/api/entitlement/cancel', { token: stale.actor.token });
+    await began;
+    t.service.store.update((state) => { state.entitlements.find((row) => row.account_id === stale.actor.account_id).state = 'EXPIRED'; });
+    releaseUpdate();
+    const staleResponse = await delayed;
+    check.equal(staleResponse.status, 409, 'changed entitlement during the provider wait is not reported as current cancellation success');
+    check.equal(staleResponse.json.error.code, 'SUBSCRIPTION_CANCELLATION_STALE', 'a changed purchase has an explicit refresh refusal');
+    check.equal(t.service.store.state().entitlements.find((row) => row.account_id === stale.actor.account_id).cancel_at_period_end, false,
+      'stale provider completion cannot mutate the changed local entitlement');
+
+    const replacement = await activate('replacement');
+    began = holdUpdate();
+    const olderSubscription = structuredClone(mock.fixture.subscription);
+    mock.fixture.updateResponse = { ...structuredClone(mock.fixture.subscription), cancel_at_period_end: true };
+    const replaced = t.request('POST', '/api/entitlement/cancel', { token: replacement.actor.token });
+    await began;
+    const newerSubscription = await activate('replacement-annual', 'annual', replacement.actor);
+    releaseUpdate();
+    check.equal((await replaced).status, 409, 'a newly controlling subscription is not cancelled by an older response');
+    const replacementView = (await t.request('GET', '/api/entitlement', { token: replacement.actor.token })).json.entitlement;
+    check.equal(replacementView.plan_code, 'annual', 'the new subscription remains the controlling purchase');
+    check.equal(replacementView.cancel_at_period_end, false, 'the old cancellation never promises to stop renewal of the new subscription');
+    mock.fixture.updateResponse = null;
+    const newerBefore = JSON.stringify(t.service.store.state().entitlements.find((row) => row.checkout_id === newerSubscription.checkout.checkout_id));
+    const olderDeleted = { id: 'evt_cancel_old_deleted', type: 'customer.subscription.deleted', livemode: false,
+      data: { object: { ...olderSubscription, status: 'canceled' } } };
+    let signedDeletion = signedEvent(configured.STRIPE_WEBHOOK_SECRET, olderDeleted);
+    const olderApplied = await t.request('POST', '/api/billing/events', { raw: signedDeletion.raw, headers: signedDeletion.headers });
+    check.equal(olderApplied.json?.event?.accepted, true, 'a delayed valid deletion is applied to its own older subscription');
+    check.equal(olderApplied.json.event.applied_to, t.service.store.state().entitlements.find((row) => row.checkout_id === replacement.checkout.checkout_id).entitlement_id,
+      'the old deletion names the exact old entitlement it changed');
+    check.equal(JSON.stringify(t.service.store.state().entitlements.find((row) => row.checkout_id === newerSubscription.checkout.checkout_id)), newerBefore,
+      'the whole newer subscription stays unchanged after an older deletion');
+    check.equal(t.service.store.state().entitlements.find((row) => row.checkout_id === replacement.checkout.checkout_id).cancel_at_period_end, true,
+      'the old purchase itself is marked as no longer renewing');
+    for (const [label, metadata] of [
+      ['unknown-checkout', { ...olderSubscription.metadata, checkout_id: 'chk_unknown' }],
+      ['wrong-plan', { ...olderSubscription.metadata, plan_code: 'annual' }],
+      ['wrong-subscription', { ...olderSubscription.metadata, plan_code: 'annual', checkout_id: newerSubscription.checkout.checkout_id }]
+    ]) {
+      signedDeletion = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { ...olderDeleted, id: 'evt_cancel_' + label,
+        data: { object: { ...olderDeleted.data.object, metadata } } });
+      const rejected = await t.request('POST', '/api/billing/events', { raw: signedDeletion.raw, headers: signedDeletion.headers });
+      check.equal(rejected.json?.event?.accepted, false, label + ': signed deletion cannot change a mismatched purchase');
+      check.equal(rejected.json.event.reason, 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH', label + ': the exact binding refusal is recorded');
+      check.equal(JSON.stringify(t.service.store.state().entitlements.find((row) => row.checkout_id === newerSubscription.checkout.checkout_id)), newerBefore,
+        label + ': the newer subscription remains unchanged');
+    }
+    signedDeletion = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { ...olderDeleted, id: 'evt_cancel_missing_checkout',
+      data: { object: { ...olderDeleted.data.object, metadata: { account_id: replacement.actor.account_id, plan_code: 'monthly' } } } });
+    check.equal((await t.request('POST', '/api/billing/events', { raw: signedDeletion.raw, headers: signedDeletion.headers })).status, 400,
+      'deletion without the server Checkout metadata is refused before applying any effect');
+
+    const removed = await activate('deleted-account');
+    began = holdUpdate();
+    const removedRequest = t.request('POST', '/api/entitlement/cancel', { token: removed.actor.token });
+    await began;
+    check.equal((await t.request('DELETE', '/api/account', { token: removed.actor.token })).status, 200, 'consumer deletion proceeds while cancellation waits');
+    releaseUpdate();
+    check.equal((await removedRequest).status, 409, 'a response after account deletion cannot recreate or claim a current entitlement');
+    check.equal(t.service.store.state().entitlements.some((row) => row.account_id === removed.actor.account_id), false,
+      'deleted billing rows are not resurrected');
+    evidence.stripe_cancellation = { proof: 'HTTP_SERVICE_AND_LOOPBACK_STRIPE_MOCK_NOT_HOSTED_PAYMENT',
+      provider_confirmed: true, provider_failure_and_mismatch_preserve_local_state: true,
+      repeats_and_concurrent_writes_idempotent: true, changed_account_and_entitlement_guarded: true,
+      actual_subscription_deleted_event_mapped: true };
+  } finally {
+    if (releaseHeld) releaseUpdate();
+    for (const [key, value] of Object.entries(previous)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
+    await new Promise((resolve) => mock.close(resolve));
+  }
+}
 
 async function isolationAndLegacyParity(t, check, evidence) {
   /* AN ENTITLEMENT BELONGS TO ONE ACCOUNT. A second account's purchase is not a licence for the first. */
@@ -473,6 +653,7 @@ async function run(t, check) {
   const activation = await activationAndIdempotency(t, check, evidence);
   const verification = await verificationFailures(t, check, evidence);
   await expiryCancellationAndRevocation(t, check, evidence);
+  await stripeRenewalCancellation(t, check, evidence);
   await isolationAndLegacyParity(t, check, evidence);
 
   /* The logs written during billing carry no consumer data either — the same whitelist the B2 suite asserts. */

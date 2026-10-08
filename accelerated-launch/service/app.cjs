@@ -396,8 +396,8 @@ function buildBillingHandlers(store, logger) {
 
     entitlementView: ({ actor }) => ({ status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } }),
 
-    cancelEntitlement: ({ body, actor }) => {
-      const cancellation = entitlement.cancelEntitlement(store, actor, body);
+    cancelEntitlement: async ({ body, actor }) => {
+      const cancellation = await entitlement.cancelEntitlement(store, actor, body, env);
       logger.log({ event: 'ENTITLEMENT_CANCELLED', outcome: 'OK' });
       return { status: 200, json: { ok: true, cancellation } };
     }

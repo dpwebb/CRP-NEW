@@ -191,6 +191,12 @@ function retrieveSubscription(secretKey, subscriptionId, base) {
   return request({ method: 'GET', path: `/v1/subscriptions/${subscriptionId}`, secretKey, base });
 }
 
+/** Stop renewal while retaining the subscription's current paid period. */
+function cancelSubscriptionRenewal(secretKey, subscriptionId, base, idempotencyKey) {
+  return request({ method: 'POST', path: `/v1/subscriptions/${subscriptionId}`, secretKey,
+    params: { cancel_at_period_end: true }, base, idempotencyKey });
+}
+
 /** Retrieve a PaymentIntent (used to confirm an asynchronous payment actually succeeded). */
 function retrievePaymentIntent(secretKey, paymentIntentId, base) {
   return request({ method: 'GET', path: `/v1/payment_intents/${paymentIntentId}`, secretKey, base });
@@ -222,6 +228,7 @@ module.exports = {
   retrieveSession,
   retrievePrice,
   retrieveSubscription,
+  cancelSubscriptionRenewal,
   retrievePaymentIntent,
   createCoupon,
   createPrice,

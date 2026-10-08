@@ -265,6 +265,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     account_reference: accountRef,
     plan_code: planCode,
     session_reference: session.id,
+    subscription_reference: session.mode === 'subscription'
+      ? (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id) || null : null,
     amount_cents: Number.isInteger(session.amount_total) ? session.amount_total : null,
     currency: typeof session.currency === 'string' ? session.currency : null,
     period_end: periodEnd,
@@ -313,13 +315,14 @@ async function normalizeSubscriptionEvent(env, secretKey, base, subscription, ev
   const md = subscription.metadata || {};
   const accountRef = md.account_id || null;
   const planCode = md.plan_code || null;
-  if (!accountRef || !planCode) return null;
+  if (!accountRef || !['monthly', 'annual'].includes(planCode) || !/^sub_[A-Za-z0-9_]+$/.test(subscription.id || '')) return null;
   return {
     event_id: eventId,
     type: 'subscription.deleted',
     account_reference: accountRef,
     plan_code: planCode,
     session_reference: subscription.id,
+    checkout_reference: typeof md.checkout_id === 'string' ? md.checkout_id : null,
     amount_cents: null,
     currency: null,
     period_end: subscription.current_period_end ? new Date(subscription.current_period_end * 1000).toISOString() : null,
@@ -372,7 +375,12 @@ async function normalizeStripeEvent(env, secretKey, base, rawEvent) {
     normalized = await normalizeCheckoutEvent(env, secretKey, base, obj, eventId, type);
   } else if (type === 'invoice.paid' || type === 'invoice.payment_failed') {
     normalized = await normalizeInvoiceEvent(env, secretKey, base, obj, eventId, type);
-  } else if (type === 'subscription.deleted') {
+  } else if (type === 'customer.subscription.deleted' || type === 'subscription.deleted') {
+    if (type === 'customer.subscription.deleted') {
+      const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+      if (!mode || rawEvent.livemode !== (mode === 'live') || obj.livemode !== (mode === 'live') ||
+          typeof obj.metadata?.checkout_id !== 'string' || !obj.metadata.checkout_id) return null;
+    }
     normalized = await normalizeSubscriptionEvent(env, secretKey, base, obj, eventId);
   } else if (type === 'charge.refunded' || type === 'charge.dispute.created') {
     normalized = await normalizeChargeEvent(env, secretKey, base, obj, eventId, type);
@@ -504,6 +512,53 @@ function makeStripeAdapter(env) {
       const paid = session.payment_status === 'paid' &&
         (session.mode === 'payment' || session.subscription);
       return { outcome: paid ? 'PROVIDER_CONFIRMED_PAID' : 'NOT_PAID_AT_PROVIDER', paid, session };
+    },
+
+    /** Resolve this account's completed Checkout before cancelling its actual Stripe renewal. */
+    async cancelRenewal(request) {
+      const req = request || {};
+      function refuse(code) { const error = new Error(code); error.code = code; throw error; }
+      const keyMode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+      if (!keyMode || !req.account_id || !req.checkout_id ||
+          !['monthly', 'annual'].includes(req.plan_code) || !/^cs_[A-Za-z0-9_]+$/.test(req.provider_reference || '')) {
+        refuse('CANCELLATION_REQUEST_NOT_BOUND');
+      }
+      const liveMode = keyMode === 'live';
+      const metadataMatches = (object) => object?.metadata?.account_id === req.account_id &&
+        object.metadata.plan_code === req.plan_code && object.metadata.checkout_id === req.checkout_id;
+      const fetched = await stripe.retrieveSession(secretKey, req.provider_reference, base);
+      const session = fetched.json;
+      const lineItems = session?.line_items?.data;
+      if (fetched.status !== 200 || session?.id !== req.provider_reference || session.mode !== 'subscription' ||
+          session.status !== 'complete' || session.payment_status !== 'paid' || session.livemode !== liveMode ||
+          session.client_reference_id !== req.account_id || !metadataMatches(session) ||
+          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code)) {
+        refuse('CANCELLATION_CHECKOUT_MISMATCH');
+      }
+      const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
+      if (!/^sub_[A-Za-z0-9_]+$/.test(subscriptionId || '')) refuse('CANCELLATION_SUBSCRIPTION_MISSING');
+      function subscriptionMatches(subscription) {
+        return subscription?.id === subscriptionId && subscription.livemode === liveMode && metadataMatches(subscription);
+      }
+      const retrieved = await stripe.retrieveSubscription(secretKey, subscriptionId, base);
+      const subscription = retrieved.json;
+      if (retrieved.status !== 200 || !subscriptionMatches(subscription) ||
+          !['active', 'trialing', 'past_due', 'unpaid', 'canceled'].includes(subscription.status)) {
+        refuse('CANCELLATION_SUBSCRIPTION_MISMATCH');
+      }
+      let confirmed = subscription;
+      if (subscription.cancel_at_period_end !== true && subscription.status !== 'canceled') {
+        const idempotencyKey = 'crp-cancel-renewal-' + crypto.createHash('sha256')
+          .update([req.account_id, req.checkout_id, subscriptionId].join('\u0000')).digest('hex');
+        const updated = await stripe.cancelSubscriptionRenewal(secretKey, subscriptionId, base, idempotencyKey);
+        confirmed = updated.json;
+        if (updated.status !== 200 || !subscriptionMatches(confirmed) ||
+            (confirmed.cancel_at_period_end !== true && confirmed.status !== 'canceled')) {
+          refuse('CANCELLATION_NOT_CONFIRMED_BY_PROVIDER');
+        }
+      }
+      return { renewal_cancelled: true, subscription_reference: subscriptionId,
+        cancel_at_period_end: confirmed.cancel_at_period_end === true, subscription_status: confirmed.status };
     }
   });
 }

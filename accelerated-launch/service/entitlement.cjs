@@ -519,6 +519,7 @@ function eventFingerprint(event) {
     event.currency ? String(event.currency) : '',
     event.period_end ? String(event.period_end) : ''
   ];
+  if (typeof event.checkout_reference === 'string') relevant.push(event.checkout_reference);
   return crypto.createHash('sha256').update(relevant.join('\u0000'), 'utf8').digest('hex');
 }
 
@@ -645,8 +646,8 @@ async function recordEvent(store, input, env) {
     return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_UNPAID_CHECKOUT', entitlement: statusFor(store, account.account_id) };
   }
 
-  // ACTIVATE is the only effect that resolves through a checkout; renewal/failure/cancellation/refund operate
-  // on the account's controlling entitlement row, which an earlier activation established.
+  // Activation and actual Stripe deletion bind to their own Checkout. Other existing event contracts retain
+  // their controlling-row behavior; an old deletion must never cancel a newer subscription.
   const checkout = effect === 'ACTIVATE'
     ? (before.checkout_sessions || []).find(
         (row) => row.account_id === account.account_id && row.provider_reference === event.session_reference
@@ -661,15 +662,35 @@ async function recordEvent(store, input, env) {
     return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_PLAN_MISMATCH', entitlement: statusFor(store, account.account_id) };
   }
 
+  const stripeCancellation = provider.provider_id === 'stripe' && effect === 'CANCEL_AT_PERIOD_END';
+  const cancellationCheckout = stripeCancellation ? (before.checkout_sessions || []).find((session) =>
+    session.checkout_id === event.checkout_reference && session.account_id === account.account_id &&
+    session.provider_id === 'stripe' && session.state === 'COMPLETED' && session.plan_code === event.plan_code) : null;
+  const matchesCancellation = (row, session) => Boolean(session) && row.account_id === account.account_id &&
+    row.source === 'stripe' && row.access_via === ACCESS_VIA.SUBSCRIPTION && row.plan_code === event.plan_code &&
+    row.checkout_id === session.checkout_id && row.provider_reference === session.provider_reference &&
+    row.provider_subscription_reference === event.session_reference;
+  if (stripeCancellation && !rowsFor(before, account.account_id).some((row) => matchesCancellation(row, cancellationCheckout))) {
+    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH', event.event_id);
+    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH',
+      entitlement: statusFor(store, account.account_id) };
+  }
   const at = nowIso();
   const applied = store.update((state) => {
     const liveCheckout = checkout ? state.checkout_sessions.find((row) => row.checkout_id === checkout.checkout_id) : null;
     const rows = rowsFor(state, account.account_id);
+    const liveCancellationCheckout = stripeCancellation ? state.checkout_sessions.find((session) =>
+      session.checkout_id === event.checkout_reference && session.account_id === account.account_id &&
+      session.provider_id === 'stripe' && session.state === 'COMPLETED' && session.plan_code === event.plan_code) : null;
     const row = effect === 'ACTIVATE'
       ? rows.find((candidate) => candidate.state === 'PENDING' && candidate.provider_reference === event.session_reference)
-      : controlling(rows, at);
+      : (stripeCancellation ? rows.find((candidate) => matchesCancellation(candidate, liveCancellationCheckout)) : controlling(rows, at));
+    if (stripeCancellation && !row) throw new ServiceError('BILLING_EVENT_REJECTED', { reason: 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH' });
     if (!row) return null;
     applyEffect(row, effect, event.plan_code, event, at);
+    if (effect === 'ACTIVATE' && provider.provider_id === 'stripe' && /^sub_[A-Za-z0-9_]+$/.test(event.subscription_reference || '')) {
+      row.provider_subscription_reference = event.subscription_reference;
+    }
     if (effect === 'ACTIVATE' && liveCheckout) liveCheckout.state = 'COMPLETED';
     row.event_ids = (row.event_ids || []).concat([event.event_id]);
     row.last_event_type = event.type;
@@ -769,11 +790,45 @@ async function recordEvent(store, input, env) {
  * access has ALREADY ended — expired, or revoked by a refund — is refused, because there is nothing left to
  * stop and answering "cancelled" would suggest access was still running.
  */
-function cancelEntitlement(store, actor, input) {
+async function cancelEntitlement(store, actor, input, env) {
   const body = input || {};
+  const before = store.state();
+  const original = controlling(rowsFor(before, actor.account_id), nowIso());
+  let providerCancellation = null;
+  let originalCheckout = null;
+  const boundFields = ['entitlement_id', 'account_id', 'plan_code', 'access_via', 'source',
+    'checkout_id', 'provider_reference', 'state', 'expires_at'];
+  const binding = (row) => JSON.stringify(boundFields.map((field) => row?.[field] ?? null));
+  const originalBinding = binding(original);
+  if (original?.source === 'stripe' && ENTITLED_STATES.includes(original.state) && original.plan_code !== 'report_once') {
+    const fail = (reason) => { throw new ServiceError('SUBSCRIPTION_CANCELLATION_FAILED', { reason }); };
+    if (original.access_via !== ACCESS_VIA.SUBSCRIPTION) fail('RECORDED_SUBSCRIPTION_BINDING_INVALID');
+    originalCheckout = (before.checkout_sessions || []).find((session) => session.checkout_id === original.checkout_id &&
+      session.account_id === actor.account_id && session.provider_id === 'stripe' && session.state === 'COMPLETED' &&
+      session.plan_code === original.plan_code && session.provider_reference === original.provider_reference);
+    if (!originalCheckout) fail('OWNED_COMPLETED_CHECKOUT_NOT_FOUND');
+    originalCheckout = { ...originalCheckout };
+    const provider = payments.resolveProvider(env);
+    if (provider?.provider_id !== 'stripe' || typeof provider.cancelRenewal !== 'function') fail('STRIPE_CANCELLATION_NOT_CONFIGURED');
+    try {
+      providerCancellation = await provider.cancelRenewal({ account_id: actor.account_id,
+        checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
+        plan_code: originalCheckout.plan_code });
+    } catch (error) { fail(error?.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
+    if (providerCancellation?.renewal_cancelled !== true) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
+  }
   const at = nowIso();
   const outcome = store.update((state) => {
     const row = controlling(rowsFor(state, actor.account_id), at);
+    if (providerCancellation) {
+      const currentCheckout = (state.checkout_sessions || []).find((session) => session.checkout_id === originalCheckout.checkout_id);
+      if (!(state.accounts || []).some((account) => account.account_id === actor.account_id) || binding(row) !== originalBinding ||
+          !currentCheckout || currentCheckout.account_id !== originalCheckout.account_id || currentCheckout.state !== 'COMPLETED' ||
+          currentCheckout.provider_id !== 'stripe' || currentCheckout.plan_code !== originalCheckout.plan_code ||
+          currentCheckout.provider_reference !== originalCheckout.provider_reference) {
+        throw new ServiceError('SUBSCRIPTION_CANCELLATION_STALE');
+      }
+    }
     if (!row) return { cancelled: false, reason: 'NO_PURCHASE_IS_RECORDED' };
     if (row.state === 'PENDING') {
       row.state = 'CANCELLED';
@@ -785,9 +840,10 @@ function cancelEntitlement(store, actor, input) {
       return { cancelled: false, reason: `NOTHING_LEFT_TO_CANCEL:${row.state}` };
     }
     row.cancel_at_period_end = true;
-    row.cancelled_at = at;
+    row.cancelled_at = row.cancelled_at || at;
     row.cancellation_reason = typeof body.reason === 'string' ? body.reason.slice(0, 120) : 'CONSUMER_REQUESTED';
     row.updated_at = at;
+    if (providerCancellation) row.provider_subscription_reference = providerCancellation.subscription_reference;
     return { cancelled: true, at_period_end: true, entitlement_id: row.entitlement_id, reason: 'ACCESS_CONTINUES_TO_THE_RECORDED_EXPIRY' };
   });
   if (!outcome.cancelled) throw new ServiceError('NO_ACTIVE_PURCHASE_TO_CANCEL', { reason: outcome.reason });
