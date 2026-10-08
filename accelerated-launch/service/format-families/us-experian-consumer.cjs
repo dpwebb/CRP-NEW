@@ -904,7 +904,7 @@ function historyYearReading(word) {
 }
 
 const HISTORY_RECOVERY_CACHE = new WeakMap();
-function rereadHistoryRegions(model, regions) {
+function rereadHistoryRegions(model, regions, separateRaster = false) {
   if (textLayerFor(model).source !== 'LOCAL_OCR' || !model.path || !model.sha256 || !regions.length) return [];
   const fs = require('node:fs'), crypto = require('node:crypto');
   try {
@@ -913,11 +913,11 @@ function rereadHistoryRegions(model, regions) {
   } catch { return []; }
   if (!HISTORY_RECOVERY_CACHE.has(model)) HISTORY_RECOVERY_CACHE.set(model, { count: 0, readings: new Map() });
   const cache = HISTORY_RECOVERY_CACHE.get(model);
-  const key = JSON.stringify(regions);
+  const key = JSON.stringify({ regions, separateRaster });
   if (cache.readings.has(key)) return cache.readings.get(key);
   if (cache.count + regions.length > 64) return [];
   cache.count += regions.length;
-  const reading = ocr.readPdfRegions(model.path, regions);
+  const reading = ocr.readPdfRegions(model.path, regions, { separateRaster });
   const readings = reading.source_sha256 === String(model.sha256).toLowerCase() ? reading.regions || [] : [];
   cache.readings.set(key, readings);
   return readings;
@@ -1005,6 +1005,12 @@ function accountHistoryCells(block, model) {
       }
       const originalCodes = new Map();
       const recoveryRegions = [];
+      const monthRecoveryRegions = [];
+      const originalMonths = new Map();
+      const sourceConflicts = new Map();
+      const conflictingReadings = new Map();
+      const within = (word, region) => word && word.x0 >= region.x0 - 0.25 && word.y0 >= region.y0 - 0.25
+        && word.x1 <= region.x1 + 0.25 && word.y1 <= region.y1 + 0.25;
       const pixelPt = 72 / 300;
       const monthHeights = months.map((month) => month.y1 - month.y0).filter((height) => height > 0).sort((a, b) => a - b);
       const monthBottom = Math.max(...months.map((month) => month.y1));
@@ -1024,10 +1030,49 @@ function accountHistoryCells(block, model) {
           const width = gaps.length ? Math.round(Math.min(...gaps) * 0.65 / pixelPt) * pixelPt : 0;
           if (width < 10 || width > 40 || codeBottom - codeTop < 5) return;
           if (!HISTORY_MONTHS[String(month.text).toUpperCase()] || !historyTrust(month)) {
-            recoveryRegions.push({ id: `month-${index}`, page: heading.page,
-              x0: centers[index] - width / 2, x1: centers[index] + width / 2,
+            const monthWidth = Math.round(Math.min(...gaps) * 0.85 / pixelPt) * pixelPt;
+            monthRecoveryRegions.push({ id: `month-${index}`, page: heading.page,
+              x0: centers[index] - monthWidth / 2, x1: centers[index] + monthWidth / 2,
               y0: Math.max(monthRow.y0 - 0.5, ...yearWords.map((word) => word.y1 + 0.1)), y1: codeTop });
           }
+        });
+        const firstMonths = rereadHistoryRegions(model, monthRecoveryRegions);
+        const failedMonths = firstMonths.filter((reading) => !reading.word && reading.reason === 'REGION_NOT_READABLE')
+          .map((reading) => reading.region);
+        const retriedMonths = rereadHistoryRegions(model, failedMonths, true);
+        for (const reading of firstMonths.map((reading) => retriedMonths.find((retry) => retry.id === reading.id) || reading)) {
+          const index = Number(reading.id.split('-')[1]);
+          if (reading.word && HISTORY_MONTHS[String(reading.word.text).toUpperCase()]) {
+            const prior = months[index], different = String(prior.text).toUpperCase() !== String(reading.word.text).toUpperCase();
+            const ink = reading.word.recovery?.physical_ink_bounds;
+            // The first OCR layer is measured at 150 dpi and rounded to .1 point. A different
+            // later word box is not proof of clipping: independently detected source ink must
+            // extend beyond the prior box by more than one original pixel plus rounding.
+            const allowance = 72 / 150 + 0.05;
+            const partial = Boolean(ink && (ink.x0 < prior.x0 - allowance || ink.y0 < prior.y0 - allowance
+              || ink.x1 > prior.x1 + allowance || ink.y1 > prior.y1 + allowance));
+            originalMonths.set(index, { raw: prior.text, location: historyLocation(prior, heading.page),
+              ...(partial ? { complete_glyph: false, reason: 'PRIOR_BBOX_DOES_NOT_ENCLOSE_FULL_PRINTED_GLYPH',
+                qualification: { physical_ink_bounds: ink, allowance_pt: allowance,
+                  source_sha256: reading.word.recovery.source_sha256, raster_dpi: reading.word.recovery.raster_dpi,
+                  region: reading.region } } : {}) });
+            if (different && historyTrust(prior) && !partial) {
+              sourceConflicts.set(reading.id, 'CONFLICTING_TRUSTED_SOURCE_READINGS');
+              conflictingReadings.set(reading.id, { raw: reading.word.text,
+                location: historyLocation(reading.word, heading.page), region: reading.region,
+                reason: 'CONFLICTING_TRUSTED_SOURCE_READINGS' }); continue;
+            }
+            months[index] = reading.word;
+            centers[index] = historyCenter(reading.word);
+          }
+        }
+        months.forEach((month, index) => {
+          const codes = codesAt.get(index) || [];
+          if (codes.length > 1) return;
+          const gaps = [centers[index] - centers[index - 1], centers[index + 1] - centers[index]]
+            .filter((gap) => Number.isFinite(gap) && gap > 0);
+          const width = gaps.length ? Math.round(Math.min(...gaps) * 0.65 / pixelPt) * pixelPt : 0;
+          if (width < 10 || width > 40 || codeBottom - codeTop < 5) return;
           if (!codes.length || !historyTrust(codes[0])
             || !require('../report-code-definitions.cjs').definitionForCode(String(codes[0].text).toUpperCase())) {
             recoveryRegions.push({ id: `code-${index}`, page: heading.page,
@@ -1036,20 +1081,31 @@ function accountHistoryCells(block, model) {
           }
         });
       }
-      const recoveryReadings = rereadHistoryRegions(model, recoveryRegions);
+      const firstCodes = rereadHistoryRegions(model, recoveryRegions);
+      const failedCodes = firstCodes.filter((reading) => !reading.word && reading.reason === 'REGION_NOT_READABLE')
+        .map((reading) => reading.region);
+      const retriedCodes = rereadHistoryRegions(model, failedCodes, true);
+      const recoveryReadings = firstCodes.map((reading) => retriedCodes.find((retry) => retry.id === reading.id) || reading);
       const rejectedRecoveries = new Map();
       for (const reading of recoveryReadings) {
         const [kind, rawIndex] = reading.id.split('-'), index = Number(rawIndex);
         if (!reading.word) { rejectedRecoveries.set(reading.id, reading.reason); continue; }
-        if (kind === 'month') {
-          if (HISTORY_MONTHS[String(reading.word.text).toUpperCase()]) months[index] = reading.word;
-        } else {
-          originalCodes.set(index, (codesAt.get(index) || []).map((word) => ({ raw: word.text,
+        if (kind === 'code') {
+          const prior = codesAt.get(index) || [];
+          originalCodes.set(index, prior.map((word) => ({ raw: word.text,
             location: historyLocation(word, heading.page) })));
+          if (prior.some((word) => historyTrust(word) && within(word, reading.region)
+            && String(word.text).toUpperCase() !== String(reading.word.text).toUpperCase())) {
+            sourceConflicts.set(reading.id, 'CONFLICTING_TRUSTED_SOURCE_READINGS');
+            conflictingReadings.set(reading.id, { raw: reading.word.text,
+              location: historyLocation(reading.word, heading.page), region: reading.region,
+              reason: 'CONFLICTING_TRUSTED_SOURCE_READINGS' }); continue;
+          }
           codesAt.set(index, [reading.word]);
         }
       }
       let activeYears = null;
+      const gridStart = cells.length;
       months.forEach((month, index) => {
         if (yearsAt.has(index)) activeYears = yearsAt.get(index);
         const year = activeYears && activeYears.length === 1 ? activeYears[0] : null;
@@ -1061,12 +1117,13 @@ function accountHistoryCells(block, model) {
         const code = codes.length === 1 ? codes[0] : null;
         const normalizedCode = code ? String(code.text).toUpperCase() : null;
         const definition = code ? require('../report-code-definitions.cjs').definitionForCode(normalizedCode) : null;
-        const reason = !headingTrusted ? 'HISTORY_HEADING_NOT_READABLE'
+        const sourceConflict = sourceConflicts.get(`month-${index}`) || sourceConflicts.get(`code-${index}`);
+        const reason = sourceConflict || (!headingTrusted ? 'HISTORY_HEADING_NOT_READABLE'
           : yearAmbiguous || unmappedYear || activeYears && activeYears.length > 1 ? 'AMBIGUOUS_YEAR_HEADING'
             : !year ? 'YEAR_NOT_PRINTED_FOR_CELL' : !yearValid || !historyTrust(year) ? 'YEAR_NOT_READABLE'
               : !monthNumber ? 'UNKNOWN_MONTH' : !historyTrust(month) ? 'MONTH_NOT_READABLE'
                 : codes.length > 1 ? 'AMBIGUOUS_CODE_CELL' : !code ? 'CODE_CELL_NOT_READABLE'
-                  : !historyTrust(code) ? 'CODE_NOT_READABLE' : !definition ? 'UNKNOWN_HISTORY_CODE' : null;
+                  : !historyTrust(code) ? 'CODE_NOT_READABLE' : !definition ? 'UNKNOWN_HISTORY_CODE' : null);
         const period = yearValid && !yearAmbiguous && !unmappedYear && historyTrust(year) && monthNumber && historyTrust(month)
           ? `${year.text}-${String(monthNumber).padStart(2, '0')}` : null;
         cells.push({ period, raw_period: year ? `${month.text} ${year.text}` : null,
@@ -1077,12 +1134,31 @@ function accountHistoryCells(block, model) {
           period_location: { month: historyLocation(month, heading.page), year: historyLocation(year, heading.page) },
           source_field: 'Account history', code_definition: !reason ? definition : null, reason,
           ...(originalCodes.has(index) ? { original_code_readings: originalCodes.get(index) } : {}),
+          ...(originalMonths.has(index) ? { original_month_reading: originalMonths.get(index) } : {}),
+          ...([conflictingReadings.get(`month-${index}`), conflictingReadings.get(`code-${index}`)].some(Boolean)
+            ? { rejected_recovery_readings: [conflictingReadings.get(`month-${index}`),
+              conflictingReadings.get(`code-${index}`)].filter(Boolean) } : {}),
           ...(rejectedRecoveries.has(`code-${index}`) ? { recovery_reason: rejectedRecoveries.get(`code-${index}`) } : {}) });
       });
-      for (const word of unaligned) cells.push({ period: null, raw_period: null,
+      const completeOwnCodeGrid = months.every((month, index) => {
+        const codes = codesAt.get(index) || [];
+        return codes.length === 1 && historyTrust(codes[0]);
+      });
+      for (const word of unaligned) {
+        // These original mixed-band boxes include the month row and cell frame. They have no
+        // own month column and are not extra history cells once every own slot is independently read.
+        if (completeOwnCodeGrid && !historyTrust(word) && word.y0 < monthBottom && word.y1 > codeBottom) {
+          const first = cells[gridStart];
+          if (!first.rejected_grid_readings) first.rejected_grid_readings = [];
+          first.rejected_grid_readings.push({ raw: word.text, location: historyLocation(word, heading.page, false),
+            reason: 'UNALIGNED_MIXED_BAND_READING', source_field: 'Account history' });
+          continue;
+        }
+        cells.push({ period: null, raw_period: null,
         code: word.text, raw_code: word.text, meaning: null, uncertain: true, performance_usable: false,
         location: historyLocation(word, heading.page, false), period_location: { month: null, year: null },
         source_field: 'Account history', code_definition: null, reason: 'UNALIGNED_CODE_CELL' });
+      }
     }
   }
   return cells;
