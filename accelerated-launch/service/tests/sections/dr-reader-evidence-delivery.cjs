@@ -45,7 +45,7 @@ async function run(t, check) {
       location: { page: 5, line: 2, trusted: true }, caption_count: 1 } };
   });
   const protectedIssue = protectedCtx.findings[0];
-  check.equal(protectedIssue?.account_identity.name, 'Account entry 3', 'a privacy-preserving creditor key remains an account reference');
+  check.equal(protectedIssue?.account_identity, null, 'a private matching key cannot substitute for a printed business name');
   check.equal(JSON.stringify(issues.publicIssue(protectedIssue)).includes('INTERNAL-CREDITOR-MATCH-TOKEN'), false,
     'the consumer never sees an internal creditor match token');
   const fictionalCa = require('./dq-ca-printed-account-fields.cjs').makeFictionalPr01Model();

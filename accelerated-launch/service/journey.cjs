@@ -25,6 +25,7 @@ const reportUse = require('../adapters/report-use.cjs');
 const { labelFor } = require('./case-status.cjs');
 const entitlement = require('./entitlement.cjs');
 const assessmentClock = require('./assessment-clock.cjs');
+const accountDisplay = require('./account-display.cjs');
 
 function nowIso() {
   return new Date().toISOString();
@@ -42,7 +43,7 @@ function filesFor(store, caseId) {
 
 function latestResultFor(store, caseId) {
   const rows = store.state().results.filter((r) => r.case_id === caseId);
-  return rows.length ? rows[rows.length - 1] : null;
+  return rows.length ? accountDisplay.resultRow(store, rows[rows.length - 1]) : null;
 }
 
 /** The whole case as the consumer sees it: the file it holds, its result set, and the download boundary. */
@@ -60,12 +61,12 @@ function caseViewForResult(store, actor, caseId, resultId) {
   if (!resultId) throw new ServiceError('RESULT_ID_REQUIRED');
   const resultRow = store.state().results.find((r) => r.result_id === resultId && r.case_id === caseId);
   if (!resultRow) throw new ServiceError('NOT_FOUND');
-  return viewForResult(store, actor, caseRow, resultRow);
+  return viewForResult(store, actor, caseRow, accountDisplay.resultRow(store, resultRow));
 }
 
 function viewForResult(store, actor, caseRow, resultRow) {
   const files = filesFor(store, caseRow.case_id).map(publicFile);
-  const rendered = resultRow ? publicResult(resultRow.rendered, resultRow.evaluation) : null;
+  const rendered = resultRow ? publicResult(resultRow.rendered, resultRow.evaluation, resultRow.extraction) : null;
   /* OWNER-PURCHASE-FLOW-001: the summary (distinct counts + one teaser) is free for every signed-in account;
      the COMPLETE assessment, its evidence and its download need a one-time unlock of THIS report or a
      subscription, and the dispute packet needs a subscription. The complete assessment is therefore never
@@ -128,7 +129,7 @@ function getResult(store, actor, caseId, resultId) {
   cases.requireOwnedCase(store, actor, caseId);
   const row = store.state().results.find((r) => r.result_id === resultId && r.case_id === caseId);
   if (!row) throw new ServiceError('NOT_FOUND');
-  return publicResult(row.rendered, row.evaluation);
+  return publicResult(row.rendered, row.evaluation, accountDisplay.resultRow(store, row).extraction);
 }
 
 /* ------------------------------------------------------------------ evaluate */
@@ -161,7 +162,8 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
 }
 
 /**
- * Evaluate the report already attached to the case. No re-read of the report and no new report access.
+ * Evaluate the report already attached to the case. Reuse assessed facts; recover only missing display
+ * names from owned originals when an older reader retained private matching keys. No new report access.
  *
  * GAP-INGEST-001: when no single file is named, EVERY admitted file is assembled into one coherent report, in
  * upload order, so the latest upload can never silently replace earlier pages. An explicit `fileId` still
@@ -170,7 +172,8 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
 function evaluateCase(store, actor, caseId, options) {
   const caseRow = cases.requireOwnedCase(store, actor, caseId);
   const wanted = options && options.fileId;
-  const files = filesFor(store, caseId);
+  const files = filesFor(store, caseId).map(file => ({ ...file,
+    extraction: accountDisplay.extractionForFiles(store, file.extraction, [file]) }));
 
   let extraction;
   let provenance;
@@ -208,7 +211,7 @@ function evaluateCase(store, actor, caseId, options) {
     consumer_statements: options && Array.isArray(options.consumer_statements) ? options.consumer_statements : null
   });
   const stored = persistResult(store, actor, caseRow, provenance, evaluated, extraction, clock);
-  return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered, stored.evaluation) };
+  return { result_id: stored.result_id, assessed_on: rendered2AssessedOn(stored), result: publicResult(stored.rendered, stored.evaluation, stored.extraction) };
 }
 
 /** Assessment-only history input, constructed from owned persisted report evidence, never request data. */
@@ -550,7 +553,7 @@ function assessmentReport(store, actor, caseId) {
   return {
     filename: `CRP-assessment-report-${caseId}.txt`,
     content_type: 'text/plain; charset=utf-8',
-    body: assessmentReportBody(publicResult(row.rendered, row.evaluation), row.created_at),
+    body: assessmentReportBody(publicResult(row.rendered, row.evaluation, row.extraction), row.created_at),
     is_a_response_packet: false
   };
 }
@@ -575,10 +578,12 @@ module.exports = {
 
 
 /** Drop the audit-only machine payload and every internal identifier from a rendered result set. */
-function publicResult(rendered, savedEvaluation = null) {
+function publicResult(rendered, savedEvaluation = null, extraction = null) {
   // Older saved public statutory issues omitted the primary classification. Recover only its label from
   // the exact persisted finding ID; never rerun assessment or change historical evidence/confidence.
   const labels = new Map();
+  const accounts = extraction && savedEvaluation ? new Map(issues.issuesFor({ evaluation: savedEvaluation, extraction })
+    .map(issue => [issue.issue_id, issues.publicIssue(issue)])) : null;
   for (const row of savedEvaluation && savedEvaluation.results || []) {
     const machine = row.machine, finding = machine && machine.finding;
     if (!finding) continue;
@@ -586,8 +591,13 @@ function publicResult(rendered, savedEvaluation = null) {
     labels.set(id, issues.consumerLabel({ ...finding, adapter_id: machine.adapter_id }));
   }
   return Object.assign({}, rendered, {
-    issues: (rendered.issues || []).map((issue) => issues.projectConsumerIssue(issue,
-      issues.consumerLabel(issue) || labels.get(issue.issue_id) || null)),
+    issues: (rendered.issues || []).map((issue) => {
+      const current = accounts?.get(issue.issue_id);
+      const renamed = current?.account_identity?.name && current.account_identity.name !== issue.account_identity?.name;
+      const view = current ? { ...issue, account_identity: current.account_identity || null,
+        ...(renamed ? { explanation: current.explanation, source_facts: current.source_facts } : {}) } : issue;
+      return issues.projectConsumerIssue(view, issues.consumerLabel(issue) || labels.get(issue.issue_id) || null);
+    }),
     qualifications: (rendered.qualifications || []).map((text) => text ===
       'The report evidence and the rule determine whether an issue is definite, probable or potential.'
       ? 'Each finding states the supporting report evidence and any specific uncertainty.' : issues.consumerText(text)),

@@ -84,7 +84,7 @@ function resultRowFor(store, actor, resultId) {
   if (!row) throw new ServiceError('NOT_FOUND');
   if (row.account_id !== actor.account_id) throw new ServiceError('NOT_AUTHORIZED');
   cases.requireOwnedCase(store, actor, row.case_id);
-  return row;
+  return require('./account-display.cjs').resultRow(store, row);
 }
 
 function assessmentSummary(store, row) {

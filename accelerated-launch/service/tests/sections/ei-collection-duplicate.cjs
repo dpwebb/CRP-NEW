@@ -232,7 +232,7 @@ async function run(t, check) {
   check.equal(comparableText(text), comparableText(preview), 'the printed correspondence equals the full consumer-reviewed preview');
   check.ok(text.includes('606') && text.includes('817') && text.includes('page 1') && text.includes('page 2'), 'approved PDF states both amounts and their separate evidence pages');
   check.ok(text.includes('Fictional Collector 1') && text.includes('Fictional Collector 2'), 'both collector headings appear in the actual packet');
-  check.ok(text.includes('VIOLATION') && text.includes('original creditor') && text.includes('which account this debt came from'), 'actual correspondence retains the owner term and original-account request');
+  check.ok(comparableText(text).includes('VIOLATION') && comparableText(text).includes('original creditor') && comparableText(text).includes('which account this debt came from'), 'actual correspondence retains the owner term and original-account request across PDF line wrapping');
   check.equal(text.includes(MEMBER), false, 'private member token is absent from preview/PDF');
   check.ok(/Member number matched from the report/i.test(text), 'approved actual PDF correctly names the member-number evidence');
   check.equal(/court claim|qualifying payment|judgment/i.test(text), false, 'duplicate packet does not include proactive court inquiries');
@@ -262,6 +262,14 @@ async function run(t, check) {
     check.equal(duplicates(state.results[0]).length, 0, label + ' cannot resurrect a persisted detection');
     let error; try { packets.packetDownload(store, actor, 'ei-case'); } catch (caught) { error = caught.code; }
     check.equal(error, 'PACKET_APPROVAL_STALE', label + ' invalidates approved delivery');
+  }
+  state.results[0] = clone(originalContext);
+  for (const index of [0, 1]) {
+    state.results[0] = clone(originalContext);
+    changeFact(state.results[0].extraction.records[index], 'collection.agency', 'Fictional Changed Agency ' + index);
+    check.equal(duplicates(state.results[0]).length, 1, 'a business label change leaves the independent duplicate evidence intact');
+    let changedName; try { packets.packetDownload(store, actor, 'ei-case'); } catch (caught) { changedName = caught.code; }
+    check.equal(changedName, 'PACKET_APPROVAL_STALE', 'either collection agency name change requires fresh consumer approval');
   }
   state.results[0] = clone(originalContext);
   state.results[0].extraction.records[0].fact_sources['account.member_reference'].location.line += 1;

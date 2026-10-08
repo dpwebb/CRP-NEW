@@ -189,6 +189,7 @@ async function run(t, check) {
     'liability.openedDate': '2020-01-01' };
   const first = record({ ...shared, 'account.responsibility': 'INDIVIDUAL' });
   const second = { ...record({ ...shared, 'account.responsibility': 'JOINT' }), record_index: 2 };
+  for (const reading of Object.values(second.printed)) reading.location.page = 3;
   const pairedExtraction = { records: [first, second] };
   const pairedEvaluation = { country: 'CA', region: 'CA-NS',
     presentation: 'GENERAL-BUREAU-REPORT', results: [],
@@ -199,9 +200,9 @@ async function run(t, check) {
     'contradictory roles on the corroborated same-snapshot account support a probable violation');
   check.equal(responsibility.rule_assessment.required_facts.length, 6,
     'both accounts supply identity and responsibility facts');
-  check.ok(responsibility.source_facts.some((f) => /Account 1:/.test(f.source_field))
-    && responsibility.source_facts.some((f) => /Account 2:/.test(f.source_field)),
-  'both accounts reach the packet evidence');
+  check.ok(responsibility.source_facts.some((f) => /^Fictional Creditor:/.test(f.source_field) && f.location.page === 2)
+    && responsibility.source_facts.some((f) => /^Fictional Creditor:/.test(f.source_field) && f.location.page === 3),
+  'both printed business labels reach the packet evidence with their separate source pages');
   const duplicate = pairedIssues.find((i) => i.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING');
   check.equal(duplicate.classification, 'POTENTIAL_VIOLATION',
     'corroborated duplicate entries support a potential violation pending verification');

@@ -65,7 +65,8 @@ async function run(t, check) {
   check.equal(positive.facts['account.masked_identifier'], 'MASK-4321', 'a physically masked own account number supports identity');
   check.equal(positive.printed['Account Number'].raw, '***4321', 'only the masked printed value is retained');
   check.match(positive.facts['account.reported_identity'], /^CREDITOR-[a-f0-9]{24}$/, 'creditor matching uses a privacy token');
-  check.ok(!JSON.stringify(positive).includes('FICTIONAL CREDITOR'), 'the original creditor heading is not returned');
+  check.equal(positive.facts['account.display_name'], 'FICTIONAL CREDITOR', 'the printed business heading is retained for the consumer account label');
+  check.ok(!JSON.stringify(positive.fact_sources['account.reported_identity']).includes('FICTIONAL CREDITOR'), 'private matching sources still retain only a creditor token');
   check.equal(positive.facts['account.balance'], 70, 'the Balance caption supplies current balance, not Highest Balance');
   check.equal(positive.facts['account.creditLimit'], 300, 'credit limit remains a separately labelled value');
   check.equal(positive.facts['account.pastDueAmount'], 25, 'wrapped Amount Past Due owns its centered value');

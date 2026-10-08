@@ -15,6 +15,7 @@
  */
 
 const crypto = require('node:crypto');
+const accountDisplay = require('./account-display.cjs');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
@@ -135,8 +136,16 @@ function recordFor(extraction, recordIndex) {
 }
 
 function recordLabel(issue) {
+  const own = issue.account_identity?.entries
+    ? issue.account_identity.entries.find(entry => entry.record_index === issue.record_index) : issue.account_identity;
+  if (own?.name) return own.name;
   const kind = issue.record && issue.record.kind_label ? issue.record.kind_label : 'a record';
   return issue.record_index != null ? `${kind} ${issue.record_index}` : 'your report';
+}
+
+function pairedRecordLabel(issue, index) {
+  return issue.account_identity?.entries?.find(entry => entry.record_index === index)?.name
+    || (index != null ? `${issue.record?.kind_label || 'report entry'} ${index}` : 'the other entry');
 }
 
 /**
@@ -210,15 +219,7 @@ function sourceFactsFor(record, fields) {
  * surface renders nothing for it; no name is inferred from a neighbouring field and none is invented.
  */
 function accountIdentityFor(record) {
-  if (!record || !record.facts || !record.facts['account.reported_identity']) return null;
-  const name = record.facts['account.reported_identity'];
-  const src = factSourcesForRecord(record)['account.reported_identity'] || {};
-  return {
-    name: src.privacy_redacted ? `Account entry ${record.record_index}` : name,
-    source_field: src.source_field || null,
-    raw_value: src.privacy_redacted ? null : src.raw_value != null ? src.raw_value : name,
-    location: src.location || null
-  };
+  return accountDisplay.identityFor(record);
 }
 
 /** The record's kind plus whatever printed identity it carries, so the consumer sees WHICH account an issue is about. */
@@ -281,8 +282,8 @@ const POTENTIAL_WORDING = Object.freeze({
   },
   'COMMON-ERROR-DUPLICATE-REPORTING': {
     explain: (i) => (i.evidence || {}).pairing_basis?.startsWith('COLLECTION_')
-      ? `These two collection entries (${recordLabel(i)} and collection entry ${(i.evidence || {}).duplicate_of_record}) have matching account references. The same debt may be listed twice. The amounts printed on each entry are shown below.`
-      : `The two entries (${recordLabel(i)} and account ${(i.evidence || {}).duplicate_of_record}) have matching account details. They may list the same account twice.`,
+      ? `These two collection entries (${recordLabel(i)} and ${pairedRecordLabel(i, (i.evidence || {}).duplicate_of_record)}) have matching account references. The same debt may be listed twice. The amounts printed on each entry are shown below.`
+      : `The two entries (${recordLabel(i)} and ${pairedRecordLabel(i, (i.evidence || {}).duplicate_of_record)}) have matching account details. They may list the same account twice.`,
     uncertainty: (i) => (i.evidence || {}).pairing_basis?.startsWith('COLLECTION_')
       ? 'The bureau needs to check whether both entries should be listed. A debt moving between collectors may explain the two entries.'
       : 'Similar entries may come from the original lender and a debt collector, an account transfer, or reports from different dates. Ask the bureau whether these entries list the same account twice.',
@@ -291,7 +292,7 @@ const POTENTIAL_WORDING = Object.freeze({
       : 'please verify whether these two entries are the same account reported twice and correct any duplication'
   },
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': {
-    explain: (i) => `The same account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) has two different labels for who is responsible (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in this report.`,
+    explain: (i) => `The same account (${recordLabel(i)} and ${pairedRecordLabel(i, (i.evidence || {}).other_record)}) has two different labels for who is responsible (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in this report.`,
     uncertainty: 'The labels may describe a joint account, someone allowed to use the account, or a change in who is responsible. Partly hidden account numbers can also look alike. The report does not show which explanation applies.',
     request: 'please verify the responsibility on this account and correct the inconsistency'
   },
@@ -924,6 +925,7 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         account_identity: accountIdentityFor(record),
         source_facts: sourceFactsFor(record, EVIDENCE_FACT_FIELDS[entry.check_id] || [])
       };
+      issue.account_identity = accountDisplay.identityForIssue(issue, extraction);
       if (entry.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' && sr.evidence && sr.evidence.original_record != null) {
         const original = recordFor(extraction, sr.evidence.original_record);
         if (original) issue.source_facts.push(...sourceFactsFor(original, EVIDENCE_FACT_FIELDS[entry.check_id]));
@@ -941,7 +943,7 @@ function potentialIssues(extraction, commonErrors, evaluation) {
           field: f.field, source_field: f.role === 'earlier_report' || f.role === 'current_report'
             ? `${f.role === 'earlier_report' ? 'Earlier' : 'Current'} report ${f.source.report_reference_date}: ${f.source.source_field}`
             : assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)
-            ? `Account ${f.source.record_index}: ${f.source.source_field}` : f.source.source_field,
+            ? `${accountIdentityFor(recordFor(extraction, f.source.record_index))?.name || `Account ${f.source.record_index}`}: ${f.source.source_field}` : f.source.source_field,
           raw_value: f.source.raw_value, normalized_value: f.source.normalized_value,
           ...(f.source.omitted_value ? { omitted_value: true, state: f.source.state } : {}),
           ...(f.source.code_definition ? { code_definition: f.source.code_definition } : {}),
@@ -1171,6 +1173,8 @@ function issuesFor(ctx) {
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
       if (!record) return issue;
+      issue.account_identity = accountDisplay.identityForIssue(issue, extraction);
+      if (issue.record) issue.record.account_name = accountIdentityFor(record)?.name || null;
       // Own printed references and listing roles locate the selected entry; they do not establish account identity or ownership.
       const fields = record.kind === 'OVERDUE_ACCOUNT'
         ? ['overdue.associationCode', 'overdue.coBorrower', 'overdue.accountReference']
@@ -1416,6 +1420,10 @@ function publicIssue(issue) {
         ? { section: issue.account_identity.location.section || null, page: issue.account_identity.location.page, line: issue.account_identity.location.line }
         : null
     };
+    if (issue.account_identity.entries) out.account_identity.entries = issue.account_identity.entries.map(entry => ({
+      name: entry.name, source_field: entry.source_field, raw_value: entry.raw_value,
+      location: publicFactLocation(entry.location)
+    }));
   }
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION) {
     out.citation = issue.citation || null;

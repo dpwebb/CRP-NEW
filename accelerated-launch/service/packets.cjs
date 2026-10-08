@@ -22,6 +22,7 @@ const { renderPacketPdf } = require('./packet-pdf.cjs');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
+const accountDisplay = require('./account-display.cjs');
 const CHECKLIST_LABELS = new Map(require('./common-error-checklist.cjs').CHECKS.map(check => [check.check_id, check.label]));
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 const bureauRules = require('./bureau-dispute-requirements.cjs');
@@ -74,7 +75,7 @@ function newPacketId() {
 
 function latestResult(store, caseId) {
   const rows = store.state().results.filter((r) => r.case_id === caseId);
-  return rows.length ? rows[rows.length - 1] : null;
+  return rows.length ? accountDisplay.resultRow(store, rows[rows.length - 1]) : null;
 }
 
 /** The eligible issues of one persisted result, from the unified descriptor. */
@@ -269,7 +270,7 @@ function selectIssues(store, actor, caseId, issueIds) {
   const { row, eligible } = requireResultAndEligible(store, actor, caseId);
   const previous = currentPacket(store, caseId);
   if (previous?.report_file_ids?.length) {
-    const previousResult = store.state().results.find(result => result.result_id === previous.result_id && result.case_id === caseId);
+    const previousResult = accountDisplay.resultRow(store, store.state().results.find(result => result.result_id === previous.result_id && result.case_id === caseId));
     const previousSelected = eligibleIssues(previousResult).filter(issue => previous.selected_issue_ids.includes(issue.issue_id));
     reportExhibits.prepare(store, actor, caseId, previousResult, previousSelected, previous.report_file_ids);
   }
@@ -515,6 +516,7 @@ function resolveSelected(store, actor, caseId) {
 function accountLine(issue, indent) {
   const ai = issue && issue.account_identity;
   if (!ai || !ai.name) return null;
+  if (ai.entries) return ai.entries.map(entry => accountLine({ account_identity: entry }, indent)).join('\n');
   const pad = indent || '  ';
   const loc = ai.location && ai.location.page != null
     ? ` (page ${ai.location.page}${ai.location.line != null ? `, line ${ai.location.line}` : ''})`

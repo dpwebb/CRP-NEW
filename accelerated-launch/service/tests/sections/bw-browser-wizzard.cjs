@@ -501,7 +501,8 @@ async function run(service, check) {
   const dualOpened = await withDualClockBrowser(dualSub, dualLines);
   /* The complete assessment is the results step; the packet step follows. */
   await dualOpened.page.locator('#steps button[data-step="3"]').click();
-  await dualOpened.page.waitForTimeout(700);
+  // Leaving packet review saves selection before Results renders; await the destination, not elapsed time.
+  await dualOpened.page.waitForSelector('#result-select');
   const dualPanel = await dualOpened.page.locator('#panel').innerText();
   check.ok(/Report issued: 2026-06-12/.test(dualPanel), 'the complete assessment shows the date the report was issued');
   check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');

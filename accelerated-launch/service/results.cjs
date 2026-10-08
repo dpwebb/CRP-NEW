@@ -605,8 +605,14 @@ function firstSentence(text) {
 /** No unnecessary personal identifiers in the teaser: a printed account or creditor name is redacted first. */
 function redactIdentifiers(text, issue) {
   let out = String(text || '');
-  const name = issue.account_identity && issue.account_identity.name ? String(issue.account_identity.name) : '';
-  if (name.length > 2) out = out.split(name).join('one account on your report');
+  const identity = issue.account_identity;
+  const names = [identity?.name, ...(identity?.entries || []).map(entry => entry.name)]
+    .filter(name => typeof name === 'string' && name.trim()).sort((a, b) => b.length - a.length);
+  for (const name of names) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out.replace(new RegExp('(^|[^\\p{L}\\p{N}])' + escaped + '(?=$|[^\\p{L}\\p{N}])', 'gu'),
+      '$1one account on your report');
+  }
   return out;
 }
 

@@ -107,6 +107,7 @@ const SECTION_FILES = [
   'ek-pr01-collection-references.cjs',
   'el-collection-court-period.cjs',
   'em-collection-comparison.cjs',
+  'en-account-display.cjs',
   'ed-account-browser.cjs',
   'ef-account-recovery.cjs',
   'dh-ca-reader-completion.cjs',
