@@ -4,6 +4,9 @@
 const grid = require('../../payment-history-grid.cjs');
 const clarification = require('../../clarification.cjs');
 const validator = require('../../evidence-validator.cjs');
+const fdtAcceptance = require('../../fdt-acceptance.cjs');
+const benchmark = require('../../fdt-benchmark.cjs');
+const crypto = require('node:crypto');
 const fsNode = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -50,6 +53,81 @@ async function run(t, check) {
   const fdtGenuine = Object.assign({}, genuine, {
     acceptance: { recovery_rate: 0.96, incorrect_decisive_facts: 0, cross_record_or_bureau_borrowing: 0, unsupported_violations: 0 }
   });
+
+  /* FDT-specific OWNER-CLOSURE split. These are explicitly controlled unit records,
+     never hosted proof or persisted release acceptance. */
+  const localFile = path.join(tmpDir, 'controlled-local.cjs');
+  fsNode.writeFileSync(localFile, 'module.exports=true;');
+  const digest = file => crypto.createHash('sha256').update(fsNode.readFileSync(file)).digest('hex');
+  const localFdt = { passed: false, acceptance: fdtGenuine.acceptance,
+    benchmark: { missed_fact_rate: 0, incorrect_reading_rate: 0, baseline: 'controlled fixture' },
+    implementation: { configured: true, source_files: [{ file: 'controlled-local.cjs', sha256: digest(localFile) }],
+      evidence_refs: [{ file: boundRef, sha256: digest(boundRef) }],
+      tests: [{ id: 'CONTROLLED_UNIT', passed: true, criteria: fdtAcceptance.LOCAL_CRITERIA,
+        expected: 'controlled status behavior', measured: 'controlled status behavior' }] },
+    staging_verification: { status: 'PENDING', reason: 'current hosted recovery pending' } };
+  const fdtOptions = { targetBuildId: TARGET, sourceRoot: tmpDir, baseDir: tmpDir,
+    acceptance: { min_recovery_rate: 0.95, zero_incorrect_decisive_facts: true,
+      zero_cross_record_or_bureau_borrowing: true, zero_unsupported_violations: true },
+    benchmark: { missed_fact_rate: 0.05, incorrect_reading_rate: 0, require_baseline: true } };
+  const localStatus = fdtAcceptance.validateEvidence(localFdt, fdtOptions);
+  check.equal(localStatus.implementation_status, 'IMPLEMENTED_AND_TESTED', 'FDT: source-bound local recovery closes implementation independently');
+  check.equal(localStatus.staging_status, 'PENDING_VERIFICATION', 'FDT: historical/absent hosted recovery stays pending');
+  check.equal(localStatus.passed, false, 'FDT: local implementation never clears the production gate');
+  const served = { identity: { build_id: TARGET, served_build_id: TARGET }, recovery_cases: [
+    { scenario: 'USEFUL', case_id: 'controlled-useful', upload_status: 201, result_status: 200, input_sha256: 'a'.repeat(64),
+      recovery: { bounded: true, substitution_forbidden: true, recovery_attempts: 1, facts_added: [{ page: 1, line: 2, source: 'LOCAL_OCR' }] } },
+    { scenario: 'UNSUCCESSFUL', case_id: 'controlled-unsuccessful', upload_status: 201, result_status: 200, input_sha256: 'b'.repeat(64),
+      recovery: { bounded: true, substitution_forbidden: true, recovery_attempts: 1, facts_added: [] },
+      reading_limitations: { incomplete: true, never_equates_unread_with_absence: true } }
+  ] };
+  const stagedFdt = { ...localFdt, passed: true, identity: served.identity, served_recovery: served,
+    staging_verification: { status: 'VERIFIED' }, criteria: Object.fromEntries(fdtAcceptance.REQUIRED_CRITERIA.map(key =>
+      [key, { passed: true, expected: 'controlled expected outcome', measured: 'controlled measured outcome', evidence_refs: [boundRef] }])),
+    tests: [{ id: 'CONTROLLED_UNIT', passed: true }] };
+  check.equal(fdtAcceptance.validateEvidence(stagedFdt, fdtOptions).passed, true, 'FDT: both measured recovery-case shapes and strict criterion references are required for staging');
+  for (const [label, change] of [
+    ['admission counts alone', proof => { delete proof.recovery_cases; proof.per_file = [{ accounts: [{}, {}] }]; }],
+    ['no unsuccessful attempt', proof => { proof.recovery_cases[1].recovery.recovery_attempts = 0; }],
+    ['no recovered fact', proof => { proof.recovery_cases[0].recovery.facts_added = []; }],
+    ['no incomplete withholding', proof => { proof.recovery_cases[1].reading_limitations = null; }],
+    ['obsolete served identity', proof => { proof.identity.served_build_id = 'old'; }]
+  ]) {
+    const changed = structuredClone(stagedFdt);
+    change(changed.served_recovery);
+    check.equal(fdtAcceptance.validateEvidence(changed, fdtOptions).passed, false, `FDT: ${label} cannot establish current hosted recovery`);
+  }
+  const badMetrics = structuredClone(localFdt); badMetrics.acceptance.unsupported_violations = 1;
+  check.equal(fdtAcceptance.validateEvidence(badMetrics, fdtOptions).implementation_status, 'OPEN', 'FDT: a genuinely unsupported active violation keeps implementation open');
+  fsNode.writeFileSync(localFile, 'module.exports=false;');
+  check.equal(fdtAcceptance.validateEvidence(localFdt, fdtOptions).implementation_status, 'OPEN', 'FDT: changed tested source reopens local implementation');
+
+  const actualRoot = path.resolve(__dirname, '../../../..');
+  const inventory = fdtAcceptance.currentInventory(actualRoot);
+  const measuredAcceptance = fdtAcceptance.runAcceptance(), measuredBenchmark = benchmark.runBenchmark();
+  const controlledRun = { mode: 'FULL_CURRENT_PRODUCT', source_drift: [], unrun_sections: [],
+    selected_sections: inventory.sectionFiles.map(file => file.slice(0, -4)),
+    source_hashes: inventory.sources.map(file => ({ file, sha256: digest(path.join(actualRoot, file)) })),
+    sections: inventory.sectionFiles.map(file => ({ id: file.slice(0, -4), file, completed: true, passed: 1, failed: 0, skipped: [],
+      evidence: file === 'am-fdt-recovery.cjs' ? { acceptance: measuredAcceptance, benchmark_full: measuredBenchmark,
+        local_recovery: { useful_facts: 1, useful_attempts: 1, unsuccessful_facts: 0, unsuccessful_attempts: 1, pass_limit: 1 } } : {} })),
+    totals: { passed: inventory.sectionFiles.length, failed: 0, skipped: 0 } };
+  const controlledFile = path.join(tmpDir, 'CONTROLLED_UNIT_execution.json');
+  const buildControlled = execution => {
+    fsNode.writeFileSync(controlledFile, JSON.stringify(execution));
+    return fdtAcceptance.buildEvidence({ execution, regressionFile: controlledFile, sourceRoot: actualRoot });
+  };
+  check.equal(buildControlled(controlledRun).implementation.configured, true, 'FDT builder: complete matching inventory, measured metadata and current source hashes qualify');
+  for (const [label, change] of [
+    ['focused run', run => { run.mode = 'FOCUSED'; }],
+    ['missing registered section', run => { run.sections.pop(); run.selected_sections.pop(); run.totals.passed--; }],
+    ['missing tested source', run => { run.source_hashes.pop(); }],
+    ['stale tested source', run => { run.source_hashes[0].sha256 = '0'.repeat(64); }],
+    ['failed active positive', run => { run.sections.find(row => row.id === 'am-fdt-recovery').evidence.acceptance.implementation_passed = false; }]
+  ]) {
+    const changed = structuredClone(controlledRun); change(changed);
+    check.equal(buildControlled(changed).implementation.configured, false, `FDT builder: ${label} cannot qualify implementation`);
+  }
   check.equal(validator.validateCapabilityEvidence(fdtGenuine, { targetBuildId: TARGET, acceptance: { min_recovery_rate: 0.95, zero_incorrect_decisive_facts: true, zero_cross_record_or_bureau_borrowing: true, zero_unsupported_violations: true } }).passed, true, 'C1: FDT prospective acceptance (>=95% recovery, zero incorrect/borrowing/unsupported) is accepted');
   check.equal(validator.validateCapabilityEvidence(Object.assign({}, fdtGenuine, { acceptance: { recovery_rate: 0.94, incorrect_decisive_facts: 0, cross_record_or_bureau_borrowing: 0, unsupported_violations: 0 } }), { targetBuildId: TARGET, acceptance: { min_recovery_rate: 0.95 } }).passed, false, 'C1: FDT recovery below 95% is rejected');
   check.equal(validator.validateCapabilityEvidence(Object.assign({}, fdtGenuine, { acceptance: { recovery_rate: 1, incorrect_decisive_facts: 1, cross_record_or_bureau_borrowing: 0, unsupported_violations: 0 } }), { targetBuildId: TARGET, acceptance: { zero_incorrect_decisive_facts: true } }).passed, false, 'C1: FDT incorrect decisive facts are rejected');

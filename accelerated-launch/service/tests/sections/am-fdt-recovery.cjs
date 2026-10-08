@@ -8,6 +8,7 @@ const formats = require('../../formats.cjs');
 const evaluation = require('../../evaluation.cjs');
 const results = require('../../results.cjs');
 const benchmark = require('../../fdt-benchmark.cjs');
+const acceptance = require('../../fdt-acceptance.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
@@ -109,6 +110,10 @@ async function run(t, check) {
   const emptyAudit = fdt.recoveryAudit([], []);
   check.equal(emptyAudit.facts_added.length, 0, 'an unsuccessful recovery records no recovered facts');
   check.equal(emptyAudit.recovery_attempts.length, 0, 'and no attempts');
+  const unsuccessfulAudit = fdt.recoveryAudit([], [{ page: 2, source: 'LOCAL_OCR', lines: [] }]);
+  check.equal(unsuccessfulAudit.recovery_attempts.length, 1, 'a performed unsuccessful OCR pass is distinguished from no attempt');
+  check.equal(unsuccessfulAudit.facts_added.length, 0, 'a performed unsuccessful OCR pass creates no fact');
+  check.equal(unsuccessfulAudit.recovery_pass_limit, 1, 'unsuccessful recovery retains the one-pass bound');
 
   /* 3. consequential reading limitations */
   const limits = fdt.buildReadingLimitations(unreadable);
@@ -169,6 +174,27 @@ async function run(t, check) {
   check.equal(bench.metrics.incorrect_reading_rate, 0, 'no incorrect fact accepted');
   check.equal(bench.metrics.recovery.facts_added, 1, 'recovery added the recoverable fact');
 
+  const accepted = acceptance.runAcceptance();
+  check.equal(accepted.implementation_passed, true, 'the current shared-reader and active checklist acceptance passes locally');
+  check.equal(accepted.passed, false, 'local acceptance never fabricates current hosted recovery');
+  check.equal(accepted.expected_decisive_fact_denominator, 12, 'both lookalike accounts contribute their own decisive facts');
+  check.equal(accepted.unsupported_violations, 0, 'no unexpected active checklist violation is emitted');
+  check.equal(accepted.missing_expected_violations, 0, 'the supported positive checklist violation is actually detected');
+  const chronology = accepted.per_case.find(row => row.id === 'contradictory-dates');
+  check.deepEqual(chronology.findings, [{ check_id: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
+    classification: 'PROBABLE_VIOLATION', record_indices: [1] }], 'the positive control reaches the active source-linked issue pipeline');
+  const expected = [{ check_id: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', classification: 'PROBABLE_VIOLATION', record_index: 1 }];
+  const offered = [{ ...expected[0], eligible: true,
+    rule_assessment: { required_facts: [{ source: { record_index: 1, location: { page: 1, line: 3 } } }] } }];
+  check.deepEqual(acceptance.measureViolations(expected, offered), { unsupported: 0, missing: 0 }, 'only the explicit own-record positive is allowed');
+  check.equal(acceptance.measureViolations([], offered).unsupported, 1, 'an active checklist violation on a benign control is counted');
+  check.equal(acceptance.measureViolations(expected, []).missing, 1, 'suppressing the required positive fails acceptance');
+  check.equal(acceptance.measureViolations(expected, [{ ...offered[0], record_index: 2 }]).unsupported, 1,
+    'an otherwise matching violation attributed to another record is rejected');
+  check.equal(acceptance.measureViolations(expected, [offered[0], offered[0]]).unsupported, 1, 'a duplicated positive is counted as unexpected');
+  check.equal(acceptance.measureViolations(expected, [{ ...offered[0], rule_assessment: null }]).unsupported, 1,
+    'a classification without its decisive source facts is never an allowed positive');
+
   /* 7. HTTP journey: native-PDF result and image refusal */
   const owner = await t.account('fdt-owner@example.test');
   const caseRow = (await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'US', region: 'US-NY' } })).json.case;
@@ -203,6 +229,11 @@ async function run(t, check) {
   evidence.limitations = { incomplete: limits.incomplete, affected: limits.affected_checks };
   evidence.duplicate = { similar_state: similar.state, duplicate_state: dup.state };
   evidence.benchmark = { passed: bench.passed, missed: bench.metrics.missed_fact_rate };
+  evidence.benchmark_full = bench;
+  evidence.acceptance = accepted;
+  evidence.local_recovery = { useful_facts: imageOnlyAudit.facts_added.length,
+    useful_attempts: imageOnlyAudit.recovery_attempts.length, unsuccessful_facts: unsuccessfulAudit.facts_added.length,
+    unsuccessful_attempts: unsuccessfulAudit.recovery_attempts.length, pass_limit: unsuccessfulAudit.recovery_pass_limit };
   return evidence;
 }
 

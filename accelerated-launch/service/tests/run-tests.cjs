@@ -834,54 +834,23 @@ async function main() {
   fs.writeFileSync(path.join(OUT_DIR, 'b4-evidence.json'), `${JSON.stringify(b4, null, 2)}\n`, 'utf8');
 
   /* ------------------------------------------------------------------ FDT evidence (BLOCKER-FDT-001) */
-  const fdtBenchmark = require('../fdt-benchmark.cjs');
   const fdtAcceptance = require('../fdt-acceptance.cjs');
   const clarificationMod = require('../clarification.cjs');
   const reportUseMod = require('../../adapters/report-use.cjs');
-  const benchResult = fdtBenchmark.runBenchmark();
-  const acceptance = fdtAcceptance.runAcceptance();
   const fdtSection = byId.get('am-fdt-recovery');
   const commonErrorsSection = byId.get('al-common-errors');
   const ownerCommonErrorsSection = byId.get('ct-owner-common-error-scope');
   const reportUseSection = byId.get('bg-report-use');
 
-  /* The deployed recovery/download evidence (produced against the served staging build) is what proves the
-     served release implements the capability; a local benchmark alone does not. */
+  /* Historical proof remains input only to the historical clarification record below;
+     it is never promoted to current FDT recovery evidence. */
   let deployedEvidence = null;
   try { deployedEvidence = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'SOURCE_CAPTURES', 'ACCEPT-009', 'fdt-recovery-download-evidence.json'), 'utf8')); } catch (_) { deployedEvidence = null; }
-  const deployedOk = Boolean(deployedEvidence && deployedEvidence.build_id && deployedEvidence.download && deployedEvidence.download.status === 200
-    && (deployedEvidence.per_file || []).some((f) => f.file === 'image-body-report.pdf' && (f.accounts || []).length >= 2));
-
-  const fdtEvidence = {
-    passed: acceptance.passed === true && Boolean(fdtSection) && fdtSection.failed === 0,
-    deployed: deployedOk,
-    local_only: !deployedOk,
-    reason: acceptance.passed
-      ? 'Owner-approved PROSPECTIVE FDT acceptance run executed and passed (held-out set frozen before extraction; zero incorrect decisive facts, zero borrowing, zero unsupported findings, 100% recovery); deployed recovery + purchased download verified on the served staging build.'
-      : 'failure-to-detect mitigation acceptance run did not pass every criterion; see fdt-acceptance-evidence.json',
-    identity: { build_id: deployedEvidence ? deployedEvidence.build_id : (process.env.CRP_BUILD_ID || 'crp-wizard-4937bfc4be6aabd1'), deployment: 'staging' },
-    acceptance: {
-      freeze_digest: acceptance.freeze_digest,
-      document_count: acceptance.document_count,
-      expected_decisive_fact_denominator: acceptance.expected_decisive_fact_denominator,
-      recovery_rate: acceptance.recovery_rate,
-      incorrect_decisive_facts: acceptance.incorrect_decisive_facts,
-      cross_record_or_bureau_borrowing: acceptance.cross_record_or_bureau_borrowing,
-      unsupported_violations: acceptance.unsupported_violations
-    },
-    benchmark: {
-      missed_fact_rate: benchResult.metrics.missed_fact_rate,
-      incorrect_reading_rate: benchResult.metrics.incorrect_reading_rate,
-      misattribution_rate: benchResult.metrics.misattribution_rate,
-      baseline: benchResult.baseline,
-      uncertainty_withholding: benchResult.metrics.uncertainty_withholding,
-      recovery: benchResult.metrics.recovery
-    },
-    tests: [
-      { id: 'am-fdt-recovery', passed: Boolean(fdtSection) && fdtSection.failed === 0 },
-      { id: 'fdt-benchmark', passed: benchResult.passed === true }
-    ]
-  };
+  const servedFile = path.join(OUT_DIR, 'fdt-served-recovery-evidence.json');
+  let served = null;
+  try { served = JSON.parse(fs.readFileSync(servedFile, 'utf8')); } catch (_) { /* hosted proof stays pending */ }
+  const fdtEvidence = fdtAcceptance.buildEvidence({ execution,
+    regressionFile: path.join(OUT_DIR, 'current-regression-evidence.json'), served, servedFile: served ? servedFile : null });
   fs.writeFileSync(path.join(OUT_DIR, 'fdt-mitigation-evidence.json'), `${JSON.stringify(fdtEvidence, null, 2)}\n`, 'utf8');
 
   /* ------------------------------------------------------------------ clarify evidence (BLOCKER-CLARIFY-001) */

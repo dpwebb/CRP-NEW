@@ -39,6 +39,7 @@ const formats = require('./formats.cjs');
 const caFormatScope = require('./format-families/ca-consumer-format-scope.cjs');
 const gbFamily = require('./format-families/gb-experian-consumer.cjs');
 const gbGeneralContract = require('./gb-general-field-contract.cjs');
+const fdtAcceptance = require('./fdt-acceptance.cjs');
 
 const SERVICE_DIR = __dirname;
 const LAUNCH_DIR = path.resolve(__dirname, '..');
@@ -826,19 +827,7 @@ function readBlockerEvidence(filename) {
    release. FDT criteria, thresholds and metric definitions are ALIGNED with the Owner-approved PROSPECTIVE
    criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero
    cross-record/bureau borrowing and zero unsupported violations. */
-const FDT_REQUIRED_CRITERIA = [
-  'freeze_before_run',
-  'independent_held_out_set',
-  'zero_incorrect_decisive_facts',
-  'zero_cross_record_or_bureau_borrowing',
-  'zero_unsupported_violations',
-  'min_recovery_of_readable_assessment_required_facts',
-  'account_for_every_remaining_miss',
-  'withhold_unreadable_or_conflicting_decisive_facts',
-  'demonstrate_useful_recovery_on_deployed',
-  'demonstrate_bounded_unsuccessful_recovery_on_deployed',
-  'benchmark'
-];
+const FDT_REQUIRED_CRITERIA = fdtAcceptance.REQUIRED_CRITERIA;
 /* <=5% missed == >=95% of the designated readable required facts recovered. */
 const FDT_MAX_MISSED_FACT_RATE = 0.05;
 /* Zero incorrect decisive facts. */
@@ -861,7 +850,7 @@ CHECKS.push(
     why: 'failure-to-detect mitigation (equivalent labels/codes, contextual structure, completeness checks, bounded targeted recovery, same-record corroboration and missed-fact/incorrect-reading benchmarks) is a mandatory launch requirement; the served release must demonstrate it behaviorally, not merely carry a local benchmark',
     run() {
       const e = readBlockerEvidence('fdt-mitigation-evidence.json');
-      const verdict = validateCapabilityEvidence(e, {
+      const verdict = fdtAcceptance.validateEvidence(e, {
         targetBuildId: process.env.CRP_BUILD_ID || null,
         baseDir: path.join(OUT_DIR),
         requiredCriteria: FDT_REQUIRED_CRITERIA,
