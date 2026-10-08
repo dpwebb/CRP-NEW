@@ -23,12 +23,20 @@ const ids = ['al-common-errors', 'ct-owner-common-error-scope', 'cw-common-error
   'do-gb-history-definitions', 'dp-us-cell-recovery', 'dq-ca-printed-account-fields', 'dr-reader-evidence-delivery',
   'ds-column-caption-fields', 'dt-rating-history-rows', 'du-column-reader-delivery', 'dv-au-reference-delivery',
   'dw-us-history-completion', 'dx-report-date-custody', 'dy-reader-date-delivery'];
+// These sections exercise checklist predicates alongside benign, missing-source,
+// retired-adapter and account-association controls. Bind the release criteria to
+// those measured behaviors rather than an unrelated umbrella tag.
+const predicateSections = new Set(['al-common-errors', 'ct-owner-common-error-scope',
+  'cw-common-error-rule-assessment', 'cx-all82-required-report-data',
+  'cy-common-error-predicate-repairs', 'cz-common-error-packet-repairs']);
 const tests = ids.map((id) => {
   const section = run.sections.find((row) => row.id === id);
   if (!section || !section.completed || section.failed || section.skipped.length || !section.passed) {
     throw Error('A completed passing common-error section is required: ' + id);
   }
-  return { id, passed: true, assertions: section.passed, criteria: ['supported_checklist_paths'],
+  const criteria = ['supported_checklist_paths'];
+  if (predicateSections.has(id)) criteria.push('checks_implemented', 'no_false_finding');
+  return { id, passed: true, assertions: section.passed, criteria,
     expected: 'completed passing behavioral section', measured: `${section.passed} passed; 0 failed; 0 skipped` };
 });
 // Check every source in the frozen product run before recording its status.
@@ -69,6 +77,14 @@ const evidence = {
   staging_verification: { status: 'PENDING', reason: remaining.staging_journey },
   active_checklist: checklist,
   remaining,
+  coverage: {
+    supported_checklist_paths: { passed: true,
+      expected: 'positive, benign and qualification controls on supported shared checklist paths',
+      measured: `${tests.reduce((sum, test) => sum + test.assertions, 0)} assertions across ${tests.length} sections; full product run ${run.totals.passed} passed`,
+      evidence_refs: evidenceRefs },
+    complete_checklist_coverage: { passed: false, expected: 'supported evidence mappings for all checklist items and relevant layouts',
+      measured: remaining.re_aging + ' ' + remaining.reader_coverage, evidence_refs: [] }
+  },
   criteria: {
     checks_implemented: { passed: true, expected: 'supported checklist mechanisms tested with positive and benign controls',
       measured: `${tests.reduce((sum, test) => sum + test.assertions, 0)} measured assertions; supported paths only; remaining mappings listed separately`,
@@ -76,12 +92,6 @@ const evidence = {
     no_false_finding: { passed: true, expected: 'source-linked checklist assessments remain separate from raw comparisons; no legal findings',
       measured: 'Passing common-rule, benign, retired-adapter, neutral-review and confidence-preservation controls',
       evidence_refs: evidenceRefs },
-    supported_checklist_paths: { passed: true,
-      expected: 'positive, benign and qualification controls on supported shared checklist paths',
-      measured: `${tests.reduce((sum, test) => sum + test.assertions, 0)} assertions across ${tests.length} sections; full product run ${run.totals.passed} passed`,
-      evidence_refs: evidenceRefs },
-    complete_checklist_coverage: { passed: false, expected: 'supported evidence mappings for all checklist items and relevant layouts',
-      measured: remaining.re_aging + ' ' + remaining.reader_coverage, evidence_refs: [] },
     end_to_end_journey: { passed: false, expected: 'current served-release upload through selected approved packet',
       measured: remaining.staging_journey, evidence_refs: [] }
   },

@@ -291,6 +291,8 @@ async function draftBoundaryAndRelease(t, check, evidence) {
   const outFile = path.join(__dirname, '..', '..', 'out', 'b4-release-check.json');
   const existed = fs.existsSync(outFile);
   const report = runReleaseCheck({ write: false });
+  const presentationCheck = report.checks.find((row) => row.id === 'SUPPORTED_CHECKS_AND_LIMITATIONS_SHOWN_BEFORE_PURCHASE');
+  check.equal(presentationCheck.passed, true, 'the approved No findings available wording satisfies the presentation gate without requiring retired copy');
   check.equal(report.launch_ready, false, 'the release check does not report this build as launch ready');
   check.equal(report.state, 'NOT_LAUNCH_READY', 'and names the state plainly');
   check.equal(report.deployment_performed, false, 'no deployment was performed');

@@ -760,12 +760,12 @@ CHECKS.push(
         problems.push(`the UI banner does not state that ${advertised.length} presentations are supported`);
       }
       if (!/no payment provider is connected/.test(uiJs)) problems.push('the UI does not state the payment position before payment');
-      if (!/No issue found/.test(uiJs)) problems.push('the UI does not define what "no issue found" means');
+      if (!/No findings available\./.test(uiJs)) problems.push('the UI does not use the approved empty-result wording');
       return {
         passed: problems.length === 0,
         detail: problems.length
           ? problems.join('; ')
-          : `${advertised.length} presentation(s), each with a limitation note and a currency note, ${paid.length} paid action(s) named, and the UI states both the count and the "no issue found" boundary before payment`,
+          : `${advertised.length} presentation(s), each with a limitation note and a currency note, ${paid.length} paid action(s) named, and the UI states the count and an empty result without claiming compliance`,
         affected_regions: []
       };
     }
