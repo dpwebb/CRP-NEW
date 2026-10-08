@@ -146,7 +146,7 @@ async function run(t, check) {
   check.ok(/\$7\.95 CAD/.test(billingBox.innerHTML) && /\$79\.50 CAD/.test(billingBox.innerHTML), 'recurring prices and currency are shown');
   check.ok(/one-time purchase/.test(billingBox.innerHTML), 'one-time purchase type is shown');
   check.ok(/renews monthly/.test(billingBox.innerHTML) && /renews annually/.test(billingBox.innerHTML), 'recurring renewal is shown');
-  check.ok(/No active purchase is recorded/.test(billingBox.innerHTML), 'the unpaid access state is shown');
+  check.ok(/You have no active paid plan/.test(billingBox.innerHTML), 'the unpaid access state is shown');
   check.ok(/No upgrade credit is currently available/.test(billingBox.innerHTML), 'no upgrade credit is shown when none is held');
   check.ok(!/cancelEntitlement/.test(billingBox.innerHTML), 'no cancellation control appears for a non-subscription account');
 
@@ -164,7 +164,7 @@ async function run(t, check) {
   responderState.cancelAtPeriodEnd = true;
   vm.runInContext('state.step = 8; render();', ctx);
   await tick(); await tick();
-  check.ok(/Renewal is cancelled/.test(dom.elementById('billingView').innerHTML) && !/This purchase renews automatically/.test(dom.elementById('billingView').innerHTML), 'cancelled subscription has one truthful renewal explanation while paid access remains');
+  check.ok(/Renewal is cancelled/.test(dom.elementById('billingView').innerHTML) && !/Your subscription renews automatically/.test(dom.elementById('billingView').innerHTML), 'cancelled subscription has one truthful renewal explanation while paid access remains');
   check.ok(!/id="cancelEntitlement"/.test(dom.elementById('billingView').innerHTML), 'cancelled renewal does not offer another cancellation button');
   responderState.cancelAtPeriodEnd = false;
   vm.runInContext('state.step = 8; render();', ctx);

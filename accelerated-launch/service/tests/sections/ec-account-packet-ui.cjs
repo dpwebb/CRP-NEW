@@ -38,7 +38,7 @@ function harness(responder, { autoRead = true } = {}) {
     return [];
   };
   const context = {
-    console, setTimeout, clearTimeout, Promise, JSON, Object, Array, Map, Set, Date, String, Number, Error, crypto: require('node:crypto'),
+    console, setTimeout, clearTimeout, Promise, JSON, Object, Array, Map, Set, Date, String, Number, Error, URLSearchParams, crypto: require('node:crypto'),
     document: { getElementById: node, createElement: element, querySelectorAll: selector => panel.querySelectorAll(selector) },
     FileReader: class FileReader {
       readAsDataURL(file) { this.file = file; readers.push(this); if (autoRead) this.finish(); }
@@ -385,12 +385,107 @@ async function assessmentNavigationReturn() {
   assert.equal(h.evaluate('state.step'), 3, 'refresh opens the completed results for that same owned report');
   assert.equal(h.calls.filter(row => row.url === '/api/cases/newA').length, 1);
 }
+const returnCaseId = 'case_' + 'a'.repeat(24);
+function checkoutView(paid) {
+  return { case: { case_id: returnCaseId, country: 'CA', region: 'CA-NS' }, result_id: 'same-result',
+    result: { support: 'REPORT_SUPPORT', issues: [{ eligible: true, issue_id: 'issue-A', consumer_label: 'VIOLATION' }] },
+    assessment_summary: { distinct_total: 1 }, assessment_access: { complete_assessment: paid, dispute_packet: paid } };
+}
+async function checkoutKeepsOwnOriginAndReport() {
+  const h = harness(() => ({ checkout: { redirect_url: 'https://checkout.stripe.com/fictional' } }));
+  h.account('A', 'Fictional A'); h.context.location.origin = 'https://app.example.test';
+  h.context.location.search = '?redirect=https://foreign.example'; h.context.returnCaseId = returnCaseId;
+  h.evaluate('state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
+  await h.evaluate('startCheckout("monthly")');
+  const post = h.calls.find(row => row.url === '/api/billing/checkout'), url = new URL(post.body.return_url);
+  assert.equal(url.origin, 'https://app.example.test'); assert.equal(url.pathname, '/');
+  assert.equal(url.searchParams.get('report'), returnCaseId); assert.equal(url.searchParams.get('plan'), 'monthly');
+  assert.ok(!url.href.includes('foreign.example'), 'an input redirect URL is never used for checkout return');
+}
+async function checkoutPaidOwnedReturn() {
+  const h = harness(request => request.url.startsWith('/api/cases/') ? { view: checkoutView(true) } : { entitlement: { entitled: true } });
+  h.account('A', 'Fictional A'); h.context.returnCaseId = returnCaseId;
+  h.context.location.search = '?checkout=return&report=' + returnCaseId + '&plan=monthly';
+  await h.evaluate('restoreCheckoutReport(checkoutReturnContext())');
+  assert.equal(h.evaluate('state.caseId'), returnCaseId); assert.equal(h.evaluate('state.step'), 3);
+  assert.equal(h.evaluate('state.view.result_id'), 'same-result', 'checkout reopens the existing result, without another upload or assessment');
+  assert.equal(h.evaluate('state.checkoutReturn'), null);
+  h.evaluate('renderResults(document.getElementById("panel"));');
+  assert.match(h.panel.innerHTML, /Create my dispute packet/);
+  assert.ok(h.calls.every(row => row.method === 'GET'), 'restoring checkout performs only protected reads');
+}
+async function checkoutPendingPaymentRefresh() {
+  let paid = false;
+  const h = harness(request => request.url.startsWith('/api/cases/') ? { view: checkoutView(paid) } : { entitlement: { entitled: paid } });
+  h.account('A', 'Fictional A'); h.context.returnCaseId = returnCaseId;
+  h.context.location.search = '?checkout=return&report=' + returnCaseId + '&plan=monthly?checkout=success&payment=paid';
+  await h.evaluate('restoreCheckoutReport(checkoutReturnContext())');
+  assert.equal(h.evaluate('state.checkoutReturn.status'), 'pending', 'even synthetic paid/success flags cannot grant access');
+  assert.equal(h.evaluate('state.entitlement.entitled'), false); assert.equal(h.evaluate('state.view.assessment_access.dispute_packet'), false);
+  h.evaluate('renderResults(document.getElementById("panel")); wireCheckoutReturn();');
+  assert.match(h.panel.innerHTML, /Check payment/); assert.ok(!/id="buy-|Create my dispute packet/.test(h.panel.innerHTML), 'pending payment offers refresh instead of a second purchase');
+  h.evaluate('renderBillingView({ plan_catalog: { plans: [{ plan_code: "monthly", amount_display: "$7.95 CAD", interval: "month" }] } });');
+  assert.ok(!/id="checkout-/.test(h.node('billingView').innerHTML), 'Billing also directs the pending consumer to Check payment rather than another checkout');
+  await h.evaluate('startCheckout("monthly")'); assert.equal(h.calls.filter(row => row.method === 'POST').length, 0);
+  paid = true; await h.node('checkout-return-retry').onclick();
+  assert.equal(h.evaluate('state.checkoutReturn'), null); assert.equal(h.evaluate('state.view.assessment_access.dispute_packet'), true);
+  assert.equal(h.calls.filter(row => row.url === '/api/cases/' + returnCaseId).length, 2, 'payment refresh re-reads the same protected report');
+}
+async function checkoutForeignCaseRefusal() {
+  const h = harness(request => request.url.startsWith('/api/cases/') ? { status: 403, body: { ok: false, error: { message: 'Foreign report denied' } } } : { entitlement: { entitled: false } });
+  h.account('B', 'Fictional B'); h.context.returnCaseId = returnCaseId;
+  h.context.location.search = '?checkout=return&report=' + returnCaseId + '&plan=monthly&payment=paid';
+  await h.evaluate('restoreCheckoutReport(checkoutReturnContext())');
+  assert.equal(h.evaluate('state.view'), null); assert.equal(h.evaluate('state.caseId'), null); assert.equal(h.evaluate('state.step'), 1);
+  assert.equal(h.evaluate('state.checkoutReturn.status'), 'failed'); assert.ok(h.evaluate('notices()').includes('could not open your saved report'));
+  h.context.location.search = '?checkout=return&report=' + encodeURIComponent(returnCaseId + '/private') + '&plan=monthly';
+  assert.equal(h.evaluate('checkoutReturnContext()'), null, 'malformed URL case paths are never restored');
+}
+async function checkoutCancellationDoesNotGrantAccess() {
+  let paid = false;
+  const h = harness(request => request.url.startsWith('/api/cases/') ? { view: checkoutView(paid) } : { entitlement: { entitled: paid } });
+  h.account('A', 'Fictional A'); h.context.location.search = '?checkout=return&report=' + returnCaseId + '&plan=monthly&checkout_cancelled=1&payment=paid';
+  await h.evaluate('restoreCheckoutReport(checkoutReturnContext())');
+  assert.equal(h.evaluate('state.view.assessment_access.dispute_packet'), false); assert.equal(h.evaluate('state.entitlement.entitled'), false);
+  assert.equal(h.evaluate('state.checkoutReturn'), null, 'a cancellation can return to choices without leaving an endless confirmation prompt');
+  h.evaluate('renderResults(document.getElementById("panel"));');
+  assert.match(h.panel.innerHTML, /Checkout cancelled/); assert.match(h.panel.innerHTML, /id="buy-monthly"/);
+  assert.ok(!/Create my dispute packet/.test(h.panel.innerHTML), 'a forged cancellation hint cannot confer paid access');
+  paid = true; await h.evaluate('restoreCheckoutReport(checkoutReturnContext())');
+  assert.equal(h.evaluate('state.view.assessment_access.dispute_packet'), true);
+  assert.ok(!h.evaluate('state.notice').includes('cancelled'), 'server-confirmed access wins over a cancellation hint');
+}
+async function checkoutReturnAccountRace() {
+  const late = deferred(), h = harness(request => request.url.startsWith('/api/cases/') ? late.promise : { entitlement: { entitled: true } });
+  h.account('A', 'Fictional A'); h.context.returnCaseId = returnCaseId;
+  const action = h.evaluate('run(() => restoreCheckoutReport({ caseId: returnCaseId, planCode: "monthly" }))');
+  await until(() => h.calls.some(row => row.url.startsWith('/api/cases/')), 'checkout report read');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  late.resolve({ view: checkoutView(true) }); await action;
+  assert.equal(h.evaluate('state.account.account_id'), 'B'); assert.equal(h.evaluate('state.view'), null); assert.equal(h.evaluate('state.caseId'), null);
+  assert.equal(h.evaluate('state.checkoutReturn'), null, 'a late checkout response cannot enter a different account');
+}
+async function packetLoadFailureRetry() {
+  let fail = true;
+  const h = harness(() => fail ? { status: 503, body: { ok: false, error: { message: 'Temporary failure' } } } : { view: packetView(true) });
+  h.account('A', 'Fictional A'); await h.openPacket('caseA');
+  const failed = h.panel.querySelector('#packet-block').innerHTML;
+  assert.match(failed, /could not load your packet/); assert.ok(!/No issue.*eligible/.test(failed), 'a load failure cannot misstate issue eligibility');
+  fail = false; await h.node('packet-retry').onclick();
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Full saved packet/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Saved wording/);
+  assert.equal(h.calls.filter(row => row.url === '/api/cases/caseA/packet').length, 2); assert.ok(h.calls.every(row => row.method === 'GET'), 'retry does not change the saved packet');
+  fail = true; await h.openPacket('caseA'); const retry = h.node('packet-retry').onclick;
+  await h.node('signout').onclick(); h.account('B', 'Fictional B'); const before = h.calls.length; await retry();
+  assert.equal(h.calls.length, before, 'a previous account retry cannot read through a new session');
+}
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
   currentPreviewApproval, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
-  savedReportErrorNavigationRace, assessmentNavigationReturn };
+  savedReportErrorNavigationRace, assessmentNavigationReturn, checkoutKeepsOwnOriginAndReport, checkoutPaidOwnedReturn,
+  checkoutPendingPaymentRefresh, checkoutForeignCaseRefusal, checkoutCancellationDoesNotGrantAccess, checkoutReturnAccountRace, packetLoadFailureRetry };
 async function run(service, check) {
   for (const [name, run] of Object.entries(tests)) {
     await run(); check.ok(true, name + ' preserves account, case and reviewed-version context');

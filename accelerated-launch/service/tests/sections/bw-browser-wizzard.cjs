@@ -338,25 +338,53 @@ async function run(service, check) {
   const checkoutRequest = freePage.waitForRequest(r => r.url().endsWith('/api/billing/checkout'));
   await freePage.locator('#buy-report_once').click();
   const submittedCheckout = (await checkoutRequest).postDataJSON();
-  check.equal(submittedCheckout.return_url, new URL(freePage.url()).origin + '/', 'checkout carries this application origin as its return URL');
+  const returningUrl = new URL(submittedCheckout.return_url);
+  check.equal(returningUrl.origin, new URL(freePage.url()).origin, 'checkout returns only to this application origin');
+  check.equal(returningUrl.pathname, '/', 'checkout returns to the existing application page');
+  check.equal(returningUrl.searchParams.get('report'), freeCase.case_id, 'checkout retains the selected report for the return');
+  check.equal(returningUrl.searchParams.get('plan'), 'report_once', 'the return records the chosen one-report context, without granting access');
   check.equal(submittedCheckout.case_id, freeCase.case_id, 'checkout retains the selected assessed report');
   await freePage.waitForTimeout(1500);
   const afterCheckout = await freePage.content();
   check.ok(/Checkout opened\./.test(afterCheckout), 'the one-time button starts a checkout for the selected assessed report (test billing)');
   check.ok(!/Check: <b>/.test(afterCheckout), 'and opening a checkout unlocks nothing on its own');
   check.ok(/Unlock this report/.test(await freePage.locator('#panel').innerText()), 'so the report stays locked until the provider verifies the payment');
+  await freePage.goto(submittedCheckout.return_url + '&payment=paid');
+  await freePage.waitForSelector('#checkout-return-retry');
+  check.ok(/not been confirmed/.test(await freePage.locator('#panel').innerText()), 'returning with a fake paid flag leaves the real report awaiting payment confirmation');
+  check.equal(await freePage.locator('#create-packet, #download-assessment, #buy-report_once').count(), 0, 'pending confirmation grants no paid result or packet and asks for a refresh rather than another purchase');
+  const pendingShot = `${process.env.TEMP || '.'}/crp-checkout-return-pending.png`;
+  await freePage.screenshot({ path: pendingShot, fullPage: true });
+  evidence.checkout_pending_screenshot = pendingShot;
   await service.pay(freeActor, 'report_once', freeCase.case_id);
-  await freePage.locator('#steps button[data-step="1"]').click();
-  await freePage.waitForSelector('#refresh');
-  await freePage.locator('#refresh').click();
-  await freePage.waitForSelector(`[data-open="${freeCase.case_id}"]`);
-  await freePage.locator(`[data-open="${freeCase.case_id}"]`).click();
+  await freePage.locator('#checkout-return-retry').click();
+  await freePage.waitForSelector('#download-assessment');
   await freePage.waitForTimeout(800);
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
   check.ok(/Reporting issues for your review/.test(unlockedText) && /Download my assessment/.test(unlockedText), 'a verified payment unlocks the issue list for the consumer in the browser');
   check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
+  const previousResult = (await service.request('GET', `/api/cases/${freeCase.case_id}`, { token: freeActor.token })).json.view.result_id;
+  await freePage.locator('#go-subscribe').click(); await freePage.waitForSelector('#checkout-monthly');
+  const subscriberRequest = freePage.waitForRequest(r => r.url().endsWith('/api/billing/checkout'));
+  await freePage.locator('#checkout-monthly').click(); const subscriberReturn = (await subscriberRequest).postDataJSON().return_url;
+  check.equal(new URL(subscriberReturn).searchParams.get('report'), freeCase.case_id, 'a subscription checkout also retains the selected report');
+  await freePage.goto(subscriberReturn); await freePage.waitForSelector('#checkout-return-retry');
+  check.equal(await freePage.locator('#create-packet').count(), 0, 'a one-report purchase cannot stand in for pending subscription access');
+  await service.pay(freeActor, 'monthly'); await freePage.locator('#checkout-return-retry').click();
+  await freePage.waitForSelector('#create-packet');
+  check.equal((await service.request('GET', `/api/cases/${freeCase.case_id}`, { token: freeActor.token })).json.view.result_id, previousResult, 'paid subscription return restores the same result without asking for another upload or assessment');
+  const restoredShot = `${process.env.TEMP || '.'}/crp-checkout-return-restored.png`;
+  await freePage.screenshot({ path: restoredShot, fullPage: true });
+  evidence.checkout_restored_screenshot = restoredShot;
+  const foreignCase = await setupPaidCase(service, 'bw-return-foreign@example.test', 'CA', 'CA-NS');
+  const foreignReply = freePage.waitForResponse(r => r.url().endsWith('/api/cases/' + foreignCase.caseId));
+  await freePage.goto(new URL(freePage.url()).origin + '/?checkout=return&report=' + foreignCase.caseId + '&plan=monthly&payment=paid');
+  check.equal((await foreignReply).status(), 403, 'a forged checkout return cannot read another account’s report');
+  await freePage.waitForSelector('#checkout-return-retry');
+  check.ok(/could not open your saved report/.test(await freePage.locator('#panel').innerText()), 'a denied return gives a plain retry message');
+  check.equal(await freePage.locator('#create-packet, #packet-block').count(), 0, 'a denied return exposes no other account’s packet');
   await freePage.close();
 
   /* ---- 6. BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation concern in the REAL browser, read by
@@ -499,6 +527,11 @@ async function run(service, check) {
   evidence.browser = 'real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service';
   evidence.fixtures = 'all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report';
   return evidence;
+  } catch (error) {
+    const pages = browser.contexts().flatMap(context => context.pages());
+    const last = pages[pages.length - 1];
+    const context = last ? await last.locator('#panel').innerText().catch(() => '') : '';
+    throw new Error(String(error.message).replace(/\n/g, ' | ') + ' | page: ' + (last?.url() || '') + ' | panel: ' + context.slice(0, 1000).replace(/\n/g, ' | '));
   } finally {
     await browser.close();
   }

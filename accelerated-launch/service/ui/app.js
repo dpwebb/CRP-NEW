@@ -34,6 +34,7 @@ const state = {
   recoveryKey: null,
   recoveryMode: false,
   packetReturn: null,
+  checkoutReturn: null,
   /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
      missing purchase (which is a plan decision, not a failure). */
   assessing: false,
@@ -49,6 +50,7 @@ let accountOperationSequence = 0;
 let assessmentOperationSequence = 0;
 let assessmentCaseId = null;
 let packetLeave = null;
+let checkoutReturnSequence = 0;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
 function accountContext() {
   const id = state.account?.account_id, epoch = accountEpoch;
@@ -204,6 +206,10 @@ function notices() {
   const parts = [];
   if (state.error) parts.push(`<div class="note stop"><span class="err">Refused:</span> ${esc(state.error)}</div>`);
   if (state.notice) parts.push(`<div class="note">${esc(state.notice)}</div>`);
+  if (state.checkoutReturn && state.account && (!state.caseId || state.checkoutReturn.caseId === state.caseId)) {
+    const pending = state.checkoutReturn.status === 'pending';
+    parts.push(`<div class="note${pending ? '' : ' stop'}">${pending ? 'Your payment has not been confirmed yet. Check again before starting another checkout.' : 'We could not open your saved report. Try again, or select a saved report below.'}<br><button class="secondary" id="checkout-return-retry">${pending ? 'Check payment' : 'Try again'}</button></div>`);
+  }
   return parts.join('');
 }
 
@@ -216,6 +222,7 @@ function render() {
   footerDisclaimer();
   const panel = el('panel');
   STEP_VIEWS[STEP_KEYS[state.step]].render(panel);
+  wireCheckoutReturn();
 }
 
 /* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the legal-advice disclaimer is shown ONLY on the main page
@@ -257,6 +264,7 @@ function renderAccount(panel) {
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
     state.accountSecurity = null; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
+    state.checkoutReturn = null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
@@ -267,9 +275,12 @@ function renderAccount(panel) {
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
     state.accountSecurity = null; state.recoveryKey = null; state.packetReturn = null;
+    state.checkoutReturn = null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Signed in.';
+    const returning = checkoutReturnContext();
+    if (returning) await restoreCheckoutReport(returning);
   });
   el('forgot-password').onclick = () => { state.recoveryMode = true; state.error = null; render(); };
 }
@@ -371,7 +382,7 @@ function renderAccountDetails(panel) {
     ${state.packetReturn ? '<p class="note">Your packet draft is saved. Add or update your details, then return to your packet.</p>' : ''}
     ${recoveryKeyBlock()}
     <p><strong>Sign-in email:</strong> ${esc(state.account.email)}</p>
-    <h2>Contact details</h2><p class="evidence">Add the details you want to use in your correspondence. You can review them before sending.</p>
+    <h2>Contact details</h2><p class="evidence">Add the details you want to use in your letter. You can review them before sending.</p>
     <div class="row">${ACCOUNT_CONTACT_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
     <button class="primary" id="account-save">Save contact details</button>
     <h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
@@ -445,7 +456,7 @@ function renderAccountDetails(panel) {
     state.payment = null;
     state.support = null;
     state.billing = null;
-    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null;
+    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null; state.checkoutReturn = null;
     state.step = 0;
     state.notice = 'Signed out.';
   });
@@ -560,7 +571,7 @@ function renderJurisdiction(panel) {
       uploadBatches.set(caseId, items);
       const uploaded = await uploadReportBatch(items, caseId, ensureSelection); ensureSelection();
       const cases = await api('GET', '/api/cases'); ensureSelection();
-      state.caseId = caseId; state.cases = cases.cases; state.view = uploaded.view;
+      state.caseId = caseId; state.cases = cases.cases; state.view = uploaded.view; state.checkoutReturn = null;
       state.step = STEP.REPORT; state.notice = uploaded.notice;
       state.assessment_error = null; state.purchase_needed = null;
       if (items.every(item => item.status === 'saved')) await checkReport();
@@ -583,6 +594,7 @@ function renderJurisdiction(panel) {
       try { data = await api('GET', `/api/cases/${caseId}`); ensureSelection(); }
       catch (err) { ensureSelection(); throw err; }
       state.caseId = caseId;
+      if (state.checkoutReturn?.caseId !== caseId) state.checkoutReturn = null;
       state.view = data.view;
       state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
     });
@@ -854,10 +866,56 @@ function planPrice(code) {
   return `${plan.amount_display}${suffix}`;
 }
 
+/** The return URL remembers a report, never payment or access. The protected view supplies both. */
+function checkoutReturnContext() {
+  if (typeof location === 'undefined' || !location.search) return null;
+  const params = new URLSearchParams(location.search.replace(/^\?/, '').split('?')[0]);
+  const caseId = params.get('report'), planCode = params.get('plan');
+  return params.get('checkout') === 'return' && /^case_[a-f0-9]{24}$/.test(caseId || '') && ['report_once', 'monthly', 'annual'].includes(planCode)
+    ? { caseId, planCode, cancelled: params.get('checkout_cancelled') === '1' } : null;
+}
+async function restoreCheckoutReport(context) {
+  const ensureAccount = accountContext(), sequence = ++checkoutReturnSequence, rendered = renderSequence, step = state.step;
+  const returning = { ...context, status: 'loading' };
+  state.checkoutReturn = returning;
+  const ensureCurrent = () => { ensureAccount(); if (sequence !== checkoutReturnSequence || rendered !== renderSequence || step !== state.step || state.checkoutReturn !== returning) throw cancelledAction(); };
+  try {
+    const [data, access] = await Promise.all([api('GET', '/api/cases/' + encodeURIComponent(context.caseId)), api('GET', '/api/entitlement')]);
+    ensureCurrent();
+    if (!data.view || data.view.case?.case_id !== context.caseId) throw new Error('Report unavailable');
+    state.caseId = context.caseId; state.view = data.view;
+    state.entitlement = access.entitlement || null; state.payment = access.payment || null; state.upgrade_credit = access.upgrade_credit || null;
+    state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
+    const confirmed = context.planCode === 'report_once' ? data.view.assessment_access?.complete_assessment : data.view.assessment_access?.dispute_packet;
+    state.checkoutReturn = confirmed || context.cancelled ? null : { ...context, status: 'pending' };
+    state.notice = confirmed ? (context.planCode === 'report_once' ? 'Your full assessment is ready.' : 'Your report is ready. Choose what you want to dispute.')
+      : context.cancelled ? 'Checkout cancelled. You can choose a plan when you are ready.' : null;
+    state.error = null;
+  } catch (error) {
+    ensureCurrent();
+    state.checkoutReturn = { ...context, status: 'failed' };
+    state.caseId = null; state.view = null; state.step = STEP.JURISDICTION;
+    state.notice = null;
+  }
+}
+function wireCheckoutReturn() {
+  const retry = el('checkout-return-retry'), context = state.checkoutReturn;
+  if (!retry || !context || !state.account) return;
+  const ensureAccount = accountContext(), rendered = renderSequence;
+  retry.onclick = () => run(async () => {
+    ensureAccount(); if (rendered !== renderSequence || context !== state.checkoutReturn) throw cancelledAction();
+    await restoreCheckoutReport(context);
+  });
+}
+
 /** Start a purchase for one plan. The one-time unlock is bound to this case on the server, which validates it. */
 function startCheckout(planCode) {
   return run(async () => {
-    const body = { plan_code: planCode, return_url: typeof location !== 'undefined' ? location.origin + '/' : 'http://127.0.0.1/' };
+    if (state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId) throw new Error('Select Check payment before starting another checkout.');
+    const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
+    const context = state.caseId && state.view?.case?.case_id === state.caseId
+      ? `?checkout=return&report=${encodeURIComponent(state.caseId)}&plan=${encodeURIComponent(planCode)}` : '';
+    const body = { plan_code: planCode, return_url: base + context };
     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
     let opened;
     try {
@@ -871,9 +929,7 @@ function startCheckout(planCode) {
       }
       throw err;
     }
-    state.notice = (opened.checkout && opened.checkout.redirect_grants_nothing)
-      ? 'Checkout opened. Access activates only after the payment provider verifies the payment; returning from the payment page by itself unlocks nothing.'
-      : 'Checkout opened.';
+    state.notice = 'Checkout opened. We will check your payment when you return.';
     if (opened.checkout && /^https:\/\/checkout\.stripe\.com\//.test(opened.checkout.redirect_url || '')) location.assign(opened.checkout.redirect_url);
   });
 }
@@ -904,7 +960,7 @@ function freeSummaryBlock(view) {
     ${counts}
     ${preview}
   </div>
-  <div class="obs">
+  ${state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId ? '' : `<div class="obs">
     <span class="pill">UNLOCK THE REST</span>
     <h3>Choose what you want next</h3>
     <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
@@ -912,7 +968,7 @@ function freeSummaryBlock(view) {
     <button class="secondary" id="buy-monthly">Monthly — ${esc(planPrice('monthly'))}</button>
     <button class="secondary" id="buy-annual">Annual — ${esc(planPrice('annual'))}</button>
     <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and the assessment download for that report. Dispute packets, report history and comparison are part of a subscription.</p>
-  </div>`;
+  </div>`}`;
 }
 
 /** A one-time unlocked report: the complete findings, the download, and the subscriber note. */
@@ -1334,7 +1390,11 @@ async function wirePacket(panel) {
   try {
     pv = (await api('GET', `/api/cases/${caseId}/packet`)).view;
   } catch {
-    pv = { eligible_issues: [], packet: {} };
+    try { ensureOrigin(); } catch { return; }
+    block.innerHTML = '<p class="note stop">We could not load your packet. Try again.</p><button class="secondary" id="packet-retry">Try again</button>';
+    const retry = el('packet-retry');
+    if (retry) retry.onclick = () => { try { ensureOrigin(); } catch { return; } retry.disabled = true; return wirePacket(panel); };
+    return;
   }
   try { ensureOrigin(); } catch { return; }
   block.innerHTML = renderPacketBlock(pv);
@@ -1748,7 +1808,7 @@ function renderBilling(panel) {
   }
   panel.innerHTML = `
     <h1>Billing</h1>
-    <p class="lede">Prices, what each purchase grants, your recorded access, renewal, cancellation and your upgrade credit — all from the service's own configuration.</p>
+    <p class="lede">See your plan and prices. You can cancel your subscription renewal here.</p>
     ${notices()}
     <div class="obs" id="billingView">Loading your billing information…</div>`;
 
@@ -1785,7 +1845,7 @@ function renderBillingView(data) {
     : ent.access_via === 'SUBSCRIPTION'
       ? (ent.cancel_at_period_end
         ? 'Renewal is cancelled. Access continues until your recorded expiry.'
-        : `This purchase renews automatically (${esc(ent.plan_code || 'subscription')}) while active.`)
+        : `Your subscription renews automatically ${ent.plan_code === 'annual' ? 'each year' : 'each month'} until you cancel.`)
       : 'You have no renewing subscription.';
 
   const cancelBlock = ent.entitled && ent.access_via === 'SUBSCRIPTION'
@@ -1798,11 +1858,12 @@ function renderBillingView(data) {
     ? `You can save <b>CAD ${(credit.credit_cents / 100).toFixed(2)}</b> on your first subscription bill${credit.expires_at ? `, until ${esc(readableDate(credit.expires_at))}` : ''}.`
     : 'No upgrade credit is currently available.';
 
-  const planCards = plansList.map((p) => `
+  const checkingPayment = state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId;
+  const planCards = checkingPayment ? '' : plansList.map((p) => `
     <div class="obs">
       <span class="pill">${esc(p.label)}</span>
       <h3>${esc(p.amount_display)} — ${esc(intervalLabel(p.interval))}</h3>
-      <p class="evidence">Grants: ${(p.grants || []).map((g) => esc(g)).join('; ')}.</p>
+      <p class="evidence">${p.plan_code === 'report_once' ? 'Full assessment and download for one report. No dispute packet.' : 'Full assessments, dispute packets and report comparisons.'}</p>
       <button class="secondary" id="checkout-${esc(p.plan_code)}">Start checkout</button>
     </div>`).join('');
 
@@ -1811,9 +1872,9 @@ function renderBillingView(data) {
     <p class="evidence">${accessLine}</p>
     <p class="evidence">${renewalLine}</p>
     ${cancelBlock}
-    <h3>Plans and prices</h3>
-    <p class="evidence">Prices are in CAD and shown before you buy. A one-time purchase does not renew. A subscription renews automatically until you cancel it, and cancelling stops the next charge while your recorded access continues to its expiry.</p>
-    ${planCards}
+    ${checkingPayment ? '' : `<h3>Plans and prices</h3>
+    <p class="evidence">Prices are in CAD. A one-time purchase does not renew. A subscription renews until you cancel it. Cancelling stops the next charge. Your access lasts until the date shown above.</p>
+    ${planCards}`}
     <p class="evidence">${esc(paymentSentence(pay))}</p>
     <h3>Upgrade credit</h3>
     <p class="evidence">${creditLine}</p>`;
@@ -1847,6 +1908,8 @@ function renderBillingView(data) {
     state.cases = (await api('GET', '/api/cases')).cases;
     await refreshAccess();
     state.step = 1;
+    const returning = checkoutReturnContext();
+    if (returning) await restoreCheckoutReport(returning);
   } catch {
     state.account = null;
   }
