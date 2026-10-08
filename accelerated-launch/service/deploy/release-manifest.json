@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T14:43:54.524Z",
+  "generated_at": "2026-10-08T15:17:42.081Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -46,7 +46,7 @@
     {
       "id": "RUNTIME",
       "file_count": 70,
-      "digest": "8EB426292819BEF8417E56DE37749D73F137CE2009A2E277BB6BA8C9898D0383",
+      "digest": "086AF95AC61E1EE2CDE957E3DB24062C4FDEE4180635C00AE223B8CD427CA6A2",
       "files": [
         {
           "file": "accelerated-launch/service/account-documents.cjs",
@@ -110,7 +110,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "D004DC40F5DD87F126CAF0E7825F708152DEDB5DB976246FF3B40ACF644F1E41"
+          "sha256": "FE50D6E1FAFB4050BEDF192AEFB3BD48CE92B6A0F6DB206B3BBBFDB252044ED7"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -262,7 +262,7 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "C77DCA6BF0AE3CE0902D6723D97A040FEB0D1DADF4EB9B771E06C47CD35D0D0E"
+          "sha256": "BE7CFA30AFDA34608515E027B222FDDB0A7CFE38DCB78213B93187C8E07532A7"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
@@ -458,11 +458,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "7F2E3DAF67EDA2036856299C5DA7B1FD549C2BD28E8CDE99CD7D092108FC297A",
+      "digest": "0295E2DDACD00FF4A1E70A4EFAA99392AB6042E143B9F139F58956A7E5215EB2",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "B80B01B7795A9EE5C7D5A8497365932EDB5F507077FE5D964579B5057EEEE5DE"
+          "sha256": "9DB53BDC68F777654D1643C9EFC3AADFFE58CD1C1EFE7B6656DB670B92CE9DED"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -479,6 +479,6 @@
       ]
     }
   ],
-  "manifest_digest": "4B5382D00D399C64BE4A858B852B0A612108DA9656E47EE4EF45C85CAA437BEB",
+  "manifest_digest": "18B70A0B9903053A5CDB1CAA25C530A147444BD5BA978EB44C375CF63AC48300",
   "total_file_count": 108
 }
