@@ -27,6 +27,7 @@ function harness(responder, { autoRead = true } = {}) {
   const panel = node('panel'); let block = element('packet-block');
   const issues = [{ checked: true, getAttribute: key => key === 'data-check-issue' ? 'issue-A' : null }];
   const documentChecks = [];
+  const reportChecks = [];
   const caseButtons = [{ dataset: { open: 'existingA' }, onclick: null }, { dataset: { open: 'existingB' }, onclick: null }];
   panel.querySelector = selector => selector === '#packet-block' ? block : null;
   panel.querySelectorAll = selector => {
@@ -34,6 +35,8 @@ function harness(responder, { autoRead = true } = {}) {
     if (selector === '[data-check-issue]') return issues;
     if (selector === '[data-packet-document]:checked') return documentChecks.filter(row => row.checked);
     if (selector === '[data-packet-document], [id^="packet-document-date-"]') return documentChecks;
+    if (selector === '[data-packet-report]:checked') return reportChecks.filter(row => row.checked);
+    if (selector === '[data-packet-report]') return reportChecks;
     if (selector === '[data-open]') return caseButtons;
     return [];
   };
@@ -77,7 +80,7 @@ function harness(responder, { autoRead = true } = {}) {
     evaluate(`surface = { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }], bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] } }; state.step = 1; renderJurisdiction(document.getElementById('panel'));`);
     node('file').files = [{ name: 'fictional-report.pdf', size: 48, type: 'application/pdf' }];
   };
-  return { context, node, calls, navigations, readers, panel, issues, caseButtons, evaluate, account, openPacket, jurisdiction };
+  return { context, node, calls, navigations, readers, panel, issues, reportChecks, caseButtons, evaluate, account, openPacket, jurisdiction };
 }
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
@@ -505,13 +508,111 @@ async function packetLoadFailureRetry() {
   await h.node('signout').onclick(); h.account('B', 'Fictional B'); const before = h.calls.length; await retry();
   assert.equal(h.calls.length, before, 'a previous account retry cannot read through a new session');
 }
+function originalReports() {
+  return [
+    { file_id: 'earlier-copy', roles: ['EARLIER'], label: 'Earlier report — 2025-06-12', original_filename: 'earlier-report.pdf', content_type: 'application/pdf', page_count: 12, relevant_pages: [4], scope: 'ENTIRE_REPORT', selected: false, review_url: '/api/cases/caseA/packet/reports/earlier-copy' },
+    { file_id: 'current-copy', roles: ['CURRENT'], label: 'Current report — 2026-06-12', original_filename: 'current-report.pdf', content_type: 'application/pdf', page_count: 8, relevant_pages: [2, 3], scope: 'ENTIRE_REPORT', selected: false, review_url: '/api/cases/caseA/packet/reports/current-copy' }
+  ];
+}
+function reportCheckbox(fileId, checked) { return { checked, onchange: null, getAttribute: key => key === 'data-packet-report' ? fileId : null }; }
+async function reportCopyLabelsAndDefaults() {
+  const h = harness(() => ({ ok: true }));
+  h.account('A', 'Fictional Consumer'); h.evaluate('state.caseId = "caseA";');
+  h.context.reports = { ...packetView(), packet: { ...packetView().packet, report_exhibits: originalReports(), report_attachment_manifest: [] } };
+  const text = h.evaluate('renderPacketBlock(reports)');
+  assert.match(text, /Earlier report — June 12, 2025/); assert.match(text, /Current report — June 12, 2026/);
+  assert.match(text, /earlier-report\.pdf/); assert.match(text, /current-report\.pdf/);
+  assert.match(text, /Whole report copy.*This copy has 12 pages.*dispute refers to page 4/s);
+  assert.match(text, /This copy has 8 pages.*dispute refers to pages 2, 3/s);
+  assert.match(text, /download includes the whole report.*Print the pages listed here/s);
+  assert.match(text, /href="\/api\/cases\/caseA\/packet\/reports\/earlier-copy"/);
+  assert.equal((text.match(/Open report copy/g) || []).length, 2);
+  assert.ok(!/data-packet-report="[^"]+" checked/.test(text), 'available original files are never automatically checked');
+  assert.ok(!/ENTIRE_REPORT|stored_sha256|source_result_id/.test(text), 'consumer labels hide internal scope tokens and source identifiers');
+  h.context.reports.packet.report_exhibits = [];
+  const empty = h.evaluate('renderPacketBlock(reports)');
+  assert.match(empty, /No report copies are available for these issues/); assert.ok(!/data-packet-report=/.test(empty), 'empty exhibit lists add no broken report controls');
+  h.context.reports.packet.selected_count = 0;
+  assert.match(h.evaluate('renderPacketBlock(reports)'), /Choose your issues, then save to see the report copies/, 'first-time users see how to reach the copy choices before approval');
+}
+async function explicitReportSelectionAndReview() {
+  const view = packetView(true); view.packet.report_exhibits = originalReports(); view.packet.report_attachment_manifest = [];
+  const h = harness(request => {
+    if (request.url.endsWith('/packet/select')) return { view };
+    if (request.url.endsWith('/packet/reports')) {
+      for (const report of view.packet.report_exhibits) report.selected = request.body.file_ids.includes(report.file_id);
+      view.packet.report_attachment_manifest = view.packet.report_exhibits.filter(report => report.selected);
+      view.packet.approved = false; view.packet.download_available = false; view.packet.preview_version = 'with-current-copy';
+      view.packet.correspondence_preview = 'Full saved packet\nCurrent report — 2026-06-12\ncurrent-report.pdf — whole report, pages 2, 3';
+    }
+    return request.url.endsWith('/packet') ? { view } : { view: { case: { case_id: 'caseA' }, result_id: 'result-A' }, requirements, missing: [] };
+  });
+  h.reportChecks.push(reportCheckbox('earlier-copy', false), reportCheckbox('current-copy', false));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  h.reportChecks[1].checked = true; h.reportChecks[1].onchange();
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'checking a report copy does not silently attach it');
+  assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
+  assert.equal(h.node('packet-approved-status').hidden, true); assert.equal(h.node('packet-ready-status').hidden, true);
+  await h.node('packet-save').onclick();
+  const reportWrite = h.calls.find(row => row.url.endsWith('/packet/reports'));
+  assert.deepEqual(reportWrite.body, { file_ids: ['current-copy'] }, 'Save sends only the explicit visible report choice');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 1);
+  await h.openPacket('caseA');
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /current-report\.pdf — whole report, pages 2, 3/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /data-packet-report="current-copy" checked/);
+  assert.ok(!/data-packet-report="earlier-copy" checked/.test(h.panel.querySelector('#packet-block').innerHTML));
+  h.node('packet-preview-reviewed').checked = true; h.node('packet-preview-reviewed').onchange(); await h.node('packet-approve').onclick();
+  assert.equal(h.calls.find(row => row.url.endsWith('/approve')).body.reviewed_version, 'with-current-copy', 'approval binds the saved preview containing the selected report copy');
+}
+async function removedIssueDropsExclusiveReport() {
+  const view = packetView(true); view.packet.report_exhibits = originalReports().map(report => ({ ...report, selected: true }));
+  view.eligible_issues.push({ eligible: true, issue_id: 'issue-B', consumer_label: 'VIOLATION' });
+  const allowed = { ...view, packet: { ...view.packet, report_exhibits: [view.packet.report_exhibits[1]] } };
+  const h = harness(request => request.url.endsWith('/packet/select') ? { view: allowed } : request.url.endsWith('/packet') ? { view } : { requirements, missing: [], view: { case: { case_id: 'caseA' } } });
+  h.reportChecks.push(reportCheckbox('earlier-copy', true), reportCheckbox('current-copy', true));
+  h.issues.push({ checked: true, getAttribute: key => key === 'data-check-issue' ? 'issue-B' : null });
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  h.issues[0].checked = false; await h.issues[0].onchange(); await h.node('packet-save').onclick();
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/select')).body.issue_ids, ['issue-B']);
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/reports')).body.file_ids, ['current-copy'], 'removing an issue drops its exclusive earlier copy and preserves the still-allowed current copy');
+}
+async function changedReportChoiceStopsPendingSave() {
+  const selected = deferred(), view = packetView(true); view.packet.report_exhibits = originalReports();
+  const h = harness(request => request.url.endsWith('/packet/select') ? selected.promise : request.url.endsWith('/packet') ? { view } : { ok: true });
+  h.reportChecks.push(reportCheckbox('current-copy', true)); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  const save = h.node('packet-save').onclick(); await until(() => h.calls.some(row => row.url.endsWith('/select')), 'report choice save');
+  h.reportChecks[0].checked = false; h.reportChecks[0].onchange(); selected.resolve({ view }); await save;
+  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'a changed visible report choice stops the old pending attachment save');
+  assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
+}
+async function changedStoredReportRecovery() {
+  let stale = true;
+  const view = packetView(); view.packet.report_exhibits = originalReports(); view.packet.report_attachment_manifest = [];
+  const h = harness(request => {
+    if (request.url.endsWith('/packet/reports')) { stale = false; return { view }; }
+    return stale ? { status: 409, body: { ok: false, error: { code: 'PACKET_APPROVAL_STALE', message: 'Changed source copy' } } } : { view };
+  });
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your report copies have changed.*Review report copies again/s);
+  assert.ok(!/id="packet-retry"|id="packet-download"|id="packet-print"/.test(h.panel.querySelector('#packet-block').innerHTML), 'changed stored copies offer explicit recovery instead of stale download or a repeated generic retry');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'a refused load never silently clears saved report choices');
+  await h.node('packet-reports-review').onclick();
+  assert.deepEqual(h.calls.find(row => row.method === 'POST').body, { file_ids: [] }, 'the explicit recovery action clears only saved report-copy choices');
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Include this report copy/);
+  assert.ok(!/data-packet-report="[^"]+" checked/.test(h.panel.querySelector('#packet-block').innerHTML), 'recovered copies are offered without automatic reattachment');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 1);
+  const clear = h.node('packet-reports-review').onclick;
+  await h.node('signout').onclick(); h.account('B', 'Fictional B'); const before = h.calls.length; await clear();
+  assert.equal(h.calls.length, before, 'a previous account recovery action cannot clear another account’s packet');
+}
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
   currentPreviewApproval, dirtyPreviewStatus, printedMaskedReference, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
   savedReportErrorNavigationRace, assessmentNavigationReturn, checkoutKeepsOwnOriginAndReport, checkoutPaidOwnedReturn,
-  checkoutPendingPaymentRefresh, checkoutForeignCaseRefusal, checkoutCancellationDoesNotGrantAccess, checkoutReturnAccountRace, packetLoadFailureRetry };
+  checkoutPendingPaymentRefresh, checkoutForeignCaseRefusal, checkoutCancellationDoesNotGrantAccess, checkoutReturnAccountRace, packetLoadFailureRetry,
+  reportCopyLabelsAndDefaults, explicitReportSelectionAndReview, removedIssueDropsExclusiveReport, changedReportChoiceStopsPendingSave, changedStoredReportRecovery };
 async function run(service, check) {
   for (const [name, run] of Object.entries(tests)) {
     await run(); check.ok(true, name + ' preserves account, case and reviewed-version context');
