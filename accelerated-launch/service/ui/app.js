@@ -1650,7 +1650,9 @@ function renderBillingView(data) {
   const renewalLine = ent.access_via === 'ONE_TIME_CREDIT'
     ? 'This purchase is one-time. It does not renew, and no recurring payment will be taken.'
     : ent.access_via === 'SUBSCRIPTION'
-      ? `This purchase renews automatically (${esc(ent.plan_code || 'subscription')}) while active.`
+      ? (ent.cancel_at_period_end
+        ? 'Renewal is cancelled. Access continues until your recorded expiry.'
+        : `This purchase renews automatically (${esc(ent.plan_code || 'subscription')}) while active.`)
       : 'No recurring purchase is recorded.';
 
   const cancelBlock = ent.entitled && ent.access_via === 'SUBSCRIPTION'

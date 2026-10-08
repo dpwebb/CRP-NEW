@@ -112,13 +112,13 @@ async function run(t, check) {
 
   /* ------------------------------------------------------------------ consumer interface */
   const source = fs.readFileSync(UI_JS, 'utf8');
-  const responderState = { entitled: false, access_via: 'NONE', plan_code: null, credit: false, checkoutFails: false, cancelFails: false, billingDeferred: null };
+  const responderState = { entitled: false, access_via: 'NONE', plan_code: null, credit: false, checkoutFails: false, cancelFails: false, billingDeferred: null, cancelAtPeriodEnd: false };
   const dom = makeContext((method, url) => {
     if (url === '/api/jurisdictions') return { status: 200, body: { ok: true, surface: { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia', launch_ready: false }] } } };
     if (url === '/api/session') return { status: 401, body: { ok: false, error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } } };
     if (url === '/api/billing/plans') {
       if (responderState.billingDeferred) return { deferred: responderState.billingDeferred, status: 200 };
-      return { status: 200, body: { ok: true, ...PLANS_BODY, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: false }, upgrade_credit: { eligible: responderState.credit, credit_cents: 595, currency: 'cad', expires_at: null, remaining_ms: 0, reserved_now: false } } };
+      return { status: 200, body: { ok: true, ...PLANS_BODY, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: responderState.cancelAtPeriodEnd }, upgrade_credit: { eligible: responderState.credit, credit_cents: 595, currency: 'cad', expires_at: null, remaining_ms: 0, reserved_now: false } } };
     }
     if (method === 'POST' && url === '/api/billing/checkout') return responderState.checkoutFails ? { status: 503, body: { ok: false, error: { code: 'PAYMENT_PROVIDER_NOT_CONFIGURED', message: 'No payment provider is connected.' } } } : { status: 201, body: { ok: true, checkout: { redirect_grants_nothing: true, redirect_url: 'https://example.test/checkout' } } };
     if (method === 'POST' && url === '/api/entitlement/cancel') return responderState.cancelFails ? { status: 409, body: { ok: false, error: { code: 'NO_ACTIVE_PURCHASE_TO_CANCEL', message: 'There is no purchase recorded for this account to cancel.' } } } : { status: 200, body: { ok: true, cancellation: { at_period_end: true, plain: 'Your purchase will not renew.' } } };
@@ -160,6 +160,15 @@ async function run(t, check) {
   check.ok(/renews automatically/.test(dom.elementById('billingView').innerHTML), 'a subscription shows its renewal behavior');
   check.ok(/Cancel renewal/.test(dom.elementById('billingView').innerHTML), 'a subscription shows a cancellation control');
   check.ok(/CAD 5\.95/.test(dom.elementById('billingView').innerHTML), 'an eligible upgrade credit is shown');
+
+  responderState.cancelAtPeriodEnd = true;
+  vm.runInContext('state.step = 8; render();', ctx);
+  await tick(); await tick();
+  check.ok(/Renewal is cancelled/.test(dom.elementById('billingView').innerHTML) && !/This purchase renews automatically/.test(dom.elementById('billingView').innerHTML), 'cancelled subscription has one truthful renewal explanation while paid access remains');
+  check.ok(!/id="cancelEntitlement"/.test(dom.elementById('billingView').innerHTML), 'cancelled renewal does not offer another cancellation button');
+  responderState.cancelAtPeriodEnd = false;
+  vm.runInContext('state.step = 8; render();', ctx);
+  await tick(); await tick();
 
   /* Checkout failure never displays success or changes access locally. */
   responderState.checkoutFails = true;
