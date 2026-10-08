@@ -151,6 +151,30 @@ async function run(t, check) {
     'immediate non-colon alternate agency names remain ambiguous');
   check.equal(compactAlias.records[0].facts['account.balance'], 606,
     'the ambiguous non-colon alias retains its own subsequent balance');
+  const numberedHeader = ['Experian  Consumer Credit Report', 'Report Date: 12 June 2026'];
+  const numbered = read(t, [numberedHeader.concat([
+    'Account 1  Collection  Date of First Delinquency: 01/01/2018',
+    'Account 2  Collection  Date of First Delinquency: 01/01/2023  Transferred 01/01/2025'
+  ])]);
+  check.equal(numbered.records.length, 2, 'explicit numbered collection headings remain separate entries');
+  check.deepEqual(numbered.records.map((record) => record.facts['collection.delinquencyDate']),
+    ['2018-01-01', '2023-01-01'], 'each numbered entry keeps its own original delinquency despite a later transfer');
+  check.deepEqual(numbered.records.map((record) => formats.factsForRecord(record)['collection.delinquencyDate']),
+    ['2018-01-01', '2023-01-01'], 'the historical reporting-period interface also retains both own anchors');
+  check.deepEqual(numbered.records.map((record) => sourceForField(record, 'tradeline.firstDelinquencyDate')?.location.line),
+    [3, 4], 'numbered entry fixed dates retain their own source lines');
+  check.ok(numbered.records.every((record) => sourceForField(record, 'tradeline.firstDelinquencyDate')?.location.bbox
+    && sourceForField(record, 'tradeline.firstDelinquencyDate')?.location.trusted),
+  'numbered entry anchors retain trusted own native geometry');
+  const transferContinuation = read(t, [numberedHeader.concat([
+    'Account 1  Collection  Date of First Delinquency: 01/01/2018',
+    'Collection Date Placed 01/01/2025', 'Transferred 01/01/2025'
+  ])]);
+  check.equal(transferContinuation.records.length, 1, 'same-entry collection placement and transfer dates remain continuations');
+  check.equal(transferContinuation.records[0].facts['collection.delinquencyDate'], '2018-01-01',
+    'same-entry later placement and transfer do not reset original delinquency');
+  check.equal(sourceForField(transferContinuation.records[0], 'tradeline.firstDelinquencyDate')?.location.line, 3,
+    'a transfer continuation does not replace the original anchor source');
 
   const section = read(t, [header.concat(['Collections', 'Collector: Fictional Collection A', 'Account Number: ****1234',
     'First Delinquency Date: February 1, 2021', 'Last Payment Date: February 1, 2021', 'Balance: $606',

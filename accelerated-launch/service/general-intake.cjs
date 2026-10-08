@@ -1273,6 +1273,7 @@ function explicitAccountIdentity(text) {
    explicit collector caption opens this block. Original-creditor captions are not collector identity. */
 const COLLECTION_SECTION_RE = /^\s*(?:COLLECTIONS|COLLECTION ACCOUNTS|ACCOUNTS IN COLLECTION|COLLECTION ENTRIES|COLLECTION INFORMATION)\s*:?\s*$/i;
 const COLLECTION_ENTRY_RE = /^\s*COLLECTION(?:\s+(?:ACCOUNT|ENTRY))?(?:\s+\d+)?\s*:\s*(.*?)\s*$/i;
+const NUMBERED_COLLECTION_ENTRY_RE = /^\s*ACCOUNT\s+\d+\s+COLLECTION\b/i;
 const COLLECTION_NAME_RE = /^\s*(COLLECTOR|COLLECTION AGENCY|COLLECTION CREDITOR|MEMBER NAME)(?:\s*:\s*|\s+)(.*?)\s*$/i;
 const COLLECTION_CONTINUED_RE = /^\s*COLLECTION(?:S|\s+ACCOUNTS?|\s+ENTRIES|\s+ENTRY)?\s*(?:\(\s*)?CONTINUED(?:\s*\))?\s*:?\s*$/i;
 
@@ -1803,7 +1804,7 @@ function buildRecords(pages, convention) {
          line carries no date or dollar amount, so it reaches its owning record. */
       const hasStatus = statusReadingOf(line.text, facts.dates) !== null;
       const hasIdentifier = maskedIdentifierToken(line.text) !== null;
-      const collectionEntry = COLLECTION_ENTRY_RE.test(text);
+      const collectionEntry = COLLECTION_ENTRY_RE.test(text) || NUMBERED_COLLECTION_ENTRY_RE.test(text);
       const collectionIdentity = explicitCollectionIdentity(text);
       const collectionCaption = COLLECTION_NAME_RE.exec(text);
       const collectionHasValues = current?.kind === 'GENERAL_COLLECTION'
