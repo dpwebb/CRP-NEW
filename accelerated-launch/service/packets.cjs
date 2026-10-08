@@ -21,6 +21,7 @@ const { renderPacketPdf } = require('./packet-pdf.cjs');
 const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const issues = require('./issues.cjs');
+const CHECKLIST_LABELS = new Map(require('./common-error-checklist.cjs').CHECKS.map(check => [check.check_id, check.label]));
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 const bureauRules = require('./bureau-dispute-requirements.cjs');
 
@@ -166,7 +167,7 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
   const identity = reportIdentity(resultRow) || {};
   const ordered = [...selectedIssues].sort((a, b) => (a.issue_id < b.issue_id ? -1 : 1));
   const parts = [
-    'packet-format:print-2',
+    'packet-format:print-3',
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
     `issues:${ordered.map(issueContent).join(';')}`,
@@ -516,13 +517,13 @@ function correspondenceLines(packet, row, selected) {
 function evidenceFacts(issue) {
   const out = [];
   const seen = new Set();
-  const push = (field, raw, normalized, location, provenance, definition, periodDefinition, privacyRedacted, omitted) => {
+  const push = (field, raw, normalized, location, provenance, definition, periodDefinition, privacyRedacted, omitted, factField) => {
     if (raw == null && normalized == null && !omitted) return;
     const loc = location || {};
     const key = `${field}|${raw}|${normalized}|${loc.page}|${loc.line}|${JSON.stringify(provenance || null)}`;
     if (seen.has(key)) return;
     seen.add(key);
-    out.push({ field: field || null, raw, normalized, location: location || null,
+    out.push({ field: field || null, fact_field: factField || field || null, raw, normalized, location: location || null,
       code_definition: definition || null, period_definition: periodDefinition || null,
       ...(omitted ? { omitted_value: true } : {}),
       ...(privacyRedacted ? { privacy_redacted: true } : {}) });
@@ -532,14 +533,14 @@ function evidenceFacts(issue) {
       f.privacy_redacted ? null : f.normalized_value, f.location,
       f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null,
       f.field === 'account.paymentHistoryDefinition' ? f.code_definition : null,
-      f.period_definition, f.privacy_redacted, f.omitted_value);
+      f.period_definition, f.privacy_redacted, f.omitted_value, f.field);
   }
   if (issue.source) {
     push(issue.source.source_field || (issue.record && issue.record.source_field), issue.source.raw_value, issue.source.normalized_value, issue.source.location || issue.location);
   }
   for (const basis of issue.supported_bases || []) {
     for (const f of basis.source_facts || []) {
-      push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location);
+      push(f.source_field || f.field, f.raw_value, f.normalized_value, f.location, null, null, null, false, false, f.field);
     }
     if (basis.source) push(basis.source.source_field || basis.anchor_field,
       basis.source.raw_value, basis.source.normalized_value, basis.source.location);
@@ -562,8 +563,25 @@ function materialUncertainty(value) {
   return value && !/^(?:Every|All) report-determinable fact(?:s)? (?:is|are) resolved\.?$/i.test(value.trim()) ? value : null;
 }
 function factLabel(value) {
-  if (!value || /\s/.test(value) || !/^[a-z]/.test(value) || !/[_ .]|[a-z][A-Z]/.test(value)) return value;
-  const words = value.split('.').pop().replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
+  if (!value) return value;
+  // Report/account context belongs to the reading, but its final field may still
+  // be an internal key. Keep that context and genuine spaced bureau captions.
+  const contextual = /^((?:(?:Earlier|Current) report [^:]+|Account \d+):\s*)(.+)$/.exec(value);
+  if (contextual) return contextual[1] + factLabel(contextual[2]);
+  if (/\s/.test(value) || !/^[A-Za-z][A-Za-z0-9_.]*$/.test(value)) return value;
+  const field = value.split('.').pop();
+  const familiar = {
+    openeddate: 'Date opened', dateopened: 'Date opened',
+    closeddate: 'Date closed', dateclosed: 'Date closed',
+    firstdelinquencydate: 'First missed-payment date', firstdelinquency: 'First missed-payment date',
+    lastpaymentdate: 'Last payment date', lastpayment: 'Last payment date',
+    pastdueamount: 'Amount overdue', creditlimit: 'Credit limit',
+    maskedidentifier: 'Account number', reportedidentifier: 'Account number',
+    reportedidentity: 'Account name on the report'
+  }[field.replace(/_/g, '').toLowerCase()];
+  if (familiar) return familiar;
+  if (!/[_ .]|[a-z][A-Z]/.test(value)) return value;
+  const words = field.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').toLowerCase();
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
@@ -577,7 +595,7 @@ function evidenceLines(selected) {
   for (const issue of selected) {
     n += 1;
     const kind = issue.request_type === issues.REQUEST_TYPE.CORRECTION ? 'correction' : 'verification';
-    const heading = issue.label || (issue.record && issue.record.kind_label) || 'a reporting matter';
+    const heading = CHECKLIST_LABELS.get(issue.check_id) || issue.label || (issue.record && issue.record.kind_label) || 'a reporting matter';
     lines.push(`  ${n}. ${heading} - ${kind}`);
     if (issues.consumerLabel(issue)) lines.push(`     ${issues.consumerLabel(issue)}`);
     if (issue.report_identity && (issue.report_identity.bureau || issue.report_identity.reference_date)) {
@@ -606,10 +624,11 @@ function evidenceLines(selected) {
       const loc = f.location;
       const pageLine = loc && loc.page != null ? `page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''}` : 'source location recorded';
       const label = f.field ? `${factLabel(f.field)}: ` : '';
+      const internalMaskedReference = f.fact_field === 'account.masked_identifier' && /^MASK-/.test(String(f.normalized));
       lines.push(f.code_definition || f.period_definition ? externalDefinitionLine(f, '     ')
         : f.omitted_value ? `     Printed caption without a value: ${factLabel(f.field)} (${pageLine})`
         : f.privacy_redacted ? `     Creditor identity matched from the report (${pageLine})`
-        : `     ${label}printed "${f.raw}" (${pageLine})${f.normalized != null && String(f.normalized) !== String(f.raw) ? `; read as ${f.normalized}` : ''}`);
+        : `     ${label}printed "${f.raw}" (${pageLine})${!internalMaskedReference && f.normalized != null && String(f.normalized) !== String(f.raw) ? `; read as ${f.normalized}` : ''}`);
     }
     if (issue.explanation) lines.push(`     What the report says: ${issue.explanation}`);
     if (materialUncertainty(issue.uncertainty)) lines.push(`     What needs checking: ${issue.uncertainty}`);

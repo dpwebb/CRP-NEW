@@ -54,6 +54,10 @@ async function run(t, check) {
   const support = { ...options([identity, address, passport]), document_dates: { [address]: new Date().toISOString().slice(0, 10) } };
   check.equal((await t.request('POST', base + '/packet/support', auth({ support }))).status, 200, 'bureau-specific supporting selection saved');
   const ready = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
+  check.match(ready.packet.correspondence_preview, /^\s*1\. Account opened after it was closed - verification$/m,
+    'the complete bureau mail packet uses the friendly shared common-error heading');
+  check.ok(!/\bopened_date\b|\bclosed_date\b/.test(ready.packet.correspondence_preview),
+    'saved details and bureau forms do not reintroduce internal date keys into the review');
   check.equal(ready.packet.correspondence.consumer_name, PROFILE.full_name, 'saved name used for correspondence');
   check.ok(ready.packet.correspondence_preview.includes(PROFILE.address_line1), 'saved postal address appears in actual review');
   check.ok(ready.packet.correspondence_preview.includes('Box 190') && ready.packet.correspondence_preview.includes('Signature:'), 'review includes sourced destination and unsigned signature line');

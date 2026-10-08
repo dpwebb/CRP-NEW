@@ -20,6 +20,7 @@ const issues = require('../../issues.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
+const Module = require('node:module');
 const { comparableText } = require('../packet-pdf-assertions.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
@@ -227,6 +228,10 @@ async function run(service, check) {
   const partial = await service.request('POST', `/api/cases/${multiCase.case_id}/packet/correspondence`, { token: multiOwner.token, body: { correspondence: DETAILS } });
   const partialMailView = await service.preparePostalPacket(multiOwner, multiCase.case_id);
   const partialPreview = partialMailView.packet.correspondence_preview;
+  check.match(partialPreview, /^\s*1\. Account opened after it was closed - verification$/m,
+    'the common-error appendix uses the shared friendly checklist heading');
+  check.ok(partialPreview.includes('Date opened: printed "01/01/2020"') && partialPreview.includes('Date closed: printed "01/01/2019"'),
+    'internal source-field keys become familiar labels while the printed dates stay exact');
   const correspondenceOnly = partialPreview.split('EVIDENCE REFERENCES')[0];
   check.equal(correspondenceOnly.split('\n').filter((l) => /^\s*\d+\. \S/.test(l)).length, 1, 'the correspondence states exactly one request');
   check.ok(partialPreview.includes(`credit account ${only.account_number_in_report}`), 'the evidence references name the selected record');
@@ -310,12 +315,82 @@ async function run(service, check) {
   check.ok(/Mail the packet to the bureau address/.test(dl.text), 'and the consumer controls mailing');
   check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
 
+  await reagingLanguage(service, check);
+
   evidence.definite_correction = { case_id: caseId, recipient_type: 'CONSUMER_REPORTING_AGENCY', downloaded_chars: (dl.text || '').length };
   evidence.potential_verification = { case_id: multiCase.case_id, downloaded_chars: (partialDl.text || '').length };
   evidence.probable_verification = { case_id: probCase.case_id, downloaded_chars: (probDl.text || '').length };
   evidence.separation = 'the consumer-entered details live on the packet row and never in the report result, extraction or evaluation';
   evidence.sending = 'consumer-controlled: the packet is prepared for the consumer to submit with the relevant bureau instructions; this service sends nothing';
   return evidence;
+}
+
+async function reagingLanguage(service, check) {
+  const actor = await service.account(`cb-reaging-language-${crypto.randomBytes(4).toString('hex')}@example.test`);
+  const reports = [];
+  for (const [year, anchor] of [['2025', '2018'], ['2026', '2020']]) {
+    const opened = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'US', region: 'US-NY', bureau: 'EQUIFAX' } });
+    const id = opened.json.case.case_id, pdf = buildPdf({ pages: [{ lines: [
+      'Equifax Consumer Credit Report - FICTIONAL TEST FIXTURE', `Report Date: June 12, ${year}`,
+      'Creditor A Balance $100', 'Account Number ****1234', 'Status: Charged Off',
+      'Opened 01/01/2010', `First Delinquency Date 01/01/${anchor}`, 'Last Payment Date 01/01/2017'
+    ] }] });
+    await service.request('POST', `/api/cases/${id}/files`, { token: actor.token, body: uploadBody(pdf, `cb-language-${year}.pdf`) });
+    await service.request('POST', `/api/cases/${id}/evaluate`, { token: actor.token }); reports.push(id);
+  }
+  const id = reports[1], base = `/api/cases/${id}`;
+  const view = (await service.request('GET', base + '/packet', { token: actor.token })).json.view;
+  const row = service.service.store.state().results.find(result => result.case_id === id);
+  const internal = require('../../packets.cjs').eligibleIssues(row).find(issue => issue.check_id === 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL');
+  const reaging = view.eligible_issues.find(issue => issue.issue_id === internal?.issue_id);
+  check.ok(reaging, 'the ordinary owned report pair offers the supported re-aging issue');
+  if (!reaging) return;
+  const before = JSON.stringify(service.service.store.state().results.filter(result => reports.includes(result.case_id)));
+  await service.request('POST', base + '/packet/select', { token: actor.token, body: { issue_ids: [reaging.issue_id] } });
+  const ready = await service.preparePostalPacket(actor, id), preview = ready.packet.correspondence_preview;
+  check.match(preview, /^\s*1\. First missed-payment date moved to a later date - verification$/m,
+    'the real re-aging preview uses the checklist label instead of obligation/delinquency jargon');
+  check.ok(preview.includes('Earlier report 2025-06-12: Date opened: printed "01/01/2010"')
+    && preview.includes('Current report 2026-06-12: Date opened: printed "01/01/2010"'),
+    'both report contexts retain their exact date reading with a familiar source label');
+  check.ok(preview.includes('Earlier report 2025-06-12: FIRST DELINQUENCY DATE: printed "01/01/2018"')
+    && preview.includes('Current report 2026-06-12: FIRST DELINQUENCY DATE: printed "01/01/2020"'),
+    'genuine bureau captions and both quoted raw delinquency readings remain unchanged');
+  check.ok(preview.includes('(page 1, line 6)') && preview.includes('(page 1, line 7)'),
+    'plain source labels retain their exact report page and line pointers');
+  check.ok(preview.includes('printed "****1234" (page 1, line 4)') && !preview.includes('MASK-1234'),
+    'the printed masked account number retains its source location without the internal normalized reference');
+  check.ok(preview.includes('read as 2018-01-01') && preview.includes('read as 2020-01-01'),
+    'useful normalized date readings remain in the evidence');
+  const labels = preview.split('\n').filter(line => line.includes(': printed "')).map(line => line.split(': printed "')[0]);
+  check.equal(labels.some(label => /\b\w+_\w+\b/.test(label)), false, 'no internal snake-case keys remain in displayed source labels');
+  // Produce a real approval over this exact packet's material using the previous
+  // format stamp. The independent module is never cached or written to disk.
+  const filename = require.resolve('../../packets.cjs'), legacy = new Module(filename, module);
+  legacy.paths = Module._nodeModulePaths(path.dirname(filename));
+  legacy._compile(fs.readFileSync(filename, 'utf8').replace("'packet-format:print-3'", "'packet-format:print-2'"), filename);
+  const oldView = legacy.exports.packetView(service.service.store, actor, id);
+  legacy.exports.approvePacket(service.service.store, actor, id, oldView.packet.preview_version, true);
+  check.notEqual(oldView.packet.preview_version, ready.packet.preview_version, 'the previous format approval differs even with identical selected evidence and consumer input');
+  const refreshed = (await service.request('GET', base + '/packet', { token: actor.token })).json.view;
+  check.equal(refreshed.packet.approval_stale, true, 'the current plain wording requires rereview of an already approved print-2 packet');
+  check.equal((await service.request('GET', base + '/packet-download', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',
+    'old format approval cannot download refreshed consumer text');
+  check.equal((await service.request('GET', base + '/packet-print', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',
+    'old format approval cannot print refreshed consumer text');
+  check.equal((await service.request('POST', base + '/packet/approve', { token: actor.token, body: { reviewed_version: oldView.packet.preview_version } })).json.error.code, 'PACKET_APPROVAL_STALE',
+    'an earlier displayed format version cannot approve the current preview');
+  check.equal((await service.request('POST', base + '/packet/approve', { token: actor.token, body: { reviewed_version: ready.packet.preview_version } })).status, 200,
+    'the plain preview still approves through the existing displayed-version gate');
+  const download = await service.request('GET', base + '/packet-download', { token: actor.token });
+  check.equal(comparableText(download.text), comparableText(preview), 'the actual approved PDF carries exactly the plain reviewed preview');
+  const printed = await service.request('GET', base + '/packet-print', { token: actor.token });
+  check.equal(printed.status, 200, 'rereviewed plain packet is available as its approved printable PDF');
+  const out = path.join(__dirname, '../../out/batch66-packet-language'); fs.mkdirSync(out, { recursive: true });
+  fs.writeFileSync(path.join(out, 'reaging-correspondence.pdf'), printed.bytes);
+  fs.writeFileSync(path.join(out, 'reaging-preview.txt'), preview);
+  check.equal(JSON.stringify(service.service.store.state().results.filter(result => reports.includes(result.case_id))), before,
+    'formatting leaves all source results, predicates, confidence and issue IDs unchanged');
 }
 
 module.exports = {
