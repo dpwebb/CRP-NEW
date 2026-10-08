@@ -332,14 +332,15 @@ function lineLocation(line) {
 
 const PAIRED_CAPTIONS = Object.freeze({
   'ACCOUNT NAME': 'identity', CREDITOR: 'identity', LENDER: 'identity', 'CREDIT PROVIDER': 'identity',
+  'ORGANISATION NAME': 'identity',
   'ACCOUNT NUMBER': 'identifier', 'ACCT NUMBER': 'identifier', 'ACCT NO': 'identifier',
   'ACCOUNT NUMBER / SUFFIX': 'identifier',
-  STATUS: 'status', 'ACCOUNT STATUS': 'status', RESPONSIBILITY: 'role', OWNERSHIP: 'role',
+  STATUS: 'status', 'ACCOUNT STATUS': 'status', 'ACCOUNT STATE': 'status', RESPONSIBILITY: 'role', OWNERSHIP: 'role',
   'ACCOUNT TYPE': 'type', 'TYPE OF ACCOUNT': 'type',
   BALANCE: 'money', 'CURRENT BALANCE': 'money', 'RECENT BALANCE': 'money', 'LATEST BALANCE': 'money',
   'PAST DUE': 'money', 'PAST DUE AMOUNT': 'money', 'AMOUNT PAST DUE': 'money',
   'OVERDUE AMOUNT': 'money', 'CREDIT LIMIT': 'money', 'CREDIT LINE': 'money',
-  'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money', 'SCHEDULED PAYMENT': 'money',
+  'MONTHLY PAYMENT': 'money', 'PAYMENT AMOUNT': 'money', 'SCHEDULED PAYMENT': 'money', 'REGULAR PAYMENT VALUE': 'money',
   OPENED: 'date', 'DATE OPENED': 'date', 'OPENED DATE': 'date',
   CLOSED: 'date', 'CLOSED DATE': 'date', 'DATE CLOSED': 'date',
   'ACCOUNT START DATE': 'date', 'ACCOUNT END DATE': 'date',
@@ -530,7 +531,7 @@ function pairedCaptionLines(lines) {
       : kind === 'date' ? Boolean(normalizePrintedDate(raw).normalized || normalizePrintedDate(raw).interpretations)
         || /^(?:[-—–]|N\/?A)$/i.test(raw)
         : kind === 'identifier' ? Boolean(maskedIdentifierToken(`${name} ${raw}`))
-          : kind === 'status' ? Boolean(statusReadingOf(`Status: ${raw}`, []))
+          : kind === 'status' ? Boolean(statusReadingOf(`${name}: ${raw}`, []))
             : kind === 'role' ? Boolean(responsibilityOf(`${name}: ${raw}`))
               : kind === 'type' ? /^(?:CREDIT CARD|REVOLVING|LINE OF CREDIT)$/i.test(raw)
                 : /^[A-Za-z][A-Za-z0-9 &'.-]*$/.test(raw) && !BOILERPLATE_RE.test(raw);
@@ -788,16 +789,20 @@ const STATUS_WORDS = Object.freeze(['PAID AS AGREED', 'PAID IN FULL', 'SETTLED I
 const STATUS_PATTERN = STATUS_WORDS.map((word) => word.replace(/\s+/g, '\\s+')).join('|');
 
 function isAccountStatusLine(text) {
-  return new RegExp(`^\\s*(?:(?:THIS|THE)\\s+)?ACCOUNT\\s+(?:STATUS\\b|IS\\b|REPORTED\\s+AS\\b|(?:${STATUS_PATTERN})\\s*[.!]?\\s*$)`, 'i')
+  return new RegExp(`^\\s*(?:(?:THIS|THE)\\s+)?ACCOUNT\\s+(?:STATUS\\b|STATE\\b|IS\\b|REPORTED\\s+AS\\b|(?:${STATUS_PATTERN})\\s*[.!]?\\s*$)`, 'i')
     .test(String(text || ''));
 }
 
 function statusReadingOf(text, dates) {
   const raw = String(text || '');
-  const explicit = new RegExp(`\\b(?:ACCOUNT\\s+)?STATUS\\s*[:\\-]?\\s*(?:IS\\s+)?(${STATUS_PATTERN})\\b`, 'i').exec(raw);
+  // These publisher-defined states retain their literal meaning. Normal is not a payment-performance
+  // assertion, and Satisfied is not silently upgraded to Paid in Full.
+  const state = /^\s*ACCOUNT\s+STATE\s*[:\-]\s*(NORMAL|SATISFIED|DEFAULTED)\s*$/i.exec(raw);
+  if (state) return { value: state[1].toUpperCase(), raw: state[1] };
+  const explicit = new RegExp(`\\b(?:(?:ACCOUNT\\s+)?STATUS|ACCOUNT\\s+STATE)\\s*[:\\-]?\\s*(?:IS\\s+)?(${STATUS_PATTERN})\\b`, 'i').exec(raw);
   if (explicit) return { value: explicit[1].toUpperCase().replace(/\s+/g, ' '), raw: explicit[1] };
   // An explicit, unrecognized status must not be replaced by a word in a different field.
-  if (/\bSTATUS\b/i.test(raw)) return null;
+  if (/\bSTATUS\b|\bACCOUNT\s+STATE\b/i.test(raw)) return null;
   const escape = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   if (/^\s*(?:OPEN|CLOSED|PAID|SETTLED)\s*:\s*$/i.test(raw)) return null;
   let remaining = raw;
@@ -828,7 +833,7 @@ function labeledAmounts(text) {
   if (PAYMENT_HISTORY_HEADER_RE.test(src)) return out;
   const ownCaption = captionName(src.split(':')[0]);
   if (PAIRED_CAPTIONS[ownCaption] === 'date' || COLUMN_BOUNDARY_CAPTIONS[ownCaption] === 'ignored') return out;
-  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+|LATEST\s+)?BALANCE|MONTHLY\s+PAYMENT|SCHEDULED\s+PAYMENT|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
+  const labels = [...src.matchAll(/\b(PAST\s+DUE(?:\s+AMOUNT)?|AMOUNT\s+PAST\s+DUE|OVERDUE(?:\s+AMOUNT)?|CREDIT\s+LIMIT|CREDIT\s+LINE|HIGH\s+CREDIT|HIGH\s+BALANCE|LIMIT|(?:CURRENT\s+|RECENT\s+|LATEST\s+)?BALANCE|MONTHLY\s+PAYMENT|SCHEDULED\s+PAYMENT|REGULAR\s+PAYMENT\s+VALUE|(?:RECENT\s+)?PAYMENT(?:\s+AMOUNT)?)\b\s*:?\s*/gi)];
   for (let index = 0; index < labels.length; index++) {
     const match = labels[index], label = match[1].toUpperCase();
     if (/\b(?:LAST|DATE OF LAST)\s*$/i.test(src.slice(0, match.index)) && /^PAYMENT$/i.test(label)) continue;
@@ -1243,11 +1248,11 @@ function maskedIdentifierToken(text) {
 }
 
 function explicitAccountIdentity(text) {
-  const match = /^\s*(?:ACCOUNT\s+NAME|CREDITOR|LENDER|CREDIT\s+PROVIDER)\s*:\s*(.+)$/i.exec(String(text || '').trim());
+  const match = /^\s*(ACCOUNT\s+NAME|CREDITOR|LENDER|CREDIT\s+PROVIDER|ORGANISATION\s+NAME)\s*:\s*(.+)$/i.exec(String(text || '').trim());
   if (!match) return null;
-  const raw = match[1].split(/\s+(?=ACCOUNT\s+(?:NUMBER|TYPE|STATUS)|OPENED|CLOSED|BALANCE|CREDIT\s+LIMIT|STATUS|RESPONSIBILITY)/i)[0].trim();
+  const raw = match[2].split(/\s+(?=ACCOUNT\s+(?:NUMBER|TYPE|STATUS|STATE|START\s+DATE|END\s+DATE)|OPENED|CLOSED|(?:CURRENT\s+)?BALANCE|CREDIT\s+LIMIT|STATUS|RESPONSIBILITY|REGULAR\s+PAYMENT\s+VALUE)/i)[0].trim();
   const normalized = raw.toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
-  return normalized && !BOILERPLATE_RE.test(raw) ? { raw, normalized } : null;
+  return normalized && !BOILERPLATE_RE.test(raw) ? { raw, normalized, label: match[1] } : null;
 }
 
 /* A report-header date (Report Date / Prepared / Request / As Of) is the report's own metadata, not an account
@@ -1323,8 +1328,10 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   if (statusTrusted) canonical.facts['account.status'] = printedStatus.value;
   /* BLOCKER-FDT-001 / duplicate corroboration: an account-intro line contributes its printed account/creditor
      identity as a normalized, non-identifying token. A continuation line never adds one. */
-  if (kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase())
+  if (kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase()) || explicitAccountIdentity(line.text))
     && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)
+    && PAIRED_CAPTIONS[captionName(String(line.text).split(':')[0])] !== 'date'
+    && !facts.dates.some((date) => PAIRED_CAPTIONS[captionName(date.textBefore)] === 'date')
     && (!line.column_field || line.column_field === 'identity')) {
     const identity = explicitAccountIdentity(line.text)?.normalized || accountIdentityToken(line.text);
     if (trusted && identity) canonical.facts['account.reported_identity'] = identity;
@@ -1357,7 +1364,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
      The fact map alone is not a printed reading: it must carry its own raw token and location. */
   if (printedStatus) {
-    printed.Status = { label: line.caption_label || 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
+    printed.Status = { label: line.caption_label || (/^\s*((?:ACCOUNT\s+)?STATUS|ACCOUNT\s+STATE)\s*:/i.exec(String(line.text)) || [])[1] || 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
       raw: line.column_field === 'status' ? line.column_raw : printedStatus.raw, normalized: statusTrusted ? printedStatus.value : null,
       status: statusTrusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', reason: statusTrusted ? null : 'UNTRUSTED_VALUE',
       location: lineLocation(line), kind: 'status' };
@@ -1372,7 +1379,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   if (trusted && reportedIdentity) {
     const at = String(line.text || '').toUpperCase().indexOf(reportedIdentity);
     const explicitRaw = explicitAccountIdentity(line.text)?.raw;
-    if (explicitRaw || at >= 0) printed['account.reported_identity'] = { label: 'Creditor or account name',
+    if (explicitRaw || at >= 0) printed['account.reported_identity'] = { label: line.caption_label || explicitAccountIdentity(line.text)?.label || 'Creditor or account name',
       state: 'VALUE', raw: explicitRaw || String(line.text).slice(at, at + reportedIdentity.length),
       normalized: reportedIdentity, location: lineLocation(line), kind: 'account_identity' };
   }
@@ -1749,9 +1756,10 @@ function buildRecords(pages, convention) {
       const kind = line.column_field ? 'GENERAL_ACCOUNT' : recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
-      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && ACCOUNT_INTRO_RE.test(up)
+      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(up) || explicitAccountIdentity(line.text))
         && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType && !isAccountStatusLine(line.text)
         && PAIRED_CAPTIONS[ownCaption] !== 'date' && (!line.column_field || line.column_boundary)
+        && !facts.dates.some((date) => PAIRED_CAPTIONS[captionName(date.textBefore)] === 'date')
         && !/^\s*(?:AUTHORI[ZS]ED USER|INDIVIDUAL|JOINT)\s+(?:ON|ACCOUNT\b)/i.test(line.text);
 
       /* OWNER-CANDIDATE-002: a judgment-content line (Judgment context, creditor/amount/assignee, case/docket,

@@ -9,6 +9,8 @@ const general = require('../../general-intake.cjs');
 const assembly = require('../../multi-file-assembly.cjs');
 const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const PAID = 'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID';
+const ZERO_LIMIT = 'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT';
+const GB_REGIONS = ['GB-ENG', 'GB-NIR', 'GB-SCT', 'GB-WLS'];
 let sequence = 0;
 function lines(balance = '£100', status = 'Paid in Full', anchor = '2020-01-01', report = '2026-06-12') {
   return ['Equifax Consumer Credit Report', 'Report Date: ' + report, 'Creditor:', 'Cedar & Pine Bank',
@@ -28,6 +30,144 @@ function synthetic(content) {
 function finding(extraction) {
   return issues.issuesFor({ extraction, evaluation: engine.evaluateCase({ country: 'GB', region: 'GB-ENG', extraction }) })
     .filter((issue) => issue.check_id === PAID);
+}
+
+/* Official TransUnion V9 consumer field definitions guide the caption contract. These native PDFs are
+   explicitly fictional behavioral inputs, not bureau specimens or evidence for a complete PDF layout. */
+function gbFields({ name = 'Cedar & Pine Bank', mask = 'XXXX1234', state = 'Normal', balance = '£100',
+  limit = '£0', opened = '2010-01-02', closed = 'N/A' } = {}) {
+  return ['Organisation Name:', name, 'Account Number / suffix:', mask, 'Account State:', state,
+    'Account Type:', 'Credit Card', 'Current Balance:', balance, 'Credit Limit:', limit,
+    'Regular Payment Value:', '£25', 'Account Start Date:', opened, 'Account End Date:', closed];
+}
+function gbReport(fields = gbFields()) {
+  return ['TransUnion Consumer Credit Report', 'Report Date: 2026-10-08', ...fields];
+}
+function zeroLimitIssues(extraction) {
+  return issues.issuesFor({ extraction, evaluation: engine.evaluateCase({ country: 'GB', region: 'GB-ENG', extraction }) })
+    .filter((issue) => issue.check_id === ZERO_LIMIT);
+}
+async function gbFieldContract(t, check) {
+  let sourceIsolation = true;
+  const isolated = (condition, label) => { sourceIsolation = sourceIsolation && Boolean(condition); check.ok(condition, label); };
+  const actual = native(t, gbReport()), record = actual.extraction.records[0];
+  check.equal(actual.extraction.presentation_id, 'GENERAL-BUREAU-REPORT', 'fictional TU captions use the existing general reader');
+  check.equal(actual.extraction.records.length, 1, 'organisation heading owns all account captions');
+  check.deepEqual(['account.reported_identity', 'account.masked_identifier', 'account.status', 'account.balance',
+    'account.creditLimit', 'account.paymentAmount', 'liability.openedDate'].map((field) => record.facts[field]),
+  ['CEDAR PINE BANK', 'MASK-1234', 'NORMAL', 100, 0, 25, '2010-01-02'], 'exact captions map their own literal facts');
+  for (const [field, label, caption, value] of [['account.reported_identity', 'Organisation Name', 3, 4],
+    ['account.masked_identifier', 'Account Number / suffix', 5, 6], ['account.status', 'Account State', 7, 8],
+    ['account.balance', 'Current Balance', 11, 12], ['account.creditLimit', 'Credit Limit', 13, 14],
+    ['account.paymentAmount', 'Regular Payment Value', 15, 16], ['liability.openedDate', 'Account Start Date', 17, 18]]) {
+    const source = sourceForField(record, field);
+    check.equal(source?.source_field, label, 'the field keeps its own publisher caption');
+    isolated(source?.location.line === value && source?.location.caption_location?.line === caption
+      && source?.location.bbox && source?.location.caption_location?.bbox, 'both physical caption and value locations remain bound');
+  }
+  check.equal(record.facts['tradeline.lastPaymentDate'], undefined, 'scheduled payment value establishes no last-payment date');
+  check.equal(zeroLimitIssues(actual.extraction).length, 1, 'documented type/balance/limit facts reach the existing checklist issue');
+  const inline = gbFields().reduce((rows, text, index, fields) => index % 2 ? rows : rows.concat(text + ' ' + fields[index + 1]), []);
+  const inlineRecord = native(t, gbReport(inline)).extraction.records[0];
+  isolated(inlineRecord.facts['account.reported_identity'] === 'CEDAR PINE BANK'
+    && sourceForField(inlineRecord, 'account.reported_identity')?.raw_value === 'Cedar & Pine Bank',
+  'account start-date text never supplies identity START or contradicts its organisation');
+  const noColon = native(t, gbReport(['Organisation Name: Cedar & Pine Bank', 'Account Number / suffix: XXXX1234',
+    'Account Start Date 2010-01-02', 'Account End Date 2020-07-08'])).extraction;
+  isolated(noColon.records.length === 1 && noColon.records[0].facts['account.reported_identity'] === 'CEDAR PINE BANK'
+    && noColon.records[0].facts['liability.openedDate'] === '2010-01-02'
+    && noColon.records[0].facts['liability.closedDate'] === '2020-07-08', 'own date captions without punctuation remain account fields, not account headings');
+
+  const two = native(t, gbReport(gbFields().concat(gbFields({ name: 'Fir Bank', mask: 'XXXX5678', balance: '£250',
+    limit: '£500', opened: '2019-02-03' })))).extraction;
+  isolated(two.records.length === 2 && two.records[0].facts['account.masked_identifier'] === 'MASK-1234'
+    && two.records[1].facts['account.masked_identifier'] === 'MASK-5678'
+    && two.records[0].facts['liability.openedDate'] === '2010-01-02'
+    && two.records[1].facts['liability.openedDate'] === '2019-02-03'
+    && two.records[0].facts['account.balance'] === 100 && two.records[1].facts['account.balance'] === 250,
+  'two organisation headings preserve separate identities, dates and balances');
+  check.equal(zeroLimitIssues(two).length, 1, 'only the first account has the zero-limit violation');
+  const benign = native(t, gbReport(gbFields({ limit: '£500' }))).extraction;
+  check.equal(zeroLimitIssues(benign).length, 0, 'positive compatible limit is benign');
+  for (const state of ['Normal', 'Satisfied', 'Defaulted']) {
+    const own = native(t, gbReport(gbFields({ state, limit: '£500', closed: '2020-07-08' }))).extraction;
+    check.equal(own.records[0].facts['account.status'], state.toUpperCase(), 'publisher account state retains its literal meaning');
+    check.equal(finding(own).length, 0, 'literal state is never upgraded to final-payment wording');
+  }
+  const conflictingState = native(t, gbReport(gbFields().concat('Account State:', 'Satisfied'))).extraction.records[0];
+  isolated(sourceForField(conflictingState, 'account.status') === null && conflictingState.facts['account.status'] === undefined,
+    'contradictory own states never choose one value');
+  const ambiguous = native(t, gbReport(gbFields({ opened: '03/04/2020' }))).extraction.records[0];
+  isolated(ambiguous.facts['liability.openedDate'] === undefined && sourceForField(ambiguous, 'liability.openedDate') === null
+    && ambiguous.facts['account.reported_identity'] === 'CEDAR PINE BANK', 'ambiguous opening date neither resolves by country nor destroys the own identity');
+  const irrelevant = ['Account Holder Start Date:', '2015-03-04', 'Account Holder End Date:', '2018-05-06',
+    'Payment Start Date:', '2010-02-03', 'Date Account Last Updated:', '2026-09-30'];
+  const ownDatesMissing = native(t, gbReport(gbFields({ opened: 'N/A' }).concat(irrelevant))).extraction.records[0];
+  isolated(['liability.openedDate', 'liability.closedDate', 'tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate']
+    .every((field) => ownDatesMissing.facts[field] === undefined), 'holder, payment-start and update dates do not replace absent account anchors');
+  for (const [wordText, field] of [['Organisation', 'account.reported_identity'], ['Normal', 'account.status'],
+    ['State:', 'account.status'], ['Value:', 'account.paymentAmount'], ['£25', 'account.paymentAmount'],
+    ['£0', 'account.creditLimit']]) {
+    const unread = native(t, gbReport(), (model) => {
+      for (const word of model.pages[0].word_boxes) if (word.text === wordText) word.trusted = false;
+    }).extraction;
+    isolated(unread.records[0].facts[field] === undefined && sourceForField(unread.records[0], field) === null,
+      'untrusted own caption/value never resolves the affected field');
+    check.equal(unread.records[0].facts['account.balance'], 100, 'independent own readable balance survives');
+    if (field === 'account.creditLimit') check.equal(zeroLimitIssues(unread).length, 0, 'untrusted decisive limit supplies no violation');
+  }
+  const missingLimit = gbFields(); missingLimit.splice(10, 2);
+  check.equal(zeroLimitIssues(native(t, gbReport(missingLimit)).extraction).length, 0, 'missing limit cannot borrow regular payment value');
+  const owner = await t.unpaidAccount('dl-gb-field-contract@example.test'); await t.pay(owner, 'monthly');
+  let approvedDownloads = 0;
+  for (const region of GB_REGIONS) {
+    const opened = await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'GB', region } });
+    check.equal(opened.status, 201, region + ' opens the ordinary consumer case');
+    const id = opened.json.case.case_id, endpoint = '/api/cases/' + id;
+    const upload = await t.request('POST', endpoint + '/files', { token: owner.token, body: {
+      originalFilename: 'fictional-tu-field-contract.pdf', declaredBytes: actual.bytes.length,
+      mimeType: 'application/pdf', contentBase64: actual.bytes.toString('base64') } });
+    check.equal(upload.status, 201, region + ' uploads the actual fictional native PDF');
+    const assessed = await t.request('POST', endpoint + '/evaluate', { token: owner.token });
+    check.equal(assessed.status, 201, region + ' evaluates supported general-reader facts');
+    const view = (await t.request('GET', endpoint + '/packet', { token: owner.token })).json.view;
+    const selected = view.eligible_issues.find((issue) => issue.check_kind === zeroLimitIssues(actual.extraction)[0].label);
+    check.ok(selected, region + ' delivers the existing zero-limit checklist issue');
+    if (!selected) continue;
+    check.equal(selected.consumer_label, 'VIOLATION', region + ' uses the sole consumer verdict');
+    const ownRecord = t.service.store.state().results.find((result) => result.case_id === id).extraction.records[0];
+    const physicalFacts = ['account.type', 'account.balance', 'account.creditLimit'].map((field) => sourceForField(ownRecord, field));
+    const publicFacts = selected.source_facts.filter((fact) => ['ACCOUNT TYPE', 'CURRENT BALANCE', 'CREDIT LIMIT'].includes(fact.source_field.toUpperCase()));
+    isolated(publicFacts.length === 3 && publicFacts.every((fact) => fact.location?.page === 1 && fact.location?.line)
+      && physicalFacts.every((fact) => fact?.location?.bbox && fact?.location?.caption_location?.bbox),
+    region + ' issue retains its own public references and internal physical caption/value sources');
+    const choice = await t.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
+    check.equal(choice.status, 200, region + ' consumer selects the violation');
+    const correspondence = await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
+      correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    check.equal(correspondence.status, 200, region + ' prepares reviewable correspondence');
+    const reviewed = await t.request('GET', endpoint + '/packet', { token: owner.token });
+    check.equal(reviewed.status, 200, region + ' consumer reviews the selected packet');
+    const approval = await t.request('POST', endpoint + '/packet/approve', { token: owner.token });
+    check.equal(approval.status, 200, region + ' consumer approves the selected evidence');
+    const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
+    check.equal(download.status, 200, region + ' actual approved packet downloads');
+    const ownCreditor = download.text.includes('Cedar & Pine Bank'), ownMask = download.text.includes('XXXX1234');
+    const ownValues = download.text.includes('£100') && download.text.includes('£0');
+    const ownLocations = download.text.includes('page 1, line 12') && download.text.includes('page 1, line 14');
+    const ownVerdict = download.text.includes('VIOLATION') && !/probable violation|potential violation/i.test(download.text);
+    check.ok(ownCreditor, region + ' downloaded packet names the own printed creditor');
+    check.ok(ownMask, region + ' downloaded packet retains the own masked account suffix');
+    check.ok(ownValues && ownLocations, region + ' downloaded packet retains decisive values and their physical source locations');
+    check.ok(ownVerdict, region + ' downloaded packet uses the sole consumer verdict');
+    const ownedEvidence = ownCreditor && ownMask && ownValues && ownLocations && ownVerdict;
+    if ([opened.status, upload.status, assessed.status, choice.status, correspondence.status, reviewed.status, approval.status, download.status]
+      .every((status, index) => status === (index < 3 ? 201 : 200)) && ownedEvidence && selected.consumer_label === 'VIOLATION'
+      && physicalFacts.length === 3 && physicalFacts.every((fact) => fact.location?.bbox && fact.location?.caption_location?.bbox)) approvedDownloads++;
+  }
+  check.equal(approvedDownloads, GB_REGIONS.length, 'all four current-field consumer paths complete their actual approved downloads');
+  return { id: 'GB-TU-GENERAL-FIELDS-V9-2025', source_version: 'V9.0 | April 2025', regions: GB_REGIONS,
+    check_id: ZERO_LIMIT, source_isolation: sourceIsolation, approved_downloads: approvedDownloads };
 }
 async function run(t, check) {
   const positive = native(t), record = positive.extraction.records[0];
@@ -166,6 +306,8 @@ async function run(t, check) {
     t.service.store.update((state) => { sourceForField(state.results.find((r) => r.case_id === current).extraction.records[0], 'tradeline.firstDelinquencyDate').location.caption_location.line += 1; });
     check.equal((await t.request('GET', '/api/cases/' + current + '/packet-download', { token: owner.token })).status, 409, 'changed caption provenance invalidates approval');
   }
-  return { mapping: 'own account heading and adjacent caption/value', reaging_packet: 'native owned reports', deployment: 'NOT_PERFORMED' };
+  const gbFieldEvidence = await gbFieldContract(t, check);
+  return { mapping: 'own account heading and adjacent caption/value', reaging_packet: 'native owned reports',
+    gb_field_contract: gbFieldEvidence, deployment: 'NOT_PERFORMED' };
 }
 module.exports = { run, id: 'dl-general-caption-sources', title: 'General own caption/value sources and re-aging packet integration' };
