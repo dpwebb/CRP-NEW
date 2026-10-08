@@ -1326,6 +1326,24 @@ function packetSupportingDocuments(pv) {
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
     <label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea>`;
 }
+function packetReportCopies(packet) {
+  if (!Array.isArray(packet.report_exhibits)) return '';
+  const reports = packet.report_exhibits;
+  if (!reports.length) return `<section id="packet-reports"><h3>Report copies</h3><p class="evidence">${packet.selected_count ? 'No report copies are available for these issues.' : 'Choose your issues, then save to see the report copies.'}</p></section>`;
+  return `<section id="packet-reports"><h3>Report copies</h3>
+    <p class="evidence">Choose the report copies you want to include. Copies are added only when you select them and save.</p>
+    ${reports.map(report => {
+      const label = String(report.label || 'Report copy').replace(/\b\d{4}-\d{2}-\d{2}\b/g, date => readableDate(date) || date);
+      const count = Number.isSafeInteger(report.page_count) && report.page_count > 0 ? report.page_count : null;
+      const pages = (report.relevant_pages || []).filter(page => Number.isSafeInteger(page) && page > 0);
+      const copyUrl = `/api/cases/${encodeURIComponent(state.caseId)}/packet/reports/${encodeURIComponent(report.file_id)}`;
+      return `<div class="obs"><h4>${esc(label)}</h4><p class="evidence">${esc(report.original_filename || 'Credit report')} · <strong>Whole report copy</strong></p>
+        <p class="evidence">${count ? `This copy has ${count} ${count === 1 ? 'page' : 'pages'}. ` : ''}${pages.length ? `Your dispute refers to ${pages.length === 1 ? 'page' : 'pages'} ${pages.join(', ')}.` : ''}</p>
+        <p class="evidence">If you include this copy, the download includes the whole report. ${pages.length ? 'Print the pages listed here.' : 'Print this copy.'}</p>
+        ${report.review_url === copyUrl ? `<a href="${esc(copyUrl)}" target="_blank" rel="noopener noreferrer">Open report copy</a>` : ''}
+        <label><input type="checkbox" data-packet-report="${esc(report.file_id)}" ${report.selected === true ? 'checked' : ''}>Include this report copy</label></div>`;
+    }).join('')}</section>`;
+}
 function renderPacketBlock(pv) {
   const issues = (pv.eligible_issues || []).filter((i) => i.eligible);
   const packet = pv.packet || {};
@@ -1353,6 +1371,7 @@ function renderPacketBlock(pv) {
     <h3>Where to mail your letter</h3>
     <p class="evidence">Check the bureau address. Choose the documents you will mail with your letter.</p>
     ${packetSupportingDocuments(pv)}
+    ${packetReportCopies(packet)}
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
       <input id="packet-name" readonly value="${esc(correspondence.consumer_name || '')}">
@@ -1377,7 +1396,7 @@ function renderPacketBlock(pv) {
       <button class="primary" id="packet-approve" disabled>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print letter and evidence</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download correction packet</button>
-      ${packet.download_available ? '<p class="note" id="packet-ready-status">Your packet is ready. Download it to get the letter, forms and selected document copies. Print all of them. Fill in the forms and sign where shown. Mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
+      ${packet.download_available ? `<p class="note" id="packet-ready-status">Your packet is ready. Download it to get the letter, forms and selected document copies${packet.report_attachment_manifest?.length ? ' and chosen report copies. Print the letter, forms and document copies. For each report, print the pages listed under Report copies.' : '. Print all of them.'} Fill in the forms and sign where shown. Mail everything to the bureau address above. Keep a copy for yourself.</p>` : ''}
     </div>`;
 }
 
@@ -1389,8 +1408,21 @@ async function wirePacket(panel) {
   let pv;
   try {
     pv = (await api('GET', `/api/cases/${caseId}/packet`)).view;
-  } catch {
+  } catch (error) {
     try { ensureOrigin(); } catch { return; }
+    if (error.code === 'PACKET_APPROVAL_STALE') {
+      state.notice = null;
+      if (el('consumer-notice')) el('consumer-notice').hidden = true;
+      block.innerHTML = '<p class="note stop">Your report copies have changed. Clear the saved copy choices and review your packet again.</p><button class="secondary" id="packet-reports-review">Review report copies again</button>';
+      const review = el('packet-reports-review');
+      if (review) review.onclick = () => run(async () => {
+        ensureOrigin(); review.disabled = true;
+        await api('POST', `/api/cases/${caseId}/packet/reports`, { file_ids: [] }); ensureOrigin();
+        state.notice = 'Your saved report-copy choices were cleared. Choose copies and review your packet again.';
+        await wirePacket(panel);
+      });
+      return;
+    }
     block.innerHTML = '<p class="note stop">We could not load your packet. Try again.</p><button class="secondary" id="packet-retry">Try again</button>';
     const retry = el('packet-retry');
     if (retry) retry.onclick = () => { try { ensureOrigin(); } catch { return; } retry.disabled = true; return wirePacket(panel); };
@@ -1403,6 +1435,7 @@ async function wirePacket(panel) {
   /* The current visible selection and wording, captured at action time so a save or an approve can never
      silently use an older saved version while the consumer sees a changed one. */
   const currentSelection = () => [...panel.querySelectorAll('[data-check-issue]:checked')].map((n) => n.getAttribute('data-check-issue'));
+  const currentReports = () => [...panel.querySelectorAll('[data-packet-report]:checked')].map(node => node.getAttribute('data-packet-report'));
   const currentWording = () => el('packet-wording') ? el('packet-wording').value : '';
   const currentCorrespondence = () => ({
     consumer_name: el('packet-name') ? el('packet-name').value : '',
@@ -1428,13 +1461,20 @@ async function wirePacket(panel) {
   let previewCurrent = Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview);
   const persistSelection = async () => {
     ensureOrigin();
-    const captured = edits, payloads = [
+    const captured = edits, chosenReports = currentReports(), payloads = [
       ['select', { issue_ids: currentSelection() }], ['correspondence', { correspondence: currentCorrespondence() }],
       ['wording', { wording: currentWording() }], ...(pv.support?.catalog?.length ? [['support', { support: currentSupport() }]] : [])
     ];
     const ensureCurrent = () => { ensureOrigin(); if (edits !== captured) throw cancelledAction(); };
+    let allowedReports = null;
     for (const [action, body] of payloads) {
-      ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/${action}`, body); ensureCurrent();
+      ensureCurrent(); const answer = await api('POST', `/api/cases/${caseId}/packet/${action}`, body); ensureCurrent();
+      if (action === 'select' && Array.isArray(answer.view?.packet?.report_exhibits)) allowedReports = new Set(answer.view.packet.report_exhibits.map(report => report.file_id));
+    }
+    if (Array.isArray(pv.packet?.report_exhibits)) {
+      if (chosenReports.length && !allowedReports) throw new Error('We could not save your report choices. Try saving again.');
+      const file_ids = chosenReports.filter(fileId => allowedReports?.has(fileId));
+      ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/reports`, { file_ids }); ensureCurrent();
     }
     return ensureCurrent;
   };
@@ -1522,6 +1562,7 @@ async function wirePacket(panel) {
   for (const id of ['packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).oninput = markChanged;
   for (const node of panel.querySelectorAll('[data-packet-document], [id^="packet-document-date-"]')) node.onchange = refreshChecklist;
   for (const node of panel.querySelectorAll('[data-check-issue]')) node.onchange = refreshChecklist;
+  for (const node of panel.querySelectorAll('[data-packet-report]')) node.onchange = markChanged;
   if (pv.support?.suggested_purpose && !pv.support.settings && pv.support.suggested_purpose !== pv.support.requirements?.purpose) refreshChecklist();
 }
 

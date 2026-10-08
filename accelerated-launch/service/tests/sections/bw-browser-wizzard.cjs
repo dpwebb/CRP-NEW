@@ -62,7 +62,7 @@ async function run(service, check) {
   }
 
   try {
-  async function openCasePage(email, password, caseId, lines) {
+  async function openCasePage(email, password, caseId, lines, extraPages = []) {
     const context = await browser.newContext();
     const page = await context.newPage();
     page.setDefaultTimeout(20000);
@@ -76,7 +76,8 @@ async function run(service, check) {
     await page.locator(`[data-open="${caseId}"]`).click();
     await page.locator('#steps button[data-step="2"]').click();
     await page.waitForSelector('#file');
-    await page.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines }] }) });
+    const reportBytes = buildPdf({ pages: [{ lines }, ...extraPages] });
+    await page.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: reportBytes });
     await page.locator('#upload').click();
     await page.waitForFunction(() => document.body.innerText.includes('1 file uploaded.'), null, { timeout: 15000 });
     await page.locator('#steps button[data-step="3"]').click();
@@ -86,7 +87,7 @@ async function run(service, check) {
     await page.locator('#steps button[data-step="4"]').click();
     await page.waitForSelector('#packet-block');
     await page.waitForTimeout(600);
-    return { page, context };
+    return { page, context, reportBytes };
   }
 
   /** OWNER dual-date retention (Batch 33): open the same case in the browser with the ASSESSMENT clock pinned, so
@@ -531,6 +532,75 @@ async function run(service, check) {
   evidence.dual_date_browser = { free_summary: 'the teaser names an entry that may now be too old to report', packet: dualDownload.filename };
   await dualOpened.page.close();
 
+  /* ---- Original report copies: choose none, review exact earlier/current files, then include and remove explicitly. ---- */
+  const copyActor = await service.unpaidAccount('bw-report-copies@example.test');
+  await service.pay(copyActor, 'monthly');
+  const copyLines = (reportYear, missedYear) => ['Equifax Consumer Credit Report - FICTIONAL TEST FIXTURE', `Report Date: June 12, ${reportYear}`, 'Creditor A Balance $100', 'Account Number ****1234', 'Status: Charged Off', 'Opened 01/01/2010', `First Delinquency Date 01/01/${missedYear}`, 'Last Payment Date 01/01/2017'];
+  const extraCopyPage = { lines: ['FICTIONAL REPORT NOTES', 'This second page must stay in the original report copy.'] };
+  const earlierBytes = buildPdf({ pages: [{ lines: copyLines('2025', '2018') }, extraCopyPage] });
+  const earlierCase = (await service.request('POST', '/api/cases', { token: copyActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
+  check.equal((await service.request('POST', `/api/cases/${earlierCase.case_id}/files`, { token: copyActor.token, body: { originalFilename: 'earlier-report.pdf', declaredBytes: earlierBytes.length, mimeType: 'application/pdf', contentBase64: earlierBytes.toString('base64') } })).status, 201, 'the earlier original report uploads through the real service');
+  check.equal((await service.request('POST', `/api/cases/${earlierCase.case_id}/evaluate`, { token: copyActor.token })).status, 201, 'the earlier report is assessed for the owned comparison');
+  const currentCase = (await service.request('POST', '/api/cases', { token: copyActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
+  const copies = await openCasePage('bw-report-copies@example.test', 'a-long-enough-password', currentCase.case_id, copyLines('2026', '2020'), [extraCopyPage]);
+  const copyPage = copies.page;
+  check.ok(/Choose your issues, then save to see the report copies/.test(await copyPage.locator('#packet-reports').innerText()), 'the first review explains how to reach report-copy choices');
+  await accountContact(copyPage, 'Fictional Copy Consumer', 'copy-consumer@example.test');
+  await copyPage.locator('[data-check-issue]').first().check();
+  const firstCopyPreview = copyPage.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
+  await copyPage.locator('#packet-save').click(); await (await firstCopyPreview).finished();
+  await copyPage.waitForSelector('[data-packet-report]');
+  const copyView = (await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view;
+  const originals = copyView.packet.report_exhibits;
+  check.equal(originals.length, 2, 'a saved re-aging dispute offers both original earlier and current reports');
+  check.ok(originals.every(report => report.selected === false), 'first-time report copies are offered without automatic inclusion');
+  check.equal(copyView.packet.approved, false, 'the user sees report-copy choices before acknowledging and approving the first saved preview');
+  const copyText = await copyPage.locator('#packet-reports').innerText();
+  check.ok(/Earlier report — June 12, 2025/.test(copyText) && /Current report — June 12, 2026/.test(copyText), 'the real report choices show familiar earlier/current labels and dates');
+  check.ok(/This copy has 2 pages/.test(copyText) && /Your dispute refers to page 1/.test(copyText), 'the choices show the whole-file size and the specific evidence page');
+  check.ok(/download includes the whole report/.test(copyText) && !/ENTIRE_REPORT|source_result_id|stored_sha256/.test(copyText), 'the full-copy scope is clear without internal identifiers');
+  for (const original of originals) {
+    const [originalPage] = await Promise.all([copyPage.context().waitForEvent('page'), copyPage.locator(`#packet-reports a[href="${original.review_url}"]`).click()]);
+    await originalPage.waitForLoadState();
+    const originalResponse = await copyPage.request.get(originalPage.url());
+    check.equal(originalResponse.status(), 200, 'Open report copy uses the authorized original-copy endpoint');
+    check.ok((await originalResponse.body()).equals(original.roles.includes('EARLIER') ? earlierBytes : copies.reportBytes), 'the opened whole report has the exact original uploaded bytes');
+    await originalPage.close();
+    check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isChecked(), false, 'opening an original copy does not include it');
+  }
+  await copyPage.locator('#packet-preview-reviewed').check(); await copyPage.locator('#packet-approve').click();
+  const noCopies = await downloadText(copyPage);
+  check.ok(!(noCopies.entries || []).some(entry => entry.bytes.equals(earlierBytes) || entry.bytes.equals(copies.reportBytes)), 'approving without selecting a report silently attaches neither full original');
+  for (const report of await copyPage.locator('[data-packet-report]').all()) await report.check();
+  check.equal(await copyPage.locator('#packet-download').isDisabled(), true, 'a changed report choice disables stale download');
+  check.equal(await copyPage.locator('#packet-print').isDisabled(), true, 'a changed report choice disables stale print');
+  check.ok(!/Your packet is approved|Your packet is ready/.test(await copyPage.locator('#panel').innerText()), 'changing report choices hides the earlier approval and ready claims');
+  check.equal((await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view.packet.report_attachment_manifest.length, 0, 'checking report copies alone does not silently save any attachment');
+  const copySaveRequest = copyPage.waitForRequest(request => request.url().endsWith('/packet/reports'));
+  await saveReadApprove(copyPage);
+  check.deepEqual((await copySaveRequest).postDataJSON().file_ids.slice().sort(), originals.map(report => report.file_id).sort(), 'Save submits exactly the two explicit report-copy choices');
+  const includedView = (await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view;
+  const includedPreview = await copyPage.locator('#packet-preview').innerText();
+  check.ok(originals.every(report => includedPreview.includes(report.original_filename)), 'the full saved preview names both chosen original reports before approval');
+  check.ok(/For each report, print the pages listed under Report copies/.test(await copyPage.locator('#packet-ready-status').innerText()), 'the ready message tells the user which report pages to print');
+  const withCopies = await downloadText(copyPage);
+  check.equal(includedView.packet.report_attachment_manifest.length, 2, 'the approved packet binds both explicit original reports');
+  for (const original of includedView.packet.report_attachment_manifest) {
+    const archived = (withCopies.entries || []).filter(entry => entry.name === original.archive_name);
+    check.equal(archived.length, 1, 'a chosen report appears once under its reviewed archive name');
+    check.ok(archived[0]?.bytes.equals(original.roles.includes('EARLIER') ? earlierBytes : copies.reportBytes), 'the download retains the entire original two-page report bytes');
+  }
+  const reportChoiceShot = `${process.env.TEMP || '.'}/crp-original-report-copy-review.png`;
+  await copyPage.screenshot({ path: reportChoiceShot, fullPage: true }); evidence.report_copy_review_screenshot = reportChoiceShot;
+  const oldOriginal = originals.find(report => report.roles.includes('EARLIER'));
+  await copyPage.locator(`[data-packet-report="${oldOriginal.file_id}"]`).uncheck();
+  check.equal(await copyPage.locator('#packet-download').isDisabled(), true, 'removing a copy requires saving and reviewing the new packet');
+  await saveReadApprove(copyPage);
+  const remainingCopies = await downloadText(copyPage);
+  check.ok(!(remainingCopies.entries || []).some(entry => entry.bytes.equals(earlierBytes)), 'the newly approved download omits the removed earlier report');
+  check.equal((remainingCopies.entries || []).filter(entry => entry.bytes.equals(copies.reportBytes)).length, 1, 'the still-chosen current report remains exactly once');
+  await copyPage.close();
+  evidence.original_report_copies = { available: 2, default_selected: 0, explicit_selected: 2, removed_earlier: true, original_bytes_retained: true, whole_file_pages: 2, relevant_page: 1 };
   evidence.browser = 'real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service';
   evidence.fixtures = 'all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report';
   return evidence;
