@@ -205,7 +205,7 @@ async function refreshAccess() {
 function notices() {
   const parts = [];
   if (state.error) parts.push(`<div class="note stop"><span class="err">Refused:</span> ${esc(state.error)}</div>`);
-  if (state.notice) parts.push(`<div class="note">${esc(state.notice)}</div>`);
+  if (state.notice) parts.push(`<div class="note" id="consumer-notice">${esc(state.notice)}</div>`);
   if (state.checkoutReturn && state.account && (!state.caseId || state.checkoutReturn.caseId === state.caseId)) {
     const pending = state.checkoutReturn.status === 'pending';
     parts.push(`<div class="note${pending ? '' : ' stop'}">${pending ? 'Your payment has not been confirmed yet. Check again before starting another checkout.' : 'We could not open your saved report. Try again, or select a saved report below.'}<br><button class="secondary" id="checkout-return-retry">${pending ? 'Check payment' : 'Try again'}</button></div>`);
@@ -1367,7 +1367,7 @@ function renderPacketBlock(pv) {
     <div class="row">
       <button class="primary" id="packet-save">Save and review packet</button>
     </div>
-    ${packet.approved ? '<p class="evidence">Your packet is approved.</p>' : ''}
+    ${packet.approved ? '<p class="evidence" id="packet-approved-status">Your packet is approved.</p>' : ''}
     ${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}
     <div class="packet-review">
       <h3>Read your full packet</h3>
@@ -1377,7 +1377,7 @@ function renderPacketBlock(pv) {
       <button class="primary" id="packet-approve" disabled>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print letter and evidence</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download correction packet</button>
-      ${packet.download_available ? '<p class="note">Your packet is ready. Download it to get the letter, forms and selected document copies. Print all of them. Fill in the forms and sign where shown. Mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
+      ${packet.download_available ? '<p class="note" id="packet-ready-status">Your packet is ready. Download it to get the letter, forms and selected document copies. Print all of them. Fill in the forms and sign where shown. Mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
     </div>`;
 }
 
@@ -1478,6 +1478,8 @@ async function wirePacket(panel) {
   const markChanged = () => {
     edits++;
     previewCurrent = false;
+    state.notice = null;
+    for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status']) if (el(id)) el(id).hidden = true;
     for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed']) if (el(id)) el(id).disabled = true;
     if (reviewed) reviewed.checked = false;
     if (el('packet-preview-status')) el('packet-preview-status').textContent = 'Your packet changed. Select Save and review packet to read the new version.';
@@ -1550,7 +1552,8 @@ function comparisonFactList(issue) {
       const source = f.definition_source;
       return `<span class="evidence">${source.kind === 'HISTORY_PERIOD' ? 'What the payment period means' : 'What the payment code means'}: ${esc(readableFactLabel(f.source_field))} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)}: ${esc(source.url)}</span>`;
     }
-    return `<span class="evidence">${esc(readableFactLabel(f.source_field))}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null ? ` → read as <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
+    const maskedReference = f.source_field === 'account.masked_identifier' || /^MASK-[A-Z0-9]+$/.test(String(f.normalized_value || '')) && /account[ _.-]+(?:number|identifier)/i.test(String(f.source_field || ''));
+    return `<span class="evidence">${esc(readableFactLabel(f.source_field))}: printed <b>${esc(f.raw_value)}</b>${f.normalized_value != null && !maskedReference ? ` → read as <b>${esc(f.normalized_value)}</b>` : ''}</span>`;
   }).join('');
 }
 

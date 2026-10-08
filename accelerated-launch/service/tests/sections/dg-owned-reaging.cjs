@@ -1,5 +1,5 @@
 'use strict';
-const { packetText } = require('../packet-pdf-assertions.cjs');
+const { packetText, comparableText } = require('../packet-pdf-assertions.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const formats = require('../../formats.cjs');
@@ -56,7 +56,11 @@ async function run(service, check) {
   check.equal(issue.classification, 'POTENTIAL_VIOLATION', 'corrected-date/new-episode uncertainty keeps internal potential confidence');
   check.equal(issues.publicIssue(issue).consumer_label, 'VIOLATION', 'the consumer uses the sole breach term');
   check.equal(issue.eligible, true, 'the supported verification packet is selectable');
-  check.match(issue.uncertainty, /earlier date was corrected.*separate delinquency episode/, 'the remaining uncertainty is stated specifically');
+  check.match(issue.uncertainty, /corrected the old date.*new period of missed payments.*check the account history/, 'the specific corrected-date and new-period uncertainty uses familiar words and gives the next step');
+  const consumer = issues.publicIssue(issue);
+  check.match(consumer.explanation, /same account lists 2018-01-01.*first missed-payment date.*earlier report dated 2025-06-12.*current report lists 2020-01-01.*dated 2026-06-12/, 'plain explanation retains both report dates and both first missed-payment dates');
+  check.match(consumer.rule_assessment.requirement, /first missed-payment date.*same account.*old date was wrong.*new period of missed payments/, 'the plain rule retains the account-history correction and new-period exceptions');
+  check.equal(/same obligation|first-delinquency|delinquency anchor|delinquency episode|supported correction/.test([consumer.explanation, consumer.uncertainty, consumer.rule_assessment.requirement].join(' ')), false, 'consumer prose avoids re-aging jargon without changing printed source labels');
   check.deepEqual(issue.source_facts.filter((fact) => fact.field === 'tradeline.firstDelinquencyDate')
     .map((fact) => [fact.raw_value, fact.normalized_value, fact.location.line, fact.source_file_id, fact.report_reference_date]),
   [['01/01/2018', '2018-01-01', 7, 'fictional-earlier-file', '2025-06-12'],
@@ -65,7 +69,7 @@ async function run(service, check) {
   check.equal((packet.body.split('EVIDENCE REFERENCES')[0].match(/^\s*\d+\. /gm) || []).length, 1, 'one chosen violation creates one request');
   check.match(packet.body, /Earlier report 2025-06-12:.*printed "01\/01\/2018"/, 'the packet names the earlier raw anchor and report');
   check.match(packet.body, /Current report 2026-06-12:.*printed "01\/01\/2020"/, 'the packet names the current raw anchor and report');
-  check.match(packet.body, /reporting period has not been restarted/, 'the request asks for anchor verification and correction of an unsupported restart');
+  check.match(comparableText(packet.body), /first missed-payment date against the account history.*correct it if wrong.*wrong date has not restarted how long this debt can stay on my report/, 'the printable request asks for date correction and checks that a wrong date has not extended reporting');
   check.equal(/probable violation|potential violation|undefined/i.test(packet.body), false, 'consumer packet wording contains no obsolete verdict or invented source');
   check.match(journey.assessmentReportBody(results.renderResultSet(ctx), 'fictional'), /Earlier report 2025-06-12/, 'assessment downloads retain the same earlier source');
   const bound = JSON.parse(packets.issueContent(issue));

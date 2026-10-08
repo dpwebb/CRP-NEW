@@ -24,21 +24,21 @@ const RULE_BY_REGION = Object.freeze({
 });
 
 const REPORT_RULES = Object.freeze({
-  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': 'The original delinquency anchor for the same continuing obligation must not be replaced by a later date without a supported correction or a new delinquency episode.',
+  'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': 'The first missed-payment date for the same account must not move forward unless the account history shows the old date was wrong or a new period of missed payments began.',
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': 'An account cannot close before it opened.',
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': 'An account cannot first be reported before it opened.',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': 'An account cannot be both open and closed on the same report.',
-  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': 'An account reported paid in full cannot also show a positive amount currently due.',
-  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': 'A past-due amount cannot exceed the current balance on the same account snapshot.',
-  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': 'The reported revolving balance and explicit credit-limit fields must be reconcilable.',
-  'COMMON-ERROR-DUPLICATE-REPORTING': 'One account should not be presented as two separate current obligations in the same report.',
-  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': 'One account should not carry contradictory responsibility labels in the same reporting snapshot.',
-  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': 'A collection and its linked original account should not misstate one obligation as two amounts currently due.',
-  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first delinquency cannot predate account opening or occur after the report was issued.',
-  'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': 'One account and period cannot carry two contradictory report-defined payment statuses.',
-  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'A reported adverse event needs a usable date anchor to permit verification.',
-  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'A reported write-off needs a usable charge-off date to permit verification.',
-  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': 'A reported closure needs a usable closed date to permit verification.'
+  'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': 'An account marked paid in full cannot also show money still owed.',
+  'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': 'The past-due amount cannot be more than the current balance on the same account in the same report.',
+  'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': 'A balance on a credit account with a credit limit of zero needs an explanation.',
+  'COMMON-ERROR-DUPLICATE-REPORTING': 'The same account should not be listed as two separate debts in one report.',
+  'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': 'One report should not give conflicting answers about who is responsible for the same account.',
+  'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': 'A debt collection entry and its linked original account should not make one debt look like two amounts still owed.',
+  'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first missed payment cannot happen before the account opened or after the report date.',
+  'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': 'One report cannot give two conflicting payment statuses for the same account and period.',
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'A reported account problem needs a date so it can be checked.',
+  'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'If a report says the lender wrote off an account as a loss, it needs the write-off date so this can be checked.',
+  'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': 'If a report says an account is closed, it needs the closed date so this can be checked.'
 });
 
 /* Only report-internal conflicts with two identifiable printed values are admitted in this batch.
@@ -261,8 +261,8 @@ function assess(issue, record, evaluation, extraction) {
     || record.status !== 'RESOLVED' && record.shared_facts_status !== 'RESOLVED') return null;
   let requirement = REPORT_RULES[issue.check_id];
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE') {
-    if (issue.reason === 'DATE_AFTER_REPORT_ISSUED') requirement = 'A payment or first delinquency cannot occur after the report was issued.';
-    else if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED') requirement = 'A payment or first delinquency cannot predate the opening of its account.';
+    if (issue.reason === 'DATE_AFTER_REPORT_ISSUED') requirement = 'A payment or first missed payment cannot happen after the report date.';
+    else if (issue.reason === 'DATE_BEFORE_ACCOUNT_OPENED') requirement = 'A payment or first missed payment cannot happen before the account opened.';
   }
   if (!requirement) return null;
   const historical = reaging.validatedSources(issue, extraction, evaluation.reaging_baselines);
@@ -316,9 +316,9 @@ function assess(issue, record, evaluation, extraction) {
     source_version: rule ? rule.source_version : null,
     jurisdiction: evaluation.region,
     required_facts: required,
-    unresolved: historical ? 'The reports do not establish whether the earlier date was corrected or whether a separate delinquency episode applies.' : omission
-      ? 'The report does not establish whether the missing date is necessary for this information to be complete for its use or whether the underlying file contains it.'
-      : 'The report does not establish which printed value is inaccurate or the source records and procedures used to prepare it.'
+    unresolved: historical ? 'The later report may have corrected the old date or show a new period of missed payments.' : omission
+      ? 'The missing date may be needed to check this entry. The bureau or lender may have the date in its records.'
+      : 'The report does not show which value is wrong or how the information was checked.'
   };
 }
 

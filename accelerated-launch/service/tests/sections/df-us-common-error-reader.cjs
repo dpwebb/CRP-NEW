@@ -240,7 +240,7 @@ async function run(t, check) {
   check.equal((await t.request('POST', `/api/cases/${caseId}/evaluate`, { token: owner.token })).status, 201, 'the uploaded family report reaches assessment');
   const view = (await t.request('GET', `/api/cases/${caseId}/packet`, { token: owner.token })).json.view;
   const candidate = (view.eligible_issues || []).find((issue) => issue.rule_assessment?.check_id === REVOLVING
-    || issue.rule_assessment?.requirement === 'The reported revolving balance and explicit credit-limit fields must be reconcilable.');
+    || issue.rule_assessment?.requirement === 'A balance on a credit account with a credit limit of zero needs an explanation.');
   check.ok(candidate, 'the real HTTP journey offers the revolving issue for selection');
   if (candidate) {
     check.equal(candidate.consumer_label, 'VIOLATION', 'the selectable issue uses VIOLATION');

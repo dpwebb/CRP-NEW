@@ -247,9 +247,9 @@ function contentFindingFacts(requiredFacts) {
 /** Recorded issue-specific request wording (recorded before enabling each path — never blanket). */
 const POTENTIAL_WORDING = Object.freeze({
   'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': {
-    explain: (i) => `The same obligation prints a first-delinquency date of ${i.evidence.earlier_anchor} in the earlier report dated ${i.evidence.earlier_report_date}, and ${i.evidence.current_anchor} in the current report dated ${i.evidence.current_report_date}. The original delinquency date has moved forward.`,
-    uncertainty: 'The reports do not establish whether the earlier date was corrected or whether a separate delinquency episode applies. Verify the original delinquency against the account history.',
-    request: 'please verify the original first-delinquency date against the account history, correct an unsupported date change, and ensure the reporting period has not been restarted'
+    explain: (i) => `The same account lists ${i.evidence.earlier_anchor} as the first missed-payment date in the earlier report dated ${i.evidence.earlier_report_date}. The current report lists ${i.evidence.current_anchor} for that date and is dated ${i.evidence.current_report_date}. The date has moved forward.`,
+    uncertainty: 'The later report may have corrected the old date or show a new period of missed payments. Ask the bureau to check the account history.',
+    request: 'please check the first missed-payment date against the account history and correct it if wrong. Please make sure a wrong date has not restarted how long this debt can stay on my report'
   },
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': {
     explain: (i) => `This report prints ${recordLabel(i)} with an opened date later than its closed date (${(i.evidence || {}).opened} after ${(i.evidence || {}).closed}).`,
@@ -280,18 +280,18 @@ const POTENTIAL_WORDING = Object.freeze({
     request: 'please verify the balance and the past-due amount for this account and correct the inconsistency'
   },
   'COMMON-ERROR-DUPLICATE-REPORTING': {
-    explain: (i) => `This report prints two records (${recordLabel(i)} and account ${(i.evidence || {}).duplicate_of_record}) with the same kind, identifying dates, source report, masked account identifier and a matching printed fact, which may be the same account reported twice.`,
-    uncertainty: 'The identity is corroborated but duplication is unconfirmed: a legitimate original-creditor entry and a collector entry, a transfer, or different report snapshots can produce similar entries. This is a qualified potential-duplicate review, not a definite finding.',
+    explain: (i) => `The two entries (${recordLabel(i)} and account ${(i.evidence || {}).duplicate_of_record}) have matching account details. They may list the same account twice.`,
+    uncertainty: 'Similar entries may come from the original lender and a debt collector, an account transfer, or reports from different dates. Ask the bureau whether these entries list the same account twice.',
     request: 'please verify whether these two entries are the same account reported twice and correct any duplication'
   },
   'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': {
-    explain: (i) => `This report prints the same corroborated account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) with two different responsibility labels (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in the same reporting snapshot.`,
-    uncertainty: 'A joint account, an authorized-user role, a changed responsibility over time, or a masked-identifier collision can produce different labels. The report does not resolve which applies.',
+    explain: (i) => `The same account (${recordLabel(i)} and account ${(i.evidence || {}).other_record}) has two different labels for who is responsible (${(i.evidence || {}).responsibility} and ${(i.evidence || {}).other_responsibility}) in this report.`,
+    uncertainty: 'The labels may describe a joint account, someone allowed to use the account, or a change in who is responsible. Partly hidden account numbers can also look alike. The report does not show which explanation applies.',
     request: 'please verify the responsibility on this account and correct the inconsistency'
   },
   'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT': {
     explain: (i) => `This report prints ${recordLabel(i)} as ${String((i.evidence || {}).type || 'revolving credit')} with a balance of ${(i.evidence || {}).balance} and an explicit credit limit of zero.`,
-    uncertainty: 'The printed fields need verification. A zero limit may reflect a closed or restricted line; the report does not establish how a lender scored this account.',
+    uncertainty: 'The zero limit may mean the account is closed or cannot be used. The bureau should check the balance and limit. The report does not show how a lender used this account when calculating a credit score.',
     request: 'please verify the credit limit and balance for this account and correct either field if inaccurate'
   },
   'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': {
@@ -304,13 +304,13 @@ const POTENTIAL_WORDING = Object.freeze({
       : 'please verify the paid or settled status and past-due amount, and correct any inaccurate value'
   },
   'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': {
-    explain: (i) => `This report prints a ${(i.evidence || {}).field === 'last_payment' ? 'last-payment' : 'first-delinquency'} date of ${(i.evidence || {}).value} for ${recordLabel(i)}, which conflicts with another printed date on this entry or report.`,
+    explain: (i) => `This report lists a ${(i.evidence || {}).field === 'last_payment' ? 'last payment' : 'first missed-payment'} date of ${(i.evidence || {}).value} for ${recordLabel(i)}. It does not agree with another date on this account or report.`,
     uncertainty: 'The report shows a date conflict. It does not establish the correct date without the account history.',
-    request: 'please verify the last-payment or first-delinquency date against the account history and correct it if inaccurate'
+    request: 'please check the last payment date or first missed-payment date against the account history and correct it if wrong'
   },
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': {
     explain: (i) => `This report prints a collection entry and linked original account with amounts due (${(i.evidence || {}).collection_amount} and ${(i.evidence || {}).original_amount}).`,
-    uncertainty: 'Both entries may describe one obligation; their presence alone does not prove double collection or an incorrect balance.',
+    uncertainty: 'Both entries may describe the same debt. Seeing both does not prove that the debt is being collected twice or that the balance is wrong.',
     request: 'please verify how the original account and collection balances relate and correct any duplicate or inaccurate amount'
   },
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness items read from an entry's own

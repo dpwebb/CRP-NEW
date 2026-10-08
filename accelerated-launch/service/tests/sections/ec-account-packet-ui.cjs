@@ -169,6 +169,32 @@ async function currentPreviewApproval() {
   assert.equal(approved.length, 1); assert.equal(approved[0].body.reviewed_version, 'current-A', 'approval binds the exact displayed preview version');
   assert.equal(h.calls.filter(row => /\/(select|wording|correspondence)$/.test(row.url)).length, 0, 'approval must not write unseen packet content');
 }
+async function dirtyPreviewStatus() {
+  const h = harness(() => ({ view: packetView(true), requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  h.evaluate('state.notice = "Packet approved. Download it.";');
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your packet is approved.*Your packet is ready/s);
+  h.node('packet-wording').value = 'Unsaved words after approval'; h.node('packet-wording').oninput();
+  for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status']) {
+    assert.equal(h.node(id).hidden, true, 'an unsaved edit hides the stale ' + id + ' message');
+  }
+  assert.equal(h.evaluate('state.notice'), null, 'the old approval notice cannot return on the next render');
+  assert.match(h.node('packet-preview-status').textContent, /Save and review/);
+  assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'wording changes do not silently save or approve');
+}
+async function printedMaskedReference() {
+  const h = harness(() => ({ ok: true }));
+  h.context.facts = [
+    { source_field: 'account.masked_identifier', raw_value: '****1234', normalized_value: 'MASK-1234' },
+    { source_field: 'Earlier report 2025-06-12: Masked account number', raw_value: '****5678', normalized_value: 'MASK-5678' },
+    { source_field: 'account.first_delinquency', raw_value: '01/01/2018', normalized_value: '2018-01-01' }
+  ];
+  const text = h.evaluate('comparisonFactList({ source_facts: facts })');
+  assert.match(text, /\*\*\*\*1234/); assert.match(text, /\*\*\*\*5678/);
+  assert.ok(!/MASK-1234|MASK-5678/.test(text), 'the comparison keeps printed account references without an internal masked token');
+  assert.match(text, /01\/01\/2018.*read as.*2018-01-01/, 'date normalization stays available beside the printed date');
+}
 async function packetDraftDocumentReturn() {
   const h = harness(request => {
     if (request.url === '/api/account/profile' || request.method === 'PUT') return { profile: { full_name: request.body?.profile?.full_name || 'Fictional Consumer' } };
@@ -480,7 +506,7 @@ async function packetLoadFailureRetry() {
   assert.equal(h.calls.length, before, 'a previous account retry cannot read through a new session');
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
-  currentPreviewApproval, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
+  currentPreviewApproval, dirtyPreviewStatus, printedMaskedReference, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
