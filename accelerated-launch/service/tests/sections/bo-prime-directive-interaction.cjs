@@ -268,7 +268,9 @@ async function run(service, check) {
   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
   const billingBox = post.elementById('billingView').innerHTML;
   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
-  check.ok(/Prices are in CAD and shown before you buy/.test(billingBox), 'and states the purchase terms before purchase');
+  check.ok(/Prices are in CAD\./.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
+    && /subscription renews until you cancel/i.test(billingBox) && /Cancelling stops the next charge/.test(billingBox)
+    && /Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal, cancellation and remaining access before purchase');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
 
   return { interaction: 'select -> save full preview -> edit disables approval -> save and read new preview -> approve -> download against the real service' };
