@@ -5,7 +5,7 @@
 const { ADAPTERS, adaptersForRegion } = require('../adapters/rule-adapters.cjs');
 const APPLICABILITY = require('../adapters/applicability-records.json');
 
-const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { validatedDefinition } = require('./report-code-definitions.cjs');
 const reaging = require('./reaging.cjs');
 
@@ -96,7 +96,8 @@ function paymentHistorySources(issue, record) {
   const cells = (record.facts && record.facts['account.paymentHistoryCells']) || [];
   if (!Array.isArray(cells)) return null;
   const inPeriod = cells.filter((c) => c && c.period === e.period && c.uncertain !== true && c.performance_usable !== false
-    && c.code != null && c.meaning && c.location && c.raw_period);
+    && c.code != null && c.meaning && c.location && c.raw_period
+    && (!requiresPrintedHistoryDefinition(c) || validatedPrintedHistoryDefinition(c)));
   const first = inPeriod.find((c) => c.code === e.first_code && c.meaning === e.first_meaning);
   const second = inPeriod.find((c) => c !== first && c.code === e.second_code && c.meaning === e.second_meaning);
   if (!first || !second || String(first.meaning).trim().toUpperCase() === String(second.meaning).trim().toUpperCase()) return null;
@@ -107,12 +108,30 @@ function paymentHistorySources(issue, record) {
     const role = index === 0 ? 'first_printed_cell' : 'second_printed_cell';
     const facts = [{ field: 'account.paymentHistoryCells', role,
       source: { raw_value: cell.raw_symbol ? 'Graphical repayment symbol' : cell.raw_code || cell.code, normalized_value: cell.code,
-        source_field: `Payment history ${cell.raw_period}`, location: cell.location,
+        source_field: cell.printed_definition && cell.source_field || `Payment history ${cell.raw_period}`,
+        location: { ...cell.location, ...(cell.row_label_location ? { caption_location: cell.row_label_location } : {}) },
         record_index: record.record_index,
         ...(cell.raw_symbol ? { raw_symbol: cell.raw_symbol } : {}),
         ...(cell.legend ? { legend: cell.legend } : {}),
         ...(cell.period_location ? { period_location: cell.period_location } : {}),
         ...(cell.code_definition ? { code_definition: cell.code_definition } : {}) } }];
+    const printedDefinition = validatedPrintedHistoryDefinition(cell);
+    if (printedDefinition) facts.push({ field: 'account.paymentHistoryPrintedDefinition', role: `${role}_printed_definition`,
+      source: { raw_value: printedDefinition.location.raw || `${printedDefinition.code}=${printedDefinition.meaning}`,
+        normalized_value: printedDefinition.meaning,
+        source_field: printedDefinition.heading_location?.raw || 'Report printed payment-history key',
+        record_index: record.record_index, location: { ...printedDefinition.location,
+          ...(printedDefinition.heading_location ? { caption_location: printedDefinition.heading_location } : {}),
+          ...(printedDefinition.code_location ? { code_location: printedDefinition.code_location } : {}),
+          ...(printedDefinition.meaning_location ? { meaning_location: printedDefinition.meaning_location } : {}),
+          ...(printedDefinition.alternatives ? { alternatives: printedDefinition.alternatives } : {}) } } });
+    if (printedDefinition) facts.push({ field: 'account.paymentHistoryPrintedPeriod', role: `${role}_printed_period`,
+      source: { raw_value: cell.period_location.month.raw, normalized_value: cell.period,
+        source_field: cell.period_location.month.source_field || 'Payment history period', record_index: record.record_index,
+        location: { ...cell.period_location.month,
+          ...(cell.period_location.label ? { caption_location: cell.period_location.label } : {}),
+          ...(cell.period_location.year ? { year_location: cell.period_location.year } : {}),
+          ...(cell.period_location.heading ? { heading_location: cell.period_location.heading } : {}) } } });
     const definition = cell.code_definition && validatedDefinition(cell, record);
     if (definition) facts.push({ field: 'account.paymentHistoryDefinition', role: `${role}_definition`,
       source: { raw_value: definition.meaning, normalized_value: cell.meaning,
@@ -262,6 +281,7 @@ function assess(issue, record, evaluation, extraction) {
       || field === 'account.paymentHistoryDefinition' && paymentHistory && source.code_definition
         && source.normalized_value === source.code_definition.meaning
       || field === 'account.paymentHistoryPeriodAnchor' && paymentHistory
+      || ['account.paymentHistoryPrintedDefinition', 'account.paymentHistoryPrintedPeriod'].includes(field) && paymentHistory
       || field === 'account.paymentHistoryPeriodDefinition' && paymentHistory && source.period_definition
       || field === 'account.paymentHistoryLegend' && paymentHistory
         && source.raw_value === source.normalized_value
@@ -306,7 +326,8 @@ function assess(issue, record, evaluation, extraction) {
 function hasUnusableDecisiveSource(issue, record, extraction) {
   if (!record) return true;
   if (issue.check_id === 'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY'
-    && ['FAM-US-EXP-CONSUMER', 'FAM-GB-EXP-CONSUMER'].includes(record.reader_family_id)
+    && (['FAM-US-EXP-CONSUMER', 'FAM-GB-EXP-CONSUMER'].includes(record.reader_family_id)
+      || (record.facts?.['account.paymentHistoryCells'] || []).some(requiresPrintedHistoryDefinition))
     && !paymentHistorySources(issue, record)) return true;
   if (issue.check_id === 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE'
     && issue.reason === 'DATE_AFTER_REPORT_ISSUED' && record.report_reference_date && !reportReference(record)) return true;

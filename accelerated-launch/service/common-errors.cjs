@@ -8,7 +8,7 @@
 const CHECK_CLASS = 'COMMON_ERROR';
 const { CHECKS: PRODUCT_CHECKLIST } = require('./common-error-checklist.cjs');
 const reaging = require('./reaging.cjs');
-const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { validatedDefinition } = require('./report-code-definitions.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 
@@ -557,6 +557,7 @@ function performanceCellUsable(cell, record) {
   const definition = external && validatedDefinition(cell, record);
   return Boolean(cell && cell.code != null && String(cell.meaning || '').trim()
     && cell.uncertain !== true && cell.performance_usable !== false
+    && (!requiresPrintedHistoryDefinition(cell) || validatedPrintedHistoryDefinition(cell))
     && (!external || definition && definition.performance_usable === true));
 }
 

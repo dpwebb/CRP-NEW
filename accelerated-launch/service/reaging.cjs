@@ -3,7 +3,7 @@
 /* One checklist mapping over frozen, owned report snapshots. Later adverse/update/placement
  * dates are never substitutes for a first-delinquency anchor. */
 const { MATCH, matchRecords, recordBureau } = require('./account-identity.cjs');
-const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition } = require('./report-fact-sources.cjs');
 const { calendar: { parseIso, daysInMonth } } = require('../adapters/evaluation-primitives.cjs');
 const CHECK_ID = 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL';
 const ANCHOR = 'tradeline.firstDelinquencyDate';
@@ -55,17 +55,25 @@ function fixedEvidence(record) {
   for (const cell of history) {
     if (!cell || cell.uncertain === true || !cell.code || !cell.raw_period || !cell.location
       || cell.location.trusted === false || !historyPeriod(cell.period)
+      || requiresPrintedHistoryDefinition(cell) && !validatedPrintedHistoryDefinition(cell)
       || historyPeriod(cell.period).first > reportRange(record).last
       || !/collection|write[ -]?off|bad debt|charge[ -]?off/i.test(cell.meaning || '')) continue;
     const definition = legend.find((item) => item.code === cell.code && item.meaning === cell.meaning
       && item.location && item.location.trusted !== false);
     if (!definition) continue;
     return [{ field: 'account.fixed_obligation_history', source: { raw_value: cell.code,
-      normalized_value: cell.code, source_field: `Payment history ${cell.raw_period}`, location: cell.location,
+      normalized_value: cell.code, source_field: cell.source_field || `Payment history ${cell.raw_period}`,
+      location: { ...cell.location, ...(cell.row_label_location ? { caption_location: cell.row_label_location } : {}) },
+      ...(cell.period_location ? { period_location: cell.period_location } : {}),
       record_index: record.record_index } },
-    { field: 'account.fixed_obligation_legend', source: { raw_value: `${definition.code}=${definition.meaning}`,
+    { field: 'account.fixed_obligation_legend', source: { raw_value: cell.printed_definition?.location.raw || `${definition.code}=${definition.meaning}`,
       normalized_value: definition.meaning, source_field: 'Report-defined payment history meaning',
-      location: definition.location, record_index: record.record_index } }];
+      location: cell.printed_definition ? { ...cell.printed_definition.location,
+        ...(cell.printed_definition.heading_location ? { caption_location: cell.printed_definition.heading_location } : {}),
+        ...(cell.printed_definition.code_location ? { code_location: cell.printed_definition.code_location } : {}),
+        ...(cell.printed_definition.meaning_location ? { meaning_location: cell.printed_definition.meaning_location } : {}),
+        ...(cell.printed_definition.alternatives ? { alternatives: cell.printed_definition.alternatives } : {}) }
+        : definition.location, record_index: record.record_index } }];
   }
   return null;
 }
@@ -94,6 +102,7 @@ function cureBetween(earlier, current) {
   return Array.isArray(cells) && cells.some((cell) => {
     const period = cell && historyPeriod(cell.period);
     return period && cell.location && cell.uncertain !== true && cell.code != null
+      && (!requiresPrintedHistoryDefinition(cell) || validatedPrintedHistoryDefinition(cell))
       && /current|satisf|on[ -]?time|paid as agreed|pays as agreed/i.test(cell.meaning || '')
       && period.first > anchorRange(earlier).last && period.last < anchorRange(current).first;
   });

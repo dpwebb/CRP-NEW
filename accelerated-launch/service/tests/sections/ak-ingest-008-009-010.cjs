@@ -81,6 +81,8 @@ async function run(t, check) {
     ['Equifax Consumer Credit Report', 'Continued', 'Closed January 15, 2020']
   ] }), { mode: 'REPORT', country: 'US' });
   check.equal(repeated.records.length, 1, 'a repeated same-bureau header on a dateless continuation preserves its account boundary');
+  check.equal(repeated.records[0].facts['liability.closedDate'], '2020-01-15', 'the supported continuation closure remains on its owning account');
+  check.equal(repeated.records[0].printed.closed_date.location.page, 2, 'the continuation closure keeps its actual second-page source');
 
   /* ------------------------------------------------------------------ GAP-INGEST-010: upload limits surface */
   const limits = uploads.uploadLimits();

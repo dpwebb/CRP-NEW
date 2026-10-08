@@ -2,6 +2,8 @@
 
 Batch 55 implements the source-supported parts of the owner's Canada, US, UK and Australia field-gap request. The active scope remains the 19-item common-error checklist, all 82 jurisdiction selections and consumer **VIOLATION** terminology. This is a local implementation record; the new candidate has not been deployed.
 
+Batch 56 subsequently adds shared physical card fields, positioned Category/Rating history, exact printed key custody and AU account-reference delivery. Its current evidence and remaining boundaries are maintained in [Artifact and public-source reader recovery](CRP_READER_ARTIFACT_PUBLIC_SOURCE_RECOVERY_2026_10_07.md); the Batch 55 figures below describe that earlier freeze.
+
 ## Delivered mappings
 
 | Source | Recovered facts and consumer outcome |

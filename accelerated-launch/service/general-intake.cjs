@@ -1678,6 +1678,7 @@ function buildRecords(pages, convention) {
   let index = 0;
   let current = null;
   let nonAccountSection = false;
+  let seenBureau = null;
   for (const page of pages) {
     // A physical card's missing heading cannot borrow the preceding page's record.
     if (page.lines.some((line) => line.column_boundary || line.column_reset)) current = null;
@@ -1691,7 +1692,15 @@ function buildRecords(pages, convention) {
         if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
         else continue;
       }
-      if (bureauSectionOf(text) || /^(?:GENERATED|FILE OPENED)\s*:/i.test(text)
+      // Report segmentation already separates bureaus and distinct report dates. Repeated headers
+      // retained inside one supported continuation must not split its existing account.
+      const sectionBureau = bureauSectionOf(text);
+      if (sectionBureau) {
+        if (seenBureau !== sectionBureau) current = null;
+        seenBureau = sectionBureau;
+        continue;
+      }
+      if (/^(?:GENERATED|FILE OPENED)\s*:/i.test(text)
         || /^TOTAL\s+(?:CREDIT\s+LIMIT|BALANCE|PAST DUE|ACCOUNTS)\b/i.test(text)
         || /\bTOTAL\s+(?:BALANCE|CREDIT LIMIT)\s*:?\s*[$£€\d]/i.test(text)
         || /^(?:DATE OF BIRTH|CURRENT ADDRESS|PREVIOUS ADDRESS)\b|^(?:PREVIOUS|FORMER|CURRENT)\s+(?:\d+|FLAT\b)/i.test(text)

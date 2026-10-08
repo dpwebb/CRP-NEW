@@ -15,6 +15,7 @@ const PRINTED_LABEL = Object.freeze({
   'account.reported_identity': /creditor|lender|account.*name|reported.*identity/i,
   'account.responsibility': /responsib|ownership/i,
   'account.pastDueAmount': /past.?due/i,
+  'account.paymentAmount': /payment.*amount|monthly.*payment|scheduled.*payment/i,
   'tradeline.lastPaymentDate': /last.*payment/i,
   'tradeline.firstDelinquencyDate': /first.*delinquen/i
 });
@@ -58,11 +59,12 @@ function sourceForField(record, field) {
   }
   if (!label) return null;
   const printed = record.printed || {};
-  const reading = Object.entries(printed).find(([key, p]) => p && (field === 'account.amount'
+  const readings = Object.entries(printed).filter(([key, p]) => p && (field === 'account.amount'
     ? label.test(key) : label.test(`${key} ${p.label || ''}`))
     && p.raw != null && p.location && p.location.trusted !== false && p.trusted !== false
     && (!p.status || p.status === 'RESOLVED') && !p.reason
     && String(p.normalized) === String(value));
+  const reading = readings.find(([key]) => key === field) || readings[0];
   if (reading) {
     return { raw_value: reading[1].raw, normalized_value: value, location: reading[1].location,
       source_field: reading[1].label || reading[0], record_index: record.record_index,
@@ -81,4 +83,40 @@ function sourceForField(record, field) {
       source_field: cell, record_index: record.record_index } : null;
 }
 
-module.exports = { sourceForField, reportReference };
+// Positioned history keeps the report's own key separate from the cell's interpreted meaning.
+// Recheck that association whenever a stored result is assessed or an approved packet is downloaded.
+function validatedPrintedHistoryDefinition(cell) {
+  const definition = cell && cell.printed_definition;
+  if (!definition || definition.trusted !== true || definition.performance_usable === false
+    || definition.code !== cell.code || definition.meaning !== cell.meaning || !definition.location
+    || !cell.location || cell.location.trusted === false || !cell.period_location) return null;
+  const normalized = (value) => String(value ?? '').trim().replace(/\s+/g, ' ').toUpperCase();
+  if (normalized(cell.raw_code || cell.location.raw) !== normalized(cell.code)) return null;
+  const month = cell.period_location.month, year = cell.period_location.year;
+  if (!month?.raw || normalized(cell.raw_period) !== normalized(month.raw)
+    && normalized(cell.raw_period) !== normalized(month.raw + ' ' + (year?.raw || ''))) return null;
+  if (normalized(cell.period) !== normalized(year ? month.raw + ' ' + year.raw : month.raw)) return null;
+  if (definition.code_location || definition.meaning_location) {
+    if (normalized(definition.code_location?.raw) !== normalized(definition.code)
+      || normalized(definition.meaning_location?.raw) !== normalized(definition.meaning)) return null;
+  } else {
+    const escape = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pair = new RegExp('(?:^|\\s)' + escape(definition.code) + '\\s*=\\s*'
+      + escape(definition.meaning) + '(?=\\s+[A-Z0-9]{1,4}\\s*=|\\s*$)', 'i');
+    if (!pair.test(definition.location.raw || '')) return null;
+  }
+  const locations = [definition.location, definition.code_location, definition.meaning_location,
+    definition.heading_location, cell.row_label_location, ...Object.values(cell.period_location)].filter(Boolean);
+  if (locations.some((loc) => loc.trusted === false || loc.page !== cell.location.page
+    || loc.file_id && cell.location.file_id && loc.file_id !== cell.location.file_id)) return null;
+  if ((definition.alternatives || []).some((entry) => entry.trusted !== true
+    || normalized(entry.code) !== normalized(definition.code)
+    || normalized(entry.meaning) !== normalized(definition.meaning) || entry.location?.trusted === false)) return null;
+  return definition;
+}
+
+function requiresPrintedHistoryDefinition(cell) {
+  return Boolean(cell && (Object.hasOwn(cell, 'printed_definition') || /^Rating:?$/i.test(cell.source_field || '')));
+}
+
+module.exports = { sourceForField, reportReference, validatedPrintedHistoryDefinition, requiresPrintedHistoryDefinition };
