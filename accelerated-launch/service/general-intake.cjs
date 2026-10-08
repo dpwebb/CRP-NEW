@@ -1806,8 +1806,13 @@ function buildRecords(pages, convention) {
       const collectionEntry = COLLECTION_ENTRY_RE.test(text);
       const collectionIdentity = explicitCollectionIdentity(text);
       const collectionCaption = COLLECTION_NAME_RE.exec(text);
+      const collectionHasValues = current?.kind === 'GENERAL_COLLECTION'
+        && ['account.masked_identifier', 'account.member_reference', 'tradeline.firstDelinquencyDate',
+          'tradeline.lastPaymentDate', 'account.balance', 'account.amount'].some((field) => current.facts[field] != null);
+      const memberNameCaption = collectionCaption?.[1].toUpperCase() === 'MEMBER NAME';
       const collectionNameBoundary = Boolean(collectionIdentity && collectionCaption
-        && (collectionSection || current?.kind !== 'GENERAL_COLLECTION' && collectionCaption[1].toUpperCase() !== 'MEMBER NAME'));
+        && (memberNameCaption ? collectionSection && !current
+          : current?.kind !== 'GENERAL_COLLECTION' || collectionHasValues));
       const hasCollectionName = Boolean(collectionIdentity && current?.kind === 'GENERAL_COLLECTION');
       const hasCollectionMember = current?.kind === 'GENERAL_COLLECTION' && /^\s*MEMBER\s+NUMBER\s*:/i.test(text);
       // A plain account heading after a collection still closes it, even without a date or balance.

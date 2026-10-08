@@ -96,7 +96,7 @@ async function run(t, check) {
   const role = first(t, collection().concat('Original Creditor: Fictional Original Bank'));
   check.equal(role.facts['account.reported_identity'], 'FICTIONAL COLLECTION A', 'the original-creditor caption does not replace collector identity');
   check.equal(sourceForField(role, 'account.reported_identity')?.raw_value, 'Fictional Collection A', 'collector identity remains bound to its own entry heading');
-  const repeatedName = first(t, collection().concat('Collector: Fictional Collection A'));
+  const repeatedName = first(t, ['Collection Account: Fictional Collection A', 'Collector: Fictional Collection A', ...collection().slice(1)]);
   check.equal(sourceForField(repeatedName, 'account.reported_identity'), null, 'two own collector-name captions remain ambiguous for the weaker identity match');
   check.equal(repeatedName.facts['account.balance'], 606, 'ambiguous identity does not suppress independent balance evidence');
   const inlineDelinquency = first(t, ['Collection Account: Fictional Collection A Date of First Delinquency: February 1, 2021',
@@ -112,6 +112,28 @@ async function run(t, check) {
   check.deepEqual(following.records.map((record) => [record.kind, record.facts['account.balance']]),
     [['CONSUMER_CREDIT_LIABILITY', 100], ['GENERAL_COLLECTION', 606]],
   'an explicit collection-agency caption also starts a fresh collection after an ordinary account');
+  const agencies = read(t, [header.concat(['Collection Agency: Fictional Collection A', ...collection().slice(1),
+    'Collection Agency: Fictional Collection B', ...collection({ name: 'Fictional Collection B', mask: '****9876',
+      member: 'FICT65432', delinquency: 'March 3, 2022', payment: 'April 4, 2022', balance: 817 }).slice(1)])]);
+  check.equal(agencies.records.length, 2, 'successive collection-agency headings create separate entries without a section heading');
+  check.deepEqual(agencies.records.map((record) => [record.kind, record.facts['account.masked_identifier'],
+    record.facts['tradeline.firstDelinquencyDate'], record.facts['tradeline.lastPaymentDate'], record.facts['account.balance']]),
+  [['GENERAL_COLLECTION', 'MASK-1234', '2021-02-01', '2021-02-01', 606],
+    ['GENERAL_COLLECTION', 'MASK-9876', '2022-03-03', '2022-04-04', 817]],
+  'each agency retains its own distinct reference, dates and unequal balance');
+  check.ok(agencies.records.every((record) => decisive.every((field) => sourceForField(record, field)?.location.trusted)),
+    'each agency retains usable own source evidence instead of contradictory merged captions');
+  const immediateAlias = read(t, [header.concat(['Collection Agency: Fictional Collection A',
+    'Collector: Fictional Alternate Name', ...collection().slice(1)])]);
+  check.equal(immediateAlias.records.length, 1, 'an immediate alternate collector caption before account facts stays within one entry');
+  check.equal(sourceForField(immediateAlias.records[0], 'account.reported_identity'), null,
+    'the immediate alternate collector caption leaves the same-entry name association ambiguous');
+  check.equal(immediateAlias.records[0].facts['account.balance'], 606, 'the ambiguous immediate alias preserves the independent own balance');
+  const sectionAlias = read(t, [header.concat(['Collections', 'Collection Agency: Fictional Collection A',
+    'Collector: Fictional Alternate Name', ...collection().slice(1)])]);
+  check.equal(sectionAlias.records.length, 1, 'a section heading does not split immediate alternate names into separate debt entries');
+  check.equal(sourceForField(sectionAlias.records[0], 'account.reported_identity'), null,
+    'an immediate alternate name under a collection section is also ambiguous');
 
   const section = read(t, [header.concat(['Collections', 'Collector: Fictional Collection A', 'Account Number: ****1234',
     'First Delinquency Date: February 1, 2021', 'Last Payment Date: February 1, 2021', 'Balance: $606',
