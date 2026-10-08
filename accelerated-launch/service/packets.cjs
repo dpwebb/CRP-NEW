@@ -633,14 +633,14 @@ function printingInstructions(packet) {
   return [
     'Print this letter and all evidence pages. Sign and date the letter.',
     ...(attached ? ['Open the documents folder in your download. Print each listed document and add it to your letter.'] : []),
-    ...forms.map(form => `Print ${form.filename} (${form.label}). Fill in the form. Sign where asked.`),
+    ...forms.map(form => `Print ${form.filename} (${form.label}). ${form.instructions}`),
     ...(packet?.support_snapshot?.requirements?.items || []),
     'Keep a copy. Mail the packet to the bureau address shown in your letter.'
   ];
 }
 function requiredFormManifest(packet) {
   return (packet?.support_snapshot?.form_assets || []).map(form => ({
-    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256
+    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256, instructions: form.instructions
   }));
 }
 function documentText(packet, row, selected) {

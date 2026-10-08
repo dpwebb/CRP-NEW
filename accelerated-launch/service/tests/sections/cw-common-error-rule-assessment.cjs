@@ -243,12 +243,13 @@ async function run(t, check) {
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token,
       body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana@example.test' } } })).status,
       200, 'the consumer supplies correspondence details');
+    await t.preparePostalPacket(owner, caseId);
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token })).status,
       200, 'the consumer approves the packet');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the packet downloads');
-    check.match(downloaded.text, /VIOLATION of report-data requirement:/,
-      'the packet names the report-data requirement');
+    check.match(downloaded.text, /VIOLATION[\s\S]*Reporting rule: An account cannot be both open and closed/,
+      'the actual PDF names the violation and its reporting rule');
   }
   return { source_linked_cases: cases.length, statutory_gate: false,
     ordinary_report_regions: regions.length, ordinary_report_checks_per_region: 6 };
