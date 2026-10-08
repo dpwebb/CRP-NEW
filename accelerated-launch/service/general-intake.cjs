@@ -13,6 +13,7 @@ const { acceptFact, loadPolicy } = require('../reported-fact-policy.cjs');
 const fdt = require('./fdt-recovery.cjs');
 const paymentHistoryGrid = require('./payment-history-grid.cjs');
 const { printedAmount } = require('./report-amount.cjs');
+const crypto = require('node:crypto');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
@@ -331,6 +332,9 @@ function lineLocation(line) {
 }
 
 const PAIRED_CAPTIONS = Object.freeze({
+  'COLLECTION ACCOUNT': 'identity', 'COLLECTION ENTRY': 'identity', COLLECTION: 'identity',
+  COLLECTOR: 'identity', 'COLLECTION AGENCY': 'identity', 'COLLECTION CREDITOR': 'identity', 'MEMBER NAME': 'identity',
+  'MEMBER NUMBER': 'collection_member',
   'ACCOUNT NAME': 'identity', CREDITOR: 'identity', LENDER: 'identity', 'CREDIT PROVIDER': 'identity',
   'ORGANISATION NAME': 'identity',
   'ACCOUNT NUMBER': 'identifier', 'ACCT NUMBER': 'identifier', 'ACCT NO': 'identifier',
@@ -534,6 +538,7 @@ function pairedCaptionLines(lines) {
           : kind === 'status' ? Boolean(statusReadingOf(`${name}: ${raw}`, []))
             : kind === 'role' ? Boolean(responsibilityOf(`${name}: ${raw}`))
               : kind === 'type' ? /^(?:CREDIT CARD|REVOLVING|LINE OF CREDIT)$/i.test(raw)
+                : kind === 'collection_member' ? /^[A-Za-z0-9][A-Za-z0-9 -]{1,39}$/.test(raw)
                 : /^[A-Za-z][A-Za-z0-9 &'.-]*$/.test(raw) && !BOILERPLATE_RE.test(raw);
     const geometry = caption.bbox && next.bbox;
     const aligned = geometry ? next.bbox.x0 <= caption.bbox.x1 && next.bbox.x1 >= caption.bbox.x0
@@ -642,11 +647,13 @@ function collectPages(model) {
    treated as duplicates only when their text and their geometry both match. A repeated heading (which shares
    only the header with a different body) is never mistaken for a repeated page. */
 function pageSignature(page) {
-  return (page.lines || []).map((l) => {
+  const signature = (page.lines || []).map((l) => {
     const text = String(l.text || '').replace(/\s+/g, ' ').trim();
     const bbox = l.bbox ? `@${l.bbox.x0},${l.bbox.y0},${l.bbox.x1},${l.bbox.y1}` : '';
     return text + bbox;
   }).filter((s) => s.trim()).join('\n');
+  // Equality uses the same complete text and geometry without returning the page's private contents.
+  return signature ? 'PAGE-SHA256-' + crypto.createHash('sha256').update(signature).digest('hex') : '';
 }
 
 /* GAP-INGEST-001 (strengthened): matching text and geometry — native or OCR — can conceal different visual
@@ -1095,6 +1102,12 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
     if (kind === null) kind = 'GENERAL_PUBLIC_RECORD';
   }
   if (facts['collection.delinquencyDate'] && kind === null) kind = 'GENERAL_COLLECTION';
+  if (currentKind === 'GENERAL_COLLECTION' && facts['collection.delinquencyDate']) {
+    facts['tradeline.firstDelinquencyDate'] = facts['collection.delinquencyDate'];
+    facts['tradeline.firstDelinquencyDatePrecision'] = canonicalPrinted.collection_delinquency_date.precision;
+    canonicalPrinted['tradeline.firstDelinquencyDate'] = { ...canonicalPrinted.collection_delinquency_date,
+      label: 'Date of First Delinquency' };
+  }
 
   /* OWNER-CANDIDATE-007 (B): record the ESTABLISHED (b) account/action context — the record's own printed
      COLLECTION / CHARGE-OFF / PLACED FOR COLLECTION wording — as a tri-state fact with source provenance. The
@@ -1169,7 +1182,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
         ambiguous: d.ambiguous === true ? true : undefined, alternative_normalized: d.alternative || null
       };
       if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
-    } else if (['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && ['DAY', 'MONTH'].includes(d.precision)
+    } else if (['GENERAL_ACCOUNT', 'GENERAL_COLLECTION', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && ['DAY', 'MONTH'].includes(d.precision)
       && ['FIRST REPORTED', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
       const field = up === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
         : up === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate';
@@ -1178,7 +1191,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
       canonicalPrinted[field] = { label: up, state: 'VALUE', status: 'RESOLVED',
         raw: d.raw, normalized: d.normalized, reason: null, location: null,
         kind: 'date', precision: d.precision };
-      if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
+      if (kind === null) kind = currentKind === 'GENERAL_COLLECTION' ? 'GENERAL_COLLECTION' : 'CONSUMER_CREDIT_LIABILITY';
     } else if (OVERDUE_LABELS.includes(up)) {
       facts['overdue.originalListingDate'] = d.normalized;
       facts['overdue.originalListingDatePrecision'] = d.precision || null;
@@ -1204,6 +1217,7 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
   const upText = String(text || '').toUpperCase();
   if (kind === null && !line.column_field && /OVERDUE|DEFAULT/.test(upText)) kind = 'OVERDUE_ACCOUNT';
 
+  if (currentKind === 'GENERAL_COLLECTION' && kind && kind !== 'GENERAL_PUBLIC_RECORD') kind = 'GENERAL_COLLECTION';
   return { facts, canonicalPrinted, kind };
 }
 
@@ -1253,6 +1267,23 @@ function explicitAccountIdentity(text) {
   const raw = match[2].split(/\s+(?=ACCOUNT\s+(?:NUMBER|TYPE|STATUS|STATE|START\s+DATE|END\s+DATE)|OPENED|CLOSED|(?:CURRENT\s+)?BALANCE|CREDIT\s+LIMIT|STATUS|RESPONSIBILITY|REGULAR\s+PAYMENT\s+VALUE)/i)[0].trim();
   const normalized = raw.toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
   return normalized && !BOILERPLATE_RE.test(raw) ? { raw, normalized, label: match[1] } : null;
+}
+
+/* An overdue amount does not identify a collection. Only a printed collection entry/section or an
+   explicit collector caption opens this block. Original-creditor captions are not collector identity. */
+const COLLECTION_SECTION_RE = /^\s*(?:COLLECTIONS|COLLECTION ACCOUNTS|ACCOUNTS IN COLLECTION|COLLECTION ENTRIES|COLLECTION INFORMATION)\s*:?\s*$/i;
+const COLLECTION_ENTRY_RE = /^\s*COLLECTION(?:\s+(?:ACCOUNT|ENTRY))?(?:\s+\d+)?\s*:\s*(.*?)\s*$/i;
+const COLLECTION_NAME_RE = /^\s*(COLLECTOR|COLLECTION AGENCY|COLLECTION CREDITOR|MEMBER NAME)\s*:\s*(.*?)\s*$/i;
+const COLLECTION_CONTINUED_RE = /^\s*COLLECTION(?:S|\s+ACCOUNTS?|\s+ENTRIES|\s+ENTRY)?\s*(?:\(\s*)?CONTINUED(?:\s*\))?\s*:?\s*$/i;
+
+function explicitCollectionIdentity(text) {
+  const entry = COLLECTION_ENTRY_RE.exec(String(text || ''));
+  const caption = COLLECTION_NAME_RE.exec(String(text || ''));
+  if (!entry && !caption) return null;
+  const raw = (entry ? entry[1] : caption[2]).split(/\s+(?=ACCOUNT\s+(?:NUMBER|STATUS)|(?:CURRENT\s+)?BALANCE|FIRST\s+DELINQUENCY|DATE\s+OF\s+FIRST\s+DELINQUENCY|LAST\s+PAYMENT|STATUS)/i)[0].trim();
+  const normalized = raw.toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  return normalized && !BOILERPLATE_RE.test(raw)
+    ? { raw, normalized, label: entry ? 'Collection account name' : `Collection account name (${caption[1]})` } : null;
 }
 
 /* A report-header date (Report Date / Prepared / Request / As Of) is the report's own metadata, not an account
@@ -1336,6 +1367,20 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     const identity = explicitAccountIdentity(line.text)?.normalized || accountIdentityToken(line.text);
     if (trusted && identity) canonical.facts['account.reported_identity'] = identity;
   }
+  const collectionIdentity = kind === 'GENERAL_COLLECTION' ? explicitCollectionIdentity(line.text) : null;
+  if (trusted && collectionIdentity) canonical.facts['account.reported_identity'] = collectionIdentity.normalized;
+  const member = kind === 'GENERAL_COLLECTION' ? /^\s*MEMBER\s+NUMBER\s*:\s*(.*?)\s*$/i.exec(String(line.text || '')) : null;
+  if (member) {
+    const raw = member[1].trim();
+    const usable = trusted && /^[A-Za-z0-9][A-Za-z0-9 -]{1,39}$/.test(raw)
+      && decisiveWordsTrusted(line, raw) !== false;
+    const token = usable ? 'MEMBER-' + crypto.createHash('sha256').update(raw.toUpperCase().replace(/[\s-]/g, '')).digest('hex').slice(0, 24) : null;
+    if (token) canonical.facts['account.member_reference'] = token;
+    printed['account.member_reference'] = { label: 'Member Number', state: usable ? 'VALUE' : 'UNRESOLVED',
+      status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', raw: token || '[member reference withheld]', normalized: token,
+      reason: usable ? null : 'UNTRUSTED_OR_UNREADABLE_MEMBER_REFERENCE', location: lineLocation(line),
+      kind: 'collection_member', privacy_redacted: true };
+  }
   const masked = maskedIdentifierToken(line.text);
   if (trusted && masked) canonical.facts['account.masked_identifier'] = masked;
   const accountType = /\b(?:ACCOUNT\s+TYPE|TYPE\s+OF\s+ACCOUNT)\s*[:\-]?\s*(CREDIT\s+CARD|REVOLVING|LINE\s+OF\s+CREDIT)\b/i.exec(String(line.text || ''));
@@ -1378,10 +1423,11 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   const reportedIdentity = canonical.facts['account.reported_identity'];
   if (trusted && reportedIdentity) {
     const at = String(line.text || '').toUpperCase().indexOf(reportedIdentity);
-    const explicitRaw = explicitAccountIdentity(line.text)?.raw;
+    const explicitRaw = collectionIdentity?.raw || explicitAccountIdentity(line.text)?.raw;
     if (explicitRaw || at >= 0) printed['account.reported_identity'] = { label: line.caption_label || explicitAccountIdentity(line.text)?.label || 'Creditor or account name',
       state: 'VALUE', raw: explicitRaw || String(line.text).slice(at, at + reportedIdentity.length),
       normalized: reportedIdentity, location: lineLocation(line), kind: 'account_identity' };
+    if (collectionIdentity && printed['account.reported_identity']) printed['account.reported_identity'].label = collectionIdentity.label;
   }
   const responsibility = canonical.facts['account.responsibility'];
   if (trusted && responsibility && canonical.facts['account.responsibilityRaw']) {
@@ -1686,12 +1732,32 @@ function buildRecords(pages, convention) {
   let current = null;
   let nonAccountSection = false;
   let seenBureau = null;
+  let collectionSection = false;
+  let previousPage = null;
   for (const page of pages) {
+    // A new physical page cannot lend its anonymous fields to a collection on the previous page.
+    // An explicit collection continuation heading is the supported exception.
+    const firstContent = page.lines.find((line) => String(line.text || '').trim()
+      && !bureauSectionOf(line.text) && !isReportHeaderLine(line.text) && !/^\s*PAGE\s+\d+(?:\s+OF\s+\d+)?\s*$/i.test(line.text));
+    const continuedCollection = firstContent?.trusted !== false && COLLECTION_CONTINUED_RE.test(firstContent?.text || '');
+    if (previousPage !== null && !continuedCollection) {
+      if (current?.kind === 'GENERAL_COLLECTION') current = null;
+      collectionSection = false;
+    }
+    previousPage = page.page;
     // A physical card's missing heading cannot borrow the preceding page's record.
     if (page.lines.some((line) => line.column_boundary || line.column_reset)) current = null;
     for (const line of pairedCaptionLines(page.lines)) {
       if (line.column_reset) { current = null; continue; }
       const text = String(line.text || '').trim();
+      if (COLLECTION_SECTION_RE.test(text)) {
+        current = null; collectionSection = line.trusted !== false; nonAccountSection = false; continue;
+      }
+      if (COLLECTION_CONTINUED_RE.test(text)) { collectionSection = line.trusted !== false; continue; }
+      if (/^(?:ACCOUNTS|ACCOUNT INFORMATION|TRADELINES|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|SUMMARY|PERSONAL INFORMATION|EMPLOYMENT|EMPLOYERS)\s*:?\s*$/i.test(text)) {
+        if (collectionSection || current?.kind === 'GENERAL_COLLECTION') current = null;
+        collectionSection = false;
+      }
       if (/^(?:CO[- ]?APPLICANTS|JOINT HOLDERS|RELATED PARTIES|FINANCIAL ASSOCIATES|EMPLOYMENT|EMPLOYERS)(?:\s|\/|$)/i.test(text)) {
         current = null; nonAccountSection = true; continue;
       }
@@ -1703,7 +1769,7 @@ function buildRecords(pages, convention) {
       // retained inside one supported continuation must not split its existing account.
       const sectionBureau = bureauSectionOf(text);
       if (sectionBureau) {
-        if (seenBureau !== sectionBureau) current = null;
+        if (seenBureau !== sectionBureau) { current = null; collectionSection = false; }
         seenBureau = sectionBureau;
         continue;
       }
@@ -1737,6 +1803,16 @@ function buildRecords(pages, convention) {
          line carries no date or dollar amount, so it reaches its owning record. */
       const hasStatus = statusReadingOf(line.text, facts.dates) !== null;
       const hasIdentifier = maskedIdentifierToken(line.text) !== null;
+      const collectionEntry = COLLECTION_ENTRY_RE.test(text);
+      const collectionIdentity = explicitCollectionIdentity(text);
+      const collectionCaption = COLLECTION_NAME_RE.exec(text);
+      const collectionNameBoundary = Boolean(collectionIdentity && collectionCaption
+        && (collectionSection || current?.kind !== 'GENERAL_COLLECTION' && collectionCaption[1].toUpperCase() !== 'MEMBER NAME'));
+      const hasCollectionName = Boolean(collectionIdentity && current?.kind === 'GENERAL_COLLECTION');
+      const hasCollectionMember = current?.kind === 'GENERAL_COLLECTION' && /^\s*MEMBER\s+NUMBER\s*:/i.test(text);
+      // A plain account heading after a collection still closes it, even without a date or balance.
+      const collectionAccountExit = current?.kind === 'GENERAL_COLLECTION' && /^\s*(?:ACCOUNT|ACCOUNT NAME|TRADELINE)\s*:\s*\S/i.test(text)
+        && !ACCOUNT_NUMBER_LABEL_RE.test(text) && !isAccountStatusLine(text) && !hasAccountType;
       /* OWNER-CANDIDATE-002/003: a Judgment or criminal-charge context line, and a judgment/criminal content
          field line (or a truncation marker) while a public record is open, are value lines even without a date or
          amount — they carry the public record's own content and completeness evidence. */
@@ -1750,10 +1826,11 @@ function buildRecords(pages, convention) {
         || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
         || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text)
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
-        || hasStatus || hasIdentifier || hasPublicRecordContent;
+        || hasStatus || hasIdentifier || hasPublicRecordContent || collectionEntry || collectionNameBoundary || collectionAccountExit || hasCollectionMember || hasCollectionName;
       if (!hasValue) continue;
       const trusted = line.trusted !== false;
-      const kind = line.column_field ? 'GENERAL_ACCOUNT' : recordKind(line.text);
+      const kind = collectionEntry || collectionNameBoundary ? 'GENERAL_COLLECTION'
+        : line.column_field ? 'GENERAL_ACCOUNT' : recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
       const isAccountIntro = kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(up) || explicitAccountIdentity(line.text))
@@ -1783,6 +1860,15 @@ function buildRecords(pages, convention) {
       }
 
       if (isNonAccount) {
+        if (collectionEntry) collectionSection = false;
+        // Collection status/date fields belong to the open collection, not to a new anonymous entry.
+        if (kind === 'GENERAL_COLLECTION' && current?.kind === 'GENERAL_COLLECTION' && !collectionEntry && !collectionNameBoundary) {
+          const fields = collectLineFields(line, facts, current.kind, convention, trusted);
+          for (const key of Object.keys(fields.printed)) current.printed[uniqueKey(current.printed, key)] = fields.printed[key];
+          Object.assign(current.facts, fields.canonical.facts);
+          if (fields.resolved > 0) { current.status = 'RESOLVED'; current.reason = null; }
+          continue;
+        }
         const fields = collectLineFields(line, facts, kind, convention, trusted);
         const finalKind = fields.canonical.kind || kind;
         const record = {
@@ -1801,14 +1887,15 @@ function buildRecords(pages, convention) {
         const identity = PUBLIC_RECORD_IDENTITY_RE.exec(line.text);
         if (identity) record.public_record_identity = identity[1];
         records.push(record);
-        /* A public-record header opens a record its continuation lines (Order for Relief, Historical verification)
-           join; any other non-account line is a standalone record. OWNER-CANDIDATE-002: a judgment public-record
+        /* Collection and public-record headings open a record for their own continuation fields.
+           Other non-account lines remain standalone. OWNER-CANDIDATE-002: a judgment public-record
            line (without a header) also opens a record its creditor/amount/assignee continuation lines join. */
-        current = (isPublicRecordHeader || (finalKind === 'GENERAL_PUBLIC_RECORD' && /JUDGMENT|JUDGEMENT|CIVIL SUIT|CIVIL ACTION/i.test(up))) ? record : null;
+        current = (finalKind === 'GENERAL_COLLECTION' || isPublicRecordHeader || (finalKind === 'GENERAL_PUBLIC_RECORD' && /JUDGMENT|JUDGEMENT|CIVIL SUIT|CIVIL ACTION/i.test(up))) ? record : null;
         continue;
       }
 
       if (isAccountIntro) {
+        collectionSection = false;
         const fields = collectLineFields(line, facts, kind, convention, trusted);
         const finalKind = fields.canonical.kind || kind;
         const record = {
@@ -1830,7 +1917,7 @@ function buildRecords(pages, convention) {
          account precedes it; otherwise a date-only field line (a report header, an ambiguous "Opened") is not
          invented into a record. */
       if (current) {
-        current._text = (current._text || '') + ' ' + String(line.text || '');
+        current._text = (current._text || '') + ' ' + (hasCollectionMember ? 'Member Number: [member reference withheld]' : String(line.text || ''));
         if (trusted === false) current._allTrusted = false;
         const fields = collectLineFields(line, facts, current.kind, convention, trusted, current.public_record_identity || null);
         for (const key of Object.keys(fields.printed)) {
@@ -2040,6 +2127,49 @@ function bindOrdinarySources(record) {
   return record;
 }
 
+/* Collection pairing uses exact readings rather than a block-wide raw value. Repeated/uncertain own
+   captions cannot choose one identity, fixed date or balance; independent readable fields remain usable. */
+function bindCollectionSources(record) {
+  if (record.kind !== 'GENERAL_COLLECTION') return record;
+  const labels = {
+    'account.reported_identity': /collection account name/i,
+    'account.masked_identifier': /masked account number|account.*number/i,
+    'account.member_reference': /^Member Number$/i,
+    'tradeline.firstDelinquencyDate': /^FIRST DELINQUENCY DATE$/i,
+    'tradeline.lastPaymentDate': /^LAST PAYMENT DATE$/i,
+    'account.balance': /^(?:Current )?Balance$/i,
+    'account.amount': /^Amount$/i,
+    'account.status': /^(?:Account )?Status$/i
+  };
+  record.fact_sources = { ...(record.fact_sources || {}) };
+  for (const [field, label] of Object.entries(labels)) {
+    const readings = Object.entries(record.printed || {}).filter(([key, value]) =>
+      key === field || key.startsWith(field + ' (') || value && label.test(value.label || ''))
+      .map(([, value]) => value);
+    // Canonical and display aliases for one physical caption are the same reading.
+    const own = [...new Map(readings.map((value) => [`${value.location?.page}:${value.location?.line}`, value])).values()];
+    if (!own.length) continue;
+    const first = own[0], value = record.facts[field];
+    const usable = own.length === 1 && value != null && first.normalized != null
+      && String(first.normalized) === String(value) && first.state === 'VALUE'
+      && (!first.status || first.status === 'RESOLVED') && !first.reason
+      && first.location && first.location.trusted !== false;
+    record.fact_sources[field] = { raw_value: first.raw, normalized_value: usable ? value : null,
+      source_field: first.label, location: first.location, precision: first.precision || null,
+      caption_count: own.length, status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', trusted: usable,
+      reason: usable ? null : 'DUPLICATE_OR_UNTRUSTED_COLLECTION_CAPTION',
+      ...(first.privacy_redacted ? { privacy_redacted: true } : {}) };
+    if (!usable) {
+      delete record.facts[field];
+      if (field === 'account.balance') {
+        delete record.facts['account.amount'];
+        record.fact_sources['account.amount'] = { ...record.fact_sources[field] };
+      }
+    }
+  }
+  return record;
+}
+
 function findReferenceDate(pages, convention) {
   const candidates = [];
   for (const page of pages) {
@@ -2139,7 +2269,7 @@ function extract(model, opts) {
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
   }
-  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map((record) =>
+  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
