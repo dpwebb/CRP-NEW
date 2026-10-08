@@ -1,13 +1,52 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T13:19:50.631Z",
+  "generated_at": "2026-10-08T14:43:54.524Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
+      "id": "RUNTIME_ASSETS",
+      "file_count": 8,
+      "digest": "44E2880E9C53EC5AB6554F564D78B93BF11CB9DB0B4BA9FB5EFBAF4DDB895A0E",
+      "files": [
+        {
+          "file": "accelerated-launch/service/packet-fonts/NotoSans-Regular.ttf",
+          "sha256": "B85C38ECEA8A7CFB39C24E395A4007474FA5A4FC864F6EE33309EB4948D232D5"
+        },
+        {
+          "file": "accelerated-launch/service/packet-fonts/OFL.txt",
+          "sha256": "0DAB92D0544F7B233403F14B84A663BDBFA746982EDA629E7F4F9FFE1B036FEB"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/ca-equifax-account.pdf",
+          "sha256": "C7B9E9742F94FEF44CB3D6FCF066418F4127193A0C297A81F11B82C8312B4383"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/ca-equifax-personal.pdf",
+          "sha256": "190342AA231C4911AA06864B4C252AA29C4FB837178CDC1D09C4FF14FB56DE06"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/ca-equifax-public-record.pdf",
+          "sha256": "430BF36366C216AAB02D864D3DACF23B962AF182AEE4D6CE9B89BE6B29AB4A3F"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/ca-transunion.pdf",
+          "sha256": "348355C40129C97B84ECFB31877FF6E3B4F31A222CC17CDB204F6EE0938CCA5E"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/catalog.json",
+          "sha256": "B12F419C6F42C5702FBDC46F7A7E8350E9E5AB808742A9998CC57E098FA37B62"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/us-equifax.pdf",
+          "sha256": "5697E47D925B57EA0105D68F78F3D57BA0A4DA807924EC1B28FB6C4F1BE72576"
+        }
+      ]
+    },
+    {
       "id": "RUNTIME",
-      "file_count": 68,
-      "digest": "5929322E9D4136AABA8C996A8B236BD708E343CE86556283F8638C0EB19C8442",
+      "file_count": 70,
+      "digest": "8EB426292819BEF8417E56DE37749D73F137CE2009A2E277BB6BA8C9898D0383",
       "files": [
         {
           "file": "accelerated-launch/service/account-documents.cjs",
@@ -23,11 +62,11 @@
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
-          "sha256": "3CE5F6756674EE2D358B4651AF601DD09A147E47382B8D0E9BBD2142127F9442"
+          "sha256": "A71C367E70E13BBCF21D9B7153F8A81E537E111DF1466DC0D2567D343501B01E"
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "EB7BAAA453DE4F8A06C5F123D9AF300BA4F424284EEF00FD1776B512EC8D8BFD"
+          "sha256": "542714F47766F9856BB1B9E28A3867F18F1FF258126DBAAC02C0FB51BA57A08C"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -47,7 +86,11 @@
         },
         {
           "file": "accelerated-launch/service/bureau-dispute-requirements.cjs",
-          "sha256": "FB14CA5272F8DB1F6E0AFD5167C3BF85040DBA02FB20E317DA9ECCA71A1A2A7F"
+          "sha256": "2BB8D42EA05279A3D4C3279E9146DD35797E95A9E7FB4CA841086F882C09F3F6"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms.cjs",
+          "sha256": "F5FB485C12889EB60E7CBA1695233326F453390C365362E7C9552CF4AC1C5656"
         },
         {
           "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
@@ -107,7 +150,7 @@
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
-          "sha256": "7FC05403FB3DBD96DFF9AFE719EF12670836102C0E819025FB3EB63716DBE2C6"
+          "sha256": "D578E88E909D3FD14F065B89BD65C53D829C0F9E571B514C81639E6C7FC28D6E"
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
@@ -198,12 +241,16 @@
           "sha256": "72E85C136174B543DEFC6ECF5A32D3CC634E14B106BC7D97ACBE6DEC23175A66"
         },
         {
+          "file": "accelerated-launch/service/packet-pdf.cjs",
+          "sha256": "4F5A85F48088E7C2E113E8EEC85CA3D28A162A6BD9B6209B8BC935D75B505904"
+        },
+        {
           "file": "accelerated-launch/service/packet-support.cjs",
-          "sha256": "9EA3C7D353D10559BB3BE7EDB0A0847E444BCF1A259F6EDF2C66C44056933253"
+          "sha256": "3BBC69806C442CFD157E1C35FD5BBC50ED3735848E34C70E01EF7A744A131D6C"
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "B3FBCB8F52CF2DAAF413D2E2B14EE5B48AFFBD84E1A8ED656934AFED76835450"
+          "sha256": "73BCB9FE926C9F727CEB6D66A44E02C465B218F3C11DAD005483C95161F2E4B6"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -235,7 +282,7 @@
         },
         {
           "file": "accelerated-launch/service/release-check.cjs",
-          "sha256": "344BB9C1353A7FD51F56814878813891163DEC35E318CB05E23B143C2FAD7A04"
+          "sha256": "316411861B4663044B2FBCE9397A74BD8702AE686FA3858BB9F0D22BACD18274"
         },
         {
           "file": "accelerated-launch/service/report-amount.cjs",
@@ -411,11 +458,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "2A6FE4C29DBDEF63F966902B9DEAA8B35B78825950764F283E758D0C79441DC4",
+      "digest": "7F2E3DAF67EDA2036856299C5DA7B1FD549C2BD28E8CDE99CD7D092108FC297A",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "A78F34040DC036BC2367467B15FE08A045FA6A54CF60DDF055ACFA6614A69B8E"
+          "sha256": "B80B01B7795A9EE5C7D5A8497365932EDB5F507077FE5D964579B5057EEEE5DE"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -423,15 +470,15 @@
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "91236376BCF66C9C519E1CE036697B419A268BAC2D94820C9F082235131B2CD4"
+          "sha256": "79F0426D94988F8F697C4D7F577DA143C50A3E7AE1ACCA52860E4A8699374485"
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "2EDBFC4FE9761CAE77CA286C08B211DB4694863C4E7E9DA396B4B6CA8CB50E67"
+          "sha256": "4D459B95A55CE91813CC933163B3E28360857297509A2CC8B442CE82C02D7B68"
         }
       ]
     }
   ],
-  "manifest_digest": "21A7A7DC0D0D2741992412BCFA0691FADBDE34066E4B5AE37D54CE36AE458B52",
-  "total_file_count": 98
+  "manifest_digest": "4B5382D00D399C64BE4A858B852B0A612108DA9656E47EE4EF45C85CAA437BEB",
+  "total_file_count": 108
 }
