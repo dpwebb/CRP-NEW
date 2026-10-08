@@ -140,8 +140,13 @@ function documentLines(model) {
     const normalized = (text) => xmlText(text).trim().replace(/\s+/g, ' ');
     page.lines.forEach((text, index) => {
       const entry = { page: page.page, line: index + 1, text };
-      const row = rows.find((r) => !used.has(r) && normalized(r.words.slice().sort((a, b) => a.x0 - b.x0)
+      const matches = rows.filter((r) => normalized(r.words.slice().sort((a, b) => a.x0 - b.x0)
         .map((w) => w.text).join(' ')) === normalized(text));
+      const occurrences = page.lines.filter((line) => normalized(line) === normalized(text)).length;
+      const row = occurrences === matches.length ? matches.find((r) => !used.has(r)) : null;
+      // A native line without its own unambiguous physical row is retained, but cannot supply a fact.
+      entry.trusted = (model.synthetic === true && !(page.word_boxes || []).length) || !normalized(text) || Boolean(row)
+        && row.words.every((w) => w.trusted !== false);
       if (row) {
         used.add(row);
         Object.assign(entry, { x0: Math.min(...row.words.map((w) => w.x0)), y0: Math.min(...row.words.map((w) => w.y0)),
@@ -373,13 +378,16 @@ function locateReferenceDate(model) {
   const occurrences = [];
   for (const entry of documentLines(model)) {
     const value = valueAfterLabel(String(entry.text).trim(), FAMILY_CONTRACT.reference_date_label);
-    if (value !== null) occurrences.push({ page: entry.page, line: entry.line, token: value });
+    if (value !== null) occurrences.push({ ...entry, token: value });
   }
+  const sourceTrusted = (o) => o.trusted === true
+    && (model.synthetic === true || [o.x0, o.y0, o.x1, o.y1].every(Number.isFinite));
   const base = {
     fact: 'REPORT_REFERENCE_DATE',
     source_field: FAMILY_CONTRACT.reference_date_label,
     section_path: 'report cover',
-    occurrences: occurrences.map((o) => ({ page: o.page, line: o.line })),
+    occurrences: occurrences.map((o) => ({ page: o.page, line: o.line, raw_value: o.token,
+      trusted: sourceTrusted(o), ...(Number.isFinite(o.x0) ? { x0: o.x0, y0: o.y0, x1: o.x1, y1: o.y1 } : {}) })),
     pages_with_label: [...new Set(occurrences.map((o) => o.page))]
   };
   const fail = (reason) => Object.assign(base, { status: FACT_STATUS.EXTRACTION_UNRESOLVED, reason, raw_value: null, normalized_value: null, location: null });
@@ -387,6 +395,13 @@ function locateReferenceDate(model) {
   if (occurrences.length === 0) return fail('REPORT_DATE_LABEL_NOT_FOUND');
   const distinct = [...new Set(occurrences.map((o) => o.token))];
   if (distinct.length > 1) return fail('REPORT_DATE_CONTRADICTORY');
+  const first = occurrences[0];
+  const trusted = occurrences.every(sourceTrusted);
+  const location = { page: first.page, line: first.line, label: FAMILY_CONTRACT.reference_date_label,
+    section: 'report cover', trusted,
+    ...(Number.isFinite(first.x0) ? { x0: first.x0, y0: first.y0, x1: first.x1, y1: first.y1 } : {}) };
+  if (!trusted) return Object.assign(base, { status: FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: 'REPORT_DATE_SOURCE_NOT_READABLE', raw_value: distinct[0], normalized_value: null, trusted: false, location });
   const { normalized, reason } = normalizePrintedDate(distinct[0]);
   if (!normalized) return fail(reason === 'IMPOSSIBLE_CALENDAR_VALUE' ? 'REPORT_DATE_IMPOSSIBLE_CALENDAR_VALUE' : 'REPORT_DATE_MALFORMED_PRINTED_FORM');
   return Object.assign(base, {
@@ -394,7 +409,8 @@ function locateReferenceDate(model) {
     reason: null,
     raw_value: distinct[0],
     normalized_value: normalized,
-    location: { page: occurrences[0].page, line: occurrences[0].line, label: FAMILY_CONTRACT.reference_date_label, section: 'report cover' }
+    trusted: true,
+    location
   });
 }
 

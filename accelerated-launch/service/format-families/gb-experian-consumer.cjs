@@ -728,16 +728,26 @@ function locateReferenceDate(model) {
   for (const entry of documentLines(model)) {
     const text = readable(entry.text).trim();
     if (!text.startsWith(REFERENCE_DATE_LABEL)) continue;
-    occurrences.push({ page: entry.page, line: entry.line, token: text.slice(REFERENCE_DATE_LABEL.length).trim() });
+    occurrences.push({ ...entry, token: text.slice(REFERENCE_DATE_LABEL.length).trim() });
   }
+  const sourceTrusted = (o) => o.trusted === true
+    && (model.synthetic === true || [o.x0, o.y0, o.x1, o.y1].every(Number.isFinite));
   const base = {
     fact: 'REPORT_REFERENCE_DATE', source_field: REFERENCE_DATE_LABEL, section_path: 'report cover letter',
-    occurrences: occurrences.map((o) => ({ page: o.page, line: o.line }))
+    occurrences: occurrences.map((o) => ({ page: o.page, line: o.line, raw_value: o.token,
+      trusted: sourceTrusted(o), ...(Number.isFinite(o.x0) ? { x0: o.x0, y0: o.y0, x1: o.x1, y1: o.y1 } : {}) }))
   };
   const fail = (reason) => Object.assign(base, { status: FACT_STATUS.EXTRACTION_UNRESOLVED, reason, raw_value: null, normalized_value: null, location: null });
   if (occurrences.length === 0) return fail('REPORT_DATE_LABEL_NOT_FOUND');
   const distinct = [...new Set(occurrences.map((o) => o.token))];
   if (distinct.length > 1) return fail('REPORT_DATE_CONTRADICTORY');
+  const first = occurrences[0];
+  const trusted = occurrences.every(sourceTrusted);
+  const location = { page: first.page, line: first.line, label: REFERENCE_DATE_LABEL,
+    section: 'report cover letter', trusted,
+    ...(Number.isFinite(first.x0) ? { x0: first.x0, y0: first.y0, x1: first.x1, y1: first.y1 } : {}) };
+  if (!trusted) return Object.assign(base, { status: FACT_STATUS.EXTRACTION_UNRESOLVED,
+    reason: 'REPORT_DATE_SOURCE_NOT_READABLE', raw_value: distinct[0], normalized_value: null, trusted: false, location });
   const { normalized, reason } = normalizePrintedDate(distinct[0]);
   if (!normalized) return fail(reason === 'IMPOSSIBLE_CALENDAR_VALUE' ? 'REPORT_DATE_IMPOSSIBLE_CALENDAR_VALUE' : 'REPORT_DATE_MALFORMED_PRINTED_FORM');
   return Object.assign(base, {
@@ -745,7 +755,8 @@ function locateReferenceDate(model) {
     reason: null,
     raw_value: distinct[0],
     normalized_value: normalized,
-    location: { page: occurrences[0].page, line: occurrences[0].line, label: REFERENCE_DATE_LABEL, section: 'report cover letter' }
+    trusted: true,
+    location
   });
 }
 
