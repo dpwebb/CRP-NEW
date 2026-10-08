@@ -83,7 +83,7 @@ function run(fn) {
   return Promise.resolve()
     .then(fn)
     .then(render)
-    .catch((err) => { if (!err.cancelled) state.error = err.message; render(); });
+    .catch((err) => { if (err.cancelled) return; state.error = err.message; render(); });
 }
 
 function regionLabel(country, region) {
@@ -406,23 +406,35 @@ function renderJurisdiction(panel) {
 
   el('country').onchange = () => render();
   if (el('region')) el('region').onchange = () => render();
+  let selectionOperation = 0;
+  const selectionContext = () => {
+    const ensureAccount = accountContext(), sequence = renderSequence, operation = ++selectionOperation;
+    return () => { ensureAccount(); if (state.step !== STEP.JURISDICTION || sequence !== renderSequence || operation !== selectionOperation) throw cancelledAction(); };
+  };
   el('open').onclick = () => run(async () => {
+    const ensureSelection = selectionContext();
     const bureau = el('bureau')?.value || '';
     if (bureauChoices.length && !bureau) throw new Error('Choose the bureau that issued your report.');
     const data = await api('POST', '/api/cases', { country: el('country').value, region: el('region').value, ...(bureau ? { bureau } : {}) });
+    ensureSelection();
+    const cases = await api('GET', '/api/cases'); ensureSelection();
+    const view = await api('GET', `/api/cases/${data.case.case_id}`); ensureSelection();
     state.caseId = data.case.case_id;
-    state.cases = (await api('GET', '/api/cases')).cases;
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+    state.cases = cases.cases;
+    state.view = view.view;
     state.step = 2;
     state.notice = `Case opened for ${regionLabel(data.case.country, data.case.region)}.`;
   });
   el('refresh').onclick = () => run(async () => {
-    state.cases = (await api('GET', '/api/cases')).cases;
+    const ensureSelection = selectionContext(), data = await api('GET', '/api/cases');
+    ensureSelection(); state.cases = data.cases;
   });
   for (const button of panel.querySelectorAll('[data-open]')) {
     button.onclick = () => run(async () => {
-      state.caseId = button.dataset.open;
-      state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+      const ensureSelection = selectionContext(), caseId = button.dataset.open;
+      const data = await api('GET', `/api/cases/${caseId}`); ensureSelection();
+      state.caseId = caseId;
+      state.view = data.view;
       state.step = 3;
     });
   }

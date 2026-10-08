@@ -27,12 +27,14 @@ function harness(responder, { autoRead = true } = {}) {
   const panel = node('panel'); let block = element('packet-block');
   const issues = [{ checked: true, getAttribute: key => key === 'data-check-issue' ? 'issue-A' : null }];
   const documentChecks = [];
+  const caseButtons = [{ dataset: { open: 'existingA' }, onclick: null }, { dataset: { open: 'existingB' }, onclick: null }];
   panel.querySelector = selector => selector === '#packet-block' ? block : null;
   panel.querySelectorAll = selector => {
     if (selector === '[data-check-issue]:checked') return issues.filter(row => row.checked);
     if (selector === '[data-check-issue]') return issues;
     if (selector === '[data-packet-document]:checked') return documentChecks.filter(row => row.checked);
     if (selector === '[data-packet-document], [id^="packet-document-date-"]') return documentChecks;
+    if (selector === '[data-open]') return caseButtons;
     return [];
   };
   const context = {
@@ -69,7 +71,11 @@ function harness(responder, { autoRead = true } = {}) {
     node('packet-name').value = 'Fictional Consumer'; node('packet-contact').value = '10 Fictional Street';
     return evaluate('wirePacket(document.getElementById("panel"))');
   };
-  return { context, node, calls, navigations, readers, panel, issues, evaluate, account, openPacket };
+  const jurisdiction = () => {
+    node('country').value = 'CA'; node('region').value = 'CA-NS'; node('bureau').value = 'TRANSUNION';
+    evaluate(`surface = { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }], bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] } }; state.step = 1; renderJurisdiction(document.getElementById('panel'));`);
+  };
+  return { context, node, calls, navigations, readers, panel, issues, caseButtons, evaluate, account, openPacket, jurisdiction };
 }
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
@@ -148,7 +154,82 @@ async function issueSelectionInvalidation() {
   assert.equal(h.node('packet-download').disabled, true, 'Changing selected issues must invalidate visible approval');
   assert.equal(h.node('packet-approve').disabled, false, 'Changed selection must permit reapproval');
 }
-const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation };
+const createdCase = { case_id: 'newA', country: 'CA', region: 'CA-NS', selected_bureau: 'TRANSUNION' };
+async function createCaseAccountRace() {
+  const late = deferred(), h = harness(request => request.method === 'POST' && request.url === '/api/cases' ? late.promise : { ok: true });
+  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
+  await until(() => h.calls.some(row => row.method === 'POST' && row.url === '/api/cases'), 'case POST');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  late.resolve({ case: createdCase }); await action;
+  assert.equal(h.calls.filter(row => row.method === 'GET' && row.url.startsWith('/api/cases')).length, 0, 'late A creation must not read cases using B session');
+  assert.equal(h.evaluate('state.caseId'), null);
+}
+async function createCaseListNavigationRace() {
+  const late = deferred(), h = harness(request => request.method === 'POST' ? { case: createdCase } : late.promise);
+  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
+  await until(() => h.calls.some(row => row.method === 'GET' && row.url === '/api/cases'), 'case list');
+  h.evaluate('state.step = 0; renderSequence++; state.accountProfile.full_name = "Edited contact";');
+  h.context.renderCalls = []; h.evaluate('render = () => { renderSequence++; renderCalls.push(state.step); };');
+  late.resolve({ cases: [createdCase] }); await action;
+  assert.equal(h.evaluate('state.step'), 0, 'late case list must keep the consumer on Account');
+  assert.equal(h.evaluate('state.accountProfile.full_name'), 'Edited contact');
+  assert.equal(h.evaluate('state.caseId'), null);
+  assert.equal(h.calls.filter(row => row.url === '/api/cases/newA').length, 0, 'cancelled list must not request a view');
+  assert.equal(h.context.renderCalls.length, 0, 'cancelled action must not reset current file controls or edits');
+}
+async function createCaseViewNavigationRace() {
+  const late = deferred(), h = harness(request => request.method === 'POST' ? { case: createdCase } : request.url === '/api/cases' ? { cases: [createdCase] } : late.promise);
+  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
+  await until(() => h.calls.some(row => row.url === '/api/cases/newA'), 'case view');
+  h.evaluate('state.step = 0; renderSequence++;'); h.jurisdiction(); h.evaluate('renderSequence++;');
+  late.resolve({ view: { case: createdCase } }); await action;
+  assert.equal(h.evaluate('state.step'), 1, 'leaving and returning to the same step must still cancel old navigation');
+  assert.equal(h.evaluate('state.caseId'), null);
+  assert.equal(h.evaluate('state.view'), null);
+}
+async function existingCaseAccountRace() {
+  const late = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? late.promise : { ok: true });
+  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.caseButtons[0].onclick();
+  await until(() => h.calls.some(row => row.url === '/api/cases/existingA'), 'existing case view');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  late.resolve({ view: { case: { case_id: 'existingA' }, private_fixture: 'A-only' } }); await action;
+  assert.equal(h.evaluate('state.caseId'), null, 'A case must not become active for B');
+  assert.equal(h.evaluate('state.view'), null, 'A response must not enter B view');
+  assert.equal(h.evaluate('state.step'), 0);
+}
+async function caseRefreshAccountRace() {
+  const late = deferred(), h = harness(request => request.url === '/api/cases' ? late.promise : { ok: true });
+  h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('refresh').onclick();
+  await until(() => h.calls.some(row => row.url === '/api/cases'), 'case refresh');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  late.resolve({ cases: [createdCase] }); await action;
+  assert.equal(h.evaluate('state.cases.length'), 0, 'A case list must not enter B account');
+}
+async function createCaseNormalCompletion() {
+  const h = harness(request => request.method === 'POST' ? { case: createdCase } : request.url === '/api/cases' ? { cases: [createdCase] } : { view: { case: createdCase } });
+  h.account('A', 'Fictional A'); h.jurisdiction(); await h.node('open').onclick();
+  assert.equal(h.evaluate('state.step'), 2); assert.equal(h.evaluate('state.caseId'), 'newA');
+  assert.equal(h.calls[0].body.bureau, 'TRANSUNION', 'normal selected bureau still reaches creation');
+  assert.equal(h.evaluate('state.view.case.selected_bureau'), 'TRANSUNION');
+}
+async function existingCaseNormalCompletion() {
+  const h = harness(() => ({ view: { case: { case_id: 'existingA' } } }));
+  h.account('A', 'Fictional A'); h.jurisdiction(); await h.caseButtons[0].onclick();
+  assert.equal(h.evaluate('state.step'), 3); assert.equal(h.evaluate('state.caseId'), 'existingA');
+}
+async function latestCaseChoiceWins() {
+  const first = deferred(), second = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? first.promise : second.promise);
+  h.account('A', 'Fictional A'); h.jurisdiction();
+  const openA = h.caseButtons[0].onclick(); await until(() => h.calls.some(row => row.url === '/api/cases/existingA'), 'first case choice');
+  const openB = h.caseButtons[1].onclick(); await until(() => h.calls.some(row => row.url === '/api/cases/existingB'), 'latest case choice');
+  first.resolve({ view: { case: { case_id: 'existingA' } } }); await openA;
+  assert.equal(h.evaluate('state.caseId'), null, 'older response must wait for the latest selected case');
+  second.resolve({ view: { case: { case_id: 'existingB' } } }); await openB;
+  assert.equal(h.evaluate('state.caseId'), 'existingB'); assert.equal(h.evaluate('state.step'), 3);
+}
+const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
+  createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
+  createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins };
 async function run(service, check) {
   for (const [name, run] of Object.entries(tests)) {
     await run(); check.ok(true, name + ' preserves account, case and reviewed-version context');
@@ -160,6 +241,6 @@ async function run(service, check) {
   h.context.legacy = { eligible_issues: [{ eligible: true, issue_id: 'legacy' }], packet: { correspondence: { consumer_name: 'Previously Saved Consumer', contact: 'previous@example.test' } }, support: { account_profile: {} } };
   const legacy = h.evaluate('renderPacketBlock(legacy)');
   check.ok(legacy.includes('Previously Saved Consumer') && legacy.includes('previous@example.test'), 'legacy packet details remain visible when account contact is unset');
-  return { deferred_account_and_file_reads: true, deferred_packet_navigation: true, selection_invalidates_download: true, signed_in_account_view: true };
+  return { deferred_account_and_file_reads: true, deferred_packet_navigation: true, deferred_case_navigation: true, selection_invalidates_download: true, signed_in_account_view: true };
 }
 module.exports = { run, id: 'ec-account-packet-ui', title: 'Account and packet actions preserve their original account, case and reviewed selection' };

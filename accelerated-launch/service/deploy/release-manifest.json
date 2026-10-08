@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T04:39:23.506Z",
+  "generated_at": "2026-10-08T05:16:51.392Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -407,11 +407,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "5F44AAD6077D9C63621A94FEC557EAF5194F081DC18DE64A037321FD16728C45",
+      "digest": "6C81C233C331178B3E36F252B25ECEEF697C642A8DF216424E15AE3251C1AA98",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "ACF23FB589D9DDFA05803ED2FAB5CBCDC00C087A7804CB5A17971FDC6FD750F5"
+          "sha256": "175EB56C76E7CE69744CB22381363012AA93D2345312C970525B8318CBF5E5BE"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -428,6 +428,6 @@
       ]
     }
   ],
-  "manifest_digest": "6C186087EDD245B80EB71FAF7D94F9904D7B3EFD21546B045148387F63DE8FC7",
+  "manifest_digest": "CF3C51ED6AF136D9F991ED37CE884571FB25676C8961908B2A2C0631AFC60657",
   "total_file_count": 97
 }
