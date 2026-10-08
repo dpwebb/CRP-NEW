@@ -16,6 +16,7 @@ const formats = require('./formats.cjs');
 const evaluation = require('./evaluation.cjs');
 const issues = require('./issues.cjs');
 const validator = require('./evidence-validator.cjs');
+const { MAX_RECOVERY_PASSES, MAX_RECOVERY_PAGES } = require('./fdt-recovery.cjs');
 const { PROSPECTIVE_CRITERIA } = require('./fdt-benchmark.cjs');
 
 const HOSTED_CRITERIA = ['demonstrate_useful_recovery_on_deployed', 'demonstrate_bounded_unsuccessful_recovery_on_deployed'];
@@ -157,11 +158,14 @@ function hostedRecoveryPassed(proof, target) {
   const cases = proof.recovery_cases || [];
   const measured = row => row.upload_status === 201 && row.result_status === 200
     && typeof row.case_id === 'string' && /^[a-f0-9]{64}$/i.test(row.input_sha256 || '')
+    && Number.isInteger(row.input_page_count) && row.input_page_count > 0 && row.input_page_count <= MAX_RECOVERY_PAGES
     && row.recovery?.bounded === true && row.recovery.substitution_forbidden === true
-    && Number.isInteger(row.recovery.recovery_attempts) && row.recovery.recovery_attempts > 0;
+    && Number.isInteger(row.recovery.recovery_attempts) && row.recovery.recovery_attempts > 0
+    && row.recovery.recovery_attempts <= row.input_page_count * MAX_RECOVERY_PASSES;
   const useful = cases.some(row => row.scenario === 'USEFUL' && measured(row)
     && Array.isArray(row.recovery.facts_added) && row.recovery.facts_added.length > 0
-    && row.recovery.facts_added.every(fact => Number.isInteger(fact.page) && Number.isInteger(fact.line) && fact.source === 'LOCAL_OCR'));
+    && row.recovery.facts_added.every(fact => Number.isInteger(fact.page) && fact.page > 0 && fact.page <= row.input_page_count
+      && Number.isInteger(fact.line) && fact.line > 0 && fact.source === 'LOCAL_OCR'));
   const unsuccessful = cases.some(row => row.scenario === 'UNSUCCESSFUL' && measured(row)
     && Array.isArray(row.recovery.facts_added) && row.recovery.facts_added.length === 0
     && row.reading_limitations?.incomplete === true && row.reading_limitations.never_equates_unread_with_absence === true);
@@ -170,12 +174,27 @@ function hostedRecoveryPassed(proof, target) {
 
 function validateEvidence(evidence, options = {}) {
   const implementation = validator.validateImplementationEvidence(evidence, { ...options, requiredCriteria: LOCAL_CRITERIA });
+  const root = options.sourceRoot || path.resolve(__dirname, '../..');
+  let custody = false;
+  try {
+    const refs = evidence.implementation.evidence_refs;
+    if (refs.length === 1) {
+      const regressionFile = path.resolve(root, refs[0].file);
+      const execution = JSON.parse(fs.readFileSync(regressionFile, 'utf8'));
+      const derived = buildEvidence({ execution, regressionFile, sourceRoot: root });
+      custody = derived.implementation.configured && ['acceptance', 'benchmark'].every(key =>
+        JSON.stringify(evidence[key]) === JSON.stringify(derived[key]))
+        && ['tests', 'source_files', 'evidence_refs'].every(key =>
+          JSON.stringify(evidence.implementation[key]) === JSON.stringify(derived.implementation[key]));
+    }
+  } catch (_) { /* missing, partial, changed or inconsistent full proof never earns closure */ }
+  const localPassed = implementation.passed && custody;
   const staging = validator.validateCapabilityEvidence(evidence, { ...options, requiredCriteria: REQUIRED_CRITERIA });
   const measured = hostedRecoveryPassed(evidence?.served_recovery, options.targetBuildId);
   const pending = evidence?.staging_verification?.status === 'PENDING';
-  const passed = staging.passed && measured && !pending;
-  return { passed, implementation_status: implementation.passed || passed ? 'IMPLEMENTED_AND_TESTED' : 'OPEN',
-    implementation_detail: implementation.detail,
+  const passed = localPassed && staging.passed && measured && !pending;
+  return { passed, implementation_status: localPassed ? 'IMPLEMENTED_AND_TESTED' : 'OPEN',
+    implementation_detail: [implementation.detail, !custody && 'complete current local execution and matching evidence metadata are required'].filter(Boolean).join('; '),
     staging_status: passed ? 'VERIFIED_ON_STAGING' : 'PENDING_VERIFICATION',
     detail: passed ? staging.detail : (pending ? evidence.staging_verification.reason :
       [staging.detail, !measured && 'current response-backed useful and bounded unsuccessful recovery proof is required'].filter(Boolean).join('; ')) };
