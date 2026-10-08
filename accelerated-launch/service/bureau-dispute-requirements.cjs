@@ -40,7 +40,7 @@ const ROUTES = {
   },
   AU: {
     EQUIFAX: { label: 'Equifax', postal: 'Equifax – Public Access, Equifax Australia Information Services and Solutions Pty Limited, GPO Box 964, North Sydney NSW 2059', online: 'https://equifax.australiancreditdata.com.au/', sources: [SOURCES.AU_EQ, SOURCES.AU_EQ_ROUTE] },
-    EXPERIAN: { label: 'Experian (including former illion)', postal: null, online: 'https://consumer-services.experian.com.au/login.html', sources: [SOURCES.AU_EX, SOURCES.AU_EX_MERGER] }
+    EXPERIAN: { label: 'Experian (including former illion)', postal: 'Experian Consumer Operations, PO Box 7405, St Kilda Road, Melbourne VIC 3004', online: 'https://consumer-services.experian.com.au/login.html', sources: [SOURCES.AU_EX, SOURCES.AU_EX_MERGER, 'https://www.experian.com.au/contact-us', 'https://www.experian.com.au/privacy-policy-terms-conditions/experian-australia-credit-reporting-policy', 'https://www.experian.com.au/content/dam/noindex/apac/australia/FY25-Experian-Independent-Compliance-Review-Audit-Report-2024.pdf'] }
   }
 };
 const GOVERNMENT = ['DRIVING_LICENCE', 'PASSPORT', 'GOVERNMENT_ID', 'BIRTH_CERTIFICATE'];
@@ -53,9 +53,9 @@ function catalog(country) { return Object.entries(ROUTES[country] || {}).map(([i
 function requirements(country, bureau, settings = {}) {
   const id = normalizeBureau(bureau, country), route = ROUTES[country]?.[id];
   if (!route) return null;
-  const channel = settings.channel || 'POSTAL', purpose = settings.purpose || 'ACCOUNT';
-  const req = { version: '2026-10-08-v1', country, bureau: id, channel, purpose, ...route,
-    sources: [...route.sources], items: ['Identify the disputed entries, explain what is wrong and request the correction you want.', 'Include relevant supporting evidence.'],
+  const channel = 'POSTAL', purpose = settings.purpose || 'ACCOUNT';
+  const req = { version: '2026-10-08-postal-v2', country, bureau: id, channel, purpose, ...route,
+    sources: [...route.sources], items: ['List the entries you dispute. Say what is wrong and what you want changed.', 'Include copies of papers that support your dispute.'],
     identity_count: 0, address_count: 0, identity_kinds: GOVERNMENT, address_kinds: null, fields: [], ssn_required: false };
   if (channel === 'POSTAL') req.items.push('Print and sign the correspondence before sending.');
   if (country === 'CA') {

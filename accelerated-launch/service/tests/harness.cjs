@@ -122,7 +122,10 @@ class TestService {
       body = JSON.stringify(opts.body);
     }
     const response = await fetch(this.base + urlPath, { method, headers, body });
-    const text = await response.text();
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const type = response.headers.get('content-type') || '';
+    const text = /application\/(pdf|zip)/.test(type)
+      ? require('./packet-pdf-assertions.cjs').packetText(bytes) : bytes.toString('utf8');
     let json = null;
     try {
       json = JSON.parse(text);
@@ -133,6 +136,7 @@ class TestService {
       status: response.status,
       json,
       text,
+      bytes,
       headers: response.headers,
       setCookie: response.headers.get('set-cookie')
     };
@@ -209,6 +213,38 @@ class TestService {
     const actor = await this.unpaidAccount(email);
     actor.payment = await this.pay(actor, 'monthly');
     return actor;
+  }
+
+  /** Explicit fictional mail preparation for a positive HTTP packet journey.
+   * Uses the real profile, document and support endpoints; no production gate is bypassed.
+   * Callers testing missing details must leave this helper out. */
+  async preparePostalPacket(actor, caseId) {
+    const base = `/api/cases/${caseId}`;
+    const cases = await this.request('GET', '/api/cases', { token: actor.token });
+    const owned = cases.json.cases.find(c => c.case_id === caseId);
+    const view = (await this.request('GET', base + '/packet', { token: actor.token })).json.view;
+    const bureau = view.support.requirements?.bureau || owned.selected_bureau || view.support.catalog[0].id;
+    const correspondence = view.packet.correspondence;
+    const profile = { full_name: correspondence.consumer_name || 'Morgan Fiction', date_of_birth: '1980-04-12',
+      phone: '555-0100', contact_email: 'morgan@example.test', address_line1: correspondence.contact || '12 Example Street',
+      address_line2: '', city: 'Example City', region: 'Example Region', postal_code: '00000', country: owned.country, previous_address: '' };
+    const saved = await this.request('PUT', '/api/account/profile', { token: actor.token, body: { profile } });
+    if (saved.status !== 200) throw new Error(`fictional mail profile failed: ${saved.text}`);
+    const settings = { bureau, channel: 'POSTAL', purpose: view.support.suggested_purpose || 'ACCOUNT', document_ids: [],
+      use_account_profile: true, identity_reference: owned.country === 'US' ? '000000000' : '', no_ssn_issued: false,
+      identity_shows_address: false, verification_requested: false, copies_confirmed: true, document_dates: {}, other_identity_details: '' };
+    for (const [type, kind] of [['IDENTITY', 'DRIVING_LICENCE'], ['IDENTITY', owned.country === 'US' && bureau === 'EQUIFAX' ? 'SOCIAL_SECURITY' : 'PASSPORT'], ['ADDRESS', 'UTILITY_BILL']]) {
+      const bytes = buildPdf({ pages: [{ lines: ['FICTIONAL TEST DOCUMENT', type, kind, actor.account_id] }] });
+      const uploaded = await this.request('POST', '/api/account/documents', { token: actor.token, body: {
+        originalFilename: `fictional-${kind}.pdf`, declaredBytes: bytes.length, mimeType: 'application/pdf',
+        contentBase64: bytes.toString('base64'), document_type: type, document_kind: kind } });
+      if (uploaded.status !== 201) throw new Error(`fictional mail document failed: ${uploaded.text}`);
+      settings.document_ids.push(uploaded.json.document.file_id);
+      settings.document_dates[uploaded.json.document.file_id] = new Date().toISOString().slice(0, 10);
+    }
+    const prepared = await this.request('POST', base + '/packet/support', { token: actor.token, body: { support: settings } });
+    if (prepared.status !== 200 || prepared.json.view.support.missing.length) throw new Error(`fictional mail checklist failed: ${prepared.text}`);
+    return prepared.json.view;
   }
 
   blobFiles() {

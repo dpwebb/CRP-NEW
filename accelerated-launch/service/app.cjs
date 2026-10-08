@@ -141,6 +141,9 @@ const ROUTES = Object.freeze([
   ['POST', '/api/sessions', false, 'signIn'],
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
+  ['GET', '/api/account/security', true, 'accountSecurity'],
+  ['POST', '/api/account/recovery-key', true, 'issueRecoveryKey'],
+  ['POST', '/api/account/recover', false, 'recoverAccount'],
   ['GET', '/api/account/profile', true, 'accountProfile'],
   ['PUT', '/api/account/profile', true, 'saveAccountProfile'],
   ['GET', '/api/account/documents', true, 'accountDocuments'],
@@ -156,6 +159,7 @@ const ROUTES = Object.freeze([
   ['GET', '/api/jurisdictions', false, 'jurisdictions'],
   ['GET', '/api/health', false, 'health'],
   ['GET', '/api/formats', false, 'supportedFormats'],
+  ['GET', '/api/pricing', false, 'publicPricing'],
   /* B4. `auth: false` on the two public reads and on the PROVIDER callback: the provider has no session, and
      the event it sends is trusted only after its signature verifies. The billing routes are authenticated but
      deliberately NOT entitlement-gated — they are how an account becomes entitled. */
@@ -190,6 +194,7 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
   ['POST', '/api/cases/:caseId/packet/approve', true, 'packetApprove'],
   ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
+  ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
   /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
   ['GET', '/api/history', true, 'historyView'],
   ['GET', '/api/history/compare/:leftResultId/:rightResultId', true, 'comparisonView']
@@ -300,7 +305,7 @@ function buildHandlers(store, logger, surface) {
       logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
       return {
         status: 201,
-        json: { ok: true, account: created.account, signed_in: true },
+        json: { ok: true, account: created.account, signed_in: true, recovery_key: created.recovery_key },
         headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
       };
     },
@@ -318,6 +323,24 @@ function buildHandlers(store, logger, surface) {
     },
 
     sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true } }),
+
+    accountSecurity: ({ actor }) => ({ status: 200, json: { ok: true, ...accounts.securityView(store, actor) } }),
+    issueRecoveryKey: ({ actor, body }) => {
+      const issued = accounts.issueRecoveryKey(store, actor, body);
+      logger.log({ event: 'RECOVERY_KEY_ISSUED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, ...issued } };
+    },
+    recoverAccount: ({ body, req }) => {
+      const recovered = accounts.recoverAccount(store, body, req.socket?.remoteAddress);
+      logger.log({ event: 'ACCOUNT_RECOVERED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, ...recovered }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
+    },
+    publicPricing: () => {
+      const catalog = require('./plan-catalog.cjs').catalog();
+      const publicPlans = catalog.plans.map(({ plan_code, currency, amount_cents, amount_display, interval, headline }) =>
+        ({ plan_code, currency, amount_cents, amount_display, interval, headline }));
+      return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency } } };
+    },
 
     accountProfile: ({ actor }) => ({ status: 200, json: { ok: true, profile: accountProfile.getProfile(store, actor) } }),
     saveAccountProfile: ({ actor, body }) => ({ status: 200, json: { ok: true, profile: accountProfile.setProfile(store, actor, body.profile) } }),
@@ -413,7 +436,20 @@ function buildCaseHandlers(store, logger) {
       return { status: 201, json: { ok: true, case: created } };
     },
 
-    listCases: ({ actor }) => ({ status: 200, json: { ok: true, cases: cases.listCases(store, actor) } }),
+    listCases: ({ actor }) => {
+      const state = store.state();
+      const rows = cases.listCases(store, actor).map(row => {
+        const ownFiles = state.files.filter(file => file.case_id === row.case_id && file.account_id === actor.account_id);
+        const results = state.results.filter(result => result.case_id === row.case_id && result.account_id === actor.account_id);
+        const latest = results[results.length - 1];
+        const bureau = row.selected_bureau || '';
+        const route = require('./bureau-dispute-requirements.cjs').catalog(row.country).find(item => item.id === bureau);
+        return { ...row, bureau, bureau_label: route?.label || bureau,
+          report_date: comparison.reportIdentityOf(latest?.extraction).report_date,
+          original_filenames: ownFiles.map(file => file.original_filename || file.originalFilename).filter(Boolean) };
+      });
+      return { status: 200, json: { ok: true, cases: rows } };
+    },
 
     getCase: ({ params, actor }) => ({ status: 200, json: { ok: true, view: journey.caseView(store, actor, params.caseId) } }),
 
@@ -581,10 +617,11 @@ function buildCaseHandlers(store, logger) {
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
 
-    packetApprove: ({ params, actor }) => {
+    packetApprove: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      packets.approvePacket(store, actor, params.caseId);
+      require('./packet-support.cjs').requirePostalPacket(packets.packetView(store, actor, params.caseId));
+      packets.approvePacket(store, actor, params.caseId, body.reviewed_version);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
@@ -610,13 +647,24 @@ function buildCaseHandlers(store, logger) {
          recorded approval is still required below. */
       entitlement.requireSubscriberFeature(store, actor);
       const file = packets.packetDownload(store, actor, params.caseId);
+      require('./packet-support.cjs').requirePostalPacket(packets.packetView(store, actor, params.caseId));
       logger.log({ event: 'PACKET_DOWNLOAD_SERVED', outcome: 'SUBSCRIPTION' });
       return {
         status: 200,
         text: file.body,
         content_type: file.content_type,
-        headers: { 'Content-Disposition': `attachment; filename="${file.filename}"` }
+        headers: { 'Content-Disposition': `attachment; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version }
       };
+    },
+
+    packetPrint: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const file = packets.packetPrint(store, actor, params.caseId);
+      require('./packet-support.cjs').requirePostalPacket(packets.packetView(store, actor, params.caseId));
+      logger.log({ event: 'PACKET_PRINT_SERVED', outcome: 'SUBSCRIPTION' });
+      return { status: 200, text: file.body, content_type: file.content_type,
+        headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version } };
     },
 
     /* BLOCKER-SUBSCRIPTION-VALUE-001 + OWNER-PURCHASE-FLOW-001: reading basic information about your own file is

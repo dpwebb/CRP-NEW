@@ -28,6 +28,8 @@ const STATUS_BY_CODE = Object.freeze({
   PRESENTATION_NOT_AVAILABLE_FOR_SELECTED_JURISDICTION: 400,
   AUTHENTICATION_REQUIRED: 401,
   INVALID_CREDENTIALS: 401,
+  INVALID_RECOVERY_KEY: 401,
+  TOO_MANY_RECOVERY_ATTEMPTS: 429,
   ENTITLEMENT_REQUIRED: 402,
   DOWNLOAD_NOT_ENTITLED: 402,
   ASSESSMENT_ACCESS_REQUIRED: 402,
@@ -67,10 +69,12 @@ const STATUS_BY_CODE = Object.freeze({
 
 /** Plain-language copy for every machine code. The consumer UI renders these and nothing rawer. */
 const MESSAGE_BY_CODE = Object.freeze({
+  INVALID_RECOVERY_KEY: 'The email and recovery key do not match. Check them and try again.',
+  TOO_MANY_RECOVERY_ATTEMPTS: 'Too many tries. Wait 15 minutes, then try again.',
   PACKET_SUPPORT_REQUIRED: 'Complete the bureau checklist shown in your packet review before approving.',
   PACKET_BUREAU_MISMATCH: 'Choose the bureau that issued the selected report. Prepare separate packets for different bureaus.',
   PACKET_PURPOSE_MISMATCH: 'Use the checklist for the selected entries: accounts, or collections and public records. Mixed entries also need address proof.',
-  PACKET_SUBMISSION_METHOD_REQUIRED: 'Use the bureau’s online correction service for this packet.',
+  PACKET_SUBMISSION_METHOD_REQUIRED: 'This packet is prepared to send by mail. Use the mailing details shown in your packet.',
   ACCOUNT_DOCUMENT_LIMIT_REACHED: 'Your account holds eight supporting documents. Remove an unneeded document before uploading another.',
   INVALID_REQUEST: 'That request could not be understood.',
   EXPLICIT_COUNTRY_AND_REGION_REQUIRED: 'Choose a country and a region before continuing.',

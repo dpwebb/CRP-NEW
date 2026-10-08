@@ -13,6 +13,7 @@
  */
 
 const crypto = require('node:crypto');
+const net = require('node:net');
 const { ServiceError } = require('./errors.cjs');
 
 const MIN_PASSWORD_LENGTH = 12;
@@ -27,6 +28,49 @@ const SESSION_IDLE_MINUTES = 120;
 /** How many sessions one account may hold at once; the oldest is dropped, never the newest. */
 const MAX_ACTIVE_SESSIONS_PER_ACCOUNT = 10;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const RECOVERY_WINDOW_MS = 15 * 60000;
+const recoveryAttempts = new WeakMap();
+
+function recoveryKey() { return crypto.randomBytes(32).toString('base64url'); }
+function recoveryDigest(key) { return tokenDigest(`crp-recovery-v1:${key}`); }
+
+// A private peer may be the reverse proxy shared by every customer. Never use a
+// caller-supplied forwarding header as recovery proof or as a trusted address.
+function publicRecoveryPeer(client) {
+  const ip = String(client || '').replace(/^::ffff:/, '');
+  if (net.isIP(ip) === 4) {
+    const p = ip.split('.').map(Number);
+    return !(p[0] === 127 || p[0] === 10 || p[0] === 0 ||
+      (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+      (p[0] === 192 && p[1] === 168) || (p[0] === 169 && p[1] === 254));
+  }
+  return net.isIP(ip) === 6 && ip !== '::1' && ip !== '::' && !/^(fc|fd|fe[89ab])/i.test(ip);
+}
+
+/** Bound unauthenticated attempts without storing email addresses or raw credentials. */
+function countRecoveryAttempt(store, email, client) {
+  let attempts = recoveryAttempts.get(store);
+  if (!attempts) { attempts = new Map(); recoveryAttempts.set(store, attempts); }
+  const now = Date.now();
+  for (const [key, row] of attempts) if (now - row.started >= RECOVERY_WINDOW_MS) attempts.delete(key);
+  const keys = [[`email:${tokenDigest(email)}`, 8]];
+  if (publicRecoveryPeer(client)) keys.push([`client:${tokenDigest(client)}`, 40]);
+  for (const [key, limit] of keys) {
+    const row = attempts.get(key) || { started: now, count: 0 };
+    if (row.count >= limit) throw new ServiceError('TOO_MANY_RECOVERY_ATTEMPTS');
+  }
+  for (const [key] of keys) {
+    const row = attempts.get(key) || { started: now, count: 0 };
+    row.count++; attempts.set(key, row);
+  }
+  // Bound memory without turning unrelated failed addresses into a global lock.
+  while (attempts.size > 4096) attempts.delete(attempts.keys().next().value);
+}
+
+function sameDigest(actual, expected) {
+  const a = Buffer.from(actual || '', 'hex'), b = Buffer.from(expected || '', 'hex');
+  return a.length === 32 && b.length === 32 && crypto.timingSafeEqual(a, b);
+}
 
 function newId(prefix) {
   return `${prefix}_${crypto.randomBytes(12).toString('hex')}`;
@@ -122,6 +166,7 @@ function createAccount(store, input) {
   const saltHex = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(password, saltHex);
   const session = createSessionRow(null);
+  const key = recoveryKey();
   const account = store.update((state) => {
     if (state.accounts.some((a) => a.email === email)) throw new ServiceError('EMAIL_ALREADY_REGISTERED');
     const created = {
@@ -129,6 +174,8 @@ function createAccount(store, input) {
       email,
       password_salt: saltHex,
       password_hash: passwordHash,
+      recovery_key_digest: recoveryDigest(key),
+      recovery_key_created_at: nowIso(),
       created_at: nowIso(),
       failed_sign_ins: 0
     };
@@ -138,7 +185,60 @@ function createAccount(store, input) {
     trimSessions(state, created.account_id);
     return { account_id: created.account_id, email: created.email };
   });
-  return { account, token: session.token };
+  return { account, token: session.token, recovery_key: key };
+}
+
+/** A secret is revealed only when issued. Existing accounts may set one up while signed in. */
+function securityView(store, actor) {
+  const account = store.state().accounts.find(a => a.account_id === actor.account_id);
+  if (!account) throw new ServiceError('AUTHENTICATION_REQUIRED');
+  return { recovery_key_available: Boolean(account.recovery_key_digest) };
+}
+
+function issueRecoveryKey(store, actor, input) {
+  const account = store.state().accounts.find(a => a.account_id === actor.account_id);
+  if (!account) throw new ServiceError('AUTHENTICATION_REQUIRED');
+  if (!input || typeof input.password !== 'string' || input.password.length > 1024) throw new ServiceError('INVALID_CREDENTIALS');
+  const key = recoveryKey();
+  const outcome = store.update(state => {
+    // Verify the password with the same persisted attempt window, without opening or trimming sessions.
+    const checked = checkCredentials(state, account.email, input.password);
+    if (checked.refuse) return checked;
+    const owned = checked.account;
+    owned.recovery_key_digest = recoveryDigest(key);
+    owned.recovery_key_created_at = nowIso();
+    return { recovery_key: key };
+  });
+  if (outcome.refuse) throw new ServiceError(outcome.refuse);
+  return outcome;
+}
+
+/** Recovery proof is high entropy, stored hashed, one use, and never an account/email lookup. */
+function recoverAccount(store, input, client) {
+  const email = normalizeEmail(input && input.email);
+  countRecoveryAttempt(store, email, client);
+  const key = input && input.recovery_key, password = input && input.password;
+  if (typeof password !== 'string' || password.length < MIN_PASSWORD_LENGTH || password.length > 1024) {
+    throw new ServiceError('INVALID_ACCOUNT_DETAILS');
+  }
+  const suppliedDigest = typeof key === 'string' && /^[A-Za-z0-9_-]{43}$/.test(key.trim()) ? recoveryDigest(key.trim()) : '';
+  const nextKey = recoveryKey();
+  const recovered = store.update(state => {
+    const account = state.accounts.find(a => a.email === email);
+    if (!account || !sameDigest(suppliedDigest, account.recovery_key_digest)) return false;
+    const salt = crypto.randomBytes(16).toString('hex');
+    account.password_salt = salt;
+    account.password_hash = hashPassword(password, salt);
+    account.recovery_key_digest = recoveryDigest(nextKey);
+    account.recovery_key_created_at = nowIso();
+    account.failed_sign_ins = 0;
+    account.failed_window_started_at = null;
+    account.locked_until = null;
+    state.sessions = state.sessions.filter(row => row.account_id !== account.account_id);
+    return true;
+  });
+  if (!recovered) throw new ServiceError('INVALID_RECOVERY_KEY');
+  return { recovered: true, recovery_key: nextKey };
 }
 
 /**
@@ -156,6 +256,19 @@ function signIn(store, input) {
   const password = input && input.password;
   const session = createSessionRow(null);
   const outcome = store.update((state) => {
+    const checked = checkCredentials(state, email, password);
+    if (checked.refuse) return checked;
+    const account = checked.account;
+    session.row.account_id = account.account_id;
+    state.sessions.push(session.row);
+    trimSessions(state, account.account_id);
+    return { account: { account_id: account.account_id, email: account.email } };
+  });
+  if (outcome.refuse) throw new ServiceError(outcome.refuse);
+  return { account: outcome.account, token: session.token };
+}
+
+function checkCredentials(state, email, password) {
     const account = state.accounts.find((a) => a.email === email);
     if (account && account.locked_until && Date.parse(account.locked_until) > Date.now()) {
       return { refuse: 'TOO_MANY_FAILED_SIGN_INS' };
@@ -176,13 +289,7 @@ function signIn(store, input) {
     account.failed_sign_ins = 0;
     account.failed_window_started_at = null;
     account.locked_until = null;
-    session.row.account_id = account.account_id;
-    state.sessions.push(session.row);
-    trimSessions(state, account.account_id);
-    return { account: { account_id: account.account_id, email: account.email } };
-  });
-  if (outcome.refuse) throw new ServiceError(outcome.refuse);
-  return { account: outcome.account, token: session.token };
+    return { account };
 }
 
 /**
@@ -235,6 +342,9 @@ function signOutEverywhere(store, accountId) {
 }
 
 module.exports = {
+  securityView,
+  issueRecoveryKey,
+  recoverAccount,
   createAccount,
   signIn,
   signOut,
