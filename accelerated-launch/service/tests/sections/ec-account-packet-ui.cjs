@@ -531,7 +531,7 @@ async function reportCopyLabelsAndDefaults() {
   assert.ok(!/ENTIRE_REPORT|stored_sha256|source_result_id/.test(text), 'consumer labels hide internal scope tokens and source identifiers');
   h.context.reports.packet.report_exhibits = [];
   const empty = h.evaluate('renderPacketBlock(reports)');
-  assert.match(empty, /No report copies are available for these issues/); assert.ok(!/data-packet-report=/.test(empty), 'empty exhibit lists add no broken report controls');
+  assert.match(empty, /Add copies of the report pages about your dispute when you mail the packet/); assert.ok(!/data-packet-report=/.test(empty), 'empty exhibit lists explain the paper copies to add and add no broken report controls');
   h.context.reports.packet.selected_count = 0;
   assert.match(h.evaluate('renderPacketBlock(reports)'), /Choose your issues, then save to see the report copies/, 'first-time users see how to reach the copy choices before approval');
 }

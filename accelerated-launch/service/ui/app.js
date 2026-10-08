@@ -1329,7 +1329,7 @@ function packetSupportingDocuments(pv) {
 function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
   const reports = packet.report_exhibits;
-  if (!reports.length) return `<section id="packet-reports"><h3>Report copies</h3><p class="evidence">${packet.selected_count ? 'No report copies are available for these issues.' : 'Choose your issues, then save to see the report copies.'}</p></section>`;
+  if (!reports.length) return `<section id="packet-reports"><h3>Report copies</h3><p class="evidence">${packet.selected_count ? 'Add copies of the report pages about your dispute when you mail the packet.' : 'Choose your issues, then save to see the report copies.'}</p></section>`;
   return `<section id="packet-reports"><h3>Report copies</h3>
     <p class="evidence">Choose the report copies you want to include. Copies are added only when you select them and save.</p>
     ${reports.map(report => {

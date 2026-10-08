@@ -550,7 +550,8 @@ async function run(service, check) {
   const firstCopyPreview = copyPage.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
   await copyPage.locator('#packet-save').click(); await (await firstCopyPreview).finished();
   await copyPage.waitForSelector('[data-packet-report]');
-  const copyView = (await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view;
+  const copyPacketUrl = new URL(`/api/cases/${currentCase.case_id}/packet`, copyPage.url()).href;
+  const copyView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
   const originals = copyView.packet.report_exhibits;
   check.equal(originals.length, 2, 'a saved re-aging dispute offers both original earlier and current reports');
   check.ok(originals.every(report => report.selected === false), 'first-time report copies are offered without automatic inclusion');
@@ -575,11 +576,11 @@ async function run(service, check) {
   check.equal(await copyPage.locator('#packet-download').isDisabled(), true, 'a changed report choice disables stale download');
   check.equal(await copyPage.locator('#packet-print').isDisabled(), true, 'a changed report choice disables stale print');
   check.ok(!/Your packet is approved|Your packet is ready/.test(await copyPage.locator('#panel').innerText()), 'changing report choices hides the earlier approval and ready claims');
-  check.equal((await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view.packet.report_attachment_manifest.length, 0, 'checking report copies alone does not silently save any attachment');
+  check.equal((await (await copyPage.request.get(copyPacketUrl)).json()).view.packet.report_attachment_manifest.length, 0, 'checking report copies alone does not silently save any attachment');
   const copySaveRequest = copyPage.waitForRequest(request => request.url().endsWith('/packet/reports'));
   await saveReadApprove(copyPage);
   check.deepEqual((await copySaveRequest).postDataJSON().file_ids.slice().sort(), originals.map(report => report.file_id).sort(), 'Save submits exactly the two explicit report-copy choices');
-  const includedView = (await (await copyPage.request.get(`/api/cases/${currentCase.case_id}/packet`)).json()).view;
+  const includedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
   const includedPreview = await copyPage.locator('#packet-preview').innerText();
   check.ok(originals.every(report => includedPreview.includes(report.original_filename)), 'the full saved preview names both chosen original reports before approval');
   check.ok(/For each report, print the pages listed under Report copies/.test(await copyPage.locator('#packet-ready-status').innerText()), 'the ready message tells the user which report pages to print');
