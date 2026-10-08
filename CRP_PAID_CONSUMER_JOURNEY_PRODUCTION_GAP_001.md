@@ -42,6 +42,8 @@ Returning consumers' saved reports must also be recognisable by bureau/date/file
 
 October 8 fresh-review follow-up, within items 2, 6 and 8: the UI writer retains its isolated worktree ownership of `app.js` and affected K/BN/BW/CP/EC tests, plus BA. Repair the demonstrated external Checkout return that currently loses the owned report context, and replace a failed packet-load response with a clear retry rather than a false no-eligible-issues message. Restore the report only through authenticated owned-case reads; preserve payment/webhook and approval gates. BA's unpaid-state assertion must follow the current plain wording while retaining price, renewal, access and cancellation checks. Root integrates serially and runs the final frozen regression after these executable corrections.
 
+Coordinator follow-up ownership: `payment-provider.cjs` and T. Stripe's cancel return must identify cancelled Checkout so the unpaid consumer can choose a plan again; this hint grants no access. Preserve the same origin/report context and signed-webhook entitlement. The synthetic adapter must preserve valid query structure and cannot grant access through its decoy success flags. The isolated UI writer handles the corresponding owned-report cancellation wording and no-grant checks.
+
 Multiple writers use separate managed Git worktrees and bounded nonoverlapping ownership. Root preserves the main checkout and integrates one completed change at a time. Completed tests are implementation evidence; all gap rows need measured passing evidence before implementation closure. Production controls remain separately open.
 
 ## Measured outcomes

@@ -173,11 +173,15 @@ async function activationAndIdempotency(t, check, evidence) {
   const before = await t.request('GET', '/api/entitlement', { token: buyer.token });
   check.equal(before.json.entitlement.entitled, false, 'the buyer is not entitled before a verified event');
 
-  const checkout = await t.openCheckout(buyer, 'report_once', caseId);
+  const checkout = await t.request('POST', '/api/billing/checkout', { token: buyer.token,
+    body: { plan_code: 'report_once', case_id: caseId, return_url: t.base + '/?report=' + caseId } });
   check.equal(checkout.status, 201, 'a checkout intent is opened through the real endpoint');
   check.equal(checkout.json.checkout.provider_is_a_working_payment, false, 'and states the provider is not a working payment');
   check.equal(checkout.json.checkout.redirect_grants_nothing, true, 'and states that the redirect grants nothing');
   check.ok(/checkout=success/.test(checkout.json.checkout.redirect_url), 'the decoy redirect carries a success flag');
+  const decoy = new URL(checkout.json.checkout.redirect_url);
+  check.equal(decoy.searchParams.get('report'), caseId, 'the synthetic redirect preserves the existing report query');
+  check.equal(decoy.searchParams.get('payment'), 'paid', 'synthetic paid flag is a separate valid parameter');
   check.equal((await t.request('GET', '/api/entitlement', { token: buyer.token })).json.entitlement.entitled, false,
     'and opening it grants nothing at all');
   check.equal((await t.request('GET', `/api/cases/${caseId}/report-download`, { token: buyer.token })).status, 402,
@@ -433,9 +437,16 @@ async function stripeRenewalCancellation(t, check, evidence) {
     mock.fixture.subscription.id = mock.fixture.session.subscription;
     mock.fixture.subscription.cancel_at_period_end = false;
     mock.fixture.subscription.current_period_end = Math.floor(Date.now() / 1000) + (plan === 'annual' ? 365 : 30) * 86400;
+    const returnUrl = t.base + '/?checkout=return&report=case_' + 'a'.repeat(32) + '&plan=' + plan;
     const checkout = await t.request('POST', '/api/billing/checkout', { token: actor.token,
-      body: { plan_code: plan, return_url: t.base + '/' } });
+      body: { plan_code: plan, return_url: returnUrl } });
     check.equal(checkout.status, 201, label + ': actual Stripe adapter opens this owned mock Checkout');
+    const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
+    check.equal(sent.get('success_url'), returnUrl, label + ': Stripe success retains the report return context');
+    const cancelledReturn = new URL(sent.get('cancel_url'));
+    check.equal(cancelledReturn.searchParams.get('checkout_cancelled'), '1', label + ': cancelling Checkout has a distinct return hint');
+    cancelledReturn.searchParams.delete('checkout_cancelled');
+    check.equal(cancelledReturn.href, returnUrl, label + ': cancellation preserves the same origin and report context');
     const signed = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_activate_' + sequence,
       type: 'checkout.session.completed', livemode: false, created: Math.floor(Date.now() / 1000),
       data: { object: { ...mock.fixture.session } } });

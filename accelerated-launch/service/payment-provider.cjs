@@ -128,10 +128,14 @@ function makeTestAdapter(env) {
     createCheckout(request) {
       const req = request || {};
       const reference = `test_cs_${crypto.randomBytes(12).toString('hex')}`;
+      const redirect = new URL(req.return_url || 'http://127.0.0.1/');
+      if (!redirect.searchParams.has('checkout')) redirect.searchParams.set('checkout', 'success');
+      redirect.searchParams.set('payment', 'paid');
+      redirect.searchParams.set('session', reference);
       return {
         provider_reference: reference,
         /* A success flag in a URL grants NOTHING: the suite follows it and is still refused. */
-        redirect_url: `${req.return_url || 'http://127.0.0.1/'}?checkout=success&payment=paid&session=${reference}`,
+        redirect_url: redirect.href,
         mode: 'TEST_ADAPTER_NO_HOSTED_PAGE',
         is_a_working_payment: false
       };
@@ -426,12 +430,14 @@ function makeStripeAdapter(env) {
     const planCode = req.plan_code;
     const mode = planCode === 'report_once' ? 'payment' : 'subscription';
     const priceId = priceIdFor(env, planCode);
+    const cancelledReturn = new URL(req.return_url);
+    cancelledReturn.searchParams.set('checkout_cancelled', '1');
     const params = {
       mode,
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': 1,
       success_url: req.return_url,
-      cancel_url: req.return_url,
+      cancel_url: cancelledReturn.href,
       client_reference_id: req.account_id,
       'metadata[account_id]': req.account_id,
       'metadata[plan_code]': planCode,
