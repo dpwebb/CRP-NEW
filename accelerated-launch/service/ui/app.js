@@ -1320,9 +1320,9 @@ function renderPacketBlock(pv) {
       <pre id="packet-preview">${esc(packet.correspondence_preview || 'Select at least one issue to see the correspondence and its evidence.')}</pre>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${packet.selected_count && packet.correspondence_preview ? '' : 'disabled'}>I have read this packet and checked its attachments</label>
       <button class="primary" id="packet-approve" disabled>Approve this version</button>
-      <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print packet</button>
+      <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print letter and evidence</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download correction packet</button>
-      ${packet.download_available ? '<p class="note">Your packet is ready. Print the letter and evidence PDF. Add the selected document copies, sign where shown and mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
+      ${packet.download_available ? '<p class="note">Your packet is ready. Download it to get the letter, forms and selected document copies. Print all of them. Fill in the forms and sign where shown. Mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
     </div>`;
 }
 
@@ -1394,7 +1394,7 @@ async function wirePacket(panel) {
     const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || !previewCurrent) throw cancelledAction(); };
     await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version }); ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.notice = 'Packet approved. Print it and add the selected document copies before mailing.';
+    state.notice = 'Packet approved. Download it. Print the letter, forms and selected copies before mailing.';
   });
   const reviewed = el('packet-preview-reviewed');
   if (reviewed) reviewed.onchange = () => { ensureOrigin(); if (approve) approve.disabled = !previewCurrent || edits > 0 || !reviewed.checked || pv.packet.approved; };

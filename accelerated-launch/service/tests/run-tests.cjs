@@ -101,6 +101,7 @@ const SECTION_FILES = [
   'eb-account-packet-support.cjs',
   'ec-account-packet-ui.cjs',
   'ed-account-browser.cjs',
+  'ef-account-recovery.cjs',
   'dh-ca-reader-completion.cjs',
   'di-au-reader-completion.cjs',
   'dj-gb-reader-completion.cjs',

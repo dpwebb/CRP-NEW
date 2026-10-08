@@ -117,7 +117,10 @@ function requirements(country, bureau, settings = {}) {
 }
 function missing(req, profile, documents, settings) {
   if (!req) return ['Choose the bureau that issued your report.'];
-  const result = req.fields.filter(field => !String(profile[field] || '').trim()).map(field => 'Add ' + field.replace(/_/g, ' ') + ' in your account details.');
+  const labels = { full_name: 'your full name', date_of_birth: 'your date of birth', address_line1: 'your street address',
+    city: 'your city or town', region: 'your province, state or county', postal_code: 'your postal or ZIP code',
+    contact_email: 'your contact email', phone: 'your phone number' };
+  const result = req.fields.filter(field => !String(profile[field] || '').trim()).map(field => 'Add ' + (labels[field] || field.replace(/_/g, ' ')) + ' in your account details.');
   const identity = documents.filter(doc => doc.document_type === 'IDENTITY' && req.identity_kinds.includes(doc.document_kind));
   const distinctIdentity = new Set(identity.map(doc => doc.sha256));
   if (distinctIdentity.size < req.identity_count) result.push('Select ' + req.identity_count + ' qualifying identification document(s).');

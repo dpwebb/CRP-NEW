@@ -225,15 +225,23 @@ class TestService {
     const view = (await this.request('GET', base + '/packet', { token: actor.token })).json.view;
     const bureau = view.support.requirements?.bureau || owned.selected_bureau || view.support.catalog[0].id;
     const correspondence = view.packet.correspondence;
+    const currentProfile = (await this.request('GET', '/api/account/profile', { token: actor.token })).json.profile;
     const profile = { full_name: correspondence.consumer_name || 'Morgan Fiction', date_of_birth: '1980-04-12',
-      phone: '555-0100', contact_email: 'morgan@example.test', address_line1: correspondence.contact || '12 Example Street',
+      phone: '555-0100', contact_email: 'morgan@example.test', address_line1: (correspondence.contact || '12 Example Street').replace(/[\r\n]+/g, ', ').slice(0, 180),
       address_line2: '', city: 'Example City', region: 'Example Region', postal_code: '00000', country: owned.country, previous_address: '' };
-    const saved = await this.request('PUT', '/api/account/profile', { token: actor.token, body: { profile } });
+    const saved = await this.request('PUT', '/api/account/profile', { token: actor.token, body: { profile: currentProfile.full_name ? currentProfile : profile } });
     if (saved.status !== 200) throw new Error(`fictional mail profile failed: ${saved.text}`);
     const settings = { bureau, channel: 'POSTAL', purpose: view.support.suggested_purpose || 'ACCOUNT', document_ids: [],
       use_account_profile: true, identity_reference: owned.country === 'US' ? '000000000' : '', no_ssn_issued: false,
       identity_shows_address: false, verification_requested: false, copies_confirmed: true, document_dates: {}, other_identity_details: '' };
+    const existing = (await this.request('GET', '/api/account/documents', { token: actor.token })).json.documents;
     for (const [type, kind] of [['IDENTITY', 'DRIVING_LICENCE'], ['IDENTITY', owned.country === 'US' && bureau === 'EQUIFAX' ? 'SOCIAL_SECURITY' : 'PASSPORT'], ['ADDRESS', 'UTILITY_BILL']]) {
+      const prior = existing.find(doc => doc.document_type === type && doc.document_kind === kind && doc.original_filename === `fictional-${kind}.pdf`);
+      if (prior) {
+        settings.document_ids.push(prior.file_id);
+        settings.document_dates[prior.file_id] = new Date().toISOString().slice(0, 10);
+        continue;
+      }
       const bytes = buildPdf({ pages: [{ lines: ['FICTIONAL TEST DOCUMENT', type, kind, actor.account_id] }] });
       const uploaded = await this.request('POST', '/api/account/documents', { token: actor.token, body: {
         originalFilename: `fictional-${kind}.pdf`, declaredBytes: bytes.length, mimeType: 'application/pdf',

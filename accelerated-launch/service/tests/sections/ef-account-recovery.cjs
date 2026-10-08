@@ -1,0 +1,56 @@
+'use strict';
+const accounts = require('../../accounts.cjs');
+async function run(t, check) {
+  const password = 'fictional-original-password', nextPassword = 'fictional-replacement-password';
+  const created = await t.request('POST', '/api/accounts', { body: { email: 'recover@example.test', password } });
+  const accountId = created.json.account.account_id, firstKey = created.json.recovery_key;
+  const token = /crp_session=([^;]+)/.exec(created.setCookie)[1];
+  check.match(firstKey, /^[A-Za-z0-9_-]{43}$/, 'signup gives a high-entropy recovery key');
+  const stranger = await t.unpaidAccount('recovery-stranger@example.test');
+  const row = t.service.store.state().accounts.find(a => a.account_id === accountId);
+  check.equal(row.recovery_key_digest, accounts.tokenDigest('crp-recovery-v1:' + firstKey), 'only the recovery digest is persisted');
+  check.ok(!JSON.stringify(t.service.store.state()).includes(firstKey), 'the key itself is absent from stored state');
+  check.equal((await t.request('GET', '/api/account/security')).status, 401, 'security view requires sign-in');
+  const security = await t.request('GET', '/api/account/security', { token });
+  check.deepEqual(security.json, { ok: true, recovery_key_available: true }, 'security view discloses readiness only');
+  check.match(security.headers.get('cache-control'), /no-store/, 'security response is not cached');
+  const rotate = password => t.request('POST', '/api/account/recovery-key', { token, body: { password } });
+  check.equal((await rotate('wrong-fictional-password')).json.error.code, 'INVALID_CREDENTIALS', 'rotation needs the current password');
+  const sessionsBefore = t.service.store.state().sessions.map(s => s.session_id);
+  const rotated = await rotate(password), key = rotated.json.recovery_key;
+  check.equal(rotated.status, 200, 'signed-in consumer can replace the saved key');
+  check.notEqual(key, firstKey, 'rotation produces a new secret');
+  check.deepEqual(t.service.store.state().sessions.map(s => s.session_id), sessionsBefore, 'key rotation preserves active sessions');
+  const recover = (email, recovery_key, password = nextPassword) => t.request('POST', '/api/account/recover', { body: { email, recovery_key, password } });
+  check.equal((await recover('recover@example.test', firstKey)).json.error.code, 'INVALID_RECOVERY_KEY', 'replaced key cannot reset a password');
+  const unknown = await recover('unknown@example.test', key), mismatch = await recover('recovery-stranger@example.test', key);
+  check.equal(unknown.json.error.code, mismatch.json.error.code, 'unknown and mismatched accounts use the same refusal');
+  check.equal(unknown.json.error.message, mismatch.json.error.message, 'refusal wording does not disclose an account');
+  check.equal((await recover('recover@example.test', key, 'short')).status, 400, 'recovery keeps password length requirements');
+  const recovered = await recover(' RECOVER@example.test ', key);
+  check.equal(recovered.status, 200, 'matching account and current key recover access');
+  check.equal(recovered.json.recovered, true, 'successful recovery is explicit');
+  check.notEqual(recovered.json.recovery_key, key, 'used key rotates immediately');
+  check.match(recovered.setCookie, /Max-Age=0/, 'recovery clears the old browser session');
+  check.equal((await t.request('GET', '/api/session', { token })).status, 401, 'old target session is revoked');
+  check.equal((await t.request('GET', '/api/session', { token: stranger.token })).status, 200, 'another account session is preserved');
+  check.equal((await recover('recover@example.test', key)).status, 401, 'recovery key works only once');
+  check.equal((await t.request('POST', '/api/sessions', { body: { email: 'recover@example.test', password } })).status, 401, 'old password no longer signs in');
+  check.equal((await t.request('POST', '/api/sessions', { body: { email: 'recover@example.test', password: nextPassword } })).status, 200, 'consumer signs in normally with the new password');
+  for (let i = 0; i < 8; i++) check.equal((await recover('limited@example.test', key)).status, 401, 'limited address attempt ' + i + ' is counted');
+  check.equal((await recover('limited@example.test', key)).status, 429, 'per-address attempt limit is enforced');
+  for (let i = 0; i < 45; i++) check.equal((await recover(`shared-proxy-${i}@example.test`, key)).status, 401, 'shared private proxy does not lock unrelated addresses ' + i);
+  const serviceStore = t.service.store;
+  for (let i = 0; i < 40; i++) { try { accounts.recoverAccount(serviceStore, { email: `peer-${i}@example.test`, recovery_key: key, password: nextPassword }, '203.0.113.8'); } catch (e) { check.equal(e.code, 'INVALID_RECOVERY_KEY', 'public peer request ' + i + ' counted'); } }
+  let error; try { accounts.recoverAccount(serviceStore, { email: 'peer-next@example.test', recovery_key: key, password: nextPassword }, '203.0.113.8'); } catch (e) { error = e.code; }
+  check.equal(error, 'TOO_MANY_RECOVERY_ATTEMPTS', 'a directly connected public peer retains its request limit');
+  const publicPrices = await t.request('GET', '/api/pricing');
+  check.equal(publicPrices.status, 200, 'first visitor can read configured prices without an account');
+  const planCatalog = publicPrices.json.plan_catalog;
+  check.equal(planCatalog.plans.length, 3, 'all current paid plans are shown');
+  check.ok(planCatalog.plans.every(p => p.amount_cents > 0 && p.amount_display && p.currency === 'cad'), 'prices are populated from the configured catalog');
+  check.ok(!/provider_reference|price_id|secret|account_id/.test(JSON.stringify(planCatalog)), 'public prices disclose no private payment settings');
+  check.ok(!t.logText().includes(firstKey) && !t.logText().includes(key) && !t.logText().includes(nextPassword), 'activity logs contain no recovery secrets or passwords');
+  return { one_use_recovery: true, session_isolation: true, proxy_safe_rate_limit: true, configured_public_prices: true };
+}
+module.exports = { id: 'ef-account-recovery', title: 'Secure recovery and first-visit configured prices', run };
