@@ -138,6 +138,10 @@ async function run(service, check) {
   const pot = await setupPaidCase(service, 'bw-pot@example.test', 'US', 'US-CA');
   let opened = await openCasePage(pot.email, pot.password, pot.caseId, ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019']);
   let page = opened.page;
+  const reviewText = await page.locator('#panel').innerText();
+  check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(reviewText),
+    'the actual browser packet review has no obsolete draft, observation-only or demonstration claims');
+  check.equal(await page.locator('#draft, #download').count(), 0, 'the actual browser review has no legacy draft or demonstration control');
   check.equal(await page.locator('[data-check-issue]').count(), 1, 'the common potential issue renders as one selectable card');
   const potBlock = await page.locator('#packet-block').innerText();
   check.ok(/opened date later than its closed date/.test(potBlock), 'with readable evidence and the affirmative concern');

@@ -4,7 +4,7 @@
  *
  * OWNER-ALL82-001 / B2. The HTTP suite proves the service's behaviour; this section proves the private UI
  * consumes it without error and shows the plain-language path, including the demonstration banner and the
- * draft refusal. It runs `ui/app.js` in a `node:vm` context with a small DOM and `fetch` stub — the same
+ * packet review. It runs `ui/app.js` in a `node:vm` context with a small DOM and `fetch` stub — the same
  * technique the repository already uses to check the static consumer site (`wizard-check.cjs`).
  *
  * What it does NOT claim: no browser was used, no layout was measured and no CSS was applied.
@@ -219,7 +219,7 @@ const ONE_TIME_VIEW = Object.assign({}, FREE_VIEW, {
 });
 
 function makeResponder() {
-  const state = { signed_in: false };
+  const state = { signed_in: false, reviewed: false };
   return (method, url) => {
     if (url === '/api/jurisdictions') {
       return { status: 200, body: { ok: true, surface: { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia', launch_ready: false }], bureau_choices: { CA: [{ id: 'EQUIFAX', label: 'Equifax' }] } } } };
@@ -237,7 +237,7 @@ function makeResponder() {
     if (method === 'GET' && url === '/api/cases') return { status: 200, body: { ok: true, cases: [{ case_id: 'case_stub', country: 'CA', region: 'CA-NS', status: 'OPEN' }] } };
     if (method === 'GET' && url === '/api/privacy') return { status: 200, body: { ok: true, cases: [{country:'CA',region:'CA-NS',documents:[{name:'private-owned.pdf',stored_bytes:123}],result_count:1}],retention:{plain:'Kept until you delete it.'},deletion:{backups:'Backup erasure timing has not been verified.',external_billing:'Payment provider records are separate.'} } };
     if (method === 'POST' && url === '/api/cases') return { status: 201, body: { ok: true, case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS' } } };
-    if (method === 'GET' && url === '/api/cases/case_stub') return { status: 200, body: { ok: true, view: CASE_VIEW } };
+    if (method === 'GET' && url === '/api/cases/case_stub') return { status: 200, body: { ok: true, view: { ...CASE_VIEW, reviewed: state.reviewed } } };
     if (method === 'POST' && url === '/api/cases/case_stub/files') return { status: 201, body: { ok: true, receipt: { file_id: 'f_uploaded', format_detection: { supported: true, refusal_reason: null } } } };
     if (method === 'POST' && url === '/api/cases/case_stub/demonstration') {
       return { status: 201, body: { ok: true, demonstration: true, counts_as_report_support: false, label: 'INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT', result: DEMONSTRATION_RESULT } };
@@ -253,7 +253,10 @@ function makeResponder() {
     if (method === 'GET' && url === '/api/cases/case_stub/response-draft') {
       return { status: 409, body: { ok: false, error: { code: 'RESULT_NOT_ELIGIBLE_FOR_DRAFT', message: 'No response draft can be produced for this result.' } } };
     }
-    if (method === 'POST' && url === '/api/cases/case_stub/review') return { status: 200, body: { ok: true, result_id: 'res_stub', case_status: 'REVIEWED' } };
+    if (method === 'POST' && url === '/api/cases/case_stub/review') {
+      state.reviewed = true;
+      return { status: 200, body: { ok: true, result_id: 'res_stub', case_status: 'REVIEWED' } };
+    }
     return { status: 200, body: { ok: true } };
   };
 }
@@ -328,13 +331,17 @@ async function run(t, check) {
 
   /* Step 4: the review and download boundary. */
   vm.runInContext('state.step = 4; render();', ctx);
-  check.ok(/not available/.test(panel.innerHTML), 'the review step states that no draft is available');
-  check.ok(/No result in this build may be used to produce a response draft/.test(panel.innerHTML), 'and explains why in plain language');
-  await dom.elementById('draft').onclick();
+  check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(panel.innerHTML),
+    'the packet review does not repeat obsolete draft, observation-only or demonstration claims');
+  check.ok(!/id="draft"|id="download"/.test(panel.innerHTML), 'and does not offer legacy draft or demonstration controls');
+  check.ok(/id="packet-block"/.test(panel.innerHTML), 'the correction-packet mount remains in the review');
+  check.ok(/NOT YET REVIEWED/.test(panel.innerHTML) && /id="review"/.test(panel.innerHTML), 'the assessment acknowledgement is available before review');
+  await dom.elementById('review').onclick();
   await tick();
-  check.ok(/No response draft can be produced/.test(panel.innerHTML), 'requesting a draft shows the service\'s refusal');
-  dom.elementById('download').onclick();
-  check.ok(dom.calls.some((c) => /NAVIGATE .*demonstration-download/.test(c)), 'the download interface is reachable from the UI');
+  check.ok(dom.calls.includes('POST /api/cases/case_stub/review'), 'acknowledgement records the review through the existing service action');
+  check.ok(/REVIEWED BY YOU/.test(panel.innerHTML) && /id="review" disabled/.test(panel.innerHTML), 'the returned review disables repeated acknowledgement');
+  check.ok(/Your review is saved\./.test(panel.innerHTML), 'the saved review has a simple confirmation');
+  check.ok(!dom.calls.some((c) => /response-draft|demonstration-download/.test(c)), 'reviewing the packet requests neither obsolete endpoint');
 
   /* Step 5: case status and deletion controls. */
   vm.runInContext('state.step = 6; render();', ctx);

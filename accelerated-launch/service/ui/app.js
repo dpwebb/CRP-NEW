@@ -1094,36 +1094,20 @@ function renderReview(panel) {
   const result = view.result;
   panel.innerHTML = `
     <h1>Review and download</h1>
-    <p class="lede">You review the observations before anything can follow from them. Nothing was sent, and nothing
-    will be sent from this build.</p>
+    <p class="lede">Select the issues you want to dispute. Review your correspondence and attachments, then approve
+    and download your packet.</p>
     ${notices()}
     ${result ? `<div class="obs">
       <span class="pill ${view.reviewed ? '' : 'stop'}">${view.reviewed ? 'REVIEWED BY YOU' : 'NOT YET REVIEWED'}</span>
-      <h3>${esc(result.checks_performed)} checks performed on this case</h3>
-      <p class="evidence">${esc((result.assessment && result.assessment.plain) || '')}</p>
-      <p class="evidence">A response draft is available only where the recorded output permission allows it.
-      Here: <b>not available</b>. ${esc(view.download.reason_plain || '')}</p>
-      <button class="primary" id="review" ${view.reviewed ? 'disabled' : ''}>I have reviewed this result</button>
-      <button class="secondary" id="draft">Request a response draft</button>
-      <button class="secondary" id="download">Download the demonstration file</button>
+      <button class="primary" id="review" ${view.reviewed ? 'disabled' : ''}>I have reviewed my assessment</button>
       <div id="packet-block"></div>
     </div>` : '<div class="note">Run the checks on the previous step first.</div>'}`;
 
   if (el('review')) el('review').onclick = () => run(async () => {
     await api('POST', `/api/cases/${state.caseId}/review`, {});
     state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
-    state.notice = 'Review recorded. A response draft still depends on the recorded output permission.';
+    state.notice = 'Your review is saved.';
   });
-
-  if (el('draft')) el('draft').onclick = () => run(async () => {
-    await api('GET', `/api/cases/${state.caseId}/response-draft`);
-    state.notice = 'A response draft was produced.';
-  });
-
-  if (el('download')) el('download').onclick = () => {
-    note(`GET /api/cases/${state.caseId}/demonstration-download -> browser download`);
-    window.location.assign(`/api/cases/${state.caseId}/demonstration-download`);
-  };
 
   wirePacket(panel);
 }
