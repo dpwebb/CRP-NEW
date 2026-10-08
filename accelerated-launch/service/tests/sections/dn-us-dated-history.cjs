@@ -202,13 +202,15 @@ async function run(t, check) {
     await t.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
     await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await t.preparePostalPacket(owner, caseId);
     check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves the report cells and published definition');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'the approved history packet downloads');
     check.ok(download.text.includes('May 2025') && download.text.includes('printed "OK"') && download.text.includes('printed "30"'),
       'packet states both own printed codes and their reporting period');
+    const joinedPacket = download.text.replace(/\s/g, '');
     check.ok(download.text.includes('Published code definition: OK') && download.text.includes('Published code definition: 30')
-      && download.text.includes(definitions.SOURCE.title) && download.text.includes(definitions.SOURCE.url),
+      && joinedPacket.includes(definitions.SOURCE.title.replace(/\s/g, '')) && joinedPacket.includes(definitions.SOURCE.url.replace(/\s/g, '')),
       'packet separately cites the published definitions with their title and URL');
     check.equal(/page undefined|probable violation|potential violation/.test(download.text.toLowerCase()), false,
       'consumer packet has no invented source page or obsolete verdict');

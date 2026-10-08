@@ -49,6 +49,7 @@ async function run(t, check) {
       body: { issue_ids: [issue.issue_id] } })).status, 200, 'the recovered supported violation is selectable');
     await t.request('POST', reading.endpoint + '/packet/correspondence', { token: owner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await t.preparePostalPacket(owner, reading.caseId);
     check.equal((await t.request('POST', reading.endpoint + '/packet/approve', { token: owner.token })).status, 200,
       'the consumer approves the recovered physical sources');
     const body = await t.request('GET', reading.endpoint + '/packet-download', { token: owner.token });

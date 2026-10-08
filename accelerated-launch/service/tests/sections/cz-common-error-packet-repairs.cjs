@@ -219,6 +219,7 @@ async function httpJourney(service, check) {
     body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
   check.equal((await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token })).status,
     409, 'the real route refuses the download before approval');
+  await service.preparePostalPacket(actor, caseId);
   check.equal((await service.request('POST', `/api/cases/${caseId}/packet/approve`, { token: actor.token })).status,
     200, 'the owner approves the current evidence and request');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });

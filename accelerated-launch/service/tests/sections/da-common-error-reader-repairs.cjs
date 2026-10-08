@@ -170,6 +170,7 @@ async function run(t, check) {
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token,
       body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana@example.test' } } })).status,
       200, 'the consumer supplies the packet correspondence details');
+    await t.preparePostalPacket(owner, caseId);
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token })).status, 200,
       'the selected date issue reaches consumer approval');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });

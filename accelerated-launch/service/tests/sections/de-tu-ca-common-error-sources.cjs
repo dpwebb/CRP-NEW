@@ -1,4 +1,5 @@
 'use strict';
+const { packetText, comparableText } = require('../packet-pdf-assertions.cjs');
 
 // Fictional downstream reader inputs exercise the measured TU-CA layout, not report admission.
 // No private specimen is needed, and the production presentation predicates remain unchanged.
@@ -76,9 +77,9 @@ function approveAndDownload(ctx, issue, check) {
   'the existing packet selection uses the sole public breach term');
   packets.setCorrespondence(store, actor, caseId, { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, caseId);
-  const body = packets.packetDownload(store, actor, caseId).body;
+  const body = packetText(packets.packetDownload(store, actor, caseId));
   check.match(body, /VIOLATION/, 'the approved packet names the supported breach');
-  check.ok(body.includes(issue.rule_assessment.requirement), 'the packet carries the existing report-data requirement');
+  check.ok(comparableText(body).includes(comparableText(issue.rule_assessment.requirement)), 'the packet carries the existing report-data requirement');
   check.match(body, /verify|verification/i, 'the supported uncertain issue retains a verification request');
   for (const fact of issue.source_facts) {
     check.ok(body.includes(String(fact.raw_value)), 'the packet includes the decisive printed reading');

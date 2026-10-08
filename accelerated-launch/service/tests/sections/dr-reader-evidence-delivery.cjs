@@ -1,4 +1,5 @@
 'use strict';
+const { packetText } = require('../packet-pdf-assertions.cjs');
 
 const common = require('../../common-errors.cjs');
 const issues = require('../../issues.cjs');
@@ -66,7 +67,7 @@ async function run(t, check) {
     packets.selectIssues(store, actor, 'dr-case', [duplicate.issue_id]);
     packets.setCorrespondence(store, actor, 'dr-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
     packets.approvePacket(store, actor, 'dr-case');
-    const body = packets.packetDownload(store, actor, 'dr-case').body;
+    const body = packetText(packets.packetDownload(store, actor, 'dr-case'));
     check.equal(/CREDITOR-?[a-f0-9]{24}/i.test(body), false, 'the approved duplicate packet has no internal creditor key');
     check.ok(body.includes('***4321') && body.includes('Creditor identity matched from the report'),
       'duplicate packet retains the actual masked identifier and located creditor match');
@@ -95,7 +96,7 @@ async function run(t, check) {
     packets.selectIssues(store, actor, 'dr-case', [issue.issue_id]);
     packets.setCorrespondence(store, actor, 'dr-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
     packets.approvePacket(store, actor, 'dr-case');
-    const body = packets.packetDownload(store, actor, 'dr-case').body;
+    const body = packetText(packets.packetDownload(store, actor, 'dr-case'));
     check.ok(body.includes('VIOLATION') && body.includes('Notes: printed "Closed by credit grantor"'),
       'the selected approved packet states the actual own Notes phrase');
     check.ok(body.includes('Printed caption without a value: Date Closed') && body.includes('page 5'),
@@ -122,6 +123,7 @@ async function run(t, check) {
     await t.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
     await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await t.preparePostalPacket(owner, endpoint.split('/').at(-1));
     check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200,
       'the consumer approves the recovered source evidence');
     const downloaded = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
@@ -169,9 +171,9 @@ async function run(t, check) {
     check.ok(body.includes('File updated for the period to: printed "01/01/26"')
       && body.includes('Published history-period definition:') && body.includes('Published code definition:'),
     'packet distinguishes the own date anchor, published ordering and published code meanings');
-    const issueSummary = body.split('ISSUES AND THE FACTS THEY CAME FROM')[1].split('EVIDENCE REFERENCES')[0];
+    const issueSummary = body.split('EVIDENCE REFERENCES')[1].split('PRINT AND MAIL')[0];
     check.ok(issueSummary.includes('printed "1"') && issueSummary.includes('printed "0"') && issueSummary.includes('page 1'),
-      'packet issue summary retains both physical code readings separately from the definitions');
+      'the single evidence appendix retains both physical code readings separately from the definitions');
     const report = await t.request('GET', endpoint + '/report-download', { token: owner.token });
     check.equal(report.status, 200, 'the same recovered UK violation reaches the assessment download');
     check.ok(report.text.includes('Published payment-history order') && report.text.includes('most recent')

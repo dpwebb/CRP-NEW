@@ -1,4 +1,5 @@
 'use strict';
+const { packetText } = require('../packet-pdf-assertions.cjs');
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -45,7 +46,7 @@ function approve(ctx, issueIds) {
   packets.selectIssues(store, actor, 'fictional-gb', issueIds);
   packets.setCorrespondence(store, actor, 'fictional-gb', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, 'fictional-gb');
-  return { store, actor, body: packets.packetDownload(store, actor, 'fictional-gb').body };
+  return { store, actor, body: packetText(packets.packetDownload(store, actor, 'fictional-gb')) };
 }
 
 function familyPdf(accountLines) {
@@ -183,12 +184,12 @@ async function run(service, check) {
   }
 
   const selected = approve(positive, positive.findings.map((issue) => issue.issue_id));
-  check.match(selected.body, /Selected issues: 2/, 'the approved packet preserves two distinct concerns on one account');
+  check.equal((selected.body.split('EVIDENCE REFERENCES')[0].match(/^\s*\d+\. /gm) || []).length, 2, 'the approved packet preserves two distinct concerns on one account');
   check.match(selected.body, /Started: printed "01\/01\/20"/, 'the packet uses the exact Started reading');
   check.match(selected.body, /Settled: printed "01\/01\/19"/, 'the packet uses the exact Settled reading');
   check.match(selected.body, /Credit Limit: printed "£0"/, 'the packet uses the exact numeric caption and raw zero');
   check.match(selected.body, /FICTIONAL BANK CREDIT CARD/, 'the packet retains the source-linked account heading');
-  check.match(selected.body, /Request \(verification\)/, 'the concerns support verification without raising confidence');
+  check.match(selected.body, / - verification/, 'the concerns support verification without raising confidence');
   record.fact_sources['liability.closedDate'].location.line += 1;
   let stale = null;
   try { packets.packetDownload(selected.store, selected.actor, 'fictional-gb'); } catch (error) { stale = error.code; }
@@ -235,6 +236,7 @@ async function run(service, check) {
       body: { issue_ids: view.eligible_issues.map((issue) => issue.issue_id) } });
     await service.request('POST', `/api/cases/${ctx.caseId}/packet/correspondence`, { token: owner.token,
       body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await service.preparePostalPacket(owner, ctx.caseId);
     const approved = await service.request('POST', `/api/cases/${ctx.caseId}/packet/approve`, { token: owner.token });
     check.equal(approved.status, 200, `${region}: the consumer approves the reviewed packet`);
     const download = await service.request('GET', `/api/cases/${ctx.caseId}/packet-download`, { token: owner.token });

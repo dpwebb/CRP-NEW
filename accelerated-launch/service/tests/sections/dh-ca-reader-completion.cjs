@@ -1,4 +1,5 @@
 'use strict';
+const { packetText } = require('../packet-pdf-assertions.cjs');
 
 // Source-shaped fictional inputs exercise existing Canadian readers; they do not enlarge admission.
 const formats = require('../../formats.cjs');
@@ -64,7 +65,7 @@ function approvedPacket(ctx, issue) {
   packets.selectIssues(store, actor, caseId, [issue.issue_id]);
   packets.setCorrespondence(store, actor, caseId, { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, caseId);
-  return packets.packetDownload(store, actor, caseId).body;
+  return packetText(packets.packetDownload(store, actor, caseId));
 }
 
 async function run(t, check) {

@@ -121,6 +121,7 @@ async function run(service, check) {
   check.equal(worded.json.view.packet.approved, false, 'editing leaves the packet unapproved');
 
   await service.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(owner, caseId);
   const approved = await service.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token });
   check.equal(approved.status, 200, 'approval succeeds');
   check.equal(approved.json.view.packet.approved, true, 'and the packet is approved');
@@ -136,7 +137,8 @@ async function run(service, check) {
   check.ok(download.text.includes('Please verify this entry and correct it if it is out of date.'), 'and the consumer wording, kept in its own section');
   const printable = require('../../packets.cjs').packetPrint(service.service.store, owner, caseId);
   check.equal(printable.approved_version, approvedVersion, 'the generated file remains bound to the approved version');
-  check.deepEqual(download.bytes, printable.body, 'the HTTP download is the exact approved printable file');
+  const correspondencePdf = require('../packet-pdf-assertions.cjs').zipEntries(download.bytes)[0].bytes;
+  check.deepEqual(correspondencePdf, printable.body, 'the HTTP ZIP contains the exact approved printable file');
   check.equal(download.text.includes(approvedVersion), false, 'the internal approval hash stays out of the letter');
   check.ok(!/not legal advi/i.test(download.text), 'with no legal-advice disclaimer');
 

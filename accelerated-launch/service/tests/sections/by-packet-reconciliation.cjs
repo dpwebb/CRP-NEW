@@ -80,6 +80,7 @@ async function fullPacket(service, check, email, country, region, preparedPdf, f
   check.ok(issue, 'a finding on this case is an eligible packet issue');
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issue.issue_id] } });
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  await service.preparePostalPacket(actor, caseRow.case_id);
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: actor.token });
   const dl = await service.request('GET', `/api/cases/${caseRow.case_id}/packet-download`, { token: actor.token });
   check.equal(dl.status, 200, 'the entitled packet downloads');

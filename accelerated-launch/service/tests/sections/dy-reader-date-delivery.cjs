@@ -135,6 +135,7 @@ async function run(t, check) {
     await t.request('POST', pairEndpoint + '/packet/correspondence', { token: pairOwner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' }
     } });
+    await t.preparePostalPacket(pairOwner, pairCaseId);
     check.equal((await t.request('POST', pairEndpoint + '/packet/approve', { token: pairOwner.token })).status, 200, 'consumer approves the complete paired evidence');
     check.equal((await t.request('GET', pairEndpoint + '/packet-download', { token: pairOwner.token })).status, 200, 'approved paired packet downloads');
     const pairAmend = (fn) => t.service.store.update((state) => {
@@ -181,6 +182,7 @@ async function run(t, check) {
   await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
     correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' }
   } });
+  await t.preparePostalPacket(owner, caseId);
   check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves own evidence');
   check.equal((await t.request('GET', endpoint + '/packet-download', { token: owner.token })).status, 200, 'approved independent packet downloads');
   const amend = (fn) => t.service.store.update((state) => {

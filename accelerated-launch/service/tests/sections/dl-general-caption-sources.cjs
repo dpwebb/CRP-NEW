@@ -164,6 +164,7 @@ async function gbFieldContract(t, check) {
     check.equal(correspondence.status, 200, region + ' prepares reviewable correspondence');
     const reviewed = await t.request('GET', endpoint + '/packet', { token: owner.token });
     check.equal(reviewed.status, 200, region + ' consumer reviews the selected packet');
+    await t.preparePostalPacket(owner, id);
     const approval = await t.request('POST', endpoint + '/packet/approve', { token: owner.token });
     check.equal(approval.status, 200, region + ' consumer approves the selected evidence');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
@@ -315,6 +316,7 @@ async function run(t, check) {
     check.equal(selected.consumer_label, 'VIOLATION', 'changed anchor uses sole consumer verdict');
     await t.request('POST', '/api/cases/' + current + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
     await t.request('POST', '/api/cases/' + current + '/packet/correspondence', { token: owner.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await t.preparePostalPacket(owner, current);
     check.equal((await t.request('POST', '/api/cases/' + current + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves paired evidence');
     const download = await t.request('GET', '/api/cases/' + current + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'approved changed-anchor packet downloads');

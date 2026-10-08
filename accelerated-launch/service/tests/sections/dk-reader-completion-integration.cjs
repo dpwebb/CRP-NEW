@@ -1,4 +1,5 @@
 'use strict';
+const { packetText } = require('../packet-pdf-assertions.cjs');
 
 const formats = require('../../formats.cjs');
 const common = require('../../common-errors.cjs');
@@ -33,7 +34,7 @@ function download(ctx, issue) {
   packets.selectIssues(store, actor, 'dk-case', [issue.issue_id]);
   packets.setCorrespondence(store, actor, 'dk-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, 'dk-case');
-  return packets.packetDownload(store, actor, 'dk-case').body;
+  return packetText(packets.packetDownload(store, actor, 'dk-case'));
 }
 
 async function run(t, check) {

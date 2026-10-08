@@ -124,10 +124,11 @@ async function run(service, check) {
 
 
   /* ---- 3. The consumer review shows the correspondence and the organized evidence. ---- */
-  const preview = withDetails.json.view.packet.correspondence_preview;
+  const mailView = await service.preparePostalPacket(owner, caseId);
+  const preview = mailView.packet.correspondence_preview;
   check.ok(/^CREDIT REPORT DISPUTE$/m.test(preview), 'the review shows the sendable dispute letter');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(preview), 'and the organized evidence references');
-  check.ok(/^To: the consumer reporting agency that issued this report$/m.test(preview), 'addressed by TYPE, never a fabricated address');
+  check.ok(preview.includes('To: ' + mailView.support.requirements.label) && preview.includes(mailView.support.requirements.postal), 'addressed to the selected bureau and its verified mailing address');
   check.ok(preview.includes(`From: ${DETAILS.consumer_name}`) && preview.includes(`Reply to: ${DETAILS.contact}`), 'carrying the details the consumer supplied');
   check.ok(preview.includes(`Your reference: ${DETAILS.account_reference}`), 'including the optional reference when supplied');
   check.ok(/\n\s*\d+\. \S/.test(preview), 'with one numbered request per selected issue');
@@ -142,7 +143,7 @@ async function run(service, check) {
   check.equal(approved.json.view.packet.download_available, true, 'and the download becomes available');
   const dl = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the approved packet downloads');
-  check.equal(dl.headers.get('content-type'), 'application/pdf', 'as a printable PDF');
+  check.equal(dl.headers.get('content-type'), 'application/zip', 'as a complete download with its printable PDF and selected documents');
   check.ok(dl.text.startsWith('CREDIT REPORT DISPUTE'), 'carrying the sendable correspondence');
   check.ok(dl.text.includes(`From: ${DETAILS.consumer_name}`) && dl.text.includes(`Reply to: ${DETAILS.contact}`), 'with the consumer-supplied details');
   check.equal((dl.text.match(/^EVIDENCE REFERENCES/gm) || []).length, 1, 'with one evidence appendix and no duplicate issue section');
@@ -153,22 +154,25 @@ async function run(service, check) {
   check.ok(/Signature: _+/.test(dl.text), 'with a blank signature line for the consumer to sign');
   check.ok(!/within \d+ (days|weeks)|by \d{1,2} [A-Z][a-z]+ \d{4}/.test(dl.text), 'and no invented deadline');
   check.ok(!/\b(remedy|remedies)\b/i.test(dl.text), 'and no invented remedy');
-  check.ok(!/\d+ [A-Z][a-z]+ (Street|Avenue|Road|Blvd)|P\.O\. Box/i.test(dl.text), 'and no invented mailing address');
+  check.ok(comparableText(dl.text).includes(comparableText(mailView.support.requirements.postal)), 'the packet uses the reviewed verified mailing address');
   check.equal(comparableText(dl.text), comparableText(preview), 'all independently extracted PDF text matches the complete preview');
   check.equal(/Approved version:|Produced:|[a-f0-9]{64}/i.test(dl.text), false, 'the consumer letter contains no internal approval or source hash or generated timestamp');
   const again = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.deepEqual(again.bytes, dl.bytes, 'the same approved PDF is deterministic across downloads');
   const packetModule = require('../../packets.cjs');
   const printFile = packetModule.packetPrint(service.service.store, owner, caseId);
-  check.deepEqual(printFile.body, dl.bytes, 'printing and downloading use the exact same approved PDF');
+  const correspondencePdf = require('../packet-pdf-assertions.cjs').zipEntries(dl.bytes)[0].bytes;
+  check.deepEqual(printFile.body, correspondencePdf, 'printing and downloading use the exact same approved PDF');
   check.ok(printFile.page_count >= 2, 'the letter and evidence have separate printable pages');
   const out = path.join(__dirname, '..', '..', 'out', 'packet-print');
   fs.mkdirSync(out, { recursive: true });
-  fs.writeFileSync(path.join(out, 'approved-correspondence.pdf'), dl.bytes);
+  fs.writeFileSync(path.join(out, 'approved-correspondence.pdf'), correspondencePdf);
   fs.writeFileSync(path.join(out, 'approved-preview.txt'), preview);
 
   /* ---- 5. Editing a correspondence detail after approval invalidates the approval. ---- */
   const edited = await service.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: { contact: 'corrected-reply@example.test' } } });
+  await service.request('PUT', '/api/account/profile', { token: owner.token, body: { profile: {
+    address_line1: '12 Example Street', contact_email: 'corrected-reply@example.test' } } });
   check.equal(edited.json.view.packet.approved, false, 'editing a detail after approval leaves the packet unapproved');
   const staleDownload = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(staleDownload.status, 409, 'so the packet the consumer no longer sees approved cannot be downloaded');
@@ -181,15 +185,13 @@ async function run(service, check) {
 
   /* ---- 6. The download re-checks the necessary details: they are never omitted silently. ---- */
   service.service.store.update((state) => {
-    const row = state.packets.find((p) => p.case_id === caseId);
-    row.correspondence = { consumer_name: '', contact: '', account_reference: '' };
+    state.accounts.find(account => account.account_id === owner.account_id).profile.full_name = '';
   });
   const strippedDownload = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(strippedDownload.status, 409, 'a packet whose necessary correspondence details are gone is refused, not produced');
   check.equal(strippedDownload.json.error.code, 'PACKET_CORRESPONDENCE_REQUIRED', 'with the correspondence refusal, never a silently incomplete document');
   service.service.store.update((state) => {
-    const row = state.packets.find((p) => p.case_id === caseId);
-    row.correspondence = { consumer_name: DETAILS.consumer_name, contact: 'corrected-reply@example.test', account_reference: DETAILS.account_reference };
+    state.accounts.find(account => account.account_id === owner.account_id).profile.full_name = DETAILS.consumer_name;
   });
   await service.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token });
   check.equal((await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token })).status, 200, 'and restoring them restores the download');
@@ -223,7 +225,8 @@ async function run(service, check) {
   const other = multiView.eligible_issues[1];
   await service.request('POST', `/api/cases/${multiCase.case_id}/packet/select`, { token: multiOwner.token, body: { issue_ids: [only.issue_id] } });
   const partial = await service.request('POST', `/api/cases/${multiCase.case_id}/packet/correspondence`, { token: multiOwner.token, body: { correspondence: DETAILS } });
-  const partialPreview = partial.json.view.packet.correspondence_preview;
+  const partialMailView = await service.preparePostalPacket(multiOwner, multiCase.case_id);
+  const partialPreview = partialMailView.packet.correspondence_preview;
   const correspondenceOnly = partialPreview.split('EVIDENCE REFERENCES')[0];
   check.equal(correspondenceOnly.split('\n').filter((l) => /^\s*\d+\. \S/.test(l)).length, 1, 'the correspondence states exactly one request');
   check.ok(partialPreview.includes(`credit account ${only.account_number_in_report}`), 'the evidence references name the selected record');
@@ -234,7 +237,7 @@ async function run(service, check) {
   check.equal(partialDl.status, 200, 'the partially selected packet downloads');
   check.ok(!partialDl.text.includes(`credit account ${other.account_number_in_report}`), 'and never includes the unselected issue');
   check.ok(/ - verification/.test(partialDl.text) && !/potential, verification/.test(partialDl.text), 'the packet states the requested action without a confidence tier');
-  const priorPreviewVersion = partial.json.view.packet.preview_version;
+  const priorPreviewVersion = partialMailView.packet.preview_version;
   const longWording = 'My message: José François Łukasz.\n' + 'LongReference'.repeat(220) + '\n' + 'Please check my account. '.repeat(180);
   packetModule.setWording(service.service.store, multiOwner, multiCase.case_id, longWording);
   const longView = packetModule.packetView(service.service.store, multiOwner, multiCase.case_id);
@@ -278,6 +281,7 @@ async function run(service, check) {
   check.ok(probable.citation, 'whose recorded rule identity is stated');
   await service.request('POST', `/api/cases/${probCase.case_id}/packet/select`, { token: probOwner.token, body: { issue_ids: [probable.issue_id] } });
   await service.request('POST', `/api/cases/${probCase.case_id}/packet/correspondence`, { token: probOwner.token, body: { correspondence: DETAILS } });
+  await service.preparePostalPacket(probOwner, probCase.case_id);
   await service.request('POST', `/api/cases/${probCase.case_id}/packet/approve`, { token: probOwner.token });
   const probDl = await service.request('GET', `/api/cases/${probCase.case_id}/packet-download`, { token: probOwner.token });
   check.equal(probDl.status, 200, 'the probable packet downloads');

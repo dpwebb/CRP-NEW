@@ -204,6 +204,7 @@ async function run(t, check) {
     await t.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [selected.issue_id] } });
     await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await t.preparePostalPacket(owner, created.json.case.case_id);
     check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200,
       'the consumer approves the source-linked dated Rating issue');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });

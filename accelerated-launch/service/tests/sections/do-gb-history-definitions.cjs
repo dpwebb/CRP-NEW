@@ -155,11 +155,13 @@ async function run(service, check) {
     await service.request('POST', endpoint + '/packet/select', { token: owner.token, body: { issue_ids: [offered.issue_id] } });
     await service.request('POST', endpoint + '/packet/correspondence', { token: owner.token,
       body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+    await service.preparePostalPacket(owner, opened.json.case.case_id);
     check.equal((await service.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'the consumer approves the selected native history evidence');
     const download = await service.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'the selected approved history packet downloads');
     check.ok(download.text.includes('printed "1"') && download.text.includes('printed "0"'), 'both conflicting own report codes remain printed evidence');
-    check.ok(download.text.includes(definitions.GB_SOURCE.url) && download.text.includes(definitions.GB_CAIS_SOURCE.url),
+    const joinedPacket = download.text.replace(/\s/g, '');
+    check.ok(joinedPacket.includes(definitions.GB_SOURCE.url.replace(/\s/g, '')) && joinedPacket.includes(definitions.GB_CAIS_SOURCE.url.replace(/\s/g, '')),
       'code meanings remain separate published citations in the packet');
     check.equal(/page undefined|probable violation|potential violation/i.test(download.text), false, 'packet has no invented source page or retired breach label');
   }

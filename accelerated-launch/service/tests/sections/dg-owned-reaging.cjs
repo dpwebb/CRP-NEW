@@ -1,4 +1,5 @@
 'use strict';
+const { packetText } = require('../packet-pdf-assertions.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const formats = require('../../formats.cjs');
@@ -38,7 +39,7 @@ function approved(ctx) {
   packets.selectIssues(store, actor, 'fictional-case', [violations(ctx)[0].issue_id]);
   packets.setCorrespondence(store, actor, 'fictional-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, 'fictional-case');
-  return { store, actor, body: packets.packetDownload(store, actor, 'fictional-case').body };
+  return { store, actor, body: packetText(packets.packetDownload(store, actor, 'fictional-case')) };
 }
 function regions() {
   const text = fs.readFileSync(path.resolve(__dirname, '../../../../consumer-wizard/dist/jurisdiction-data.js'), 'utf8');
@@ -61,7 +62,7 @@ async function run(service, check) {
   [['01/01/2018', '2018-01-01', 7, 'fictional-earlier-file', '2025-06-12'],
     ['01/01/2020', '2020-01-01', 7, 'fictional-current-file', '2026-06-12']], 'both readings preserve separate report provenance despite identical page/line');
   const packet = approved(ctx);
-  check.match(packet.body, /Selected issues: 1/, 'one chosen violation creates one request');
+  check.equal((packet.body.split('EVIDENCE REFERENCES')[0].match(/^\s*\d+\. /gm) || []).length, 1, 'one chosen violation creates one request');
   check.match(packet.body, /Earlier report 2025-06-12:.*printed "01\/01\/2018"/, 'the packet names the earlier raw anchor and report');
   check.match(packet.body, /Current report 2026-06-12:.*printed "01\/01\/2020"/, 'the packet names the current raw anchor and report');
   check.match(packet.body, /reporting period has not been restarted/, 'the request asks for anchor verification and correction of an unsupported restart');
@@ -198,6 +199,7 @@ async function run(service, check) {
   check.deepEqual([positive?.evidence.earlier_anchor, positive?.evidence.current_anchor], ['2018-01-01', '2020-01-01'], 'other-account history and client-supplied baselines are excluded');
   await service.request('POST', `/api/cases/${now.caseId}/packet/select`, { token: owner.token, body: { issue_ids: [positive.issue_id] } });
   await service.request('POST', `/api/cases/${now.caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+  await service.preparePostalPacket(owner, now.caseId);
   check.equal((await service.request('POST', `/api/cases/${now.caseId}/packet/approve`, { token: owner.token })).status, 200, 'the consumer approves the current verification packet');
   const download = await service.request('GET', `/api/cases/${now.caseId}/packet-download`, { token: owner.token });
   check.equal(download.status, 200, 'the approved packet downloads through the real service');
