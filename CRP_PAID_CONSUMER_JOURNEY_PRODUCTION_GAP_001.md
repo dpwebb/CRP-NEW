@@ -7,7 +7,7 @@ Owner language requirement: the user base has a junior-high education. Use short
 
 Gap ID: **GAP-PAID-CONSUMER-JOURNEY-001**. Outcomes: INTAKE, PACKETS, PURCHASE, TRUST_AND_RELEASE. This consolidates demonstrated consumer defects under the existing approved scope; it does not duplicate the existing packet, billing, account or all-82 blockers.
 
-Implementation: **OPEN**. Staging verification: **PENDING**. Production readiness: **OPEN**.
+Implementation: **CLOSED**. Staging verification: **PENDING**. Production readiness: **OPEN**.
 
 ## Owner correction: mail-in disputes
 
@@ -15,18 +15,18 @@ The consumer path is a paper dispute mailed to the selected bureau. Do not offer
 
 ## Gaps and completion criteria
 
-| Item | Demonstrated pain point | Required repair and evidence | Status |
+| Item | Demonstrated pain point | Required repair and evidence | Implementation status |
 |---|---|---|---|
-| 1 | The first visit does not clearly state the service or next action. | Plain introduction: upload a report, review supported VIOLATION findings, select disputes, review and print the packet. Keep internal reader/check wording out of the consumer shell. | OPEN |
-| 2 | Purchase differences and prices appear late. | Show configured public prices and the free summary / one-time full assessment / subscriber packet distinction before registration, preserving current entitlements and prices. | OPEN |
-| 3 | Nine numbered steps make utilities appear required after download. | Preserve the wizard; show its main journey separately from account/history/deletion/support/billing tools, with an accurate progress indicator and clear completion. | OPEN |
-| 4 | No visible secure forgotten-password path. | Implement a visible usable recovery path, verify account isolation, rate limits, one-time recovery, credential hashing and session revocation. Do not claim unconfigured email delivery. | OPEN |
-| 5 | Upload preparation is burdensome and guidance appears late. | Before upload, provide short PDF/image preparation guidance and accessible detailed limits, preserving existing file/page/storage safeguards. | OPEN |
-| 6 | Results lack a prominent next action to create a packet. | Give an entitled consumer a clear route to packet preparation; keep one-time assessment-only access truthful. | OPEN |
-| 7 | Contact/document detours lose packet edits and return to upload. | Preserve the current draft before leaving review and return to the same case/result/packet after account changes. No cross-account or stale-context reuse. | OPEN |
-| 8 | Approval can precede display of the current full packet, including added wording. | Show the complete current correspondence/evidence/consumer wording and attachments before approval; material edits invalidate review/approval until refreshed. Verify preview/download equivalence. | OPEN |
-| 9 | Submission choices include unsupported methods. | Use the owner's postal-only consumer flow; fill verified postal mappings and display the selected bureau's destination/checklist. Keep any proved exception explicit and internal evidence retained. | OPEN |
-| 10 | Download requires manual text formatting and assembly to print. | Produce readable paginated correspondence/evidence PDF, a clear print action and attachment checklist, preserving original attachment bytes and approval/entitlement binding. Reduce duplicate technical presentation without dropping selected facts or source locations. Render and inspect actual PDF output. | OPEN |
+| 1 | The first visit does not clearly state the service or next action. | Plain introduction: upload a report, review supported VIOLATION findings, select disputes, review and print the packet. Keep internal reader/check wording out of the consumer shell. | IMPLEMENTATION CLOSED: K, CP, CT |
+| 2 | Purchase differences and prices appear late. | Show configured public prices and the free summary / one-time full assessment / subscriber packet distinction before registration, preserving current entitlements and prices. | IMPLEMENTATION CLOSED: EF, K, CQ, BA, BO, T |
+| 3 | Nine numbered steps make utilities appear required after download. | Preserve the wizard; show its main journey separately from account/history/deletion/support/billing tools, with an accurate progress indicator and clear completion. | IMPLEMENTATION CLOSED: K, ED, BW |
+| 4 | No visible secure forgotten-password path. | Implement a visible usable recovery path, verify account isolation, rate limits, one-time recovery, credential hashing and session revocation. Do not claim unconfigured email delivery. | IMPLEMENTATION CLOSED: EF, ED, EC |
+| 5 | Upload preparation is burdensome and guidance appears late. | Before upload, provide short PDF/image preparation guidance and accessible detailed limits, preserving existing file/page/storage safeguards. | IMPLEMENTATION CLOSED: K, ED, EC |
+| 6 | Results lack a prominent next action to create a packet. | Give an entitled consumer a clear route to packet preparation; keep one-time assessment-only access truthful. | IMPLEMENTATION CLOSED: BN, K, CQ, BW |
+| 7 | Contact/document detours lose packet edits and return to upload. | Preserve the current draft before leaving review and return to the same case/result/packet after account changes. No cross-account or stale-context reuse. | IMPLEMENTATION CLOSED: EC, BW |
+| 8 | Approval can precede display of the current full packet, including added wording. | Show the complete current correspondence/evidence/consumer wording and attachments before approval; material edits invalidate review/approval until refreshed. Verify preview/download equivalence. | IMPLEMENTATION CLOSED: EC, BO, CB, EB, BW |
+| 9 | Submission choices include unsupported methods. | Use the owner's postal-only consumer flow; fill verified postal mappings and display the selected bureau's destination/checklist. Keep any proved exception explicit and internal evidence retained. | IMPLEMENTATION CLOSED: EB, BX, BN, BW |
+| 10 | Download requires manual text formatting and assembly to print. | Produce readable paginated correspondence/evidence PDF, a clear print action and attachment checklist, preserving original attachment bytes and approval/entitlement binding. Reduce duplicate technical presentation without dropping selected facts or source locations. Render and inspect actual PDF output. | IMPLEMENTATION CLOSED: CB, EB, BW |
 
 Returning consumers' saved reports must also be recognisable by bureau/date/file identity; this is included in the navigation repair.
 
@@ -50,6 +50,10 @@ Multiple writers use separate managed Git worktrees and bounded nonoverlapping o
 
 ## Measured outcomes
 
-The first frozen integrated run completed all **131 sections**, with **226 matching source hashes**, zero unrun sections or source drift: **11,825 passed, 1 failed, 0 skipped** in **930,059 ms**. The sole failure is BA's obsolete unpaid-state wording assertion; it is assigned above. Implementation closure is pending the correction, the two demonstrated UI follow-ups and a passing final frozen run. Earlier focused results remain development evidence, not a passing full regression or staging proof.
+The first frozen integrated run completed all **131 sections**, with **226 matching source hashes**, zero unrun sections or source drift: **11,825 passed, 1 failed, 0 skipped** in **930,059 ms**. The sole failure was BA's obsolete unpaid-state wording assertion. Closure at that point awaited its correction, the two demonstrated UI follow-ups and a passing final frozen run. Earlier focused results remain development evidence, not a passing full regression or staging proof.
 
-The second frozen run, after those executable fixes and the shared reading-level correction, completed **131 sections** with zero unrun/drift: **11,867 passed, 1 failed, 0 skipped** in **914,590 ms**. BO alone still expected the former purchase sentence. Root owns its bounded assertion repair: check the current currency, no-renewal one-time purchase, recurring renewal, cancellation and continued-access terms before purchase. Shipped runtime stays frozen at manifest **18B70A0B9903053A5CDB1CAA25C530A147444BD5BA978EB44C375CF63AC48300**; repeat affected checks and the required full regression before closure or staging.
+The second frozen run, after those executable fixes and the shared reading-level correction, completed **131 sections** with zero unrun/drift: **11,867 passed, 1 failed, 0 skipped** in **914,590 ms**. BO alone still expected the former purchase sentence. Root corrected that bounded assertion to check currency, no-renewal one-time purchase, recurring renewal, cancellation and continued-access terms before purchase. Shipped runtime remained frozen at manifest **18B70A0B9903053A5CDB1CAA25C530A147444BD5BA978EB44C375CF63AC48300**; affected checks and the final full regression then passed.
+
+The final corrected full run passed **11,868 assertions, 0 failed, 0 skipped** in **986,525 ms**. All **131 sections** completed; **226 tested-source hashes** match; source drift and unrun sections are empty. The run re-derived **17/17 implementation closure records**. The ten rows above are implementation-closed against their meaningful behavioral sections. The runtime manifest remains **18B70A0B9903053A5CDB1CAA25C530A147444BD5BA978EB44C375CF63AC48300**, **108 shipped files**, build **crp-v1-18b70a0b9903053a**. Source/test commit at run completion: **c38b3c57dd03aacb0f5168a4f88400f4ff396a55**. Documentation-only closure follows this run. Retained full log: `accelerated-launch/service/out/batch66/final-full-corrected-regression.log`; current full evidence: `accelerated-launch/service/out/current-regression-evidence.json`.
+
+Staging remains PENDING until the exact candidate is served and a fresh fictional account completes ordinary test Checkout, signed-webhook access, report comparison, current packet review/approval, actual PDF/ZIP download and cleanup. Production remains OPEN; implementation closure does not settle independent current-format/source and release controls.
