@@ -19,7 +19,7 @@ function element(id) {
     checked: false, hidden: false, isConnected: true, style: {}, dataset: {}, files: [],
     onclick: null, onchange: null, oninput: null,
     setAttribute(key, value) { this[key] = value; }, getAttribute(key) { return this[key] ?? null; },
-    scrollIntoView() {}, contains() { return true; }, querySelectorAll: () => [], querySelector: () => null };
+    scrollIntoView() {}, after() {}, contains() { return true; }, querySelectorAll: () => [], querySelector: () => null };
 }
 function harness(responder, { autoRead = true } = {}) {
   const nodes = new Map(), calls = [], navigations = [], readers = [];
@@ -38,7 +38,7 @@ function harness(responder, { autoRead = true } = {}) {
     return [];
   };
   const context = {
-    console, setTimeout, clearTimeout, Promise, JSON, Object, Array, Map, Set, Date, String, Number, Error,
+    console, setTimeout, clearTimeout, Promise, JSON, Object, Array, Map, Set, Date, String, Number, Error, crypto: require('node:crypto'),
     document: { getElementById: node, createElement: element, querySelectorAll: selector => panel.querySelectorAll(selector) },
     FileReader: class FileReader {
       readAsDataURL(file) { this.file = file; readers.push(this); if (autoRead) this.finish(); }
@@ -74,6 +74,7 @@ function harness(responder, { autoRead = true } = {}) {
   const jurisdiction = () => {
     node('country').value = 'CA'; node('region').value = 'CA-NS'; node('bureau').value = 'TRANSUNION';
     evaluate(`surface = { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }], bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] } }; state.step = 1; renderJurisdiction(document.getElementById('panel'));`);
+    node('file').files = [{ name: 'fictional-report.pdf', size: 48, type: 'application/pdf' }];
   };
   return { context, node, calls, navigations, readers, panel, issues, caseButtons, evaluate, account, openPacket, jurisdiction };
 }
@@ -155,6 +156,12 @@ async function issueSelectionInvalidation() {
   assert.equal(h.node('packet-approve').disabled, false, 'Changed selection must permit reapproval');
 }
 const createdCase = { case_id: 'newA', country: 'CA', region: 'CA-NS', selected_bureau: 'TRANSUNION' };
+function intakeReply(request) {
+  if (request.method === 'POST' && request.url === '/api/cases') return { case: createdCase };
+  if (request.url.endsWith('/files')) return { receipt: { format_detection: { supported: true } } };
+  if (request.url === '/api/cases') return { cases: [createdCase] };
+  return { view: { case: createdCase, files: [{ file_id: 'reportA' }] } };
+}
 async function createCaseAccountRace() {
   const late = deferred(), h = harness(request => request.method === 'POST' && request.url === '/api/cases' ? late.promise : { ok: true });
   h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
@@ -165,7 +172,7 @@ async function createCaseAccountRace() {
   assert.equal(h.evaluate('state.caseId'), null);
 }
 async function createCaseListNavigationRace() {
-  const late = deferred(), h = harness(request => request.method === 'POST' ? { case: createdCase } : late.promise);
+  const late = deferred(), h = harness(request => request.method === 'GET' && request.url === '/api/cases' ? late.promise : intakeReply(request));
   h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
   await until(() => h.calls.some(row => row.method === 'GET' && row.url === '/api/cases'), 'case list');
   h.evaluate('state.step = 0; renderSequence++; state.accountProfile.full_name = "Edited contact";');
@@ -174,11 +181,11 @@ async function createCaseListNavigationRace() {
   assert.equal(h.evaluate('state.step'), 0, 'late case list must keep the consumer on Account');
   assert.equal(h.evaluate('state.accountProfile.full_name'), 'Edited contact');
   assert.equal(h.evaluate('state.caseId'), null);
-  assert.equal(h.calls.filter(row => row.url === '/api/cases/newA').length, 0, 'cancelled list must not request a view');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/evaluate')).length, 0, 'cancelled list must not start assessment');
   assert.equal(h.context.renderCalls.length, 0, 'cancelled action must not reset current file controls or edits');
 }
 async function createCaseViewNavigationRace() {
-  const late = deferred(), h = harness(request => request.method === 'POST' ? { case: createdCase } : request.url === '/api/cases' ? { cases: [createdCase] } : late.promise);
+  const late = deferred(), h = harness(request => request.url === '/api/cases/newA' ? late.promise : intakeReply(request));
   h.account('A', 'Fictional A'); h.jurisdiction(); const action = h.node('open').onclick();
   await until(() => h.calls.some(row => row.url === '/api/cases/newA'), 'case view');
   h.evaluate('state.step = 0; renderSequence++;'); h.jurisdiction(); h.evaluate('renderSequence++;');
@@ -206,16 +213,18 @@ async function caseRefreshAccountRace() {
   assert.equal(h.evaluate('state.cases.length'), 0, 'A case list must not enter B account');
 }
 async function createCaseNormalCompletion() {
-  const h = harness(request => request.method === 'POST' ? { case: createdCase } : request.url === '/api/cases' ? { cases: [createdCase] } : { view: { case: createdCase } });
+  const h = harness(intakeReply);
   h.account('A', 'Fictional A'); h.jurisdiction(); await h.node('open').onclick();
-  assert.equal(h.evaluate('state.step'), 2); assert.equal(h.evaluate('state.caseId'), 'newA');
+  assert.equal(h.evaluate('state.step'), 3); assert.equal(h.evaluate('state.caseId'), 'newA');
   assert.equal(h.calls[0].body.bureau, 'TRANSUNION', 'normal selected bureau still reaches creation');
   assert.equal(h.evaluate('state.view.case.selected_bureau'), 'TRANSUNION');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/files')).length, 1, 'Step2 uploads its captured report');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/evaluate')).length, 1, 'successful Step2 upload runs the existing assessment');
 }
 async function existingCaseNormalCompletion() {
   const h = harness(() => ({ view: { case: { case_id: 'existingA' } } }));
   h.account('A', 'Fictional A'); h.jurisdiction(); await h.caseButtons[0].onclick();
-  assert.equal(h.evaluate('state.step'), 3); assert.equal(h.evaluate('state.caseId'), 'existingA');
+  assert.equal(h.evaluate('state.step'), 2); assert.equal(h.evaluate('state.caseId'), 'existingA');
 }
 async function latestCaseChoiceWins() {
   const first = deferred(), second = deferred(), h = harness(request => request.url === '/api/cases/existingA' ? first.promise : second.promise);
@@ -225,11 +234,110 @@ async function latestCaseChoiceWins() {
   first.resolve({ view: { case: { case_id: 'existingA' } } }); await openA;
   assert.equal(h.evaluate('state.caseId'), null, 'older response must wait for the latest selected case');
   second.resolve({ view: { case: { case_id: 'existingB' } } }); await openB;
-  assert.equal(h.evaluate('state.caseId'), 'existingB'); assert.equal(h.evaluate('state.step'), 3);
+  assert.equal(h.evaluate('state.caseId'), 'existingB'); assert.equal(h.evaluate('state.step'), 2);
+}
+async function invalidIntakeNoCase() {
+  for (const input of ['missing-country', 'missing-region', 'missing-bureau', 'missing-file', 'bad-type', 'oversized', 'too-many']) {
+    const h = harness(intakeReply); h.account('A', 'Fictional A'); h.jurisdiction();
+    if (input.startsWith('missing-') && input !== 'missing-file') h.node(input.replace('missing-', '')).value = '';
+    if (input === 'missing-file') h.node('file').files = [];
+    if (input === 'bad-type') h.node('file').files[0].name = 'report.heic';
+    if (input === 'oversized') h.node('file').files[0].size = 10485761;
+    if (input === 'too-many') h.node('file').files = Array.from({ length: 9 }, () => ({ name: 'page.png', size: 20 }));
+    await h.node('open').onclick();
+    assert.equal(h.calls.filter(row => row.url === '/api/cases').length, 0, input + ' must not create an empty case');
+    assert.ok(h.evaluate('state.error'), input + ' gives an actionable message');
+  }
+}
+async function selectionKeepsFile() {
+  const h = harness(intakeReply); h.account('A', 'Fictional A'); h.jurisdiction();
+  const file = h.node('file').files[0];
+  h.node('country').onchange(); h.node('region').value = 'CA-NS'; h.node('region').onchange();
+  h.node('bureau').value = 'TRANSUNION'; h.node('bureau').onchange();
+  assert.equal(h.node('file').files[0], file, 'dependent country/region/bureau choices preserve the selected report');
+  assert.equal(h.node('open').disabled, false);
+}
+async function reportReadAccountRace() {
+  const h = harness(intakeReply, { autoRead: false }); h.account('A', 'Fictional A'); h.jurisdiction();
+  const action = h.node('open').onclick(); await until(() => h.readers.length, 'report FileReader');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  h.readers[0].finish(); await action;
+  assert.equal(h.calls.filter(row => row.url.endsWith('/files')).length, 0, 'A report bytes must not be sent in B session');
+  assert.equal(h.evaluate('state.step'), 0);
+}
+async function reportReadSelectionRace() {
+  const h = harness(intakeReply, { autoRead: false }); h.account('A', 'Fictional A'); h.jurisdiction();
+  const action = h.node('open').onclick(); await until(() => h.readers.length, 'report FileReader');
+  h.node('bureau').value = 'EQUIFAX'; h.node('bureau').onchange(); h.readers[0].finish(); await action;
+  assert.equal(h.calls.filter(row => row.url.endsWith('/files')).length, 0, 'changed selection cancels old report attachment');
+  assert.equal(h.evaluate('state.step'), 1); assert.equal(h.node('file').files[0].name, 'fictional-report.pdf');
+}
+async function partialRetryOnlyPending() {
+  let failed = false;
+  const h = harness(request => {
+    if (request.url.endsWith('/files') && request.body.originalFilename === 'second.pdf' && !failed) { failed = true; throw new Error('Response lost'); }
+    return intakeReply(request);
+  });
+  h.account('A', 'Fictional A'); h.jurisdiction(); h.node('file').files.push({ name: 'second.pdf', size: 48, type: 'application/pdf' });
+  await h.node('open').onclick();
+  assert.equal(h.evaluate('state.step'), 2, 'partial upload offers recovery on the report screen');
+  assert.ok(/1 still pending/.test(h.evaluate('state.notice')));
+  assert.equal(h.calls.filter(row => row.url.endsWith('/evaluate')).length, 0, 'partial batch is not described as a completed review');
+  h.evaluate('renderReport(document.getElementById("panel"));'); await h.node('retry-upload').onclick();
+  const posts = h.calls.filter(row => row.url.endsWith('/files'));
+  assert.deepEqual(posts.map(row => row.body.originalFilename), ['fictional-report.pdf', 'second.pdf', 'second.pdf']);
+  assert.equal(posts[1].body.uploadKey, posts[2].body.uploadKey, 'retry retains original idempotency key');
+  assert.ok(/2 files uploaded/.test(h.evaluate('state.notice')));
+}
+async function evaluateAccountRace() {
+  const late = deferred(), h = harness(request => request.url.endsWith('/evaluate') ? late.promise : intakeReply(request));
+  h.account('A', 'Fictional A'); h.evaluate('state.caseId = "newA"; state.step = 2;');
+  const action = h.evaluate('run(() => checkReport())'); await until(() => h.calls.some(row => row.url.endsWith('/evaluate')), 'assessment');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B'); h.evaluate('state.caseId = "caseB";');
+  late.resolve({ ok: true }); await action;
+  assert.equal(h.calls.filter(row => row.method === 'GET' && row.url.startsWith('/api/cases')).length, 0, 'old assessment must not fetch either account case after account changes');
+  assert.equal(h.evaluate('state.step'), 0); assert.equal(h.evaluate('state.caseId'), 'caseB');
+}
+async function completedCaseNormalCompletion() {
+  const h = harness(() => ({ view: { case: { case_id: 'existingA' }, assessment_summary: { distinct_total: 1 } } }));
+  h.account('A', 'Fictional A'); h.jurisdiction(); await h.caseButtons[0].onclick();
+  assert.equal(h.evaluate('state.step'), 3, 'completed report opens existing results');
+}
+async function savedReportErrorNavigationRace() {
+  for (const button of ['refresh', 'continue']) {
+    const late = deferred(), h = harness(() => late.promise);
+    h.account('A', 'Fictional A'); h.jurisdiction();
+    const action = button === 'refresh' ? h.node('refresh').onclick() : h.caseButtons[0].onclick();
+    await until(() => h.calls.length, 'saved report request');
+    h.evaluate('state.step = 0; renderSequence++;');
+    h.context.renderCalls = []; h.evaluate('render = () => renderCalls.push(state.step);');
+    late.resolve({ status: 503, body: { ok: false, error: { message: 'Old report response failed' } } }); await action;
+    assert.equal(h.evaluate('state.error'), null, 'stale ' + button + ' error must not appear on Account');
+    assert.equal(h.context.renderCalls.length, 0, 'stale ' + button + ' error must not reset current controls');
+  }
+}
+async function assessmentNavigationReturn() {
+  const late = deferred(), h = harness(request => request.url.endsWith('/evaluate') ? late.promise :
+    { view: { case: createdCase, files: [], assessment_summary: { distinct_total: 1 } } });
+  h.account('A', 'Fictional A');
+  h.evaluate('state.caseId = "newA"; state.view = { case: ' + JSON.stringify(createdCase) + ', files: [{ file_id: "reportA" }] }; state.step = 2;');
+  const action = h.evaluate('run(() => checkReport())'); await until(() => h.calls.length, 'assessment request');
+  h.evaluate('state.step = 0; renderSequence++; state.step = 2; renderSequence++; renderReport(document.getElementById("panel"));');
+  assert.match(h.panel.innerHTML, /id="refresh-report"/, 'returning during assessment has a usable refresh action');
+  h.node('file').files = [{ name: 'selected-next-report.pdf' }];
+  h.context.renderCalls = []; h.evaluate('render = () => renderCalls.push(state.step);');
+  late.resolve({ ok: true }); await action;
+  assert.equal(h.context.renderCalls.length, 0, 'old assessment completion preserves the selected file on return');
+  assert.equal(h.node('file').files[0].name, 'selected-next-report.pdf');
+  await h.node('refresh-report').onclick();
+  assert.equal(h.evaluate('state.step'), 3, 'refresh opens the completed results for that same owned report');
+  assert.equal(h.calls.filter(row => row.url === '/api/cases/newA').length, 1);
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
-  createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins };
+  createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
+  reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
+  savedReportErrorNavigationRace, assessmentNavigationReturn };
 async function run(service, check) {
   for (const [name, run] of Object.entries(tests)) {
     await run(); check.ok(true, name + ' preserves account, case and reviewed-version context');

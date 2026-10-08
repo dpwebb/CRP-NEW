@@ -3,7 +3,7 @@
    `machine` payload is never read here, and no internal classification is ever shown. */
 
 const STEP_VIEWS = Object.freeze({
-  ACCOUNT: { label: 'Account', render: renderAccount }, JURISDICTION: { label: 'Your jurisdiction', render: renderJurisdiction },
+  ACCOUNT: { label: 'Account', render: renderAccount }, JURISDICTION: { label: 'Upload report', render: renderJurisdiction },
   REPORT: { label: 'Your report', render: renderReport }, RESULTS: { label: 'Results', render: renderResults },
   REVIEW: { label: 'Review and download', render: renderReview }, HISTORY: { label: 'Report history', render: renderHistory },
   CASE: { label: 'Case and deletion', render: renderCase }, SUPPORT: { label: 'Support', render: renderSupport },
@@ -41,6 +41,8 @@ const uploadBatches = new Map();
 let accountEpoch = 0;
 let renderSequence = 0;
 let accountOperationSequence = 0;
+let assessmentOperationSequence = 0;
+let assessmentCaseId = null;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
 function accountContext() {
   const id = state.account?.account_id, epoch = accountEpoch;
@@ -346,22 +348,9 @@ function renderAccountDetails(panel) {
 
 /* ------------------------------------------------------------------ step 1: jurisdiction */
 
-/**
- * What this build can actually read and check for the selected region, stated BEFORE any upload. Plan
- * section 2: any limitation in a regional check must be visible before purchase and upload.
- */
 function coverage(region) {
-  if (!region) return '<div class="note">Pick a region to see what this build can read and check for it.</div>';
-  const avail = region.availability || { state: 'UNKNOWN', plain: 'Availability for this region is not reported.' };
-  const checks = region.executable_checks || 0;
-  const families = (region.supported_format_families || []).join(', ');
-  const scope = surface && surface.presentation_scope ? surface.presentation_scope[region.country] : null;
-  return `<div class="note">
-    <strong>${esc(region.label)} (${esc(region.value)})</strong> — ${esc(avail.plain)}
-    <br><span class="evidence">Upload your report. We check its readable information for reporting issues,
-    under the requirements relevant to your selection.
-    Review the issues, choose the ones you want to dispute, and create your packet to send to the bureau.</span>
-  </div>`;
+  return region ? `<p class="evidence">We check your report using your selected location: ${esc(region.label)}.
+    Review your results and choose what you want to dispute.</p>` : '';
 }
 
 function renderJurisdiction(panel) {
@@ -369,73 +358,110 @@ function renderJurisdiction(panel) {
   const countries = surface ? surface.countries : [];
   const regions = surface ? surface.regions : [];
   const selectedCountry = el('country') ? el('country').value : (state.view ? state.view.case.country : '');
-  const selectedRegion = el('region') ? el('region').value : '';
+  const selectedRegion = el('region') ? el('region').value : (state.view?.case.region || '');
   const bureauChoices = surface?.bureau_choices?.[selectedCountry] || [];
   const selectedBureau = el('bureau') ? el('bureau').value : (state.view?.case.selected_bureau || '');
   const options = regions.filter((r) => r.country === selectedCountry);
   panel.innerHTML = `
-    <h1>Choose your jurisdiction</h1>
-    <p class="lede">Choose your jurisdiction and the bureau that issued your report.</p>
+    <h1>Upload your credit report</h1>
+    <p class="lede">Choose your current location, select your credit bureau and upload your report.</p>
     ${notices()}
     <div class="row">
       <div>
         <label for="country">Country</label>
         <select id="country">
           <option value="">Select a country</option>
-          ${countries.map((c) => `<option value="${esc(c.value)}" ${c.value === selectedCountry ? 'selected' : ''}>${esc(c.label)} (${esc(c.value)})</option>`).join('')}
+          ${countries.map((c) => `<option value="${esc(c.value)}" ${c.value === selectedCountry ? 'selected' : ''}>${esc(c.label)}</option>`).join('')}
         </select>
       </div>
       <div>
         <label for="region">Region</label>
         <select id="region">
           <option value="">Select a region</option>
-          ${options.map((r) => `<option value="${esc(r.value)}" ${r.value === selectedRegion ? 'selected' : ''}>${esc(r.label)} (${esc(r.value)})</option>`).join('')}
+          ${options.map((r) => `<option value="${esc(r.value)}" ${r.value === selectedRegion ? 'selected' : ''}>${esc(r.label)}</option>`).join('')}
         </select>
       </div>
     </div>
-    ${bureauChoices.length ? `<label for="bureau">Credit bureau</label><select id="bureau"><option value="">Choose a bureau</option>${bureauChoices.map(row => `<option value="${row.id}" ${row.id === selectedBureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select>` : ''}
-    <button class="primary" id="open">Open a case for this selection</button>
-    <button class="secondary" id="refresh">Reload my cases</button>
-    ${coverage(options.find((r) => r.value === (el('region') ? el('region').value : '')))}
-    <div class="note">You can open a case for any of the 82 regions. What we can read and check for the one you
-    pick is shown above, before you upload anything.</div>
-    <h2>Your cases</h2>
+    <label for="bureau">Credit bureau</label><select id="bureau" ${bureauChoices.length ? '' : 'disabled'}><option value="">Choose a bureau</option>${bureauChoices.map(row => `<option value="${row.id}" ${row.id === selectedBureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select>
+    <p class="evidence">Choose the country and region where you live now. We use this selection to check your report,
+    even if it shows a different or previous address.</p>
+    <label for="file">Credit report (PDF, PNG or JPEG)</label>
+    <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
+    <p class="evidence">You can select up to 8 files, with a maximum of 10 MB each. Keep report images in page order.</p>
+    <button class="primary" id="open">Upload your report</button>
+    <div id="upload-progress" role="status" aria-live="polite"></div>
+    <button class="secondary" id="refresh">Continue a saved report</button>
     ${state.cases.length
-      ? `<ul class="plain">${state.cases.map((c) => `<li><code>${esc(c.region)}</code> · ${esc(regionLabel(c.country, c.region))} · status ${esc(c.status)} <button class="secondary" data-open="${esc(c.case_id)}">Open</button></li>`).join('')}</ul>`
-      : '<p class="lede">No cases yet for this account.</p>'}`;
+      ? `<details open><summary>Your saved reports</summary><ul class="plain">${state.cases.map((c) => `<li>${esc(regionLabel(c.country, c.region))} <button class="secondary" data-open="${esc(c.case_id)}">Continue</button></li>`).join('')}</ul></details>`
+      : ''}`;
 
-  el('country').onchange = () => render();
-  if (el('region')) el('region').onchange = () => render();
   let selectionOperation = 0;
+  let uploading = false;
+  const uploadButton = el('open');
+  const updateButton = () => {
+    uploadButton.disabled = uploading || !el('country').value || !el('region').value || !el('bureau').value;
+  };
+  // Update dependent choices in place so choosing a location never clears the selected file.
+  el('country').onchange = () => {
+    selectionOperation++;
+    const country = el('country').value;
+    el('region').innerHTML = '<option value="">Select a region</option>' + regions.filter(row => row.country === country)
+      .map(row => `<option value="${esc(row.value)}">${esc(row.label)}</option>`).join('');
+    el('region').value = '';
+    const choices = surface?.bureau_choices?.[country] || [];
+    el('bureau').innerHTML = '<option value="">Choose a bureau</option>' + choices.map(row => `<option value="${esc(row.id)}">${esc(row.label)}</option>`).join('');
+    el('bureau').value = ''; el('bureau').disabled = !choices.length;
+    updateButton();
+  };
+  el('region').onchange = el('bureau').onchange = el('file').onchange = () => { selectionOperation++; updateButton(); };
+  updateButton();
   const selectionContext = () => {
     const ensureAccount = accountContext(), sequence = renderSequence, operation = ++selectionOperation;
-    return () => { ensureAccount(); if (state.step !== STEP.JURISDICTION || sequence !== renderSequence || operation !== selectionOperation) throw cancelledAction(); };
+    const country = el('country').value, region = el('region').value, bureau = el('bureau').value;
+    return () => { ensureAccount(); if (state.step !== STEP.JURISDICTION || sequence !== renderSequence || operation !== selectionOperation ||
+      el('country').value !== country || el('region').value !== region || el('bureau').value !== bureau) throw cancelledAction(); };
   };
-  el('open').onclick = () => run(async () => {
+  uploadButton.onclick = () => run(async () => {
     const ensureSelection = selectionContext();
-    const bureau = el('bureau')?.value || '';
-    if (bureauChoices.length && !bureau) throw new Error('Choose the bureau that issued your report.');
-    const data = await api('POST', '/api/cases', { country: el('country').value, region: el('region').value, ...(bureau ? { bureau } : {}) });
-    ensureSelection();
-    const cases = await api('GET', '/api/cases'); ensureSelection();
-    const view = await api('GET', `/api/cases/${data.case.case_id}`); ensureSelection();
-    state.caseId = data.case.case_id;
-    state.cases = cases.cases;
-    state.view = view.view;
-    state.step = 2;
-    state.notice = `Case opened for ${regionLabel(data.case.country, data.case.region)}.`;
+    const country = el('country').value, region = el('region').value, bureau = el('bureau').value;
+    const files = Array.from(el('file').files);
+    if (!country || !regions.some(row => row.country === country && row.value === region)) throw new Error('Choose the country and region where you live now.');
+    if (!(surface?.bureau_choices?.[country] || []).some(row => row.id === bureau)) throw new Error('Choose the bureau that issued your report.');
+    validateReportFiles(files);
+    const sequence = renderSequence, ensureAccount = accountContext();
+    uploading = true; updateButton();
+    try {
+      const data = await api('POST', '/api/cases', { country, region, bureau }); ensureSelection();
+      const caseId = data.case.case_id;
+      const items = files.map(file => ({ file, key: crypto.randomUUID(), status: 'pending' }));
+      uploadBatches.set(caseId, items);
+      const uploaded = await uploadReportBatch(items, caseId, ensureSelection); ensureSelection();
+      const cases = await api('GET', '/api/cases'); ensureSelection();
+      state.caseId = caseId; state.cases = cases.cases; state.view = uploaded.view;
+      state.step = STEP.REPORT; state.notice = uploaded.notice;
+      state.assessment_error = null; state.purchase_needed = null;
+      if (items.every(item => item.status === 'saved')) await checkReport();
+    } catch (err) {
+      ensureSelection();
+      throw err;
+    } finally {
+      try { ensureAccount(); if (sequence === renderSequence && state.step === STEP.JURISDICTION) { uploading = false; updateButton(); } } catch {}
+    }
   });
   el('refresh').onclick = () => run(async () => {
-    const ensureSelection = selectionContext(), data = await api('GET', '/api/cases');
-    ensureSelection(); state.cases = data.cases;
+    const ensureSelection = selectionContext();
+    try { const data = await api('GET', '/api/cases'); ensureSelection(); state.cases = data.cases; }
+    catch (err) { ensureSelection(); throw err; }
   });
   for (const button of panel.querySelectorAll('[data-open]')) {
     button.onclick = () => run(async () => {
       const ensureSelection = selectionContext(), caseId = button.dataset.open;
-      const data = await api('GET', `/api/cases/${caseId}`); ensureSelection();
+      let data;
+      try { data = await api('GET', `/api/cases/${caseId}`); ensureSelection(); }
+      catch (err) { ensureSelection(); throw err; }
       state.caseId = caseId;
       state.view = data.view;
-      state.step = 3;
+      state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
     });
   }
 }
@@ -465,8 +491,9 @@ function reportStatus(view) {
     return `<div class="note"><strong>Your results are ready</strong><br>${line}</div>
       <button class="primary" id="view-results">View my results</button>`;
   }
-  if (state.assessing) {
-    return `<div class="note">${head}<br>We are checking your report.</div>`;
+  if (state.assessing && assessmentCaseId === view.case.case_id) {
+    return `<div class="note">${head}<br>We are checking your report.</div>
+      <button class="secondary" id="refresh-report">Refresh results</button>`;
   }
   if (state.assessment_error) {
     return `<div class="note stop">${head}<br>Your report is ready to review.<br><span class="err">We could not check your report:</span> ${esc(state.assessment_error)}</div>
@@ -476,34 +503,88 @@ function reportStatus(view) {
     <button class="primary" id="check-report">Check my report</button>`;
 }
 
-/** Run the assessment for this case. A missing purchase is a plan decision, not a failed check. */
+function validateReportFiles(files) {
+  if (!files.length) throw new Error('Choose your credit report first.');
+  if (files.length > (uploadLimits?.max_case_files || 8)) throw new Error('Choose up to 8 files. Combine extra report images into a PDF.');
+  for (const file of files) {
+    if (!file.size || file.size > (uploadLimits?.max_file_bytes || 10485760)) throw new Error('Each file must be nonempty and no larger than 10 MB. Export a smaller readable copy or split it at page boundaries.');
+    if (!/\.(pdf|png|jpe?g)$/i.test(file.name)) throw new Error('Convert your report to PDF, PNG or JPEG first.');
+  }
+}
+
+/** Shared ordered upload/retry. File bytes and responses stay bound to the initiating account and screen. */
+async function uploadReportBatch(items, caseId, ensureContext) {
+  ensureContext();
+  if (el('upload')) el('upload').disabled = true;
+  if (el('retry-upload')) el('retry-upload').disabled = true;
+  for (const item of items.filter(row => row.status === 'pending')) {
+    try {
+      validateReportFiles([item.file]);
+      const contentBase64 = await readFileBase64(item.file); ensureContext();
+      const data = await api('POST', '/api/cases/' + caseId + '/files', {
+        originalFilename: item.file.name, declaredBytes: item.file.size, mimeType: item.file.type,
+        contentBase64, uploadKey: item.key
+      }); ensureContext();
+      item.status = 'saved';
+      item.message = data.receipt.format_detection.supported ? 'Uploaded' : 'Uploaded; ' + refusalMessage(data.receipt.format_detection.refusal_reason);
+    } catch (err) {
+      ensureContext();
+      if (err.cancelled) throw err;
+      item.message = 'Pending: ' + err.message;
+    }
+    ensureContext();
+    const progress = el('upload-progress');
+    if (progress) progress.textContent = items.map(row => row.file.name + ': ' + (row.message || row.status)).join('\n');
+  }
+  const data = await api('GET', '/api/cases/' + caseId); ensureContext();
+  const saved = items.filter(row => row.status === 'saved').length, pending = items.filter(row => row.status === 'pending').length;
+  return { view: data.view, notice: pending
+    ? `${saved} uploaded; ${pending} still pending. Retry the pending files to include them in your review. Files already uploaded will not be repeated.`
+    : `${saved} file${saved === 1 ? '' : 's'} uploaded.` };
+}
+
+/** Run the existing free assessment for the captured owned case. */
 async function checkReport() {
-  if (state.assessing) return;
+  const caseId = state.caseId;
+  if (state.assessing && assessmentCaseId === caseId) return;
+  const ensureAccount = accountContext(), operation = ++assessmentOperationSequence;
+  assessmentCaseId = caseId;
   state.error = null;
   state.notice = null;
   state.assessment_error = null;
   state.purchase_needed = null;
   state.assessing = true;
   render();
+  const sequence = renderSequence, step = state.step;
+  const ensureContext = () => { ensureAccount(); if (state.caseId !== caseId || state.step !== step ||
+    sequence !== renderSequence || operation !== assessmentOperationSequence) throw cancelledAction(); };
+  let cancelled = false;
   try {
-    await api('POST', `/api/cases/${state.caseId}/evaluate`, {});
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+    await api('POST', `/api/cases/${caseId}/evaluate`, {}); ensureContext();
+    const data = await api('GET', `/api/cases/${caseId}`); ensureContext();
+    state.view = data.view;
     state.step = STEP.RESULTS;
-    state.notice = 'Checks run. Nothing was sent anywhere.';
+    state.notice = 'Your results are ready. Choose what you want to dispute.';
   } catch (err) {
+    try { ensureContext(); } catch (stale) { cancelled = true; throw stale; }
+    if (err.cancelled) { cancelled = true; throw err; }
     if (err && err.status === 402) {
       state.purchase_needed = 'Checking a report needs a recorded purchase. Choose a plan, then check your report.';
     } else {
       state.assessment_error = err && err.message ? err.message : 'The check could not be completed. Try again.';
     }
   } finally {
-    state.assessing = false;
-    render();
+    if (operation === assessmentOperationSequence) state.assessing = false;
+    if (!cancelled) render();
   }
 }
 
 function renderReport(panel) {
-  if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1><p class="lede">Choose your jurisdiction on the previous step.</p>`; return; }
+  if (!state.view) {
+    panel.innerHTML = `${notices()}<h1>Upload your credit report</h1><p class="lede">Start with your current location and credit bureau.</p><button class="primary" id="upload-start">Upload your report</button>`;
+    el('upload-start').onclick = () => { state.step = STEP.JURISDICTION; render(); };
+    return;
+  }
   const view = state.view;
   const files = view.files || [];
   const regionRow = surface ? surface.regions.find((r) => r.value === view.case.region) : null;
@@ -538,34 +619,20 @@ function renderReport(panel) {
     <select id="scenario">${(view.demonstration_scenarios || []).map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
     <button class="secondary" id="demo">Run the demonstration</button>`;
 
-  async function uploadBatch(items) {
-    const caseId = state.caseId;
-    el('upload').disabled = true;
-    el('retry-upload').disabled = true;
-    for (const item of items.filter(x => x.status === 'pending')) {
-      try {
-        if (!item.file.size || item.file.size > (uploadLimits ? uploadLimits.max_file_bytes : 10485760)) throw new Error('File must be nonempty and at most 10 MiB. Split or export a smaller readable copy.');
-        if (!/\.(pdf|png|jpe?g)$/i.test(item.file.name)) throw new Error('Convert this file to PDF, PNG or JPEG first.');
-        const data = await api('POST', '/api/cases/' + caseId + '/files', {
-          originalFilename: item.file.name, declaredBytes: item.file.size, mimeType: item.file.type,
-          contentBase64: await readFileBase64(item.file), uploadKey: item.key
-        });
-        item.status = 'saved';
-        item.message = data.receipt.format_detection.supported ? 'Saved; read where possible' : 'Saved; ' + refusalMessage(data.receipt.format_detection.refusal_reason);
-      } catch (err) { item.message = 'Pending: ' + err.message; }
-      const progress = el('upload-progress');
-      if (progress) progress.textContent = items.map(x => x.file.name + ': ' + (x.message || x.status)).join('\n');
-    }
-    if (state.caseId === caseId) state.view = (await api('GET', '/api/cases/' + caseId)).view;
-    state.notice = items.filter(x => x.status === 'saved').length + ' saved; ' + items.filter(x => x.status === 'pending').length + ' pending. A partial upload is not a complete review. Retry pending files or choose converted copies; saved files will not be repeated by retry.';
-  }
+  const caseId = state.caseId, ensureAccount = accountContext(), sequence = renderSequence;
+  const ensureReport = () => { ensureAccount(); if (state.caseId !== caseId || state.step !== STEP.REPORT || sequence !== renderSequence) throw cancelledAction(); };
+  const uploadBatch = async items => {
+    const uploaded = await uploadReportBatch(items, caseId, ensureReport); ensureReport();
+    state.view = uploaded.view; state.notice = uploaded.notice;
+  };
   el('upload').onclick = () => {
     const selected = Array.from(el('file').files);
     return run(async () => {
-      if (!selected.length) throw new Error('Choose PDF, PNG or JPEG files first.');
+      ensureReport();
+      validateReportFiles(selected);
       if (batch.some(x => x.status === 'pending')) throw new Error('Retry pending files first, or remove them from the pending list before selecting replacements.');
       const items = selected.map(file => ({file, key: crypto.randomUUID(), status: 'pending'}));
-      uploadBatches.set(state.caseId, items);
+      uploadBatches.set(caseId, items);
       await uploadBatch(items);
     });
   };
@@ -586,12 +653,18 @@ function renderReport(panel) {
 
   /* The one next action the status offers, wired to the case's own state. */
   const viewResults = el('view-results');
-  if (viewResults) viewResults.onclick = () => run(async () => {
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
-    state.step = STEP.RESULTS;
+  const refreshReport = el('refresh-report');
+  const refreshResults = () => run(async () => {
+    try {
+      const data = await api('GET', `/api/cases/${caseId}`); ensureReport();
+      state.view = data.view;
+      state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
+    } catch (err) { ensureReport(); throw err; }
   });
+  if (viewResults) viewResults.onclick = refreshResults;
+  if (refreshReport) refreshReport.onclick = refreshResults;
   const check = el('check-report');
-  if (check) check.onclick = () => checkReport();
+  if (check) check.onclick = () => run(() => checkReport());
   const choosePlan = el('choose-plan');
   if (choosePlan) choosePlan.onclick = () => run(async () => { state.step = STEP.BILLING; });
 }

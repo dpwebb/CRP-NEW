@@ -222,7 +222,7 @@ function makeResponder() {
   const state = { signed_in: false };
   return (method, url) => {
     if (url === '/api/jurisdictions') {
-      return { status: 200, body: { ok: true, surface: { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia', launch_ready: false }] } } };
+      return { status: 200, body: { ok: true, surface: { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia', launch_ready: false }], bureau_choices: { CA: [{ id: 'EQUIFAX', label: 'Equifax' }] } } } };
     }
     if (!state.signed_in && (url === '/api/session' || url === '/api/cases')) {
       return { status: 401, body: { ok: false, error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } } };
@@ -278,16 +278,19 @@ async function run(t, check) {
   await dom.elementById('create').onclick();
   await tick();
   check.ok(dom.calls.includes('POST /api/accounts'), 'creating an account calls the service');
-  check.ok(/Choose your jurisdiction/.test(panel.innerHTML), 'the jurisdiction step then renders');
-  check.ok(/You can open a case for any of the 82 regions/.test(panel.innerHTML), 'and it says a case can be opened for any of the 82 regions');
+  check.ok(/Upload your credit report/.test(panel.innerHTML), 'Step2 guides the consumer directly to report upload');
+  check.ok(/where you live now/.test(panel.innerHTML) && /different or previous address/.test(panel.innerHTML), 'the selection explains how the current location is used');
 
   /* Step 2: open a case for an explicit selection. */
   dom.elementById('country').value = 'CA';
   dom.elementById('region').value = 'CA-NS';
+  dom.elementById('bureau').value = 'EQUIFAX';
+  dom.elementById('file').files = [{ name: 'fictional-report.pdf', size: 30, type: 'application/pdf' }];
   await dom.elementById('open').onclick();
   await tick();
   check.ok(dom.calls.includes('POST /api/cases'), 'opening a case posts the explicit selection');
-  check.ok(/Your report/.test(panel.innerHTML), 'the report step renders');
+  check.ok(dom.calls.includes('POST /api/cases/case_stub/evaluate'), 'Step2 upload starts the existing assessment');
+  vm.runInContext('state.step = 2; render();', ctx);
 
   /* Step 2b: the upload experience accepts multiple PDF/image files and uploads each individually. */
   check.ok(/multiple/.test(source) && /image\/png/.test(source), 'the upload input advertises multi-select images, not only PDF');
@@ -300,7 +303,7 @@ async function run(t, check) {
   await tick();
   await tick();
   const filePosts = dom.calls.filter((c) => c === 'POST /api/cases/case_stub/files');
-  check.equal(filePosts.length, 2, 'two selected files produce two individual uploads, never just files[0]');
+  check.equal(filePosts.length, 3, 'Step2 report plus two additional files each produce their own upload');
   vm.runInContext('state.step = 2; render();', ctx);
 
   /* Step 3: run the labelled demonstration. */
@@ -396,9 +399,10 @@ async function run(t, check) {
   vm.runInContext('state.entitlement = { entitled: true, state: "ACTIVE", plan_code: "monthly" }; render();', ctx);
   check.ok(/id="check-report"/.test(panel.innerHTML) && /Check my report</.test(panel.innerHTML), 'the same check action is offered with a purchase recorded');
 
-  vm.runInContext('state.assessing = true; render();', ctx);
+  vm.runInContext('state.assessing = true; assessmentCaseId = state.view.case.case_id; render();', ctx);
   check.ok(/We are checking your report\./.test(panel.innerHTML), 'while processing it says the check is running');
   check.ok(!/id="check-report"|id="choose-plan"|id="view-results"/.test(panel.innerHTML), 'and offers no action while the check runs');
+  check.ok(/id="refresh-report"/.test(panel.innerHTML), 'a consumer returning during assessment can safely refresh its results');
 
   vm.runInContext('state.purchase_needed = null; state.assessing = false; state.assessment_error = "The file on this case could not be read."; render();', ctx);
   check.ok(/We could not check your report:/.test(panel.innerHTML) && /The file on this case could not be read\./.test(panel.innerHTML), 'a failed check explains the specific problem');

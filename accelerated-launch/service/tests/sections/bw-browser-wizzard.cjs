@@ -76,11 +76,11 @@ async function run(service, check) {
     await page.waitForSelector('#file');
     await page.locator('#file').setInputFiles({ name: 'fictional-report.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines }] }) });
     await page.locator('#upload').click();
-    await page.waitForFunction(() => document.body.innerText.includes('Saved; read where possible'), null, { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes('1 file uploaded.'), null, { timeout: 15000 });
     await page.locator('#steps button[data-step="3"]').click();
     await page.waitForSelector('#evaluate');
     await page.locator('#evaluate').click();
-    await page.waitForFunction(() => document.body.innerText.includes('Checks run'), null, { timeout: 15000 });
+    await page.waitForFunction(() => document.body.innerText.includes('Your results are ready.'), null, { timeout: 15000 });
     await page.locator('#steps button[data-step="4"]').click();
     await page.waitForSelector('#packet-block');
     await page.waitForTimeout(600);
