@@ -5,8 +5,8 @@
 const STEP_VIEWS = Object.freeze({
   ACCOUNT: { label: 'Account', render: renderAccount }, JURISDICTION: { label: 'Upload report', render: renderJurisdiction },
   REPORT: { label: 'Your report', render: renderReport }, RESULTS: { label: 'Results', render: renderResults },
-  REVIEW: { label: 'Review and download', render: renderReview }, HISTORY: { label: 'Report history', render: renderHistory },
-  CASE: { label: 'Case and deletion', render: renderCase }, SUPPORT: { label: 'Support', render: renderSupport },
+  REVIEW: { label: 'Print your packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
+  CASE: { label: 'Privacy and deletion', render: renderCase }, SUPPORT: { label: 'Help', render: renderSupport },
   BILLING: { label: 'Billing', render: renderBilling }
 });
 const STEP_KEYS = Object.keys(STEP_VIEWS);
@@ -29,6 +29,11 @@ const state = {
   result_list: [],
   support: null,
   billing: null,
+  publicPricing: null,
+  accountSecurity: null,
+  recoveryKey: null,
+  recoveryMode: false,
+  packetReturn: null,
   /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
      missing purchase (which is a plan decision, not a failure). */
   assessing: false,
@@ -43,6 +48,7 @@ let renderSequence = 0;
 let accountOperationSequence = 0;
 let assessmentOperationSequence = 0;
 let assessmentCaseId = null;
+let packetLeave = null;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
 function accountContext() {
   const id = state.account?.account_id, epoch = accountEpoch;
@@ -107,17 +113,27 @@ function readFileBase64(file) {
 /* ------------------------------------------------------------------ shell */
 
 function renderSteps() {
-  el('steps').innerHTML = STEPS.map((label, index) =>
+  const main = STEPS.slice(0, STEP.REVIEW + 1).map((label, index) =>
     `<button data-step="${index}" aria-current="${index === state.step}"><span class="num">${index + 1}</span><span class="step-name">${esc(label)}</span></button>`).join('');
+  const tools = STEPS.slice(STEP.HISTORY).map((label, offset) =>
+    `<button data-step="${STEP.HISTORY + offset}" aria-current="${STEP.HISTORY + offset === state.step}"><span class="step-name">${esc(label)}</span></button>`).join('');
+  el('steps').innerHTML = `${main}<div class="tools-label">Your tools</div>${tools}`;
   for (const button of el('steps').querySelectorAll('button')) {
-    button.onclick = () => { state.step = Number(button.dataset.step); render(); };
+    button.onclick = () => navigateStep(Number(button.dataset.step));
   }
   el('breadcrumb').textContent = STEPS[state.step];
-  el('stepcount').textContent = `Step ${state.step + 1} of ${STEPS.length}`;
+  const inJourney = state.step <= STEP.REVIEW;
+  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of 5` : 'Your tools';
   el('step-label').textContent = STEPS[state.step];
-  el('bar').style.width = `${(state.step + 1) / STEPS.length * 100}%`;
+  el('bar').style.width = `${Math.min(state.step + 1, 5) / 5 * 100}%`;
   const progress = el('journey-progress');
-  if (progress.setAttribute) progress.setAttribute('aria-valuenow', String(state.step + 1));
+  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', '5'); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, 5))); }
+  progress.hidden = !inJourney;
+}
+
+function navigateStep(step) {
+  if (state.step === STEP.REVIEW && packetLeave) return packetLeave(step);
+  state.step = step; render();
 }
 
 function banner() {
@@ -189,6 +205,7 @@ function notices() {
 
 function render() {
   renderSequence++;
+  packetLeave = null;
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
   banner();
   renderSteps();
@@ -208,9 +225,11 @@ function footerDisclaimer() {
 
 function renderAccount(panel) {
   if (state.account) { renderAccountDetails(panel); return; }
+  if (state.recoveryMode) { renderRecovery(panel); return; }
   panel.innerHTML = `
     <h1>Your account</h1>
-    <p class="lede">Sign in or create an account to get started.</p>
+    <p class="lede">Create an account to upload your report. Already have an account? Sign in.</p>
+    ${firstVisitPlans()}
     ${notices()}
     <div class="row">
       <div>
@@ -224,6 +243,7 @@ function renderAccount(panel) {
     </div>
     <button class="primary" id="create">Create account</button>
     <button class="secondary" id="signin">Sign in</button>
+    <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
     `;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value });
@@ -232,6 +252,7 @@ function renderAccount(panel) {
     const data = await api('POST', '/api/accounts', credentials());
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
+    state.accountSecurity = null; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
@@ -241,10 +262,66 @@ function renderAccount(panel) {
     const data = await api('POST', '/api/sessions', credentials());
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
+    state.accountSecurity = null; state.recoveryKey = null; state.packetReturn = null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Signed in.';
   });
+  el('forgot-password').onclick = () => { state.recoveryMode = true; state.error = null; render(); };
+}
+
+function firstVisitPlans() {
+  const plans = state.publicPricing?.plans || [];
+  const price = code => esc(plans.find(plan => plan.plan_code === code)?.amount_display || 'Price unavailable');
+  return `<section class="first-visit-plans" aria-label="Plans and prices"><h2>Choose after you see your free summary</h2>
+    <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
+    <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
+    <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
+    <p class="evidence">Prices are in CAD. You choose a plan before paying.</p></section>`;
+}
+
+function recoveryKeyBlock() {
+  return state.recoveryKey ? `<section class="note recovery-key"><h2>Save your recovery key</h2>
+    <p>Use this key if you forget your password. Keep it in a safe place. We show it only now. A key works once.</p>
+    <label for="recovery-key">Your recovery key</label><input id="recovery-key" readonly autocomplete="off" value="${esc(state.recoveryKey)}">
+    <button class="secondary" id="download-recovery-key">Save key to a file</button><button class="secondary" id="copy-recovery-key">Copy key</button>
+    <button class="primary" id="saved-recovery-key">I saved my key</button><p id="recovery-key-status" role="status"></p></section>` : '';
+}
+
+function wireRecoveryKey() {
+  if (!state.recoveryKey) return;
+  const key = state.recoveryKey, ensureAccount = accountContext();
+  el('download-recovery-key').onclick = () => {
+    ensureAccount();
+    const url = URL.createObjectURL(new Blob(['Credit Regulator Pro recovery key\n\n' + key + '\n\nKeep this file private. This key works once.\n'], { type: 'text/plain' }));
+    const link = document.createElement('a'); link.href = url; link.download = 'CRP-recovery-key.txt'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  el('copy-recovery-key').onclick = async () => {
+    try { ensureAccount(); await navigator.clipboard.writeText(key); ensureAccount(); el('recovery-key-status').textContent = 'Key copied. Save it in a safe place.'; }
+    catch { if (state.recoveryKey === key && el('recovery-key-status')) el('recovery-key-status').textContent = 'Select the key and copy it, or save it to a file.'; }
+  };
+  el('saved-recovery-key').onclick = () => { ensureAccount(); state.recoveryKey = null; render(); };
+}
+
+function renderRecovery(panel) {
+  panel.innerHTML = `<h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
+    ${recoveryKeyBlock()}
+    ${state.recoveryKey ? '' : `<label for="recover-email">Email address</label><input id="recover-email" type="email" autocomplete="username">
+    <label for="recover-key">Saved recovery key</label><input id="recover-key" type="password" autocomplete="off">
+    <label for="recover-password">New password (at least 12 characters)</label><input id="recover-password" type="password" autocomplete="new-password">
+    <button class="primary" id="recover-account">Reset password</button>
+    <p class="evidence">Without your saved key, we cannot reset your password here.</p>`}
+    <button class="secondary" id="recovery-back">Back to sign in</button>`;
+  if (state.recoveryKey) wireRecoveryKey();
+  if (el('recover-account')) el('recover-account').onclick = () => run(async () => {
+    const epoch = accountEpoch, rendered = renderSequence;
+    const data = await api('POST', '/api/account/recover', { email: el('recover-email').value, recovery_key: el('recover-key').value, password: el('recover-password').value });
+    if (epoch !== accountEpoch || rendered !== renderSequence || state.account || !state.recoveryMode) throw cancelledAction();
+    state.recoveryKey = data.recovery_key || null;
+    state.notice = 'Password reset. Save your new key, then sign in with your new password.';
+  });
+  el('recovery-back').onclick = () => { state.recoveryKey = null; state.recoveryMode = false; render(); };
 }
 
 const ACCOUNT_CONTACT_FIELDS = [
@@ -274,10 +351,10 @@ function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
   if (!state.accountProfile) {
     panel.innerHTML = `${notices()}<h1>Your account</h1><p>Loading your details…</p>`;
-    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents')]).then(([profile, documents]) => {
+    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents'), api('GET', '/api/account/security')]).then(([profile, documents, security]) => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       if (!profile.profile || !Array.isArray(documents.documents)) throw new Error('Your account details could not be loaded. Try again.');
-      state.accountProfile = profile.profile; state.accountDocuments = documents.documents; renderAccountDetails(panel);
+      state.accountProfile = profile.profile; state.accountDocuments = documents.documents; state.accountSecurity = security; renderAccountDetails(panel);
     }).catch(error => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       panel.innerHTML = `<h1>Your account</h1><p class="note stop">${esc(error.message)}</p><button id="account-retry">Try again</button>`;
@@ -287,6 +364,8 @@ function renderAccountDetails(panel) {
   }
   panel.innerHTML = `${notices()}<h1>Your account</h1>
     <p class="lede">Manage your contact details and documents for your dispute packets.</p>
+    ${state.packetReturn ? '<p class="note">Your packet draft is saved. Add or update your details, then return to your packet.</p>' : ''}
+    ${recoveryKeyBlock()}
     <p><strong>Sign-in email:</strong> ${esc(state.account.email)}</p>
     <h2>Contact details</h2><p class="evidence">Add the details you want to use in your correspondence. You can review them before sending.</p>
     <div class="row">${ACCOUNT_CONTACT_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
@@ -297,7 +376,16 @@ function renderAccountDetails(panel) {
     <label for="account-document-file">PDF, PNG or JPEG, up to 10 MB</label><input id="account-document-file" type="file" accept="application/pdf,image/png,image/jpeg">
     <button class="secondary" id="account-document-upload">Upload document</button>
     <div>${state.accountDocuments.length ? state.accountDocuments.map(doc => `<p><a href="/api/account/documents/${encodeURIComponent(doc.file_id)}">${esc(doc.original_filename)}</a> — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)} <button class="secondary" data-delete-document="${esc(doc.file_id)}">Remove</button></p>`).join('') : '<p class="evidence">No documents uploaded yet.</p>'}</div>
-    <div class="row"><button class="primary" id="account-continue">Continue</button><button class="secondary" id="signout">Sign out</button></div>`;
+    <details class="account-security"><summary>Password recovery</summary><p>${state.accountSecurity?.recovery_key_available ? 'You have a recovery key. Creating a new key replaces the old one.' : 'Save a recovery key so you can reset a forgotten password.'}</p>
+    <label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">
+    <button class="secondary" id="create-recovery-key">Create a recovery key</button></details>
+    <div class="row"><button class="primary" id="account-continue">${state.packetReturn ? 'Return to my packet' : 'Continue'}</button><button class="secondary" id="signout">Sign out</button></div>`;
+  wireRecoveryKey();
+  el('create-recovery-key').onclick = () => run(async () => {
+    const ensureAccount = accountContext();
+    const data = await api('POST', '/api/account/recovery-key', { password: el('security-password').value }); ensureAccount();
+    state.recoveryKey = data.recovery_key; state.accountSecurity = { recovery_key_available: true };
+  });
   for (const [field] of ACCOUNT_CONTACT_FIELDS) el('account-' + field).oninput = () => { accountOperationSequence++; state.accountProfile[field] = el('account-' + field).value; };
   el('account-save').onclick = () => run(async () => {
     const ensureAccount = accountContext(), operation = ++accountOperationSequence, profile = { ...state.accountProfile };
@@ -327,7 +415,19 @@ function renderAccountDetails(panel) {
     state.accountDocuments = saved.documents;
     state.notice = 'Document removed.';
   });
-  el('account-continue').onclick = () => { state.step = 1; render(); };
+  el('account-continue').onclick = () => run(async () => {
+    const returning = state.packetReturn, ensureAccount = accountContext(), rendered = renderSequence, operation = ++accountOperationSequence;
+    if (!returning || returning.accountId !== state.account.account_id || returning.epoch !== accountEpoch || returning.caseId !== state.caseId) {
+      state.packetReturn = null; state.step = STEP.JURISDICTION; return;
+    }
+    const ensureReturn = () => { ensureAccount(); if (rendered !== renderSequence || operation !== accountOperationSequence || state.step !== STEP.ACCOUNT || state.packetReturn !== returning || state.caseId !== returning.caseId) throw cancelledAction(); };
+    const saved = await api('PUT', '/api/account/profile', { profile: { ...state.accountProfile } }); ensureReturn();
+    state.accountProfile = saved.profile;
+    const answer = await api('GET', `/api/cases/${returning.caseId}`); ensureReturn();
+    state.view = answer.view; state.packetReturn = null;
+    state.step = answer.view.result_id === returning.resultId ? STEP.REVIEW : STEP.RESULTS;
+    state.notice = state.step === STEP.REVIEW ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
+  });
   el('signout').onclick = () => run(async () => {
     accountEpoch++;
     await api('DELETE', '/api/sessions/current');
@@ -341,6 +441,7 @@ function renderAccountDetails(panel) {
     state.payment = null;
     state.support = null;
     state.billing = null;
+    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null;
     state.step = 0;
     state.notice = 'Signed out.';
   });
@@ -351,6 +452,21 @@ function renderAccountDetails(panel) {
 function coverage(region) {
   return region ? `<p class="evidence">We check your report using your selected location: ${esc(region.label)}.
     Review your results and choose what you want to dispute.</p>` : '';
+}
+
+function uploadPreparation() {
+  return `<p class="evidence">Use the PDF from your bureau if you have it. For photos, include the whole page and keep the text clear.</p>
+    <details class="upload-help"><summary>File sizes and help</summary><ul class="plain">
+    <li>Use PDF, PNG or JPEG. Convert HEIC photos to JPEG first.</li><li>Each file must be 10 MB or less. Select up to 8 files at a time.</li>
+    <li>Keep pages in order. Split a large PDF into smaller files if needed.</li><li>Do not upload a file that needs a password.</li>
+    </ul><div id="upload-limits-help">${uploadLimits?.plain ? esc(uploadLimits.plain) : 'The upload checks the file and page limits before it is saved.'}</div></details>`;
+}
+
+function savedReportLabel(row) {
+  const bureau = row.bureau_label || row.bureau || (surface?.bureau_choices?.[row.country] || []).find(item => item.id === row.selected_bureau)?.label || 'Credit report';
+  const files = row.original_filenames || (row.files || []).map(file => file.original_filename);
+  const date = row.report_date || String(row.created_at || '').slice(0, 10);
+  return [bureau, date, files.filter(Boolean).join(', '), regionLabel(row.country, row.region)].filter(Boolean).join(' · ');
 }
 
 function renderJurisdiction(panel) {
@@ -366,6 +482,7 @@ function renderJurisdiction(panel) {
     <h1>Upload your credit report</h1>
     <p class="lede">Choose your current location, select your credit bureau and upload your report.</p>
     ${notices()}
+    ${recoveryKeyBlock()}
     <div class="row">
       <div>
         <label for="country">Country</label>
@@ -386,14 +503,16 @@ function renderJurisdiction(panel) {
     <p class="evidence">Choose the country and region where you live now. We use this selection to check your report,
     even if it shows a different or previous address.</p>
     <label for="file">Credit report (PDF, PNG or JPEG)</label>
+    ${uploadPreparation()}
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
     <p class="evidence">You can select up to 8 files, with a maximum of 10 MB each. Keep report images in page order.</p>
     <button class="primary" id="open">Upload your report</button>
     <div id="upload-progress" role="status" aria-live="polite"></div>
     <button class="secondary" id="refresh">Continue a saved report</button>
     ${state.cases.length
-      ? `<details open><summary>Your saved reports</summary><ul class="plain">${state.cases.map((c) => `<li>${esc(regionLabel(c.country, c.region))} <button class="secondary" data-open="${esc(c.case_id)}">Continue</button></li>`).join('')}</ul></details>`
+      ? `<details open><summary>Your saved reports</summary><ul class="plain">${state.cases.map((c) => `<li>${esc(savedReportLabel(c))} <button class="secondary" data-open="${esc(c.case_id)}">Continue</button></li>`).join('')}</ul></details>`
       : ''}`;
+  wireRecoveryKey();
 
   let selectionOperation = 0;
   let uploading = false;
@@ -706,7 +825,7 @@ async function wireResultSelector(panel, view) {
     const data = await api('GET', '/api/cases/' + state.caseId + '/results');
     state.result_list = data.results || [];
     select.innerHTML = '<option value="">Latest result</option>' +
-      state.result_list.map((r) => '<option value="' + esc(r.result_id) + '">' + esc((r.created_at || '').slice(0, 19).replace('T', ' ')) + ' · ' + esc(r.result_id.slice(0, 14)) + '</option>').join('');
+      state.result_list.map((r) => '<option value="' + esc(r.result_id) + '">Checked on ' + esc((r.created_at || '').slice(0, 19).replace('T', ' ')) + '</option>').join('');
     select.value = state.result_list.some((r) => r.result_id === view.result_id) ? view.result_id : '';
   } catch {
     select.innerHTML = '<option value="">Latest result</option>';
@@ -727,7 +846,7 @@ async function wireResultSelector(panel, view) {
 
 /** The price strings the purchase choices show, taken from the recorded catalogue (never invented). */
 function planPrice(code) {
-  const catalog = (state.billing && state.billing.plan_catalog) || null;
+  const catalog = (state.billing && state.billing.plan_catalog) || state.publicPricing || null;
   const plan = catalog && (catalog.plans || []).find((p) => p.plan_code === code);
   if (!plan) return '';
   const suffix = plan.interval === 'month' ? ' per month' : (plan.interval === 'year' ? ' per year' : '');
@@ -818,12 +937,12 @@ function renderResults(panel) {
     ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
     <p class="lede">Case for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
     ${notices()}
-    <button class="primary" id="evaluate">Run the applicable checks on this case</button>
+    <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
     ${summary
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
       : '<div class="note">No result set exists for this case yet. Run the checks above to see your results.</div>'}
     ${summary && access.complete_assessment && result && !demo
-      ? (access.dispute_packet ? clarificationBlock(view) : oneTimeNextStepsBlock())
+      ? (access.dispute_packet ? `${clarificationBlock(view)}${(result.issues || []).some(issue => issue.eligible) ? '<button class="primary" id="create-packet">Create my dispute packet</button>' : ''}<button class="secondary" id="download-assessment">Download my assessment</button>` : oneTimeNextStepsBlock())
       : ''}`;
 
   el('evaluate').onclick = () => checkReport();
@@ -835,6 +954,8 @@ function renderResults(panel) {
   if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download`);
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
+  const packet = el('create-packet');
+  if (packet) packet.onclick = () => navigateStep(STEP.REVIEW);
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -1094,8 +1215,7 @@ function renderReview(panel) {
   const result = view.result;
   panel.innerHTML = `
     <h1>Review and download</h1>
-    <p class="lede">Select the issues you want to dispute. Review your correspondence and attachments, then approve
-    and download your packet.</p>
+    <p class="lede">Choose your issues. Save and review your packet. Approve it, then print it and mail it to the bureau.</p>
     ${notices()}
     ${result ? `<div class="obs">
       <span class="pill ${view.reviewed ? '' : 'stop'}">${view.reviewed ? 'REVIEWED BY YOU' : 'NOT YET REVIEWED'}</span>
@@ -1128,24 +1248,24 @@ function correspondenceFieldLabel(field) {
 function bureauChecklist(requirements, missing = []) {
   if (!requirements) return '<p>Choose the bureau that issued your report.</p>';
   return `<h4>${esc(requirements.label)} checklist</h4><ul>${requirements.items.map(item => `<li>${esc(item)}</li>`).join('')}</ul>
+    ${requirements.postal ? `<p><strong>Mail your packet to:</strong><br>${esc(requirements.postal).replace(/\n/g, '<br>')}</p>` : ''}
     ${missing.length ? `<p class="note">${missing.map(esc).join('<br>')}</p>` : ''}
     <p>${[...new Set(requirements.sources)].map((url, index) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">Official instructions${index ? ' ' + (index + 1) : ''}</a>`).join(' · ')}</p>`;
 }
 function packetSupportingDocuments(pv) {
   const view = pv.support || {}, settings = view.settings || {}, req = view.requirements;
-  const bureau = settings.bureau || req?.bureau || '', channel = settings.channel || (req?.postal ? 'POSTAL' : 'ONLINE');
+  const bureau = settings.bureau || req?.bureau || '';
   return `<h3>Prepare for the bureau</h3>
     <div class="row"><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
-    <div><label for="packet-channel">How you will submit</label><select id="packet-channel"><option value="POSTAL" ${channel === 'POSTAL' ? 'selected' : ''}>By post</option><option value="ONLINE" ${channel === 'ONLINE' ? 'selected' : ''}>Bureau online service</option></select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
-    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Edit account details or upload documents</button></p>
+    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Add contact details or documents</button></p>
     <div id="packet-bureau-checklist">${bureauChecklist(req, view.missing || [])}</div>
     <h4>Choose documents to include</h4>
     ${(view.documents || []).map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${(view.selected_document_ids || []).includes(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
     <label for="packet-document-date-${doc.file_id}">Document date, if required</label><input id="packet-document-date-${doc.file_id}" type="date" value="${esc(settings.document_dates?.[doc.file_id] || '')}"></div>`).join('') || '<p class="evidence">No account documents uploaded yet.</p>'}
     <label><input id="packet-id-address" type="checkbox" ${settings.identity_shows_address ? 'checked' : ''}>My selected identification shows my current address</label>
     <label><input id="packet-verification-requested" type="checkbox" ${settings.verification_requested ? 'checked' : ''}>The bureau has asked me for identity verification</label>
-    <label><input id="packet-copies-confirmed" type="checkbox" ${settings.copies_confirmed ? 'checked' : ''}>I checked that the selected copies are current, readable and meet the bureau’s instructions</label>
+    <label><input id="packet-copies-confirmed" type="checkbox" ${settings.copies_confirmed ? 'checked' : ''}>I checked that these copies are clear, current and meet the bureau’s instructions</label>
     <div id="packet-us-identity" ${req?.country === 'US' ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence${req?.ssn_required ? '' : ' (optional)'}</label>
     <input id="packet-identity-reference" type="password" autocomplete="off" maxlength="20" value="${esc(settings.identity_reference || '')}">
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
@@ -1165,7 +1285,7 @@ function renderPacketBlock(pv) {
     <label class="issue-select">
       <input type="checkbox" data-check-issue="${esc(i.issue_id)}" ${(packet.selected_issue_ids || []).includes(i.issue_id) ? 'checked' : ''}>
       <span class="pill">${issueLabel(i)}</span>
-      ${i.account_identity && i.account_identity.name ? `<span class="evidence">Tradeline: <b>${esc(i.account_identity.name)}</b></span>` : ''}
+      ${i.account_identity && i.account_identity.name ? `<span class="evidence">Account: <b>${esc(i.account_identity.name)}</b></span>` : ''}
       <strong>${esc(i.explanation)}</strong>
       <span class="evidence">Why: ${esc(i.uncertainty)}</span>
       ${i.report_identity ? `<span class="evidence">Report: <b>${esc(i.report_identity.bureau || 'a report')}</b>${i.report_identity.reference_date ? ` · reference date <b>${esc(i.report_identity.reference_date)}</b>` : ''}</span>` : ''}
@@ -1173,10 +1293,10 @@ function renderPacketBlock(pv) {
     </label>`).join('');
   return `
     <h2>Correction packet</h2>
-    <p class="evidence">Choose the issues to include. Each states what your report says, why it merits attention and its uncertainty. Your details and your own words stay separate from the report facts.</p>
+    <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
     <h3>Who this correspondence goes to</h3>
-    <p class="evidence">Review your correspondence, choose its attachments and download the packet to send to the bureau.</p>
+    <p class="evidence">Check the bureau address. Choose the documents you will mail with your letter.</p>
     ${packetSupportingDocuments(pv)}
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
@@ -1188,18 +1308,21 @@ function renderPacketBlock(pv) {
     </div>
     ${missing.length ? `<p class="note stop">Add ${missing.map(correspondenceFieldLabel).join(' and ')} before approving: correspondence without them cannot be sent.</p>` : ''}
     <label for="packet-wording">Your own words (optional)</label>
-    <textarea id="packet-wording" placeholder="Add any request wording of your own. It is kept separate from the report facts.">${esc(packet.wording || '')}</textarea>
+    <textarea id="packet-wording" placeholder="Add anything else you want the bureau to know.">${esc(packet.wording || '')}</textarea>
     <div class="row">
-      <button class="secondary" id="packet-save">Save selection, details and wording</button>
-      <button class="primary" id="packet-approve" ${packet.approved ? 'disabled' : ''}>Approve this version</button>
-      <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download correction packet</button>
+      <button class="primary" id="packet-save">Save and review packet</button>
     </div>
     ${packet.approved ? `<p class="evidence">Approved version: <b>${esc(packet.approved_version)}</b></p>` : ''}
     ${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}
     <div class="packet-review">
-      <h3>Review the correspondence and evidence</h3>
-      <p class="evidence">This is the correspondence the download contains, and the report evidence each request rests on. It corresponds to the issues you selected.</p>
+      <h3>Read your full packet</h3>
+      <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read the letter and report facts below. Check your chosen documents too.' : 'Choose at least one issue, then select Save and review packet.'}</p>
       <pre id="packet-preview">${esc(packet.correspondence_preview || 'Select at least one issue to see the correspondence and its evidence.')}</pre>
+      <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${packet.selected_count && packet.correspondence_preview ? '' : 'disabled'}>I have read this packet and checked its attachments</label>
+      <button class="primary" id="packet-approve" disabled>Approve this version</button>
+      <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Print packet</button>
+      <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download correction packet</button>
+      ${packet.download_available ? '<p class="note">Your packet is ready. Print the letter and evidence PDF. Add the selected document copies, sign where shown and mail everything to the bureau address above. Keep a copy for yourself.</p>' : ''}
     </div>`;
 }
 
@@ -1216,6 +1339,7 @@ async function wirePacket(panel) {
   }
   try { ensureOrigin(); } catch { return; }
   block.innerHTML = renderPacketBlock(pv);
+  if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
 
   /* The current visible selection and wording, captured at action time so a save or an approve can never
      silently use an older saved version while the consumer sees a changed one. */
@@ -1234,7 +1358,7 @@ async function wirePacket(panel) {
       if (account || publicRecord) el('packet-purpose').value = account ? 'ACCOUNT' : 'PUBLIC_RECORD';
       if (account && publicRecord) el('packet-id-address').checked = false;
     }
-    return { bureau: el('packet-bureau').value, channel: el('packet-channel').value, purpose: el('packet-purpose').value,
+    return { bureau: el('packet-bureau').value, channel: 'POSTAL', purpose: el('packet-purpose').value,
       use_account_profile: true, document_ids, identity_shows_address: el('packet-id-address').checked,
       verification_requested: el('packet-verification-requested').checked, copies_confirmed: el('packet-copies-confirmed').checked,
       identity_reference: el('packet-identity-reference').value, no_ssn_issued: el('packet-no-ssn').checked,
@@ -1242,6 +1366,7 @@ async function wirePacket(panel) {
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
   let edits = 0;
+  let previewCurrent = Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview);
   const persistSelection = async () => {
     ensureOrigin();
     const captured = edits, payloads = [
@@ -1259,23 +1384,33 @@ async function wirePacket(panel) {
   if (save) save.onclick = () => run(async () => {
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.notice = 'Selection, correspondence details and wording saved. Approve the current version to enable download.';
+    state.notice = 'Packet saved. Read the full packet and check its attachments before approving.';
   });
 
   const approve = el('packet-approve');
   if (approve) approve.onclick = () => run(async () => {
-    /* Approve the CURRENT version: re-save the visible selection and wording first, then approve. */
-    const ensureCurrent = await persistSelection(); ensureCurrent();
-    await api('POST', `/api/cases/${caseId}/packet/approve`, {}); ensureCurrent();
+    ensureOrigin();
+    if (!previewCurrent || edits || !el('packet-preview-reviewed').checked) throw new Error('Save and read the current packet before approving it.');
+    const captured = edits, ensureCurrent = () => { ensureOrigin(); if (captured !== edits || !previewCurrent) throw cancelledAction(); };
+    await api('POST', `/api/cases/${caseId}/packet/approve`, { reviewed_version: pv.packet.preview_version }); ensureCurrent();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
-    state.notice = 'Packet approved. You can now download it.';
+    state.notice = 'Packet approved. Print it and add the selected document copies before mailing.';
   });
+  const reviewed = el('packet-preview-reviewed');
+  if (reviewed) reviewed.onchange = () => { ensureOrigin(); if (approve) approve.disabled = !previewCurrent || edits > 0 || !reviewed.checked || pv.packet.approved; };
 
   const dl = el('packet-download');
   if (dl) dl.onclick = () => {
     try { ensureOrigin(); } catch { return; }
+    if (edits || !pv.packet.download_available) return;
     note(`GET /api/cases/${caseId}/packet-download -> browser download`);
     window.location.assign(`/api/cases/${caseId}/packet-download`);
+  };
+  const print = el('packet-print');
+  if (print) print.onclick = () => {
+    try { ensureOrigin(); } catch { return; }
+    if (edits || !(pv.packet.print_available ?? pv.packet.download_available)) return;
+    window.open(`/api/cases/${caseId}/packet-print`, '_blank', 'noopener');
   };
 
   /* Editing the correspondence details or the wording after approval marks the visible packet changed, so the
@@ -1283,12 +1418,11 @@ async function wirePacket(panel) {
      approved version. */
   const markChanged = () => {
     edits++;
-    if (pv.packet.approved) {
-      const dlBtn = el('packet-download');
-      if (dlBtn) dlBtn.disabled = true;
-      const apBtn = el('packet-approve');
-      if (apBtn) apBtn.disabled = false;
-    }
+    previewCurrent = false;
+    for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed']) if (el(id)) el(id).disabled = true;
+    if (reviewed) reviewed.checked = false;
+    if (el('packet-preview-status')) el('packet-preview-status').textContent = 'Your packet changed. Select Save and review packet to read the new version.';
+    if (el('packet-preview')) el('packet-preview').textContent = 'Save and review your changes before approving.';
   };
   const wording = el('packet-wording');
   if (wording) wording.oninput = markChanged;
@@ -1298,7 +1432,15 @@ async function wirePacket(panel) {
     if (input) input.oninput = markChanged;
   }
   const accountDetails = el('packet-account-details');
-  if (accountDetails) accountDetails.onclick = () => { state.accountProfile = null; state.step = 0; render(); };
+  packetLeave = step => run(async () => {
+    const ensureCurrent = await persistSelection(); ensureCurrent();
+    if (step === STEP.ACCOUNT) {
+      state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id };
+      state.accountProfile = null;
+    }
+    state.step = step;
+  });
+  if (accountDetails) accountDetails.onclick = () => packetLeave(STEP.ACCOUNT);
   let checklistSequence = 0;
   const refreshChecklist = async () => {
     markChanged(); const sequence = ++checklistSequence;
@@ -1311,7 +1453,7 @@ async function wirePacket(panel) {
       el('packet-us-identity').hidden = answer.requirements.country !== 'US';
     } catch (error) { if (!error.cancelled && sequence === checklistSequence && state.caseId === caseId && renderSequence === rendered && el('packet-bureau-checklist')) el('packet-bureau-checklist').textContent = error.message; }
   };
-  for (const id of ['packet-bureau', 'packet-channel', 'packet-purpose', 'packet-id-address', 'packet-verification-requested', 'packet-copies-confirmed', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {
+  for (const id of ['packet-bureau', 'packet-purpose', 'packet-id-address', 'packet-verification-requested', 'packet-copies-confirmed', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {
     if (id === 'packet-no-ssn' && el(id).checked) el('packet-identity-reference').value = '';
     if (id === 'packet-identity-reference' && el(id).value.trim()) el('packet-no-ssn').checked = false;
     return refreshChecklist();
@@ -1690,6 +1832,8 @@ function renderBillingView(data) {
   } catch (err) {
     state.error = err.message;
   }
+  try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; }
+  catch { state.publicPricing = null; }
   try {
     const session = await api('GET', '/api/session');
     state.account = session.account;

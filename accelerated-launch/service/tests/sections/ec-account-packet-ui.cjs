@@ -54,6 +54,7 @@ function harness(responder, { autoRead = true } = {}) {
     }
   };
   context.window = context; context.location = { assign: url => navigations.push(url) };
+  context.open = url => navigations.push(url);
   vm.createContext(context); vm.runInContext(source, context, { filename: SOURCE_PATH });
   // Avoid shell rendering in action completions; state and API effects remain real.
   vm.runInContext('render = () => {};', context);
@@ -81,7 +82,7 @@ function harness(responder, { autoRead = true } = {}) {
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
   return { eligible_issues: [{ eligible: true, issue_id: 'issue-A', consumer_label: 'VIOLATION' }],
-    packet: { approved, download_available: approved, selected_issue_ids: ['issue-A'], wording: 'Saved wording' },
+    packet: { approved, download_available: approved, selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved packet\nSaved wording', preview_version: 'current-A', result_id: 'result-A' },
     support: { requirements, catalog: [], account_profile: { full_name: 'Fictional Consumer' } } };
 }
 async function saveAccountRace() {
@@ -125,7 +126,7 @@ async function packetContextRace() {
   });
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
   h.node('packet-wording').value = 'Visible wording on case A';
-  const action = h.node('packet-approve').onclick();
+  const action = h.node('packet-save').onclick();
   await until(() => h.calls.some(row => row.url === '/api/cases/caseA/packet/select'), 'A packet select');
   await h.openPacket('caseB'); h.node('packet-wording').value = 'Visible wording on case B';
   selected.resolve({ ok: true }); await action;
@@ -153,7 +154,58 @@ async function issueSelectionInvalidation() {
   if (h.issues[0].onchange) await h.issues[0].onchange();
   else if (h.issues[0].oninput) await h.issues[0].oninput();
   assert.equal(h.node('packet-download').disabled, true, 'Changing selected issues must invalidate visible approval');
-  assert.equal(h.node('packet-approve').disabled, false, 'Changed selection must permit reapproval');
+  assert.equal(h.node('packet-approve').disabled, true, 'Changed selection must require a fresh saved preview before approval');
+  assert.equal(h.node('packet-print').disabled, true, 'Changed selection must disable printing the older approval');
+}
+async function currentPreviewApproval() {
+  const h = harness(request => ({ view: request.url.endsWith('/packet') ? packetView() : { case: { case_id: 'caseA' }, result_id: 'result-A' }, requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  h.node('packet-wording').value = 'Added words not read in preview'; h.node('packet-wording').oninput();
+  h.node('packet-preview-reviewed').checked = true; await h.node('packet-approve').onclick();
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'an unsaved edit must neither save nor approve through the approval button');
+  await h.openPacket('caseA'); h.node('packet-preview-reviewed').checked = true;
+  await h.node('packet-preview-reviewed').onchange(); await h.node('packet-approve').onclick();
+  const approved = h.calls.filter(row => row.url.endsWith('/approve'));
+  assert.equal(approved.length, 1); assert.equal(approved[0].body.reviewed_version, 'current-A', 'approval binds the exact displayed preview version');
+  assert.equal(h.calls.filter(row => /\/(select|wording|correspondence)$/.test(row.url)).length, 0, 'approval must not write unseen packet content');
+}
+async function packetDraftDocumentReturn() {
+  const h = harness(request => {
+    if (request.url === '/api/account/profile' || request.method === 'PUT') return { profile: { full_name: request.body?.profile?.full_name || 'Fictional Consumer' } };
+    if (request.url === '/api/account/documents') return { documents: [] };
+    if (request.url.endsWith('/packet')) return { view: packetView() };
+    return { view: { case: { case_id: 'caseA' }, result_id: 'result-A' }, requirements, missing: [] };
+  });
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  h.node('packet-wording').value = 'Keep these draft words'; h.node('packet-wording').oninput();
+  await h.node('packet-account-details').onclick();
+  assert.equal(h.evaluate('state.step'), 0);
+  const wording = h.calls.find(row => row.url.endsWith('/wording'));
+  assert.equal(wording.body.wording, 'Keep these draft words', 'leaving for documents saves the visible draft first');
+  h.evaluate('renderAccountDetails(document.getElementById("panel"))'); await until(() => h.evaluate('state.accountProfile !== null'), 'loaded account return details');
+  h.evaluate('state.accountProfile.full_name = "Updated Consumer";'); await h.node('account-continue').onclick();
+  assert.equal(h.evaluate('state.step'), 4, 'document detour returns to the same packet rather than report upload');
+  assert.equal(h.evaluate('state.caseId'), 'caseA'); assert.equal(h.evaluate('state.packetReturn'), null);
+  assert.equal(h.calls.find(row => row.method === 'PUT').body.profile.full_name, 'Updated Consumer', 'return saves the current contact details before refreshing the packet');
+}
+async function packetReturnAccountIsolation() {
+  const h = harness(request => ({ view: packetView(), requirements, missing: [] }));
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA'); await h.node('packet-account-details').onclick();
+  h.evaluate('state.accountProfile = { full_name: "A" }; renderAccountDetails(document.getElementById("panel")); state.recoveryKey = "private-key-A";');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  assert.equal(h.evaluate('state.packetReturn'), null, 'sign-out drops the packet return binding');
+  assert.equal(h.evaluate('state.recoveryKey'), null, 'sign-out drops the one-time recovery key');
+  await h.node('account-continue').onclick(); assert.equal(h.evaluate('state.step'), 1, 'B cannot return to A packet');
+}
+async function recoveryKeyAccountRace() {
+  const late = deferred();
+  const h = harness(request => request.url === '/api/account/recovery-key' ? late.promise : { ok: true });
+  h.account('A', 'Fictional Consumer'); h.node('security-password').value = 'fictional-current-password';
+  const action = h.node('create-recovery-key').onclick(); await until(() => h.calls.length, 'recovery rotation');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B');
+  late.resolve({ recovery_key: 'private-key-A' }); await action;
+  assert.equal(h.evaluate('state.recoveryKey'), null, 'late A recovery response must not enter B account');
+  assert.ok(!h.evaluate('state.activity.join(" ")').includes('private-key-A'), 'activity never records the recovery key');
 }
 const createdCase = { case_id: 'newA', country: 'CA', region: 'CA-NS', selected_bureau: 'TRANSUNION' };
 function intakeReply(request) {
@@ -334,6 +386,7 @@ async function assessmentNavigationReturn() {
   assert.equal(h.calls.filter(row => row.url === '/api/cases/newA').length, 1);
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
+  currentPreviewApproval, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,

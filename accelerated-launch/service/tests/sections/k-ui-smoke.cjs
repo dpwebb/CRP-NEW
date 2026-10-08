@@ -243,7 +243,7 @@ function makeResponder() {
       return { status: 201, body: { ok: true, demonstration: true, counts_as_report_support: false, label: 'INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT', result: DEMONSTRATION_RESULT } };
     }
     if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: DEMONSTRATION_RESULT } };
-    if (method === 'GET' && url === '/api/billing/plans') {
+    if (method === 'GET' && (url === '/api/billing/plans' || url === '/api/pricing')) {
       return { status: 200, body: { ok: true, plan_catalog: { currency: 'cad', plans: [
         { plan_code: 'report_once', label: 'CRP One-Time Credit Report', amount_display: '$5.95 CAD', interval: 'one_time', grants: ['the complete assessment of the report already uploaded for this case'] },
         { plan_code: 'monthly', label: 'CRP Monthly', amount_display: '$7.95 CAD', interval: 'month', grants: ['complete assessments and assessment downloads for your reports'] },
@@ -274,6 +274,12 @@ async function run(t, check) {
   const panel = dom.nodes.get('panel');
   check.ok(dom.calls.includes('GET /api/jurisdictions'), 'the UI loads the jurisdiction surface on boot');
   check.ok(/Your account/.test(panel.innerHTML), 'the first step renders without error');
+  check.ok(dom.calls.includes('GET /api/pricing'), 'the public configured price catalogue is loaded before sign-in');
+  check.ok(/Free/.test(panel.innerHTML) && /No dispute packet/.test(panel.innerHTML) && /Subscription/.test(panel.innerHTML), 'first visit makes the free, one-report and subscriber packet boundary clear before registration');
+  check.ok(/\$5\.95 CAD/.test(panel.innerHTML) && /\$7\.95 CAD/.test(panel.innerHTML) && /\$79\.50 CAD/.test(panel.innerHTML), 'all three configured plan prices are visible before account creation');
+  check.ok(/Step 1 of 5/.test(dom.elementById('stepcount').textContent), 'the main journey has five steps');
+  check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
+  check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
 
   /* Step 1: create an account. */
   dom.elementById('email').value = 'stub@example.test';
@@ -283,6 +289,7 @@ async function run(t, check) {
   check.ok(dom.calls.includes('POST /api/accounts'), 'creating an account calls the service');
   check.ok(/Upload your credit report/.test(panel.innerHTML), 'Step2 guides the consumer directly to report upload');
   check.ok(/where you live now/.test(panel.innerHTML) && /different or previous address/.test(panel.innerHTML), 'the selection explains how the current location is used');
+  check.ok(/Use the PDF from your bureau/.test(panel.innerHTML) && /File sizes and help/.test(panel.innerHTML), 'simple file preparation and detailed limits appear before uploading');
 
   /* Step 2: open a case for an explicit selection. */
   dom.elementById('country').value = 'CA';

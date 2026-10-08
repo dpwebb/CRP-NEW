@@ -107,31 +107,44 @@ async function run(service, check) {
     const filePath = await download.path();
     const filename = download.suggestedFilename(), bytes = fs.readFileSync(filePath);
     const entries = filename.endsWith('.zip') ? require('./eb-account-packet-support.cjs').unzipStored(bytes) : null;
-    return { status: 200, filename, text: entries ? entries[0].bytes.toString('utf8') : bytes.toString('utf8'), entries };
+    const correspondence = entries ? entries.find(entry => /correspondence\.pdf$/i.test(entry.name))?.bytes || entries[0].bytes : bytes;
+    const text = correspondence.subarray(0, 5).toString() === '%PDF-' ? require('../packet-pdf-assertions.cjs').pdfText(correspondence) : correspondence.toString('utf8');
+    return { status: 200, filename, text, entries };
   }
-  async function accountContact(page, name, email, withDocuments = false) {
+  async function saveReadApprove(page) {
+    const previewResponse = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
+    await page.locator('#packet-save').click(); await (await previewResponse).finished();
+    await page.waitForSelector('#packet-preview-reviewed:not([disabled])');
+    await page.locator('#packet-preview-reviewed').check();
+    await page.locator('#packet-approve').click();
+  }
+  async function accountContact(page, name, email, withDocuments = true) {
+    const usEquifax = await page.locator('#packet-us-identity').isVisible() && await page.locator('#packet-bureau').inputValue() === 'EQUIFAX';
     await page.locator('#steps button[data-step="0"]').click();
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
     for (const [field, value] of Object.entries({ full_name: name, contact_email: email, date_of_birth: '1980-04-12', phone: '555-0100', address_line1: '10 Fictional Street', city: 'Example City', region: 'NS', postal_code: 'B3J 0A1' })) await page.locator('#account-' + field).fill(value);
     await page.locator('#account-save').click();
     await page.waitForFunction(() => document.body.innerText.includes('Contact details saved.'));
-    if (withDocuments) for (const [type, kind] of [['IDENTITY', 'PASSPORT'], ['IDENTITY', 'DRIVING_LICENCE'], ['ADDRESS', 'UTILITY_BILL']]) {
+    if (withDocuments && !(await page.locator('a[href^="/api/account/documents/"]').count())) for (const [type, kind] of [['IDENTITY', usEquifax ? 'SOCIAL_SECURITY' : 'PASSPORT'], ['IDENTITY', 'DRIVING_LICENCE'], ['ADDRESS', 'UTILITY_BILL']]) {
       await page.locator('#account-document-type').selectOption(type);
       await page.locator('#account-document-kind').selectOption(kind);
       await page.locator('#account-document-file').setInputFiles({ name: kind + '.pdf', mimeType: 'application/pdf', buffer: buildPdf({ pages: [{ lines: ['FICTIONAL SUPPORT DOCUMENT', kind] }] }) });
+      const expectedCount = await page.locator('a[href^="/api/account/documents/"]').count() + 1;
       await page.locator('#account-document-upload').click();
       await page.waitForSelector('a[href^="/api/account/documents/"]', { state: 'attached' });
-      await page.waitForFunction(expected => document.querySelectorAll('a[href^="/api/account/documents/"]').length === expected, ['PASSPORT', 'DRIVING_LICENCE', 'UTILITY_BILL'].indexOf(kind) + 1);
+      await page.waitForFunction(expected => document.querySelectorAll('a[href^="/api/account/documents/"]').length === expected, expectedCount);
     }
-    await page.locator('#steps button[data-step="4"]').click();
+    if (await page.locator('#account-continue').innerText() === 'Return to my packet') await page.locator('#account-continue').click();
+    else await page.locator('#steps button[data-step="4"]').click();
     await page.waitForSelector('#packet-bureau');
-    await page.locator('#packet-channel').selectOption('ONLINE');
+    check.equal(await page.locator('#packet-channel').count(), 0, 'the consumer packet has a mail-only path with no submission-method selector');
     if (withDocuments) {
       for (const checkbox of await page.locator('[data-packet-document]').all()) await checkbox.check();
       for (const date of await page.locator('[id^="packet-document-date-"]').all()) await date.fill(new Date().toISOString().slice(0, 10));
       await page.locator('#packet-copies-confirmed').check();
     }
+    if (await page.locator('#packet-us-identity').isVisible()) await page.locator('#packet-identity-reference').fill('000000000');
   }
 
   /* ---- 1. Common potential issue + change wording after approval, then download matches the approved content. ---- */
@@ -149,11 +162,12 @@ async function run(service, check) {
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
   check.ok(/Who this correspondence goes to/.test(potBlock), 'the consumer review states who the correspondence is addressed to');
   check.ok(/Equifax checklist/.test(potBlock), 'with the sourced bureau checklist');
-  check.ok(/Review the correspondence and evidence/.test(potBlock), 'and shows the correspondence and the evidence each request rests on');
+  check.ok(/Read your full packet/.test(potBlock), 'and shows the full current packet for review');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
   await page.locator('[data-check-issue]').first().check();
   await page.locator('#packet-wording').fill('Please verify these two dates.');
-  await page.locator('#packet-approve').click();
+  check.equal(await page.locator('#packet-approve').isDisabled(), true, 'an edited packet cannot be approved before its new preview is saved and read');
+  await saveReadApprove(page);
   await page.waitForTimeout(500);
   check.equal(await page.locator('#packet-download').isEnabled(), true, 'download is enabled right after approval');
   await accountContact(page, 'Dana Whitfield', 'changed-reply@example.test');
@@ -162,24 +176,32 @@ async function run(service, check) {
   await page.locator('#packet-wording').fill('CHANGED WORDS AFTER APPROVAL');
   await page.waitForTimeout(300);
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing wording after approval disables download');
-  await page.locator('#packet-approve').click();
+  await saveReadApprove(page);
   await page.waitForTimeout(500);
   const dl1 = await downloadText(page);
   check.equal(dl1.status, 200, 're-approving the changed version re-enables download');
-  check.ok(/^CRP-correction-packet-case_.+\.txt$/.test(dl1.filename), 'the browser wrote the real packet FILE (not just an API response)');
+  check.ok(/^CRP-(?:correction|dispute)-packet-case_.+\.(?:pdf|zip)$/.test(dl1.filename), 'the browser wrote the actual printable packet file');
   check.ok(/opened date later than its closed date/.test(dl1.text), 'and the packet matches the selected approved content');
   check.ok(dl1.text.includes('CHANGED WORDS AFTER APPROVAL'), 'carrying the changed wording');
   check.ok(dl1.text.includes('01/01/2020'), 'and the printed raw reading');
-  check.ok(/^CORRESPONDENCE TO SEND/m.test(dl1.text) && /^EVIDENCE REFERENCES \(from your report\)$/m.test(dl1.text), 'and the organized correspondence and evidence-reference sections');
+  check.ok(/Please check and correct|CORRESPONDENCE TO SEND/i.test(dl1.text) && /Report facts|EVIDENCE REFERENCES/i.test(dl1.text), 'and the organized correspondence and evidence sections');
   check.ok(dl1.text.includes('Dana Whitfield') && dl1.text.includes('changed-reply@example.test'), 'carrying the correspondence details the consumer approved');
   check.ok(!dl1.text.includes('dana.whitfield@example.test'), 'and not the detail that was replaced before approval');
   check.ok(!/not legal advi/i.test(dl1.text), 'with no legal-advice disclaimer');
   check.equal(dl1.text.split('\n').filter((l) => l.trim()).length > 20, true, 'and reads as a complete correspondence, not a raw debug dump');
   check.ok(!/established reporting issue/.test(dl1.text), 'never asserting a definite breach');
-  await page.locator('#steps button').filter({ hasText: 'Case and deletion' }).click();
+  const [printPage] = await Promise.all([page.context().waitForEvent('page'), page.locator('#packet-print').click()]);
+  await printPage.waitForLoadState();
+  check.ok(printPage.url().endsWith('/packet-print'), 'the real Print packet button opens the approved inline PDF');
+  const printed = await page.request.get(printPage.url());
+  check.equal(printed.status(), 200, 'the owned approved print endpoint serves its PDF');
+  check.match(printed.headers()['content-type'], /application\/pdf/, 'the print document is a PDF');
+  check.ok((await printed.body()).subarray(0, 5).toString() === '%PDF-', 'actual printable bytes carry a PDF header');
+  await printPage.close();
+  await page.locator('#steps button').filter({ hasText: 'Privacy and deletion' }).click();
   await page.waitForSelector('#privacyInventory');
   check.ok(/Delete this case/.test(await page.locator('#panel').innerText()), 'real-browser named case navigation preserves deletion controls');
-  await page.locator('#steps button').filter({ hasText: 'Support' }).click();
+  await page.locator('#steps button').filter({ hasText: 'Help' }).click();
   await page.waitForSelector('#copyReference');
   check.ok(/Your support reference/.test(await page.locator('#panel').innerText()), 'real-browser named support navigation loads its owned reference');
   await page.locator('#steps button').filter({ hasText: 'Billing' }).click();
@@ -210,11 +232,11 @@ async function run(service, check) {
   await page.locator('[data-check-issue]').first().check();
   /* A missing necessary correspondence detail refuses approval: no packet that cannot be sent can be downloaded. */
   check.ok(/Add your name/.test(await page.locator('#packet-block').innerText()), 'the review names the necessary detail that is still missing');
-  await page.locator('#packet-approve').click();
+  await saveReadApprove(page);
   await page.waitForTimeout(500);
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'approval without the necessary correspondence details leaves the download unavailable');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
-  await page.locator('#packet-approve').click();
+  await saveReadApprove(page);
   await page.waitForTimeout(500);
   const dlMulti = await downloadText(page);
   check.equal(dlMulti.status, 200, 'the packet downloads with the partial selection');
@@ -391,12 +413,12 @@ async function run(service, check) {
   check.ok(/time limit for a court claim/.test(genBlock), 'the subscriber packet offers the limitation concern to select');
   await accountContact(genPage, 'Robin Alvarez', 'robin.alvarez@example.test', true);
   await genPage.locator('[data-check-issue]').first().check();
-  await genPage.locator('#packet-approve').click();
+  await saveReadApprove(genPage);
   await genPage.waitForTimeout(700);
   check.equal(await genPage.locator('#packet-download').isEnabled(), true, 'and approval enables the download');
   const genDownload = await downloadText(genPage);
-  check.equal(genDownload.entries?.length, 4, 'real browser downloads correspondence plus exactly three selected original support documents');
-  check.ok(genDownload.entries?.slice(1).every(entry => entry.bytes.includes(Buffer.from('FICTIONAL SUPPORT DOCUMENT'))), 'browser packet preserves the uploaded fictional source bytes');
+  check.equal(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).length, 3, 'real browser downloads exactly three selected original support documents alongside its printable correspondence and any bureau forms');
+  check.ok(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).every(entry => entry.bytes.includes(Buffer.from('FICTIONAL SUPPORT DOCUMENT'))), 'browser packet preserves the uploaded fictional source bytes');
   check.ok(/may be outside the time limit for a court claim/.test(genDownload.text),
     'the downloaded packet asks whether the debt is outside the time limit for a court claim');
   check.ok(!/violation|ESTABLISHED REPORTING ISSUE/i.test(genDownload.text), 'while claiming no reporting violation');
@@ -463,7 +485,7 @@ async function run(service, check) {
   check.ok(/too old to report/.test(dualBlock), 'the subscriber packet offers the current-review concern to select');
   await accountContact(dualOpened.page, 'Robin Alvarez', 'robin.alvarez@example.test');
   await dualOpened.page.locator('[data-check-issue]').first().check();
-  await dualOpened.page.locator('#packet-approve').click();
+  await saveReadApprove(dualOpened.page);
   await dualOpened.page.waitForTimeout(700);
   const dualDownload = await downloadText(dualOpened.page);
   check.ok(/remains on my current file/.test(dualDownload.text), 'and the downloaded packet asks whether the entry remains on the current file');

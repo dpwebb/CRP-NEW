@@ -111,6 +111,7 @@ async function run(t, check) {
   check.ok(/opened date later than its closed date/.test(panel.innerHTML), 'and states what the report says');
   check.ok(/which date needs correction/.test(panel.innerHTML), 'and its specific uncertainty');
   check.ok(!/NOT_DETECTED/.test(panel.innerHTML), 'and never surfaces a NOT_DETECTED diagnostic as a card');
+  check.ok(/Create my dispute packet/.test(panel.innerHTML), 'subscribers see a clear next action from their supported results');
 
   /* Step 4: the correction-packet selection/review/edit/approve/download flow renders. */
   vm.runInContext('state.step = 4; render();', ctx);
@@ -124,6 +125,8 @@ async function run(t, check) {
   check.ok(/packet-wording/.test(packetBlock.innerHTML), 'with a consumer wording textarea kept separate from the report facts');
   check.ok(/Approve this version/.test(packetBlock.innerHTML), 'with an explicit approve action');
   check.ok(/Download correction packet/.test(packetBlock.innerHTML), 'and a download action');
+  check.ok(/Print packet/.test(packetBlock.innerHTML), 'and a print action for the approved PDF');
+  check.ok(!/packet-channel|Bureau online service/.test(packetBlock.innerHTML), 'the packet follows mail-in submission without an online-method selector');
   check.ok(dom.calls.includes('GET /api/cases/case_stub/packet'), 'the packet state is fetched from the service');
 
   return { potential_card_rendered: true, packet_flow_rendered: true };

@@ -3,8 +3,8 @@
  * bo-prime-directive-interaction.cjs — OWNER-POTENTIAL-ISSUE-001 / Batch 1 interaction coverage against the
  * ACTUAL TestService. It drives the real `ui/app.js` handlers (select an issue, save selection + wording,
  * approve, download) with a node:vm DOM whose fetch forwards to the real HTTP listener. This is service
- * integration, NOT a real browser (no layout/CSS/engine). It also covers unsaved edits: approval re-saves the
- * visible selection and wording, never an older saved version.
+ * integration, NOT a real browser (no layout/CSS/engine). Unsaved edits require a new saved full preview before
+ * approval; approval never silently saves wording the consumer has not read in the packet.
  */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -109,6 +109,12 @@ async function run(service, check) {
     full_name: 'Dana Whitfield', contact_email: 'dana.whitfield@example.test', date_of_birth: '1980-04-12',
     address_line1: '10 Fictional Street', city: 'Example City', region: 'CA', postal_code: '90001'
   } } });
+  const supportIds = [];
+  for (const [document_type, document_kind] of [['IDENTITY', 'SOCIAL_SECURITY'], ['ADDRESS', 'UTILITY_BILL']]) {
+    const bytes = buildPdf({ pages: [{ lines: ['FICTIONAL SUPPORT COPY', document_kind] }] });
+    const uploaded = await service.request('POST', '/api/account/documents', { token: owner.token, body: { ...uploadBody(bytes, document_kind + '.pdf'), document_type, document_kind } });
+    supportIds.push(uploaded.json.document.file_id);
+  }
   const c = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   await payReportOnce(service, owner, c.case_id);
   const pdf = buildPdf({ pages: [{ lines: LINES }] });
@@ -146,15 +152,32 @@ async function run(service, check) {
   dom.elementById('packet-contact').value = 'dana.whitfield@example.test';
   dom.elementById('packet-reference').value = 'CRP-REF-1';
   dom.elementById('packet-bureau').value = 'EQUIFAX';
-  dom.elementById('packet-channel').value = 'ONLINE';
   dom.elementById('packet-purpose').value = 'ACCOUNT';
+  const documentChecks = supportIds.map(id => ({ checked: true, getAttribute: name => name === 'data-packet-document' ? id : null }));
+  const originalQueries = panelEl.querySelectorAll;
+  panelEl.querySelectorAll = selector => selector === '[data-packet-document]:checked' ? documentChecks : originalQueries(selector);
+  for (const id of supportIds) dom.elementById('packet-document-date-' + id).value = new Date().toISOString().slice(0, 10);
+  dom.elementById('packet-copies-confirmed').checked = true;
+  dom.elementById('packet-identity-reference').value = '000000000';
   dom.elementById('packet-wording').value = 'First wording.';
   await dom.elementById('packet-save').onclick();
   await waitFor(() => block.innerHTML.includes('First wording.'));
 
-  /* --- unsaved edit: change the wording (no save), then APPROVE — approve must re-save the visible wording. --- */
+  /* --- an unsaved edit cannot be approved; save and read the current complete preview first. --- */
   dom.elementById('packet-wording').value = 'Changed wording (unsaved before approve).';
+  dom.elementById('packet-wording').oninput();
+  const earlierSave = dom.elementById('packet-save').onclick;
   await dom.elementById('packet-approve').onclick();
+  check.ok(!dom.calls.some((x) => /POST .*packet\/approve/.test(x)), 'unsaved wording is not silently saved or approved');
+  await waitFor(() => dom.elementById('packet-save').onclick !== earlierSave);
+  dom.elementById('packet-wording').value = 'Changed wording (unsaved before approve).';
+  dom.elementById('packet-wording').oninput();
+  await dom.elementById('packet-save').onclick();
+  await waitFor(() => block.innerHTML.includes('Changed wording (unsaved before approve).'));
+  dom.elementById('packet-preview-reviewed').checked = true;
+  dom.elementById('packet-preview-reviewed').onchange();
+  await dom.elementById('packet-approve').onclick();
+  if (vm.runInContext('state.error', ctx)) throw new Error('Approval failed: ' + vm.runInContext('state.error', ctx));
   await waitFor(() => block.innerHTML.includes('Approved version:'));
   await waitFor(() => dom.calls.some((x) => /POST .*packet\/approve/.test(x)));
   check.ok(dom.calls.some((x) => /POST .*packet\/approve/.test(x)), 'the approve endpoint is called');
@@ -174,9 +197,9 @@ async function run(service, check) {
   check.ok(/opened date later than its closed date/.test(dl.text), 'and agrees with the reviewed facts');
   check.ok(dl.text.includes('Changed wording (unsaved before approve).'), 'and carries the wording the consumer saw at approval, not the earlier saved wording');
   check.ok(!dl.text.includes('First wording.'), 'and not the older saved wording');
-  check.ok(/^CORRESPONDENCE TO SEND/m.test(dl.text), 'and an organized, sendable correspondence section');
+  check.ok(/CORRESPONDENCE TO SEND|Please check and correct/i.test(dl.text), 'and an organized, sendable correspondence section');
   check.ok(dl.text.includes('Dana Whitfield') && dl.text.includes('dana.whitfield@example.test'), 'carrying the consumer-supplied correspondence details');
-  check.ok(/^EVIDENCE REFERENCES \(from your report\)/m.test(dl.text), 'and an organized evidence-reference section');
+  check.ok(/EVIDENCE REFERENCES|Report facts/i.test(dl.text), 'and an organized evidence-reference section');
   check.ok(/printed "/.test(dl.text) && /normalized to/.test(dl.text), 'with the raw printed reading and the normalized value for the selected issue');
   check.ok(!/not legal advi/i.test(dl.text), 'with no legal-advice disclaimer');
 
@@ -247,7 +270,7 @@ async function run(service, check) {
   check.ok(/Prices are in CAD and shown before you buy/.test(billingBox), 'and states the purchase terms before purchase');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
 
-  return { interaction: 'select -> save -> (unsaved edit) -> approve -> download against the real service' };
+  return { interaction: 'select -> save full preview -> edit disables approval -> save and read new preview -> approve -> download against the real service' };
 }
 
 module.exports = {

@@ -13,7 +13,7 @@ async function run(service, check) {
     await page.goto(service.base + '/');
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
     await page.waitForSelector('#open');
-    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 9', 'sign-in still opens Step2');
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 5', 'sign-in opens Step2 of the five-step main journey');
     check.equal(await page.locator('#open').innerText(), 'Upload your report', 'the primary action clearly names report upload');
     check.ok(!/Open a case|this build can read|any of the 82/.test(await page.locator('#panel').innerText()), 'Step2 removes case/build/region-count jargon');
     const report = buildPdf({ pages: [{ lines: ['TransUnion Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'] }] });
@@ -27,7 +27,7 @@ async function run(service, check) {
     const createResponse = page.waitForResponse(response => response.url().endsWith('/api/cases') && response.request().method() === 'POST');
     await page.locator('#open').click(); const created = await (await createResponse).json();
     check.equal(created.case.selected_bureau, 'TRANSUNION', 'bureau choice reaches the real case');
-    await page.waitForFunction(() => document.getElementById('stepcount').textContent === 'Step 4 of 9');
+    await page.waitForFunction(() => document.getElementById('stepcount').textContent === 'Step 4 of 5');
     check.ok(/Reporting issues found: 1/.test(await page.locator('#panel').innerText()), 'unpaid Step2 upload automatically reaches the existing results and issue count');
     check.ok(/VIOLATION/.test(await page.locator('#panel').innerText()), 'the consumer sees the supported dispute concern');
     const storedCase = await service.request('GET', '/api/cases/' + created.case.case_id, { token: actor.token });
@@ -65,9 +65,28 @@ async function run(service, check) {
     check.ok(fs.readFileSync(await download.path()).equals(bytes), 'actual browser retrieves exactly the owned original ID copy');
     await page.locator('[data-delete-document]').click(); await page.waitForFunction(() => document.body.innerText.includes('Document removed.'));
     check.equal(await page.locator('a[href^="/api/account/documents/"]').count(), 0, 'consumer removes the supporting copy from account');
-    const removed = await service.request('DELETE', '/api/account', { token: actor.token });
-    check.equal(removed.status, 200, 'fictional browser account and contact details cleaned up');
-    return { real_browser: true, unpaid_account_contact_and_documents: true, sign_in_back_and_reload: true, jurisdiction_bureau_choice: true, screenshot };
+    await page.locator('.account-security summary').click();
+    await page.locator('#security-password').fill('a-long-enough-password'); await page.locator('#create-recovery-key').click();
+    await page.waitForSelector('#recovery-key'); const recoveryKey = await page.locator('#recovery-key').inputValue();
+    check.ok(recoveryKey.length >= 32, 'the signed-in account can create a strong recovery key');
+    const [keyDownload] = await Promise.all([page.waitForEvent('download'), page.locator('#download-recovery-key').click()]);
+    check.ok(fs.readFileSync(await keyDownload.path(), 'utf8').includes(recoveryKey), 'actual browser saves the exact one-use recovery key to a private file');
+    check.ok(!(await page.locator('#activity').innerText()).includes(recoveryKey), 'technical activity never displays the recovery key');
+    await page.locator('#saved-recovery-key').click(); await page.locator('#signout').click(); await page.waitForSelector('#forgot-password');
+    check.equal(await page.locator('#recovery-key').count(), 0, 'sign-out removes the visible recovery secret');
+    await page.locator('#forgot-password').click();
+    await page.locator('#recover-email').fill(actor.email); await page.locator('#recover-key').fill(recoveryKey);
+    await page.locator('#recover-password').fill('a-new-long-enough-password'); await page.locator('#recover-account').click();
+    await page.waitForSelector('#recovery-key');
+    const replacementKey = await page.locator('#recovery-key').inputValue();
+    check.notEqual(replacementKey, recoveryKey, 'successful recovery replaces the consumed key');
+    check.equal((await service.request('GET', '/api/session', { token: actor.token })).status, 401, 'password recovery revokes the prior session');
+    await page.locator('#saved-recovery-key').click(); await page.locator('#recovery-back').click();
+    await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-new-long-enough-password'); await page.locator('#signin').click(); await page.waitForSelector('#open');
+    check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 5', 'the consumer signs in normally with the recovered password');
+    const removed = await page.request.delete(service.base + '/api/account');
+    check.equal(removed.status(), 200, 'fictional browser account and contact details cleaned up with the new owned session');
+    return { real_browser: true, unpaid_account_contact_and_documents: true, sign_in_back_and_reload: true, jurisdiction_bureau_choice: true, recovery_key_download_and_password_reset: true, screenshot };
   } finally { await browser.close(); }
 }
 module.exports = { run, id: 'ed-account-browser', title: 'Real-browser signed-in account details, reload persistence, bureau choice and document custody' };
