@@ -452,7 +452,16 @@ function buildCaseHandlers(store, logger) {
         outcome: outcome.result.checks_performed ? 'CHECKS_PERFORMED' : 'NO_APPLICABLE_CHECK',
         count: outcome.result.checks_performed
       });
-      return { status: 201, json: { ok: true, ...outcome } };
+      // The assessment is persisted in full, but its POST response has the same purchase boundary as a read.
+      const view = journey.caseViewForResult(store, actor, params.caseId, outcome.result_id);
+      return { status: 201, json: {
+        ok: true,
+        result_id: view.result_id,
+        assessed_on: view.assessment_summary.assessed_on,
+        assessment_summary: view.assessment_summary,
+        assessment_access: view.assessment_access,
+        result: view.result
+      } };
     },
 
     listResults: ({ params, actor }) => {

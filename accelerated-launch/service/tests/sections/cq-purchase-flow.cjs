@@ -27,6 +27,29 @@ const uploadBody = (bytes, filename) => ({
 const expiredRetention = () => buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2016  Closed 01/01/2017'] }] });
 const contradiction = () => buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor B  Balance $200  Opened 01/01/2020  Closed 01/01/2019'] }] });
 
+function checkLockedEvaluation(check, response, view, label) {
+  check.equal(response.status, 201, `${label}: the assessment still runs before purchase`);
+  check.equal(response.json.result, null, `${label}: the raw POST response locks the full assessment`);
+  check.equal(response.json.result_id, null, `${label}: it does not expose the locked result identity`);
+  check.deepEqual(response.json.assessment_summary, view.assessment_summary, `${label}: it serves the same free summary and teaser as the case view`);
+  check.deepEqual(response.json.assessment_access, view.assessment_access, `${label}: it states the same purchase boundary`);
+  check.equal(response.json.assessed_on, view.assessment_summary.assessed_on, `${label}: it serves the persisted assessment date`);
+  check.ok(response.json.assessed_on, `${label}: the assessment date is populated`);
+  check.deepEqual(Object.keys(response.json).sort(), ['ok', 'result_id', 'assessed_on', 'assessment_summary', 'assessment_access', 'result'].sort(),
+    `${label}: no full-result payload is attached beside the summary`);
+  check.ok(!/"(?:issues|observations|source_facts|source_location|source_evidence|rule_assessment|supported_bases|evidence)"\s*:/.test(response.text),
+    `${label}: the raw POST response carries no issue collection, rule detail or report evidence`);
+  check.ok(!/Creditor B|01\/01\/2020|01\/01\/2019/.test(response.text), `${label}: it carries no printed creditor or account dates`);
+}
+
+function checkUnlockedEvaluation(check, response, view, label) {
+  check.equal(response.status, 201, `${label}: an entitled account can assess its report`);
+  check.ok(response.json.result && Array.isArray(response.json.result.issues), `${label}: the raw POST response includes the complete assessment`);
+  check.deepEqual(response.json.result, view.result, `${label}: its full result is the existing consumer projection`);
+  check.equal(response.json.result_id, view.result_id, `${label}: the accessible result identity is preserved`);
+  check.deepEqual(response.json.assessment_access, view.assessment_access, `${label}: its recorded purchase scope is preserved`);
+}
+
 async function uploadAndAssess(service, actor, bytes, name, region) {
   const created = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: region || 'CA-NS' } });
   const caseRow = created.json.case;
@@ -59,9 +82,10 @@ async function run(service, check) {
   const created = await service.request('POST', '/api/cases', { token: free.token, body: { country: 'CA', region: 'CA-NS' } });
   const c = created.json.case;
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/files`, { token: free.token, body: uploadBody(contradiction(), 'cq-a.pdf') })).status, 201, 'an unpaid account uploads an owned report');
-  check.equal((await service.request('POST', `/api/cases/${c.case_id}/evaluate`, { token: free.token })).status, 201, 'and the assessment runs with no purchase recorded');
+  const freeEvaluation = await service.request('POST', `/api/cases/${c.case_id}/evaluate`, { token: free.token });
 
   const view = (await service.request('GET', `/api/cases/${c.case_id}`, { token: free.token })).json.view;
+  checkLockedEvaluation(check, freeEvaluation, view, 'unpaid account');
   check.ok(view.assessment_summary, 'the case view carries the free results summary');
   check.equal(view.result, null, 'and never the complete assessment');
   check.equal(view.assessment_access.complete_assessment, false, 'the complete assessment is locked');
@@ -125,13 +149,17 @@ async function run(service, check) {
   check.equal(beforeUnlock.result, null, 'the report is locked before the unlock');
   await unlockOneReport(service, once, caseA.case_id);
 
+  const unlockedEvaluation = await service.request('POST', `/api/cases/${caseA.case_id}/evaluate`, { token: once.token });
   const aView = (await service.request('GET', `/api/cases/${caseA.case_id}`, { token: once.token })).json.view;
+  checkUnlockedEvaluation(check, unlockedEvaluation, aView, 'one-time selected report');
   check.equal(aView.assessment_access.complete_assessment, true, 'the one-time unlock opens the report it was bought for');
   check.equal(aView.assessment_access.complete_assessment_via, 'ONE_TIME_CREDIT', 'on the recorded one-time authority');
   check.ok(aView.result && Array.isArray(aView.result.issues), 'and the complete assessment is served');
   check.equal(aView.result.issues.length, aView.assessment_summary.distinct_total, 'the distinct count equals the merged issue list, so no rule inflates it');
   check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/report-download`, { token: once.token })).status, 200, 'and the assessment download is allowed');
+  const otherEvaluation = await service.request('POST', `/api/cases/${caseB.case_id}/evaluate`, { token: once.token });
   const bView = (await service.request('GET', `/api/cases/${caseB.case_id}`, { token: once.token })).json.view;
+  checkLockedEvaluation(check, otherEvaluation, bView, 'one-time other report');
   check.equal(bView.assessment_access.complete_assessment, false, 'another report stays locked');
   check.equal(bView.result, null, 'so its complete assessment is not served');
   check.equal((await service.request('GET', `/api/cases/${caseB.case_id}/report-download`, { token: once.token })).status, 402, 'and its download is refused');
@@ -178,7 +206,11 @@ async function run(service, check) {
   const sub = await service.unpaidAccount('cq-sub@example.test');
   await service.pay(sub, 'monthly');
   const subCase = await uploadAndAssess(service, sub, contradiction(), 'cq-sub.pdf', 'CA-NS');
+  const subscriberEvaluation = await service.request('POST', `/api/cases/${subCase.case_id}/evaluate`, { token: sub.token });
   const sView = (await service.request('GET', `/api/cases/${subCase.case_id}`, { token: sub.token })).json.view;
+  checkUnlockedEvaluation(check, subscriberEvaluation, sView, 'subscriber report');
+  check.ok(subscriberEvaluation.json.result.issues.some((issue) => issue.evidence && issue.source_location),
+    'the subscriber POST response retains supported issue evidence and its source location');
   check.equal(sView.assessment_access.complete_assessment, true, 'a subscription opens the complete assessment');
   check.equal(sView.assessment_access.dispute_packet, true, 'and the dispute packet');
   check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/report-download`, { token: sub.token })).status, 200, 'and the assessment download');
@@ -198,7 +230,9 @@ async function run(service, check) {
   check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/report-download`, { token: stranger.token })).status, 403, 'another account is refused the unlocked report');
   check.equal((await service.request('GET', `/api/cases/${subCase.case_id}/packet-download`, { token: stranger.token })).status, 403, 'and the subscriber packet');
   check.equal((await service.request('GET', `/api/cases/${caseA.case_id}`, { token: stranger.token })).status, 403, 'and the case itself');
+  check.equal((await service.request('POST', `/api/cases/${subCase.case_id}/evaluate`, { token: stranger.token })).status, 403, 'and cannot assess another account\'s report');
 
+  evidence.assessment_post = 'unpaid and other locked reports return only summary, teaser and assessment date; the selected one-time report and subscriber retain the complete consumer assessment';
   evidence.one_time = 'unlocks the selected report and its download only; another report and every subscriber feature stay refused';
   evidence.subscription = 'unlocks the complete assessment, the download, the dispute packet and the history';
   return evidence;
