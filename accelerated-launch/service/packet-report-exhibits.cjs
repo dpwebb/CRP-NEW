@@ -58,7 +58,7 @@ function available(store, actor, current, selected) {
     if (!fileId) return;
     const result = state.results.find(row => row.result_id === resultId);
     const ownCase = result && state.cases.find(row => row.case_id === result.case_id);
-    const file = state.files.find(row => row.file_id === fileId);
+    const file = (state.files || []).find(row => row.file_id === fileId);
     if (!result || !ownCase || !file || result.account_id !== actor.account_id
       || ownCase.account_id !== actor.account_id || file.account_id !== actor.account_id
       || ownCase.country !== currentCase?.country

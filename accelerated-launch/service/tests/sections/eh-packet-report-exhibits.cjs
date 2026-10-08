@@ -168,11 +168,62 @@ async function run(t, check) {
   check.equal((await choose(t, actor, current, [])).status, 200, 'a consumer can explicitly clear unavailable originals without adding a new assessment gate');
 
   await multipageAndImage(t, check, actor);
+  await continuationAndReset(t, check, actor, unrelated);
   archiveBounds(check);
   check.equal(t.logText().includes('Account Number ****1234'), false, 'source report content never enters service logs');
   return { original_report_bytes: true, both_reaging_sources: true, explicit_opt_in: true,
     selected_issue_sources_only: true, review_and_approval_binding: true, mutation_and_deletion_refused: true,
     multipage_and_image_originals: true, legacy_unstored_fixture_compatible: true };
+}
+
+async function continuationAndReset(t, check, actor, unrelated) {
+  const caseId = (await t.request('POST', '/api/cases', auth(actor, { country: 'US', region: 'US-NY', bureau: 'EQUIFAX' }))).json.case.case_id;
+  const fixture = { caseId, base: '/api/cases/' + caseId }, files = [];
+  for (const [name, lines] of [
+    ['account-start.pdf', ['Equifax Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor C Balance $100 Opened 01/01/2022']],
+    ['account-continued.pdf', ['Equifax Consumer Credit Report', 'Closed 01/01/2021']]
+  ]) {
+    const bytes = buildPdf({ pages: [{ lines }] });
+    const response = await t.request('POST', fixture.base + '/files', auth(actor, upload(bytes, name)));
+    files.push({ fileId: response.json.receipt.file_id, bytes });
+  }
+  fixture.resultId = (await t.request('POST', fixture.base + '/evaluate', auth(actor))).json.result_id;
+  const positive = issue(t, fixture, 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY');
+  check.ok(positive, 'real adjacent uploads support the ordinary account-continuation contradiction');
+  if (!positive) throw new Error('required continuation fixture unavailable');
+  const selected = await select(t, actor, fixture, [positive.issue_id]);
+  check.deepEqual(selected.json.view.packet.report_exhibits.map(copy => copy.file_id).sort(), files.map(file => file.fileId).sort(),
+    'both genuine source files of the selected merged account are offered');
+  const source = JSON.parse(JSON.stringify(positive));
+  const closure = source.rule_assessment.required_facts.find(fact => fact.field === 'liability.closedDate');
+  closure.source.location.file_id = files[1].fileId;
+  check.deepEqual(exhibits.available(t.service.store, actor, row(t, fixture), [source]).map(copy => copy.file_id).sort(),
+    files.map(file => file.fileId).sort(), 'an explicitly located field on a declared continuation keeps both source copies available');
+  const ambiguous = JSON.parse(JSON.stringify(source));
+  ambiguous.rule_assessment.required_facts.find(fact => fact.field === 'liability.closedDate').source.source_file_id = files[0].fileId;
+  check.deepEqual(exhibits.available(t.service.store, actor, row(t, fixture), [ambiguous]), [],
+    'conflicting explicit file pointers refuse both ambiguous copies rather than choosing one');
+  const escaped = JSON.parse(JSON.stringify(source));
+  escaped.rule_assessment.required_facts.find(fact => fact.field === 'liability.closedDate').source.location.file_id = unrelated.fileId;
+  const disallowed = exhibits.available(t.service.store, actor, row(t, fixture), [escaped]);
+  check.equal(disallowed.some(copy => copy.file_id === unrelated.fileId), false,
+    'an undeclared same-owner source file never becomes a continuation exhibit');
+  const view = await ready(t, actor, fixture, files.map(file => file.fileId));
+  const downloaded = await t.request('GET', fixture.base + '/packet-download', auth(actor));
+  const entries = zipEntries(downloaded.bytes);
+  for (const file of files) check.ok(entries.some(entry => entry.bytes.equals(file.bytes)), 'each actual continuation original reaches the approved ZIP unchanged');
+  await t.request('POST', fixture.base + '/evaluate', auth(actor));
+  check.equal((await choose(t, actor, fixture, [files[0].fileId])).json.error.code, 'PACKET_APPROVAL_STALE',
+    'nonempty report choices cannot bypass a changed current result');
+  const reset = await choose(t, actor, fixture, []);
+  check.equal(reset.status, 200, 'explicit reset works after the current result changed');
+  check.equal(reset.json.view.packet.approved, false, 'reset after re-evaluation removes approval');
+  check.deepEqual(reset.json.view.packet.report_attachment_manifest, [], 'reset after re-evaluation includes no old source copy');
+  // No eligible current issues: reset is still a safe way out of a stale old packet.
+  t.service.store.update(state => { const latest = state.results.filter(result => result.case_id === fixture.caseId).at(-1);
+    latest.evaluation = {}; latest.extraction.records = []; });
+  check.equal((await choose(t, actor, fixture, [])).status, 200, 'explicit reset works without an eligible latest issue and never creates a finding');
+  check.notEqual(view.packet.preview_version, reset.json.view.packet.preview_version, 'changed result remains bound to a different preview');
 }
 
 async function multipageAndImage(t, check, actor) {
