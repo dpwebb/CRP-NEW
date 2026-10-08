@@ -93,6 +93,7 @@ function viewForResult(store, actor, caseRow, resultRow) {
         assessed_on: rendered ? (rendered.assessed_on || null) : null,
         assessment_clock_basis: rendered ? (rendered.assessment_clock_basis || null) : null,
         distinct_total: summary.distinct_total,
+        information_total: summary.information_total,
         by_confidence: summary.by_confidence,
         teaser: summary.teaser,
         severity_order: summary.severity_order
@@ -474,7 +475,10 @@ function assessmentReportBody(rendered, producedAt) {
     for (const fact of facts || []) {
       const loc = fact.location || {};
       if (fact.privacy_redacted) {
-        lines.push(`  Source: creditor identity matched from the report (page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''})`);
+        const label = /\bMember Number\b/i.test(fact.source_field || '') ? 'member number matched from the report'
+          : /Member Name/i.test(fact.source_field || '') ? 'reporting member matched from the report'
+            : 'creditor identity matched from the report';
+        lines.push(`  Source: ${label} (page ${loc.page}${loc.line != null ? `, line ${loc.line}` : ''})`);
         continue;
       }
       if (['EXTERNAL_REPORT_CODE_DEFINITION', 'EXTERNAL_REPORT_PERIOD_DEFINITION'].includes(loc.source_kind)) {
@@ -489,13 +493,18 @@ function assessmentReportBody(rendered, producedAt) {
     }
   };
   if (reportIssues.length) {
-    lines.push('');
-    lines.push('REPORTING ISSUES');
-    for (const issue of reportIssues) {
+    const groups = [
+      ['REPORTING ISSUES', reportIssues.filter(issue => !issue.limitation_concern)],
+      ['INFORMATION ABOUT COURT TIME LIMITS — NOT A DISPUTE REASON', reportIssues.filter(issue => issue.limitation_concern)]
+    ];
+    for (const [heading, items] of groups) {
+      if (!items.length) continue;
+      lines.push('', heading);
+      for (const issue of items) {
       const label = issues.consumerLabel(issue) || 'Verification request';
       lines.push(`- ${label}${issue.check_kind ? `: ${issue.check_kind}` : ''}`);
       if (issue.explanation) lines.push(`  ${issue.explanation}`);
-      if (issue.uncertainty) lines.push(`  Why it merits attention: ${issue.uncertainty}`);
+      if (issue.uncertainty) lines.push(`  ${issue.limitation_concern ? '' : 'Why it merits attention: '}${issue.uncertainty}`);
       if (issue.account_identity && issue.account_identity.name) lines.push(`  Account: ${issue.account_identity.name}`);
       if (issue.account_number_in_report != null) lines.push(`  Record: ${issue.record_kind || 'report entry'} ${issue.account_number_in_report}`);
       if (issue.rule_assessment && issue.rule_assessment.requirement) {
@@ -522,6 +531,7 @@ function assessmentReportBody(rendered, producedAt) {
         }
         if (basis.requirement) lines.push(`  Reporting rule: ${basis.requirement}`);
       }
+    }
     }
   } else {
     lines.push('No findings available.');

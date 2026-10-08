@@ -657,6 +657,13 @@ function collectionSharedIdentity(record, model) {
       : { ...reading.location, trusted: !(page.word_boxes || []).length };
   };
   if (normalized) putShared({ ...account, normalized, location: ownLocation(account) }, 'account.masked_identifier', facts, fact_sources);
+  const member = record.printed['Member Number'];
+  if (member && member.state === 'VALUE' && member.printed_times_in_record === 1 && member.raw) {
+    const value = readable(member.raw).toUpperCase().replace(/[\s-]/g, '');
+    const token = value && `MEMBER-${crypto.createHash('sha256').update(value).digest('hex').slice(0, 24)}`;
+    if (token) putShared({ ...member, raw: token, normalized: token, location: ownLocation(member),
+      privacy_redacted: true }, 'account.member_reference', facts, fact_sources);
+  }
   const region = documentLines(model).filter((line) => (line.page > record.boundary.page || line.page === record.boundary.page && line.line >= record.boundary.line)
     && (line.page < record.end.page || line.page === record.end.page && line.line <= record.end.line));
   const hits = hitsIn(region, 'Member Name');
@@ -665,10 +672,25 @@ function collectionSharedIdentity(record, model) {
     const raw = lineText.slice(lineText.indexOf('Member Name') + 'Member Name'.length).trim();
     const token = nameToken(raw), page = model.pages.find((p) => p.page === hits[0].page), rows = nativeRows(page);
     const row = rows.find((r) => r.line === hits[0].line);
-    const location = row ? wordsLocation(page, rows, row.words, 'Member Name (creditor)')
-      : { page: hits[0].page, line: hits[0].line, label: 'Member Name (creditor)', trusted: !(page.word_boxes || []).length };
-    putShared({ label: 'Member Name (creditor)', raw: token, normalized: token, state: 'VALUE',
+    const location = row ? wordsLocation(page, rows, row.words, 'Member Name (reporting member)')
+      : { page: hits[0].page, line: hits[0].line, label: 'Member Name (reporting member)', trusted: !(page.word_boxes || []).length };
+    putShared({ label: 'Member Name (reporting member)', raw: token, normalized: token, state: 'VALUE',
       printed_times_in_record: 1, location, privacy_redacted: true }, 'account.reported_identity', facts, fact_sources);
+  }
+  const assigned = record.printed['Date Assigned'];
+  if (assigned && assigned.state === 'VALUE' && assigned.printed_times_in_record === 1)
+    putShared({ ...assigned, location: ownLocation(assigned) }, 'collection.assignedDate', facts, fact_sources);
+  // The agency heading precedes this layout's own Date Assigned boundary. It is
+  // a collection label, never evidence of the original creditor's identity.
+  const page = model.pages.find((p) => p.page === record.boundary.page);
+  const previous = page && page.lines.slice(0, record.boundary.line - 1).map((text, i) => ({
+    text: textKey(text), page: page.page, line: i + 1
+  })).filter((line) => line.text).at(-1);
+  if (previous && !isHeading(previous.text) && !COLLECTION_LABELS.some((label) => previous.text.startsWith(label))
+    && !/Credit Report|Request Date|\d{4}[/-]\d{2}[/-]\d{2}|\$/.test(previous.text)) {
+    const reading = { label: 'Collection agency (entry heading)', raw: previous.text, normalized: previous.text,
+      state: 'VALUE', printed_times_in_record: 1, location: { page: previous.page, line: previous.line } };
+    putShared({ ...reading, location: ownLocation(reading) }, 'collection.agency', facts, fact_sources);
   }
   return { facts, fact_sources };
 }

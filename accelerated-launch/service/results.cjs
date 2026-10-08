@@ -575,9 +575,6 @@ function severityRankOf(issue) {
   /* A completeness item whose remedy is an addition ranks with the additions; every other factual observation
      stays an inconsistency. */
   if (isCompletenessItem(issue)) return 1;
-  /* A limitation concern ranks with the additions: the useful next step is to verify dates the report does not
-     show, and it is never ranked as a removal demand. */
-  if (isLimitationConcern(issue)) return 1;
   /* OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued ranks
      with the additions too — the next step is to check the current file, not to treat the old report as wrong. */
   if (isLaterExpiryConcern(issue)) return 1;
@@ -632,7 +629,8 @@ function teaserFor(issue) {
  * category counts always add up to the total.
  */
 function summariseAssessment(rendered) {
-  const rows = (rendered && Array.isArray(rendered.issues)) ? rendered.issues.slice() : [];
+  const allRows = (rendered && Array.isArray(rendered.issues)) ? rendered.issues : [];
+  const rows = allRows.filter(issue => !isLimitationConcern(issue) && issue.basis_type !== 'LIMITATION_ASSESSMENT');
   const by = { violation: 0, probable_violation: 0, potential: 0 };
   for (const issue of rows) {
     if (issue.confidence === 'DEFINITE') by.violation += 1;
@@ -643,6 +641,7 @@ function summariseAssessment(rendered) {
     || (a.issue_id < b.issue_id ? -1 : (a.issue_id > b.issue_id ? 1 : 0)));
   return {
     distinct_total: rows.length,
+    information_total: allRows.length - rows.length,
     by_confidence: by,
     categories_sum_to_total: by.violation + by.probable_violation + by.potential === rows.length,
     severity_order: SEVERITY_ORDER.slice(),

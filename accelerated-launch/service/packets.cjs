@@ -576,6 +576,12 @@ function correspondenceLines(packet, row, selected) {
  */
 /** The raw readings of one issue, from whichever shape the unified descriptor uses: the printed facts of a
  *  factual/content finding, or the single printed date a statutory comparison measures from. */
+function privateFactDescription(field, caption) {
+  if (field === 'account.member_reference') return 'Member number matched from the report';
+  if (/Member Name/i.test(caption || '')) return 'Reporting member matched from the report';
+  return 'Creditor identity matched from the report';
+}
+
 function evidenceFacts(issue) {
   const out = [];
   const seen = new Set();
@@ -591,7 +597,7 @@ function evidenceFacts(issue) {
       ...(privacyRedacted ? { privacy_redacted: true } : {}) });
   };
   for (const f of (issue.source_facts || [])) {
-    push(f.source_field || f.field, f.privacy_redacted ? 'Creditor identity matched from the report' : f.raw_value,
+    push(f.source_field || f.field, f.privacy_redacted ? privateFactDescription(f.field, f.source_field) : f.raw_value,
       f.privacy_redacted ? null : f.normalized_value, f.location,
       f.report_reference_date ? [f.role, f.source_file_id, f.source_result_id, f.bureau, f.report_reference_date] : null,
       f.field === 'account.paymentHistoryDefinition' ? f.code_definition : null,
@@ -689,7 +695,7 @@ function evidenceLines(selected) {
       const internalMaskedReference = f.fact_field === 'account.masked_identifier' && /^MASK-/.test(String(f.normalized));
       lines.push(f.code_definition || f.period_definition ? externalDefinitionLine(f, '     ')
         : f.omitted_value ? `     Printed caption without a value: ${factLabel(f.field)} (${pageLine})`
-        : f.privacy_redacted ? `     Creditor identity matched from the report (${pageLine})`
+        : f.privacy_redacted ? `     ${privateFactDescription(f.fact_field, f.field)} (${pageLine})`
         : `     ${label}printed "${f.raw}" (${pageLine})${!internalMaskedReference && f.normalized != null && String(f.normalized) !== String(f.raw) ? `; read as ${f.normalized}` : ''}`);
     }
     if (issue.explanation) lines.push(`     What the report says: ${issue.explanation}`);

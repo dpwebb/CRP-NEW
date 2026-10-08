@@ -36,16 +36,13 @@ async function run(t,check){
  check.ok(onConcern,'the actual local Ontario upload reaches a qualified court-limit concern');
  check.ok(onConcern&&/does not establish when the claim was discovered/.test(onConcern.explanation),
   'the concern does not claim the printed date proves legal discovery');
- check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/select`,
-  {token:actor.token,body:{issue_ids:[onConcern.issue_id]}})).status,200,'the Ontario concern can be selected');
- check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/correspondence`,
-  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
-  200,'Ontario correspondence is reviewed');
- await t.preparePostalPacket(actor, ca.case_id);
- check.equal((await t.request('POST',`/api/cases/${ca.case_id}/packet/approve`,{token:actor.token})).status,
-  200,'the Ontario selection is approved');
- check.equal((await t.request('GET',`/api/cases/${ca.case_id}/packet-download`,{token:actor.token})).status,
-  200,'and its entitled packet downloads from the actual local upload');
+ check.equal(onConcern.consumer_label,'INFORMATION','ca: court timing is information only');
+ check.equal(onConcern.eligible,false,'ca: court timing is not selectable');
+ check.equal(onConcern.request_type,null,'ca: no court request type');
+ check.equal(onConcern.request_wording,null,'ca: no court request wording');
+ const onSelection=await t.request('POST',`/api/cases/${ca.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[onConcern.issue_id]}});
+ check.ok([400,409].includes(onSelection.status),'ca: packet API rejects court information');
  const mb=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-MB'}})).json.case;
  const mbUpload=await t.request('POST',`/api/cases/${mb.case_id}/files`,
   {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')});
@@ -57,16 +54,13 @@ async function run(t,check){
  check.ok(mbConcern,'the actual Manitoba upload reaches a qualified court-limit concern');
  check.ok(mbConcern&&/does not establish when the claim was discovered/.test(mbConcern.explanation),
   'the Manitoba issue does not equate report dates with discovery');
- check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/select`,
-  {token:actor.token,body:{issue_ids:[mbConcern.issue_id]}})).status,200,'the Manitoba concern is selectable');
- check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/correspondence`,
-  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
-  200,'Manitoba correspondence is reviewed');
- await t.preparePostalPacket(actor, mb.case_id);
- check.equal((await t.request('POST',`/api/cases/${mb.case_id}/packet/approve`,{token:actor.token})).status,
-  200,'the Manitoba selection is approved');
- check.equal((await t.request('GET',`/api/cases/${mb.case_id}/packet-download`,{token:actor.token})).status,
-  200,'and its entitled packet downloads from the local upload');
+ check.equal(mbConcern.consumer_label,'INFORMATION','mb: court timing is information only');
+ check.equal(mbConcern.eligible,false,'mb: court timing is not selectable');
+ check.equal(mbConcern.request_type,null,'mb: no court request type');
+ check.equal(mbConcern.request_wording,null,'mb: no court request wording');
+ const mbSelection=await t.request('POST',`/api/cases/${mb.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[mbConcern.issue_id]}});
+ check.ok([400,409].includes(mbSelection.status),'mb: packet API rejects court information');
  const bc=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-BC'}})).json.case;
  check.equal((await t.request('POST',`/api/cases/${bc.case_id}/files`,
   {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
@@ -78,16 +72,13 @@ async function run(t,check){
  check.ok(bcConcern,'the actual British Columbia upload reaches a qualified court-limit concern');
  check.ok(bcConcern&&/does not establish when the claim was discovered/.test(bcConcern.explanation),
   'the BC issue does not equate report dates with discovery');
- check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/select`,
-  {token:actor.token,body:{issue_ids:[bcConcern.issue_id]}})).status,200,'the BC concern is selectable');
- check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/correspondence`,
-  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
-  200,'British Columbia correspondence is reviewed');
- await t.preparePostalPacket(actor, bc.case_id);
- check.equal((await t.request('POST',`/api/cases/${bc.case_id}/packet/approve`,{token:actor.token})).status,
-  200,'the British Columbia selection is approved');
- check.equal((await t.request('GET',`/api/cases/${bc.case_id}/packet-download`,{token:actor.token})).status,
-  200,'and its entitled packet downloads from the local upload');
+ check.equal(bcConcern.consumer_label,'INFORMATION','bc: court timing is information only');
+ check.equal(bcConcern.eligible,false,'bc: court timing is not selectable');
+ check.equal(bcConcern.request_type,null,'bc: no court request type');
+ check.equal(bcConcern.request_wording,null,'bc: no court request wording');
+ const bcSelection=await t.request('POST',`/api/cases/${bc.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[bcConcern.issue_id]}});
+ check.ok([400,409].includes(bcSelection.status),'bc: packet API rejects court information');
  const nt=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-NT'}})).json.case;
  check.equal((await t.request('POST',`/api/cases/${nt.case_id}/files`,
   {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
@@ -97,18 +88,15 @@ async function run(t,check){
  const ntView=(await t.request('GET',`/api/cases/${nt.case_id}`,{token:actor.token})).json.view;
  const ntConcern=ntView.result.issues.find(i=>i.limitation_concern===true);
  check.ok(ntConcern,'the actual Northwest Territories upload reaches a qualified court-limit concern');
- check.ok(ntConcern&&/does not establish legal accrual/.test(ntConcern.explanation),
+ check.ok(ntConcern&&/does not establish when that right arose or the final court deadline/.test(ntConcern.explanation),
   'the territory issue does not equate report dates with accrual');
- check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/select`,
-  {token:actor.token,body:{issue_ids:[ntConcern.issue_id]}})).status,200,'the territory concern is selectable');
- check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/correspondence`,
-  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
-  200,'Northwest Territories correspondence is reviewed');
- await t.preparePostalPacket(actor, nt.case_id);
- check.equal((await t.request('POST',`/api/cases/${nt.case_id}/packet/approve`,{token:actor.token})).status,
-  200,'the territory selection is approved');
- check.equal((await t.request('GET',`/api/cases/${nt.case_id}/packet-download`,{token:actor.token})).status,
-  200,'and its entitled packet downloads from the local upload');
+ check.equal(ntConcern.consumer_label,'INFORMATION','nt: court timing is information only');
+ check.equal(ntConcern.eligible,false,'nt: court timing is not selectable');
+ check.equal(ntConcern.request_type,null,'nt: no court request type');
+ check.equal(ntConcern.request_wording,null,'nt: no court request wording');
+ const ntSelection=await t.request('POST',`/api/cases/${nt.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[ntConcern.issue_id]}});
+ check.ok([400,409].includes(ntSelection.status),'nt: packet API rejects court information');
  const nu=(await t.request('POST','/api/cases',{token:actor.token,body:{country:'CA',region:'CA-NU'}})).json.case;
  check.equal((await t.request('POST',`/api/cases/${nu.case_id}/files`,
   {token:actor.token,body:uploadBody(fs.readFileSync(pointer.absolute_path),'canada-authorized-local.pdf')})).status,
@@ -118,23 +106,20 @@ async function run(t,check){
  const nuView=(await t.request('GET',`/api/cases/${nu.case_id}`,{token:actor.token})).json.view;
  const nuConcern=nuView.result.issues.find(i=>i.limitation_concern===true);
  check.ok(nuConcern,'the actual Nunavut upload reaches a qualified court-limit concern');
- check.ok(nuConcern&&/does not establish legal accrual/.test(nuConcern.explanation),
+ check.ok(nuConcern&&/does not establish when that right arose or the final court deadline/.test(nuConcern.explanation),
   'the Nunavut issue does not equate report dates with accrual');
- check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/select`,
-  {token:actor.token,body:{issue_ids:[nuConcern.issue_id]}})).status,200,'the Nunavut concern is selectable');
- check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/correspondence`,
-  {token:actor.token,body:{correspondence:{consumer_name:'Fictional Canadian Tester',contact:'tester@example.test'}}})).status,
-  200,'Nunavut correspondence is reviewed');
- await t.preparePostalPacket(actor, nu.case_id);
- check.equal((await t.request('POST',`/api/cases/${nu.case_id}/packet/approve`,{token:actor.token})).status,
-  200,'the Nunavut selection is approved');
- check.equal((await t.request('GET',`/api/cases/${nu.case_id}/packet-download`,{token:actor.token})).status,
-  200,'and its entitled packet downloads from the local upload');
+ check.equal(nuConcern.consumer_label,'INFORMATION','nu: court timing is information only');
+ check.equal(nuConcern.eligible,false,'nu: court timing is not selectable');
+ check.equal(nuConcern.request_type,null,'nu: no court request type');
+ check.equal(nuConcern.request_wording,null,'nu: no court request wording');
+ const nuSelection=await t.request('POST',`/api/cases/${nu.case_id}/packet/select`,
+  {token:actor.token,body:{issue_ids:[nuConcern.issue_id]}});
+ check.ok([400,409].includes(nuSelection.status),'nu: packet API rejects court information');
  const real=persisted.extraction;
  for(const region of ['CA-BC','CA-QC','CA-SK','CA-NT','CA-NU','CA-YT']){
   const evaluated=evaluation.evaluateCase({country:'CA',region,extraction:real});
   check.ok(evaluated.results.some(r=>r.check.adapter_id.startsWith(region+'-')&&r.machine.content),'each applicable accuracy rule consumes this reader own facts: '+region);
  }
- return {real_canadian_http_upload:true,real_transunion_limitation_packet_journeys:['CA-ON','CA-MB','CA-BC','CA-NT','CA-NU'],private_report_egress:false};
+ return {real_canadian_http_upload:true,real_transunion_limitation_information_journeys:['CA-ON','CA-MB','CA-BC','CA-NT','CA-NU'],private_report_egress:false};
 }
-module.exports={id:'co-canada-upload-delivery',title:'Canada real TransUnion HTTP intake and selected limitation packets',run};
+module.exports={id:'co-canada-upload-delivery',title:'Canada real TransUnion HTTP intake and informational court limits',run};

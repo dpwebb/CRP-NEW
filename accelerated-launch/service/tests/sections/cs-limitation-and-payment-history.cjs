@@ -410,8 +410,9 @@ async function runConsumerPath(service, check, evidence) {
   const response = await service.request('GET', `/api/cases/${caseId}`, { token: actor.token });
   const view = response.json && response.json.view ? response.json.view : null;
   check.ok(view, `the case view renders for the assessed case (status ${response.status})`);
-  check.equal(view.assessment_summary.distinct_total, 4, 'the assessed case carries four distinct supported issues');
-  check.equal(view.assessment_summary.by_confidence.potential, 4, 'all four are potential issues');
+  check.equal(view.assessment_summary.distinct_total, 3, 'the assessed case carries three reporting issues');
+  check.equal(view.assessment_summary.information_total, 1, 'court timing is counted separately as information');
+  check.equal(view.assessment_summary.by_confidence.potential, 3, 'the reporting issues retain their internal confidence');
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'and the teaser ranks them with the additions');
   check.ok(!/violation|definite/i.test(String(view.assessment_summary.teaser.title)), 'while claiming no violation');
   const limitationItems = view.result.issues.filter((i) => i.limitation_concern === true);
@@ -421,13 +422,16 @@ async function runConsumerPath(service, check, evidence) {
   check.ok(/may be outside the time limit for a court claim/.test(String(item.explanation)), 'and says plainly what the dates suggest');
   check.ok(/checked on 2026-01-10/.test(String(item.explanation)), 'with the date the report was checked on the server');
   check.ok(/Assessed on 2026-01-10|2026-01-10/.test(String((item.limitation || {}).assessed_on || '')), 'and that date recorded as the assessment date');
-  check.ok(/not about whether the credit bureau may report/.test(String(item.uncertainty)),
-    'while stating that it is not a reporting-rule allegation');
-  check.equal(item.request_type, 'VERIFICATION', 'and it asks for the dates and the basis to be verified');
+  check.ok(/Court time limits and credit-report time limits are separate/.test(String(item.uncertainty)),
+    'while explaining the separate clocks');
+  check.equal(item.consumer_label, 'INFORMATION', 'court timing is consumer information');
+  check.equal(item.eligible, false, 'court timing is never a packet candidate');
+  check.equal(item.request_type, null, 'court timing has no bureau request type');
+  check.equal(item.request_wording, null, 'court timing has no bureau request wording');
   const packet = await service.request('GET', `/api/cases/${caseId}/packet`, { token: actor.token });
   check.equal(packet.status, 200, 'a subscriber can open the packet flow for it');
   const selected = await service.request('POST', `/api/cases/${caseId}/packet/select`, { token: actor.token, body: { issue_ids: [item.issue_id] } });
-  check.equal(selected.status, 200, 'and select the limitation concern into verification correspondence');
+  check.equal(selected.status, 400, 'the API refuses to select court information alongside independent issues');
   const paymentCase = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-NS' } });
   check.equal(paymentCase.status, 201, 'a second case holds the independent payment-history conflict');
   const paymentCaseId = paymentCase.json.case.case_id;
@@ -477,19 +481,13 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(onItem && onItem.account_identity.name, 'SYNTHETIC ONTARIO DEBT', 'on its own account');
   check.ok(onItem && /does not establish when the claim was discovered/.test(onItem.explanation),
     'the explanation does not turn a report date into legal discovery');
-  check.ok(onItem && /when this claim was discovered/.test(onItem.request_wording),
-    'and the request asks for the decisive missing fact');
-  check.equal(onItem && onItem.request_type, 'VERIFICATION', 'without a breach or deletion claim');
-  check.equal((await service.request('POST', `/api/cases/${onId}/packet/select`,
-    { token: actor.token, body: { issue_ids: [onItem.issue_id] } })).status, 200, 'the consumer selects it');
-  check.equal((await service.request('POST', `/api/cases/${onId}/packet/correspondence`,
-    { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
-    200, 'reviews the correspondence');
-  await service.preparePostalPacket(actor, onId);
-  check.equal((await service.request('POST', `/api/cases/${onId}/packet/approve`, { token: actor.token })).status,
-    200, 'approves that selection');
-  check.equal((await service.request('GET', `/api/cases/${onId}/packet-download`, { token: actor.token })).status,
-    200, 'and downloads the entitled packet');
+  check.equal(onItem.consumer_label, 'INFORMATION', 'Ontario timing is information only');
+  check.equal(onItem.request_wording, null, 'Ontario timing makes no bureau inquiry');
+  check.equal(onItem.request_type, null, 'Ontario timing has no request type');
+  check.equal(onItem.eligible, false, 'Ontario timing cannot enter a packet');
+  const onSelection = await service.request('POST', `/api/cases/${onId}/packet/select`,
+    { token: actor.token, body: { issue_ids: [onItem.issue_id] } });
+  check.ok([400,409].includes(onSelection.status), 'the server rejects Ontario informational selection');
   const mbCase = await service.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-MB' } });
   check.equal(mbCase.status, 201, 'the Manitoba selection creates its own case');
   const mbId = mbCase.json.case.case_id;
@@ -507,21 +505,14 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(mbItem && mbItem.account_identity.name, 'SYNTHETIC MANITOBA DEBT', 'on its own account');
   check.ok(mbItem && /does not establish when the claim was discovered/.test(mbItem.explanation),
     'the explanation does not turn a printed date into legal discovery');
-  check.ok(mbItem && /when this claim was discovered/.test(mbItem.request_wording),
-    'the request asks for the decisive missing fact');
-  check.ok(mbItem && /demand and default/.test(mbItem.request_wording), 'the request asks for a possible demand date');
-  check.equal(mbItem && mbItem.request_type, 'VERIFICATION', 'without a breach or deletion claim');
-  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/select`,
-    { token: actor.token, body: { issue_ids: [mbItem.issue_id] } })).status, 200, 'the consumer selects the Manitoba issue');
-  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/correspondence`,
-    { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
-    200, 'reviews the Manitoba correspondence');
-  await service.preparePostalPacket(actor, mbId);
-  check.equal((await service.request('POST', `/api/cases/${mbId}/packet/approve`, { token: actor.token })).status,
-    200, 'approves the Manitoba selection');
-  check.equal((await service.request('GET', `/api/cases/${mbId}/packet-download`, { token: actor.token })).status,
-    200, 'and downloads the entitled Manitoba packet');
-  evidence.consumer_path = { distinct_total: view.assessment_summary.distinct_total, selected_issue: item.issue_id };
+  check.equal(mbItem.consumer_label, 'INFORMATION', 'Manitoba timing is information only');
+  check.equal(mbItem.request_wording, null, 'Manitoba timing makes no bureau inquiry');
+  check.equal(mbItem.request_type, null, 'Manitoba timing has no request type');
+  check.equal(mbItem.eligible, false, 'Manitoba timing cannot enter a packet');
+  const mbSelection = await service.request('POST', `/api/cases/${mbId}/packet/select`,
+    { token: actor.token, body: { issue_ids: [mbItem.issue_id] } });
+  check.ok([400,409].includes(mbSelection.status), 'the server rejects Manitoba informational selection');
+  evidence.consumer_path = { distinct_total: view.assessment_summary.distinct_total, information_issue: item.issue_id };
 }
 
 async function run(service, check) {

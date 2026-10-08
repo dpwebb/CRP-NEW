@@ -1,5 +1,4 @@
 'use strict';
-const { comparableText } = require('../packet-pdf-assertions.cjs');
 /* Public AU and GB structural specimens through the real local upload, assessment and packet route. */
 const fs = require('node:fs');
 const path = require('node:path');
@@ -80,31 +79,23 @@ async function run(t, check) {
     const view = (await t.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
     const item = view.result.issues.find((issue) => issue.limitation_concern === true);
     check.ok(item, `${region}: the consumer sees a timing-verification issue`);
-    check.ok(item && /does not establish legal accrual/.test(item.explanation),
+    check.ok(item && /does not establish when that right arose or the final court deadline/.test(item.explanation),
       `${region}: the explanation does not treat a report date as accrual`);
-    check.ok(item && /which time limit applies/.test(item.request_wording),
-      `${region}: the request checks applicability and the actual legal start`);
-    check.equal(item && item.request_type, 'VERIFICATION', `${region}: no breach or deletion demand is made`);
+    check.equal(item.consumer_label, 'INFORMATION', `${region}: court timing is information only`);
+    check.equal(item.eligible, false, `${region}: court timing cannot enter packets`);
+    check.equal(item.request_wording, null, `${region}: no request for court facts`);
+    check.equal(item.request_type, null, `${region}: no bureau request`);
     const persisted = t.service.store.state().results.filter((row) => row.case_id === caseId).at(-1);
     const assessed = persisted.evaluation.limitation_assessment.performed
       .find((row) => row.record_index === item.account_number_in_report);
     check.ok(assessed && assessed.start_date.location && assessed.start_date.location.page,
       `${region}: the issue remains associated with its located printed date`);
-    check.equal((await t.request('POST', `/api/cases/${caseId}/packet/select`,
-      { token: actor.token, body: { issue_ids: [item.issue_id] } })).status, 200,
-    `${region}: the issue is selected`);
-    check.equal((await t.request('POST', `/api/cases/${caseId}/packet/correspondence`,
-      { token: actor.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } })).status,
-    200, `${region}: correspondence is reviewed`);
-    await t.preparePostalPacket(actor, caseId);
-    check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: actor.token })).status,
-      200, `${region}: the selection is approved`);
-    const download = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });
-    check.equal(download.status, 200, `${region}: an entitled packet downloads`);
-    check.ok(comparableText(download.text).includes('Fictional Consumer'), `${region}: the packet uses reviewed correspondence`);
+    const refused = await t.request('POST', `/api/cases/${caseId}/packet/select`,
+      { token: actor.token, body: { issue_ids: [item.issue_id] } });
+    check.ok([400,409].includes(refused.status), `${region}: the server refuses court information in packets`);
   }
   return { exact_regions: ['AU-ACT', 'AU-QLD', 'GB-ENG', 'GB-WLS', 'GB-NIR'], public_samples_only: true };
 }
 
 module.exports = { run, id: 'cv-accrual-limitation-delivery',
-  title: 'Accrual-based court-limit verification from AU and GB public reports through entitled packets' };
+  title: 'Informational court limits from AU and GB public reports, excluded from packets' };

@@ -426,9 +426,9 @@ async function run(service, check) {
   await limPage.locator('#steps button[data-step="3"]').click();
   await limPage.waitForTimeout(1200);
   const limSummary = await limPage.locator('#panel').innerText();
-  check.equal((limSummary.match(/Reporting issues found:\s*(\d+)/) || [])[1] || null, '1',
-    'the free summary counts the court-limitation concern exactly once');
-  check.ok(/time limit for a court claim/.test(limSummary), 'and the teaser names the court time limit, not a broken rule');
+  check.equal((limSummary.match(/Reporting issues found:\s*(\d+)/) || [])[1] || '0', '0',
+    'the free summary excludes court information from reporting issue counts');
+  check.ok(!/time limit for a court claim/.test(limSummary), 'court information is not a reporting issue teaser');
   check.ok(!/violations:|potential issues:/.test(limSummary),
     'without a confidence tier count or violation claim');
   /* OWNER correction (SOL assessment date): the free summary states the date the SERVER assessed the report. */
@@ -445,22 +445,13 @@ async function run(service, check) {
   const genPanelText = await genPage.locator('#panel').innerText();
   check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(genPanelText), 'the complete assessment states the date it was assessed');
   await genPage.locator('#steps button[data-step="4"]').click();
-  await genPage.waitForSelector('#packet-block');
   await genPage.waitForTimeout(600);
-  const genBlock = await genPage.locator('#packet-block').innerText();
-  check.ok(/time limit for a court claim/.test(genBlock), 'the subscriber packet offers the limitation concern to select');
-  await accountContact(genPage, 'Robin Alvarez', 'robin.alvarez@example.test', true);
-  await genPage.locator('[data-check-issue]').first().check();
-  await saveReadApprove(genPage);
-  await genPage.waitForTimeout(700);
-  check.equal(await genPage.locator('#packet-download').isEnabled(), true, 'and approval enables the download');
-  const genDownload = await downloadText(genPage);
-  check.equal(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).length, 3, 'real browser downloads exactly three selected original support documents alongside its printable correspondence and any bureau forms');
-  check.ok(genDownload.entries?.filter(entry => /^documents\//.test(entry.name)).every(entry => entry.bytes.includes(Buffer.from('FICTIONAL SUPPORT DOCUMENT'))), 'browser packet preserves the uploaded fictional source bytes');
-  check.ok(/may be outside the time limit for a court claim/.test(comparableText(genDownload.text)),
-    'the downloaded packet asks whether the debt is outside the time limit for a court claim');
-  check.ok(!/violation|ESTABLISHED REPORTING ISSUE/i.test(genDownload.text), 'while claiming no reporting violation');
-  evidence.limitation_browser = { summary: 'the free summary names the court time limit', packet: genDownload.filename };
+  check.ok(/Information about court time limits/.test(genPanelText), 'paid results separate court information from reporting issues');
+  check.ok(/INFORMATION/.test(genPanelText), 'court cards show INFORMATION');
+  check.ok(!/ask the bureau|please verify.*court|Please verify.*payment/.test(genPanelText), 'court information makes no bureau inquiry');
+  check.equal(await genPage.locator('[data-check-issue]').count(), 0, 'court-only results have no dispute checkbox');
+  check.equal(await genPage.locator('#packet-download').count(), 0, 'court-only results cannot download a dispute packet');
+  evidence.limitation_browser = { reporting_issue_count: 0, court_information_only: true, packet_candidate: false };
   await genPage.close();
 
   /* ---- 7. OWNER dual-date retention (Batch 33): a reporting period that has ENDED since the report was issued,

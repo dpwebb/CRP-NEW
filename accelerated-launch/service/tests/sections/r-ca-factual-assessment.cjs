@@ -45,6 +45,7 @@ const COMMON_CHECKS = [
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY',
   DATE_CHECK,
+  'COMMON-ERROR-DUPLICATE-REPORTING',
   'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
 ];
 const OTHER_TWELVE = CA_REGIONS.filter((r) => r !== 'CA-NS');
@@ -136,13 +137,15 @@ function assertFactualSurface(check, result, label, expectStatutory) {
     + result.common_errors.length + result.detected_report_information.length,
     `${label}: the performed count includes every comparison that actually ran`);
   check.deepEqual(result.common_errors.map((c) => c.check_name), COMMON_CHECKS,
-    `${label}: recovered own-account facts run exactly the four supported checklist checks`);
+    `${label}: recovered own-account facts run the five supported checklist checks`);
   const dateCheck = result.common_errors.find((c) => c.check_name === DATE_CHECK);
   check.equal(dateCheck?.state, 'NOT_DETECTED', `${label}: the specimen date check is benign`);
   check.deepEqual(dateCheck?.source_records, [], `${label}: benign dates create no issue matches`);
-  check.equal(result.common_errors.find((c) => c.check_name === COMMON_CHECKS[3])?.source_records.length, 1,
+  check.equal(result.common_errors.find((c) => c.check_name === COMMON_CHECKS[4])?.source_records.length, 1,
     `${label}: one sourced closure with an explicitly blank own date creates an issue match`);
-  check.equal(result.assessment.common_error_checks_performed, 4, `${label}: the summary counts all four completed common checks`);
+  check.equal(result.assessment.common_error_checks_performed, 5, `${label}: the summary counts all five completed common checks`);
+  check.equal(result.common_errors.find(c => c.check_name === 'COMMON-ERROR-DUPLICATE-REPORTING')?.source_records.length, 1,
+    `${label}: the actual duplicate collections now reach the shared check`);
   check.equal(result.report_consistency_checks.length, 4, `${label}: all four Canadian factual checks ran`);
   check.deepEqual(result.report_consistency_checks.map((c) => c.check_name).length, 4, `${label}: each is reported at case level`);
   check.deepEqual([...new Set(result.report_consistency_checks.map((c) => c.check_class))], ['REPORT_FACT_CONSISTENCY'],
@@ -214,12 +217,14 @@ function everyCaRegion(check, extraction) {
       `${region}: and they are exactly the four named Canadian factual checks`);
     check.equal(factual.summary.statutory_checks_named, 0, `${region}: no statutory check is among them`);
     const common = evaluated.common_errors.performed;
-    check.deepEqual(common.map((c) => c.check_id), COMMON_CHECKS, `${region}: exactly the four source-supported shared checks ran`);
+    check.deepEqual(common.map((c) => c.check_id), COMMON_CHECKS, `${region}: the five source-supported shared checks ran`);
     const dateCheck = common.find((c) => c.check_id === DATE_CHECK);
     check.equal(dateCheck?.state, 'NOT_DETECTED', `${region}: the date check remains benign`);
     check.deepEqual(dateCheck?.source_records, [], `${region}: the benign date comparison creates no issue matches`);
-    check.equal(common.find((c) => c.check_id === COMMON_CHECKS[3])?.source_records.length, 1,
+    check.equal(common.find((c) => c.check_id === COMMON_CHECKS[4])?.source_records.length, 1,
       `${region}: the ordinary-account blank closure date remains in the shared checklist scope`);
+    check.equal(common.find(c => c.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING')?.source_records.length, 1,
+      `${region}: the real report's duplicate collections reach the same shared rule`);
     check.equal(evaluated.checks_performed, statutory.length + factual.performed.length
       + common.length + evaluated.detected_report_information.performed.length,
       `${region}: the performed count is exactly what ran`);

@@ -150,12 +150,19 @@ async function mixedForms(t, check) {
   const base = '/api/cases/' + id;
   const bytes = buildPdf({ pages: [{ lines: ['Equifax Consumer Credit Report', 'Report Date: June 12, 2026',
     'Creditor A Balance $100 Opened 01/01/2020 Closed 01/01/2019',
-    'Collection Agency ABC Date of First Delinquency 01/01/2015 Last Payment Date 01/01/2015'] }] });
+    'Collection Account: Fictional Collector A', 'Account Number: ****1234', 'Member Number: FICT78901',
+    'First Delinquency Date: February 1, 2021', 'Last Payment Date: February 1, 2021', 'Balance: $500',
+    'Collection Account: Fictional Collector B', 'Account Number: ****1234', 'Member Number: FICT78901',
+    'First Delinquency Date: February 1, 2021', 'Last Payment Date: February 1, 2021', 'Balance: $300'] }] });
   await t.request('POST', base + '/files', { token: actor.token, body: { originalFilename: 'fictional-mixed.pdf', declaredBytes: bytes.length, mimeType: 'application/pdf', contentBase64: bytes.toString('base64') } });
   await t.request('POST', base + '/evaluate', { token: actor.token });
   const view = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
   check.ok(view.eligible_issues.some(issue => /credit account/i.test(issue.record_kind)), 'mixed report has a supported ordinary account issue');
-  check.ok(view.eligible_issues.some(issue => /collection/i.test(issue.record_kind)), 'mixed report has a supported collection issue');
+  check.ok(view.eligible_issues.some(issue => /collection/i.test(issue.record_kind)
+    && /duplicate/i.test(issue.check_kind) && issue.consumer_label === 'VIOLATION'),
+    'mixed report has a supported collection duplicate violation');
+  check.ok(view.eligible_issues.every(issue => !issue.limitation_concern && issue.basis_type !== 'LIMITATION_ASSESSMENT'),
+    'mixed forms use reporting violations and never court time-limit information');
   await t.request('POST', base + '/packet/select', { token: actor.token, body: { issue_ids: view.eligible_issues.map(issue => issue.issue_id) } });
   const ready = await t.preparePostalPacket(actor, id);
   check.deepEqual(ready.packet.required_form_manifest.map(form => form.filename).sort(), ['ca-equifax-account.pdf', 'ca-equifax-public-record.pdf'], 'mixed selected kinds require both relevant official Equifax forms');

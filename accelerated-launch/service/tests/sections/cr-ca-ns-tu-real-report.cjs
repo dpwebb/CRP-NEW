@@ -177,8 +177,8 @@ async function runRealReport(service, check, evidence) {
   await service.pay(actor, 'report_once', caseId);
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
   const publicIssues = view.result.issues;
-  check.equal(view.assessment_summary.distinct_total, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports the two historical-period concerns and the later-expiry concern');
-  check.equal(view.assessment_summary.by_confidence.potential, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
+  check.equal(view.assessment_summary.distinct_total, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports the two historical-period concerns and the later-expiry concern');
+  check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
     'and none of them is asserted as a violation or a probable violation');
   check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
@@ -211,10 +211,10 @@ async function runRealReport(service, check, evidence) {
     'and each shows more years elapsed than the recorded period');
   check.ok(limitationItems.every((i) => (i.limitation.what_the_report_does_not_show || []).length >= 3),
     'while listing the conditions the report does not show');
-  check.ok(limitationItems.every((i) => !i.citation && /not about whether the credit bureau may report/.test(String(i.uncertainty))),
+  check.ok(limitationItems.every((i) => !i.citation && /Court time limits and credit-report time limits are separate/.test(String(i.uncertainty))),
     'and each states plainly that it is not a reporting-rule allegation and cites no retention rule');
-  check.ok(limitationItems.every((i) => i.eligible === true && i.request_type === 'VERIFICATION'),
-    'each is a verification request the consumer may select');
+  check.ok(limitationItems.every((i) => i.eligible === false && i.request_type === null && i.consumer_label === 'INFORMATION'),
+    'each is information only and cannot enter a packet');
   const balanced = limitationItems.find((i) => i.account_identity.name === 'CAPITAL ONE BANK');
   check.equal(balanced.limitation.counted_from, 'Dec 16, 2023', 'the later printed date is the one counted from');
   check.equal(balanced.limitation.counted_from_label, 'First Delinquency Date', 'and it is named as the date it counted from');
@@ -227,8 +227,8 @@ async function runRealReport(service, check, evidence) {
   check.equal(paymentHistory.withheld_candidates.length, 7, 'while every candidate it refused to raise is recorded with its reason');
   check.ok(paymentHistory.withheld_candidates.every((c) => c.reason && c.missing_prerequisite),
     'each with the innocent explanation and the prerequisite it would need');
-  check.ok(publicIssues.every((i) => i.request_type === 'VERIFICATION' && i.eligible === true),
-    'every one of them is a verification request the consumer may dispute');
+  check.ok(publicIssues.every((i) => i.limitation_concern ? i.request_type === null && i.eligible === false : i.request_type === 'VERIFICATION' && i.eligible === true),
+    'only independent reporting issues remain available for disputes');
   check.ok(publicIssues.every((i) => !i.citation),
     'none of them names a legal rule, because none of them asserts one');
   evidence.real_report.issue_inventory = publicIssues.map((i) => ({

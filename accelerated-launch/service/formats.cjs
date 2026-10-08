@@ -811,7 +811,8 @@ function normalizeExtraction(raw, factualView) {
       }
       // A collection identifier remains bound to its own measured block. The factual
       // reader returns only a masked identifier and a privacy-preserving creditor key.
-      for (const field of ['account.masked_identifier', 'account.reported_identity']) {
+      for (const field of ['account.masked_identifier', 'account.reported_identity', 'account.member_reference',
+        'collection.agency', 'collection.assignedDate']) {
         const identity = viewRecord && viewRecord.shared_identity;
         const value = identity && identity.facts && identity.facts[field];
         const source = identity && identity.fact_sources && identity.fact_sources[field];

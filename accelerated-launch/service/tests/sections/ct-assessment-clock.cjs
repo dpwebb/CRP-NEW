@@ -83,8 +83,8 @@ async function runHttpControls(service, check, evidence) {
   check.equal(run1[0].limitation.report_date, '2026-06-12', 'and the printed report date kept separately as provenance');
   check.ok(/checked on 2026-06-13/.test(run1[0].explanation), 'the explanation names the date it was checked');
   check.ok(/The report itself was issued on 2026-06-12/.test(run1[0].explanation), 'and the report date it was issued on');
-  check.ok(/A later payment of this debt, or an admission of it in writing, can restart/.test(run1[0].uncertainty), 'with the later-events uncertainty stated plainly, and a restart attributed only to a payment or an admission');
-  check.ok(/sold or placed with a collection agency/.test(run1[0].uncertainty), 'while a sale or collection placement is named as NOT restarting the clock');
+  check.ok(/payment or a signed written admission made before the court deadline expired can restart/.test(require('../../limitation-assessment.cjs').parametersFor('CA-NS').uncertainty_since_report), 'the internal assessment retains the qualifying before-expiry restart condition');
+  check.ok(/original creditor or collector a new court deadline/.test(run1[0].explanation), 'sale or collection transfer does not restart the clock');
 
   /* 4. A RERUN ACROSS A DATE BOUNDARY: a fresh stamp, a fresh row, the earlier row untouched. */
   const firstRunIssueCount = view.result.issues.length;

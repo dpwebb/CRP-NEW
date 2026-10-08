@@ -102,6 +102,11 @@ const SECTION_FILES = [
   'ec-account-packet-ui.cjs',
   /* Batch 66: explicitly reviewed original source report copies, custody and approved ZIP delivery. */
   'eh-packet-report-exhibits.cjs',
+  'ei-collection-duplicate.cjs',
+  'ej-collection-boundaries.cjs',
+  'ek-pr01-collection-references.cjs',
+  'el-collection-court-period.cjs',
+  'em-collection-comparison.cjs',
   'ed-account-browser.cjs',
   'ef-account-recovery.cjs',
   'dh-ca-reader-completion.cjs',

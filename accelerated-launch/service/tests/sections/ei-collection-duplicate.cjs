@@ -12,6 +12,7 @@ const packets = require('../../packets.cjs');
 const pairs = require('../../duplicate-account-pair.cjs');
 const formats = require('../../formats.cjs');
 const journey = require('../../journey.cjs');
+const results = require('../../results.cjs');
 const caFacts = require('../../ca-consumer-file-facts.cjs');
 const { extractFacts } = require('../../../../internal-validation/ca-ns-last-payment-six-year/extraction.cjs');
 const fixtures = require('../../../../internal-validation/ca-ns-last-payment-six-year/tests/fixtures.cjs');
@@ -178,16 +179,26 @@ async function run(t, check) {
   check.match(timing?.explanation, /original creditor or collector a new court deadline.*reporting period is separate/,
     'court information explains transfer and the separate reporting period plainly');
   check.equal(timing?.consumer_label, 'INFORMATION', 'a timing screening concern alone is INFORMATION rather than VIOLATION');
-  check.match(timing?.uncertainty, /court claim filed in time, a judgment, or a qualifying payment or written acknowledgment/,
-    'court screening preserves the facts that can change the answer');
+  check.match(timing?.uncertainty, /Those dates alone do not prove whether someone can still sue/,
+    'court information preserves the limit of report-date screening');
   check.equal(timing?.eligible, false, 'court screening information is not a dispute candidate');
   check.equal(timing?.request_type, null, 'court information has no verification request type');
   check.equal(timing?.request_wording, null, 'court information never asks the consumer or bureau to verify a court claim');
-  check.ok(timing?.uncertainty.includes('before expiry'), 'the governing before-expiry condition remains informational');
+  check.ok(timing?.limitation.what_the_report_does_not_show.some(condition => condition.includes('before expiry')),
+    'the governing before-expiry condition remains in the assessment evidence');
   check.ok(timing?.source_facts.some(fact => fact.raw_value === '2021/02/01' && fact.location.page === 1),
     'the timing information keeps the printed date and its own source page');
   check.equal(issues.projectConsumerIssue({ ...timing, eligible: true, request_type: 'VERIFICATION',
     request_wording: 'old saved request' }).eligible, false, 'saved court information cannot recover retired packet eligibility');
+  const savedTiming = issues.projectConsumerIssue({ ...timing, eligible: true, request_type: 'VERIFICATION',
+    request_wording: 'Ask the bureau about a court case, judgment and qualifying payment',
+    uncertainty: 'Ask the bureau about any timely court case, judgment or payment.' });
+  check.equal(savedTiming.request_wording, null, 'old saved bureau inquiries are removed');
+  check.equal(/ask the bureau/i.test(savedTiming.uncertainty), false, 'old saved uncertainty cannot preserve a bureau inquiry');
+  const timingSummary = results.summariseAssessment({ issues: [savedTiming] });
+  check.equal(timingSummary.distinct_total, 0, 'court information does not inflate reporting issue counts');
+  check.equal(timingSummary.information_total, 1, 'court information is counted separately');
+  check.equal(timingSummary.teaser, null, 'court information cannot become a reporting issue teaser');
 
   // Production packet mechanisms receive a fictional stored result and retained
   // bytes; this is source-contract/packet integration, not a reader-admission test.
@@ -224,11 +235,23 @@ async function run(t, check) {
   check.ok(text.includes('VIOLATION') && text.includes('original creditor') && text.includes('which account this debt came from'), 'actual correspondence retains the owner term and original-account request');
   check.equal(text.includes(MEMBER), false, 'private member token is absent from preview/PDF');
   check.ok(/Member number matched from the report/i.test(text), 'approved actual PDF correctly names the member-number evidence');
+  check.equal(/court claim|qualifying payment|judgment/i.test(text), false, 'duplicate packet does not include proactive court inquiries');
   const out = path.resolve(__dirname, '../../out/batch67-collection-pair'); fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, 'approved-collection-packet.zip'), zip.body);
   fs.writeFileSync(path.join(out, 'approved-collection-correspondence.pdf'), printed.body);
   fs.writeFileSync(path.join(out, 'approved-collection-preview.txt'), preview);
   const originalContext = clone(state.results[0]);
+  const originalPacket = clone(state.packets[0]);
+  state.results[0].evaluation.limitation_assessment = clone(timingContext.evaluation.limitation_assessment);
+  const legacyTiming = issues.publicIssues(state.results[0]).find(issue => issue.limitation_concern);
+  state.packets[0].selected_issue_ids = [legacyTiming.issue_id];
+  let retiredApproval, retiredDownload;
+  try { packets.approvePacket(store, actor, 'ei-case'); } catch (caught) { retiredApproval = caught.code; }
+  try { packets.packetDownload(store, actor, 'ei-case'); } catch (caught) { retiredDownload = caught.code; }
+  check.equal(retiredApproval, 'PACKET_APPROVAL_STALE', 'an old saved court selection cannot be approved');
+  check.equal(retiredDownload, 'PACKET_APPROVAL_STALE', 'an old approved court selection cannot be downloaded');
+  state.results[0] = clone(originalContext);
+  state.packets[0] = clone(originalPacket);
   for (const [label, amend] of [
     ['mask source removed', rows => { rows[0].fact_sources['account.masked_identifier'] = null; }],
     ['member source removed', rows => { rows[0].fact_sources['account.member_reference'] = null;

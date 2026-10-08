@@ -958,6 +958,7 @@ function freeSummaryBlock(view) {
     <h3>What we found</h3>
     ${assessmentDateLine(summary)}
     ${counts}
+    ${summary.information_total ? '<p class="evidence">Your assessment also includes information about court time limits. This is separate from reporting issues and is not a dispute reason.</p>' : ''}
     ${preview}
   </div>
   ${state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId ? '' : `<div class="obs">
@@ -1021,7 +1022,7 @@ function renderResults(panel) {
 function resultBlock(result, demo) {
   if (!demo) {
     const checklist = (result.common_error_checklist || []).map((item) =>
-      `<li>${esc(item.label)}</li>`).join('');
+      `<li>${esc(item.label)}${item.description ? `<p>${esc(item.description)}</p>` : ''}</li>`).join('');
     return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We check for common reporting errors using the rules for where you live. When your report breaks a rule we check, we label the issue VIOLATION.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
@@ -1078,18 +1079,20 @@ function assessmentDateLine(holder) {
    never failed-check diagnostics). Each states what the report says, why it merits attention and its uncertainty. */
 function issuesSection(result) {
   const issues = result.issues || [];
-  const cards = issues.map((i) => `
+  const informational = i => i.limitation_concern || i.basis_type === 'LIMITATION_ASSESSMENT';
+  const cards = items => items.map((i) => `
     <div class="obs issue">
       <span class="pill potential">${issueLabel(i)}</span>
       ${i.account_identity && i.account_identity.name ? `<p class="evidence">Account: <b>${esc(i.account_identity.name)}</b></p>` : ''}
       <h3>${esc(i.explanation)}</h3>
-      <p class="evidence">Why it merits attention: ${esc(i.uncertainty)}</p>
+      <p class="evidence">${informational(i) ? '' : 'Why it merits attention: '}${esc(i.uncertainty)}</p>
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.retention_review ? `<p class="evidence">${i.retention_review.report_issued ? `Report issued: <b>${esc(i.retention_review.report_issued)}</b> · ` : 'Report issued: <b>not stated</b> · '}Assessed on: <b>${esc(i.retention_review.assessed_on || '')}</b> · the reporting period appears to end ${i.retention_review.period_appears_to_end_from ? `somewhere between <b>${esc(i.retention_review.period_appears_to_end_from)}</b> and <b>${esc(i.retention_review.period_appears_to_end_on)}</b>` : `<b>${esc(i.retention_review.period_appears_to_end_on || '')}</b>`}${i.retention_review.arose_through_later_passage_of_time ? ' · this arose through the passage of time since your report was issued' : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
       ${i.rule_assessment ? `<p class="evidence">${esc(i.rule_assessment.requirement)}${i.citation ? ` Supporting statute: ${esc(i.citation)}.` : ''}</p>` : i.retention_review || i.limitation_concern ? '' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
     </div>`).join('');
-  return issues.length ? `<h2>Reporting issues for your review</h2>${cards}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
+  const reporting = issues.filter(i => !informational(i)), information = issues.filter(informational);
+  return `${reporting.length ? `<h2>Reporting issues for your review</h2>${cards(reporting)}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${information.length ? `<h2>Information about court time limits</h2><p>This information is for you. It is not included in a dispute packet.</p>${cards(information)}` : ''}`;
 }
 
 /* ------------------------------------------------------------------ optional clarification (BLOCKER-CLARIFY-001) */
@@ -1290,7 +1293,7 @@ function renderReview(panel) {
 /* OWNER-POTENTIAL-ISSUE-001: the correction-packet selection/review/edit/approve/download flow, wired into the
    Wizzard review step. Consumer wording is kept separate from the report facts. */
 function issueLabel(issue) {
-  return issue && issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'Verification request';
+  return issue && issue.consumer_label === 'INFORMATION' ? 'INFORMATION' : issue && issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'Verification request';
 }
 
 /* OWNER-PACKET-CORRESPONDENCE-001: the consumer-visible name of each necessary correspondence detail. */
@@ -1588,7 +1591,12 @@ function comparisonFactList(issue) {
   if (!facts.length) return '';
   return facts.map((f) => {
     if (f.omitted_value) return `<span class="evidence">${esc(readableFactLabel(f.source_field))}: label printed without a value.</span>`;
-    if (f.privacy_redacted) return `<span class="evidence">Creditor identity matched from the report.</span>`;
+    if (f.privacy_redacted) {
+      const label = /\bMember Number\b/i.test(f.source_field || '') ? 'Member number matched from the report'
+        : /Member Name/i.test(f.source_field || '') ? 'Reporting member matched from the report'
+          : 'Creditor identity matched from the report';
+      return `<span class="evidence">${esc(label)}.</span>`;
+    }
     if (f.definition_source) {
       const source = f.definition_source;
       return `<span class="evidence">${source.kind === 'HISTORY_PERIOD' ? 'What the payment period means' : 'What the payment code means'}: ${esc(readableFactLabel(f.source_field))} — <b>${esc(f.normalized_value)}</b>. ${esc(source.publisher)}, ${esc(source.title)}, ${esc(source.section)}: ${esc(source.url)}</span>`;
@@ -1652,7 +1660,7 @@ function renderHistory(panel) {
     if (state.step !== 5 || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
     const rows = data.assessments || [];
     const list = rows.length
-      ? `<ul class="plain">${rows.map((r) => `<li>${esc(historyOption(r))} · ${esc(r.jurisdiction || '')} · ${esc(String(r.issue_count))} issue(s) <span class="evidence">assessment recorded ${esc(String(r.recorded_at || '').slice(0, 10))}</span></li>`).join('')}</ul>`
+      ? `<ul class="plain">${rows.map((r) => `<li>${esc(historyOption(r))} · ${esc(r.jurisdiction || '')} · ${esc(String(r.issue_count))} reporting issue(s)${r.information_count ? ` · court time-limit information for ${esc(String(r.information_count))} account(s)` : ''} <span class="evidence">assessment recorded ${esc(String(r.recorded_at || '').slice(0, 10))}</span></li>`).join('')}</ul>`
       : '<p class="evidence">No assessment is recorded for this account yet. Open a case, upload a report and run the checks.</p>';
     const options = rows.map((r) => `<option value="${esc(r.result_id)}">${esc(historyOption(r))}</option>`).join('');
     el('history-body').innerHTML = `

@@ -462,10 +462,7 @@ const LIMITATION_WORDING = Object.freeze({
     return `${printed} In ${e.jurisdiction_label}, the usual court time limit for a claim like this is ${e.basic_period_years} years from when the claim is discovered.${deadline}${checked}${reportPart} The dates suggest this debt may be outside the time limit for a court claim.${transfer}`;
   },
   uncertainty: (i) => {
-    const e = i.evidence || {};
-    const unknowns = (e.unknown_conditions || []).map((u) => `• ${u}`).join(' ');
-    const since = e.uncertainty_since_report ? ` ${e.uncertainty_since_report}` : '';
-    return `This is about whether a court claim could still be started, not about whether the credit bureau may report the entry. An expired court time limit alone does not require the bureau to remove a debt. A court claim filed in time, a judgment, or a qualifying payment or written acknowledgment may change the answer. The report does not establish these facts: ${unknowns || '• the conditions this assessment depends on'}.${since}`;
+    return 'Court time limits and credit-report time limits are separate. This information uses the dates printed on your report. Those dates alone do not prove whether someone can still sue. An expired court time limit alone does not require the bureau to remove a debt. This is information for you, not a dispute reason.';
   }
 });
 
@@ -774,6 +771,7 @@ function projectConsumerIssue(issue, label = consumerLabel(issue)) {
     out.eligible = false;
     out.request_type = null;
     out.request_wording = null;
+    out.uncertainty = LIMITATION_WORDING.uncertainty(issue);
   }
   for (const field of ['explanation', 'uncertainty', 'request_wording']) {
     if (Object.hasOwn(out, field)) out[field] = consumerText(out[field]);

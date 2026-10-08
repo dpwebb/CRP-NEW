@@ -19,6 +19,15 @@
 const { SUPPORT } = require('./formats.cjs');
 const { GENERAL_PRESENTATION_ID } = require('./general-intake.cjs');
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
+const crypto = require('node:crypto');
+
+// Older persisted readers retained the exact page signature as text. Compare it
+// with the new private digest without changing equivalent-page retention rules.
+function privatePageSignature(value) {
+  if (!value) return '';
+  return /^PAGE-SHA256-[a-f0-9]{64}$/.test(value) ? value
+    : 'PAGE-SHA256-' + crypto.createHash('sha256').update(String(value)).digest('hex');
+}
 
 function isAdmitted(fileRow) {
   const e = fileRow && fileRow.extraction;
@@ -165,7 +174,7 @@ function assemble(files) {
      SUSPECTED duplicate, never a confirmed discard. It is retained with an explicit flag and an audit entry;
      only byte-identical content (stored_sha256) is confirmed and skipped. */
   const contentSig = (f) => {
-    const sigs = (f.extraction && Array.isArray(f.extraction.page_signatures) ? f.extraction.page_signatures : []).slice().sort();
+    const sigs = (f.extraction && Array.isArray(f.extraction.page_signatures) ? f.extraction.page_signatures : []).map(privatePageSignature).sort();
     return sigs.length ? sigs.join('\u0001') : null;
   };
   const sigSeen = new Map();
@@ -234,6 +243,15 @@ function assemble(files) {
     const reference = ownReference ? JSON.parse(JSON.stringify(ownReference)) : null;
     if (reference?.location && !reference.location.file_id) reference.location = { ...reference.location, file_id: fileRow.file_id };
     const referenceRecord = { source_file_id: fileRow.file_id, report_reference_date: reference };
+    const factSources = record.fact_sources ? JSON.parse(JSON.stringify(record.fact_sources)) : record.fact_sources;
+    for (const source of Object.values(factSources || {})) {
+      if (!source || typeof source !== 'object') continue;
+      if (source.record_index != null) {
+        if (source.record_index === record.record_index) source.record_index = index;
+        else source.trusted = false;
+      }
+      if (source.location && !source.location.file_id) source.location.file_id = fileRow.file_id;
+    }
     return Object.assign({}, record, {
       record_index: index,
       source_file_id: fileRow.file_id,
@@ -248,7 +266,8 @@ function assemble(files) {
       location: Object.assign({}, loc, { file_id: fileRow.file_id }),
       /* Deep-copy the mutable fact surfaces so a cross-file merge never mutates the original per-file record. */
       printed: record.printed ? JSON.parse(JSON.stringify(record.printed)) : record.printed,
-      facts: record.facts ? JSON.parse(JSON.stringify(record.facts)) : record.facts
+      facts: record.facts ? JSON.parse(JSON.stringify(record.facts)) : record.facts,
+      fact_sources: factSources
     });
   }
 

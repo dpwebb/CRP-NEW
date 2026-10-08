@@ -28,6 +28,17 @@
 
 const CHECK_ID = 'LIMITATION-PERIOD-COURT-CLAIM';
 const CHECK_CLASS = 'LIMITATION_ASSESSMENT';
+const { sourceForField } = require('./report-fact-sources.cjs');
+
+function isCollectionKind(record) {
+  return Boolean(record && ['COLLECTION_ACCOUNT', 'GENERAL_COLLECTION'].includes(record.kind));
+}
+
+function collectionEntry(record) {
+  return Boolean(isCollectionKind(record)
+    && record.location?.trusted !== false
+    && (!Object.hasOwn(record.fact_sources || {}, 'collection.entryContext') || sourceForField(record, 'collection.entryContext')));
+}
 
 const ENGLAND_WALES_SIMPLE_CONTRACT = Object.freeze({
   country_code: 'GB', basic_period_years: 6, ultimate_period_years: null,
@@ -79,10 +90,10 @@ const PARAMETERS = Object.freeze({
        COLLECTION ACTIVITY alone does NOT restart a limitation period and is never described as doing so: only a
        qualifying payment or an acknowledgment of the debt can restart the clock, and every other later event is
        listed separately as something that changes the picture WITHOUT restarting it. */
-    uncertainty_since_report: 'This report was issued before the date shown above. A later payment of this debt, or an admission of it in writing, can restart the time limit for a court claim. Other things since then change the picture without restarting it — a court claim may already have been started, a judgment may already exist, the debt may have been sold or placed with a collection agency, or the entry may have been corrected. The report cannot show any of those later events, so the dates you see may no longer be the whole picture.',
+    uncertainty_since_report: 'This report was issued before the date shown above. A payment or a signed written admission made before the court deadline expired can restart it. A sale or transfer to another collection agency does not restart it. An existing court case or judgment can affect the answer. This is information about the dates shown, not a reason by itself to remove the debt from your report.',
     unknown_conditions_plain: [
       'when the creditor first knew, or ought to have known, about the missed payments',
-      'whether a later payment or a written admission of the debt restarted the time',
+      'whether a payment or signed written admission made before the deadline expired restarted it',
       'whether a court claim was already started, or a judgment already obtained, on this debt',
       'whether a bankruptcy, a stay or another court order affects this debt'
     ]
@@ -303,7 +314,10 @@ function labelledDates(record) {
   const out = [];
   const add = (label, factKey, printedLabel, basis) => {
     const fromFact = typeof facts[factKey] === 'string' ? facts[factKey] : null;
-    const reading = printedLabel ? printed[printedLabel]
+    const direct = isCollectionKind(record) ? sourceForField(record, factKey) : null;
+    if (isCollectionKind(record) && !direct) return;
+    const reading = direct ? { raw: direct.raw_value, normalized: direct.normalized_value, location: direct.location }
+      : printedLabel ? printed[printedLabel]
       : (factKey === 'overdue.originalListingDate' && record && record.kind === 'OVERDUE_ACCOUNT'
         ? { raw: record.raw_value, normalized: record.normalized_value, location: record.location } : null);
     const iso = fromFact || (reading && reading.normalized) || null;
@@ -376,6 +390,8 @@ function claimNarrativeEvidence(record) {
 function printedClaimView(record) {
   const facts = (record && record.facts) || {};
   const indicators = [];
+  if (isCollectionKind(record) && !collectionEntry(record)) return { has_printed_claim_indicator: false,
+    indicators, amounts: { balance: facts['account.balance'] ?? null, past_due: facts['account.pastDueAmount'] ?? null } };
   const ratings = claimRatingEvidence(record);
   if (ratings.length) {
     indicators.push({ kind: 'PRINTED_COLLECTION_OR_WRITE_OFF_RATING', count: ratings.length, example: ratings[ratings.length - 1] });
@@ -390,6 +406,12 @@ function printedClaimView(record) {
   }
   const pastDue = typeof facts['account.pastDueAmount'] === 'number' ? facts['account.pastDueAmount'] : null;
   const balance = typeof facts['account.balance'] === 'number' ? facts['account.balance'] : null;
+  const collectionAmountField = balance !== null ? 'account.balance' : 'account.amount';
+  const collectionAmount = facts[collectionAmountField];
+  if (collectionEntry(record) && typeof collectionAmount === 'number' && collectionAmount > 0
+    && sourceForField(record, collectionAmountField)) {
+    indicators.push({ kind: 'PRINTED_COLLECTION_ENTRY', amount: collectionAmount, location: record.location || null });
+  }
   if (pastDue !== null && pastDue > 0) indicators.push({ kind: 'PRINTED_AMOUNT_PAST_DUE', amount: pastDue });
   if (typeof facts['account.status'] === 'string' && /collection|charge|write|default|delinquent/i.test(facts['account.status'])) {
     indicators.push({ kind: 'PRINTED_STATUS', value: facts['account.status'] });
@@ -472,7 +494,11 @@ function assessRecord(record, params, clock) {
       missing_prerequisite: 'a printed indicator of an outstanding claim (an amount past due, a collection or charge-off action, or a default status)'
     };
   }
-  const dates = labelledDates(record);
+  const allDates = labelledDates(record);
+  // A collection's assignment/listing date describes reporting activity, not a
+  // new claim or payment. Keep it as context without restarting the screen.
+  const dates = isCollectionKind(record) ? allDates.filter(d => [START_DATE_BASIS.FIRST_DELINQUENCY,
+    START_DATE_BASIS.COLLECTION_DELINQUENCY, START_DATE_BASIS.LAST_PAYMENT].includes(d.basis)) : allDates;
   if (!dates.length) {
     return {
       withheld: true,
@@ -535,7 +561,8 @@ function assessRecord(record, params, clock) {
         ? (params.start_is.startsWith('DISCOVERY') ? 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_DISCOVERY' : 'LATEST_PRINTED_SCREENING_DATE_NOT_LEGAL_ACCRUAL')
         : 'LATEST_PRINTED_DATE_THAT_CAN_BEAR_THIS_RELATION_TO_THE_CLAIM'
     }),
-    other_printed_dates: dates.slice(0, -1).map((d) => ({ label: d.label, iso: d.iso, basis: d.basis, location: d.location })),
+    other_printed_dates: allDates.filter(d => d !== latest).map((d) => ({ label: d.label, iso: d.iso, basis: d.basis, location: d.location,
+      ...(isCollectionKind(record) && !dates.includes(d) ? { role: 'COLLECTION_ACTIVITY_NOT_A_RESTART' } : {}) })),
     elapsed_years: elapsed,
     elapsed_days: elapsedDays,
     period_ends: periodEnd,

@@ -9,7 +9,7 @@ const CHECKS = Object.freeze([
   ['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT', 'Balance on a credit card or line of credit with a credit limit of $0'],
   ['COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY', 'Payment history that does not match other account details'],
   ['COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY', 'Conflicting details about who is responsible for an account'],
-  ['COMMON-ERROR-DUPLICATE-REPORTING', 'Possible duplicate accounts'],
+  ['COMMON-ERROR-DUPLICATE-REPORTING', 'Duplicate account and collection entries'],
   ['COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING', 'Similar accounts to review'],
   ['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'Account first reported before it was opened'],
   ['COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'First missed-payment date moved to a later date'],
@@ -21,8 +21,9 @@ const CHECKS = Object.freeze([
   ['COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID', 'Paid or settled account still shown as unpaid'],
   ['COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', 'Last-payment or first missed-payment date errors'],
   ['COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', 'Original debt and its collection both showing money owed'],
-  ['LIMITATION-PERIOD-COURT-CLAIM', 'Time limits for court claims and keeping debts on credit reports']
-].map(([check_id, label]) => Object.freeze({ check_id, label })));
+  ['LIMITATION-PERIOD-COURT-CLAIM', 'Court deadlines and credit-report time limits',
+    'A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.']
+].map(([check_id, label, description]) => Object.freeze({ check_id, label, ...(description ? { description } : {}) })));
 
 function checklistFor(evaluation) {
   const common = evaluation && evaluation.common_errors && evaluation.common_errors.performed || [];

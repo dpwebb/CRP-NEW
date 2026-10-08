@@ -134,6 +134,7 @@ async function run(service, check) {
   check.equal(tied.teaser.issue_id, 'aaa', 'equal severity breaks on the stable issue id');
   check.deepEqual(results.summariseAssessment({ issues: [] }), {
     distinct_total: 0,
+    information_total: 0,
     by_confidence: { violation: 0, probable_violation: 0, potential: 0 },
     categories_sum_to_total: true,
     severity_order: results.SEVERITY_ORDER.slice(),
@@ -155,7 +156,7 @@ async function run(service, check) {
   check.equal(aView.assessment_access.complete_assessment, true, 'the one-time unlock opens the report it was bought for');
   check.equal(aView.assessment_access.complete_assessment_via, 'ONE_TIME_CREDIT', 'on the recorded one-time authority');
   check.ok(aView.result && Array.isArray(aView.result.issues), 'and the complete assessment is served');
-  check.equal(aView.result.issues.length, aView.assessment_summary.distinct_total, 'the distinct count equals the merged issue list, so no rule inflates it');
+  check.equal(aView.result.issues.filter(issue => !issue.limitation_concern).length, aView.assessment_summary.distinct_total, 'the distinct reporting count excludes court information and merged rule duplicates');
   check.equal((await service.request('GET', `/api/cases/${caseA.case_id}/report-download`, { token: once.token })).status, 200, 'and the assessment download is allowed');
   const otherEvaluation = await service.request('POST', `/api/cases/${caseB.case_id}/evaluate`, { token: once.token });
   const bView = (await service.request('GET', `/api/cases/${caseB.case_id}`, { token: once.token })).json.view;
