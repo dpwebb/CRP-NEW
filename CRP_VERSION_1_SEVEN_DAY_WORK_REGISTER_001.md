@@ -626,3 +626,25 @@ Integrated DN131/DP51/DW34 focus: **216/0/0**. Frozen product: **11,006/0/0**, a
 Delivered repairs are **IMPLEMENTED_AND_TESTED**. Four US month readings remain **OPEN**, with no source coercion or inferred dates; clearer/native-text US history has been requested. Canada, UK and AU absent/ambiguous fields remain source dependencies, not populated values. All 82 and independent supported packets remain intact. **Staging PENDING; production OPEN.** No push or deployment occurred. Details: `CRP_READER_GAP_COMPLETION_2026_10_07.md`.
 
 Both Batch 57 managed writer worktrees are archived with recoverable Git snapshots after serial integration. Needed source/diagnostic proof remains in main or external local temporary storage; no needed ignored files were lost.
+
+## Batch 58 — owner gap note and staging release, October 8, 2026
+
+Authority: the owner's explicit instruction, "make a note of these gaps and commit-push-deploy to staging." Root owns the note, commit, push, packaging, staging activation and verification. This authorizes the existing staging release procedure; production cutover and live billing remain separate. Preserve all 82 jurisdictions, the active common-error checklist, consumer **VIOLATION** wording, existing consumer data and release safeguards.
+
+### Remaining production closeout work
+
+| Gap | Concrete completion evidence | Current status |
+| --- | --- | --- |
+| Current UK report evidence | Exercise a current bureau report or official layout-specific example/specification through relevant extraction, a supported common-error check and its selected packet. The dedicated GB family currently records historical June 2007 demonstration evidence; the working general GB path does not establish current dedicated-family support. | OPEN source/evidence dependency; no claim that UK intake is wholly unavailable. |
+| Latest candidate on staging | Ship the frozen Batch 57 build, verify all manifest/archive/host hashes and exact public health identity, retain the previous release and restricted snapshot, and run affected hosted smoke. | AUTHORIZED, execution pending. Candidate `crp-v1-0680404381fe7a71`; staging before activation is `crp-v1-a9740d383ab0bf94`. |
+| Complete current-build paid consumer journey | Verify legitimate test-mode checkout, payment/webhook confirmation and entitlement; then consumer selection, correspondence review/edit, approval and usable subscriber packet download. Verify continuing owned-report comparison/re-aging on the current served build. Reuse all-82 automated loops and representative distinct reader/journey paths rather than 82 bureau-by-jurisdiction browser runs. | PENDING hosted acceptance. Free-assessment smoke and an unpaid 402 refusal alone do not establish the paid journey. |
+| Release-check/evidence reconciliation | Align current served-build evidence and readiness criteria with the controlling owner scope. Correct the obsolete exact `No issue found` wording expectation and reconcile generic/hardcoded OPEN inventory states with demonstrated supported-path implementation. Do not manually fabricate closure or reinstate retired independent statutory checks. | OPEN bounded release closeout; the recorded gate count is not a count of missing application features. |
+| Production release controls and cutover | Verify live Stripe account/price/webhook/key configuration without requiring a live charge, durable private storage, backup restoration, rollback and hosted capacity. Record the exact accepted build, production host, owner go-live authorization and deployment provenance. Configuration availability has not been disproved by local unset environment flags. | PENDING production verification and authorization; production readiness remains OPEN. |
+
+### Reader boundaries retained separately
+
+Four US history month readings remain unresolved: two `Msy`/`May` conflicts, one `Ape`/`Apr` conflict and one below-threshold `Mar`. All 56 actual history codes are read; 52 cells have usable dates. Some accepted Canadian, UK and Australian source fields are absent, blank or lack an exact own period. These restrict particular checks; no report value is invented and perfect whole-report extraction is not an automatic launch prerequisite. The fresh review found no additional failed mapping in the supported checklist paths. Exact limits remain in `CRP_READER_GAP_COMPLETION_2026_10_07.md`.
+
+### Frozen release evidence and execution boundary
+
+Reuse Batch 57's passing **11,006/0/0**, **126 completed sections**, **211 matching tested-source hashes**, source audit **23/0/0**, **17/17 closure records** and **92 shipped files**. Manifest digest: `0680404381FE7A713D02FC845799D439ED448B3D5B4F89BC1255F3E8A449C461`. Packaging must revalidate current source and shipped hashes before activation. This note changes no executable source, finding predicate, consumer wording, price or billing configuration. Record measured staging outcomes after execution; do not close production gaps merely by deploying.
