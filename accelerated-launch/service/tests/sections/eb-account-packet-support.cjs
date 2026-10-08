@@ -133,11 +133,32 @@ async function run(t, check) {
   }
   check.equal((await t.request('POST', '/api/cases', auth({ country: 'CA', region: 'CA-NS', bureau: 'EXPERIAN' }))).status, 400, 'bureau from a different country is rejected');
   await mixedBureau(t, check);
+  await mixedForms(t, check);
   check.ok(!t.logText().includes(PROFILE.full_name) && !t.logText().includes('Fictional ID'), 'contact and ID content do not reach logs');
   const deleted = await t.request('DELETE', '/api/account', { token: actor.token });
   check.equal(deleted.status, 200, 'account removal available after supporting uploads');
   check.ok(!t.service.store.blobExists(identity) && !t.service.store.blobExists(passport) && !t.service.store.blobExists(unused), 'account deletion removes retained support bytes');
   return { http_ownership: true, selected_document_archive: true, contact_and_document_approval_binding: true, sourced_bureau_purpose_channel: true };
+}
+async function mixedForms(t, check) {
+  const actor = await t.account('mixed-forms@example.test');
+  const id = (await t.request('POST', '/api/cases', { token: actor.token, body: { country: 'CA', region: 'CA-NS', bureau: 'EQUIFAX' } })).json.case.case_id;
+  const base = '/api/cases/' + id;
+  const bytes = buildPdf({ pages: [{ lines: ['Equifax Consumer Credit Report', 'Report Date: June 12, 2026',
+    'Creditor A Balance $100 Opened 01/01/2020 Closed 01/01/2019',
+    'Collection Agency ABC Date of First Delinquency 01/01/2015 Last Payment Date 01/01/2015'] }] });
+  await t.request('POST', base + '/files', { token: actor.token, body: { originalFilename: 'fictional-mixed.pdf', declaredBytes: bytes.length, mimeType: 'application/pdf', contentBase64: bytes.toString('base64') } });
+  await t.request('POST', base + '/evaluate', { token: actor.token });
+  const view = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
+  check.ok(view.eligible_issues.some(issue => /credit account/i.test(issue.record_kind)), 'mixed report has a supported ordinary account issue');
+  check.ok(view.eligible_issues.some(issue => /collection/i.test(issue.record_kind)), 'mixed report has a supported collection issue');
+  await t.request('POST', base + '/packet/select', { token: actor.token, body: { issue_ids: view.eligible_issues.map(issue => issue.issue_id) } });
+  const ready = await t.preparePostalPacket(actor, id);
+  check.deepEqual(ready.packet.required_form_manifest.map(form => form.filename).sort(), ['ca-equifax-account.pdf', 'ca-equifax-public-record.pdf'], 'mixed selected kinds require both relevant official Equifax forms');
+  check.equal((await t.request('POST', base + '/packet/approve', { token: actor.token, body: { reviewed_version: ready.packet.preview_version } })).status, 200, 'mixed mail packet approves its reviewed complete form set');
+  const download = await t.request('GET', base + '/packet-download', { token: actor.token });
+  const entries = unzipStored(download.bytes);
+  check.ok(entries.some(entry => entry.name === 'ca-equifax-account.pdf') && entries.some(entry => entry.name === 'ca-equifax-public-record.pdf'), 'actual mixed packet archive includes both required forms');
 }
 async function mixedBureau(t, check) {
   const actor = await t.account('mixed-packet@example.test'), auth = body => ({ token: actor.token, body });
