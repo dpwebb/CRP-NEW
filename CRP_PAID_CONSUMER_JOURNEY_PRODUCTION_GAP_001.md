@@ -7,7 +7,7 @@ Owner language requirement: the user base has a junior-high education. Use short
 
 Gap ID: **GAP-PAID-CONSUMER-JOURNEY-001**. Outcomes: INTAKE, PACKETS, PURCHASE, TRUST_AND_RELEASE. This consolidates demonstrated consumer defects under the existing approved scope; it does not duplicate the existing packet, billing, account or all-82 blockers.
 
-Implementation: **FOLLOW-UP OPEN**. Staging verification: **FOLLOW-UP OPEN**. Production readiness: **OPEN**.
+Implementation: **CLOSED**. Staging verification: **FOLLOW-UP OPEN**. Production readiness: **OPEN**.
 
 ## Owner correction: mail-in disputes
 
@@ -29,6 +29,18 @@ The consumer path is a paper dispute mailed to the selected bureau. Do not offer
 | 10 | Download requires manual text formatting and assembly to print. | Produce readable paginated correspondence/evidence PDF, a clear print action and attachment checklist, preserving original attachment bytes and approval/entitlement binding. Reduce duplicate technical presentation without dropping selected facts or source locations. Render and inspect actual PDF output. | IMPLEMENTATION CLOSED: CB, EB, BW |
 
 Returning consumers' saved reports must also be recognisable by bureau/date/file identity; this is included in the navigation repair.
+
+## October 8 authorized report-copy repair — implementation closed, staging acceptance pending
+
+The owner authorized completing the appraisal's missing original report copies. The selected dispute now offers only its source-linked earlier/current report files. Each copy shows its date, filename, whole-report scope, total pages and relevant pages, and can be opened before inclusion. Copies are included only after an explicit choice and Save. Their exact original bytes enter the ZIP, and the reviewed letter lists the copies and pages to print. No page excerpt is guessed, and a whole private report is never attached silently.
+
+Approval binds chosen file custody and material. Changed/deleted chosen originals refuse approval, printing and download. An explicit consumer reset clears stale copy choices; Save cannot silently discard a damaged chosen original. Issue changes remove valid copies that no longer support the selection. Existing supported packets with no stored originals acquire no new finding or approval prerequisite.
+
+Serially integrated source commits: `0cadf2b`, `696f25b`, `59226a8`, `3dcf51f`. Root affected checks: EH 122, DG 321, EC 45, BO 42 — **530 passed, 0 failed, 0 skipped**. The earlier root focused run's DG legacy fixture failure is retained; the repair safely handles that fixture's absent file collection without changing any finding predicate. Separate writer proof covers custody/image/continuation/recovery and actual browser whole two-page report choices. Writer totals overlap and are not added to root totals.
+
+Frozen runtime manifest: **15C68FA73C47BC7681E6507C336B8E3D2DA1FC8282E3D5AB7A20625BECA6C68D**, **109 files**, candidate **crp-v1-15c68fa73c47bc76**. Corrected full regression passed **12,058/0/0**, with **132 completed sections**, **228 tested-source hashes**, zero drift/unrun and **17/17 re-derived implementation closures**. Runner wall time was **1,063,668 ms**; accumulated section duration was **980,236 ms**. Current-source staging acceptance, visual downloaded-packet review and provider-first fictional-fixture cleanup remain pending. Production remains OPEN.
+
+The first frozen full follow-up is retained honestly: **12,006 passed, 12 failed, 0 skipped**, **978,993 ms**. Failures were confined to DA/DI/BP's older sentence expectations; their wording-based selectors also prevented the existing packet branches from running. The bounded test correction preserves confidence, dates, account evidence and delivery assertions, selects duplicate/responsibility issues by existing public evidence fields, and checks the new plain sentences. Corrected focused DA **52/0/0**, DI **194/0/0**, BP **42/0/0** passed. No runtime rule was changed for this repair. The corrected full run passed; its retained log is `accelerated-launch/service/out/batch66/final-report-copies-corrected-full-regression.log`. Earlier failures remain development history, not current acceptance evidence.
 
 ## Execution plan — Batch 66 in the single work register
 

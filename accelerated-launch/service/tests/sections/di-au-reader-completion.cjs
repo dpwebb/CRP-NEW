@@ -276,7 +276,7 @@ async function run(t, check) {
   check.equal((await t.request('POST', `/api/cases/${caseId}/evaluate`, { token: owner.token })).status, 201, 'the uploaded report reaches checklist assessment');
   const view = (await t.request('GET', `/api/cases/${caseId}/packet`, { token: owner.token })).json.view;
   const selectable = (view.eligible_issues || []).find((i) => i.rule_assessment?.requirement ===
-    'One account and period cannot carry two contradictory report-defined payment statuses.');
+    'One report cannot give two conflicting payment statuses for the same account and period.');
   check.ok(selectable, 'the uploaded graphical history breach reaches the packet selector');
   if (selectable) {
     check.equal(selectable.consumer_label, 'VIOLATION', 'the selector displays VIOLATION');

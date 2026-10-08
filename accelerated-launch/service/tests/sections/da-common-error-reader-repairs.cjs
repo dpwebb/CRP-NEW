@@ -17,7 +17,7 @@ const fixtures = require('../../../../internal-validation/ca-ns-last-payment-six
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
 const DATE_CHECK = 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE';
-const FUTURE_REQUIREMENT = 'A payment or first delinquency cannot occur after the report was issued.';
+const FUTURE_REQUIREMENT = 'A payment or first missed payment cannot happen after the report date.';
 
 function pr01(options = {}, amendView) {
   const model = fixtures.specimen({ requestDate: options.requestDate || '2026/06/12',
@@ -144,7 +144,7 @@ async function run(t, check) {
     ...record.printed, 'Opened Date': { label: 'Opened Date', raw: '2028/01/01', normalized: '2028-01-01',
       location: { page: 16, line: 3 } }
   } }, { region: 'CA-MB', presentation: 'PR-01' });
-  check.equal(beforeOpening?.requirement, 'A payment or first delinquency cannot predate the opening of its account.',
+  check.equal(beforeOpening?.requirement, 'A payment or first missed payment cannot happen before the account opened.',
     'a before-opening conflict retains its own requirement');
 
   const owner = await t.unpaidAccount('da-reader-owner@example.test');
@@ -177,7 +177,7 @@ async function run(t, check) {
     check.equal(downloaded.status, 200, 'the approved future-date packet downloads');
     check.ok(downloaded.text.includes('June 12, 2026') && downloaded.text.includes('01/01/2027')
       && downloaded.text.includes(FUTURE_REQUIREMENT), 'the downloaded packet carries both decisive dates and the correct rule');
-    check.equal(downloaded.text.includes('predate the opening'), false,
+    check.equal(downloaded.text.includes('cannot happen before the account opened'), false,
       'the future-date packet does not attribute the conflict to the unrelated opening-date rule');
   }
   return { pr01_fixture: 'fictional structural reader input; pinned report admission unchanged',

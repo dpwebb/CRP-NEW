@@ -124,8 +124,8 @@ async function run(service, check) {
   const dupIssues = dup.iss.filter((i) => i.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING');
   check.equal(dupIssues.length, 1, 'a corroborated potential duplicate produces one issue');
   check.equal(dupIssues[0].classification, 'POTENTIAL_VIOLATION', 'the source-linked duplicate concern is a potential violation');
-  check.ok(/may be the same account reported twice/.test(dupIssues[0].explanation), 'with qualified potential-duplicate wording');
-  check.ok(/unconfirmed/.test(dupIssues[0].uncertainty), 'stating the duplication is unconfirmed');
+  check.ok(/may list the same account twice/.test(dupIssues[0].explanation), 'with qualified potential-duplicate wording');
+  check.ok(/original lender and a debt collector/.test(dupIssues[0].uncertainty) && /reports from different dates/.test(dupIssues[0].uncertainty), 'retaining the stated benign explanations for matching entries');
 
   const noCorroboration = pipeline(DUP_NO_CORROBORATION);
   check.equal(noCorroboration.iss.filter((i) => i.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING').length, 0, 'same identity with contradicting balances is never promoted as a duplicate');
@@ -135,7 +135,7 @@ async function run(service, check) {
   const respIssues = resp.iss.filter((i) => i.check_id === 'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY');
   check.equal(respIssues.length, 1, 'conflicting responsibility labels on the same corroborated account produce one issue');
   check.equal(respIssues[0].classification, 'PROBABLE_VIOLATION', 'the two located responsibility labels support a probable violation');
-  check.ok(/two different responsibility labels/.test(respIssues[0].explanation), 'explaining the conflict');
+  check.ok(/two different labels for who is responsible/.test(respIssues[0].explanation), 'explaining the conflict');
   check.ok(/joint account|authorized-user/.test(respIssues[0].uncertainty), 'with the benign alternatives');
 
   /* ---- 4. HTTP end-to-end: balance/past-due through the packet path. ---- */
@@ -162,11 +162,11 @@ async function run(service, check) {
 
   /* ---- 5. HTTP end-to-end: potential duplicate through the packet path (qualified wording). ---- */
   const dupOwner = await service.unpaidAccount('b2-dup@example.test');
-  const dupRun = await httpPacket(service, dupOwner, DUP, 'duplicate.pdf', (i) => i.explanation.includes('reported twice'));
+  const dupRun = await httpPacket(service, dupOwner, DUP, 'duplicate.pdf', (i) => i.evidence?.duplicate_of_record != null);
   check.equal(dupRun.up.status, 201, 'the duplicate report uploads');
   check.equal(dupRun.ev.status, 201, 'and evaluates');
   check.ok(dupRun.issue, 'the potential duplicate is offered for selection');
-  check.ok(dupRun.issue.uncertainty.includes('unconfirmed'), 'with qualified potential-duplicate wording in the review');
+  check.ok(dupRun.issue.uncertainty.includes('original lender and a debt collector') && dupRun.issue.uncertainty.includes('reports from different dates'), 'with qualified potential-duplicate wording in the review');
   check.equal(dupRun.dl.status, 200, 'the potential-duplicate packet downloads');
   check.ok(/reported twice/.test(comparableText(dupRun.dl.text)), 'with the qualified potential-duplicate request');
   check.ok(/verify whether/.test(comparableText(dupRun.dl.text)), 'and the recorded verification wording');
@@ -174,13 +174,13 @@ async function run(service, check) {
 
   /* ---- 6. HTTP end-to-end: responsibility conflict through the packet path. ---- */
   const respOwner = await service.unpaidAccount('b2-resp@example.test');
-  const respRun = await httpPacket(service, respOwner, RESP, 'responsibility.pdf', (i) => i.explanation.includes('responsibility labels'));
+  const respRun = await httpPacket(service, respOwner, RESP, 'responsibility.pdf', (i) => i.evidence?.other_responsibility != null);
   check.equal(respRun.up.status, 201, 'the responsibility report uploads');
   check.equal(respRun.ev.status, 201, 'and evaluates');
   check.ok(respRun.issue, 'the responsibility conflict is offered for selection');
   check.ok(respRun.issue.uncertainty.includes('joint account'), 'with the benign alternatives in the review');
   check.equal(respRun.dl.status, 200, 'the responsibility packet downloads');
-  check.ok(/responsibility labels/.test(comparableText(respRun.dl.text)), 'with the factual verification request');
+  check.ok(/labels for who is responsible/.test(comparableText(respRun.dl.text)), 'with the factual verification request');
   check.ok(/verify the responsibility/.test(comparableText(respRun.dl.text)), 'and the recorded request wording');
 
   /* ---- 7. Editing wording after approval invalidates the approval (download refused, not the older packet). ---- */
