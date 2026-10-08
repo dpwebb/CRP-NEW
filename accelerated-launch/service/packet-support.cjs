@@ -19,7 +19,7 @@ function normalize(input, country) {
   if (input.no_ssn_issued && String(input.identity_reference || '').trim()) throw new ServiceError('INVALID_REQUEST');
   return { ...input, bureau, document_ids: [...input.document_ids].sort(), identity_reference: (input.identity_reference || '').trim(), other_identity_details: (input.other_identity_details || '').trim(), document_dates: Object.fromEntries(Object.entries(dates).sort()) };
 }
-function snapshot(store, actor, country, settings) {
+function snapshot(store, actor, country, settings, mixed) {
   if (!settings) return null;
   const profile = settings.use_account_profile ? profiles.getProfile(store, actor) : {};
   const requirements = bureaus.requirements(country, settings.bureau, settings);
@@ -30,14 +30,17 @@ function snapshot(store, actor, country, settings) {
   if (settings.channel !== 'POSTAL') missing.push('Save the mail checklist before you approve this packet.');
   if (unavailable) missing.push('A selected document was changed or removed. Choose its current copy.');
   const form_assets = forms.materialForms(country, settings.bureau, settings.purpose);
+  if (mixed && country === 'CA' && settings.bureau === 'EQUIFAX' && settings.purpose === 'ACCOUNT') {
+    form_assets.push(...forms.materialForms(country, settings.bureau, 'PUBLIC_RECORD'));
+  }
   return { settings, profile, documents: selected, requirements, form_assets, unavailable, missing };
 }
 function address(profile) {
   return ['address_line1', 'address_line2', 'city', 'region', 'postal_code', 'country'].map(field => profile[field]).filter(Boolean).join(', ');
 }
-function enrich(store, actor, country, packet) {
+function enrich(store, actor, country, packet, mixed) {
   if (!packet || !packet.support) return packet;
-  const support = snapshot(store, actor, country, packet.support);
+  const support = snapshot(store, actor, country, packet.support, mixed);
   const correspondence = { ...packet.correspondence };
   if (packet.support.use_account_profile) {
     correspondence.consumer_name = support.profile.full_name || '';

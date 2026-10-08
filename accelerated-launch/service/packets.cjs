@@ -46,6 +46,11 @@ function purposeFor(selected) {
   const publicRecord = kinds.some(kind => /collection|judgment|bankruptcy|public record|tax lien/.test(kind));
   return { purpose: account ? 'ACCOUNT' : publicRecord ? 'PUBLIC_RECORD' : null, mixed: account && publicRecord };
 }
+function enrichedCurrentPacket(store, actor, country, caseId) {
+  const packet = currentPacket(store, caseId), row = latestResult(store, caseId);
+  const selected = eligibleIssues(row).filter(issue => packet?.selected_issue_ids?.includes(issue.issue_id));
+  return support.enrich(store, actor, country, packet, purposeFor(selected).mixed);
+}
 function purposeMismatch(country, selected, settings) {
   if (!settings || country !== 'CA' || settings.bureau !== 'EQUIFAX') return false;
   const expected = purposeFor(selected);
@@ -193,7 +198,7 @@ function packetView(store, actor, caseId) {
   const owned = cases.requireOwnedCase(store, actor, caseId);
   const row = latestResult(store, caseId);
   const eligible = row ? eligibleIssues(row) : [];
-  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
+  const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
   const identity = row ? reportIdentity(row) : null;
 
   /* The correspondence and its organized evidence, exactly as they will appear in the download, so the consumer
@@ -391,9 +396,9 @@ function requireCorrespondence(packet) {
 
 
 /** Explicitly approve the current version. Requires a non-empty selection bound to the current result. */
-function approvePacket(store, actor, caseId, expectedVersion) {
+function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
   const owned = cases.requireOwnedCase(store, actor, caseId);
-  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
+  const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
   if (!packet || !packet.selected_issue_ids || !packet.selected_issue_ids.length) {
     throw new ServiceError('PACKET_NO_SELECTION');
   }
@@ -407,6 +412,7 @@ function approvePacket(store, actor, caseId, expectedVersion) {
   requirePurpose(owned.country, selected, packet.support);
   /* A usable piece of correspondence needs its necessary details before it can be approved. */
   requireCorrespondence(packet);
+  if (requirePostal && (packet.support?.channel !== 'POSTAL' || !packet.support_snapshot?.requirements?.postal)) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
   return store.update((state) => {
@@ -421,7 +427,7 @@ function approvePacket(store, actor, caseId, expectedVersion) {
 /** Resolve the approved, non-stale selected issues (throws on any stale/ineligible selection). */
 function resolveSelected(store, actor, caseId) {
   const owned = cases.requireOwnedCase(store, actor, caseId);
-  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
+  const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
   if (!packet || !packet.approved_version) throw new ServiceError('PACKET_NOT_APPROVED');
   requireCorrespondence(packet);
   const row = latestResult(store, caseId);
@@ -666,7 +672,7 @@ function packetDownload(store, actor, caseId) {
   const printed = packetPrint(store, actor, caseId);
   const body = printed.body;
   const owned = cases.requireOwnedCase(store, actor, caseId);
-  const packet = support.enrich(store, actor, owned.country, currentPacket(store, caseId));
+  const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
   const forms = support.requiredForms ? support.requiredForms(packet) : [];
   if (packet.support?.document_ids?.length || forms.length) {
     const entries = [{ name: '01-correspondence.pdf', bytes: body }];

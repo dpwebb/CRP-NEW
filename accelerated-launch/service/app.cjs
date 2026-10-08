@@ -620,8 +620,7 @@ function buildCaseHandlers(store, logger) {
     packetApprove: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      require('./packet-support.cjs').requirePostalPacket(packets.packetView(store, actor, params.caseId));
-      packets.approvePacket(store, actor, params.caseId, body.reviewed_version);
+      packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
