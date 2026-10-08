@@ -30,7 +30,7 @@ function pixelPdf(rgb, width, height) {
   return { bytes: Buffer.concat(chunks), region: { id: 'own', page: 1, x0: x, y0: y, x1: x + w, y1: y + h } };
 }
 
-function coloredUnknown(prefixInGutter) {
+function coloredUnknown(prefixInGutter, prefixColor = [0, 0, 0]) {
   const width = 120, height = 50, rgb = Buffer.alloc(width * height * 3);
   const set = (x, y, color) => color.forEach((value, channel) => { rgb[(y * width + x) * 3 + channel] = value; });
   for (let y = 0; y < height; y += 1) for (let x = 0; x < width; x += 1) {
@@ -38,12 +38,18 @@ function coloredUnknown(prefixInGutter) {
   }
   // A dark X is independent of the white glyphs and equals the green background's red channel.
   for (let y = 10; y < 39; y += 1) for (let thickness = 0; thickness < 3; thickness += 1) {
-    set(4 + Math.floor((y - 10) / 2) + thickness, y, [0, 0, 0]);
-    set(18 - Math.floor((y - 10) / 2) + thickness, y, [0, 0, 0]);
+    if (prefixColor) {
+      set(4 + Math.floor((y - 10) / 2) + thickness, y, prefixColor);
+      set(18 - Math.floor((y - 10) / 2) + thickness, y, prefixColor);
+    }
   }
-  for (let y = 12; y < 37; y += 1) for (let x = 42; x < 98; x += 1) {
-    if (x < 47 || x > 92 || y < 17 || y > 31) set(x, y, [255, 255, 255]);
-  }
+  const letters = [['01110', '10001', '10001', '10001', '10001', '10001', '01110'],
+    ['10001', '10010', '10100', '11000', '10100', '10010', '10001']];
+  letters.forEach((rows, letter) => rows.forEach((row, yy) => [...row].forEach((bit, xx) => {
+    if (bit === '1') for (let dy = 0; dy < 4; dy += 1) for (let dx = 0; dx < 4; dx += 1) {
+      set(48 + letter * 28 + xx * 4 + dx, 10 + yy * 4 + dy, [255, 255, 255]);
+    }
+  })));
   return { rgb, width, height };
 }
 
@@ -57,6 +63,27 @@ function controlledReading(t, change) {
 }
 
 async function run(t, check) {
+  const clearPixels = coloredUnknown(false, null), clearPdf = pixelPdf(clearPixels.rgb, clearPixels.width, clearPixels.height);
+  const clearFile = path.join(t.dataDir, 'fictional-colored-readable-code.pdf'); fs.writeFileSync(clearFile, clearPdf.bytes);
+  const clear = ocr.readPdfRegions(clearFile, [clearPdf.region]).regions[0];
+  check.equal(clear.word?.text.toUpperCase(), 'OK', 'the chromatic source controls start from a physically readable own code');
+  check.ok(clear.word?.recovery.source_ink_channels.some((channel) => channel.source_channel === 'RED'),
+    'accepted recovery retains the source channels supporting its full glyph enclosure');
+  for (const [name, color] of [['red', [255, 0, 0]], ['yellow', [255, 128, 0]], ['faint-yellow', [100, 128, 0]]]) {
+    const fixture = coloredUnknown(false, color), pdf = pixelPdf(fixture.rgb, fixture.width, fixture.height);
+    const file = path.join(t.dataDir, `fictional-${name}-unknown-prefix.pdf`); fs.writeFileSync(file, pdf.bytes);
+    const region = ocr.readPdfRegions(file, [pdf.region]).regions[0];
+    check.equal(region.word, null, 'a chromatic prefix cannot disappear into a known code in another channel');
+    if (name === 'red') {
+      check.equal(region.reason, 'REGION_HAS_OPPOSITE_POLARITY_INK', 'opposite ink in any source channel rejects the whole region');
+      check.equal(region.physical_features.source_channel, 'GREEN', 'the rejected channel is recorded even though grayscale loses the red mark');
+    } else {
+      check.ok(region.variants.some((variant) => /^BLUE_/.test(variant.polarity)
+        && variant.words.length === 1 && variant.words[0].text.toUpperCase() === 'OK'
+        && variant.words[0].trusted && !variant.covers_source_ink && !variant.own),
+      'same-polarity red-channel prefix ink rejects a trusted incomplete blue-channel reading');
+    }
+  }
   for (const gutter of [true, false]) {
     const fixture = coloredUnknown(gutter), pdf = pixelPdf(fixture.rgb, fixture.width, fixture.height);
     const file = path.join(t.dataDir, `fictional-${gutter ? 'gutter' : 'inside'}-unknown.pdf`);
