@@ -134,6 +134,23 @@ async function run(t, check) {
   check.equal(sectionAlias.records.length, 1, 'a section heading does not split immediate alternate names into separate debt entries');
   check.equal(sourceForField(sectionAlias.records[0], 'account.reported_identity'), null,
     'an immediate alternate name under a collection section is also ambiguous');
+  const compact = read(t, [header.concat([
+    'Collection Agency ABC Balance $500 Past Due $500 Date of First Delinquency 01 June 2010',
+    'Collection Agency DEF Balance $300 Past Due $300 Date of First Delinquency 01 June 2011'
+  ])]);
+  check.equal(compact.records.length, 2, 'successive compact agency rows remain separate collection entries');
+  check.deepEqual(compact.records.map((record) => [record.facts['account.reported_identity'], record.facts['account.balance'],
+    record.facts['account.pastDueAmount'], record.facts['collection.delinquencyDate']]),
+  [['ABC', 500, 500, '2010-06-01'], ['DEF', 300, 300, '2011-06-01']],
+  'compact entry identity, balance, past due and delinquency remain on their own row');
+  check.deepEqual(compact.records.map((record) => sourceForField(record, 'account.balance')?.location.line), [3, 4],
+    'compact balances retain distinct own source lines');
+  const compactAlias = read(t, [header.concat(['Collection Agency ABC', 'Collection Agency Alternate Name', ...collection().slice(1)])]);
+  check.equal(compactAlias.records.length, 1, 'immediate non-colon agency aliases without account facts stay in one entry');
+  check.equal(sourceForField(compactAlias.records[0], 'account.reported_identity'), null,
+    'immediate non-colon alternate agency names remain ambiguous');
+  check.equal(compactAlias.records[0].facts['account.balance'], 606,
+    'the ambiguous non-colon alias retains its own subsequent balance');
 
   const section = read(t, [header.concat(['Collections', 'Collector: Fictional Collection A', 'Account Number: ****1234',
     'First Delinquency Date: February 1, 2021', 'Last Payment Date: February 1, 2021', 'Balance: $606',

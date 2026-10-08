@@ -845,7 +845,7 @@ function labeledAmounts(text) {
     const match = labels[index], label = match[1].toUpperCase();
     if (/\b(?:LAST|DATE OF LAST)\s*$/i.test(src.slice(0, match.index)) && /^PAYMENT$/i.test(label)) continue;
     const rest = src.slice(match.index + match[0].length, labels[index + 1]?.index ?? src.length);
-    const boundary = /\b(?:ACCOUNT\s+(?:NUMBER|STATUS|TYPE)|(?:INDIVIDUAL|JOINT)\s+ACCOUNT|AUTHORI[ZS]ED\s+USER|CO[- ]?(?:SIGNER|BORROWER|APPLICANT)|STATUS|RESPONSIBILITY|OPENED|CLOSED|DATE\s+OPENED|DATE\s+CLOSED|FIRST\s+DELINQUENCY|LAST\s+PAYMENT\s+DATE|FIRST\s+REPORTED)\b/i.exec(rest);
+    const boundary = /\b(?:ACCOUNT\s+(?:NUMBER|STATUS|TYPE)|(?:INDIVIDUAL|JOINT)\s+ACCOUNT|AUTHORI[ZS]ED\s+USER|CO[- ]?(?:SIGNER|BORROWER|APPLICANT)|STATUS|RESPONSIBILITY|OPENED|CLOSED|DATE\s+OPENED|DATE\s+CLOSED|(?:DATE\s+OF\s+)?FIRST\s+DELINQUENCY|LAST\s+PAYMENT\s+DATE|FIRST\s+REPORTED)\b/i.exec(rest);
     const raw = rest.slice(0, boundary?.index ?? rest.length).trim();
     if ((!raw || !/[$£€\d]/.test(raw)) && !PAIRED_CAPTIONS[captionName(src.split(':')[0])]) continue;
     const key = /PAST\s+DUE|OVERDUE/.test(label) ? 'account.pastDueAmount'
@@ -1273,7 +1273,7 @@ function explicitAccountIdentity(text) {
    explicit collector caption opens this block. Original-creditor captions are not collector identity. */
 const COLLECTION_SECTION_RE = /^\s*(?:COLLECTIONS|COLLECTION ACCOUNTS|ACCOUNTS IN COLLECTION|COLLECTION ENTRIES|COLLECTION INFORMATION)\s*:?\s*$/i;
 const COLLECTION_ENTRY_RE = /^\s*COLLECTION(?:\s+(?:ACCOUNT|ENTRY))?(?:\s+\d+)?\s*:\s*(.*?)\s*$/i;
-const COLLECTION_NAME_RE = /^\s*(COLLECTOR|COLLECTION AGENCY|COLLECTION CREDITOR|MEMBER NAME)\s*:\s*(.*?)\s*$/i;
+const COLLECTION_NAME_RE = /^\s*(COLLECTOR|COLLECTION AGENCY|COLLECTION CREDITOR|MEMBER NAME)(?:\s*:\s*|\s+)(.*?)\s*$/i;
 const COLLECTION_CONTINUED_RE = /^\s*COLLECTION(?:S|\s+ACCOUNTS?|\s+ENTRIES|\s+ENTRY)?\s*(?:\(\s*)?CONTINUED(?:\s*\))?\s*:?\s*$/i;
 
 function explicitCollectionIdentity(text) {
