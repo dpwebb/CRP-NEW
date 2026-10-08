@@ -1,5 +1,9 @@
 'use strict';
 // Stored ZIP entries use original reviewed bytes: no document conversion or external service.
+// A packet can include 256 explicitly chosen source files, eight saved documents,
+// its letter and up to eight bureau forms. Bound entries and buffered bytes.
+const MAX_ARCHIVE_ENTRIES = 273;
+const MAX_ARCHIVE_BYTES = 64 * 1024 * 1024;
 const CRC_TABLE = Array.from({ length: 256 }, (_, index) => {
   let crc = index;
   for (let bit = 0; bit < 8; bit++) crc = crc & 1 ? 0xedb88320 ^ (crc >>> 1) : crc >>> 1;
@@ -11,10 +15,14 @@ function crc32(bytes) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 function archive(entries) {
-  if (!Array.isArray(entries) || entries.length > 16) throw new Error('Invalid packet archive');
+  if (!Array.isArray(entries) || entries.length > MAX_ARCHIVE_ENTRIES) throw new Error('Invalid packet archive');
+  if (entries.reduce((sum, entry) => sum + Buffer.byteLength(entry.bytes), 0) > MAX_ARCHIVE_BYTES) throw new Error('Invalid packet archive');
+  const names = new Set();
   const chunks = [], central = []; let offset = 0;
   for (const entry of entries) {
     if (!/^(?:documents\/)?[a-zA-Z0-9_. -]+$/.test(entry.name) || entry.name.includes('..')) throw new Error('Unsafe archive entry');
+    if (names.has(entry.name)) throw new Error('Duplicate archive entry');
+    names.add(entry.name);
     const name = Buffer.from(entry.name), bytes = Buffer.isBuffer(entry.bytes) ? entry.bytes : Buffer.from(entry.bytes, 'utf8');
     const crc = crc32(bytes), local = Buffer.alloc(30), directory = Buffer.alloc(46);
     local.writeUInt32LE(0x04034b50); local.writeUInt16LE(20, 4); local.writeUInt16LE(0x800, 6);
@@ -29,4 +37,4 @@ function archive(entries) {
   end.writeUInt32LE(directorySize, 12); end.writeUInt32LE(offset, 16);
   return Buffer.concat([...chunks, ...central, end]);
 }
-module.exports = { archive };
+module.exports = { archive, MAX_ARCHIVE_ENTRIES, MAX_ARCHIVE_BYTES };

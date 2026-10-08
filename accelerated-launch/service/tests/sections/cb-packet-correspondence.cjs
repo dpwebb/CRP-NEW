@@ -368,12 +368,12 @@ async function reagingLanguage(service, check) {
   // format stamp. The independent module is never cached or written to disk.
   const filename = require.resolve('../../packets.cjs'), legacy = new Module(filename, module);
   legacy.paths = Module._nodeModulePaths(path.dirname(filename));
-  legacy._compile(fs.readFileSync(filename, 'utf8').replace("'packet-format:print-3'", "'packet-format:print-2'"), filename);
+  legacy._compile(fs.readFileSync(filename, 'utf8').replace("'packet-format:print-4'", "'packet-format:print-3'"), filename);
   const oldView = legacy.exports.packetView(service.service.store, actor, id);
   legacy.exports.approvePacket(service.service.store, actor, id, oldView.packet.preview_version, true);
   check.notEqual(oldView.packet.preview_version, ready.packet.preview_version, 'the previous format approval differs even with identical selected evidence and consumer input');
   const refreshed = (await service.request('GET', base + '/packet', { token: actor.token })).json.view;
-  check.equal(refreshed.packet.approval_stale, true, 'the current plain wording requires rereview of an already approved print-2 packet');
+  check.equal(refreshed.packet.approval_stale, true, 'the report-copy packet format requires rereview of an already approved print-3 packet');
   check.equal((await service.request('GET', base + '/packet-download', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',
     'old format approval cannot download refreshed consumer text');
   check.equal((await service.request('GET', base + '/packet-print', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',

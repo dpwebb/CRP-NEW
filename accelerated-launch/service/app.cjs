@@ -192,6 +192,8 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/select', true, 'packetSelect'],
   ['POST', '/api/cases/:caseId/packet/wording', true, 'packetWording'],
   ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
+  ['POST', '/api/cases/:caseId/packet/reports', true, 'packetReports'],
+  ['GET', '/api/cases/:caseId/packet/reports/:fileId', true, 'packetReport'],
   ['POST', '/api/cases/:caseId/packet/approve', true, 'packetApprove'],
   ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
@@ -623,6 +625,20 @@ function buildCaseHandlers(store, logger) {
       packets.approvePacket(store, actor, params.caseId, body.reviewed_version, true);
       logger.log({ event: 'PACKET_APPROVED', outcome: 'OK' });
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
+    packetReports: ({ params, actor, body }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      packets.setReportFiles(store, actor, params.caseId, body.file_ids);
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+    packetReport: ({ params, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const file = packets.packetReport(store, actor, params.caseId, params.fileId);
+      return { status: 200, text: file.body, content_type: file.content_type,
+        headers: { 'Content-Disposition': `inline; filename="${file.filename}"` } };
     },
 
     packetSupport: ({ params, actor, body }) => {
