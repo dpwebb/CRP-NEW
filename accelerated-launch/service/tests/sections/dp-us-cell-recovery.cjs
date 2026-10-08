@@ -20,8 +20,17 @@ async function run(t, check) {
     || path.resolve(__dirname, '../../../../SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-001.pdf');
   check.ok(fs.existsSync(specimen), 'the actual pinned public report is required for region recovery evidence');
   check.equal(hash(specimen), family.EVIDENCED_SHA256, 'the own glyph source is the exact reviewed public PDF');
-  const model = formats.buildPdfDocumentModel(specimen);
-  const extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'US' });
+  const started = Date.now(), physicalReads = [], originalRegionReader = ocr.readPdfRegions;
+  let model, extraction;
+  ocr.readPdfRegions = (...args) => { const reading = originalRegionReader(...args);
+    physicalReads.push({ elapsed_ms: reading.elapsed_ms, band_time_budget_ms: reading.band_time_budget_ms,
+      source_sha256: reading.source_sha256, regions: reading.regions.length,
+      refused: reading.refusal_reason, reasons: reading.regions.map((row) => row.reason) }); return reading; };
+  try {
+    model = formats.buildPdfDocumentModel(specimen);
+    extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'US' });
+  } finally { ocr.readPdfRegions = originalRegionReader; }
+  const actualRuntimeMs = Date.now() - started;
   const accounts = extraction.records.filter((record) => record.kind === 'REPORTED_ACCOUNT');
   const cells = accounts.flatMap((record) => record.facts['account.paymentHistoryCells'] || []);
   const may = accounts[0].facts['account.paymentHistoryCells'].find((cell) => cell.period === '2015-05');
@@ -32,14 +41,32 @@ async function run(t, check) {
   check.ok(may.location.x0 > 100 && may.location.x1 < 125 && may.location.y0 > 1970 && may.location.y1 < 1980,
     'the code keeps its own small physical bbox rather than the merged OCR month/border bbox');
   check.equal(may.location.recovery.raster_dpi, 300, 'the recovery records its actual physical raster resolution');
-  check.equal(may.location.recovery.psm, 7, 'the unrestricted single-region OCR mode is recorded');
+  check.ok([7, 8].includes(may.location.recovery.psm), 'the actual unrestricted line or word mode is recorded');
   check.equal(may.location.recovery.confidence_floor, ocr.TRUSTED_LINE_CONFIDENCE, 'the existing confidence floor is unchanged');
   check.ok(may.location.recovery.confidence >= 70, 'the recovered decisive glyph meets the existing floor');
   check.equal(may.location.recovery.source_sha256, family.EVIDENCED_SHA256, 'recovered pixels pin the same immutable report bytes');
   check.equal(may.period_location.month.page, 1, 'the own May label retains its source');
   check.equal(may.period_location.year.page, 1, 'the own 2015 heading retains its source');
   check.equal(accounts[0].facts['tradeline.firstDelinquencyDate'], undefined, 'a recovered 30 rating does not invent original delinquency');
-  check.ok(cells.some((cell) => cell.uncertain && cell.raw_code), 'remaining unreadable glyphs stay raw and unresolved');
+  check.deepEqual(accounts.map((record) => record.facts['account.paymentHistoryCells'].length), [25, 24, 7],
+    'all 56 actual source columns are retained without the two spurious border cells');
+  check.deepEqual(accounts.map((record) => record.facts['account.paymentHistoryCells'].filter((cell) => !cell.uncertain).length),
+    [25, 22, 5], '52 physically supported dated cells are usable while four month readings remain unresolved');
+  check.deepEqual(cells.filter((cell) => cell.uncertain).map((cell) => cell.reason).sort(),
+    ['CONFLICTING_TRUSTED_SOURCE_READINGS', 'CONFLICTING_TRUSTED_SOURCE_READINGS',
+      'CONFLICTING_TRUSTED_SOURCE_READINGS', 'MONTH_NOT_READABLE'], 'complete trusted disagreements and the below-floor month are retained honestly');
+  check.ok(cells.every((cell) => ['30', 'OK'].includes(cell.code)), 'all actual source code glyphs are physically readable');
+  check.equal(cells.filter((cell) => cell.code === '30').length, 1, 'only the printed May rating is late');
+  check.deepEqual(cells.flatMap((cell) => cell.rejected_grid_readings || []).map((reading) => reading.raw), ['T', '1'],
+    'both mixed-band border readings remain internal source diagnostics');
+  check.ok(accounts[0].facts['account.paymentHistoryCells'].slice(17).every((cell) => cell.period.startsWith('2010-')),
+    'the report actually prints 2010 above the final sparse year segment');
+  check.ok(cells.filter((cell) => cell.reason === 'CONFLICTING_TRUSTED_SOURCE_READINGS')
+    .every((cell) => cell.rejected_recovery_readings.length && cell.original_month_reading.location.trusted),
+  'trusted rejected month readings retain both source interpretations');
+  check.ok(physicalReads.every((reading) => reading.source_sha256 === family.EVIDENCED_SHA256
+    && reading.band_time_budget_ms === 45000 && reading.elapsed_ms < 46000),
+  'each bounded nearby-band read retains the exact source and fixed aggregate time budget');
   const april = accounts[0].facts['account.paymentHistoryCells'].find((cell) => cell.period === '2015-04');
   check.equal(april.raw_code.toUpperCase(), 'OK', 'the own April crop separately rereads its printed OK');
   check.ok(april.original_code_readings.some((reading) => reading.raw === 'Pox'), 'the rejected original reading is preserved separately');
@@ -142,7 +169,8 @@ async function run(t, check) {
     check.equal((await t.request('GET', endpoint + '/packet-download', { token: owner.token })).status, 409,
       'changing the physical retry source identity invalidates approval');
   }
-  return { public_source: family.EVIDENCED_SHA256, cells: cells.length,
+  return { public_source: family.EVIDENCED_SHA256, actual_runtime_ms: actualRuntimeMs,
+    physical_reads: physicalReads, cells: cells.length,
     readable: cells.filter((cell) => !cell.uncertain).length,
     recovered_codes: cells.filter((cell) => cell.location?.recovery).length,
     recovered_months: cells.filter((cell) => cell.period_location.month?.recovery).length,
