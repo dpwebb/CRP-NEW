@@ -520,6 +520,32 @@ function putShared(reading, field, facts, sources) {
     ...(reading.privacy_redacted ? { privacy_redacted: true } : {}) };
 }
 
+// Business display names are separate from private matching keys. One logical native heading may
+// wrap across rows; repeated physical or consecutive printed headings are ambiguous, not a usable name.
+function displayHeadingReading(text, page, rows, line, label) {
+  let firstLine = line;
+  while (firstLine > 1 && textKey(page.lines[firstLine - 2]) === text) firstLine -= 1;
+  const ownRows = rows.filter((row) => row.line >= firstLine && row.line <= line);
+  const count = (page.word_boxes || []).length ? new Set(ownRows.map((row) => row.matchY)).size : line - firstLine + 1;
+  const location = ownRows.length ? wordsLocation(page, rows, ownRows.flatMap((row) => row.words), label)
+    : { page: page.page, line, source: 'NATIVE_TEXT', trusted: !(page.word_boxes || []).length };
+  const trusted = count === 1 && location && location.line === line && location.trusted !== false;
+  return { label, raw: text, normalized: trusted ? text : null,
+    state: trusted ? 'VALUE' : 'SOURCE_UNTRUSTED', location, trusted,
+    printed_times_in_record: count, reason: trusted ? null
+      : count !== 1 ? 'AMBIGUOUS_BUSINESS_HEADING' : 'UNTRUSTED_BUSINESS_HEADING' };
+}
+
+function putDisplayHeading(reading, fields, facts, sources) {
+  for (const field of fields) {
+    putShared(reading, field, facts, sources);
+    if (facts[field] == null) sources[field] = { raw_value: reading.raw, normalized_value: null,
+      source_field: reading.label, location: reading.location, caption_count: reading.printed_times_in_record,
+      status: FACT_STATUS.EXTRACTION_UNRESOLVED, trusted: false,
+      reason: reading.reason || 'UNTRUSTED_BUSINESS_HEADING' };
+  }
+}
+
 function ordinaryRecords(model) {
   const records = [], unread = new Set(unreadPages(model));
   for (const page of model.pages) {
@@ -625,6 +651,9 @@ function ordinaryRecords(model) {
           state: token && location ? 'VALUE' : 'SOURCE_UNTRUSTED', location, trusted: creditorWords.every((w) => w.trusted !== false),
           printed_times_in_record: 1, privacy_redacted: true };
         printed['Creditor Name'] = reading; putShared(reading, 'account.reported_identity', facts, sources);
+        const display = displayHeadingReading(previous.text, page, rows, previous.line, 'Creditor Name (account heading)');
+        printed['Account Display Name'] = display;
+        putDisplayHeading(display, ['account.display_name'], facts, sources);
       }
       if (unread.has(page.page)) {
         for (const reading of Object.values(printed)) { reading.state = 'PAGE_NOT_READ'; reading.normalized = null; }
@@ -688,9 +717,8 @@ function collectionSharedIdentity(record, model) {
   })).filter((line) => line.text).at(-1);
   if (previous && !isHeading(previous.text) && !COLLECTION_LABELS.some((label) => previous.text.startsWith(label))
     && !/Credit Report|Request Date|\d{4}[/-]\d{2}[/-]\d{2}|\$/.test(previous.text)) {
-    const reading = { label: 'Collection agency (entry heading)', raw: previous.text, normalized: previous.text,
-      state: 'VALUE', printed_times_in_record: 1, location: { page: previous.page, line: previous.line } };
-    putShared({ ...reading, location: ownLocation(reading) }, 'collection.agency', facts, fact_sources);
+    const reading = displayHeadingReading(previous.text, page, nativeRows(page), previous.line, 'Collection agency (entry heading)');
+    putDisplayHeading(reading, ['collection.agency', 'account.display_name'], facts, fact_sources);
   }
   return { facts, fact_sources };
 }
