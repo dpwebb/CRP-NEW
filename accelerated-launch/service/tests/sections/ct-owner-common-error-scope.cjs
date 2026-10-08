@@ -17,6 +17,8 @@ function rec(index, kind, facts) {
 async function run(t, check) {
   check.equal(CHECKS.length, 19, 'the combined checklist has nineteen shared entries');
   check.equal(new Set(CHECKS.map((x) => x.check_id)).size, 19, 'every entry has one stable id');
+  check.ok(CHECKS.every(item => !/\bSOL\b|\btradelines?\b|\banchor\b|\bre-aging\b/i.test(item.label)),
+    'consumer checklist labels avoid unexplained reporting and legal shorthand');
   check.equal(catalogue.regions.length, 82, 'the declared jurisdiction population remains 82');
   check.deepEqual([...new Set(Object.values(CHECKLIST_STATUTORY_SUPPORT))].sort(),
     ['COLLECTION_REPORTING_PERIOD', 'REPORT_DATA_ACCURACY', 'TRADELINE_REPORTING_PERIOD'],

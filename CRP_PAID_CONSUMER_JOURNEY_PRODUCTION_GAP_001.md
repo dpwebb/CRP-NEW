@@ -44,6 +44,8 @@ October 8 fresh-review follow-up, within items 2, 6 and 8: the UI writer retains
 
 Coordinator follow-up ownership: `payment-provider.cjs` and T. Stripe's cancel return must identify cancelled Checkout so the unpaid consumer can choose a plan again; this hint grants no access. Preserve the same origin/report context and signed-webhook entitlement. The synthetic adapter must preserve valid query structure and cannot grant access through its decoy success flags. The isolated UI writer handles the corresponding owned-report cancellation wording and no-grant checks.
 
+Final reading-level correction under item 1: root owns the shared checklist's display labels and CT language guard. Replace unexplained `SOL`, `tradeline`, `delinquency anchor` and `re-aging` wording with familiar descriptions across screens and downloads. Preserve all 19 IDs, predicates, source requirements, classification, performed states and the all-82 scope; do not create a second checklist.
+
 Multiple writers use separate managed Git worktrees and bounded nonoverlapping ownership. Root preserves the main checkout and integrates one completed change at a time. Completed tests are implementation evidence; all gap rows need measured passing evidence before implementation closure. Production controls remain separately open.
 
 ## Measured outcomes
