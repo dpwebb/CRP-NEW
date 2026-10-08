@@ -7,7 +7,7 @@ Owner language requirement: the user base has a junior-high education. Use short
 
 Gap ID: **GAP-PAID-CONSUMER-JOURNEY-001**. Outcomes: INTAKE, PACKETS, PURCHASE, TRUST_AND_RELEASE. This consolidates demonstrated consumer defects under the existing approved scope; it does not duplicate the existing packet, billing, account or all-82 blockers.
 
-Implementation: **CLOSED**. Staging verification: **PENDING**. Production readiness: **OPEN**.
+Implementation: **FOLLOW-UP OPEN**. Staging verification: **FOLLOW-UP OPEN**. Production readiness: **OPEN**.
 
 ## Owner correction: mail-in disputes
 
@@ -57,3 +57,5 @@ The second frozen run, after those executable fixes and the shared reading-level
 The final corrected full run passed **11,868 assertions, 0 failed, 0 skipped** in **986,525 ms**. All **131 sections** completed; **226 tested-source hashes** match; source drift and unrun sections are empty. The run re-derived **17/17 implementation closure records**. The ten rows above are implementation-closed against their meaningful behavioral sections. The runtime manifest remains **18B70A0B9903053A5CDB1CAA25C530A147444BD5BA978EB44C375CF63AC48300**, **108 shipped files**, build **crp-v1-18b70a0b9903053a**. Source/test commit at run completion: **c38b3c57dd03aacb0f5168a4f88400f4ff396a55**. Documentation-only closure follows this run. Retained full log: `accelerated-launch/service/out/batch66/final-full-corrected-regression.log`; current full evidence: `accelerated-launch/service/out/current-regression-evidence.json`.
 
 Staging remains PENDING until the exact candidate is served and a fresh fictional account completes ordinary test Checkout, signed-webhook access, report comparison, current packet review/approval, actual PDF/ZIP download and cleanup. Production remains OPEN; implementation closure does not settle independent current-format/source and release controls.
+
+The first served candidate completed the actual recovery/test payment/report comparison/full packet/browser PDF/ZIP path. That review exposed bounded reading-level and stale-status fixes in existing rows 1, 8 and 10, which reopen their final acceptance until fixed. Exact accepted paths, source identity, artifacts and writer ownership: `CRP_STAGING_PAID_JOURNEY_CLOSEOUT_2026_10_08.md`. The other seven row mechanisms passed. No additional scope or evidence gate was introduced.
