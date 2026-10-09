@@ -7,7 +7,7 @@ const STEP_VIEWS = Object.freeze({
   REPORT: { label: 'Your report', render: renderReport }, RESULTS: { label: 'Results', render: renderResults },
   REVIEW: { label: 'Print your packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
   CASE: { label: 'Privacy and deletion', render: renderCase }, SUPPORT: { label: 'Help', render: renderSupport },
-  BILLING: { label: 'Billing', render: renderBilling }
+  BILLING: { label: 'Plans', render: renderBilling }
 });
 const STEP_KEYS = Object.keys(STEP_VIEWS);
 const STEPS = STEP_KEYS.map(key => STEP_VIEWS[key].label);
@@ -28,6 +28,8 @@ const state = {
   upgrade_credit: null,
   upgrade_quotes: null,
   upgrade_confirmation: null,
+  pending_checkout: null,
+  pending_checkout_account_id: null,
   result_list: [],
   support: null,
   billing: null,
@@ -196,6 +198,7 @@ async function refreshAccess() {
     if (data && data.payment) state.payment = data.payment;
     state.upgrade_credit = data.upgrade_credit || null;
     state.upgrade_quotes = data.upgrade_quotes || null;
+    rememberPendingCheckout(data);
   } catch (error) {
     if (error.cancelled) throw error;
     ensureAccount();
@@ -204,6 +207,7 @@ async function refreshAccess() {
     state.upgrade_credit = null;
     state.upgrade_quotes = null;
     state.upgrade_confirmation = null;
+    rememberPendingCheckout({});
   }
   try {
     /* The purchase choices appear on the results step as well as in billing, so the catalogue is loaded once. */
@@ -212,6 +216,7 @@ async function refreshAccess() {
     state.billing = billing;
     if (billing.upgrade_quotes) state.upgrade_quotes = billing.upgrade_quotes;
     if (billing.upgrade_credit) state.upgrade_credit = billing.upgrade_credit;
+    rememberPendingCheckout(billing);
   } catch (error) {
     if (error.cancelled) throw error;
     ensureAccount();
@@ -383,9 +388,14 @@ function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
   if (!state.accountProfile) {
     panel.innerHTML = `${notices()}<h1>Your account</h1><p>Loading your details…</p>`;
-    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents'), api('GET', '/api/account/security')]).then(([profile, documents, security]) => {
+    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents'), api('GET', '/api/account/security'), api('GET', '/api/entitlement')]).then(([profile, documents, security, access]) => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       if (!profile.profile || !Array.isArray(documents.documents)) throw new Error('Your account details could not be loaded. Try again.');
+      if (access.entitlement) state.entitlement = access.entitlement;
+      if (access.payment) state.payment = access.payment;
+      if (access.upgrade_credit) state.upgrade_credit = access.upgrade_credit;
+      if (access.upgrade_quotes) { state.upgrade_quotes = access.upgrade_quotes; state.billing = null; }
+      rememberPendingCheckout(access);
       state.accountProfile = profile.profile; state.accountDocuments = documents.documents; state.accountSecurity = security; renderAccountDetails(panel);
     }).catch(error => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
@@ -476,6 +486,7 @@ function renderAccountDetails(panel) {
     state.support = null;
     state.billing = null;
     state.upgrade_confirmation = null;
+    rememberPendingCheckout({});
     state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null; state.checkoutReturn = null;
     state.step = 0;
     state.notice = 'Signed out.';
@@ -925,6 +936,66 @@ function subscriptionChoices(prefix = 'buy') {
   return ['monthly', 'annual'].filter(canChoosePlan).map(code => `<div class="subscription-choice"><button class="secondary" id="${prefix}-${code}">${code === 'annual' ? 'Yearly' : 'Monthly'} — ${esc(purchasePrice(code))}</button>${priceDetails(code)}</div>`).join('');
 }
 
+function rememberPendingCheckout(data) {
+  const pending = data?.pending_checkout;
+  const valid = pending && typeof pending.checkout_id === 'string' && pending.checkout_id.length > 0
+    && ['report_once', 'monthly', 'annual'].includes(pending.plan_code)
+    && (!pending.state || ['OPEN', 'OPENING'].includes(pending.state));
+  state.pending_checkout = valid ? pending : null;
+  state.pending_checkout_account_id = valid ? state.account?.account_id || null : null;
+}
+function ownedPendingCheckout() {
+  return state.account?.account_id && state.pending_checkout_account_id === state.account.account_id
+    ? state.pending_checkout : null;
+}
+function pendingPaymentBlock(forReport = false) {
+  const pending = ownedPendingCheckout();
+  if (!pending) return '';
+  if (forReport) {
+    const context = state.checkoutReturn;
+    if (context?.status !== 'pending' || context.caseId !== state.caseId || context.planCode !== pending.plan_code) return '';
+    if (pending.plan_code === 'report_once' && pending.case_id !== state.caseId) return '';
+  }
+  const pricing = Number.isSafeInteger(pending.payable_cents) && pending.payable_cents >= 0
+    ? `<p class="evidence">Payment amount: <b>${esc(money(pending.payable_cents, pending.currency))}</b>${pending.credit_cents > 0 ? ` after ${esc(money(pending.credit_cents, pending.currency))} credit` : ''}.${pending.plan_code !== 'report_once' && Number.isSafeInteger(pending.renewal_cents) ? ` Then ${esc(money(pending.renewal_cents, pending.currency))} per ${pending.plan_code === 'annual' ? 'year' : 'month'}.` : ''}</p>` : '';
+  return `<section class="note" aria-label="Your open payment"><h3>${pending.is_subscription_upgrade ? 'Your yearly upgrade is waiting for payment' : 'Finish your payment'}</h3><p>Your payment has not been confirmed yet. Continue the payment you already started.</p>${pricing}<button class="primary" id="continue-payment">Continue payment</button></section>`;
+}
+function redirectToPayment(redirect, expectedReturn = null, resuming = false) {
+  if (/^https:\/\/(?:checkout|invoice)\.stripe\.com\//.test(redirect || '')) return location.assign(redirect);
+  if (expectedReturn && redirect === expectedReturn) return location.assign(redirect);
+  const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
+  if (resuming && (redirect === base || String(redirect || '').startsWith(base + '?checkout=return&'))) return location.assign(redirect);
+}
+function resumePendingCheckout(expectedCheckoutId, ensureOwner) {
+  return run(async () => {
+    if (ensureOwner) ensureOwner();
+    const ensureAccount = accountContext(), pending = ownedPendingCheckout();
+    if (!pending) throw new Error('Your open payment is unavailable. Refresh your plans and try again.');
+    if (expectedCheckoutId && pending.checkout_id !== expectedCheckoutId) throw cancelledAction();
+    let opened;
+    try {
+      opened = await api('POST', '/api/billing/checkout', { plan_code: pending.plan_code, resume_checkout_id: pending.checkout_id });
+      ensureAccount();
+    } catch (error) {
+      ensureAccount();
+      if (error.code === 'PAYMENT_CONFIRMATION_PENDING') {
+        state.step = STEP.BILLING;
+        await refreshAccess();
+        ensureAccount();
+      }
+      throw error;
+    }
+    await refreshAccess(); ensureAccount();
+    state.notice = 'Continuing the payment you already started. We will check it when you return.';
+    redirectToPayment(opened.checkout?.redirect_url, null, true);
+  });
+}
+function wirePendingPayment() {
+  const button = el('continue-payment'), pending = ownedPendingCheckout();
+  const ensureOwner = accountContext();
+  if (button && pending) button.onclick = () => resumePendingCheckout(pending.checkout_id, ensureOwner);
+}
+
 /** The return URL remembers a report, never payment or access. The protected view supplies both. */
 function checkoutReturnContext() {
   if (typeof location === 'undefined' || !location.search) return null;
@@ -945,9 +1016,12 @@ async function restoreCheckoutReport(context) {
     state.caseId = context.caseId; state.view = data.view;
     state.entitlement = access.entitlement || null; state.payment = access.payment || null; state.upgrade_credit = access.upgrade_credit || null;
     state.upgrade_quotes = access.upgrade_quotes || null;
+    rememberPendingCheckout(access);
     state.billing = null;
     state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
-    const confirmed = context.planCode === 'report_once' ? data.view.assessment_access?.complete_assessment : data.view.assessment_access?.dispute_packet;
+    const confirmed = context.planCode === 'report_once' ? data.view.assessment_access?.complete_assessment
+      : data.view.assessment_access?.dispute_packet && (context.planCode !== 'annual'
+        || access.entitlement?.entitled && access.entitlement.plan_code === 'annual');
     state.checkoutReturn = confirmed || context.cancelled ? null : { ...context, status: 'pending' };
     state.notice = confirmed ? (context.planCode === 'report_once' ? 'Your full assessment is ready.' : 'Your report is ready. Choose what you want to dispute.')
       : context.cancelled ? 'Checkout cancelled. You can choose a plan when you are ready.' : null;
@@ -974,6 +1048,8 @@ function startCheckout(planCode, confirmedUpgrade = false) {
   return run(async () => {
     const ensureAccount = accountContext();
     if (state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId) throw new Error('Select Check payment before starting another checkout.');
+    const pending = ownedPendingCheckout();
+    if (pending && (planCode !== 'report_once' || pending.plan_code === 'report_once' && pending.case_id === state.caseId)) throw new Error('Continue your open payment or check its status before starting another checkout.');
     if (!canChoosePlan(planCode)) throw new Error('This plan is already included in your subscription. Choose a higher plan to upgrade.');
     if (state.entitlement?.entitled && state.entitlement.access_via === 'SUBSCRIPTION') {
       const quote = upgradeQuote(planCode);
@@ -1001,8 +1077,9 @@ function startCheckout(planCode, confirmedUpgrade = false) {
       ensureAccount();
     } catch (err) {
       ensureAccount();
-      if (err && err.code === 'STALE_UPGRADE_QUOTE') {
+      if (err && ['STALE_UPGRADE_QUOTE', 'PAYMENT_CONFIRMATION_PENDING'].includes(err.code)) {
         state.upgrade_confirmation = null;
+        if (err.code === 'PAYMENT_CONFIRMATION_PENDING') state.step = STEP.BILLING;
         await refreshAccess();
         ensureAccount();
       }
@@ -1018,8 +1095,9 @@ function startCheckout(planCode, confirmedUpgrade = false) {
       ? 'Your yearly upgrade was requested. We will confirm your payment before changing your access.'
       : 'Checkout opened. We will check your payment when you return.';
     state.upgrade_confirmation = null;
+    await refreshAccess(); ensureAccount();
     const redirect = opened.checkout?.redirect_url || '';
-    if (/^https:\/\/(?:checkout|invoice)\.stripe\.com\//.test(redirect) || redirect === body.return_url) location.assign(redirect);
+    redirectToPayment(redirect, body.return_url);
   });
 }
 
@@ -1099,6 +1177,7 @@ function renderResults(panel) {
     ${access.complete_assessment && result ? '<label for="result-select">Result</label><select id="result-select"><option value="">Latest result</option></select>' : ''}
     <p class="lede">Your report for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
     ${notices()}
+    ${pendingPaymentBlock(true)}
     <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
     ${summary
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
@@ -1121,6 +1200,7 @@ function renderResults(panel) {
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
+  wirePendingPayment();
 }
 
 function resultBlock(result, demo) {
@@ -1859,6 +1939,7 @@ function renderCase(panel) {
     state.billing = null;
     state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
     state.upgrade_confirmation = null;
+    rememberPendingCheckout({});
     state.step = 0;
     state.notice = 'Account deleted, along with every case and stored file.';
   });
@@ -1999,6 +2080,7 @@ function renderBillingView(data) {
   state.payment = data.payment || null;
   state.upgrade_credit = data.upgrade_credit || null;
   state.upgrade_quotes = data.upgrade_quotes || null;
+  rememberPendingCheckout(data);
 
   const accessLine = ent.entitled
     ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
@@ -2044,7 +2126,8 @@ function renderBillingView(data) {
     <p class="evidence">${accessLine}</p>
     <p class="evidence">${renewalLine}</p>
     ${cancelBlock}
-    ${Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
+    ${pendingPaymentBlock()}
+    ${!ownedPendingCheckout() && Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
     ${checkingPayment ? '' : upgradeConfirmationBlock()}
     ${subscriptionBenefits('Keep going with a subscription')}
     ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
@@ -2064,6 +2147,7 @@ function renderBillingView(data) {
   if (cancelUpgrade) cancelUpgrade.onclick = () => { state.upgrade_confirmation = null; renderBillingView(data); };
   const refreshPayment = el('refresh-billing-payment');
   if (refreshPayment) refreshPayment.onclick = () => run(async () => { await refreshAccess(); });
+  wirePendingPayment();
   const cancel = el('cancelEntitlement');
   if (cancel) cancel.onclick = () => run(async () => {
     const result = await api('POST', '/api/entitlement/cancel', {});

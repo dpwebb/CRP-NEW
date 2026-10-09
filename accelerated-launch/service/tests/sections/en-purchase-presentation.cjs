@@ -60,12 +60,15 @@ function reportView() {
 }
 
 async function run(t, check) {
-  let data = billing(), checkoutError = null, checkoutResponse = null;
+  let data = billing(), checkoutError = null, checkoutResponse = null, returnedView = reportView();
   const dom = makeContext((method, url) => {
     if (url === '/api/jurisdictions') return { status: 200, body: { ok: true, surface: { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', label: 'Nova Scotia', country: 'CA' }], preview_mode: true } } };
     if (url === '/api/session') return { status: 401, body: { ok: false, error: { message: 'Sign in.' } } };
     if (url === '/api/pricing') return { status: 200, body: { ok: true, plan_catalog: data.plan_catalog } };
     if (url === '/api/billing/plans' || url === '/api/entitlement') return { status: 200, body: data };
+    if (method === 'GET' && url === '/api/cases/' + returnedView.case.case_id) return { status: 200, body: { ok: true, view: returnedView } };
+    if (url === '/api/account/profile') return { status: 200, body: { ok: true, profile: {} } };
+    if (url === '/api/account/documents') return { status: 200, body: { ok: true, documents: [] } };
     if (method === 'POST' && url === '/api/billing/checkout') return checkoutError || { status: 201, body: { ok: true, checkout: checkoutResponse || { redirect_url: 'https://checkout.stripe.com/c/pay/fictional' } } };
     return { status: 200, body: { ok: true } };
   });
@@ -165,11 +168,93 @@ async function run(t, check) {
   check.ok(!/id="buy-report_once"|id="buy-monthly"|id="buy-annual"|id="download-assessment"/.test(panel.innerHTML), 'pending payment still withholds repeat purchases and paid downloads');
   check.ok(/most serious violation/.test(panel.innerHTML), 'the existing single serious-violation preview survives the purchase presentation change');
 
+  /* A paid monthly subscriber retains usable access while an annual invoice waits for confirmation. */
+  data = billing();
+  data.entitlement = { entitled: true, access_via: 'SUBSCRIPTION', plan_code: 'monthly', cancel_at_period_end: false };
+  data.pending_checkout = { checkout_id: 'chk_existing_annual', plan_code: 'annual', redirect_url: 'https://invoice.stripe.com/i/existing', is_subscription_upgrade: true,
+    payable_cents: 6560, credit_cents: 1390, renewal_cents: 7950, currency: 'cad' };
+  for (const q of Object.values(data.upgrade_quotes)) { q.allowed = false; q.reason = 'CHECKOUT_ALREADY_IN_PROGRESS'; }
+  returnedView = reportView();
+  returnedView.assessment_access = { complete_assessment: true, complete_assessment_via: 'SUBSCRIPTION', dispute_packet: true, assessment_download: true };
+  ctx.RETURN_CONTEXT = { caseId: returnedView.case.case_id, planCode: 'annual' };
+  vm.runInContext('state.checkoutReturn = null; state.step = STEP.RESULTS;', ctx);
+  await vm.runInContext('restoreCheckoutReport(RETURN_CONTEXT)', ctx);
+  check.equal(vm.runInContext('state.entitlement.plan_code', ctx), 'monthly', 'the annual return preserves the authoritative current monthly plan');
+  check.equal(vm.runInContext('state.checkoutReturn.status', ctx), 'pending', 'monthly packet access cannot falsely confirm an unpaid annual upgrade');
+  vm.runInContext('render();', ctx); await tick(); await tick();
+  check.ok(/id="continue-payment"/.test(panel.innerHTML) && /Your yearly upgrade is waiting for payment/.test(panel.innerHTML), 'the matching pending Results page can continue its existing annual payment');
+  check.ok(/id="download-assessment"/.test(panel.innerHTML) && /id="create-packet"/.test(panel.innerHTML), 'the previously paid monthly download and packet remain usable while the upgrade waits');
+  vm.runInContext('state.step = STEP.BILLING; render();', ctx); await tick(); await tick();
+  check.ok(/id="continue-payment"/.test(box.innerHTML) && /Payment amount: <b>\$65\.60 CAD/.test(box.innerHTML), 'Plans show the open invoice and its original server-supplied amount');
+  check.ok(/after \$13\.90 CAD credit/.test(box.innerHTML) && /Then \$79\.50 CAD per year/.test(box.innerHTML), 'the resumable invoice retains its applied credit and regular renewal price');
+  check.ok(!/id="checkout-annual"/.test(box.innerHTML), 'an open annual upgrade is resumed rather than offered as a new purchase');
+  checkoutResponse = { is_subscription_upgrade: true, redirect_url: data.pending_checkout.redirect_url };
+  const beforeResume = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length;
+  await dom.get('continue-payment').onclick(); await tick(); await tick();
+  const resume = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').at(-1);
+  check.deepEqual(resume.body, { plan_code: 'annual', resume_checkout_id: 'chk_existing_annual' }, 'resume sends only the plan and existing checkout ID, never another quoted amount or revision');
+  check.equal(dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length, beforeResume + 1, 'continuing payment makes one idempotent resume request');
+  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === data.pending_checkout.redirect_url), 'the resumed existing payment uses the approved hosted Stripe invoice');
+  checkoutResponse = { is_subscription_upgrade: true, redirect_url: 'https://app.example.test/?checkout=return&report=case_fixture&plan=annual' };
+  await dom.get('continue-payment').onclick(); await tick(); await tick();
+  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === checkoutResponse.redirect_url), 'a paid resumed invoice can return to its existing same-origin report URL');
+  const beforeInvalidRedirect = dom.calls.filter(c => c.method === 'NAVIGATE').length;
+  checkoutResponse = { redirect_url: 'https://app.example.test.evil.example/?checkout=return&report=case_fixture&plan=annual' };
+  await dom.get('continue-payment').onclick(); await tick(); await tick();
+  check.equal(dom.calls.filter(c => c.method === 'NAVIGATE').length, beforeInvalidRedirect, 'resume does not follow a lookalike foreign return origin');
+
+  checkoutError = { status: 409, body: { ok: false, error: { code: 'PAYMENT_CONFIRMATION_PENDING', message: 'Your payment is still being checked. Continue the payment you already started.' } } };
+  const beforePendingRefresh = dom.calls.filter(c => c.url === '/api/billing/plans').length;
+  await dom.get('continue-payment').onclick(); await tick(); await tick();
+  check.ok(dom.calls.filter(c => c.url === '/api/billing/plans').length > beforePendingRefresh, 'an uncertain provider response refreshes the authoritative pending payment');
+  check.ok(/payment is still being checked/.test(panel.innerHTML) && /id="continue-payment"/.test(box.innerHTML), 'the uncertain response shows its error and keeps the existing payment available');
+  check.ok(!/nothing.*charged|no charge|payment failed|payment cancelled/i.test(panel.innerHTML + box.innerHTML), 'an uncertain payment response never claims no charge or cancellation');
+  checkoutError = null;
+  data.entitlement.plan_code = 'annual'; data.pending_checkout = null;
+  await vm.runInContext('restoreCheckoutReport(RETURN_CONTEXT)', ctx);
+  check.equal(vm.runInContext('state.checkoutReturn', ctx), null, 'an authoritative paid annual entitlement clears the annual-return pending notice');
+  check.equal(vm.runInContext('state.pending_checkout', ctx), null, 'a confirmed annual payment clears the cached pending checkout');
+  vm.runInContext('render();', ctx);
+  check.ok(!/id="continue-payment"/.test(panel.innerHTML), 'the confirmed annual report no longer offers payment resume');
+
+  /* One-off payment resume belongs to the report it was opened for. */
+  data = billing();
+  data.pending_checkout = { checkout_id: 'chk_other_report', plan_code: 'report_once', case_id: 'case_other_report', redirect_url: 'https://checkout.stripe.com/c/pay/other', payable_cents: 595, credit_cents: 0, renewal_cents: 595, currency: 'cad' };
+  returnedView.assessment_access = { complete_assessment: false, dispute_packet: false };
+  ctx.RETURN_CONTEXT = { caseId: returnedView.case.case_id, planCode: 'report_once' };
+  await vm.runInContext('restoreCheckoutReport(RETURN_CONTEXT)', ctx); vm.runInContext('render();', ctx);
+  check.ok(!/id="continue-payment"/.test(panel.innerHTML), 'a pending one-off checkout for another owned report is not placed on these Results');
+  data.pending_checkout.case_id = returnedView.case.case_id;
+  await vm.runInContext('restoreCheckoutReport(RETURN_CONTEXT)', ctx); vm.runInContext('render();', ctx);
+  check.ok(/id="continue-payment"/.test(panel.innerHTML), 'the matching owned one-off Results can resume their existing payment');
+  data.pending_checkout = { ...data.pending_checkout, state: 'CREDIT_REVOKED' };
+  vm.runInContext('state.step = STEP.BILLING; render();', ctx); await tick(); await tick();
+  check.ok(!/id="continue-payment"/.test(box.innerHTML), 'an explicitly revoked checkout is never offered as a resumable payment');
+  check.equal(vm.runInContext('state.pending_checkout', ctx), null, 'invalid pending state is discarded from the consumer cache');
+
+  /* Profile loads refresh payment state; stale controls cannot resume another account's payment. */
+  delete data.pending_checkout.state;
+  vm.runInContext('state.checkoutReturn = null; state.accountProfile = null; state.step = STEP.ACCOUNT; render();', ctx);
+  await tick(); await tick(); await tick();
+  check.equal(vm.runInContext('state.pending_checkout.checkout_id', ctx), 'chk_other_report', 'the account-details refresh loads the current pending checkout from access');
+  vm.runInContext('state.step = STEP.BILLING; render();', ctx); await tick(); await tick();
+  const staleResume = dom.get('continue-payment').onclick;
+  const beforeForeign = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length;
+  vm.runInContext('state.account = { account_id: "other_account", email: "other@example.test" };', ctx);
+  check.equal(vm.runInContext('pendingPaymentBlock()', ctx), '', 'cached payment data from a different account cannot render a resume control');
+  await staleResume(); await tick();
+  check.equal(dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length, beforeForeign, 'a stale previous-account button makes no resume request');
+  vm.runInContext('state.accountProfile = {}; state.step = STEP.ACCOUNT; render();', ctx); await tick();
+  await dom.get('signout').onclick(); await tick();
+  check.equal(vm.runInContext('state.pending_checkout', ctx), null, 'sign-out clears the pending checkout');
+  check.equal(vm.runInContext('state.pending_checkout_account_id', ctx), null, 'sign-out clears its account binding');
+  check.ok(/Plans/.test(dom.get('steps').innerHTML) && !/>Billing</.test(dom.get('steps').innerHTML), 'the sidebar matches the PDF instruction to open Plans');
+
   const css = fs.readFileSync(CSS, 'utf8');
   check.ok(/\.benefit-grid/.test(css) && /\.credit-equation/.test(css) && /\.current-plan/.test(css), 'the visual benefits, credit calculation and current-plan state have dedicated styles');
   check.ok(/max-width:700px[\s\S]*\.subscription-choices/.test(css), 'upgrade choices stack for narrow screens');
   check.ok(!/guaranteed|boost your score|remove all|not legal advice/i.test(box.innerHTML + panel.innerHTML), 'the marketing makes no score, deletion or disclaimer claims');
-  return { sample_retired: true, branded_pdf_control: true, shared_benefits: true, cumulative_credit_quotes: true, current_plan_boundaries: true, upgrade_review_confirmation: true, stale_quote_refresh: true, pending_lock: true };
+  return { sample_retired: true, branded_pdf_control: true, shared_benefits: true, cumulative_credit_quotes: true, current_plan_boundaries: true, upgrade_review_confirmation: true, stale_quote_refresh: true, pending_lock: true, pending_invoice_resume: true, annual_confirmation_bound: true, pending_account_isolation: true };
 }
 
 module.exports = { run, id: 'en-purchase-presentation', title: 'Batch 70: simple PDF and subscription presentation, cumulative upgrade quotes and retirement of sample invitations' };
