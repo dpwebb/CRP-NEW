@@ -245,6 +245,33 @@ async function run(t, check) {
     const blockedAfterRefund = await events('invoice.paid', invalidPaid);
     check.ok(blockedAfterRefund.status < 500 && (blockedAfterRefund.status >= 400 || blockedAfterRefund.json.event.accepted === false),
       'revoked discounted invoice cannot activate annual access later');
+    const partialRenewal = mock.historicalInvoice(refundMonth.subscription.id, 795);
+    resetHistory(refundActor);
+    const partialQuote = (await getPlans(refundActor)).upgrade_quotes.annual;
+    check.equal(partialQuote.credit_cents, 1590, 'a new historical renewal adds its actual unused cash');
+    const partialDraft = await purchase(refundActor, 'annual', { quote_revision: partialQuote.revision });
+    check.equal(partialDraft.status, 201, 'unused cash can fund another reviewed upgrade');
+    const partialCharge = mock.refundIntent(partialRenewal.payment_intent, 100);
+    check.equal((await events('charge.refunded', partialCharge)).json.event.accepted, true, 'signed partial source refund is processed');
+    check.equal(mock.invoices.get(partialDraft.json.checkout.provider_reference).status, 'void', 'partial refund voids the now-inaccurate discounted invoice');
+    const partiallyRefunded = creditsFor(refundActor).find(row => row.payment_id === partialRenewal.id);
+    check.equal(partiallyRefunded.amount_cents, 795, 'partial refund preserves the original cash receipt');
+    check.equal(partiallyRefunded.refunded_cents, 100, 'partial refund records the cumulative returned amount');
+    check.equal(partiallyRefunded.remaining_amount_cents, 695, 'only the returned cash is removed from unused credit');
+    check.equal(creditsFor(refundActor).filter(row => row.state === 'RESERVED').length, 0, 'partial refund releases every allocation for its cancelled invoice');
+    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 1490, 'consumer can review the corrected cash credit after partial refund');
+    check.equal((await status(refundActor)).plan_code, 'monthly', 'partial historical refund preserves the independently paid monthly access');
+    const readBackPartial = mock.historicalInvoice(refundMonth.subscription.id, 795);
+    mock.refundIntent(readBackPartial.payment_intent, 200);
+    resetHistory(refundActor);
+    check.equal((await getPlans(refundActor)).upgrade_quotes.annual.credit_cents, 2085,
+      'provider read-back imports only the remaining cash of a previously unseen partial-refund receipt');
+    const readBackRow = () => creditsFor(refundActor).find(row => row.payment_id === readBackPartial.id);
+    check.equal(readBackRow().amount_cents, 795, 'historical partial refund retains the actual original payment');
+    check.equal(readBackRow().refunded_cents, 200, 'historical partial refund retains the cumulative returned amount');
+    check.equal(readBackRow().remaining_amount_cents, 595, 'historical partial refund leaves unreturned cash eligible');
+    resetHistory(refundActor); await getPlans(refundActor);
+    check.equal(readBackRow().remaining_amount_cents, 595, 'repeated historical partial-refund import is idempotent');
 
     const zeroActor = await t.unpaidAccount('ep-zero@example.test');
     await payReport(zeroActor); await payReport(zeroActor);
@@ -259,6 +286,31 @@ async function run(t, check) {
     check.equal((await getPlans(zeroActor)).upgrade_quotes.annual.credit_cents, 395, 'unused receipt balance survives the zero first bill');
     const cancelledZero = await t.request('POST', '/api/entitlement/cancel', { token: zeroActor.token, body: {} });
     check.equal(cancelledZero.status, 200, 'a fully credited subscriber can cancel renewal too: ' + cancelledZero.text);
+    const partiallyUsed = creditsFor(zeroActor).find(row => row.remaining_amount_cents === 395);
+    check.equal(partiallyUsed.consumed_cents, 200, 'one source receipt was partly consumed by the paid subscription');
+    const usedRefund = mock.refundIntent(partiallyUsed.payment_intent, 100);
+    const firstPartialEvent = 'evt_partly_used_cash_refund';
+    check.equal((await events('charge.refunded', usedRefund, firstPartialEvent)).json.event.accepted, true,
+      'partial refund of a partly used source payment is processed');
+    const adjustedUsed = () => creditsFor(zeroActor).find(row => row.credit_id === partiallyUsed.credit_id);
+    check.equal(adjustedUsed().amount_cents, 595, 'returned cash never rewrites the original paid amount');
+    check.equal(adjustedUsed().consumed_cents, 200, 'a refund never erases credit already allocated to a paid upgrade');
+    check.equal(adjustedUsed().refunded_cents, 100, 'returned cash remains a separate cumulative ledger amount');
+    check.equal(adjustedUsed().remaining_amount_cents, 295, 'the remaining credit is paid cash minus consumed credit and refund');
+    check.equal((await events('charge.refunded', usedRefund, firstPartialEvent)).json.event.duplicate, true, 'same partial-refund event is idempotent');
+    check.equal((await events('charge.refunded', usedRefund)).json.event.duplicate, true, 'repeated cumulative refund with a new event ID is idempotent');
+    check.equal(adjustedUsed().remaining_amount_cents, 295, 'refund replay deducts no cash twice');
+    const increasedRefund = mock.refundIntent(partiallyUsed.payment_intent, 150);
+    check.equal((await events('charge.refunded', increasedRefund)).json.event.accepted, true, 'a later larger cumulative refund is applied');
+    check.equal(adjustedUsed().refunded_cents, 150, 'later refund replaces the cumulative returned total');
+    check.equal(adjustedUsed().remaining_amount_cents, 245, 'only the newly returned difference is removed');
+    resetHistory(zeroActor);
+    check.equal((await getPlans(zeroActor)).upgrade_quotes.annual.credit_cents, 245, 'provider receipt read-back preserves the unused net cash');
+    resetHistory(zeroActor); await getPlans(zeroActor);
+    check.equal(adjustedUsed().refunded_cents, 150, 'repeated provider read-back does not add the refund again');
+    check.equal(adjustedUsed().remaining_amount_cents, 245, 'provider read-back cannot reset spent or returned credit');
+    check.equal(adjustedUsed().consumed_cents, 200, 'provider read-back keeps already settled allocations');
+    check.equal((await status(zeroActor)).plan_code, 'monthly', 'refund of the earlier report payment preserves the verified zero-due monthly purchase');
 
     const uncertainActor = await t.unpaidAccount('ep-uncertain@example.test');
     const uncertainMonth = await pay(uncertainActor, 'monthly');

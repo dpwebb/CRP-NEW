@@ -100,9 +100,10 @@ class StripeUpgradeFixture {
     if (sub?.pending?.invoice_id === id) { sub.pending = null; sub.pending_update = null; }
     return invoice;
   }
-  refundIntent(id) {
+  refundIntent(id, cumulativeAmount) {
     const intent = this.intents.get(id), charge = this.charges.get(intent.latest_charge);
-    charge.refunded = true; charge.amount_refunded = charge.amount;
+    charge.amount_refunded = cumulativeAmount === undefined ? charge.amount : cumulativeAmount;
+    charge.refunded = charge.amount_refunded === charge.amount;
     return charge;
   }
   pauseNextUpgrade() {
