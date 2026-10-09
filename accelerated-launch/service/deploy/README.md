@@ -1,4 +1,14 @@
-# Deployment configuration — prepared locally, NOT APPLIED
+# Deployment configuration
+
+## Current production authority — October 9, 2026
+
+The owner authorizes deployment to `https://creditregulatorpro.com` and required release repairs. The historical preparation notes below describe the original B4 batch, not current billing or deployment status. Current Stripe integration is implemented and verified in test mode; production must separately verify live CAD 595 one-time, 795/month and 7950/year prices and the dedicated `/api/billing/events` endpoint. Current upgrade credit uses every verified unused lower-plan cash payment and dynamic once-only coupons; a fixed 595-cent coupon is not required.
+
+Use a dedicated loopback production service, durable private storage, secure cookies and a stable support-reference secret. On the shared VPS, change only the exact apex/www CRP route and its own service/configuration. Preserve legacy accounts and authentic documents before cutover. Keep the manifest, frozen regression, actual provider reads, exact deployed source, restore/rollback, and other-domain preservation in the production acceptance receipt. Never commit consumer data or secret values.
+
+Rollback must retain current purchases, accounts and report blobs. Switch compatible code/configuration while the CRP writer is stopped; do not overwrite current state with an older snapshot. The old app does not automatically read new wizard data.
+
+## Historical B4 preparation notes
 
 OWNER-ALL82-001 / B4: *"Prepare deployment configuration and release checks locally; do not deploy."*
 

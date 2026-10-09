@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-09T17:56:56.097Z",
+  "generated_at": "2026-10-09T19:02:34.601Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME_ASSETS",
-      "file_count": 15,
-      "digest": "D51837DFB4DFF2B4F8BD8D93FF561951E2ED45CB552B77C3C545DBB7832F223C",
+      "file_count": 19,
+      "digest": "618B1E651DFB80E60C654759933DB3DEE304D7E0A2D7B1CDCFCEF1ED1D886A2A",
       "files": [
         {
           "file": "accelerated-launch/service/packet-fonts/NotoSans-Regular.ttf",
@@ -68,13 +68,29 @@
         {
           "file": "accelerated-launch/service/pdf-vendor/provenance.json",
           "sha256": "B730ACB9C554B5335BDF3C09B2CE0A37E98C382E5488251D7D7C74D3B91D97E0"
+        },
+        {
+          "file": "accelerated-launch/service/password-vendor/README.md",
+          "sha256": "2B16276E98AE4538A44CA93A950918D45AF453A873673EBA21046D0E0D212F4D"
+        },
+        {
+          "file": "accelerated-launch/service/password-vendor/bcryptjs-3.0.3.cjs",
+          "sha256": "ED01B52B436504D8BB7086D93FEE4BD8EDBB22D8ED88E1B456E0C604F30E79C4"
+        },
+        {
+          "file": "accelerated-launch/service/password-vendor/bcryptjs-LICENSE.txt",
+          "sha256": "095017EF78D2C818465EEA7D71EBED918EB415AEE9D38D36CE0B1240AE5781EE"
+        },
+        {
+          "file": "accelerated-launch/service/password-vendor/provenance.json",
+          "sha256": "C06709CC5E3ED0ACBC49DFE892D349ED5BFF51E77A1E1DFE255FF847C5E0E3A7"
         }
       ]
     },
     {
       "id": "RUNTIME",
-      "file_count": 82,
-      "digest": "C726737F92BADFADA3616C314235403BA410497E53AD3E8D02489847C0D33A41",
+      "file_count": 83,
+      "digest": "DDAC4B3F53AD34F1BB1B5417202AA20A2D42A89CBA5EDDEE11E192EF82FAE8C6",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -94,7 +110,7 @@
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
-          "sha256": "A71C367E70E13BBCF21D9B7153F8A81E537E111DF1466DC0D2567D343501B01E"
+          "sha256": "FDE76500D70957BD00A8986704E5E32302409BD1E98A41C6214C4A41BBEC7D3C"
         },
         {
           "file": "accelerated-launch/service/app.cjs",
@@ -283,6 +299,10 @@
         {
           "file": "accelerated-launch/service/journey.cjs",
           "sha256": "E1C154ABB85D8EC8A924E26EB5D74B33BA5E7B8F4D45982E318A5C0956D6F4A0"
+        },
+        {
+          "file": "accelerated-launch/service/legacy-password.cjs",
+          "sha256": "61C87FC93FF2929ADF093A1550C09FE2B04C7DDA15DEB75851F47600560917BF"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -534,11 +554,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "1F936756C6645EE7CAF81725208987C96E41A63910E3AE8CCE93C83E3A0AB370",
+      "digest": "37666A60CEBBB1754674F4C1B0EA945DBFAEA6095EB9875F6F8ABE50DB3E7E2D",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "8B8892B635F70FB66651A6C279979B6622F3D30F6A469B5A9FACB5F14F49A021"
+          "sha256": "7E806D06307869DB35A984E9794DDCE9B91E67013CE6FEBC3D4C1D2139938DD2"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -555,6 +575,6 @@
       ]
     }
   ],
-  "manifest_digest": "AB7D1EDA31F7B1068255792D853E372F8A6497F4A8EFE59202C9CB3BEE42F27E",
-  "total_file_count": 127
+  "manifest_digest": "AEF14BD0DAB8599FAFF37C045EEAEF1C0197A07ACADA77DE7BF9CD9351E33896",
+  "total_file_count": 132
 }

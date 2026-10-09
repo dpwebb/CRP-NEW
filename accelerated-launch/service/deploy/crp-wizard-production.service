@@ -1,0 +1,25 @@
+[Unit]
+Description=Credit Regulator Pro version 1 production
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=crp-wizard-production
+StateDirectoryMode=0700
+WorkingDirectory=/opt/crp-wizard-production/current
+EnvironmentFile=/opt/crp-wizard-production/production.env
+ExecStart=/opt/crp-node/bin/node accelerated-launch/service/server.cjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/crp-wizard-production
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

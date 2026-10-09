@@ -270,8 +270,9 @@ function renderAccount(panel) {
         <input id="email" type="email" autocomplete="username" placeholder="you@example.com">
       </div>
       <div>
-        <label for="password">Password (at least 12 characters)</label>
+        <label for="password">Password</label>
         <input id="password" type="password" autocomplete="new-password">
+        <p class="small">For a new account, use at least 12 characters.</p>
       </div>
     </div>
     <button class="primary" id="create">Create account</button>

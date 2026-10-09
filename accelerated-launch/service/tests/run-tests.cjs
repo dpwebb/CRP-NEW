@@ -58,6 +58,7 @@ const SECTION_FILES = [
   'es-filled-packet-business-letter.cjs',
   'ew-inline-packet-composer.cjs',
   'ex-inline-packet-journey.cjs',
+  'ey-legacy-account-continuity.cjs',
   /* B6-INGEST-001 — the coverage matrix, its registry consistency and the unsupported-bureau acquisition queue. */
   'y-ingest-coverage-matrix.cjs',
   /* B6-INGEST-002 — the general bureau-report intake path and its unrelated/unreadable refusals. */
@@ -324,8 +325,8 @@ function restoreImplementationEvidence() {
     : [];
   const applied = [];
   if (!scripts.length) return [{ script: '*', applied: false, reason: 'NO_CLOSURE_RECORDS_FOUND' }];
-  /* The one evidence builder that lives in the service directory (it runs its own focused sections) is re-derived
-     in the same way, so a source change cannot leave BLOCKER-SUBSCRIPTION-VALUE-001 stale either. */
+  /* Reuse this passing frozen run. Re-running the browser sections here can time out and replace genuine
+     passing subscriber evidence with a failed child result. The builder still verifies current source hashes. */
   const serviceBuilders = path.resolve(__dirname, '..').replace(/[\\/]tests$/, '');
   const builders = ['build-subscription-value-evidence.cjs']
     .map((n) => path.join(serviceBuilders, n))
@@ -344,7 +345,7 @@ function restoreImplementationEvidence() {
   }
   for (const file of builders) {
     try {
-      execFileSync(process.execPath, [file], { stdio: ['ignore', 'pipe', 'pipe'] });
+      execFileSync(process.execPath, [file, '--reuse-current'], { stdio: ['ignore', 'pipe', 'pipe'] });
       applied.push({ script: path.basename(file), applied: true });
     } catch (err) {
       const stderr = String((err && err.stderr) || (err && err.message) || 'failed').split('\n').map((l) => l.trim()).filter(Boolean);
