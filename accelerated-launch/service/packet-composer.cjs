@@ -24,6 +24,13 @@ function version() {
     for (const filename of ['packet-composer.cjs', 'packet-composer-worker.cjs', 'pdf-vendor/pdf-lib-1.17.1.min.js', 'pdf-vendor/fontkit-1.1.1.min.js', 'packet-fonts/NotoSans-Regular.ttf']) {
       hash.update(filename); hash.update(fs.readFileSync(path.join(__dirname, filename)));
     }
+    // Permitted encrypted evidence depends on the local Poppler copy engine. A
+    // changed engine invalidates saved approval identities, even with a warm recipe.
+    for (const tool of ['pdfinfo', 'pdftocairo']) {
+      const result = spawnSync(tool, ['-v'], { encoding: 'utf8', timeout: 2000, maxBuffer: 8192, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } });
+      const identity = !result.error && result.status === 0 && (String(result.stdout || '') + String(result.stderr || '')).match(new RegExp(`^${tool} version ([0-9]+(?:\\.[0-9]+)+)`, 'm'));
+      hash.update(tool); hash.update(identity ? identity[1] : 'unavailable');
+    }
     rendererVersion = `${FORMAT_VERSION}-${hash.digest('hex').slice(0, 24)}`;
   }
   return rendererVersion;

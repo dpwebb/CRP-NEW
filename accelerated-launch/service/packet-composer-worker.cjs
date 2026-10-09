@@ -2,6 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
 const lib = require('./pdf-vendor/pdf-lib-1.17.1.min.js');
 const fontkit = require('./pdf-vendor/fontkit-1.1.1.min.js');
 const { PDFDocument, PDFName, PDFDict, PDFArray, PDFRef, PDFString, PDFHexString, PDFObjectCopier, PDFPage,
@@ -33,10 +34,58 @@ function sanitize(doc) {
   visit(doc.catalog);
   for (const [, object] of doc.context.enumerateIndirectObjects()) visit(object);
 }
-async function load(bytes) {
+const COPY_MAX_BYTES = 64 * 1024 * 1024, COPY_TIMEOUT_MS = 20000;
+const PDF_LOAD_OPTIONS = { updateMetadata: false, throwOnInvalidObject: true };
+// This vendored ES5 library's Error subclasses do not retain instanceof identity.
+const ENCRYPTED_LOAD_MESSAGE = new lib.EncryptedPDFError().message;
+async function permittedEvidenceCopy(value, budget) {
+  // Only an empty-password, explicitly printable/copyable report or supporting copy is
+  // eligible. Original upload bytes remain untouched; no password, path or private data
+  // enters an argument, temporary file, diagnostic or external service.
+  const options = { input: value, timeout: COPY_TIMEOUT_MS, maxBuffer: COPY_MAX_BYTES,
+    windowsHide: true, stdio: ['pipe', 'pipe', 'pipe'], env: { ...process.env, LC_ALL: 'C' } };
+  const info = execFileSync('pdfinfo', ['-upw', '', '-'], { ...options, maxBuffer: 1024 * 1024 }).toString('utf8');
+  const permissionLines = info.split(/\r?\n/).filter(line => /^\s*Encrypted:/.test(line));
+  const pageLines = info.split(/\r?\n/).filter(line => /^\s*Pages:/.test(line));
+  if (permissionLines.length !== 1 || !/^Encrypted:\s+yes \(print:yes copy:yes change:(?:yes|no) addNotes:(?:yes|no) algorithm:[\w-]+\)\s*$/.test(permissionLines[0]) ||
+      pageLines.length !== 1 || !/^Pages:\s+[1-9]\d*\s*$/.test(pageLines[0])) throw new Error('PDF');
+  const original = await PDFDocument.load(value, { ...PDF_LOAD_OPTIONS, ignoreEncryption: true });
+  const encryption = original.context.lookup(original.context.trailerInfo.Encrypt);
+  const permissions = encryption instanceof PDFDict && encryption.lookupMaybe(name('P'), lib.PDFNumber)?.asNumber();
+  // Verify permission bits independently; metadata text can never grant a permission.
+  if (!original.isEncrypted || !(encryption instanceof PDFDict) || encryption.get(name('Filter'))?.toString() !== '/Standard' ||
+      !Number.isSafeInteger(permissions) || (permissions & 4) !== 4 || (permissions & 16) !== 16 ||
+      original.getPageCount() !== Number(pageLines[0].replace(/^Pages:\s+/, '').trim()) || original.getPageCount() > 400) throw new Error('PDF');
+  if (budget.pages + original.getPageCount() > 400) throw coded('INVALID_REQUEST');
+  const copied = execFileSync('pdftocairo', ['-upw', '', '-pdf', '-', '-'], options);
+  if (copied.subarray(0, 5).toString('ascii') !== '%PDF-') throw new Error('PDF');
+  if (budget.bytes + copied.length > COPY_MAX_BYTES) throw coded('INVALID_REQUEST');
+  budget.pages += original.getPageCount(); budget.bytes += copied.length;
+  const doc = await PDFDocument.load(copied, PDF_LOAD_OPTIONS);
+  if (doc.isEncrypted || doc.getPageCount() !== original.getPageCount()) throw new Error('PDF');
+  for (let at = 0; at < doc.getPageCount(); at++) {
+    const source = original.getPage(at), target = doc.getPage(at);
+    const rotation = ((source.getRotation().angle % 360) + 360) % 360;
+    const sourceSize = source.getSize(), targetSize = target.getSize();
+    const width = rotation === 90 || rotation === 270 ? sourceSize.height : sourceSize.width;
+    const height = rotation === 90 || rotation === 270 ? sourceSize.width : sourceSize.height;
+    if (Math.abs(width - targetSize.width) > .02 || Math.abs(height - targetSize.height) > .02) throw new Error('PDF');
+  }
+  // Cairo adds wall-clock dates/trailer IDs. Neither belongs to an evidence page;
+  // discard them before copying so cold previews/approvals/downloads are identical.
+  doc.context.trailerInfo.Info = undefined;
+  doc.context.trailerInfo.ID = undefined;
+  return doc;
+}
+async function load(bytes, allowPermittedEvidenceCopy = false, budget) {
   const value = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || '', 'base64');
   if (value.subarray(0, 5).toString('ascii') !== '%PDF-') throw new Error('PDF');
-  const doc = await PDFDocument.load(value, { updateMetadata: false, throwOnInvalidObject: true });
+  let doc;
+  try { doc = await PDFDocument.load(value, PDF_LOAD_OPTIONS); }
+  catch (error) {
+    if (!allowPermittedEvidenceCopy || error?.message !== ENCRYPTED_LOAD_MESSAGE) throw error;
+    doc = await permittedEvidenceCopy(value, budget);
+  }
   if (doc.isEncrypted || !doc.getPageCount()) throw new Error('PDF');
   sanitize(doc);
   return doc;
@@ -153,12 +202,12 @@ async function letterPages(doc, text) {
   }
   return fields;
 }
-async function appendEvidence(target, entry, isReport, position) {
+async function appendEvidence(target, entry, isReport, position, copyBudget) {
   const bytes = Buffer.isBuffer(entry.bytes) ? entry.bytes : Buffer.from(entry.bytes || '', 'base64');
   const type = String(entry.content_type || '').toLowerCase().split(';')[0].trim();
   let source, pages;
   if (type === 'application/pdf') {
-    try { source = await load(bytes); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }
+    try { source = await load(bytes, true, copyBudget); } catch (error) { throw coded(error.code === 'INVALID_REQUEST' ? error.code : 'PACKET_ATTACHMENT_UNREADABLE'); }
     // Freeze evidence fields to their saved appearances, retaining source artwork and entered values.
     try {
     const sourceForm = source.getForm();
@@ -192,6 +241,7 @@ async function appendEvidence(target, entry, isReport, position) {
   return pages;
 }
 async function compose(input) {
+  const copyBudget = { bytes: 0, pages: 0 };
   const forms = input.forms || [], sourceForms = [];
   if (forms.length > 20 || (input.reports || []).length > 256 || (input.documents || []).length > 32) throw coded('INVALID_REQUEST');
   for (const entry of forms) { try { sourceForms.push(await load(entry.bytes)); } catch { throw coded('SERVICE_STATE_UNAVAILABLE'); } }
@@ -202,7 +252,7 @@ async function compose(input) {
   const fields = await letterPages(doc, input.letter_text), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
   let position = fields.length;
   for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const entry of entries) {
-    const pages = await appendEvidence(doc, entry, kind === 'report', position);
+    const pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget);
     sections.push({ kind, label: label(entry.label), start_page: position + 1, page_count: pages.length, source_pages: pages }); position += pages.length;
   }
   for (const range of formRanges) { sections.push({ ...range, start_page: position + 1 }); position += range.page_count; }
