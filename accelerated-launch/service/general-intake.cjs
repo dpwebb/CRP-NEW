@@ -1250,6 +1250,29 @@ function accountIdentityToken(text) {
   return token;
 }
 
+// Recover display text only from the same trusted intro line and its own printed
+// value captions. The private matching token and assessment values stay unchanged.
+function accountNamePrefix(line, facts, token) {
+  const text = String(line.text || '');
+  const starts = [];
+  const caption = /\b(?:(?:DATE\s+)?OPENED|(?:DATE\s+)?CLOSED|(?:CURRENT\s+)?BALANCE|CREDIT\s+LIMIT|PAST\s+DUE|OVERDUE|STATUS|RESPONSIBILITY)\b/gi;
+  for (const match of text.matchAll(caption)) {
+    const after = text.slice(match.index + match[0].length).replace(/^[\s:=-]+/, '');
+    const status = statusReadingOf(after, facts.dates), responsibility = responsibilityOf(after);
+    if ((facts.dates || []).some(date => after.startsWith(date.raw.trim()))
+      || (facts.amounts || []).some(amount => after.startsWith(amount.trim()))
+      || status && after.toUpperCase().startsWith(status.raw.toUpperCase())
+      || responsibility && after.toUpperCase().startsWith(responsibility.raw.toUpperCase())) starts.push(match.index);
+  }
+  if (!starts.length) return null;
+  const raw = text.slice(0, Math.min(...starts)).trim().replace(/[,:;]+$/, '').trim();
+  if (!raw || accountIdentityToken(raw) !== token || decisiveWordsTrusted(line, raw) === false
+    || IDENTITY_FIELD_RE.test(raw)
+    || /\b(?:ACCOUNT\s*(?:NUMBER|NO\.?|#)|MEMBER\s*(?:NUMBER|NO\.?|#)|CONSUMER|ADDRESS|RESPONSIBILITY|AUTHORIZED\s+USER|AUTHORISED\s+USER)\b|\d{5,}|@/i.test(raw)
+    || BOILERPLATE_RE.test(raw)) return null;
+  return raw;
+}
+
 /* BLOCKER-FDT-001 / duplicate corroboration: a MASKED account identifier, taken from a printed masked account
    number (e.g. "Account Number ****1234" / "Acct # XXXX 5678"). Only the trailing digits are retained as a
    privacy-preserving token; the full number is never kept. This — not the creditor name — is what corroborates
@@ -1439,9 +1462,15 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   if (trusted && reportedIdentity) {
     const at = String(line.text || '').toUpperCase().indexOf(reportedIdentity);
     const explicitRaw = collectionIdentity?.raw || explicitAccountIdentity(line.text)?.raw;
-    if (explicitRaw || at >= 0) printed['account.reported_identity'] = { label: line.caption_label || explicitAccountIdentity(line.text)?.label || 'Creditor or account name',
-      state: 'VALUE', raw: explicitRaw || String(line.text).slice(at, at + reportedIdentity.length),
+    const recoveredRaw = !explicitRaw && kind === 'GENERAL_ACCOUNT' ? accountNamePrefix(line, facts, reportedIdentity) : null;
+    if (explicitRaw || recoveredRaw || at >= 0) printed['account.reported_identity'] = { label: line.caption_label || explicitAccountIdentity(line.text)?.label || 'Creditor or account name',
+      state: 'VALUE', raw: explicitRaw || recoveredRaw || String(line.text).slice(at, at + reportedIdentity.length),
       normalized: reportedIdentity, location: lineLocation(line), kind: 'account_identity' };
+    if (recoveredRaw) {
+      canonical.facts['account.display_name'] = recoveredRaw;
+      printed['account.display_name'] = { label: 'Creditor or account name', state: 'VALUE', raw: recoveredRaw,
+        normalized: recoveredRaw, location: lineLocation(line), kind: 'account_identity' };
+    }
     if (collectionIdentity && printed['account.reported_identity']) printed['account.reported_identity'].label = collectionIdentity.label;
   }
   const responsibility = canonical.facts['account.responsibility'];
@@ -2111,7 +2140,7 @@ function bindOrdinarySources(record) {
     'account.status': 'Status', 'account.balance': 'account.balance',
     'account.pastDueAmount': 'account.pastDueAmount', 'account.creditLimit': 'account.creditLimit',
     'account.paymentAmount': 'account.paymentAmount', 'account.amount': 'account.amount',
-    'account.reported_identity': 'account.reported_identity', 'account.masked_identifier': 'account.masked_identifier',
+    'account.reported_identity': 'account.reported_identity', 'account.display_name': 'account.display_name', 'account.masked_identifier': 'account.masked_identifier',
     'account.type': 'account.type', 'account.responsibility': 'account.responsibility',
     'liability.openedDate': 'opened_date', 'reportedAccount.dateOpened': 'opened_date',
     'liability.closedDate': 'closed_date', 'tradeline.firstDelinquencyDate': 'tradeline.firstDelinquencyDate',
@@ -2133,7 +2162,12 @@ function bindOrdinarySources(record) {
     const rejected = readings.some((reading) => reading.normalized == null || reading.state === 'UNRESOLVED'
       || reading.reason || reading.location?.trusted === false);
     const usable = !rejected && values.size === 1;
-    if (usable) continue; // Existing single-reading source stays live; do not cache a second copy of its evidence.
+    if (usable) {
+      if (field === 'account.display_name') record.fact_sources[field] = { raw_value: first.raw, normalized_value: first.normalized,
+        location: first.location, source_field: first.label, record_index: record.record_index,
+        caption_count: readings.length, trusted: true, status: 'RESOLVED' };
+      continue; // Existing single-reading source stays live; do not cache a second copy of its evidence.
+    }
     record.fact_sources[field] = { raw_value: first.raw, normalized_value: usable ? first.normalized : null,
       location: first.location, source_field: first.label, precision: first.precision || null,
       status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED',

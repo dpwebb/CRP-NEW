@@ -1,6 +1,6 @@
 'use strict';
 // Coordinates are PDF points in the original bureau pages. Only blank input areas are used.
-const VERSION = '2026-10-09-original-form-v1';
+const VERSION = '2026-10-09-original-form-v2';
 const CANADA_PROVINCES = { AB:'Alberta', BC:'British Columbia', MB:'Manitoba', NB:'New Brunswick', NL:'Newfoundland and Labrador', NS:'Nova Scotia', NT:'Northwest Territories', NU:'Nunavut', ON:'Ontario', PE:'Prince Edward Island', QC:'Quebec', SK:'Saskatchewan', YT:'Yukon' };
 function province(value) {
   const text=String(value||'').normalize('NFC').trim().toUpperCase();
@@ -32,7 +32,7 @@ const commonCa = personal => {
 const MAPS = {
   'ca-equifax-account': {
     version: VERSION, mode: 'ORIGINAL_OVERLAY', pages: 5, capacity: 3, name_parts: true,
-    profile: commonCa(false), previous_address: box(1, 189.3, 587.0, 386.6, 21.6, 25),
+    profile: commonCa(false), bureau_reference: box(0, 36.24, 334.1, 539.62, 21.6, 10), previous_address: box(1, 189.3, 587.0, 386.6, 21.6, 25),
     letter_date: box(4, 317.3, 559.5, 172.6, 28.8, 8),
     slots: [
       { name: box(1, 36.2, 359.6, 269.4, 21.6, 20), account: box(1, 306.2, 359.6, 269.7, 21.6, 16), reason: box(2, 63.5, 594.8, 485.4, 112.1, 30), other: [2, 53.7, 712.2] },
@@ -42,7 +42,7 @@ const MAPS = {
   },
   'ca-equifax-personal': {
     version: VERSION, mode: 'ORIGINAL_OVERLAY', pages: 3, capacity: 0, name_parts: true,
-    profile: commonCa(true), previous_address: box(1, 194.9, 465.9, 386.6, 21.6, 25),
+    profile: commonCa(true), bureau_reference: box(0, 41.89, 340.7, 539.62, 21.6, 10), previous_address: box(1, 194.9, 465.9, 386.6, 21.6, 25),
     letter_date: box(2, 317.3, 423.8, 172.6, 28.8, 8),
     comments: box(2, 42, 620, 528, 75),
     personal_choices: { name: [0, 48, 472], address: [0, 48, 452.4], date_of_birth: [0, 48, 432.8], phone: [0, 328.4, 452.4], identity_reference: [0, 328.4, 472] }

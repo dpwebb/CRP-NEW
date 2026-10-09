@@ -56,6 +56,8 @@ const SECTION_FILES = [
   'ep-provider-upgrades.cjs',
   'er-bureau-form-population.cjs',
   'es-filled-packet-business-letter.cjs',
+  'ew-inline-packet-composer.cjs',
+  'ex-inline-packet-journey.cjs',
   /* B6-INGEST-001 — the coverage matrix, its registry consistency and the unsupported-bureau acquisition queue. */
   'y-ingest-coverage-matrix.cjs',
   /* B6-INGEST-002 — the general bureau-report intake path and its unrelated/unreadable refusals. */

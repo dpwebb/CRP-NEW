@@ -165,7 +165,8 @@ function measuredScope(sections) {
     'Actual original-form/letter PDF review and approved bytes.');
   const paired = value('eh-packet-report-exhibits');
   need(paired?.both_reaging_sources === true && paired.review_and_approval_binding === true
-    && paired.selected_issue_sources_only === true && paired.explicit_opt_in === true, 'Both owned re-aging originals and explicit approved attachments.');
+    && paired.selected_issue_sources_only === true && paired.automatically_included_relevant_pages === true,
+    'Both owned re-aging source pages are automatically included and approval-bound.');
   const periods = value('by-packet-reconciliation')?.emitted_findings_reconciled;
   need(Array.isArray(periods) && periods.length > 0 && periods.every(row => row?.eligible === true && row.issues > 0
     && ['COLLECTION_REPORTING_PERIOD', 'TRADELINE_REPORTING_PERIOD'].includes(CHECKLIST_STATUTORY_SUPPORT[row.adapter_id])),

@@ -1,5 +1,5 @@
 'use strict';
-// Opt-in original report copies. Resolve custody from selected issue provenance,
+// Relevant original report pages. Resolve custody from selected issue provenance,
 // never from a filename, a caller's case id, or an unrelated saved report.
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
@@ -95,8 +95,6 @@ function available(store, actor, current, selected) {
     locations(source || record?.location, loc => {
       if (!loc.file_id || loc.file_id === fileId) ref.pages.add(loc.page);
     });
-    const dateLocation = record?.report_reference_date?.location;
-    if (dateLocation && (!dateLocation.file_id || dateLocation.file_id === fileId)) locations(dateLocation, loc => ref.pages.add(loc.page));
   }
   function fileFor(result, record, source) {
     const sourceIds = [source?.source_file_id, source?.location?.file_id].filter(Boolean);
@@ -161,7 +159,7 @@ function available(store, actor, current, selected) {
     const label = roles.length === 1 ? `${role === 'EARLIER' ? 'Earlier' : 'Current'} report${dates.length ? ' — ' + dates.join(', ') : ''}` : 'Report copy';
     out.push({ file_id: fileId, role, roles, label, original_filename: ref.file.original_filename,
       content_type: type, page_count: count, relevant_pages: [...ref.pages].sort((a, b) => a - b),
-      scope: 'ENTIRE_REPORT', bytes, sha256: digest, sources: [...ref.sources.values()]
+      scope: 'RELEVANT_PAGES', bytes, sha256: digest, sources: [...ref.sources.values()]
         .sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b))) });
   }
   return out.sort((a, b) => a.role.localeCompare(b.role) || a.label.localeCompare(b.label) || a.file_id.localeCompare(b.file_id));
@@ -174,16 +172,50 @@ function normalizedSelection(ids) {
   return unique;
 }
 
-function prepare(store, actor, caseId, result, selected, fileIds) {
+function prepare(store, actor, caseId, result, selected, fileIds, pageChoices = {}) {
   const ids = normalizedSelection(fileIds || []);
   const copies = result ? available(store, actor, result, selected) : [];
+  const state = store.state(), expected = new Set();
+  function expect(row, record, source) {
+    // Structural rule fixtures have no stored-file inventory; real stores always do.
+    if (!Array.isArray(state.files)) return;
+    const id = source?.source_file_id || source?.location?.file_id || record?.source_file_id || record?.location?.file_id
+      || (row?.file_ids?.length === 1 ? row.file_ids[0] : null);
+    const explicit = Boolean(source?.source_file_id || source?.location?.file_id || record?.source_file_id || record?.location?.file_id);
+    const file = (state.files || []).find(file => file.file_id === id);
+    if (id && !file?.demonstration && file?.stored_blob !== false && (file?.stored_sha256 || !file && explicit)) expected.add(id);
+  }
+  for (const issue of selected || []) {
+    for (const index of relatedIndices(issue)) {
+      const record = result.extraction?.records?.find(record => record.record_index === index);
+      if (record) expect(result, record);
+      for (const continuation of record?.continuation_merged_from || []) expect(result, record, { source_file_id: continuation.file_id });
+    }
+    for (const fact of [...(issue.source_facts || []), ...(issue.rule_assessment?.required_facts || [])]) {
+      const source = fact.source || fact;
+      const row = source.source_result_id ? state.results.find(row => row.result_id === source.source_result_id) : result;
+      const record = row?.extraction?.records?.find(record => record.record_index === (source.record_index ?? fact.record_index));
+      expect(row, record, source);
+    }
+  }
+  if ([...expected].some(id => !copies.some(copy => copy.file_id === id))) throw new ServiceError('PACKET_APPROVAL_STALE');
   if (ids.some(id => !copies.some(copy => copy.file_id === id))) throw new ServiceError('PACKET_APPROVAL_STALE');
+  if (!pageChoices || typeof pageChoices !== 'object' || Array.isArray(pageChoices)
+    || Object.keys(pageChoices).some(id => !copies.some(copy => copy.file_id === id))) throw new ServiceError('INVALID_REQUEST');
+  for (const copy of copies) {
+    const chosen = pageChoices[copy.file_id] || [];
+    if (!Array.isArray(chosen) || chosen.length > copy.page_count
+      || chosen.some(page => !Number.isSafeInteger(page) || page < 1 || page > copy.page_count)) throw new ServiceError('INVALID_REQUEST');
+    copy.relevant_pages = [...new Set([...copy.relevant_pages, ...chosen,
+      ...(copy.page_count === 1 ? [1] : [])])].sort((a,b) => a-b);
+    copy.consumer_pages = [...new Set(chosen)].sort((a,b) => a-b);
+  }
   const view = copies.map(copy => {
     const { bytes, sha256: digest, sources, ...publicCopy } = copy;
-    return { ...publicCopy, selected: ids.includes(copy.file_id),
+    return { ...publicCopy, selected: true,
       review_url: `/api/cases/${caseId}/packet/reports/${copy.file_id}` };
   });
-  const chosen = copies.filter(copy => ids.includes(copy.file_id));
+  const chosen = copies;
   const manifest = chosen.map((copy, index) => {
     const ext = copy.content_type === 'application/pdf' ? 'pdf' : copy.content_type === 'image/png' ? 'png' : 'jpg';
     return { ...view.find(item => item.file_id === copy.file_id),
@@ -191,7 +223,9 @@ function prepare(store, actor, caseId, result, selected, fileIds) {
   });
   return { view, manifest, material: chosen.map(copy => ({ ...manifest.find(item => item.file_id === copy.file_id),
     stored_bytes: copy.bytes.length, stored_sha256: copy.sha256, sources: copy.sources })),
-    copies: chosen.map(copy => ({ name: manifest.find(item => item.file_id === copy.file_id).archive_name, bytes: copy.bytes })) };
+    copies: chosen.map(copy => ({ name: manifest.find(item => item.file_id === copy.file_id).archive_name,
+      bytes: copy.bytes, content_type: copy.content_type, relevant_pages: copy.relevant_pages, label: copy.label })),
+    missing: copies.filter(copy => !copy.relevant_pages.length).map(copy => `Choose the report pages to include for ${copy.original_filename}.`) };
 }
 
 module.exports = { prepare, available, normalizedSelection, MAX_REPORT_EXHIBITS };

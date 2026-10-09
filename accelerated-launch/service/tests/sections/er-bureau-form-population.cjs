@@ -48,6 +48,15 @@ async function run(t,check) {
     check.ok(blank.bytes.equals(original.bytes),'empty template rendering preserves exact original appearance: '+descriptor.id);
     if(t?.dataDir)fs.writeFileSync(path.join(t.dataDir,'populated-'+descriptor.filename),filled.bytes);
   }
+  for(const descriptor of descriptors.filter(form=>['ca-equifax-account','ca-equifax-personal'].includes(form.id))) {
+    const data=payload(descriptor);data.correspondence.bureau_reference='8421864201';
+    const filled=forms.populateForm(descriptor,data);
+    check.deepEqual(filled.fields.filter(field=>field.label==='bureau file or account number').map(field=>[field.value,field.printed_value,field.page]),
+      [['8421864201','8421864201',1]],'explicit bureau consumer number fills its exact original row: '+descriptor.id);
+    data.correspondence.bureau_reference='LONG-EXPLICIT-BUREAU-FILE-REFERENCE';
+    check.ok(forms.populateForm(descriptor,data).fields.some(field=>field.label==='bureau file or account number'
+      &&field.type==='CONTINUATION'&&field.value===data.correspondence.bureau_reference),'long bureau number remains complete without truncation: '+descriptor.id);
+  }
   const tu=descriptors.find(f=>f.id==='ca-transunion'), tuData=payload(tu), filledTu=forms.populateForm(tu,tuData);
   const tuForm=(await lib.PDFDocument.load(filledTu.bytes)).getForm();
   check.equal(tuForm.getTextField('Name').getText(),'Fiction Zoë Émile','native form stores explicit name components in original last-first-middle order');

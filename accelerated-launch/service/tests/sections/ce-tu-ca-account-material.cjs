@@ -227,7 +227,7 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the approved packet downloads');
-  check.ok(/past-due amount \(500\) larger than its balance \(100\)/.test(comparableText(dl.text)), 'with the supported factual verification request');
+  check.ok(/balance of \$?100.*overdue amount of \$?500.*overdue amount is larger than the balance/.test(comparableText(dl.text)), 'with both actual amounts and the supported factual conflict in plain language');
   check.ok(comparableText(dl.text).indexOf('500') !== -1, 'and the printed past-due reading as evidence');
 
   evidence.synthetic_material_issue =

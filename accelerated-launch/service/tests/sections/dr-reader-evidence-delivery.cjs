@@ -173,7 +173,7 @@ async function run(t, check) {
   check.ok(selected, 'the derived UK period has a separate published basis in consumer packet review');
   if (selected) {
     const delivered = await approve(endpoint, selected), body = delivered.body, letter = delivered.letter;
-    check.ok(letter.includes('"File updated for the period to" date (01/01/26)')
+    check.ok(letter.includes('"File updated for the period to" date (January 1, 2026)')
       && letter.includes("the bureau's published order: the most recent month comes first, with one month for each entry"),
     'the human letter distinguishes the printed date anchor from the published history ordering');
     check.ok(letter.includes('"1"') && letter.includes('"0"') && letter.includes('page 1')

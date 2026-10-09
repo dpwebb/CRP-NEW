@@ -73,12 +73,13 @@ async function run(service, check) {
     'equivalent rule bases on different collection records remain distinct issues');
 
   const historicalPacket = approve(historical);
-  const letter = historicalPacket.body.split('EVIDENCE REFERENCES')[0];
+  const historicalView=packets.packetView(historicalPacket.store,historicalPacket.actor,'fictional-case');
+  const letter = historicalView.packet.correspondence_preview;
   check.equal((letter.match(/^\s*\d+\. /gm) || []).length, 1, 'the approved letter has one request for the underlying concern');
-  check.match(historicalPacket.body, /Additional supporting rule: FCRA/,
-    'the packet names the federal support without a consumer confidence label');
-  check.match(comparableText(historicalPacket.body), /Qualification for this rule:.*exception applies/,
-    'the packet preserves the federal exception uncertainty');
+  check.ok(historicalView.eligible_issues[0].supported_bases.some(b=>/FCRA/.test(b.citation)),
+    'the reviewed finding retains federal support while the consumer letter uses plain words');
+  check.ok(primary.supported_bases.some(b=>/exception applies/.test(b.uncertainty||'')),
+    'the qualified secondary basis remains recorded without repeating a legal appendix in the letter');
   const approval = historicalPacket.store.state().packets[0].approved_version;
   const federal = historical.evaluation.results.find((r) => r.machine.adapter_id === 'FCRA-605A-4-US-NATIONAL-7Y');
   federal.machine.finding.evaluation.exceptions.unresolved_items[0].text += ' (changed material qualification)';
@@ -92,13 +93,13 @@ async function run(service, check) {
   check.equal(staleView.packet.approval_stale, true, 'the review screen recognizes the changed supporting qualification');
   check.equal(staleView.packet.approved, false, 'the screen enables approval of the changed packet');
   check.equal(staleView.packet.download_available, false, 'the screen withholds the stale download');
-  check.match(staleView.packet.correspondence_preview, /changed material qualification/,
-    'the new review displays the changed qualification before renewed approval');
+  check.ok(JSON.stringify(staleView.eligible_issues[0].supported_bases).includes('changed material qualification'),
+    'the reviewed finding retains the changed supporting qualification before renewed approval');
   packets.approvePacket(historicalPacket.store, historicalPacket.actor, 'fictional-case');
   check.equal(packets.packetView(historicalPacket.store, historicalPacket.actor, 'fictional-case').packet.approved,
     true, 'renewed approval restores the current packet view');
-  check.match(packetText(packets.packetDownload(historicalPacket.store, historicalPacket.actor, 'fictional-case')),
-    /changed material qualification/, 'the newly approved download matches the reviewed qualification');
+  check.equal(comparableText(packetText(packets.packetDownload(historicalPacket.store, historicalPacket.actor, 'fictional-case'))),
+    comparableText(staleView.packet.correspondence_preview), 'the newly approved PDF matches the current plain letter');
 
   const review = assessed('2019', '2027-06-13');
   const reviewIssue = issues.issuesFor(review)[0];
@@ -111,8 +112,8 @@ async function run(service, check) {
     'the printed-date evidence stays separate from the shifted retention anchor');
   check.equal(publicReview.evidence.anchor_normalized_value, '2019-11-28', 'the 180-day arithmetic remains unchanged');
   const reviewPacket = approve(review).body;
-  check.match(reviewPacket, /Date of first delinquency on the collection entry: printed "01 June 2019" \(page 1, line 3\)/,
-    'the packet carries the actual first-delinquency reading');
+  check.match(comparableText(reviewPacket), /Date of first delinquency on the collection entry.*June 1, 2019.*report page 1, line 3/,
+    'the letter carries the actual first-delinquency date and inline page reference');
   check.equal(/undefined|value omitted/.test(reviewPacket), false, 'the packet never fabricates missing evidence from a source-shape mismatch');
   check.match(reviewPacket, /current file/, 'the later-expiry request is conditional on continued reporting');
   const report = journey.assessmentReportBody(results.renderResultSet(review), 'fictional-produced-at');
@@ -173,7 +174,7 @@ async function run(service, check) {
     'the assessment retains the supported history readings without raw diagnostics');
   check.match(historyReport, /Source: Payment history 2024-01.*printed "OK" \(page 1, line 4\)/,
     'the assessment identifies the actual inline history source instead of substituting the account heading');
-  check.match(approve(history).body, /"OK" \(Paid as agreed\).*"30" \(30 days late\)/,
+  check.match(comparableText(approve(history).body), /"OK" \(Paid as agreed\).*"30" \(30 days late\)/,
     'the reviewed and approved packet uses the same supported history readings');
 
   const accuracyExtraction = formats.extractWithSharedAdapter(makeSyntheticModel({ pages: [[
@@ -224,7 +225,7 @@ async function httpJourney(service, check) {
     200, 'the owner approves the current evidence and request');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });
   check.equal(download.status, 200, 'the subscribed owner downloads the approved packet');
-  check.match(download.text, /printed "01 June 2019" \(page 1, line 3\)/,
+  check.match(comparableText(download.text), /June 1, 2019.*report page 1, line 3/,
     'the actual HTTP packet download contains the corrected decisive source');
   check.equal((await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: other.token })).status,
     403, 'a different owner cannot download the corrected packet');

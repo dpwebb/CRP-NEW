@@ -70,8 +70,17 @@ async function ready(t, actor, fixture, ids) {
 async function refusedCopies(t, check, actor, fixture, label) {
   for (const suffix of ['/packet', '/packet-download', '/packet-print', '/packet/reports/' + fixture.fileId]) {
     const response = await t.request('GET', fixture.base + suffix, auth(actor));
+    if (suffix === '/packet' && response.status === 200) {
+      const view = response.json.view, eligible = new Set(view.eligible_issues.map(issue => issue.issue_id));
+      check.ok(view.packet.selected_issue_ids.some(id => !eligible.has(id)), label + ' removes an obsolete selected issue from the current selector');
+      check.equal(view.packet.approval_stale, true, label + ' keeps the saved approval stale');
+      check.equal(view.packet.approved, false, label + ' cannot present the obsolete packet as approved');
+      check.equal(view.packet.preview_ready || view.packet.download_available || view.packet.print_available, false,
+        label + ' keeps preview, download and printing disabled until reselection');
+      continue;
+    }
     check.equal(response.status, 409, label + ' refuses ' + suffix);
-    check.equal(response.json.error.code, 'PACKET_APPROVAL_STALE', label + ' has a typed stale-custody refusal');
+    check.equal(response.json.error?.code, 'PACKET_APPROVAL_STALE', label + ' has a typed stale-custody refusal');
   }
 }
 
@@ -184,18 +193,25 @@ async function run(t, check) {
   await ready(t, actor, current, [earlier.fileId, current.fileId]);
   t.service.store.putBlob(current.fileId, Buffer.concat([current.bytes, Buffer.from('\nTAMPERED')]));
   await refusedCopies(t, check, actor, current, 'changed original bytes');
-  check.equal((await select(t, actor, current, [reaging.issue_id])).json.error.code, 'PACKET_APPROVAL_STALE',
+  check.equal((await select(t, actor, current, [reaging.issue_id])).json.error?.code, 'PACKET_APPROVAL_STALE',
     'saving the same issues cannot silently remove a chosen original with invalid custody');
   const resetTampered = await choose(t, actor, current, []);
   check.equal(resetTampered.status, 409, 'an obsolete empty opt-in cannot bypass changed required report custody');
-  check.equal(resetTampered.json.error.code, 'PACKET_APPROVAL_STALE', 'required report pages remain bound after a reset attempt');
+  check.equal(resetTampered.json.error?.code, 'PACKET_APPROVAL_STALE', 'required report pages remain bound after a reset attempt');
   t.service.store.putBlob(current.fileId, current.bytes);
   await ready(t, actor, current, [earlier.fileId, current.fileId]);
   check.equal((await t.request('GET', current.base + '/packet-download', auth(actor))).status, 200,
     'the restored exact source pages can be rereviewed');
   t.service.store.update(state => { state.files.find(file => file.file_id === current.fileId).account_id = stranger.account_id; });
   for (const suffix of ['/packet', '/packet-download', '/packet-print']) {
-    check.equal((await t.request('GET', current.base + suffix, auth(actor))).json.error.code, 'PACKET_APPROVAL_STALE',
+    const response = await t.request('GET', current.base + suffix, auth(actor));
+    if (suffix === '/packet' && response.status === 200) {
+      check.equal(response.json.view.packet.approval_stale, true, 'changed ownership removes obsolete issues while retaining stale approval');
+      check.equal(response.json.view.packet.preview_ready || response.json.view.packet.download_available, false,
+        'changed ownership cannot provide an approved preview or download');
+      continue;
+    }
+    check.equal(response.json.error?.code, 'PACKET_APPROVAL_STALE',
       'changed source ownership refuses the selected packet');
   }
   t.service.store.update(state => { state.files.find(file => file.file_id === current.fileId).account_id = actor.account_id; });
@@ -205,7 +221,7 @@ async function run(t, check) {
   t.service.store.update(state => { state.results.find(result => result.result_id === earlier.resultId).extraction.records[0] = priorRecord; });
   await t.request('DELETE', earlier.base, auth(actor));
   await refusedCopies(t, check, actor, current, 'deleted earlier source case');
-  check.equal((await choose(t, actor, current, [])).json.error.code, 'PACKET_APPROVAL_STALE',
+  check.equal((await choose(t, actor, current, [])).json.error?.code, 'PACKET_APPROVAL_STALE',
     'deleting an earlier source cannot be hidden by clearing obsolete opt-in choices');
 
   await multipageAndImage(t, check, actor);
@@ -256,20 +272,25 @@ async function continuationAndReset(t, check, actor, unrelated) {
     check.ok(includedPage > 1, 'each actual continuation source page reaches the approved complete PDF');
     sameRenderedPage(check, t.dataDir, file.bytes, 1, downloaded.bytes, includedPage, 'continuation page');
   }
-  await t.request('POST', fixture.base + '/evaluate', auth(actor));
-  check.equal((await choose(t, actor, fixture, [files[0].fileId])).json.error.code, 'PACKET_APPROVAL_STALE',
+  fixture.resultId = (await t.request('POST', fixture.base + '/evaluate', auth(actor))).json.result_id;
+  check.equal((await choose(t, actor, fixture, [files[0].fileId])).json.error?.code, 'PACKET_APPROVAL_STALE',
     'nonempty report choices cannot bypass a changed current result');
+  check.equal((await choose(t, actor, fixture, [])).json.error?.code, 'PACKET_APPROVAL_STALE',
+    'clearing report choices cannot bypass a changed assessed result');
+  const currentIssue = issue(t, fixture, 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY');
+  check.equal((await select(t, actor, fixture, [currentIssue.issue_id])).status, 200,
+    'consumer can select the supported issue from the newest assessment');
   const reset = await choose(t, actor, fixture, []);
-  check.equal(reset.status, 200, 'explicit reset works after the current result changed');
+  check.equal(reset.status, 200, 'source choices save after the newest supported issue is selected');
   check.equal(reset.json.view.packet.approved, false, 'reset after re-evaluation removes approval');
   check.deepEqual(reset.json.view.packet.report_attachment_manifest.map(copy => copy.file_id).sort(), files.map(file => file.fileId).sort(),
     'an obsolete copy reset does not remove the actual source pages of the selected issue');
-  check.equal((await t.request('GET', fixture.base + '/packet-download', auth(actor))).json.error.code, 'PACKET_NOT_APPROVED',
+  check.equal((await t.request('GET', fixture.base + '/packet-download', auth(actor))).json.error?.code, 'PACKET_NOT_APPROVED',
     'clearing approval after re-evaluation cannot deliver the obsolete selected result');
   // No eligible current issues: resetting obsolete opt-in state cannot invent a current finding.
   t.service.store.update(state => { const latest = state.results.filter(result => result.case_id === fixture.caseId).at(-1);
     latest.evaluation = {}; latest.extraction.records = []; });
-  check.equal((await choose(t, actor, fixture, [])).json.error.code, 'PACKET_APPROVAL_STALE',
+  check.equal((await choose(t, actor, fixture, [])).json.error?.code, 'PACKET_APPROVAL_STALE',
     'an obsolete copy reset refuses an unavailable current finding and never manufactures one');
   check.notEqual(view.packet.preview_version, reset.json.view.packet.preview_version, 'changed result remains bound to a different preview');
 }
@@ -343,7 +364,7 @@ async function multipageAndImage(t, check, actor) {
     ['Creditor Legacy Balance $100 Opened 01/01/2022 Closed 01/01/2021']);
   t.service.store.update(state => { const file = state.files.find(item => item.file_id === fixture.fileId);
     file.stored_blob = false; delete file.stored_sha256; });
-  check.equal((await t.request('GET', fixture.base + '/packet-download', auth(actor))).json.error.code, 'PACKET_APPROVAL_STALE',
+  check.equal((await t.request('GET', fixture.base + '/packet-download', auth(actor))).json.error?.code, 'PACKET_APPROVAL_STALE',
     'removing retained-source metadata cannot silently drop an approved report exhibit');
   t.service.store.update(state => { const file = state.files.find(item => item.file_id === legacyFixture.fileId);
     file.stored_blob = false; delete file.stored_sha256; });

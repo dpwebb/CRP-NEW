@@ -249,8 +249,9 @@ async function run(t, check) {
       200, 'the consumer approves the packet');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the packet downloads');
-    check.match(downloaded.text, /VIOLATION[\s\S]*Reporting rule: An account cannot be both open and closed/,
-      'the actual PDF names the violation and its reporting rule');
+    check.equal(issue.consumer_label,'VIOLATION','the selected finding retains the sole platform breach term');
+    check.match(require('../packet-pdf-assertions.cjs').comparableText(downloaded.text), /says this account is open.*closing date.*check the status/,
+      'the actual PDF states the selected status/date conflict and factual request in familiar words');
   }
   return { source_linked_cases: cases.length, statutory_gate: false,
     ordinary_report_regions: regions.length, ordinary_report_checks_per_region: 6 };

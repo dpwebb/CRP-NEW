@@ -171,6 +171,7 @@ async function populate(descriptor, payload) {
   for(const item of accountItems)if(!item.account_reference)overflow('Entry without a printed account number',`${item.name||'Entry'}\nReport reference: ${item.report_reference||'See attached report'}\nLocation: ${location(item.source_location)||'See the marked copy with my letter'}\n${itemLink(item)}`);
   if(descriptor.country==='US'&&settings.no_ssn_issued)overflow('Social Security number','I have never been issued a Social Security number.');
   if(map.mode==='ORIGINAL_OVERLAY') {
+    if(map.bureau_reference)overlay('bureau file or account number',payload.correspondence?.bureau_reference,map.bureau_reference);
     for(const [key,b] of Object.entries(map.profile)) {
       let value=key==='identity_reference'?settings.identity_reference:key==='street_name'?streetName:profile[key];
       if(key==='date_of_birth')value=descriptor.country==='US'?digits(dateUs(clean(value))):digits(value);

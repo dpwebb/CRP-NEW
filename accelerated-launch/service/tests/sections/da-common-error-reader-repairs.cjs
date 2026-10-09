@@ -12,6 +12,8 @@ const issues = require('../../issues.cjs');
 const packets = require('../../packets.cjs');
 const results = require('../../results.cjs');
 const evaluation = require('../../evaluation.cjs');
+const letter = require('../../consumer-dispute-letter.cjs');
+const { comparableText } = require('../packet-pdf-assertions.cjs');
 const { extractFacts } = require('../../../../internal-validation/ca-ns-last-payment-six-year/extraction.cjs');
 const fixtures = require('../../../../internal-validation/ca-ns-last-payment-six-year/tests/fixtures.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
@@ -66,6 +68,8 @@ async function run(t, check) {
     'only the two decisive printed dates are carried to the issue and packet');
   check.deepEqual(paymentIssue?.source_facts[1].location, legacy.location,
     'the payment keeps its own account and exact source location');
+  check.match(letter.requestFor(paymentIssue), /last-payment date as January 1, 2027\. That is after the report date of June 12, 2026/,
+    'the supported payment conflict names both dates and their actual relationship in plain English');
   const material = packets.issueContent(paymentIssue);
   check.ok(material.includes('2026/06/12') && material.includes('2027/01/01')
     && material.includes(FUTURE_REQUIREMENT), 'PR-01 packet material carries both readings and their requirement');
@@ -85,6 +89,8 @@ async function run(t, check) {
     'the independent issue uses the delinquency source and report reference');
   check.equal(delinquencyIssue?.source_facts[1].location.label, 'First Delinquency',
     'the delinquency source points to its own printed field');
+  check.match(letter.requestFor(delinquencyIssue), /first missed-payment date as January 1, 2027\. That is after the report date of June 12, 2026/,
+    'an independent missed-payment conflict uses its own date and the report date');
   const independentExtraction = { ...independent.extraction, presentation_id: 'PR-01',
     support: formats.SUPPORT.ACTUAL_REPORT_EVIDENCE, extraction_ran: true, admission: { admitted: true } };
   const independentResult = results.renderResultSet({ extraction: independentExtraction,
@@ -146,6 +152,10 @@ async function run(t, check) {
   } }, { region: 'CA-MB', presentation: 'PR-01' });
   check.equal(beforeOpening?.requirement, 'A payment or first missed payment cannot happen before the account opened.',
     'a before-opening conflict retains its own requirement');
+  check.match(letter.requestFor({ ...paymentIssue, rule_assessment: beforeOpening,
+    source_facts: beforeOpening.source_facts, evidence: { field: 'last_payment', value: '2027-01-01', opened: '2028-01-01' } }),
+  /last-payment date as January 1, 2027\. That is before the account opened on January 1, 2028/,
+  'the separately supported opening-date comparison does not become a report-date conflict');
 
   const owner = await t.unpaidAccount('da-reader-owner@example.test');
   await t.pay(owner, 'monthly');
@@ -175,8 +185,11 @@ async function run(t, check) {
       'the selected date issue reaches consumer approval');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the approved future-date packet downloads');
-    check.ok(downloaded.text.includes('June 12, 2026') && downloaded.text.includes('01/01/2027')
-      && downloaded.text.includes(FUTURE_REQUIREMENT), 'the downloaded packet carries both decisive dates and the correct rule');
+    const plainPacket = comparableText(downloaded.text);
+    check.match(plainPacket, /last-payment date as January 1, 2027\. That is after the report date of June 12, 2026/,
+      'the downloaded letter states both decisive dates and the supported after-report conflict');
+    check.match(plainPacket, /Please check.*correct/i, 'the consumer asks the bureau to check and correct the date');
+    check.ok(downloaded.text.includes('01/01/2027'), 'the included original page retains the exact raw date reading');
     check.equal(downloaded.text.includes('cannot happen before the account opened'), false,
       'the future-date packet does not attribute the conflict to the unrelated opening-date rule');
   }

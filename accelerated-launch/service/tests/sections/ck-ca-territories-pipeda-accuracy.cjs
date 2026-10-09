@@ -133,8 +133,8 @@ async function run(service, check) {
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token })).status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.match(comparableText(dl.text), /clause 4\.6/, 'naming the recorded principle behind the issue');
-  check.match(comparableText(dl.text), /cannot both be right/, 'carrying the printed conflict the verification asks about');
+  check.match(issue.citation, /clause 4\.6/, 'the reviewed issue retains the recorded principle supporting its factual rule');
+  check.match(comparableText(dl.text), /opened on January 1, 2020 and closed on January 1, 2019.*opening date comes after the closing date.*check which of these two printed values is correct/, 'the letter states both sourced dates, their impossible order and a factual correction request');
   const changed = extractionFor(BENIGN);
   inject(service, owner, c.case_id, evaluateFor(changed, 'CA-NT'), changed);
   const stale = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });

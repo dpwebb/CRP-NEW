@@ -66,9 +66,10 @@ async function run(service, check) {
   [['01/01/2018', '2018-01-01', 7, 'fictional-earlier-file', '2025-06-12'],
     ['01/01/2020', '2020-01-01', 7, 'fictional-current-file', '2026-06-12']], 'both readings preserve separate report provenance despite identical page/line');
   const packet = approved(ctx);
-  check.equal((packet.body.split('EVIDENCE REFERENCES')[0].match(/^\s*\d+\. /gm) || []).length, 1, 'one chosen violation creates one request');
-  check.match(packet.body, /Earlier report 2025-06-12:.*printed "01\/01\/2018"/, 'the packet names the earlier raw anchor and report');
-  check.match(packet.body, /Current report 2026-06-12:.*printed "01\/01\/2020"/, 'the packet names the current raw anchor and report');
+  const letter=packet.body;
+  check.equal((letter.match(/^\s*\d+\. /gm) || []).length, 1, 'one chosen violation creates one request');
+  check.match(comparableText(letter), /January 1, 2018.*earlier report dated June 12, 2025/, 'the letter names the earlier date and report in familiar words');
+  check.match(comparableText(letter), /January 1, 2020.*this report dated June 12, 2026/, 'the letter names the current date and report in familiar words');
   check.match(comparableText(packet.body), /first missed-payment date against the account history.*correct it if wrong.*wrong date has not restarted how long this debt can stay on my report/, 'the printable request asks for date correction and checks that a wrong date has not extended reporting');
   check.equal(/probable violation|potential violation|undefined/i.test(packet.body), false, 'consumer packet wording contains no obsolete verdict or invented source');
   check.match(journey.assessmentReportBody(results.renderResultSet(ctx), 'fictional'), /Earlier report 2025-06-12/, 'assessment downloads retain the same earlier source');
@@ -108,7 +109,7 @@ async function run(service, check) {
   const monthPair = context(monthCurrent, monthPrior);
   check.equal(violations(monthPair).length, 1, 'nonoverlapping report months establish order without inventing a day');
   check.equal(violations(monthPair)[0].evidence.earlier_report_date, '2025-06', 'the earlier report month keeps month precision');
-  check.match(approved(monthPair).body, /Earlier report 2025-06:.*printed "June 2025"/, 'the packet preserves the actual printed report month');
+  check.match(comparableText(approved(monthPair).body), /earlier report dated June 2025.*this report dated June 2026/, 'the packet preserves report-month precision without inventing a day');
   check.equal(violations(context(monthCurrent, extracted('overlap-month', lines('2018', '2026')))).length, 0,
     'overlapping report-month/day intervals do not establish report order');
   const curedLines = lines().concat('Payment History: 2019-06=OK Key: OK=Paid as agreed');
@@ -123,8 +124,9 @@ async function run(service, check) {
   const historyCurrent = extracted('history-current', lines('2020', '2026', 'Closed').concat('Payment History: 2021-06=R9 Key: R9=Bad debt'));
   const historyPrior = extracted('history-prior', lines('2018', '2025', 'Closed').concat('Payment History: 2021-06=R9 Key: R9=Bad debt'));
   const historyContext = context(historyCurrent, historyPrior), historyPacket = approved(historyContext);
-  check.match(historyPacket.body, /R9=Bad debt/, 'the decisive adverse history and report-defined meaning reach the packet');
-  check.match(historyPacket.body, /Payment history 2021-06/, 'the decisive history period is identified');
+  const historyIssue=violations(context(historyCurrent,historyPrior))[0];
+  check.ok(JSON.stringify(historyIssue.source_facts).includes('R9=Bad debt'), 'the approved issue retains the decisive report-defined adverse meaning');
+  check.ok(JSON.stringify(historyIssue.source_facts).includes('Payment history 2021-06'), 'the approved source evidence identifies the decisive history period');
   const historyRow = historyCurrent.records[0].facts['account.paymentHistoryCells'][0];
   historyRow.location.line += 1;
   let historyStale = null;
@@ -168,7 +170,7 @@ async function run(service, check) {
     const rows = violations(regional);
     check.equal(rows.length, 1, `${region.region_code}: sourced anchor change works without a statute gate`);
     check.equal(issues.publicIssue(rows[0]).consumer_label, 'VIOLATION', `${region.region_code}: consistent consumer terminology`);
-    check.match(approved(regional).body, /Earlier report 2025-06-12/, `${region.region_code}: the selected packet carries both snapshots`);
+    check.match(comparableText(approved(regional).body), /earlier report dated June 12, 2025.*this report dated June 12, 2026/, `${region.region_code}: the selected letter names both snapshots`);
   }
   const previous = JSON.stringify(earlier);
   earlier.records[0].facts['tradeline.firstDelinquencyDate'] = '1901-01-01';
@@ -207,7 +209,7 @@ async function run(service, check) {
   check.equal((await service.request('POST', `/api/cases/${now.caseId}/packet/approve`, { token: owner.token })).status, 200, 'the consumer approves the current verification packet');
   const download = await service.request('GET', `/api/cases/${now.caseId}/packet-download`, { token: owner.token });
   check.equal(download.status, 200, 'the approved packet downloads through the real service');
-  check.match(download.text, /Earlier report 2025-06-12/, 'the HTTP packet retains the earlier own report');
+  check.match(comparableText(download.text), /earlier report dated June 12, 2025.*this report dated June 12, 2026/, 'the HTTP packet identifies the earlier and current owned reports');
   check.equal((await service.request('GET', `/api/cases/${now.caseId}/packet-download`, { token: other.token })).status, 403, 'another account cannot download the paired evidence');
   const after = await service.request('GET', `/api/cases/${oldReport.caseId}/results/${oldReport.response.json.result_id}`, { token: owner.token });
   check.deepEqual(after.json, snapshot.json, 'new assessment and packet creation preserve the previous result and its clock');

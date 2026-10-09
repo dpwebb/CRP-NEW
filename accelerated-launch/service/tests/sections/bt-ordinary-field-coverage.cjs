@@ -143,7 +143,7 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the retained positive downloads');
-  check.ok(/status says it is open/.test(comparableText(dl.text)), 'with the factual verification request');
+  check.ok(/says this account is open.*closing date.*check the status/.test(comparableText(dl.text)), 'the human letter states the open-status/closing-date conflict and asks for checking');
 
   evidence.au_repayment_status_benign = 'the AU "Current Repayment Status" sentence beside a closure date is benign; the raw reading and location are preserved and the sentence is never mapped to the lifecycle status fact';
   evidence.lifecycle_open_positive = 'a lifecycle-open status (Status: Open) beside a closure date remains a selectable verification issue through the upload path';

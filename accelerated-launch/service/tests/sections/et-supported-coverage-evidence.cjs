@@ -57,7 +57,7 @@ function fixture(root) {
   set('es-filled-packet-business-letter', { owned_actual_pdf_review: true, original_form_approval_digest: true,
     name_parts_not_guessed: true, ordinary_business_letter: true });
   set('eh-packet-report-exhibits', { both_reaging_sources: true, review_and_approval_binding: true,
-    selected_issue_sources_only: true, explicit_opt_in: true });
+    selected_issue_sources_only: true, automatically_included_relevant_pages: true });
   set('by-packet-reconciliation', { emitted_findings_reconciled: [{ adapter_id: 'FCRA-605A-4-US-NATIONAL-7Y', eligible: true, issues: 1 }] });
   set('ap-accept-010-consistency', { c5_clarification: true });
   set('w-ca-second-bureau-format', { specimens_available: { equifax_ca_pr_01: true, transunion_ca: true, transunion_digest_verified: true } });

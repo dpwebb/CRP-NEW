@@ -186,7 +186,7 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: actor.token });
   const download = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: actor.token });
   check.equal(download.status, 200, 'the approved packet downloads');
-  check.ok(comparableText(download.text).includes(issue.explanation), "and it keeps the selected finding's own words");
+  check.ok(/opening date comes after the closing date.*check the opened and closed dates/.test(comparableText(download.text)), 'the consumer letter keeps the selected factual concern and request in everyday words');
   check.deepEqual(RETIRED_WORDING.filter((re) => re.test(comparableText(download.text))).map(String), [], 'and carries none of the retired wording');
   check.ok(!/not legal advice/i.test(comparableText(download.text)), 'and never repeats the legal-advice disclaimer');
   check.ok(!/not legal advice/i.test(JSON.stringify(result)), 'the results surface carries no legal-advice disclaimer either');

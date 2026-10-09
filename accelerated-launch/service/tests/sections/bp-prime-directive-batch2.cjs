@@ -155,9 +155,9 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the balance/past-due packet downloads');
-  check.ok(/past-due amount/.test(comparableText(dl.text)), 'with the factual verification request');
+  check.ok(/overdue amount.*larger than the balance/.test(comparableText(dl.text)), 'with the factual amount conflict in familiar words');
   check.ok(/check the balance/.test(comparableText(dl.text)), 'and the plain request wording');
-  check.ok(/VIOLATION/.test(comparableText(dl.text)) && comparableText(dl.text).includes(`Reporting rule: ${balIssue.rule_assessment.requirement}`), 'stating the violation and its breached report-data requirement');
+  check.ok(balIssue.consumer_label==='VIOLATION' && /balance of \$1,250\.00.*overdue amount of \$2,000\.00/.test(comparableText(dl.text)), 'the finding remains a VIOLATION and its letter states both decisive printed amounts');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite reporting issue');
 
   /* ---- 5. HTTP end-to-end: potential duplicate through the packet path (qualified wording). ---- */
@@ -180,7 +180,7 @@ async function run(service, check) {
   check.ok(respRun.issue, 'the responsibility conflict is offered for selection');
   check.ok(respRun.issue.uncertainty.includes('joint account'), 'with the benign alternatives in the review');
   check.equal(respRun.dl.status, 200, 'the responsibility packet downloads');
-  check.ok(/labels for who is responsible/.test(comparableText(respRun.dl.text)), 'with the factual verification request');
+  check.ok(/different details about who is responsible for the same account/.test(comparableText(respRun.dl.text)), 'the letter plainly identifies the responsibility conflict');
   check.ok(/check the responsibility/.test(comparableText(respRun.dl.text)), 'and the plain request wording');
 
   /* ---- 7. Editing wording after approval invalidates the approval (download refused, not the older packet). ---- */

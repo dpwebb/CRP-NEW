@@ -48,7 +48,7 @@ const SECURITY_HEADERS = Object.freeze({
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Resource-Policy': 'same-origin',
   'X-Permitted-Cross-Domain-Policies': 'none',
-  'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'"
+  'Content-Security-Policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; frame-src 'self'; form-action 'none'; frame-ancestors 'none'; base-uri 'none'"
 });
 
 /**
@@ -191,6 +191,7 @@ const ROUTES = Object.freeze([
   ['GET', '/api/cases/:caseId/packet', true, 'packetView'],
   ['POST', '/api/cases/:caseId/packet/select', true, 'packetSelect'],
   ['POST', '/api/cases/:caseId/packet/wording', true, 'packetWording'],
+  ['POST', '/api/cases/:caseId/packet/letter', true, 'packetLetter'],
   ['POST', '/api/cases/:caseId/packet/correspondence', true, 'packetCorrespondence'],
   ['POST', '/api/cases/:caseId/packet/reports', true, 'packetReports'],
   ['GET', '/api/cases/:caseId/packet/reports/:fileId', true, 'packetReport'],
@@ -641,10 +642,18 @@ function buildCaseHandlers(store, logger, surface) {
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
 
+    packetLetter: ({ params, body, actor }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      packets.setLetter(store, actor, params.caseId, body?.letter_text);
+      logger.log({ event: 'PACKET_LETTER_RECORDED', outcome: 'OK' });
+      return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
+    },
+
     packetReports: ({ params, actor, body }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       entitlement.requireSubscriberFeature(store, actor);
-      packets.setReportFiles(store, actor, params.caseId, body.file_ids);
+      packets.setReportFiles(store, actor, params.caseId, body.file_ids, body.page_choices);
       return { status: 200, json: { ok: true, view: packets.packetView(store, actor, params.caseId) } };
     },
     packetReport: ({ params, actor }) => {
@@ -702,7 +711,8 @@ function buildCaseHandlers(store, logger, surface) {
       const version = new URL(req.url, 'http://127.0.0.1').searchParams.get('version');
       const file = packets.packetPreview(store, actor, params.caseId, version);
       return { status: 200, text: file.body, content_type: file.content_type,
-        headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version } };
+        headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version,
+          'X-Frame-Options': 'SAMEORIGIN', 'Content-Security-Policy': "default-src 'none'; frame-ancestors 'self'; form-action 'none'; base-uri 'none'" } };
     },
     packetForm: ({ params, actor, req }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
