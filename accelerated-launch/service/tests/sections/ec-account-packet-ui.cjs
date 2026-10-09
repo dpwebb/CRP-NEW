@@ -28,6 +28,7 @@ function harness(responder, { autoRead = true } = {}) {
   const issues = [{ checked: true, getAttribute: key => key === 'data-check-issue' ? 'issue-A' : null }];
   const documentChecks = [];
   const reportChecks = [];
+  const pageInputs = [];
   const caseButtons = [{ dataset: { open: 'existingA' }, onclick: null }, { dataset: { open: 'existingB' }, onclick: null }];
   panel.querySelector = selector => selector === '#packet-block' ? block : null;
   panel.querySelectorAll = selector => {
@@ -37,6 +38,7 @@ function harness(responder, { autoRead = true } = {}) {
     if (selector === '[data-packet-document], [id^="packet-document-date-"]') return documentChecks;
     if (selector === '[data-packet-report]:checked') return reportChecks.filter(row => row.checked);
     if (selector === '[data-packet-report]') return reportChecks;
+    if (selector === '[data-packet-pages]') return pageInputs;
     if (selector === '[data-open]') return caseButtons;
     return [];
   };
@@ -80,12 +82,12 @@ function harness(responder, { autoRead = true } = {}) {
     evaluate(`surface = { countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }], bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] } }; state.step = 1; renderJurisdiction(document.getElementById('panel'));`);
     node('file').files = [{ name: 'fictional-report.pdf', size: 48, type: 'application/pdf' }];
   };
-  return { context, node, calls, navigations, readers, panel, issues, reportChecks, caseButtons, evaluate, account, openPacket, jurisdiction };
+  return { context, node, calls, navigations, readers, panel, issues, reportChecks, pageInputs, caseButtons, evaluate, account, openPacket, jurisdiction };
 }
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
   return { eligible_issues: [{ eligible: true, issue_id: 'issue-A', consumer_label: 'VIOLATION' }],
-    packet: { approved, download_available: approved, selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved packet\nSaved wording', preview_version: 'current-A', result_id: 'result-A' },
+    packet: { approved, download_available: approved, preview_ready: true, letter_preview_url: '/api/cases/caseA/packet/preview?version=current-A', selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved letter\nSaved wording', preview_version: 'current-A', result_id: 'result-A' },
     support: { requirements, catalog: [], account_profile: { full_name: 'Fictional Consumer' } } };
 }
 async function saveAccountRace() {
@@ -176,7 +178,7 @@ async function dirtyPreviewStatus() {
   const h = harness(() => ({ view: packetView(true), requirements, missing: [] }));
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
   h.evaluate('state.notice = "Packet approved. Download it.";');
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your packet is approved.*Your packet is ready/s);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your packet is approved.*id="packet-ready-status"/s);
   h.node('packet-wording').value = 'Unsaved words after approval'; h.node('packet-wording').oninput();
   for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status']) {
     assert.equal(h.node(id).hidden, true, 'an unsaved edit hides the stale ' + id + ' message');
@@ -185,6 +187,40 @@ async function dirtyPreviewStatus() {
   assert.match(h.node('packet-preview-status').textContent, /Save and review/);
   assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
   assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'wording changes do not silently save or approve');
+}
+async function completeLetterEditAndReset() {
+  const view = packetView(true), h = harness(request => request.url.endsWith('/packet') ? { view } : { view, requirements, missing: [] });
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /id="packet-letter"/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /iframe title="Your complete dispute packet"/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /id="packet-preview" hidden/);
+  h.node('packet-letter').value = 'My full edited letter.\nPlease check my dates.'; h.node('packet-letter').oninput();
+  h.node('packet-bureau-reference').value = 'BUREAU-ACCOUNT-123';
+  assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
+  assert.equal(h.node('packet-approve').disabled, true); assert.equal(h.node('packet-pdf-review').hidden, true);
+  h.node('packet-preview-reviewed').checked = true; await h.node('packet-approve').onclick();
+  assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'approval cannot silently save an edited full letter');
+  await h.node('packet-save').onclick();
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/letter')).body, { letter_text: 'My full edited letter.\nPlease check my dates.' });
+  assert.equal(h.calls.find(row => row.url.endsWith('/correspondence')).body.correspondence.bureau_reference, 'BUREAU-ACCOUNT-123');
+  await h.openPacket('caseA'); await h.node('packet-reset-letter').onclick(); await h.node('packet-save').onclick();
+  assert.deepEqual(h.calls.filter(row => row.url.endsWith('/letter')).at(-1).body, { letter_text: null }, 'prepared letter reset is an explicit saved action');
+}
+async function fullLetterSaveContextRace() {
+  const selected = deferred(), h = harness(request => request.url.endsWith('/packet/select') ? selected.promise : { view: packetView() });
+  h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  h.node('packet-letter').value = 'Case A private letter'; h.node('packet-letter').oninput();
+  const save = h.node('packet-save').onclick(); await until(() => h.calls.some(row => row.url.endsWith('/select')), 'full letter selection save');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B'); selected.resolve({ view: packetView() }); await save;
+  assert.equal(h.calls.filter(row => row.url.endsWith('/letter')).length, 0, 'a delayed save cannot write A letter after account change');
+}
+async function incompletePacketCannotApprove() {
+  const view = packetView(); view.packet.preview_ready = false;
+  const h = harness(() => ({ view })); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  assert.ok(!/iframe title=/.test(h.panel.querySelector('#packet-block').innerHTML), 'an incomplete packet has no stale complete PDF preview');
+  h.node('packet-preview-reviewed').checked = true; await h.node('packet-preview-reviewed').onchange();
+  assert.equal(h.node('packet-approve').disabled, true); await h.node('packet-approve').onclick();
+  assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'letter text alone never permits approval of missing attachments');
 }
 async function printedMaskedReference() {
   const h = harness(() => ({ ok: true }));
@@ -216,6 +252,18 @@ async function packetDraftDocumentReturn() {
   assert.equal(h.evaluate('state.step'), 4, 'document detour returns to the same packet rather than report upload');
   assert.equal(h.evaluate('state.caseId'), 'caseA'); assert.equal(h.evaluate('state.packetReturn'), null);
   assert.equal(h.calls.find(row => row.method === 'PUT').body.profile.full_name, 'Updated Consumer', 'return saves the current contact details before refreshing the packet');
+}
+async function firstPacketContactDetour() {
+  const view = packetView(); view.packet.selected_issue_ids = []; view.packet.selected_count = 0;
+  view.packet.preview_ready = false; view.packet.correspondence_preview = ''; view.packet.report_exhibits = [];
+  const h = harness(request => request.url.endsWith('/packet/reports')
+    ? { status: 409, body: { ok: false, error: { code: 'PACKET_NO_SELECTION', message: 'No chosen issue' } } }
+    : { view, requirements, missing: [] });
+  h.issues[0].checked = false; h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
+  await h.node('packet-account-details').onclick();
+  assert.equal(h.evaluate('state.step'), 0, 'a first-time user can add contact details before choosing a dispute');
+  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'empty initial selection never attempts a required report-page attachment save');
+  assert.equal(h.evaluate('state.caseId'), 'caseA', 'the contact detour retains the owned case context');
 }
 async function packetReturnAccountIsolation() {
   const h = harness(request => ({ view: packetView(), requirements, missing: [] }));
@@ -501,7 +549,7 @@ async function packetLoadFailureRetry() {
   const failed = h.panel.querySelector('#packet-block').innerHTML;
   assert.match(failed, /could not load your packet/); assert.ok(!/No issue.*eligible/.test(failed), 'a load failure cannot misstate issue eligibility');
   fail = false; await h.node('packet-retry').onclick();
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Full saved packet/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Full saved letter/);
   assert.match(h.panel.querySelector('#packet-block').innerHTML, /Saved wording/);
   assert.equal(h.calls.filter(row => row.url === '/api/cases/caseA/packet').length, 2); assert.ok(h.calls.every(row => row.method === 'GET'), 'retry does not change the saved packet');
   fail = true; await h.openPacket('caseA'); const retry = h.node('packet-retry').onclick;
@@ -510,8 +558,8 @@ async function packetLoadFailureRetry() {
 }
 function originalReports() {
   return [
-    { file_id: 'earlier-copy', roles: ['EARLIER'], label: 'Earlier report — 2025-06-12', original_filename: 'earlier-report.pdf', content_type: 'application/pdf', page_count: 12, relevant_pages: [4], scope: 'ENTIRE_REPORT', selected: false, review_url: '/api/cases/caseA/packet/reports/earlier-copy' },
-    { file_id: 'current-copy', roles: ['CURRENT'], label: 'Current report — 2026-06-12', original_filename: 'current-report.pdf', content_type: 'application/pdf', page_count: 8, relevant_pages: [2, 3], scope: 'ENTIRE_REPORT', selected: false, review_url: '/api/cases/caseA/packet/reports/current-copy' }
+    { file_id: 'earlier-copy', roles: ['EARLIER'], label: 'Earlier report — 2025-06-12', original_filename: 'earlier-report.pdf', content_type: 'application/pdf', page_count: 12, relevant_pages: [4], scope: 'RELEVANT_PAGES', selected: true, review_url: '/api/cases/caseA/packet/reports/earlier-copy' },
+    { file_id: 'current-copy', roles: ['CURRENT'], label: 'Current report — 2026-06-12', original_filename: 'current-report.pdf', content_type: 'application/pdf', page_count: 8, relevant_pages: [2, 3], scope: 'RELEVANT_PAGES', selected: true, review_url: '/api/cases/caseA/packet/reports/current-copy' }
   ];
 }
 function reportCheckbox(fileId, checked) { return { checked, onchange: null, getAttribute: key => key === 'data-packet-report' ? fileId : null }; }
@@ -521,19 +569,17 @@ async function reportCopyLabelsAndDefaults() {
   h.context.reports = { ...packetView(), packet: { ...packetView().packet, report_exhibits: originalReports(), report_attachment_manifest: [] } };
   const text = h.evaluate('renderPacketBlock(reports)');
   assert.match(text, /Earlier report — June 12, 2025/); assert.match(text, /Current report — June 12, 2026/);
-  assert.match(text, /earlier-report\.pdf/); assert.match(text, /current-report\.pdf/);
-  assert.match(text, /Whole report copy.*This copy has 12 pages.*dispute refers to page 4/s);
-  assert.match(text, /This copy has 8 pages.*dispute refers to pages 2, 3/s);
-  assert.match(text, /download includes the whole report.*Print the pages listed here/s);
+  assert.match(text, /Included: report page 4/); assert.match(text, /Included: report pages 2, 3/);
+  assert.match(text, /pages about your chosen disputes are included in your packet/);
   assert.match(text, /href="\/api\/cases\/caseA\/packet\/reports\/earlier-copy"/);
-  assert.equal((text.match(/Open report copy/g) || []).length, 2);
-  assert.ok(!/data-packet-report="[^"]+" checked/.test(text), 'available original files are never automatically checked');
-  assert.ok(!/ENTIRE_REPORT|stored_sha256|source_result_id/.test(text), 'consumer labels hide internal scope tokens and source identifiers');
+  assert.equal((text.match(/Check the original report/g) || []).length, 2);
+  assert.equal((text.match(/type="checkbox" hidden checked data-packet-report=/g) || []).length, 2, 'relevant pages are included automatically');
+  assert.ok(!/RELEVANT_PAGES|stored_sha256|source_result_id|download includes the whole report/.test(text), 'consumer labels hide internal scope tokens and whole-file assembly instructions');
   h.context.reports.packet.report_exhibits = [];
   const empty = h.evaluate('renderPacketBlock(reports)');
-  assert.match(empty, /Add copies of the report pages about your dispute when you mail the packet/); assert.ok(!/data-packet-report=/.test(empty), 'empty exhibit lists explain the paper copies to add and add no broken report controls');
-  h.context.reports.packet.selected_count = 0;
-  assert.match(h.evaluate('renderPacketBlock(reports)'), /Choose your issues, then save to see the report copies/, 'first-time users see how to reach the copy choices before approval');
+  assert.ok(!/data-packet-report=/.test(empty), 'empty exhibit lists add no broken original-report controls');
+  h.context.reports.packet.report_exhibits = [{ ...originalReports()[0], relevant_pages: [] }];
+  assert.match(h.evaluate('renderPacketBlock(reports)'), /Pages to include \(for example, 2, 3\)/, 'unknown multipage locations give a simple page-number input');
 }
 async function explicitReportSelectionAndReview() {
   const view = packetView(true); view.packet.report_exhibits = originalReports(); view.packet.report_attachment_manifest = [];
@@ -543,24 +589,21 @@ async function explicitReportSelectionAndReview() {
       for (const report of view.packet.report_exhibits) report.selected = request.body.file_ids.includes(report.file_id);
       view.packet.report_attachment_manifest = view.packet.report_exhibits.filter(report => report.selected);
       view.packet.approved = false; view.packet.download_available = false; view.packet.preview_version = 'with-current-copy';
-      view.packet.correspondence_preview = 'Full saved packet\nCurrent report — 2026-06-12\ncurrent-report.pdf — whole report, pages 2, 3';
+      view.packet.correspondence_preview = 'Full saved letter\nPlease see report pages 2, 3.';
     }
     return request.url.endsWith('/packet') ? { view } : { view: { case: { case_id: 'caseA' }, result_id: 'result-A' }, requirements, missing: [] };
   });
-  h.reportChecks.push(reportCheckbox('earlier-copy', false), reportCheckbox('current-copy', false));
+  h.reportChecks.push(reportCheckbox('earlier-copy', true), reportCheckbox('current-copy', true));
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
-  h.reportChecks[1].checked = true; h.reportChecks[1].onchange();
-  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'checking a report copy does not silently attach it');
-  assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
-  assert.equal(h.node('packet-approved-status').hidden, true); assert.equal(h.node('packet-ready-status').hidden, true);
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'opening the review never changes report custody');
   await h.node('packet-save').onclick();
   const reportWrite = h.calls.find(row => row.url.endsWith('/packet/reports'));
-  assert.deepEqual(reportWrite.body, { file_ids: ['current-copy'] }, 'Save sends only the explicit visible report choice');
+  assert.deepEqual(reportWrite.body, { file_ids: ['earlier-copy', 'current-copy'], page_choices: {} }, 'Save preserves the automatically included relevant reports');
   assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 1);
   await h.openPacket('caseA');
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /current-report\.pdf — whole report, pages 2, 3/);
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /data-packet-report="current-copy" checked/);
-  assert.ok(!/data-packet-report="earlier-copy" checked/.test(h.panel.querySelector('#packet-block').innerHTML));
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Included: report pages 2, 3/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /hidden checked data-packet-report="current-copy"/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /hidden checked data-packet-report="earlier-copy"/);
   h.node('packet-preview-reviewed').checked = true; h.node('packet-preview-reviewed').onchange(); await h.node('packet-approve').onclick();
   assert.equal(h.calls.find(row => row.url.endsWith('/approve')).body.reviewed_version, 'with-current-copy', 'approval binds the saved preview containing the selected report copy');
 }
@@ -570,43 +613,41 @@ async function removedIssueDropsExclusiveReport() {
   const allowed = { ...view, packet: { ...view.packet, report_exhibits: [view.packet.report_exhibits[1]] } };
   const h = harness(request => request.url.endsWith('/packet/select') ? { view: allowed } : request.url.endsWith('/packet') ? { view } : { requirements, missing: [], view: { case: { case_id: 'caseA' } } });
   h.reportChecks.push(reportCheckbox('earlier-copy', true), reportCheckbox('current-copy', true));
+  h.pageInputs.push(...[['earlier-copy', '4'], ['current-copy', '2, 3']].map(([id, value]) => ({ value,
+    getAttribute: key => key === 'data-packet-pages' ? id : null })));
   h.issues.push({ checked: true, getAttribute: key => key === 'data-check-issue' ? 'issue-B' : null });
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
   h.issues[0].checked = false; await h.issues[0].onchange(); await h.node('packet-save').onclick();
   assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/select')).body.issue_ids, ['issue-B']);
-  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/reports')).body.file_ids, ['current-copy'], 'removing an issue drops its exclusive earlier copy and preserves the still-allowed current copy');
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/reports')).body.file_ids, ['current-copy'], 'removing an issue drops its exclusive earlier copy and preserves the still-relevant current source');
+  assert.deepEqual(h.calls.find(row => row.url.endsWith('/packet/reports')).body.page_choices, { 'current-copy': [2, 3] }, 'removing an issue also drops its exclusive old page-picker values before saving');
 }
 async function changedReportChoiceStopsPendingSave() {
   const selected = deferred(), view = packetView(true); view.packet.report_exhibits = originalReports();
   const h = harness(request => request.url.endsWith('/packet/select') ? selected.promise : request.url.endsWith('/packet') ? { view } : { ok: true });
-  h.reportChecks.push(reportCheckbox('current-copy', true)); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
+  const pages = { value: '2', getAttribute: key => key === 'data-packet-pages' ? 'current-copy' : null };
+  h.pageInputs.push(pages); h.reportChecks.push(reportCheckbox('current-copy', true)); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
   const save = h.node('packet-save').onclick(); await until(() => h.calls.some(row => row.url.endsWith('/select')), 'report choice save');
-  h.reportChecks[0].checked = false; h.reportChecks[0].onchange(); selected.resolve({ view }); await save;
-  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'a changed visible report choice stops the old pending attachment save');
+  pages.value = '3'; pages.oninput(); selected.resolve({ view }); await save;
+  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 0, 'a changed page-number choice stops the old pending attachment save');
   assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
 }
 async function changedStoredReportRecovery() {
-  let stale = true;
-  const view = packetView(); view.packet.report_exhibits = originalReports(); view.packet.report_attachment_manifest = [];
-  const h = harness(request => {
-    if (request.url.endsWith('/packet/reports')) { stale = false; return { view }; }
-    return stale ? { status: 409, body: { ok: false, error: { code: 'PACKET_APPROVAL_STALE', message: 'Changed source copy' } } } : { view };
-  });
+  const h = harness(() => ({ status: 409, body: { ok: false, error: { code: 'PACKET_APPROVAL_STALE', message: 'Changed source copy' } } }));
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your report copies have changed.*Review report copies again/s);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Your report copy has changed.*Upload your report again/s);
   assert.ok(!/id="packet-retry"|id="packet-download"|id="packet-print"/.test(h.panel.querySelector('#packet-block').innerHTML), 'changed stored copies offer explicit recovery instead of stale download or a repeated generic retry');
-  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'a refused load never silently clears saved report choices');
-  await h.node('packet-reports-review').onclick();
-  assert.deepEqual(h.calls.find(row => row.method === 'POST').body, { file_ids: [] }, 'the explicit recovery action clears only saved report-copy choices');
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /Include this report copy/);
-  assert.ok(!/data-packet-report="[^"]+" checked/.test(h.panel.querySelector('#packet-block').innerHTML), 'recovered copies are offered without automatic reattachment');
-  assert.equal(h.calls.filter(row => row.url.endsWith('/packet/reports')).length, 1);
-  const clear = h.node('packet-reports-review').onclick;
-  await h.node('signout').onclick(); h.account('B', 'Fictional B'); const before = h.calls.length; await clear();
-  assert.equal(h.calls.length, before, 'a previous account recovery action cannot clear another account’s packet');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'a refused load never silently changes source custody');
+  const uploadAgain = h.node('packet-reports-review').onclick;
+  await uploadAgain();
+  assert.equal(h.evaluate('state.step'), 1, 'the recovery action returns to the ordinary report upload step');
+  assert.equal(h.calls.filter(row => row.method === 'POST').length, 0, 'upload-again navigation never discards or bypasses required source pages');
+  await h.node('signout').onclick(); h.account('B', 'Fictional B'); const before = h.calls.length; await uploadAgain();
+  assert.equal(h.calls.length, before, 'a previous account recovery action cannot read or write under another account');
+  assert.equal(h.evaluate('state.step'), 0, 'a previous account handler cannot navigate a different account to upload');
 }
 const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRace, wirePacketRace, issueSelectionInvalidation,
-  currentPreviewApproval, dirtyPreviewStatus, printedMaskedReference, packetDraftDocumentReturn, packetReturnAccountIsolation, recoveryKeyAccountRace,
+  currentPreviewApproval, dirtyPreviewStatus, completeLetterEditAndReset, fullLetterSaveContextRace, incompletePacketCannotApprove, printedMaskedReference, packetDraftDocumentReturn, firstPacketContactDetour, packetReturnAccountIsolation, recoveryKeyAccountRace,
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,

@@ -141,10 +141,10 @@ async function run(service, check) {
   await waitFor(() => dom.elementById('packet-save').onclick != null);
   const panelEl = dom.elementById('panel');
   const block = panelEl.querySelector('#packet-block');
-  check.ok(/Correction packet/.test(block.innerHTML), 'the packet block renders against the real service');
-  check.ok(/Where to mail your letter/.test(block.innerHTML), 'the packet block shows the mail destination in the consumer review');
+  check.ok(/Your dispute packet/.test(block.innerHTML), 'the packet block renders against the real service');
+  check.ok(/Mail your packet to:/.test(block.innerHTML), 'the packet block shows the mail destination in the consumer review');
   check.ok(/Equifax/.test(block.innerHTML), 'and shows the sourced bureau recipient');
-  check.ok(/id="packet-preview"/.test(block.innerHTML), 'and mounts the correspondence/evidence review from the service view');
+  check.ok(/id="packet-preview" hidden/.test(block.innerHTML), 'the old text preview is hidden compatibility content');
 
   /* --- select the issue (checkbox) + correspondence details + wording A, then SAVE (against the real service). --- */
   const checkbox = { checked: true, getAttribute: (n) => (n === 'data-check-issue' ? issueId : null) };
@@ -152,6 +152,7 @@ async function run(service, check) {
   dom.elementById('packet-name').value = 'Dana Whitfield';
   dom.elementById('packet-contact').value = 'dana.whitfield@example.test';
   dom.elementById('packet-reference').value = 'CRP-REF-1';
+  dom.elementById('packet-bureau-reference').value = 'BUREAU-4321';
   dom.elementById('packet-bureau').value = 'EQUIFAX';
   dom.elementById('packet-purpose').value = 'ACCOUNT';
   const documentChecks = supportIds.map(id => ({ checked: true, getAttribute: name => name === 'data-packet-document' ? id : null }));
@@ -175,6 +176,14 @@ async function run(service, check) {
   dom.elementById('packet-wording').oninput();
   await dom.elementById('packet-save').onclick();
   await waitFor(() => block.innerHTML.includes('Changed wording (unsaved before approve).'));
+  const beforeLetterEdit = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
+  check.ok(/iframe title="Your complete dispute packet"/.test(block.innerHTML), 'the saved complete PDF appears inline for review');
+  check.ok(/id="packet-letter"/.test(block.innerHTML), 'the consumer can edit all letter text on the review page');
+  dom.elementById('packet-letter').value = beforeLetterEdit.packet.correspondence_preview.replace('Thank you for your help.', 'Thank you. Please send your reply to me.');
+  dom.elementById('packet-letter').oninput();
+  check.equal(dom.elementById('packet-approve').disabled, true, 'an edited full letter needs a saved fresh PDF preview');
+  await dom.elementById('packet-save').onclick();
+  await waitFor(() => block.innerHTML.includes('Thank you. Please send your reply to me.'));
   dom.elementById('packet-preview-reviewed').checked = true;
   dom.elementById('packet-preview-reviewed').onchange();
   await dom.elementById('packet-approve').onclick();
@@ -183,6 +192,7 @@ async function run(service, check) {
   await waitFor(() => dom.calls.some((x) => /POST .*packet\/approve/.test(x)));
   check.ok(dom.calls.some((x) => /POST .*packet\/approve/.test(x)), 'the approve endpoint is called');
   check.ok(dom.calls.some((x) => /POST .*packet\/wording/.test(x)), 'the wording endpoint is called');
+  check.ok(dom.calls.some((x) => /POST .*packet\/letter/.test(x)), 'the full letter editor saves through the protected letter endpoint');
   check.equal(vm.runInContext('state.error', ctx), null, 'no UI error during the approve');
 
   /* --- download: the UI navigates to the download endpoint; fetch it against the real service. --- */
@@ -195,13 +205,18 @@ async function run(service, check) {
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the matching packet downloads');
-  check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'and agrees with the reviewed facts');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the completed packet is a single PDF');
+  const completePreview = await service.request('GET', pvAfter.packet.letter_preview_url, { token: owner.token });
+  check.deepEqual(dl.bytes, completePreview.bytes, 'the download is the exact complete PDF the consumer reviewed');
+  check.ok(/opening date comes after the closing date/.test(comparableText(dl.text)), 'and agrees with the reviewed impossible date order');
   check.ok(comparableText(dl.text).includes('Changed wording (unsaved before approve).'), 'and carries the wording the consumer saw at approval, not the earlier saved wording');
   check.ok(!comparableText(dl.text).includes('First wording.'), 'and not the older saved wording');
   check.ok(/Re: Credit report dispute/.test(comparableText(dl.text)), 'and an organized, sendable correspondence section');
   check.ok(comparableText(dl.text).includes('Dana Whitfield') && comparableText(dl.text).includes('dana.whitfield@example.test'), 'carrying the consumer-supplied correspondence details');
-  check.ok(/EVIDENCE REFERENCES|Report facts/i.test(comparableText(dl.text)), 'and an organized evidence-reference section');
-  check.ok(/printed "/.test(comparableText(dl.text)) && /read as/.test(comparableText(dl.text)), 'with the raw printed reading and the normalized value for the selected issue');
+  check.ok(/Please see report page 1/.test(comparableText(dl.text)), 'short report-page references sit inside the letter');
+  check.ok(/opened on January 1, 2020 and closed on January 1, 2019/.test(comparableText(dl.text)), 'both source-derived dates remain understandable in the request');
+  check.ok(comparableText(dl.text).includes('Thank you. Please send your reply to me.'), 'download includes the consumer full-letter edit');
+  check.ok(comparableText(dl.text).includes('My bureau file or account number: BUREAU-4321'), 'the separately supplied bureau number is in the approved letter');
   check.ok(!/not legal advi/i.test(comparableText(dl.text)), 'with no legal-advice disclaimer');
 
   /* Editing the wording after approval disables the download (no silent older-version download while the changed

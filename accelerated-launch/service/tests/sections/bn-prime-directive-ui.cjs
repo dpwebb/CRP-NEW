@@ -118,14 +118,16 @@ async function run(t, check) {
   await tick(); await tick(); await tick();
   const packetBlock = panel.children.get('#packet-block');
   check.ok(packetBlock, 'the review step mounts the correction-packet block');
-  check.ok(/Correction packet/.test(packetBlock.innerHTML), 'with a correction-packet heading');
+  check.ok(/Your dispute packet/.test(packetBlock.innerHTML), 'with a plain dispute-packet heading');
   check.ok(/VIOLATION/.test(packetBlock.innerHTML), 'with the sole consumer breach label');
   check.ok(/opened date later than its closed date/.test(packetBlock.innerHTML), 'with the issue explanation');
   check.ok(/data-check-issue=/.test(packetBlock.innerHTML), 'with a per-issue selection checkbox');
   check.ok(/packet-wording/.test(packetBlock.innerHTML), 'with a consumer wording textarea kept separate from the report facts');
   check.ok(/Approve this version/.test(packetBlock.innerHTML), 'with an explicit approve action');
-  check.ok(/Download correction packet/.test(packetBlock.innerHTML), 'and a download action');
-  check.ok(/Print letter and evidence/.test(packetBlock.innerHTML), 'and a print action for the approved PDF');
+  check.ok(/Download your PDF/.test(packetBlock.innerHTML), 'and one PDF download action');
+  check.ok(/Open PDF to print/.test(packetBlock.innerHTML), 'and a print action for the same approved PDF');
+  check.ok(/letter, report pages, document copies and bureau forms in one PDF/.test(packetBlock.innerHTML), 'the complete packet is explained in one simple sentence');
+  check.ok(/id="packet-bureau-reference"/.test(packetBlock.innerHTML), 'the bureau file number is separate from the consumer own reference');
   check.ok(!/packet-channel|Bureau online service/.test(packetBlock.innerHTML), 'the packet follows mail-in submission without an online-method selector');
   check.ok(dom.calls.includes('GET /api/cases/case_stub/packet'), 'the packet state is fetched from the service');
 
