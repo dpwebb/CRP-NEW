@@ -6,6 +6,11 @@ const forms = require('../../bureau-forms.cjs');
 const lib = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const { MAPS } = require('../../bureau-form-mappings.cjs');
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+function refusal(check, callback, predicate, label) {
+  let caught;
+  try { callback(); } catch (error) { caught = error; }
+  check.ok(Boolean(caught && predicate(caught)), label);
+}
 const PROFILE = { full_name:'Zoë Fiction', given_name:'Zoë', family_name:'Fiction', middle_name:'Émile', suffix:'',
   address_line1:'12 Example Street', street_number:'12', street_name:'Example Street', address_line2:'4',
   city:'Halifax', region:'NS', postal_code:'B3H 0A0', date_of_birth:'1980-04-12', phone:'555-010-0000', contact_email:'zoe@example.test', previous_address:'' };
@@ -83,9 +88,9 @@ async function run(t,check) {
   check.equal(forms.populateForm(descriptors[0],mixed).selected_item_count,1,'ordinary account form excludes collection entries');
   check.equal(forms.populateForm(descriptors[1],mixed).selected_item_count,1,'public-record form includes selected collection independently');
   for(const bad of [{...ex,bureau:'EQUIFAX'},{...ex,sha256:'0'.repeat(64)},{...ex,mapping_version:'old-renderer'},{...ex,filename:'../outside.pdf'}]) {
-    check.throws(()=>forms.populateForm(bad,exData),error=>error.code==='SERVICE_STATE_UNAVAILABLE','wrong bureau, source drift, stale mapping or path cannot fill an unrelated form');
+    refusal(check,()=>forms.populateForm(bad,exData),error=>error.code==='SERVICE_STATE_UNAVAILABLE','wrong bureau, source drift, stale mapping or path cannot fill an unrelated form');
   }
-  check.throws(()=>forms.populateForm(ex,{...exData,items:new Array(201).fill(exData.items[0])}),error=>error.code==='INVALID_REQUEST','form worker has an explicit selected-item bound');
+  refusal(check,()=>forms.populateForm(ex,{...exData,items:new Array(201).fill(exData.items[0])}),error=>error.code==='INVALID_REQUEST','form worker has an explicit selected-item bound');
   const edited=payload(ex);edited.profile.phone='555-019-9999';edited.profile.given_name='Renée';
   check.notEqual(forms.populateForm(ex,edited).sha256,exFilled.sha256,'material consumer input changes actual filled output');
   check.ok(Object.values(MAPS).every(map=>map.version),'each distinct original layout is versioned');

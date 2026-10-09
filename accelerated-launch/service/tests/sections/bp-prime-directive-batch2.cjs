@@ -156,7 +156,7 @@ async function run(service, check) {
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the balance/past-due packet downloads');
   check.ok(/past-due amount/.test(comparableText(dl.text)), 'with the factual verification request');
-  check.ok(/verify the balance/.test(comparableText(dl.text)), 'and the recorded request wording');
+  check.ok(/check the balance/.test(comparableText(dl.text)), 'and the plain request wording');
   check.ok(/VIOLATION/.test(comparableText(dl.text)) && comparableText(dl.text).includes(`Reporting rule: ${balIssue.rule_assessment.requirement}`), 'stating the violation and its breached report-data requirement');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite reporting issue');
 
@@ -169,7 +169,7 @@ async function run(service, check) {
   check.ok(dupRun.issue.uncertainty.includes('original lender and a debt collector') && dupRun.issue.uncertainty.includes('reports from different dates'), 'with qualified potential-duplicate wording in the review');
   check.equal(dupRun.dl.status, 200, 'the potential-duplicate packet downloads');
   check.ok(/reported twice/.test(comparableText(dupRun.dl.text)), 'with the qualified potential-duplicate request');
-  check.ok(/verify whether/.test(comparableText(dupRun.dl.text)), 'and the recorded verification wording');
+  check.ok(/check whether/.test(comparableText(dupRun.dl.text)), 'and the plain verification wording');
   check.ok(!/established reporting issue/.test(comparableText(dupRun.dl.text)), 'never asserting a definite finding');
 
   /* ---- 6. HTTP end-to-end: responsibility conflict through the packet path. ---- */
@@ -181,7 +181,7 @@ async function run(service, check) {
   check.ok(respRun.issue.uncertainty.includes('joint account'), 'with the benign alternatives in the review');
   check.equal(respRun.dl.status, 200, 'the responsibility packet downloads');
   check.ok(/labels for who is responsible/.test(comparableText(respRun.dl.text)), 'with the factual verification request');
-  check.ok(/verify the responsibility/.test(comparableText(respRun.dl.text)), 'and the recorded request wording');
+  check.ok(/check the responsibility/.test(comparableText(respRun.dl.text)), 'and the plain request wording');
 
   /* ---- 7. Editing wording after approval invalidates the approval (download refused, not the older packet). ---- */
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [balIssue.issue_id] } });

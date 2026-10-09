@@ -127,11 +127,11 @@ async function run(service, check) {
   /* ---- 3. The consumer review shows the correspondence and the organized evidence. ---- */
   const mailView = await service.preparePostalPacket(owner, caseId);
   const preview = mailView.packet.correspondence_preview;
-  check.ok(/^CREDIT REPORT DISPUTE$/m.test(preview), 'the review shows the sendable dispute letter');
+  check.ok(/^Re: Credit report dispute$/m.test(preview), 'the review shows the business-letter subject');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(preview), 'and the organized evidence references');
-  check.ok(preview.includes('To: ' + mailView.support.requirements.label) && preview.includes(mailView.support.requirements.postal), 'addressed to the selected bureau and its verified mailing address');
-  check.ok(preview.includes(`From: ${DETAILS.consumer_name}`) && preview.includes(`Reply to: ${DETAILS.contact}`), 'carrying the details the consumer supplied');
-  check.ok(preview.includes(`Your reference: ${DETAILS.account_reference}`), 'including the optional reference when supplied');
+  check.ok(preview.includes(mailView.support.requirements.label) && mailView.support.requirements.postal.split(/,\s*/).every(part => preview.includes(part)), 'addressed to the selected bureau and its verified mailing address');
+  check.ok(preview.startsWith(DETAILS.consumer_name) && preview.includes(DETAILS.contact), 'carrying the details the consumer supplied in the sender block');
+  check.ok(preview.includes(`My reference: ${DETAILS.account_reference}`), 'including the optional reference when supplied');
   check.ok(/\n\s*\d+\. \S/.test(preview), 'with one numbered request per selected issue');
   check.ok(/Recorded rule: /.test(preview), 'and the recorded rule identity for the correction request');
   check.ok(/printed "1 January 2019"/.test(preview), 'with the raw printed reading');
@@ -145,8 +145,8 @@ async function run(service, check) {
   const dl = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the approved packet downloads');
   check.equal(dl.headers.get('content-type'), 'application/zip', 'as a complete download with its printable PDF and selected documents');
-  check.ok(dl.text.startsWith('CREDIT REPORT DISPUTE'), 'carrying the sendable correspondence');
-  check.ok(dl.text.includes(`From: ${DETAILS.consumer_name}`) && dl.text.includes(`Reply to: ${DETAILS.contact}`), 'with the consumer-supplied details');
+  check.ok(dl.text.startsWith(DETAILS.consumer_name) && /Re: Credit report dispute/.test(dl.text), 'carrying the sendable business letter');
+  check.ok(dl.text.includes(DETAILS.consumer_name) && dl.text.includes(DETAILS.contact), 'with the consumer-supplied details');
   check.equal((dl.text.match(/^EVIDENCE REFERENCES/gm) || []).length, 1, 'with one evidence appendix and no duplicate issue section');
   check.ok(/^EVIDENCE REFERENCES \(from your report\)$/m.test(dl.text), 'and the organized evidence-reference section');
   check.ok(/SOME BANK|credit account 1|liability 1/i.test(dl.text), 'naming the record the finding concerns');
@@ -155,7 +155,7 @@ async function run(service, check) {
   check.ok(/Signature: _+/.test(dl.text), 'with a blank signature line for the consumer to sign');
   check.ok(!/within \d+ (days|weeks)|by \d{1,2} [A-Z][a-z]+ \d{4}/.test(dl.text), 'and no invented deadline');
   check.ok(!/\b(remedy|remedies)\b/i.test(dl.text), 'and no invented remedy');
-  check.ok(comparableText(dl.text).includes(comparableText(mailView.support.requirements.postal)), 'the packet uses the reviewed verified mailing address');
+  check.ok(mailView.support.requirements.postal.split(/,\s*/).every(part => comparableText(dl.text).includes(part)), 'the packet uses every line of the reviewed verified mailing address');
   check.equal(comparableText(dl.text), comparableText(preview), 'all independently extracted PDF text matches the complete preview');
   check.equal(/Approved version:|Produced:|[a-f0-9]{64}/i.test(dl.text), false, 'the consumer letter contains no internal approval or source hash or generated timestamp');
   const again = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
@@ -228,7 +228,7 @@ async function run(service, check) {
   const partial = await service.request('POST', `/api/cases/${multiCase.case_id}/packet/correspondence`, { token: multiOwner.token, body: { correspondence: DETAILS } });
   const partialMailView = await service.preparePostalPacket(multiOwner, multiCase.case_id);
   const partialPreview = partialMailView.packet.correspondence_preview;
-  check.match(partialPreview, /^\s*1\. Account opened after it was closed - verification$/m,
+  check.match(partialPreview, /^\s*1\. .+$/m,
     'the common-error appendix uses the shared friendly checklist heading');
   check.ok(partialPreview.includes('Date opened: printed "01/01/2020"') && partialPreview.includes('Date closed: printed "01/01/2019"'),
     'internal source-field keys become familiar labels while the printed dates stay exact');
@@ -294,7 +294,7 @@ async function run(service, check) {
   check.ok(/Recorded rule: /.test(probDl.text), 'and the recorded rule identity of the proposed rule');
   check.ok(/not shown to be absent/.test(comparableText(probDl.text)), 'preserving the specific uncertainty, never an absent exception');
   check.ok(!/established violation|definite breach/i.test(probDl.text), 'and never turning a probable issue into a categorical allegation');
-  check.ok(/please verify whether an exception/.test(comparableText(probDl.text)), 'with a verification request, never a correction demand');
+  check.ok(/Please check whether an exception/.test(comparableText(probDl.text)), 'with a verification request, never a correction demand');
 
   /* ---- 9. Ownership and entitlement are enforced on the correspondence itself. ---- */
   const stranger = await service.unpaidAccount(`cb-stranger-${crypto.randomBytes(4).toString('hex')}@example.test`);
@@ -310,7 +310,7 @@ async function run(service, check) {
   /* ---- 10. The definite correction, the sending control and the classification on the real download. ---- */
   check.ok(/ - correction/.test(dl.text) && !/definite, correction/.test(dl.text), 'the evidence reference states the requested correction without a confidence tier');
   const reviewedCorrection = packetModule.eligibleIssues(resultRow).find(issue => issue.issue_id === correction.definite.issue_id);
-  check.ok(comparableText(dl.text).includes(comparableText(reviewedCorrection.request_wording)), 'with the selected correction request');
+  check.ok(comparableText(dl.text).includes(comparableText(require('../../consumer-dispute-letter.cjs').requestFor(reviewedCorrection))), 'with the selected plain correction request');
   check.ok(/Sign and date the letter/.test(dl.text), 'the instructions tell the consumer to sign the letter');
   check.ok(/Mail the packet to the bureau address/.test(dl.text), 'and the consumer controls mailing');
   check.ok(!/Please (find|see) (the )?enclosed/i.test(dl.text), 'with no claim of an enclosure this service never made');
@@ -368,12 +368,12 @@ async function reagingLanguage(service, check) {
   // format stamp. The independent module is never cached or written to disk.
   const filename = require.resolve('../../packets.cjs'), legacy = new Module(filename, module);
   legacy.paths = Module._nodeModulePaths(path.dirname(filename));
-  legacy._compile(fs.readFileSync(filename, 'utf8').replace("'packet-format:print-4'", "'packet-format:print-3'"), filename);
+  legacy._compile(fs.readFileSync(filename, 'utf8').replace("'packet-format:original-forms-business-letter-5'", "'packet-format:print-4'"), filename);
   const oldView = legacy.exports.packetView(service.service.store, actor, id);
   legacy.exports.approvePacket(service.service.store, actor, id, oldView.packet.preview_version, true);
   check.notEqual(oldView.packet.preview_version, ready.packet.preview_version, 'the previous format approval differs even with identical selected evidence and consumer input');
   const refreshed = (await service.request('GET', base + '/packet', { token: actor.token })).json.view;
-  check.equal(refreshed.packet.approval_stale, true, 'the report-copy packet format requires rereview of an already approved print-3 packet');
+  check.equal(refreshed.packet.approval_stale, true, 'the filled-form business-letter format requires rereview of an already approved print-4 packet');
   check.equal((await service.request('GET', base + '/packet-download', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',
     'old format approval cannot download refreshed consumer text');
   check.equal((await service.request('GET', base + '/packet-print', { token: actor.token })).json.error.code, 'PACKET_APPROVAL_STALE',

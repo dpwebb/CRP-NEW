@@ -6,6 +6,12 @@ const { ServiceError } = require('./errors.cjs');
 
 const FIELD_LIMITS = Object.freeze({
   full_name: 200,
+  given_name: 100,
+  middle_name: 100,
+  family_name: 100,
+  suffix: 20,
+  street_number: 30,
+  street_name: 250,
   date_of_birth: 10,
   phone: 50,
   contact_email: 254,

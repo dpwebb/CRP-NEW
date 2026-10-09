@@ -197,6 +197,8 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/approve', true, 'packetApprove'],
   ['GET', '/api/cases/:caseId/packet-download', true, 'packetDownload'],
   ['GET', '/api/cases/:caseId/packet-print', true, 'packetPrint'],
+  ['GET', '/api/cases/:caseId/packet/preview', true, 'packetPreview'],
+  ['GET', '/api/cases/:caseId/packet/forms/:filename', true, 'packetForm'],
   /* BLOCKER-SUBSCRIPTION-VALUE-001 — owned report history and evidence-based comparison. */
   ['GET', '/api/history', true, 'historyView'],
   ['GET', '/api/history/compare/:leftResultId/:rightResultId', true, 'comparisonView']
@@ -688,6 +690,23 @@ function buildCaseHandlers(store, logger, surface) {
       const file = packets.packetPrint(store, actor, params.caseId);
       require('./packet-support.cjs').requirePostalPacket(packets.packetView(store, actor, params.caseId));
       logger.log({ event: 'PACKET_PRINT_SERVED', outcome: 'SUBSCRIPTION' });
+      return { status: 200, text: file.body, content_type: file.content_type,
+        headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version } };
+    },
+
+    packetPreview: ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const version = new URL(req.url, 'http://127.0.0.1').searchParams.get('version');
+      const file = packets.packetPreview(store, actor, params.caseId, version);
+      return { status: 200, text: file.body, content_type: file.content_type,
+        headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version } };
+    },
+    packetForm: ({ params, actor, req }) => {
+      cases.requireOwnedCase(store, actor, params.caseId);
+      entitlement.requireSubscriberFeature(store, actor);
+      const version = new URL(req.url, 'http://127.0.0.1').searchParams.get('version');
+      const file = packets.packetForm(store, actor, params.caseId, params.filename, version);
       return { status: 200, text: file.body, content_type: file.content_type,
         headers: { 'Content-Disposition': `inline; filename="${file.filename}"`, 'X-CRP-Packet-Version': file.approved_version } };
     },

@@ -99,7 +99,7 @@ async function run(service, check) {
   check.equal(dl.status, 200, 'the qualified probable packet downloads');
   check.ok(/entry older than the ordinary reporting period/.test(comparableText(dl.text)), 'with the affirmative concern in the packet');
   check.ok(/not shown to be absent/.test(comparableText(dl.text)), 'with the exception uncertainty');
-  check.ok(/verify whether an exception/.test(comparableText(dl.text)), 'with the verification request');
+  check.ok(/check whether an exception/.test(comparableText(dl.text)), 'with the plain verification request');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite breach');
   check.ok(comparableText(dl.text).indexOf(issues.PROBABLE_LEAD) === -1, 'the downloaded packet omits the generic confidence tier sentence');
   check.ok(!/could not be read|not readable/i.test(comparableText(dl.text)), 'and never describes the exception uncertainty as a reading failure');

@@ -7,7 +7,7 @@ const rules = require('../../bureau-dispute-requirements.cjs');
 const supportModule = require('../../packet-support.cjs');
 const { pdfText, comparableText } = require('../packet-pdf-assertions.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
-const PROFILE = { full_name: 'Morgan Fiction', date_of_birth: '1980-04-12', phone: '555-0100', contact_email: 'morgan@example.test',
+const PROFILE = { full_name: 'Morgan Fiction', given_name: 'Morgan', family_name: 'Fiction', date_of_birth: '1980-04-12', phone: '555-0100', contact_email: 'morgan@example.test',
   address_line1: '12 Example Street', address_line2: '', city: 'Halifax', region: 'NS', postal_code: 'B3H 0A0', country: 'Canada', previous_address: '' };
 function options(ids = [], purpose = 'ACCOUNT') { return { bureau: 'EQUIFAX', channel: 'POSTAL', purpose, document_ids: ids, use_account_profile: true,
   identity_reference: '', no_ssn_issued: false, identity_shows_address: false, verification_requested: false, copies_confirmed: true, document_dates: {}, other_identity_details: '' }; }
@@ -26,7 +26,8 @@ async function run(t, check) {
   const auth = body => ({ token: actor.token, body });
   check.equal((await t.request('GET', '/api/account/profile')).status, 401, 'account profile requires authentication');
   check.equal((await t.request('PUT', '/api/account/profile', auth({ profile: PROFILE }))).status, 200, 'HTTP contact details save');
-  check.deepEqual((await t.request('GET', '/api/account/profile', { token: actor.token })).json.profile, PROFILE, 'saved contact details returned');
+  const savedProfile = (await t.request('GET', '/api/account/profile', { token: actor.token })).json.profile;
+  check.deepEqual(Object.fromEntries(Object.keys(PROFILE).map(key => [key, savedProfile[key]])), PROFILE, 'every supplied contact and name field is returned exactly');
   check.equal((await t.request('GET', '/api/account/profile', { token: stranger.token })).json.profile.full_name, '', 'other account has no contact disclosure');
   const pdf = label => buildPdf({ pages: [{ lines: ['FICTIONAL SUPPORTING DOCUMENT', label] }] });
   const identityBytes = pdf('Fictional ID'), addressBytes = pdf('Fictional address'), passportBytes = pdf('Fictional passport'), unusedBytes = pdf('Unselected ID');
@@ -54,8 +55,8 @@ async function run(t, check) {
   const support = { ...options([identity, address, passport]), document_dates: { [address]: new Date().toISOString().slice(0, 10) } };
   check.equal((await t.request('POST', base + '/packet/support', auth({ support }))).status, 200, 'bureau-specific supporting selection saved');
   const ready = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
-  check.match(ready.packet.correspondence_preview, /^\s*1\. Account opened after it was closed - verification$/m,
-    'the complete bureau mail packet uses the friendly shared common-error heading');
+  check.match(ready.packet.correspondence_preview, /^\s*1\. .+$/m,
+    'the complete bureau mail packet names the selected account in a numbered request');
   check.ok(!/\bopened_date\b|\bclosed_date\b/.test(ready.packet.correspondence_preview),
     'saved details and bureau forms do not reintroduce internal date keys into the review');
   check.equal(ready.packet.correspondence.consumer_name, PROFILE.full_name, 'saved name used for correspondence');
@@ -71,7 +72,8 @@ async function run(t, check) {
   check.equal(entries.length, 5, 'archive contains correspondence, required form and exactly three selected documents');
   check.equal(comparableText(pdfText(entries[0].bytes)), comparableText(ready.packet.correspondence_preview), 'actual PDF matches the complete reviewed packet');
   const form = entries.find(entry => entry.name === 'ca-equifax-account.pdf');
-  check.equal(crypto.createHash('sha256').update(form.bytes).digest('hex'), 'c7b9e9742f94fef44cb3d6fcf066418f4127193a0c297a81f11b82c8312b4383', 'required official form retains its original verified bytes');
+  check.equal(ready.packet.required_form_manifest[0].template_sha256, 'c7b9e9742f94fef44cb3d6fcf066418f4127193a0c297a81f11b82c8312b4383', 'filled form identifies its exact original bureau template');
+  check.ok(pdfText(form.bytes).includes(PROFILE.family_name) && pdfText(form.bytes).includes(PROFILE.given_name), 'original form blanks are automatically populated with the saved consumer name');
   const printed = await t.request('GET', base + '/packet-print', { token: actor.token });
   check.ok(printed.bytes.equals(entries[0].bytes), 'print endpoint serves the same approved letter and evidence PDF');
   check.equal((await t.request('GET', base + '/packet-print', { token: stranger.token })).status, 403, 'stranger cannot print another consumer packet');

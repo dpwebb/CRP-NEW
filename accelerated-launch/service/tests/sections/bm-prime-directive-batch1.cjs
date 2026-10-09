@@ -114,7 +114,7 @@ async function run(service, check) {
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the approved packet downloads');
   check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'the request agrees with the reviewed facts');
-  check.ok(/verify the opened and closed dates/.test(comparableText(dl.text)), 'with the recorded verification request wording');
+  check.ok(/check the opened and closed dates/.test(comparableText(dl.text)), 'with a plain request to check the reported dates');
   check.ok(/ - verification/.test(comparableText(dl.text)), 'and is labelled a verification request');
   check.ok(!/ - correction/.test(comparableText(dl.text)), 'no correction request is asserted');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'no definite reporting issue is asserted for a potential discrepancy');

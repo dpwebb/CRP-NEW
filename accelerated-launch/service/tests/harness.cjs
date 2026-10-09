@@ -239,10 +239,18 @@ class TestService {
     const bureau = view.support.requirements?.bureau || owned.selected_bureau || view.support.catalog[0].id;
     const correspondence = view.packet.correspondence;
     const currentProfile = (await this.request('GET', '/api/account/profile', { token: actor.token })).json.profile;
-    const profile = { full_name: correspondence.consumer_name || 'Morgan Fiction', date_of_birth: '1980-04-12',
+    const fictionalName = correspondence.consumer_name || 'Morgan Fiction';
+    const fictionalNameParts = fictionalName.split(/\s+/);
+    const profile = { full_name: fictionalName, given_name: fictionalNameParts[0], family_name: fictionalNameParts.slice(1).join(' ') || 'Fiction', date_of_birth: '1980-04-12',
       phone: '555-0100', contact_email: 'morgan@example.test', address_line1: (correspondence.contact || '12 Example Street').replace(/[\r\n]+/g, ', ').slice(0, 180),
-      address_line2: '', city: 'Example City', region: 'Example Region', postal_code: '00000', country: owned.country, previous_address: '' };
-    const saved = await this.request('PUT', '/api/account/profile', { token: actor.token, body: { profile: currentProfile.full_name ? currentProfile : profile } });
+      address_line2: '', city: 'Example City', region: owned.region.replace(/^[A-Z]{2}-/, ''), postal_code: '00000', country: owned.country, previous_address: '' };
+    // Fictional fixture values are declared here; runtime never guesses consumers' name parts.
+    const existingParts = currentProfile.full_name ? currentProfile.full_name.split(/\s+/) : [];
+    const savedProfile = currentProfile.full_name ? { ...currentProfile,
+      given_name: currentProfile.given_name || existingParts[0],
+      family_name: currentProfile.family_name || existingParts.slice(1).join(' ') || 'Fiction',
+      region: currentProfile.region === 'Example Region' ? profile.region : currentProfile.region } : profile;
+    const saved = await this.request('PUT', '/api/account/profile', { token: actor.token, body: { profile: savedProfile } });
     if (saved.status !== 200) throw new Error(`fictional mail profile failed: ${saved.text}`);
     const settings = { bureau, channel: 'POSTAL', purpose: view.support.suggested_purpose || 'ACCOUNT', document_ids: [],
       use_account_profile: true, identity_reference: owned.country === 'US' ? '000000000' : '', no_ssn_issued: false,

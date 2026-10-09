@@ -69,12 +69,15 @@ function lines(packet) {
   out.push('', 'DOCUMENTS INCLUDED');
   selected.forEach(doc => out.push(doc.original_filename + ' — ' + doc.document_type.replace(/_/g, ' ') + (settings.document_dates?.[doc.file_id] ? ' (dated ' + settings.document_dates[doc.file_id] + ')' : '')));
   if (!selected.length) out.push('No additional documents selected.');
-  if (support.form_assets?.length) out.push('', 'FORMS TO PRINT AND FILL IN', ...support.form_assets.map(form => `${form.label}: ${form.instructions}`));
+  if (support.form_assets?.length) out.push('', 'COMPLETED BUREAU FORMS', ...support.form_assets.map(form => `${form.label}: ${form.instructions}`));
   out.push('', 'BEFORE YOU MAIL', ...requirements.items.map(item => '- ' + item));
   if (settings.channel === 'POSTAL') out.push('', 'Signature: ________________________', 'Date: ________________________');
   return out.filter(value => value != null);
 }
-function requiredForms(packet) { return (packet?.support_snapshot?.form_assets || []).map(forms.bytesFor); }
+function requiredForms(packet) {
+  const snapshot = packet?.support_snapshot;
+  return (snapshot?.form_assets || []).map(form => forms.populateForm(form, snapshot.form_payload).bytes);
+}
 function requirePostalPacket(view) {
   if (view?.support?.settings?.channel !== 'POSTAL' || !view?.support?.requirements?.postal) {
     throw new ServiceError('PACKET_SUPPORT_REQUIRED');

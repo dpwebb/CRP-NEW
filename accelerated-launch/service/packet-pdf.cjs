@@ -89,16 +89,23 @@ function renderPacketPdf(text) {
   const face = font(), pages = [[]];
   const left = 54, right = 558, top = 736, bottom = 64;
   let y = top;
-  const headings = new Set(['CREDIT REPORT DISPUTE', 'EVIDENCE REFERENCES (from your report)',
+  const headings = new Set(['CREDIT REPORT DISPUTE', 'Re: Credit report dispute', 'EVIDENCE REFERENCES (from your report)',
     'EVIDENCE REFERENCES (report readings and published definitions)', 'PRINT AND MAIL']);
-  for (const original of String(text).split('\n')) {
+  const originals = String(text).split('\n');
+  for (let index = 0; index < originals.length; index++) {
+    const original = originals[index];
     if (original.startsWith('EVIDENCE REFERENCES') && pages[pages.length - 1].length) {
       pages.push([]); y = top;
     }
     if (!original) { y -= 8; continue; }
-    const heading = headings.has(original), size = original === 'CREDIT REPORT DISPUTE' ? 18 : heading ? 13 : 11;
+    const heading = headings.has(original), size = original === 'CREDIT REPORT DISPUTE' ? 18
+      : original === 'Re: Credit report dispute' ? 11 : heading ? 13 : 11;
     const indent = /^\s/.test(original) ? 12 : 0;
     const lines = wrap(original.trim(), size, right - left - indent, face);
+    // Keep each letter paragraph and its item name together where it fits on one page.
+    const next = /^\d+\. /.test(original) ? wrap((originals[index + 1] || '').trim(), 11, right - left, face).length : 0;
+    const blockHeight = (lines.length + next) * 15 + (original === 'Sincerely,' ? 68 : 0);
+    if (blockHeight < top - bottom && y - blockHeight < bottom) { pages.push([]); y = top; }
     if (heading && y - 45 < bottom) { pages.push([]); y = top; }
     for (const line of lines) {
       if (y < bottom) { pages.push([]); y = top; }

@@ -26,6 +26,8 @@ const accountDisplay = require('./account-display.cjs');
 const CHECKLIST_LABELS = new Map(require('./common-error-checklist.cjs').CHECKS.map(check => [check.check_id, check.label]));
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 const bureauRules = require('./bureau-dispute-requirements.cjs');
+const bureauForms = require('./bureau-forms.cjs');
+const consumerLetter = require('./consumer-dispute-letter.cjs');
 
 function selectedBureaus(country, row, selected) {
   const own = [...new Set(selected.map(issue => bureauRules.normalizeBureau(issue.report_identity?.bureau, country)).filter(Boolean))];
@@ -51,9 +53,17 @@ function purposeFor(selected) {
 }
 function enrichedCurrentPacket(store, actor, country, caseId) {
   const packet = currentPacket(store, caseId), row = latestResult(store, caseId);
-  const selected = eligibleIssues(row).filter(issue => packet?.selected_issue_ids?.includes(issue.issue_id));
+  const eligible = eligibleIssues(row);
+  const selected = (packet?.selected_issue_ids || []).map(id => eligible.find(issue => issue.issue_id === id)).filter(Boolean);
   const enriched = support.enrich(store, actor, country, packet, purposeFor(selected).mixed);
   if (enriched) enriched.report_snapshot = reportExhibits.prepare(store, actor, caseId, row, selected, packet.report_file_ids);
+  if (enriched?.support_snapshot) {
+    enriched.support_snapshot.form_payload = consumerLetter.payloadFor(enriched, row, selected);
+    for (const form of enriched.support_snapshot.form_assets || []) {
+      enriched.support_snapshot.missing.push(...bureauForms.missingFormFields(form, enriched.support_snapshot.form_payload));
+    }
+    enriched.support_snapshot.missing = [...new Set(enriched.support_snapshot.missing)];
+  }
   return enriched;
 }
 function purposeMismatch(country, selected, settings) {
@@ -169,9 +179,10 @@ function issueContent(issue) {
 
 function canonicalVersion(packetRow, resultRow, selectedIssues) {
   const identity = reportIdentity(resultRow) || {};
-  const ordered = [...selectedIssues].sort((a, b) => (a.issue_id < b.issue_id ? -1 : 1));
+  // Display order is material: native forms refer to the numbered letter items.
+  const ordered = selectedIssues;
   const parts = [
-    'packet-format:print-4',
+    'packet-format:original-forms-business-letter-5',
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
     `issues:${ordered.map(issueContent).join(';')}`,
@@ -249,6 +260,12 @@ function packetView(store, actor, caseId) {
       report_exhibits: packet?.report_snapshot?.view || [],
       report_attachment_manifest: reportAttachmentManifest(packet),
       required_form_manifest: requiredFormManifest(packet),
+      letter_preview_url: packet && row && selectedIssues.length
+        ? `/api/cases/${caseId}/packet/preview?version=${canonicalVersion(packet, row, selectedIssues)}` : null,
+      form_previews: (packet?.support_snapshot?.form_assets || []).map(form => ({
+        filename: form.filename, label: form.label, source_url: form.source_url,
+        review_url: `/api/cases/${caseId}/packet/forms/${form.filename}?version=${canonicalVersion(packet, row, selectedIssues)}`
+      })),
       print_instructions: printingInstructions(packet),
       print_available: Boolean(packet && packet.approved_version && !approvalStale),
       download_available: Boolean(packet && packet.approved_version && !approvalStale)
@@ -479,10 +496,12 @@ function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
   if (requirePostal && (packet.support?.channel !== 'POSTAL' || !packet.support_snapshot?.requirements?.postal)) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
+  const populated = populatedForms(packet);
   return store.update((state) => {
     const live = state.packets.find((p) => p.case_id === caseId);
     live.approved_version = canonicalVersion(packet, row, selected);
     live.approved_at = nowIso();
+    live.approved_form_digests = populated.map(formDigest);
     live.updated_at = nowIso();
     return live;
   });
@@ -530,45 +549,7 @@ function accountLine(issue, indent) {
  * SELECTED issue and nothing else. No address, remedy, deadline, signature or submitted status is ever invented.
  */
 function correspondenceLines(packet, row, selected) {
-  const identity = packetIdentity(row, selected);
-  const c = correspondenceOf(packet);
-  const lines = [];
-  lines.push('CREDIT REPORT DISPUTE');
-  lines.push('');
-  lines.push(`To: ${packet.support_snapshot?.requirements?.label || RECIPIENT_LABEL[recipientTypeOf(packet)]}`);
-  if (packet.support_snapshot?.requirements?.postal) lines.push(packet.support_snapshot.requirements.postal);
-  lines.push(`From: ${c.consumer_name || '(not supplied yet)'}`);
-  lines.push(`Reply to: ${c.contact || '(not supplied yet)'}`);
-  if (c.account_reference) lines.push(`Your reference: ${c.account_reference}`);
-  lines.push(`Report: ${identity.bureau || 'a supported report'}${identity.reference_date ? ` (report date ${identity.reference_date})` : ''}`);
-  const extra = packet.support_snapshot;
-  if (extra?.settings.use_account_profile && extra.profile.date_of_birth) lines.push(`Date of birth: ${extra.profile.date_of_birth}`);
-  if (extra?.settings.use_account_profile && extra.profile.previous_address) lines.push(`Previous address: ${extra.profile.previous_address}`);
-  if (extra?.settings.identity_reference) lines.push(`${extra.requirements.country === 'US' ? 'Social Security number' : 'Identification reference'}: ${extra.settings.identity_reference}`);
-  if (extra?.settings.no_ssn_issued && extra.requirements.country === 'US') lines.push('I have never been issued a Social Security number.');
-  if (extra?.settings.other_identity_details) lines.push(extra.settings.other_identity_details);
-  lines.push('');
-  lines.push('Please check the items below in my credit report. Correct any wrong information and send me your reply.');
-  lines.push('');
-  let n = 0;
-  for (const issue of selected) {
-    n += 1;
-    const account = issue.account_identity?.name;
-    lines.push(`  ${n}. ${account ? account + ': ' : ''}${issue.request_wording}`);
-  }
-  lines.push('');
-  if (packet.wording) {
-    lines.push('My added message:');
-    lines.push(packet.wording);
-    lines.push('');
-  }
-  lines.push('The attached evidence pages show the report details for each item.');
-  if (attachmentManifest(packet).length) lines.push(`I have included ${attachmentManifest(packet).length} supporting document${attachmentManifest(packet).length === 1 ? '' : 's'}. They are listed at the end.`);
-  lines.push('');
-  lines.push('Signature: ________________________');
-  lines.push('Date: ________________________');
-  lines.push('');
-  return lines;
+  return consumerLetter.lines(packet, row, selected);
 }
 
 /**
@@ -733,8 +714,46 @@ function printingInstructions(packet) {
 }
 function requiredFormManifest(packet) {
   return (packet?.support_snapshot?.form_assets || []).map(form => ({
-    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256, instructions: form.instructions
+    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256,
+    template_sha256: form.sha256, mapping_version: form.mapping_version, instructions: form.instructions,
+    population_supported: true
   }));
+}
+function populatedForms(packet) {
+  return (packet?.support_snapshot?.form_assets || []).map(form => ({ ...form,
+    ...bureauForms.populateForm(form, packet.support_snapshot.form_payload) }));
+}
+function formDigest(form) {
+  return { filename: form.filename, sha256: form.sha256, template_sha256: form.template_sha256,
+    mapping_version: form.mapping_version };
+}
+/** Draft PDF access stays owned and version-bound; it grants no approval or mailing authority. */
+function resolvePreview(store, actor, caseId, expectedVersion) {
+  const { row, eligible } = requireResultAndEligible(store, actor, caseId);
+  const owned = cases.getCase(store, actor, caseId);
+  const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
+  if (!packet?.selected_issue_ids?.length) throw new ServiceError('PACKET_NO_SELECTION');
+  const selected = packet.selected_issue_ids.map(id => eligible.find(issue => issue.issue_id === id));
+  if (packet.result_id !== row.result_id || selected.some(issue => !issue)) throw new ServiceError('PACKET_APPROVAL_STALE');
+  requireBureau(owned.country, row, selected, packet.support);
+  requirePurpose(owned.country, selected, packet.support);
+  const version = canonicalVersion(packet, row, selected);
+  if (expectedVersion && expectedVersion !== version) throw new ServiceError('PACKET_APPROVAL_STALE');
+  return { packet, row, selected, version };
+}
+function packetPreview(store, actor, caseId, expectedVersion) {
+  const { packet, row, selected, version } = resolvePreview(store, actor, caseId, expectedVersion);
+  const pdf = renderPacketPdf(documentText(packet, row, selected));
+  return { body: pdf.bytes, content_type: 'application/pdf', filename: 'dispute-letter-review.pdf', approved_version: version };
+}
+function packetForm(store, actor, caseId, filename, expectedVersion) {
+  const { packet, version } = resolvePreview(store, actor, caseId, expectedVersion);
+  requireCorrespondence(packet);
+  if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
+  const template = packet.support_snapshot.form_assets.find(form => form.filename === filename);
+  if (!template) throw new ServiceError('NOT_FOUND');
+  const form = bureauForms.populateForm(template, packet.support_snapshot.form_payload);
+  return { body: form.bytes, content_type: 'application/pdf', filename: template.filename, approved_version: version };
 }
 function documentText(packet, row, selected) {
   const lines = [...correspondenceLines(packet, row, selected), ...evidenceLines(selected), 'PRINT AND MAIL', ''];
@@ -771,7 +790,10 @@ function packetDownload(store, actor, caseId) {
   const body = printed.body;
   const owned = cases.requireOwnedCase(store, actor, caseId);
   const packet = enrichedCurrentPacket(store, actor, owned.country, caseId);
-  const forms = support.requiredForms ? support.requiredForms(packet) : [];
+  const forms = populatedForms(packet);
+  if (JSON.stringify(forms.map(formDigest)) !== JSON.stringify(packet.approved_form_digests || [])) {
+    throw new ServiceError('PACKET_APPROVAL_STALE');
+  }
   if (packet.support?.document_ids?.length || forms.length || packet.report_snapshot?.copies.length) {
     const entries = [{ name: '01-correspondence.pdf', bytes: body }];
     for (const form of forms) entries.push({ name: form.filename, bytes: form.bytes });
@@ -794,6 +816,8 @@ module.exports = {
   setSupport,
   setReportFiles,
   packetReport,
+  packetPreview,
+  packetForm,
   approvePacket,
   packetDownload,
   packetPrint,

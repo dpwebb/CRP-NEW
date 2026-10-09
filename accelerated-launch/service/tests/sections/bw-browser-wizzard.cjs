@@ -127,6 +127,11 @@ async function run(service, check) {
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
     for (const [field, value] of Object.entries({ full_name: name, contact_email: email, date_of_birth: '1980-04-12', phone: '555-0100', address_line1: '10 Fictional Street', city: 'Example City', region: 'NS', postal_code: 'B3J 0A1' })) await page.locator('#account-' + field).fill(value);
+    const formDetails = page.locator('details').filter({ has: page.locator('#account-given_name') });
+    if (!await formDetails.evaluate(node => node.open)) await formDetails.locator('summary').click();
+    // Explicit fictional name components; the application never splits a consumer's full name.
+    await page.locator('#account-given_name').fill(name.split(/\s+/)[0]);
+    await page.locator('#account-family_name').fill(name.split(/\s+/).slice(1).join(' ') || 'Fiction');
     await page.locator('#account-save').click();
     await page.waitForFunction(() => document.body.innerText.includes('Contact details saved.'));
     if (withDocuments && !(await page.locator('a[href^="/api/account/documents/"]').count())) for (const [type, kind] of [['IDENTITY', usEquifax ? 'SOCIAL_SECURITY' : 'PASSPORT'], ['IDENTITY', 'DRIVING_LICENCE'], ['ADDRESS', 'UTILITY_BILL']]) {
@@ -173,6 +178,11 @@ async function run(service, check) {
   await saveReadApprove(page);
   await page.waitForTimeout(500);
   check.equal(await page.locator('#packet-download').isEnabled(), true, 'download is enabled right after approval');
+  const formReviewLink = page.locator('a[href*="/packet/forms/"]').first();
+  check.equal(await formReviewLink.count(), 1, 'real browser exposes the completed original form review');
+  const reviewedForm = await page.context().request.get(service.base + await formReviewLink.getAttribute('href'));
+  check.equal(reviewedForm.status(), 200, 'browser session cookie opens its owned filled original PDF');
+  check.ok(require('../packet-pdf-assertions.cjs').pdfText(await reviewedForm.body()).includes('Whitfield'), 'actual browser form review includes the saved consumer name');
   check.ok(/Your packet is approved/.test(await page.locator('#packet-block').innerText()) && /Your packet is ready/.test(await page.locator('#packet-block').innerText()), 'approved and ready messages describe the current approved preview');
   await page.locator('#packet-wording').fill('CHANGED WORDS AFTER APPROVAL');
   await page.waitForTimeout(300);
@@ -194,7 +204,7 @@ async function run(service, check) {
   check.ok(/opened date later than its closed date/.test(comparableText(dl1.text)), 'and the packet matches the selected approved content');
   check.ok(dl1.text.includes('CHANGED WORDS AFTER APPROVAL'), 'carrying the changed wording');
   check.ok(dl1.text.includes('01/01/2020'), 'and the printed raw reading');
-  check.ok(/CREDIT REPORT DISPUTE/.test(comparableText(dl1.text)) && /EVIDENCE REFERENCES/.test(comparableText(dl1.text)), 'and the organized correspondence and evidence sections');
+  check.ok(/Re: Credit report dispute/.test(comparableText(dl1.text)) && /EVIDENCE REFERENCES/.test(comparableText(dl1.text)), 'and the organized correspondence and evidence sections');
   check.ok(dl1.text.includes('Dana Whitfield') && dl1.text.includes('changed-reply@example.test'), 'carrying the correspondence details the consumer approved');
   check.ok(!dl1.text.includes('dana.whitfield@example.test'), 'and not the detail that was replaced before approval');
   check.ok(!/not legal advi/i.test(dl1.text), 'with no legal-advice disclaimer');

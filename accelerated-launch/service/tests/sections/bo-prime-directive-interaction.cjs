@@ -107,7 +107,7 @@ async function run(service, check) {
   const source = fs.readFileSync(UI_JS, 'utf8');
   const owner = await service.unpaidAccount('bo-inter@example.test');
   await service.request('PUT', '/api/account/profile', { token: owner.token, body: { profile: {
-    full_name: 'Dana Whitfield', contact_email: 'dana.whitfield@example.test', date_of_birth: '1980-04-12',
+    full_name: 'Dana Whitfield', given_name: 'Dana', family_name: 'Whitfield', contact_email: 'dana.whitfield@example.test', date_of_birth: '1980-04-12',
     address_line1: '10 Fictional Street', city: 'Example City', region: 'CA', postal_code: '90001'
   } } });
   const supportIds = [];
@@ -198,7 +198,7 @@ async function run(service, check) {
   check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'and agrees with the reviewed facts');
   check.ok(comparableText(dl.text).includes('Changed wording (unsaved before approve).'), 'and carries the wording the consumer saw at approval, not the earlier saved wording');
   check.ok(!comparableText(dl.text).includes('First wording.'), 'and not the older saved wording');
-  check.ok(/CREDIT REPORT DISPUTE/.test(comparableText(dl.text)), 'and an organized, sendable correspondence section');
+  check.ok(/Re: Credit report dispute/.test(comparableText(dl.text)), 'and an organized, sendable correspondence section');
   check.ok(comparableText(dl.text).includes('Dana Whitfield') && comparableText(dl.text).includes('dana.whitfield@example.test'), 'carrying the consumer-supplied correspondence details');
   check.ok(/EVIDENCE REFERENCES|Report facts/i.test(comparableText(dl.text)), 'and an organized evidence-reference section');
   check.ok(/printed "/.test(comparableText(dl.text)) && /read as/.test(comparableText(dl.text)), 'with the raw printed reading and the normalized value for the selected issue');
