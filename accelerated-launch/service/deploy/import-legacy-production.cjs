@@ -2,7 +2,7 @@
 // Operator-only, host-local migration. Source database, old object references and sessions remain untouched.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict');
 const [mode,release,sourceDir,reportPath,idPath]=process.argv.slice(2);
-assert.ok(['inspect','apply'].includes(mode));
+assert.ok(['inspect','apply','apply-with-unavailable-id'].includes(mode));
 assert.match(release,/^\/opt\/crp-wizard-production\/releases\/crp-v1-[a-f0-9]{16}$/);
 assert.equal(fs.realpathSync(release),release);
 assert.match(sourceDir,/^\/opt\/crp-wizard-production\/backups\/legacy-[A-Za-z0-9_-]+$/);
@@ -62,8 +62,26 @@ async function stripe(route){const r=await fetch('https://api.stripe.com/v1/'+ro
     cash_upgrade_credits:0,original_sessions_imported:0,roles_imported:0,original_database_unmodified:true,
     report_original_recovered:Boolean(report),id_original_recovered:Boolean(id),anonymous_custody_references_retained:source.all_report_custody_references.filter(r=>!r.user_id).length,
     measured_at:new Date().toISOString(),passed:false};
-  if(mode==='apply'){
-    assert.ok(report&&id,'BOTH_AUTHENTIC_ORIGINAL_FILES_REQUIRED');assert.equal(id.length,Number(oldId.file_size_bytes));
+  if(mode==='apply'||mode==='apply-with-unavailable-id'){
+    assert.ok(report,'AUTHENTIC_ORIGINAL_REPORT_REQUIRED');
+    if(mode==='apply')assert.ok(id,'BOTH_AUTHENTIC_ORIGINAL_FILES_REQUIRED');
+    if(id)assert.equal(id.length,Number(oldId.file_size_bytes));
+    else{
+      // Explicit recovery mode preserves the unavailable source reference; it never creates a substitute file.
+      assert.equal(mode,'apply-with-unavailable-id');
+      const proof=JSON.parse(fs.readFileSync(sourceDir+'/original-id-recovery.json','utf8'));
+      assert.equal(proof.exact_original_id_recovered,false);
+      assert.equal(proof.original_id_sha256,oldId.sha256);
+      assert.equal(Number(proof.original_id_bytes),Number(oldId.file_size_bytes));
+      assert.equal(proof.source_reference_preserved,true);
+      mapped.get(String(oldId.user_id)).legacy_import.unavailable_identification={
+        original_sha256:oldId.sha256,original_bytes:Number(oldId.file_size_bytes),
+        source_record:oldId,
+        source_export_sha256:sha(sourceBytes),recovery_status:'ORIGINAL_UNAVAILABLE_REUPLOAD_REQUIRED'
+      };
+      receipt.unavailable_id_reference_preserved=true;
+      receipt.id_reupload_required=true;
+    }
     assert.equal(oldReport.data.jurisdictionCode,'CA');assert.equal(oldReport.data.caseJurisdictionCode,'NS');
     const data='/var/lib/private/crp-wizard-production';assert.equal(env.CRP_LOCAL_SERVICE_DATA,'/var/lib/crp-wizard-production');
     assert.ok(!fs.existsSync(data+'/state.json'),'EMPTY_DESTINATION_REQUIRED');
@@ -74,7 +92,7 @@ async function stripe(route){const r=await fetch('https://api.stripe.com/v1/'+ro
       const actor=mapped.get(String(oldReport.user_id)),caseRow=moduleAt('cases').createCase(store,actor,{country:'CA',region:'CA-NS'});
       const reportReceipt=moduleAt('uploads').receiveReport(store,actor,caseRow,{originalFilename:oldReport.data.fileName||'credit-report.pdf',mimeType:'application/pdf',declaredBytes:report.length,contentBase64:report.toString('base64')});
       moduleAt('journey').evaluateCase(store,actor,caseRow.case_id);
-      const document=moduleAt('account-documents').receiveDocument(store,mapped.get(String(oldId.user_id)),{document_type:'IDENTITY',document_kind:'IDENTIFICATION',originalFilename:oldId.file_name,mimeType:oldId.file_type,declaredBytes:id.length,contentBase64:id.toString('base64')});
+      if(id)moduleAt('account-documents').receiveDocument(store,mapped.get(String(oldId.user_id)),{document_type:'IDENTITY',document_kind:'IDENTIFICATION',originalFilename:oldId.file_name,mimeType:oldId.file_type,declaredBytes:id.length,contentBase64:id.toString('base64')});
       store.update(state=>{state.cases.find(c=>c.case_id===caseRow.case_id).legacy_import={source_report_sha256:oldReport.sha256,source_selection:'explicit recorded CA / NS',source_export_sha256:sha(sourceBytes)};});
       receipt.actual_private_files=store.state().files.length;receipt.current_checklist_reassessed=true;receipt.legacy_findings_imported=0;receipt.passed=true;
     }finally{

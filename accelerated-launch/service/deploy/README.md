@@ -8,6 +8,8 @@ Use a dedicated loopback production service, durable private storage, secure coo
 
 Rollback must retain current purchases, accounts and report blobs. Switch compatible code/configuration while the CRP writer is stopped; do not overwrite current state with an older snapshot. The old app does not automatically read new wizard data.
 
+The strict legacy importer requires authentic originals. Its explicit `apply-with-unavailable-id` recovery mode is reserved for an ID already unavailable in the source system after a recorded bounded search. It requires the matching root-only recovery receipt, retains the entire original identification reference and metadata under that account's private import provenance, and creates no replacement attachment. Restore authentic available reports and accounts; the consumer must upload the missing ID again before including it in a packet. Record this exception separately from successful recovery of available documents.
+
 ## Historical B4 preparation notes
 
 OWNER-ALL82-001 / B4: *"Prepare deployment configuration and release checks locally; do not deploy."*
