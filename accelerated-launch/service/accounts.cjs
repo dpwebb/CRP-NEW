@@ -7,7 +7,8 @@
  * identity provider integration — plan section 5 excludes speculative infrastructure, and the legacy
  * Auth0 wiring is unreachable and read-only here.
  *
- * Secrets: the password is stored as a scrypt digest with a per-account random salt, and the session token
+ * Secrets: passwords use salted scrypt; explicitly imported bcrypt credentials convert on valid sign-in.
+ * The session token
  * itself is NEVER stored — only its SHA-256. A leaked state file therefore yields no usable credential and
  * no usable session.
  */
@@ -15,6 +16,7 @@
 const crypto = require('node:crypto');
 const net = require('node:net');
 const { ServiceError } = require('./errors.cjs');
+const { verifyLegacyPassword } = require('./legacy-password.cjs');
 
 const MIN_PASSWORD_LENGTH = 12;
 const MAX_FAILED_ATTEMPTS = 8;
@@ -89,6 +91,8 @@ function hashPassword(password, saltHex) {
 }
 
 function verifyPassword(password, saltHex, expectedHex) {
+  if (typeof saltHex !== 'string' || !/^[a-f0-9]{32}$/i.test(saltHex) ||
+      typeof expectedHex !== 'string' || !/^[a-f0-9]{128}$/i.test(expectedHex)) return false;
   const actual = Buffer.from(hashPassword(password, saltHex), 'hex');
   const expected = Buffer.from(expectedHex, 'hex');
   return actual.length === expected.length && crypto.timingSafeEqual(actual, expected);
@@ -188,6 +192,21 @@ function createAccount(store, input) {
   return { account, token: session.token, recovery_key: key };
 }
 
+/** Only an explicitly imported password row uses bcrypt; native credentials never fall back to it. */
+function verifyAccountPassword(account, password) {
+  if (typeof password !== 'string') return false;
+  if (Object.hasOwn(account, 'password_salt') || Object.hasOwn(account, 'password_hash')) {
+    return verifyPassword(password, account.password_salt, account.password_hash);
+  }
+  if (!verifyLegacyPassword(password, account.legacy_password_bcrypt)) return false;
+  // The same atomic update that opens the session replaces the old credential. No password is retained.
+  const salt = crypto.randomBytes(16).toString('hex');
+  account.password_salt = salt;
+  account.password_hash = hashPassword(password, salt);
+  delete account.legacy_password_bcrypt;
+  return true;
+}
+
 /** A secret is revealed only when issued. Existing accounts may set one up while signed in. */
 function securityView(store, actor) {
   const account = store.state().accounts.find(a => a.account_id === actor.account_id);
@@ -229,6 +248,7 @@ function recoverAccount(store, input, client) {
     const salt = crypto.randomBytes(16).toString('hex');
     account.password_salt = salt;
     account.password_hash = hashPassword(password, salt);
+    delete account.legacy_password_bcrypt;
     account.recovery_key_digest = recoveryDigest(nextKey);
     account.recovery_key_created_at = nowIso();
     account.failed_sign_ins = 0;
@@ -273,7 +293,7 @@ function checkCredentials(state, email, password) {
     if (account && account.locked_until && Date.parse(account.locked_until) > Date.now()) {
       return { refuse: 'TOO_MANY_FAILED_SIGN_INS' };
     }
-    if (!account || typeof password !== 'string' || !verifyPassword(password, account.password_salt, account.password_hash)) {
+    if (!account || !verifyAccountPassword(account, password)) {
       if (account) {
         const windowStart = Date.parse(account.failed_window_started_at || '');
         const insideWindow = !Number.isNaN(windowStart) && Date.now() - windowStart < FAILED_ATTEMPT_WINDOW_MINUTES * 60000;
