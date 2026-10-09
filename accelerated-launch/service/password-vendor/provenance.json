@@ -1,0 +1,25 @@
+{
+  "name": "bcryptjs",
+  "version": "3.0.3",
+  "license": "BSD-3-Clause",
+  "upstream": "https://github.com/dcodeIO/bcrypt.js",
+  "registry_metadata": "https://registry.npmjs.org/bcryptjs/3.0.3",
+  "archive": "https://registry.npmjs.org/bcryptjs/-/bcryptjs-3.0.3.tgz",
+  "verified_archive_integrity": "sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==",
+  "retrieved_at_utc": "2026-10-09",
+  "files": [
+    {
+      "path": "bcryptjs-3.0.3.cjs",
+      "archive_path": "package/umd/index.js",
+      "sha256": "ed01b52b436504d8bb7086d93fee4bd8edbb22d8ed88e1b456e0c604f30e79c4",
+      "changes": "Renamed to .cjs; original bytes unchanged."
+    },
+    {
+      "path": "bcryptjs-LICENSE.txt",
+      "archive_path": "package/LICENSE",
+      "sha256": "095017ef78d2c818465eea7d71ebed918eb415aee9d38d36ce0b1240ae5781ee",
+      "changes": "Renamed; original bytes unchanged."
+    }
+  ],
+  "runtime_scope": "Local verification of explicit imported legacy_password_bcrypt account credentials, then atomic conversion to salted scrypt. New accounts never use bcrypt. No password-bearing subprocess or network call."
+}
