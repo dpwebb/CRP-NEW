@@ -8,7 +8,14 @@ const COLORS = Object.freeze({ ink: [0.10, 0.22, 0.22], green: [0.13, 0.28, 0.24
   line: [0.82, 0.87, 0.82], white: [1, 1, 1], alert: [0.61, 0.23, 0.15] });
 const LEFT = 48, WIDTH = 516, BOTTOM = 72;
 const COUNTRY_NAMES = { CA: 'Canada', US: 'United States', GB: 'United Kingdom', UK: 'United Kingdom', AU: 'Australia', NZ: 'New Zealand' };
+const FIELD_LABELS = { opened_date: 'Date opened', closed_date: 'Date closed', first_reported_date: 'Date first reported',
+  first_delinquency_date: 'First missed-payment date', original_delinquency_date: 'Original missed-payment date',
+  last_payment_date: 'Last-payment date', write_off_date: 'Write-off date', credit_limit: 'Credit limit',
+  past_due: 'Past-due amount', past_due_amount: 'Past-due amount', current_balance: 'Current balance',
+  account_status: 'Account status', account_type: 'Account type', account_number: 'Account number',
+  bureau_account_number: 'Bureau account number', responsibility: 'Who is responsible for the account' };
 function plain(value) { return String(value == null ? '' : value).replace(/[\r\n\t]+/g, ' ').trim(); }
+function displayLabel(value) { const label = plain(value).replace(/_/g, ' '); return label ? label[0].toUpperCase() + label.slice(1) : ''; }
 function day(value) { return plain(value).slice(0, 10); }
 function amount(cents, currency) { return `${plain(currency || 'cad').toUpperCase()} ${(cents / 100).toFixed(2)}`; }
 function place(jurisdiction = {}) {
@@ -32,8 +39,9 @@ function sourceText(fact) {
   }
   const reading = fact.omitted_value ? 'caption printed without a value'
     : fact.raw_value != null ? `printed "${plain(fact.raw_value)}"`
-      : fact.normalized_value != null ? `normalized value ${plain(fact.normalized_value)}` : 'value omitted';
-  return `${plain(fact.source_field || 'Report field')} - ${reading} (${sourceLocation(loc)}).`;
+      : fact.normalized_value != null ? `value ${plain(fact.normalized_value)}` : 'value omitted';
+  const label = FIELD_LABELS[fact.source_field] || displayLabel(fact.source_field || 'Report field');
+  return `${label} - ${reading} (${sourceLocation(loc)}).`;
 }
 function supportingDetails(issue) {
   const rules = [], facts = [], seenRules = new Set(), seenFacts = new Set();
@@ -131,7 +139,7 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
 
   function issueCard(issue, number, isInformation) {
     const label = isInformation ? 'INFORMATION' : issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'REVIEW';
-    const title = issue.check_kind || (isInformation ? 'Court time-limit information' : 'Report details to review');
+    const title = displayLabel(issue.check_kind || (isInformation ? 'Court time-limit information' : 'Report details to review'));
     continuation = null;
     ensure(112);
     line(LEFT, y + 7, LEFT + WIDTH, y + 7);

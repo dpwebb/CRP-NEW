@@ -101,6 +101,8 @@ async function run(t, check) {
   check.equal(response.headers.get('content-type'), 'application/pdf', 'the real endpoint serves the PDF media type');
   check.ok(/attachment; filename="CRP-credit-report-review-.*\.pdf"/.test(response.headers.get('content-disposition')), 'the real endpoint supplies a printable PDF filename');
   check.ok(response.bytes.subarray(0, 5).toString() === '%PDF-' && /Creditor A/i.test(response.text), 'real downloaded bytes carry the owned report creditor and PDF structure');
+  check.ok(/Date opened - printed/.test(response.text) && /Date closed - printed/.test(response.text), 'actual report evidence uses readable date labels');
+  check.ok(!/opened_date|closed_date|normalized value/.test(response.text), 'internal field names do not reach the consumer PDF');
   check.equal(journey.assessmentReport(t.service.store, owner, caseId).is_a_response_packet, false, 'the paid assessment remains distinct from a dispute packet');
   check.equal((await t.request('GET', `/api/cases/${caseId}/packet`, { token: owner.token })).status, 402, 'a one-report PDF does not grant subscriber packet access');
   const other = await t.unpaidAccount('em-paid-pdf-other@example.test');

@@ -29,6 +29,7 @@ For a nonzero first bill below CAD 0.50, apply a slightly smaller credit so the 
 - The provider fixture runs locally, with signed Stripe-shaped events through the production verifier and actual HTTP service. It creates no external objects and moves no money.
 - Actual local-browser tests exercise one-off payment return, report access, PDF download, subscription return, selection/review/approval and packet printing. PDF pages are rendered locally and visually reviewed.
 - Actual PDF download uses a readable country/region name and the same authoritative credit quote used by Plans.
+- Actual report field keys are replaced with readable labels such as Date opened and Date closed. Final visual review confirms this in the owned HTTP download. The final full run restarts after that repair; the interrupted prior run is not release evidence.
 - Full frozen totals, source hashes, closure records and release provenance will be recorded after the candidate passes.
 
 ## Release boundaries
