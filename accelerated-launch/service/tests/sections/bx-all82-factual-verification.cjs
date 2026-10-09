@@ -1,5 +1,6 @@
 'use strict';
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 /**
  * bx-all82-factual-verification.cjs — OWNER-ALL82-001: the jurisdiction-agnostic factual-verification consumer
  * journey exercised across all 82 canonical regions. The six common-error potential issues run on the
@@ -20,6 +21,7 @@ const { comparableText } = require('../packet-pdf-assertions.cjs');
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const crypto = require('node:crypto');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..', '..');
@@ -51,7 +53,12 @@ async function run(service, check) {
     const ordinal = regions.indexOf(r);
     /* An UNAMBIGUOUS numeric date: the day is 13-27, so it cannot be read as a month and the general intake resolves it without needing a report-wide convention. A day of 2-12 is ambiguous (02/03 reads either way) and is left unresolved, so the record would carry no opened date and the comparison would not run. */
     const opened = `${String(1 + Math.floor(ordinal / 15)).padStart(2, '0')}/${String(13 + (ordinal % 15)).padStart(2, '0')}/2020`;
-    const pdf = buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', `${marker}  Balance $100  Opened ${opened}  Closed 01/01/2019`] }] });
+    const openedIso = `2020-${String(1 + Math.floor(ordinal / 15)).padStart(2, '0')}-${String(13 + (ordinal % 15)).padStart(2, '0')}`;
+    const openedLabel = new Date(openedIso + 'T00:00:00Z').toLocaleDateString('en-US', {
+      month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    // The accepted explicit creditor caption supplies its own name reading. The
+    // uncaptioned punctuation-name boundary is separate reader coverage evidence.
+    const pdf = buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', `Creditor: ${marker}  Balance $100  Opened ${opened}  Closed 01/01/2019`] }] });
     const c = (await service.request('POST', '/api/cases', { token: actor.token, body: { country: r.country, region: r.region } })).json.case;
     const up = await service.request('POST', `/api/cases/${c.case_id}/files`, { token: actor.token, body: uploadBody(pdf, 'fictional-general-report.pdf') });
     presentations.add(up.json.receipt.format_detection.presentation_id);
@@ -74,15 +81,35 @@ async function run(service, check) {
     await service.preparePostalPacket(actor, c.case_id);
     const approval = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: actor.token });
     const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: actor.token });
-    const contentOk = dl.status === 200 && comparableText(dl.text).includes(comparableText(issue.explanation))
-      && comparableText(dl.text).includes(comparableText(issue.rule_assessment.requirement))
-      && approval.json.view.packet.selected_count === 1 && /- verification/.test(comparableText(dl.text))
-      && !/established reporting issue/.test(comparableText(dl.text));
-    const identity = pv.report_identity || {};
-    const version = approval.json.view.packet.approved_version;
-    const assocOk = contentOk && comparableText(dl.text).includes(opened) && dl.headers.get('x-crp-packet-version') === version
+    const packet = approval.json.view.packet;
+    const letter = comparableText(packet.correspondence_preview);
+    const wholePdf = comparableText(dl.text);
+    const namedAccount = issue.account_identity;
+    const hasConcern = text => namedAccount?.raw_value === marker && namedAccount?.location?.page === 1
+      && text.toLowerCase().includes(namedAccount.name.toLowerCase())
+      && text.includes(openedLabel) && text.includes('January 1, 2019')
+      && /opening date comes after the closing date|those two printed values cannot both be right/.test(text)
+      && /(?:check the opened and closed dates|check which of these two printed values is correct).*correct/i.test(text)
+      && /report page 1/i.test(text);
+    const editable = dl.status === 200 && dl.headers.get('content-type') === 'application/pdf'
+      ? await PDFDocument.load(dl.bytes) : null;
+    const contentOk = hasConcern(letter) && hasConcern(wholePdf)
+      && packet.selected_count === 1
+      && (packet.correspondence_preview.match(/^\s*\d+\.\s+/gm) || []).length === 1
+      && editable?.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly())
+      && !/established reporting issue| - verification|Recorded rule:|EVIDENCE REFERENCES|PRINT AND MAIL/.test(letter);
+    const version = packet.approved_version;
+    const manifest = packet.report_attachment_manifest || [];
+    const sourceFile = service.service.store.state().files.find(file => file.file_id === up.json.receipt.file_id);
+    const assocOk = contentOk && wholePdf.toLowerCase().includes(marker.toLowerCase()) && wholePdf.includes(opened)
+      && /Closed\s+01\/01\/2019/i.test(wholePdf)
+      && dl.headers.get('x-crp-packet-version') === version
       && String(dl.headers.get('content-disposition')).includes(c.case_id)
-      && /Report: /.test(comparableText(dl.text)) && (!identity.reference_date || comparableText(dl.text).includes(identity.reference_date));
+      && String(dl.headers.get('content-disposition')).includes('.pdf')
+      && manifest.length === 1 && manifest[0].file_id === up.json.receipt.file_id
+      && manifest[0].scope === 'RELEVANT_PAGES' && JSON.stringify(manifest[0].relevant_pages) === '[1]'
+      && sourceFile?.case_id === c.case_id && sourceFile?.account_id === actor.account_id
+      && sourceFile.stored_sha256 === crypto.createHash('sha256').update(pdf).digest('hex');
     if (r === regions[0]) {
       check.equal((await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: stranger.token })).status, 403, 'a stranger cannot download the approved regional packet');
       const other = (await service.request('POST', '/api/cases', { token: actor.token, body: { country: r.country, region: r.region } })).json.case;
@@ -105,7 +132,8 @@ async function run(service, check) {
   check.equal(contentMatched, 82, 'every downloaded packet matches the selected approved issue content');
   check.equal(associationMatched, 82, 'and carries its own case report identity (case/report association preserved)');
 
-  return { regions_tested: surfaced.length, presentations: [...presentations], download_content_matched: contentMatched, case_association_matched: associationMatched, one_issue_regions_delivering_the_factual_observation_as_a_supported_base: mergedRegions, fixtures: '82 distinct fictional general reports with case-specific printed creditor evidence; no real consumer identifiers or private reports' };
+  return { regions_tested: surfaced.length, presentations: [...presentations], download_content_matched: contentMatched, case_association_matched: associationMatched, one_issue_regions_delivering_the_factual_observation_as_a_supported_base: mergedRegions, fixtures: '82 distinct fictional general reports with explicit case-specific creditor captions; no real consumer identifiers or private reports',
+    reader_boundary: 'This journey proves the accepted explicit creditor-caption path. Recovery of the originally diagnosed uncaptioned punctuation-name limitation is tested separately.' };
 }
 
 module.exports = { run, id: 'bx-all82-factual-verification', title: 'OWNER-ALL82-001: the general-intake factual-observation journey (select/approve/download) across all 82 jurisdictions, including the one region whose own issue carries the factual observation as a supported base' };

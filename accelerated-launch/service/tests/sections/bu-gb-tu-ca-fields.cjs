@@ -205,12 +205,13 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/select`, { token: auOwner.token, body: { issue_ids: [auSelected.issue_id] } });
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/correspondence`, { token: auOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   const auPreview = (await service.request('GET', `/api/cases/${auCase.case_id}/packet`, { token: auOwner.token })).json.view.packet.correspondence_preview;
-  check.ok(auPreview.includes('Account: EXPRESS BANK'), 'the correspondence preview names the account it concerns');
+  check.ok(/^1\. EXPRESS BANK$/m.test(auPreview), 'the correspondence preview names the actual account in its numbered request');
   await service.preparePostalPacket(auOwner, auCase.case_id);
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/approve`, { token: auOwner.token });
   const auDownload = await service.request('GET', `/api/cases/${auCase.case_id}/packet-download`, { token: auOwner.token });
   check.equal(auDownload.status, 200, 'the approved packet downloads');
-  check.ok(comparableText(auDownload.text).includes('Account: EXPRESS BANK'), 'and names the credited account inside the packet');
+  check.ok(/1\. EXPRESS BANK/.test(comparableText(auDownload.text)), 'the complete packet names the credited account in the human letter');
+  check.equal(auDownload.headers.get('content-type'), 'application/pdf', 'the AU account-name packet is one PDF');
   /* A MATERIAL identity change after approval invalidates the approval. */
   service.service.store.update((state) => {
     const res = state.results.find((r) => r.case_id === auCase.case_id);
@@ -272,11 +273,16 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${gbCase.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [gbSel.issue_id] } });
   await service.request('POST', `/api/cases/${gbCase.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.preparePostalPacket(owner, gbCase.case_id);
-  await service.request('POST', `/api/cases/${gbCase.case_id}/packet/approve`, { token: owner.token });
+  const gbApproved = await service.request('POST', `/api/cases/${gbCase.case_id}/packet/approve`, { token: owner.token });
   const gbDl = await service.request('GET', `/api/cases/${gbCase.case_id}/packet-download`, { token: owner.token });
   check.equal(gbDl.status, 200, 'the GB account-dates packet downloads');
-  check.ok(/opened date later than its closed date/.test(comparableText(gbDl.text)), 'with the factual verification request');
-  check.ok(comparableText(gbDl.text).includes('19/10/06'), 'with the printed Started reading as evidence');
+  const gbLetter = gbApproved.json.view.packet.correspondence_preview;
+  check.ok(/opening date comes after the closing date.*check the opened and closed dates/i.test(comparableText(gbLetter)),
+    'the human letter explains the factual conflict and asks the bureau to check it');
+  check.ok(gbLetter.includes('October 19, 2006') && gbLetter.includes('October 19, 2005'),
+    'both decisive Started and Settled dates are stated in familiar language');
+  check.ok(/report page 1/i.test(gbLetter), 'the human letter retains the printed GB source page');
+  check.equal(gbDl.headers.get('content-type'), 'application/pdf', 'the GB account-date packet is one PDF');
 
   const tuCase = (await service.request('POST', '/api/cases', { token: owner.token, body: { country: 'CA', region: 'CA-ON' } })).json.case;
   await payReportOnce(service, owner, tuCase.case_id);
@@ -289,10 +295,15 @@ async function run(service, check) {
   const canadianProfile = await service.request('PUT', '/api/account/profile', { token: owner.token, body: { profile: { country: 'CA', region: 'ON' } } });
   check.equal(canadianProfile.status, 200, 'the fictional Canadian packet uses an explicitly saved Ontario address rather than the earlier England profile');
   await service.preparePostalPacket(owner, tuCase.case_id);
-  await service.request('POST', `/api/cases/${tuCase.case_id}/packet/approve`, { token: owner.token });
+  const tuApproved = await service.request('POST', `/api/cases/${tuCase.case_id}/packet/approve`, { token: owner.token });
   const tuDl = await service.request('GET', `/api/cases/${tuCase.case_id}/packet-download`, { token: owner.token });
   check.equal(tuDl.status, 200, 'the TU-CA account-dates packet downloads');
-  check.ok(comparableText(tuDl.text).includes('Oct 2, 2025'), 'with the printed Opened Date as evidence');
+  const tuLetter = tuApproved.json.view.packet.correspondence_preview;
+  check.ok(tuLetter.includes('October 2, 2025') && tuLetter.includes('October 2, 2024'),
+    'the human letter states both actual TU Opened Date and Closed Date readings in familiar language');
+  check.ok(/check the opened and closed dates/i.test(tuLetter) && /report page 1/i.test(tuLetter),
+    'the consumer asks the bureau to check the located TU date conflict');
+  check.equal(tuDl.headers.get('content-type'), 'application/pdf', 'the TU account-date packet is one PDF');
 
   evidence.gb_account_dates = 'GB-Experian Started/Settled map to liability.openedDate/closedDate -> account-dates verification issue (downstream)';
   evidence.tu_ca_account_dates = 'TU-CA Opened/Closed Date map to liability.openedDate/closedDate -> account-dates verification issue (downstream)';

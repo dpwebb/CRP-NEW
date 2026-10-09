@@ -6,6 +6,7 @@
  */
 const crypto = require('node:crypto');
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const issues = require('../../issues.cjs');
 const { activeAdapter } = require('../../common-error-scope.cjs');
@@ -81,10 +82,17 @@ async function fullPacket(service, check, email, country, region, preparedPdf, f
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/select`, { token: actor.token, body: { issue_ids: [issue.issue_id] } });
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/correspondence`, { token: actor.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.preparePostalPacket(actor, caseRow.case_id);
-  await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: actor.token });
+  const approval = await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: actor.token });
   const dl = await service.request('GET', `/api/cases/${caseRow.case_id}/packet-download`, { token: actor.token });
   check.equal(dl.status, 200, 'the entitled packet downloads');
-  return { report_identity: pv.report_identity, issue, text: dl.text };
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the entire approved packet is one PDF');
+  check.equal(dl.headers.get('x-crp-packet-version'), approval.json.view.packet.approved_version, 'the actual PDF remains bound to the reviewed approval');
+  const editable = await PDFDocument.load(dl.bytes);
+  check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
+    'the actual downloaded consumer letter remains editable');
+  return { report_identity: pv.report_identity, issue, text: dl.text,
+    letter: approval.json.view.packet.correspondence_preview, manifest: approval.json.view.packet.report_attachment_manifest,
+    fileId: up.json.receipt.file_id, caseId: caseRow.case_id };
 }
 
 async function run(service, check) {
@@ -134,7 +142,11 @@ async function run(service, check) {
   ] }] });
   const commonRun = await fullPacket(service, check, 'by-common@example.test', 'US', 'US-CA', commonPdf, 'fictional-chronology.pdf');
   check.equal(commonRun.issue.basis_type, issues.BASIS_TYPE.FACTUAL_CONSISTENCY);
-  check.ok(/opened date later than its closed date/.test(comparableText(commonRun.text)));
+  check.ok(/opening date comes after the closing date.*check the opened and closed dates/i.test(comparableText(commonRun.letter)),
+    'the human letter explains the contradiction and asks the bureau to check it');
+  check.ok(/CREDITOR A/i.test(commonRun.letter) && commonRun.letter.includes('January 1, 2020')
+    && commonRun.letter.includes('January 1, 2019'), 'the letter names the actual tradeline and both decisive dates');
+  check.ok(/Opened\s+01\/01\/2020/i.test(comparableText(commonRun.text)), 'the inline original retains the raw opened date and its own caption');
   check.ok(!/dismissed.disposition.presence/.test(commonRun.text), 'retired content evidence is absent');
 
   /* A checklist-related AU retention finding also reaches a complete packet. */
@@ -148,9 +160,14 @@ async function run(service, check) {
   const auRun = await fullPacket(service, check, 'by-au@example.test', 'AU', 'AU-NSW', auPdf, 'fictional-au-liability.pdf');
   check.equal(auRun.issue.basis_type, issues.BASIS_TYPE.STATUTORY_RETENTION, 'the AU liability finding is the eligible retention issue');
   check.equal(auRun.issue.confidence, 'DEFINITE', 'as a definite correction request');
-  check.ok(/retention period has been exceeded|More than 2 years/.test(auRun.text), 'the packet states the recorded retention basis');
+  check.ok(/credit-report time limit|More than 2 years/i.test(comparableText(auRun.letter)), 'the human letter states the supported reporting-time concern');
+  check.ok(auRun.letter.includes('SOME BANK') && auRun.letter.includes('January 1, 2019'), 'the letter identifies the actual account and closed-date temporal anchor');
+  check.ok(/check|correct|remove/i.test(auRun.letter), 'the letter requests checking or correcting the supported reporting-time concern');
   check.ok(auRun.report_identity && (auRun.report_identity.bureau || auRun.report_identity.reference_date), 'the AU packet carries ITS own case report identity');
-  check.ok(/Report: /.test(auRun.text), 'and the AU packet states the report it came from');
+  check.ok(/report page 3/i.test(auRun.letter), 'the human letter integrates the actual AU source page');
+  check.ok(auRun.manifest.length === 1 && auRun.manifest[0].file_id === auRun.fileId
+    && auRun.manifest[0].scope === 'RELEVANT_PAGES' && auRun.manifest[0].relevant_pages.includes(3),
+    'the complete AU packet includes the owned original page associated with its selected retention issue');
   check.ok(auRun.issue.issue_id !== commonRun.issue.issue_id, 'the two packets are bound to their own case, not shared');
 
   evidence.reconciled_content_finding = 'retired dismissed-charge content finding is absent from consumer issues';

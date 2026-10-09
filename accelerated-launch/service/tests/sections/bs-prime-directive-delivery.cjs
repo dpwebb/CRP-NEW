@@ -1,5 +1,6 @@
 'use strict';
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 /**
  * bs-prime-directive-delivery.cjs — the consumer delivery of the newly qualified retention path (Branch B) and the
  * AU contradictory-date issue (Branch A) through the complete fictional upload -> extraction -> issue -> Wizzard
@@ -94,12 +95,19 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [qual.issue_id] } });
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.preparePostalPacket(owner, c.case_id);
-  await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
+  const approved = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the qualified probable packet downloads');
-  check.ok(/entry older than the ordinary reporting period/.test(comparableText(dl.text)), 'with the affirmative concern in the packet');
-  check.ok(/not shown to be absent/.test(comparableText(dl.text)), 'with the exception uncertainty');
-  check.ok(/check whether an exception/.test(comparableText(dl.text)), 'with the plain verification request');
+  const letter = approved.json.view.packet.correspondence_preview;
+  check.ok(/past the usual credit-report time limit/.test(comparableText(letter)), 'the human letter leads with the reporting-time concern');
+  check.ok(/report does not say whether an exception allows it to stay/.test(comparableText(letter)), 'the letter preserves the specific exception uncertainty in plain English');
+  check.ok(/check whether an exception/.test(comparableText(letter)), 'the consumer asks the bureau to check whether the exception applies');
+  check.ok(letter.includes('June 2015') && /report page 1/i.test(letter), 'the letter retains the actual month-precision anchor and source page');
+  check.ok(comparableText(dl.text).includes('30 days past due as of Jun 2015'), 'the inline original preserves the actual adverse-rating reading');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the complete qualified packet downloads as one PDF');
+  const editable = await PDFDocument.load(dl.bytes);
+  check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
+    'the downloaded consumer letter remains editable');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'never asserting a definite breach');
   check.ok(comparableText(dl.text).indexOf(issues.PROBABLE_LEAD) === -1, 'the downloaded packet omits the generic confidence tier sentence');
   check.ok(!/could not be read|not readable/i.test(comparableText(dl.text)), 'and never describes the exception uncertainty as a reading failure');
@@ -135,11 +143,15 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/select`, { token: auOwner.token, body: { issue_ids: [auSel.issue_id] } });
   await service.request('POST', `/api/cases/${auCase.case_id}/packet/correspondence`, { token: auOwner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.preparePostalPacket(auOwner, auCase.case_id);
-  await service.request('POST', `/api/cases/${auCase.case_id}/packet/approve`, { token: auOwner.token });
+  const auApproved = await service.request('POST', `/api/cases/${auCase.case_id}/packet/approve`, { token: auOwner.token });
   const auDl = await service.request('GET', `/api/cases/${auCase.case_id}/packet-download`, { token: auOwner.token });
   check.equal(auDl.status, 200, 'the AU contradictory-date packet downloads');
-  check.ok(/1 January 2020/.test(comparableText(auDl.text)), 'with the printed opened date');
-  check.ok(/opened date later than its closed date/.test(comparableText(auDl.text)), 'and the factual verification request');
+  const auLetter = auApproved.json.view.packet.correspondence_preview;
+  check.ok(auLetter.includes('January 1, 2020') && auLetter.includes('January 1, 2019'), 'the human letter states both actual conflicting dates');
+  check.ok(/opening date comes after the closing date.*check the opened and closed dates/i.test(comparableText(auLetter)),
+    'the letter explains the conflict and asks the bureau to check the dates');
+  check.ok(/SOME BANK/.test(auLetter) && /report page 3/i.test(auLetter), 'the letter names the actual account and source page');
+  check.equal(auDl.headers.get('content-type'), 'application/pdf', 'the AU packet is one complete PDF');
 
   /* ---- 3. Controls: applicable exception, in-period, missing evidence, cross-account, edited wording. ---- */
   const rOwner = await service.unpaidAccount('bs-ru@example.test');
