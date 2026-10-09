@@ -1,5 +1,9 @@
 # Credit Regulator Pro — final acceptance checklist
 
+## October 9 — recovery rehearsal verified on current staging
+
+The requested backup restoration and previous-release rehearsal is **VERIFIED on staging**. An actual complete stopped-service backup was restored in isolation, with real restored sign-in, saved account details, report/assessment and document-byte checks. Public staging was switched to the retained previous release and safely back to the newest build without losing existing records. The final state, private backup custody, cleanup, corrected failed attempts and timings are recorded in `CRP_BACKUP_RESTORE_ROLLBACK_CLOSEOUT_2026_10_09.md`. Production backup cadence/retention/off-host custody and production-specific configuration remain separate, unverified requirements. This current recovery update does not relabel the historical acceptance rows for other features or declare production readiness.
+
 ## October 5 — OWNER-V1-SEVEN-DAY-001 adopted
 
 `CRP_OWNER_VERSION_1_SEVEN_DAY_EXECUTION_001.md` overrides conflicting build schedules with October 5–11 checkpoints toward an approved-scope staging candidate. `CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md` is the single remaining-work schedule. Preserve 82 jurisdictions, existing core obligations, one implementation writer, supported potential issues and release authorization. No runtime source changed or acceptance status closed by this amendment; no full regression needed for documentation. Target date is not a production-readiness guarantee.
@@ -118,7 +122,7 @@ Implementation open IDs:
 | Consumers can prepare supported next steps and track their case | Create and review an eligible draft, download it and record response status without implying delivery | Case/draft features exist, but no complete current deployed acceptance record is established here | Not demonstrated to completion |
 | Private reports remain private and can be deleted | Test ownership, deletion, retention policy, logs and external transmission boundaries | Earlier staging deletion revoked the session; local privacy tests exist; broader final-release review is required | Partly demonstrated |
 | The service survives interruptions and supports multiple users | Run concurrent uploads/assessments and interrupt processing; measure recovery and response time | Local atomic-storage and recovery tests exist; deployed capacity measurements are absent | Not demonstrated to completion |
-| Backups can restore service and releases can be rolled back | Restore a copied backup in isolation and rehearse rollback without losing consumer records | Current deployment records a data snapshot and rollback target; full current restoration/rollback rehearsal is not established | Partly demonstrated |
+| Backups can restore service and releases can be rolled back | Restore a copied backup in isolation and rehearse rollback without losing consumer records | October 9: actual full backup restored with sign-in/report/document checks; public staging served the previous build and returned to the newest; existing data preserved. See current recovery closeout. | Staging verified; production backup configuration unverified |
 | The website's promises match what it actually checks | Compare purchase wording, coverage and results against executed tests | Staging clearly reports test billing and not launch ready; broad violation-detection promise remains unmet | Incomplete |
 | The final production website runs the accepted build | Verify release identity, live billing configuration and the full production journey | Current evidence is staging only; live billing and production acceptance are not established | Incomplete |
 
