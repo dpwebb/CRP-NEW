@@ -71,21 +71,37 @@ function packetStore(ctx) {
 
 function approveAndDownload(ctx, issue, check) {
   const store = packetStore(ctx), actor = { account_id: 'fictional-owner' }, caseId = 'fictional-tu-case';
+  const originalFacts = JSON.stringify(issue.source_facts);
   packets.selectIssues(store, actor, caseId, [issue.issue_id]);
-  check.equal(packets.packetView(store, actor, caseId).eligible_issues
-    .find((item) => item.issue_id === issue.issue_id)?.consumer_label, 'VIOLATION',
+  const reviewed = packets.packetView(store, actor, caseId).eligible_issues.find((item) => item.issue_id === issue.issue_id);
+  check.equal(reviewed?.consumer_label, 'VIOLATION',
   'the existing packet selection uses the sole public breach term');
-  packets.setCorrespondence(store, actor, caseId, { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
-  packets.approvePacket(store, actor, caseId);
-  const body = packetText(packets.packetDownload(store, actor, caseId));
-  check.match(body, /VIOLATION/, 'the approved packet names the supported breach');
-  check.ok(comparableText(body).includes(comparableText(issue.rule_assessment.requirement)), 'the packet carries the existing report-data requirement');
-  check.match(body, /verify|verification/i, 'the supported uncertain issue retains a verification request');
+  check.equal(reviewed.rule_assessment.requirement, issue.rule_assessment.requirement,
+    'the selected packet review retains the defined report-data requirement');
   for (const fact of issue.source_facts) {
-    check.ok(body.includes(String(fact.raw_value)), 'the packet includes the decisive printed reading');
-    check.ok(body.includes(`page ${fact.location.page}, line ${fact.location.line}`),
-      'the packet includes the decisive reading\'s source location');
+    const shown = reviewed.source_facts.find(item => item.source_field === fact.source_field && item.raw_value === fact.raw_value);
+    check.ok(shown, 'the packet review retains the exact decisive printed reading');
+    check.equal(shown.location.page, fact.location.page, 'the review retains each reading\'s exact physical source page');
+    check.equal(shown.location.line, fact.location.line, 'the review retains each reading\'s exact physical source line');
   }
+  packets.setCorrespondence(store, actor, caseId, { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
+  const preview = packets.packetView(store, actor, caseId).packet.correspondence_preview;
+  packets.approvePacket(store, actor, caseId);
+  const download = packets.packetDownload(store, actor, caseId), body = packetText(download);
+  check.equal(download.content_type, 'application/pdf', 'the approved downstream packet model renders one PDF');
+  check.equal(comparableText(body), comparableText(preview), 'independent PDF extraction matches the plain reviewed letter');
+  check.equal(issue.request_type, 'VERIFICATION', 'the supported uncertain issue retains its verification action');
+  check.match(body, /Please check/i, 'the consumer letter asks the bureau to check the report plainly');
+  check.match(body, /FICTIONAL CREDITOR/i, 'the letter names the actual selected tradeline');
+  if (issue.check_id === ZERO_LIMIT) {
+    check.match(body, /100 owed.*credit limit.*0/s, 'the zero-limit request preserves both decisive amounts and their meaning');
+  } else if (issue.check_id === FUTURE_DATE) {
+    check.ok(body.includes('January 1, 2027') && body.includes('November 2, 2025'),
+      'the future-payment request keeps the payment date and report date in familiar English');
+  }
+  check.match(body, /report page 1(?:, line \d+)?/, 'the plain request includes a brief source-page reference');
+  check.ok(!/EVIDENCE REFERENCES|Recorded rule:|PRINT AND MAIL/.test(body), 'the letter contains no internal evidence appendix or consumer printing instructions');
+  check.equal(JSON.stringify(issue.source_facts), originalFacts, 'formatting the plain letter leaves all original facts and provenance unchanged');
   return { store, actor, caseId, body };
 }
 

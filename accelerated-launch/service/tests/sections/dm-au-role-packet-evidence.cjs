@@ -6,11 +6,13 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
 const formats = require('../../formats.cjs');
 const family = require('../../format-families/au-equifax-consumer.cjs');
 const evaluation = require('../../evaluation.cjs');
 const issues = require('../../issues.cjs');
 const commonErrors = require('../../common-errors.cjs');
+const packets = require('../../packets.cjs');
 const { sourceForField } = require('../../report-fact-sources.cjs');
 const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
@@ -141,16 +143,25 @@ async function run(t, check) {
       body: { issue_ids: [selectable.issue_id] } })).status, 200, 'the consumer selects the existing issue');
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/correspondence`, { token: owner.token,
       body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana@example.test' } } })).status, 200, 'the consumer supplies correspondence');
-    await t.preparePostalPacket(owner, caseId);
+    const prepared = await t.preparePostalPacket(owner, caseId);
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token })).status, 200, 'the consumer approves the reviewable packet');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the approved native listing packet downloads');
-    check.ok(downloaded.text.includes(PRINCIPAL) && downloaded.text.includes('Morgan Lane') && downloaded.text.includes('Cedar Bank'),
-      'the selected packet states the own listing role, co-borrower and provider');
-    check.ok(downloaded.text.includes('CURRENT Listing > Association Code') && downloaded.text.includes('CURRENT Listing > Co Borrower')
-      && downloaded.text.includes('page 3'), 'the supporting evidence points to its exact captions and physical source');
-    check.equal(/INDIVIDUAL|JOINT|overdue\.associationCode|overdue\.coBorrower/.test(downloaded.text), false,
-      'neither responsibility inference nor internal fields enter consumer wording');
+    check.equal(downloaded.headers.get('content-type'), 'application/pdf', 'the selected packet downloads as one complete PDF');
+    const printed = packets.packetPrint(t.service.store, owner, caseId), reportSections = printed.sections.filter(section => section.kind === 'report');
+    check.equal(reportSections.length, 1, 'the selected native report appears once in the packet');
+    check.deepEqual(reportSections[0].source_pages, [3], 'only the original physical listing page is included');
+    const sourceText = execFileSync('pdftotext', ['-f', String(reportSections[0].start_page), '-l', String(reportSections[0].start_page + reportSections[0].page_count - 1), '-layout', '-', '-'],
+      { input: printed.body, encoding: 'utf8' });
+    check.ok(sourceText.includes(PRINCIPAL) && sourceText.includes('Morgan Lane') && sourceText.includes('Cedar Bank'),
+      'the original inline source page keeps the own literal role, co-borrower and provider');
+    check.ok(sourceText.includes('Association Code') && sourceText.includes('Co Borrower'),
+      'the supporting readings remain beside their original printed captions');
+    const original = await t.request('GET', prepared.packet.report_exhibits[0].review_url, { token: owner.token });
+    check.deepEqual(original.bytes, positive.bytes, 'the owned original-report review retains the exact uploaded PDF bytes');
+    check.ok(/report page 3/.test(prepared.packet.correspondence_preview), 'the letter refers briefly to the included physical report page');
+    check.equal(/INDIVIDUAL|JOINT|overdue\.associationCode|overdue\.coBorrower|CURRENT Listing >/.test(prepared.packet.correspondence_preview), false,
+      'neither responsibility inference, internal fields nor debug evidence captions enter the plain consumer letter');
     for (const [name, mutate] of [
       ['literal role', (r) => { r.facts[ROLE] = 'Changed literal role'; r.fact_sources[ROLE].raw_value = 'Changed literal role'; r.fact_sources[ROLE].normalized_value = 'Changed literal role'; }],
       ['role geometry', (r) => { r.fact_sources[ROLE].location.x0 += 1; }],
