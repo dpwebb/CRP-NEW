@@ -300,8 +300,10 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
 /** Resolve account + plan from a subscription's recorded metadata (renewal/failure/cancellation). */
 async function resolveFromSubscription(secretKey, base, subscriptionId) {
   try {
+    const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+    if (!mode || !/^sub_[A-Za-z0-9_]+$/.test(subscriptionId || '')) return null;
     const sub = await stripe.retrieveSubscription(secretKey, subscriptionId, base);
-    if (sub.status !== 200) return null;
+    if (sub.status !== 200 || sub.json?.id !== subscriptionId || sub.json.livemode !== (mode === 'live')) return null;
     const md = sub.json.metadata || {};
     return {
       accountRef: md.account_id || null,
@@ -316,6 +318,15 @@ async function resolveFromSubscription(secretKey, base, subscriptionId) {
 
 /** Normalise `invoice.paid` / `invoice.payment_failed`. */
 async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, type) {
+  const invoiceId = invoice?.id;
+  const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+  if (!mode || !/^in_[A-Za-z0-9_]+$/.test(invoiceId || '') || invoice.livemode !== (mode === 'live')) return null;
+  // Webhook objects use the endpoint's version, which can differ from our REST
+  // pin. Read the signed invoice ID using that pin before resolving its facts.
+  const receipt = await stripe.retrieveInvoice(secretKey, invoiceId, base);
+  if (receipt.status !== 200 || receipt.json?.id !== invoiceId || receipt.json.livemode !== (mode === 'live')) return null;
+  invoice = receipt.json;
+  if (type === 'invoice.payment_failed' && invoice.status === 'paid') return null;
   const subId = typeof invoice.subscription === 'string' ? invoice.subscription : (invoice.subscription && invoice.subscription.id);
   const resolved = subId ? await resolveFromSubscription(secretKey, base, subId) : null;
   if (!resolved || !resolved.accountRef || !resolved.planCode) return null;
@@ -427,6 +438,8 @@ async function normalizeStripeEvent(env, secretKey, base, rawEvent) {
   if (type === 'checkout.session.completed' || type === 'checkout.session.async_payment_succeeded') {
     normalized = await normalizeCheckoutEvent(env, secretKey, base, obj, eventId, type);
   } else if (type === 'invoice.paid' || type === 'invoice.payment_failed' || type === 'invoice.voided') {
+    const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+    if (!mode || rawEvent.livemode !== (mode === 'live')) return null;
     normalized = await normalizeInvoiceEvent(env, secretKey, base, obj, eventId, type);
   } else if (type === 'customer.subscription.deleted' || type === 'subscription.deleted') {
     if (type === 'customer.subscription.deleted') {

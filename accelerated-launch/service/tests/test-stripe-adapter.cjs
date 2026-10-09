@@ -191,7 +191,7 @@ async function main() {
   assert.equal(verified.event.invoice_reference, 'in_test_1', 'Checkout carries the same canonical invoice as invoice.paid');
   assert.equal(verified.event.payment_intent, 'pi_monthly_1', 'Checkout resolves its actual invoice payment intent');
   assert.equal(verified.event.amount_cents, 200, 'the actual discounted cash payment is preserved');
-  const invoiceEvent = signedEvent(WEBHOOK_SECRET, { id: 'evt_initial_invoice', type: 'invoice.paid',
+  const invoiceEvent = signedEvent(WEBHOOK_SECRET, { id: 'evt_initial_invoice', type: 'invoice.paid', livemode: false,
     created: Math.floor(Date.now() / 1000), data: { object: structuredClone(mock.fixture.invoice) } });
   const normalizedInvoice = await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers });
   assert.equal(normalizedInvoice.verified, true, 'the canonical initial paid invoice normalizes');

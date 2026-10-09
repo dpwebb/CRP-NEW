@@ -112,9 +112,15 @@ async function recordVerifiedEvent(store, event, provider) {
         live.checkout_id = intent.checkout_id;
         live.provider_reference = intent.provider_reference || event.invoice_reference || event.session_reference;
       }
-      ent.applyEffect(live, effect === 'UPGRADE' ? 'ACTIVATE' : effect, event.plan_code, event, at);
-      live.current_payment_intent = event.payment_intent || null;
-      live.current_payment_id = event.invoice_reference || event.session_reference;
+      const historicalRenewal = effect === 'RENEW' && Number.isFinite(Date.parse(event.period_end)) &&
+        Number.isFinite(Date.parse(live.expires_at)) && Date.parse(event.period_end) < Date.parse(live.expires_at);
+      // A delayed older invoice still contributes its verified cash. It cannot
+      // replace the newer paid period or make its own refund revoke that access.
+      if (!historicalRenewal) {
+        ent.applyEffect(live, effect === 'UPGRADE' ? 'ACTIVATE' : effect, event.plan_code, event, at);
+        live.current_payment_intent = event.payment_intent || null;
+        live.current_payment_id = event.invoice_reference || event.session_reference;
+      }
       if (effect !== 'RENEW') {
         intent.state = 'COMPLETED';
         intent.provider_reference ||= event.invoice_reference || event.session_reference;

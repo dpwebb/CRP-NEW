@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation CLOSED. Final frozen regression passes 13,001 assertions, with zero failures or skips. Measured staging verification is pending. Production remains open.
+Hosted verification reopened implementation for a concrete invoice-event repair. The preceding frozen regression passed 13,001 assertions, with zero failures or skips. Corrected implementation and measured hosted upgrade verification are pending. Production remains open.
 
 ## Owner request delivered
 
@@ -24,6 +24,10 @@ Refunds reduce unused cash by the provider's cumulative refunded total, without 
 For a nonzero first bill below CAD 0.50, apply a slightly smaller credit so the bill remains chargeable and leave the remaining cents in the account. Fully credited bills still cost zero. This avoids Stripe automatically deferring an invoice below its minimum to a later bill. See [Stripe's invoice behavior](https://docs.stripe.com/api/invoices) and [currency minimums](https://docs.stripe.com/currencies#minimum-and-maximum-charge-amounts).
 
 ## Verification
+
+- Exact candidate `crp-v1-69ef065334b3386a` is deployed, with all 115 hashes, public assets and unpaid locks verified. Actual Stripe test billing accepted a CAD 71.55 yearly invoice after CAD 7.95 unused monthly credit, on the same subscription. The application refused its signed event because the endpoint uses `2025-04-30.basil`, which omits the invoice fields expected by the pinned `2024-06-20` REST contract. Access correctly remained monthly, but the paid upgrade was unconfirmed.
+- Smallest repair: verify the signature and event mode, retrieve that signed invoice ID through the existing pinned REST API, and validate invoice/subscription identity and mode before applying the existing account, price and amount gates. A stale failed-payment snapshot cannot undo a canonically paid invoice. Faithful modern webhook tests exercise the actual schema rather than changing the provider version.
+- Read-only review identified a related delayed same-plan receipt defect: the old receipt could replace the current payment identity, letting its refund revoke newer paid access. Record its verified cash once, but preserve a newer paid period and payment identity. Both repairs require affected checks and a new frozen full gate before corrected deployment.
 
 - Focused real-service checks verify PDF access/privacy, cumulative ledger receipts, amount/currency/account binding, canonical invoice deduplication, pending and paid upgrades, refunds, cancellation and recovery.
 - The provider fixture runs locally, with signed Stripe-shaped events through the production verifier and actual HTTP service. It creates no external objects and moves no money.
