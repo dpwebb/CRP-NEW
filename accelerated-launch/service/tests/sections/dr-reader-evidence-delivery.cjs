@@ -69,8 +69,8 @@ async function run(t, check) {
     packets.approvePacket(store, actor, 'dr-case');
     const body = packetText(packets.packetDownload(store, actor, 'dr-case'));
     check.equal(/CREDITOR-?[a-f0-9]{24}/i.test(body), false, 'the approved duplicate packet has no internal creditor key');
-    check.ok(body.includes('***4321') && body.includes('Creditor identity matched from the report'),
-      'duplicate packet retains the actual masked identifier and located creditor match');
+    check.ok(body.includes('***4321') && /matching account details.*same debt twice/s.test(body),
+      'the human duplicate letter retains the actual masked identifier and corroborated same-account concern');
   }
 
   for (const [label, change] of [
@@ -97,10 +97,9 @@ async function run(t, check) {
     packets.setCorrespondence(store, actor, 'dr-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
     packets.approvePacket(store, actor, 'dr-case');
     const body = packetText(packets.packetDownload(store, actor, 'dr-case'));
-    check.ok(body.includes('VIOLATION') && body.includes('Notes: printed "Closed by credit grantor"'),
-      'the selected approved packet states the actual own Notes phrase');
-    check.ok(body.includes('Printed caption without a value: Date Closed') && body.includes('page 5'),
-      'packet gives the actual blank caption and physical page');
+    check.ok(body.includes('My report says "Closed by credit grantor"'), 'the selected human letter quotes the actual own Notes phrase');
+    check.ok(body.includes('space for the closing date is blank') && body.includes('page 5'),
+      'the letter identifies the blank closing-date space and physical source page');
     check.equal(/printed "null"|published code definition|potential violation|probable violation/i.test(body), false,
       'literal closure packets invent no code definition or consumer confidence verdict');
     store.update((state) => { state.results[0].extraction.records[0].report_status_statements[0].location.x0 += 1; });
@@ -124,11 +123,14 @@ async function run(t, check) {
     await t.request('POST', endpoint + '/packet/correspondence', { token: owner.token, body: {
       correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
     await t.preparePostalPacket(owner, endpoint.split('/').at(-1));
-    check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200,
+    const approved = await t.request('POST', endpoint + '/packet/approve', { token: owner.token });
+    check.equal(approved.status, 200,
       'the consumer approves the recovered source evidence');
     const downloaded = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(downloaded.status, 200, 'the selected approved evidence packet downloads');
-    return downloaded.text;
+    check.equal(downloaded.headers.get('content-type'), 'application/pdf', 'the complete recovered evidence packet is one PDF');
+    return { body: downloaded.text, letter: approved.json.view.packet.correspondence_preview,
+      view: approved.json.view, pdf: downloaded };
   };
   // Private source bytes remain inside this loopback harness and are removed with its data directory.
   const localCa = process.env.CRP_CA_EQUIFAX_LOCAL_SPECIMEN || 'C:/Users/webbd/CREDIT REPORTS/CA/CA Equifax 001.pdf';
@@ -149,12 +151,15 @@ async function run(t, check) {
     const selected = view.eligible_issues.find((entry) => entry.source_facts?.some((fact) => fact.source_field === 'Notes'));
     check.ok(selected, 'actual source-linked closure with its own blank date is selectable');
     if (selected) {
-      const body = await approve(endpoint, selected);
-      check.ok(body.includes('VIOLATION'), 'actual recovered Canadian closure packet uses the breach term');
+      const delivered = await approve(endpoint, selected), body = delivered.body, letter = delivered.letter;
+      check.equal(selected.consumer_label, 'VIOLATION', 'the actual recovered Canadian selected issue retains the sole breach term');
       const ownNote = selected.source_facts.find((fact) => fact.source_field === 'Notes').raw_value;
-      check.ok(/closed by credit grantor/i.test(ownNote) && body.includes(`Notes: printed "${ownNote}"`),
-        'actual packet includes the complete literal own closure note');
-      check.ok(body.includes('Date Closed'), 'actual packet includes the exact blank closure-date caption');
+      check.ok(/closed by credit grantor/i.test(ownNote) && letter.includes(`My report says "${ownNote}"`),
+        'the actual consumer letter includes the complete literal own closure note');
+      check.ok(selected.source_facts.some(fact => fact.source_field === 'Date Closed' && fact.raw_value == null)
+        && letter.includes('space for the closing date is blank'), 'the actual blank own Date Closed caption supports the plain-English letter request');
+      check.ok(delivered.view.packet.report_attachment_manifest.some(report => report.relevant_pages.includes(7)),
+        'the complete packet includes the original report page containing the actual blank closure caption');
       check.ok(body.includes('page 7'), 'actual recovered Canadian closure packet references its physical page');
       check.equal(/CA-CREDITOR-|INTERNAL-CREDITOR-|page undefined/.test(body), false,
         'the private-source packet exposes no internal creditor token or invented page');
@@ -167,13 +172,13 @@ async function run(t, check) {
   const selected = view.eligible_issues.find((entry) => entry.source_facts?.some((fact) => fact.definition_source?.kind === 'HISTORY_PERIOD'));
   check.ok(selected, 'the derived UK period has a separate published basis in consumer packet review');
   if (selected) {
-    const body = await approve(endpoint, selected);
-    check.ok(body.includes('File updated for the period to: printed "01/01/26"')
-      && body.includes('Published history-period definition:') && body.includes('Published code definition:'),
-    'packet distinguishes the own date anchor, published ordering and published code meanings');
-    const issueSummary = body.split('EVIDENCE REFERENCES')[1].split('PRINT AND MAIL')[0];
-    check.ok(issueSummary.includes('printed "1"') && issueSummary.includes('printed "0"') && issueSummary.includes('page 1'),
-      'the single evidence appendix retains both physical code readings separately from the definitions');
+    const delivered = await approve(endpoint, selected), body = delivered.body, letter = delivered.letter;
+    check.ok(letter.includes('"File updated for the period to" date (01/01/26)')
+      && letter.includes("the bureau's published order: the most recent month comes first, with one month for each entry"),
+    'the human letter distinguishes the printed date anchor from the published history ordering');
+    check.ok(letter.includes('"1"') && letter.includes('"0"') && letter.includes('page 1')
+      && letter.includes(selected.evidence.first_meaning) && letter.includes(selected.evidence.second_meaning),
+      'the human letter preserves both actual history codes, their distinct meanings and physical source page');
     const report = await t.request('GET', endpoint + '/report-download', { token: owner.token });
     check.equal(report.status, 200, 'the same recovered UK violation reaches the assessment download');
     check.ok(report.text.includes('Published payment-history order') && report.text.includes('most recent')
@@ -199,9 +204,10 @@ async function run(t, check) {
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
       await page.locator('#steps button[data-step="4"]').click(); await page.waitForSelector('#packet-block');
-      await page.waitForFunction(() => document.querySelector('#packet-block').innerText.includes('Published history-period definition'));
+      await page.waitForFunction(() => document.querySelector('#packet-block').innerText.includes('What the payment period means'));
       const text = await page.locator('#packet-block').innerText();
-      check.ok(text.includes('Published history-period definition') && text.includes('File updated for the period to')
+      check.ok(text.includes('What the payment period means') && text.includes('What the payment code means')
+        && text.includes('File updated for the period to')
         && text.includes('printed 1') && text.includes('printed 0'), 'actual browser review separates published ordering from the own printed date and codes');
       check.equal(/printed Most recent month first|printed Creditor identity matched|potential violation|probable violation/i.test(text), false,
         'actual review presents no calculated definition as report text or obsolete breach term');

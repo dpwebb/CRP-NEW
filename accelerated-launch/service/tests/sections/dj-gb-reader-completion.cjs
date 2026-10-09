@@ -1,5 +1,6 @@
 'use strict';
-const { packetText } = require('../packet-pdf-assertions.cjs');
+const { packetText, comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -46,7 +47,11 @@ function approve(ctx, issueIds) {
   packets.selectIssues(store, actor, 'fictional-gb', issueIds);
   packets.setCorrespondence(store, actor, 'fictional-gb', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
   packets.approvePacket(store, actor, 'fictional-gb');
-  return { store, actor, body: packetText(packets.packetDownload(store, actor, 'fictional-gb')) };
+  const pdf = packets.packetDownload(store, actor, 'fictional-gb');
+  // This structural source fixture has no retained uploads or support forms;
+  // its actual PDF therefore contains only the editable consumer letter.
+  const body = packetText(pdf);
+  return { store, actor, pdf, letter: body, body };
 }
 
 function familyPdf(accountLines) {
@@ -137,7 +142,7 @@ async function run(service, check) {
   check.equal(current.findings[0]?.source_facts.find((fact) => fact.field === 'account.balance')?.source_field,
     'Current Balance', 'the current amount is tied to Current Balance, never Balance Satisfied');
   const currentPacket = approve(current, current.findings.map((issue) => issue.issue_id)).body;
-  check.match(currentPacket, /Current Balance: printed "£100"/, 'the selected packet uses the own current-balance caption');
+  check.match(comparableText(currentPacket), /£100 owed.*credit limit is listed as £0/, 'the human letter states the actual own current balance and explicit zero limit');
   check.equal(currentPacket.includes('Balance: printed "Satisfied"'), false,
     'the packet never substitutes the nonnumeric reading as the decisive balance evidence');
   const conflicting = read(['FICTIONAL BANK CREDIT CARD', 'Balance £200 Current Balance £100 Credit Limit £0']);
@@ -184,12 +189,16 @@ async function run(service, check) {
   }
 
   const selected = approve(positive, positive.findings.map((issue) => issue.issue_id));
-  check.equal((selected.body.split('EVIDENCE REFERENCES')[0].match(/^\s*\d+\. /gm) || []).length, 2, 'the approved packet preserves two distinct concerns on one account');
-  check.match(selected.body, /Started: printed "01\/01\/20"/, 'the packet uses the exact Started reading');
-  check.match(selected.body, /Settled: printed "01\/01\/19"/, 'the packet uses the exact Settled reading');
-  check.match(selected.body, /Credit Limit: printed "£0"/, 'the packet uses the exact numeric caption and raw zero');
+  check.equal((selected.letter.match(/^\s*\d+\. /gm) || []).length, 2, 'the approved letter preserves two distinct concerns on one account');
+  check.match(selected.letter, /opened on January 1, 2020/, 'the letter states the actual Started date in familiar language');
+  check.match(selected.letter, /closed on January 1, 2019/, 'the letter states the actual Settled date in familiar language');
+  check.match(comparableText(selected.letter), /credit limit is listed as £0/, 'the letter preserves the explicitly printed numeric zero limit');
   check.match(selected.body, /FICTIONAL BANK CREDIT CARD/, 'the packet retains the source-linked account heading');
-  check.match(selected.body, / - verification/, 'the concerns support verification without raising confidence');
+  check.match(selected.letter, /Please check/, 'the human letter asks the bureau to check the concerns');
+  check.equal(selected.pdf.content_type, 'application/pdf', 'both supported concerns share one complete PDF');
+  const editable = await PDFDocument.load(selected.pdf.body);
+  check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
+    'the complete GB packet retains an editable consumer letter');
   record.fact_sources['liability.closedDate'].location.line += 1;
   let stale = null;
   try { packets.packetDownload(selected.store, selected.actor, 'fictional-gb'); } catch (error) { stale = error.code; }
@@ -241,9 +250,18 @@ async function run(service, check) {
     check.equal(approved.status, 200, `${region}: the consumer approves the reviewed packet`);
     const download = await service.request('GET', `/api/cases/${ctx.caseId}/packet-download`, { token: owner.token });
     check.equal(download.status, 200, `${region}: the entitled approved packet downloads`);
-    check.match(download.text, /Started: printed "01\/01\/20"/, `${region}: the download carries Started evidence`);
-    check.match(download.text, /Settled: printed "01\/01\/19"/, `${region}: the download carries Settled evidence`);
-    check.match(download.text, /Credit Limit: printed "£0"/, `${region}: the download carries the actual numeric limit`);
+    const letter = approved.json.view.packet.correspondence_preview;
+    const wholePacket = comparableText(download.text);
+    check.match(letter, /opened on January 1, 2020.*closed on January 1, 2019/s,
+      `${region}: the human letter states both decisive dates`);
+    check.match(letter, /£100 owed.*credit limit is listed as £0/s,
+      `${region}: the human letter states both decisive amounts`);
+    check.match(letter, /Please check/,
+      `${region}: the consumer asks the bureau to check the selected concerns`);
+    check.match(wholePacket, /Started\s+01\/01\/20/, `${region}: the inline original page carries Started evidence`);
+    check.match(wholePacket, /Settled\s+01\/01\/19/, `${region}: the inline original page carries Settled evidence`);
+    check.match(wholePacket, /Credit Limit\s+£0/, `${region}: the inline original page carries the actual numeric limit`);
+    check.equal(download.headers.get('content-type'), 'application/pdf', `${region}: the complete packet downloads as one PDF`);
     check.equal(/undefined|value omitted|PROBABLE_VIOLATION|POTENTIAL_VIOLATION/.test(download.text), false,
       `${region}: no missing source text or internal classification leaks into the packet`);
   }

@@ -130,13 +130,16 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [offered.issue_id] } });
   await service.request('POST', `/api/cases/${caseRow.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
   await service.preparePostalPacket(owner, caseRow.case_id);
-  await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: owner.token });
+  const approved = await service.request('POST', `/api/cases/${caseRow.case_id}/packet/approve`, { token: owner.token });
   const dl = await service.request('GET', `/api/cases/${caseRow.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the selected packet downloads');
   check.ok(/15 Nov 2013 Secured or Partially Secured/.test(comparableText(dl.text)), 'the packet states the full printed value');
-  check.ok(/read as 2013-11-15/.test(comparableText(dl.text)), 'and its normalized reading');
-  check.ok(/ - verification/.test(comparableText(dl.text)), 'with the verification request label');
-  check.ok(/which date needs correction/.test(comparableText(dl.text)), 'and states the date uncertainty without a legal-finding category');
+  const letter = approved.json.view.packet.correspondence_preview;
+  check.ok(/November 15, 2013/.test(comparableText(letter)), 'the human letter gives the correctly normalized opened date');
+  check.ok(/check the opened and closed dates/.test(comparableText(letter)), 'the human letter requests checking both printed dates');
+  check.ok(/January 1, 2013/.test(comparableText(letter)) && /opening date comes after the closing date/.test(comparableText(letter)),
+    'the letter states the conflicting closure date and asks for correction without choosing an unsupported replacement');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the selected AU packet remains one complete PDF');
 
   evidence.positive = { issue: 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY', confidence: 'POTENTIAL', packet_bytes: (comparableText(dl.text) || '').length };
   evidence.benign = 'the real PUB-012 record and the no-closure control both raise no issue';

@@ -257,13 +257,17 @@ async function run(service, check) {
   await service.request('POST', `/api/cases/${c.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: DETAILS } });
   check.match(JSON.stringify((await packetOf(service, owner, c.case_id)).json.view), /Ada Fictional/, 'the reviewed correspondence carries the consumer-supplied details');
   await service.preparePostalPacket(owner, c.case_id);
-  check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token })).status, 200, 'the packet approves');
+  const approved = await service.request('POST', `/api/cases/${c.case_id}/packet/approve`, { token: owner.token });
+  check.equal(approved.status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.match(comparableText(dl.text), /Alta\. Reg\. 193\/99, s\. 4\(b\)/, 'naming the recorded rule behind the issue');
-  check.ok(comparableText(dl.text).includes('Mar 01, 2015'), 'carrying the printed last payment reading as evidence');
-  check.match(comparableText(dl.text), / - verification/, 'with a verification request');
-  check.match(comparableText(dl.text), /debt was incurred/, 'and the timing uncertainty preserved in the downloaded packet');
+  const letter = approved.json.view.packet.correspondence_preview;
+  check.match(comparableText(letter), /credit-report time limit|reporting period/, 'the human letter states the supported reporting-time concern');
+  check.ok(/Last Payment Date.*March 1, 2015/.test(comparableText(letter)), 'the letter identifies its actual printed last-payment anchor using a familiar date');
+  check.match(comparableText(letter), /Please check/, 'the human letter asks the bureau to check the supported reporting-time concern');
+  check.match(comparableText(letter), /report does not show when the debt began.*check the right starting date/i,
+    'the downloaded letter preserves the uncertainty about the date the debt began');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the Alberta packet is one complete PDF');
 
   /* Stale approval: the approval is bound to the reviewed content, so evidence that changes afterwards must not
      silently yield a packet that differs from what was approved. */

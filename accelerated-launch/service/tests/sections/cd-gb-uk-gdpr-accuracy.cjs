@@ -204,19 +204,22 @@ async function run(service, check) {
   check.equal(approved.status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${paid.caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.ok(comparableText(dl.text).includes(gb.explanation), 'the downloaded correspondence carries the reviewed issue');
-  check.ok(comparableText(dl.text).includes(`Recorded rule: ${CITATION}`), 'naming the recorded rule behind the finding');
-  check.ok(/- verification/.test(comparableText(dl.text)) && !/- correction/.test(comparableText(dl.text)), 'with a verification request, never a correction demand');
+  const letter = approved.json.view.packet.correspondence_preview;
+  check.ok(/opening date comes after the closing date|those two printed values cannot both be right/.test(comparableText(letter)),
+    'the human letter states the reviewed chronology conflict');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the whole UK packet is a single PDF');
+  check.ok(/check the opened and closed dates/.test(comparableText(letter)), 'the letter requests checking the two disputed dates');
   check.ok(/correct whichever is inaccurate/.test(comparableText(dl.text)), 'asking in plain language for correction of the inaccurate value');
-  check.ok(/OPENED: printed "01\/01\/2020"/.test(comparableText(dl.text)), 'and the raw printed opened reading under its report caption in the evidence references');
-  check.ok(/CLOSED: printed "01\/01\/2019"/.test(comparableText(dl.text)), 'with the raw printed closed reading under its report caption');
-  check.ok(/read as 2020-01-01/.test(comparableText(dl.text)), 'with its normalization');
-  check.ok(/Reporting rule: An account cannot close before it opened\./.test(comparableText(dl.text)), 'naming its factual rule in plain language');
-  const letter = dl.text.split('EVIDENCE REFERENCES')[0];
+  check.ok(/Opened\s+01\/01\/2020/i.test(comparableText(dl.text)), 'the inline original report page retains its own opened caption and raw date');
+  check.ok(/Closed\s+01\/01\/2019/i.test(comparableText(dl.text)), 'the inline original report page retains its own closed caption and raw date');
+  check.ok(letter.includes('January 1, 2020') && letter.includes('January 1, 2019'), 'the normalized decisive dates appear in familiar language');
+  check.ok(/report page 1/i.test(letter), 'the letter integrates the actual report page reference');
   check.equal((letter.match(/^\s*\d+\.\s+/gm) || []).length, 1, 'with exactly one numbered request for the one issue');
   check.ok(comparableText(dl.text).includes('Rowan Ellis'), 'carrying the consumer-supplied correspondence details');
   check.ok(!/is an established reporting issue/i.test(comparableText(dl.text)), 'never asserting an established reporting issue for a probable one');
-  check.ok(/supports a verification request/.test(comparableText(dl.text)), 'while stating the supported verification action');
+  check.ok(/Please send me the result of your checks/.test(letter), 'the letter asks the bureau to send the result of its checks');
+  check.equal(/Recorded rule:|Reporting rule:|EVIDENCE REFERENCES|PRINT AND MAIL/.test(letter), false,
+    'debug headings and consumer mailing instructions do not enter the business letter');
 
   /* ---- 3. Benign controls. ---- */
   const consistent = await assess(service, owner, 'GB-ENG', ['Fictional Creditor  Balance $100  Opened 01/01/2018  Closed 01/01/2020']);

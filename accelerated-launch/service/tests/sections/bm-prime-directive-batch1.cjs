@@ -1,5 +1,6 @@
 'use strict';
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 /**
  * bm-prime-directive-batch1.cjs — OWNER-POTENTIAL-ISSUE-001 / Batch 1: the complete common-issue consumer
  * journey. A fictional report with one supported uncertain discrepancy (an account opened after it was closed)
@@ -112,14 +113,18 @@ async function run(service, check) {
   const approvedVersion = approved.json.view.packet.approved_version;
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
+  const letter = approved.json.view.packet.correspondence_preview;
   check.equal(dl.status, 200, 'the approved packet downloads');
-  check.ok(/opened date later than its closed date/.test(comparableText(dl.text)), 'the request agrees with the reviewed facts');
-  check.ok(/check the opened and closed dates/.test(comparableText(dl.text)), 'with a plain request to check the reported dates');
-  check.ok(/ - verification/.test(comparableText(dl.text)), 'and is labelled a verification request');
-  check.ok(!/ - correction/.test(comparableText(dl.text)), 'no correction request is asserted');
+  check.ok(/opening date comes after the closing date/.test(comparableText(letter)), 'the human letter agrees with the reviewed chronology facts');
+  check.ok(/check the opened and closed dates/.test(comparableText(letter)), 'the letter asks the bureau to check the reported dates');
+  check.ok(letter.includes('January 1, 2020') && letter.includes('January 1, 2019'), 'the letter states the two actual conflicting dates');
+  check.ok(!/ - verification| - correction|probable violation|potential violation/i.test(letter), 'the letter contains no internal request-type label or retired consumer classification');
   check.ok(!/established reporting issue/.test(comparableText(dl.text)), 'no definite reporting issue is asserted for a potential discrepancy');
   check.ok(comparableText(dl.text).includes('Please confirm the correct opened and closed dates.'), 'and the consumer wording, in its own section');
   check.equal(dl.headers.get('x-crp-packet-version'), approvedVersion, 'actual downloadable bytes are bound to the approved version by the response header');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the complete packet is one PDF');
+  const editablePdf = await PDFDocument.load(dl.bytes);
+  check.ok(editablePdf.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()), 'the downloaded letter is consumer-editable');
   check.ok(!/not legal advi/i.test(comparableText(dl.text)), 'with no legal-advice disclaimer');
 
 

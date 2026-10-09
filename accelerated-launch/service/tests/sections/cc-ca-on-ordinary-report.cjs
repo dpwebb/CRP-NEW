@@ -207,23 +207,25 @@ async function run(service, check) {
   check.equal(approved.status, 200, 'the packet approves');
   const dl = await service.request('GET', `/api/cases/${paid.caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the entitled download succeeds');
-  check.ok(comparableText(dl.text).includes(ontario.explanation), 'the downloaded correspondence carries the reviewed issue');
-  check.ok(comparableText(dl.text).includes(CITATION), 'and the recorded Ontario provision');
-  check.ok(comparableText(dl.text).includes(`Recorded rule: ${CITATION}`), 'as the recorded rule behind the finding');
-  check.ok(/- verification/.test(comparableText(dl.text)) && !/- correction/.test(comparableText(dl.text)), 'with a verification request, never a correction demand');
-  check.ok(comparableText(dl.text).includes('any credit information based on evidence that is not the best evidence reasonably available'), 'and the provision own words in the reviewed issue');
-  check.ok(/Reporting rule: An account cannot close before it opened\./.test(comparableText(dl.text)), 'naming its factual rule in plain language');
-  const letter = dl.text.split('EVIDENCE REFERENCES')[0];
+  const letter = approved.json.view.packet.correspondence_preview;
+  check.ok(/opening date comes after the closing date|those two printed values cannot both be right/.test(comparableText(letter)),
+    'the human letter states the reviewed factual conflict');
+  check.equal(dl.headers.get('content-type'), 'application/pdf', 'the entire Ontario packet downloads as one PDF');
+  check.ok(/report page 1/i.test(letter), 'the letter integrates the actual source page reference');
+  check.ok(/check the opened and closed dates/.test(comparableText(letter)), 'the letter requests checking the disputed dates without choosing an unsupported replacement');
+  check.equal(/Recorded rule:|Reporting rule:|EVIDENCE REFERENCES|PRINT AND MAIL/.test(letter), false,
+    'debug rule headings and consumer print instructions do not become bureau letter content');
+  check.ok(letter.includes('January 1, 2020') && letter.includes('January 1, 2019'), 'the letter states both decisive dates in familiar language');
   check.equal((letter.match(/^\s*\d+\.\s+/gm) || []).length, 1, 'with exactly one numbered request for the one issue, so the conflict is never demanded twice');
   check.equal(comparableText(dl.text).includes('please verify the opened and closed dates for this account and correct the inconsistency'), false, 'and the duplicate factual request wording never appears');
-  check.ok(/OPENED: printed "01\/01\/2020"/.test(comparableText(dl.text)), 'and the raw printed opened reading under its report caption in the evidence references');
-  check.ok(/CLOSED: printed "01\/01\/2019"/.test(comparableText(dl.text)), 'and the raw printed closed reading under its report caption');
-  check.ok(/read as 2020-01-01/.test(comparableText(dl.text)), 'with its normalization');
+  check.ok(/Opened\s+01\/01\/2020/i.test(comparableText(dl.text)), 'the inline original report page retains its printed opened caption and raw reading');
+  check.ok(/Closed\s+01\/01\/2019/i.test(comparableText(dl.text)), 'the inline original report page retains its printed closed caption and raw reading');
+  check.equal(/read as 2020-01-01/.test(letter), false, 'internal normalization notation does not replace familiar dates in the letter');
   check.ok(comparableText(dl.text).includes('Dana Whitfield'), 'carrying the consumer-supplied correspondence details');
   check.ok(!/opened date later than its closed date/.test(comparableText(dl.text)), 'and never the unselected factual card wording as a second issue');
   check.ok(!/is an established reporting issue/i.test(comparableText(dl.text)), 'never asserting an established reporting issue for a probable one');
   check.ok(!/ESTABLISHED REPORTING ISSUE/.test(comparableText(dl.text)), 'and never presenting it as an established issue');
-  check.ok(/supports a verification request/.test(comparableText(dl.text)), 'while stating the supported verification action');
+  check.ok(/Please send me the result of your checks/.test(letter), 'the human letter asks the bureau to send its investigation result');
 
 
   /* ---- 3. Benign controls: no fire where the report is consistent, elsewhere, or where a reading is missing. ---- */

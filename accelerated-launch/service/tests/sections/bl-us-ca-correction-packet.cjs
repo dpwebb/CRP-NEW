@@ -6,6 +6,7 @@
  */
 const crypto = require('node:crypto');
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const ruleAdapters = require('../../../adapters/rule-adapters.cjs');
 const issues = require('../../issues.cjs');
 const { activeAdapter } = require('../../common-error-scope.cjs');
@@ -130,15 +131,20 @@ async function run(service, check) {
   const approvedVersion = approved.json.view.packet.approved_version;
 
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
+  const letter = approved.json.view.packet.correspondence_preview;
   check.equal(download.status, 200, 'the approved packet downloads');
-  check.ok(/opened date later than its closed date/.test(comparableText(download.text)), 'and states the chronology breach');
-  check.ok(download.text.includes('01/01/2020'), 'and the printed date it measured from');
-  check.ok(download.text.includes(' - verification'), 'and a factual verification request');
-  check.ok(download.text.includes('Please verify this entry and correct it if it is out of date.'), 'and the consumer wording, kept in its own section');
+  check.ok(/opening date comes after the closing date/.test(comparableText(letter)), 'the human letter states the chronology breach');
+  check.ok(letter.includes('January 1, 2020') && letter.includes('January 1, 2019') && download.text.includes('01/01/2020'),
+    'the letter states both actual dates and the inline original preserves their printed readings');
+  check.ok(/check the opened and closed dates/.test(comparableText(letter)), 'the human letter asks the bureau to check the conflicting dates');
+  check.ok(letter.includes('Please verify this entry and correct it if it is out of date.'), 'the letter preserves the consumer’s own words');
   const printable = require('../../packets.cjs').packetPrint(service.service.store, owner, caseId);
   check.equal(printable.approved_version, approvedVersion, 'the generated file remains bound to the approved version');
-  const correspondencePdf = require('../packet-pdf-assertions.cjs').zipEntries(download.bytes)[0].bytes;
-  check.deepEqual(correspondencePdf, printable.body, 'the HTTP ZIP contains the exact approved printable file');
+  check.equal(download.headers.get('content-type'), 'application/pdf', 'the complete packet downloads as one PDF');
+  check.deepEqual(download.bytes, printable.body, 'HTTP download and print use the same approved complete PDF');
+  const pdf = await PDFDocument.load(download.bytes);
+  check.ok(pdf.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
+    'the complete PDF retains an editable consumer letter');
   check.equal(download.text.includes(approvedVersion), false, 'the internal approval hash stays out of the letter');
   check.ok(!/not legal advi/i.test(download.text), 'with no legal-advice disclaimer');
 
