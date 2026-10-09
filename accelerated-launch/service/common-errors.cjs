@@ -685,6 +685,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'
   ]),
   'FAM-AU-EQX-CONSUMER': Object.freeze([
+    'report.referenceDate',
     'liability.openedDate', 'liability.closedDate', 'overdue.originalListingDate', 'enquiry.date',
     'account.creditLimit', 'account.type', 'account.reported_identity', 'account.paymentHistoryCells'
   ]),
@@ -696,6 +697,7 @@ const PRESENTATION_FIELD_CAPABILITY = Object.freeze({
     'account.balance', 'account.pastDueAmount', 'account.creditLimit', 'account.paymentAmount', 'account.paymentHistoryCells'
   ]),
   'FAM-GB-EXP-CONSUMER': Object.freeze([
+    'report.referenceDate',
     'liability.openedDate', 'liability.closedDate', 'account.balance', 'account.creditLimit', 'account.type',
     'account.responsibility', 'account.reported_identity', 'account.paymentHistoryCells'
   ]),

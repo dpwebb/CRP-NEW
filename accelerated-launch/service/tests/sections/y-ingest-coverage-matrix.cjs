@@ -14,6 +14,7 @@
 const formats = require('../../formats.cjs');
 const coverage = require('../../coverage-matrix.cjs');
 const common = require('../../common-errors.cjs');
+const { sourceForField } = require('../../report-fact-sources.cjs');
 
 async function run(t, check) {
   const evidence = {};
@@ -65,6 +66,27 @@ async function run(t, check) {
   }
   check.deepEqual(matrix.general_intake.shared_fact_fields, common.PRESENTATION_FIELD_CAPABILITY['GENERAL-BUREAU-REPORT'],
     'GENERAL field inventory derives from the current shared reader');
+  // Source-shaped fictional cover controls exercise the existing reference readers.
+  // dy-reader-date-delivery separately verifies their physical native/source custody.
+  for (const [id, reader, printedDate] of [
+    ['FAM-AU-EQX-CONSUMER', formats.auFamily, 'Report Date: 4 January 2026'],
+    ['FAM-GB-EXP-CONSUMER', formats.gbFamily, 'Date of report: 1 June 2026']
+  ]) {
+    check.ok(common.PRESENTATION_FIELD_CAPABILITY[id].includes('report.referenceDate'),
+      id + ' declares its already-supported own report reference date');
+    const model = formats.makeSyntheticModel({ pages: [[printedDate]] });
+    const reference = reader.extract(model, { admitted: true, presentation_evidence: false }).reference_date;
+    const own = { record_index: 1, facts: {}, source_file_id: 'own-report', report_reference_date: reference };
+    check.equal(sourceForField(own, 'report.referenceDate')?.raw_value,
+      printedDate.slice(printedDate.indexOf(':') + 1).trim(), id + ' retains the actual own cover reading');
+    check.equal(sourceForField(own, 'report.referenceDate')?.location.page, 1,
+      id + ' retains the actual own cover page');
+    check.equal(common.usableField(own, 'report.referenceDate'), true, id + ' usable capability requires a sourced own date');
+    const rejected = { ...own, report_reference_date: { ...reference, trusted: false } };
+    check.equal(common.usableField(rejected, 'report.referenceDate'), false, id + ' rejects an unreadable own date');
+    const foreign = { ...own, report_reference_date: { ...reference, location: { ...reference.location, file_id: 'other-report' } } };
+    check.equal(common.usableField(foreign, 'report.referenceDate'), false, id + ' cannot borrow another report date');
+  }
   const linked = 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE';
   for (const id of ['PR-01', 'US-CONSUMER-DISCLOSURE']) {
     check.equal(common.presentationCapability(id).all_factual_checks[linked].field_ready, false,
