@@ -44,10 +44,8 @@ function inject(service, actor, caseId, ce, records, bureau) {
 }
 
 async function payReportOnce(service, actor, caseId) {
-  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'monthly' } });
-  const c = checkout.json.checkout;
-  const event = { id: `test_evt_${crypto.randomBytes(8).toString('hex')}`, type: 'checkout.session.completed', account_reference: actor.account_id, plan_code: c.plan.plan_code, session_reference: c.provider_reference, amount_cents: c.plan.amount_cents, currency: c.plan.currency, occurred_at: new Date().toISOString() };
-  await service.postEvent(event);
+  // One verified subscription covers every later case owned by this actor.
+  if (!actor.payment) actor.payment = await service.pay(actor, 'monthly');
 }
 
 async function run(service, check) {

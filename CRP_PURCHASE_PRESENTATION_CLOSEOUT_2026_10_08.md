@@ -31,6 +31,7 @@ For a nonzero first bill below CAD 0.50, apply a slightly smaller credit so the 
 - Actual PDF download uses a readable country/region name and the same authoritative credit quote used by Plans.
 - Actual report field keys are replaced with readable labels such as Date opened and Date closed. Final visual review confirms this in the owned HTTP download. The final full run restarts after that repair; the interrupted prior run is not release evidence.
 - Full frozen totals, source hashes, closure records and release provenance will be recorded after the candidate passes.
+- The first completed full run found three historical test assumptions (same-plan repurchase for later cases and old wording), with 12,993 passed, 3 failed and no skips. Those sections now reuse one verified subscription and check current purchase terms; all 156 affected assertions pass. Shipped runtime bytes are unchanged. A new complete run supplies the release evidence.
 
 ## Release boundaries
 

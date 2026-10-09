@@ -269,7 +269,7 @@ async function run(service, check) {
   const billingBox = post.elementById('billingView').innerHTML;
   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
   check.ok(/Prices are in CAD\./.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
-    && /subscription renews until you cancel/i.test(billingBox) && /Cancelling stops the next charge/.test(billingBox)
+    && /Renews until you cancel/.test(billingBox) && /Cancelling a subscription stops the next charge/.test(billingBox)
     && /Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal, cancellation and remaining access before purchase');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
 

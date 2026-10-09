@@ -28,19 +28,9 @@ const uploadBody = (bytes, filename) => ({
 });
 
 async function payReportOnce(service, actor, caseId) {
-  const checkout = await service.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'monthly' } });
-  const c = checkout.json.checkout;
-  const event = {
-    id: `test_evt_${crypto.randomBytes(8).toString('hex')}`,
-    type: 'checkout.session.completed',
-    account_reference: actor.account_id,
-    plan_code: c.plan.plan_code,
-    session_reference: c.provider_reference,
-    amount_cents: c.plan.amount_cents,
-    currency: c.plan.currency,
-    occurred_at: new Date().toISOString()
-  };
-  await service.postEvent(event);
+  // A subscription covers later cases; buying the same active plan is refused.
+  // The shared helper verifies the owned checkout and signed activation event.
+  if (!actor.payment) actor.payment = await service.pay(actor, 'monthly');
 }
 
 const A4 = { width_pt: 595.32, height_pt: 841.92, label: 'A4' };
