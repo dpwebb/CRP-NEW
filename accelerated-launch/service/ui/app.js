@@ -146,14 +146,18 @@ function navigateStep(step) {
 function banner() {
   const node = el('support-banner');
   const inDemo = state.view && state.view.result && state.view.result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
+  const preview = surface?.preview_mode === true;
+  const live = surface?.entitlement?.payment_mode === 'live';
+  el('preview-pill').hidden = !preview;
+  node.hidden = !inDemo && !preview && live;
   if (inDemo) {
     node.className = 'banner demo';
     node.innerHTML = '<strong>INTERACTIVE DEMONSTRATION</strong> These results are examples, not results from your report. You cannot create a dispute packet from this sample.';
   } else {
     node.className = 'banner';
-    node.innerHTML = surface && surface.preview_mode
+    node.innerHTML = preview
       ? '<strong>Staging preview · test payments only.</strong> Use test cards and fictional reports, never real cards or private reports.'
-      : '<strong>Preview · not open to the public yet.</strong> Payments are unavailable in this preview.';
+      : live ? '' : '<strong>Preview · not open to the public yet.</strong> Payments are unavailable in this preview.';
   }
 }
 

@@ -78,6 +78,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .sidebar-bottom strong { font-size:13px; }
 .sidebar-bottom p { color:#aec4b9; font-size:12px; line-height:1.8; }
 .preview-pill { display:inline-block; border:1px solid #567165; border-radius:5px; padding:7px 9px; margin-top:12px; font-size:9px; letter-spacing:1px; }
+.preview-pill[hidden] { display:none; }
 .shell { margin-left:264px; }
 .top { height:78px; padding:0 44px; border-bottom:1px solid var(--line); background:transparent; color:var(--muted); font-size:12px; gap:18px; }
 .slash { margin:0 12px; color:#a1b1a7; }

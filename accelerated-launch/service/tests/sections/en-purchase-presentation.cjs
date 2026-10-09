@@ -81,6 +81,17 @@ async function run(t, check) {
   check.ok(!/Try a sample|Try the sample|id="scenario"|id="demo"/.test(panel.innerHTML), 'an uploaded case has no sample-report invitation or controls');
   check.ok(!/\/demonstration/.test(fs.readFileSync(UI, 'utf8')), 'the consumer UI no longer requests the synthetic assessment endpoint');
   check.ok(!/public samples/.test(dom.get('support-banner').innerHTML), 'staging guidance does not invite consumers to try samples');
+  check.equal(dom.get('preview-pill').hidden, false, 'staging keeps its test-payment label visible');
+  check.equal(dom.get('support-banner').hidden, false, 'staging keeps its test-payment instructions visible');
+  vm.runInContext('surface.preview_mode = false; surface.entitlement = { payment_mode: "live" }; banner();', ctx);
+  check.equal(dom.get('preview-pill').hidden, true, 'the live production surface has no staging badge');
+  check.ok(/\.preview-pill\[hidden\]\s*\{\s*display:\s*none\s*;/.test(fs.readFileSync(CSS, 'utf8')), 'the staging badge display rule respects its hidden state');
+  check.equal(dom.get('support-banner').hidden, true, 'live production does not show preview restrictions');
+  check.equal(dom.get('support-banner').innerHTML, '', 'live production does not claim that working payments are unavailable');
+  vm.runInContext('surface.entitlement.payment_mode = null; banner();', ctx);
+  check.equal(dom.get('support-banner').hidden, false, 'an unconfigured local preview retains its unavailable-payment message');
+  check.ok(/Payments are unavailable/.test(dom.get('support-banner').innerHTML), 'an unconfigured local surface cannot claim working payments');
+  vm.runInContext('surface.preview_mode = true; surface.entitlement.payment_mode = "test"; banner();', ctx);
 
   vm.runInContext('state.step = STEP.RESULTS; render();', ctx);
   check.ok(/Download my report \(PDF\)/.test(panel.innerHTML), 'the one-off report explicitly offers its PDF download');
