@@ -41,7 +41,8 @@ function supportingDetails(issue) {
   function visit(basis, primary) {
     const requirement = basis.rule_assessment?.requirement || basis.requirement;
     if (requirement) add(`Reporting rule: ${plain(requirement)}`);
-    if (basis.citation) add(`${primary ? 'Supporting rule' : 'Additional supporting rule'}: ${plain(basis.citation)}${basis.rule_source_version ? ` (version ${plain(basis.rule_source_version)})` : ''}`);
+    const version = basis.rule_source_version && !/^[a-f0-9]{32,}$/i.test(basis.rule_source_version) ? plain(basis.rule_source_version) : null;
+    if (basis.citation) add(`${primary ? 'Supporting rule' : 'Additional supporting rule'}: ${plain(basis.citation)}${version ? ` (version ${version})` : ''}`);
     if (!primary && basis.uncertainty && basis.uncertainty !== issue.uncertainty) add(`Note for this rule: ${plain(basis.uncertainty)}`);
     for (const citation of basis.retention_review?.citations || []) add(`Reporting-period rule: ${plain(citation)}`);
     for (const fact of basis.source_facts || []) {
@@ -109,7 +110,7 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
   newPage(true);
   paragraph('Your credit report review', { size: 27, bold: true, gap: 7 });
   paragraph('See what needs attention and keep the facts in one place.', { size: 12, color: COLORS.muted, gap: 15 });
-  paragraph(`Your location: ${place(rendered.jurisdiction)}`, { size: 10, gap: 3 });
+  paragraph(`Your location: ${context.jurisdiction_label || place(rendered.jurisdiction)}`, { size: 10, gap: 3 });
   if (rendered.assessed_on) paragraph(`Assessed on: ${day(rendered.assessed_on)}`, { size: 10, gap: 3 });
   paragraph(`Report prepared: ${day(producedAt)}`, { size: 10, gap: 15 });
   const summaryBottom = y - 94;

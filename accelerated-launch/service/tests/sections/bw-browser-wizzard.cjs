@@ -214,9 +214,12 @@ async function run(service, check) {
   await page.locator('#steps button').filter({ hasText: 'Help' }).click();
   await page.waitForSelector('#copyReference');
   check.ok(/Your support reference/.test(await page.locator('#panel').innerText()), 'real-browser named support navigation loads its owned reference');
-  await page.locator('#steps button').filter({ hasText: 'Billing' }).click();
+  await page.locator('#steps button').filter({ hasText: 'Plans' }).click();
   await page.waitForFunction(() => document.getElementById('billingView')?.innerText.includes('Plans and prices'));
   check.ok(/Plans and prices/.test(await page.locator('#panel').innerText()), 'real-browser named billing navigation loads purchase and access state');
+  const plansShot = `${process.env.TEMP || '.'}/crp-purchase-plans.png`;
+  await page.screenshot({ path: plansShot, fullPage: true });
+  evidence.purchase_plans_screenshot = plansShot;
   await page.close();
 
   /* ---- 2. Qualified probable retention issue (US-NY adverse rating). ---- */
@@ -341,7 +344,7 @@ async function run(service, check) {
   check.ok(/The same debt appears more than once/.test(summaryText) && /This is the most serious violation we found that you can dispute\./.test(summaryText),
     'the browser previews the higher-priority duplicate and explains why it was selected');
   check.equal((summaryText.match(/\bVIOLATION\b/g) || []).length, 1, 'the unpaid browser shows exactly one violation example');
-  check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Annual/.test(summaryText), 'and the purchase choices with their recorded prices');
+  check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Yearly/.test(summaryText), 'and the purchase choices with their recorded prices');
   check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
   await freePage.screenshot({ path: shot, fullPage: true });
@@ -377,8 +380,15 @@ async function run(service, check) {
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
-  check.ok(/Reporting issues for your review/.test(unlockedText) && /Download my assessment/.test(unlockedText), 'a verified payment unlocks the issue list for the consumer in the browser');
+  check.ok(/Reporting issues for your review/.test(unlockedText) && /Download my report \(PDF\)/.test(unlockedText), 'a verified payment unlocks the issue list and PDF download for the consumer in the browser');
   check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
+  const [paidReportDownload] = await Promise.all([freePage.waitForEvent('download'), freePage.locator('#download-assessment').click()]);
+  const paidReportBytes = fs.readFileSync(await paidReportDownload.path());
+  check.ok(/CRP-credit-report-review-.*\.pdf$/.test(paidReportDownload.suggestedFilename()), 'the paid browser control downloads a named PDF report');
+  check.equal(paidReportBytes.subarray(0, 5).toString(), '%PDF-', 'the paid browser download contains actual PDF bytes');
+  const paidReportText = require('../packet-pdf-assertions.cjs').pdfText(paidReportBytes);
+  check.ok(/CREDIT REGULATOR PRO/.test(paidReportText) && /Fictional Creditor/.test(paidReportText), 'the branded report includes the consumer assessment agency names');
+  check.ok(/Canada \/ Nova Scotia/.test(paidReportText) && /CAD 2\.00/.test(paidReportText), 'the browser PDF shows the selected location and authoritative upgrade price');
   const previousResult = (await service.request('GET', `/api/cases/${freeCase.case_id}`, { token: freeActor.token })).json.view.result_id;
   await freePage.locator('#go-subscribe').click(); await freePage.waitForSelector('#checkout-monthly');
   const subscriberRequest = freePage.waitForRequest(r => r.url().endsWith('/api/billing/checkout'));

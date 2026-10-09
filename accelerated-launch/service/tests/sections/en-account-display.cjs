@@ -122,7 +122,7 @@ async function run(t, check) {
     check.equal(reads, 1, 'the verified original is read once for both account display names');
     const saved = (await t.request('GET', `/api/cases/${caseId}/results/en-old-result`, { token: owner.token }));
     check.equal(saved.status, 200, 'the explicit historical result remains readable');
-    const assessment = journey.assessmentReport(t.service.store, owner, caseId).body;
+    const assessment = require('../packet-pdf-assertions.cjs').pdfText(journey.assessmentReport(t.service.store, owner, caseId).body);
     check.ok(names.every(name => assessment.includes(name)), 'the assessment download uses both printed agency names');
     check.ok(!/Account entry \d|CREDITOR-|MEMBER-/.test(assessment), 'the repaired assessment hides generic labels and matching keys');
     const packet = packets.packetView(t.service.store, owner, caseId);

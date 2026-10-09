@@ -27,6 +27,13 @@ assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, plan_code: 'monthl
 assert.equal(upgradeQuote({ ...base, targetPlan: 'annual', purchase: { ...purchase, plan_code: 'annual', amount_cents: 7950 } }).credit_cents,
   0, 'annual payments do not discount another annual purchase');
 assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 200, remaining_amount_cents: 395 } }).credit_cents, 395);
+assert.equal(upgradeQuote({ ...base, purchase: { ...purchase, consumed_cents: 200, refunded_cents: 100,
+  remaining_amount_cents: 295 } }).credit_cents, 295, 'partly spent and partly returned cash contributes only its unused net remainder');
+const minimumReceipts = Array.from({ length: 10 }, (_, index) => ({ ...purchase, plan_code: 'monthly', amount_cents: 795,
+  payment_id: 'minimum_' + index, payment_intent: 'pi_minimum_' + index, ...(index ? {} : { refunded_cents: 39 }) }));
+const minimumQuote = upgradeQuote({ ...base, targetPlan: 'annual', purchases: minimumReceipts });
+assert.equal(minimumQuote.first_invoice_cents, 50, 'a nonzero first invoice remains chargeable');
+assert.equal(minimumQuote.remaining_credit_cents, 11, 'extra credit remains available instead of becoming an unchargeable bill');
 for (const patch of [{ account_id: 'b' }, { verified_payment: false }, { currency: 'usd' }, { amount_cents: -1 },
   { amount_cents: 1.5 }, { amount_cents: 0 }, { amount_cents: Number.MAX_SAFE_INTEGER + 1 },
   { refunded: true }, { disputed: true }, { credit_redeemed: true }, { credit_reserved: true },

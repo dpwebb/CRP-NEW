@@ -18,7 +18,7 @@ async function payWithBody(service, actor, body) {
     account_reference: actor.account_id,
     plan_code: c.plan.plan_code,
     session_reference: c.provider_reference,
-    amount_cents: c.plan.amount_cents,
+    amount_cents: c.upgrade_credit?.first_invoice_cents ?? c.plan.amount_cents,
     currency: c.plan.currency,
     payment_intent: body.payment_intent || `test_pi_${crypto.randomBytes(6).toString('hex')}`,
     occurred_at: new Date().toISOString()
@@ -49,7 +49,8 @@ async function run(service, check) {
 
   /* ---- 3. A concurrent annual checkout cannot use the same credit twice. ---- */
   const annual = await service.openCheckout(a, 'annual');
-  check.equal(annual.json.checkout.upgrade_credit.reserved, false, 'a concurrent annual checkout reserves nothing');
+  check.equal(annual.status, 409, 'a concurrent annual checkout is refused before a second renewing plan can be opened');
+  check.equal(credits()[0].reserved_for_checkout_id, monthly.json.checkout.checkout_id, 'the original checkout keeps its single reservation');
 
   /* ---- 4. Paying the reserved monthly checkout redeems the credit. ---- */
   const mPay = await service.postEvent({
@@ -58,7 +59,7 @@ async function run(service, check) {
     account_reference: a.account_id,
     plan_code: 'monthly',
     session_reference: monthly.json.checkout.provider_reference,
-    amount_cents: 795,
+    amount_cents: 200,
     currency: 'cad',
     occurred_at: new Date().toISOString()
   });

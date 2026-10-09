@@ -150,8 +150,14 @@ class TestService {
   }
 
   /** Open a checkout intent through the real endpoint. A one-time unlock is bound to the case it unlocks. */
-  openCheckout(actor, planCode, caseId) {
+  async openCheckout(actor, planCode, caseId) {
     const body = { plan_code: planCode || 'monthly' };
+    if (planCode === 'annual') {
+      const view = await this.request('GET', '/api/billing/plans', { token: actor.token });
+      if (view.json?.entitlement?.entitled && view.json.entitlement.access_via === 'SUBSCRIPTION') {
+        body.quote_revision = view.json.upgrade_quotes.annual.revision;
+      }
+    }
     if (planCode === 'report_once' && caseId) body.case_id = caseId;
     return this.request('POST', '/api/billing/checkout', { token: actor.token, body });
   }
@@ -182,7 +188,14 @@ class TestService {
   /** Pay for one plan the way a provider would: a real checkout, then a real signed event. */
   async pay(actor, planCode, caseId) {
     const plan = planCode || 'monthly';
-    const checkout = await this.openCheckout(actor, plan, caseId);
+    const pending = (await this.request('GET', '/api/billing/plans', { token: actor.token })).json.pending_checkout;
+    let checkout;
+    if (pending?.plan_code === plan && (plan !== 'report_once' || pending.case_id === caseId)) {
+      const resumed = await this.request('POST', '/api/billing/checkout', { token: actor.token,
+        body: { plan_code: plan, resume_checkout_id: pending.checkout_id } });
+      if (resumed.status !== 201) throw new Error(`checkout resume failed: ${resumed.status}`);
+      checkout = resumed;
+    } else checkout = await this.openCheckout(actor, plan, caseId);
     if (checkout.status !== 201) throw new Error(`checkout failed: ${checkout.status} ${checkout.text}`);
     const reference = checkout.json.checkout.provider_reference;
     const event = {
@@ -191,7 +204,7 @@ class TestService {
       account_reference: actor.account_id,
       plan_code: plan,
       session_reference: reference,
-      amount_cents: checkout.json.checkout.plan.amount_cents,
+      amount_cents: checkout.json.checkout.upgrade_credit?.first_invoice_cents ?? checkout.json.checkout.plan.amount_cents,
       currency: checkout.json.checkout.plan.currency,
       occurred_at: new Date().toISOString()
     };

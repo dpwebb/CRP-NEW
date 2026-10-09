@@ -118,10 +118,18 @@ function catalog() {
   };
 }
 
+/** Preserve unused cents when applying them all would create an unchargeable nonzero invoice. */
+function applicableCredit(availableCents, priceCents) {
+  const credit = Math.min(availableCents, priceCents);
+  const due = priceCents - credit;
+  return due > 0 && due < MINIMUM_CHARGE_CAD_CENTS ? priceCents - MINIMUM_CHARGE_CAD_CENTS : credit;
+}
+
 module.exports = {
   PLAN_CODES,
   BASE_PRICE_CAD_CENTS,
   MINIMUM_CHARGE_CAD_CENTS,
+  applicableCredit,
   BILLING_CURRENCY,
   PLAN_INTERVAL,
   GRANTS,

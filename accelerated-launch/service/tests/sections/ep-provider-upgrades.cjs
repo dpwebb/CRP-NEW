@@ -224,6 +224,39 @@ async function run(t, check) {
     } finally { gate.release(); }
     check.equal((await firstTry).status, 201, 'the original upgrade proceeds once');
 
+    const centsActor = await t.unpaidAccount('ep-small-invoice@example.test');
+    const centsMonth = await pay(centsActor, 'monthly');
+    for (let index = 0; index < 9; index++) mock.historicalInvoice(centsMonth.subscription.id, 795);
+    const centsInvoice = mock.invoices.get(centsMonth.session.invoice);
+    await events('charge.refunded', mock.refundIntent(centsInvoice.payment_intent, 39));
+    resetHistory(centsActor);
+    const centsQuote = (await getPlans(centsActor)).upgrade_quotes.annual;
+    check.equal(centsQuote.available_credit_cents, 7911, 'all verified net cents remain counted');
+    check.equal(centsQuote.first_invoice_cents, 50, 'nonzero invoice reaches the configured CAD minimum charge');
+    check.equal(centsQuote.credit_cents, 7900, 'only the chargeable discount is reserved');
+    check.equal(centsQuote.remaining_credit_cents, 11, 'the extra unused cents remain in the account');
+    const centsUpgrade = await purchase(centsActor, 'annual', { quote_revision: centsQuote.revision });
+    check.equal(centsUpgrade.status, 201, 'a few-cents remainder does not block the upgrade');
+    check.equal(centsUpgrade.json.checkout.upgrade_credit.first_invoice_cents, 50, 'provider invoice uses the reviewed chargeable amount');
+    const centsPaid = mock.payInvoice(centsUpgrade.json.checkout.provider_reference);
+    check.equal(centsPaid.amount_paid, 50, 'actual provider cash equals the reviewed bill');
+    check.equal((await events('invoice.paid', centsPaid)).json.event.accepted, true, 'chargeable exact paid invoice activates the upgrade');
+    check.equal(creditsFor(centsActor).filter(row => row.source_plan_code === 'monthly').reduce((sum, row) => sum + row.remaining_amount_cents, 0), 11,
+      'settlement preserves the unused cents without minting new lower-plan cash');
+
+    const partialCurrentActor = await t.unpaidAccount('ep-partial-current@example.test');
+    const partialCurrent = await pay(partialCurrentActor, 'monthly');
+    const partialCurrentInvoice = mock.invoices.get(partialCurrent.session.invoice);
+    const partialCurrentRefund = mock.refundIntent(partialCurrentInvoice.payment_intent, 100);
+    check.equal((await events('charge.refunded', partialCurrentRefund)).json.event.accepted, true, 'partial refund of current subscription cash is processed');
+    const currentAfterPartial = await status(partialCurrentActor);
+    check.equal(currentAfterPartial.state, 'ACTIVE', 'a partial refund preserves the paid subscription period');
+    check.equal(currentAfterPartial.entitled, true, 'current paid report and packet access remain available after a partial refund');
+    check.equal((await getPlans(partialCurrentActor)).upgrade_quotes.annual.credit_cents, 695, 'current subscription contributes only the unrefunded unused cash');
+    const fullCurrentRefund = mock.refundIntent(partialCurrentInvoice.payment_intent, 795);
+    check.equal((await events('charge.refunded', fullCurrentRefund)).json.event.accepted, true, 'a later full cumulative refund is processed');
+    check.equal((await status(partialCurrentActor)).entitled, false, 'a full refund still revokes the refunded subscription access');
+
     const refundActor = await t.unpaidAccount('ep-refund@example.test');
     const refundMonth = await pay(refundActor, 'monthly');
     const refundedRenewal = mock.historicalInvoice(refundMonth.subscription.id, 795);
@@ -328,6 +361,17 @@ async function run(t, check) {
     check.equal((await status(uncertainActor)).plan_code, 'monthly', 'uncertain provider reply keeps prior access');
     const foreignResume = await purchase(other, 'annual', { resume_checkout_id: pendingId });
     check.equal(foreignResume.status, 404, 'another account cannot resume the pending saved-card request');
+    const recoverableInvoice = mock.invoices.get(mock.subscriptions.get(uncertainMonth.subscription.id).latest_invoice);
+    const originalDue = recoverableInvoice.amount_due;
+    recoverableInvoice.amount_due += 1;
+    const failedResume = await purchase(uncertainActor, 'annual', { resume_checkout_id: pendingId });
+    check.equal(failedResume.status, 409, 'unconfirmed recovery keeps the purchase pending');
+    check.equal(failedResume.json.error.code, 'PAYMENT_CONFIRMATION_PENDING', 'recovery refusal avoids a false no-payment claim');
+    check.ok(!/nothing was sent|nothing.*charged/i.test(failedResume.json.error.message), 'recovery explains the uncertain original payment honestly');
+    check.equal(read().checkout_sessions.find(row => row.checkout_id === pendingId).state, 'OPENING', 'failed recovery retains the original pending request');
+    check.equal(creditsFor(uncertainActor).reduce((sum, row) => sum + row.reserved_amount_cents, 0), 795, 'failed recovery retains the approved credit reservation');
+    check.equal(mock.invoices.size, beforeLostInvoice + 1, 'failed recovery creates no second invoice');
+    recoverableInvoice.amount_due = originalDue;
     const writesBeforeResume = subscriptionWrites().length;
     const resumed = await purchase(uncertainActor, 'annual', { resume_checkout_id: pendingId });
     check.equal(resumed.status, 201, 'same owned request is recovered from its bound provider invoice: ' + resumed.text);

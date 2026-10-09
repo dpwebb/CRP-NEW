@@ -98,10 +98,10 @@ async function run(service, check) {
   check.equal(projected.observations[0].consumer_label, 'VIOLATION', 'the saved observation label is normalized');
   check.equal(journey.getResult(store, actor, 'fictional-case', 'fictional-result').issues[1].consumer_label,
     'VIOLATION', 'the explicitly selected historical-result route applies the same saved label');
-  const download = journey.assessmentReport(store, actor, 'fictional-case').body;
-  check.match(download, /- VIOLATION/, 'saved downloads use the updated term');
+  const download = require('../packet-pdf-assertions.cjs').pdfText(journey.assessmentReport(store, actor, 'fictional-case').body);
+  check.match(download, /VIOLATION/, 'saved downloads use the updated term');
   check.equal(BAD_WORDING.test(download), false, 'saved downloads omit obsolete wording');
-  check.match(download, /exception applies/, 'saved downloads preserve the material exception uncertainty');
+  check.match(download, /exception\s+applies/, 'saved PDFs preserve the material exception uncertainty across line wraps');
   check.equal(JSON.stringify(store.state()), snapshot, 'reads preserve historical rows, clarifications and approval versions');
 }
 

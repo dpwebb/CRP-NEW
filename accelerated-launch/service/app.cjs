@@ -396,7 +396,10 @@ function buildBillingHandlers(store, logger) {
   return {
     policy: () => ({ status: 200, json: { ok: true, ...retention.policyView(), check_classes: CHECK_CLASSES } }),
 
-    billingPlans: ({ actor }) => ({ status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env) } }),
+    billingPlans: async ({ actor }) => {
+      await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
+      return { status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env) } };
+    },
 
     openCheckout: async ({ body, actor }) => {
       const opened = await entitlement.openCheckout(store, actor, body, env);
@@ -419,7 +422,10 @@ function buildBillingHandlers(store, logger) {
       return { status: 200, json: { ok: true, event: outcome } };
     },
 
-    entitlementView: ({ actor }) => ({ status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } }),
+    entitlementView: async ({ actor }) => {
+      await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
+      return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } };
+    },
 
     cancelEntitlement: async ({ body, actor }) => {
       const cancellation = await entitlement.cancelEntitlement(store, actor, body, env);
@@ -430,7 +436,7 @@ function buildBillingHandlers(store, logger) {
 }
 
 /** Case, upload, evaluation, review and download handlers. */
-function buildCaseHandlers(store, logger) {
+function buildCaseHandlers(store, logger, surface) {
   return {
     createCase: ({ body, actor }) => {
       const created = cases.createCase(store, actor, body);
@@ -552,7 +558,11 @@ function buildCaseHandlers(store, logger) {
     reportDownload: ({ params, actor }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       const access = entitlement.requireAssessmentAccess(store, actor, params.caseId);
-      const file = journey.assessmentReport(store, actor, params.caseId);
+      const owned = cases.requireOwnedCase(store, actor, params.caseId);
+      const country = surface.countries.find(c => c.value === owned.country)?.label || owned.country;
+      const region = surface.regions.find(r => r.value === owned.region)?.label || owned.region;
+      const file = journey.assessmentReport(store, actor, params.caseId, {
+        jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor) });
       logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: access.via });
       return {
         status: 200,
@@ -722,7 +732,7 @@ function createService(options) {
   const handlers = Object.assign(
     {},
     buildHandlers(store, logger, surface),
-    buildCaseHandlers(store, logger),
+    buildCaseHandlers(store, logger, surface),
     buildBillingHandlers(store, logger)
   );
 

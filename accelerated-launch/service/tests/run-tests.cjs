@@ -48,6 +48,10 @@ const SECTION_FILES = [
   'w-ca-second-bureau-format.cjs',
   /* B4-PAY-001 — the once-only CAD upgrade credit and the paid assessment-report download. */
   'x-b4-pay-001.cjs',
+  'em-paid-assessment-pdf.cjs',
+  'en-purchase-presentation.cjs',
+  'eo-cumulative-upgrade-credit.cjs',
+  'ep-provider-upgrades.cjs',
   /* B6-INGEST-001 — the coverage matrix, its registry consistency and the unsupported-bureau acquisition queue. */
   'y-ingest-coverage-matrix.cjs',
   /* B6-INGEST-002 — the general bureau-report intake path and its unrelated/unreadable refusals. */

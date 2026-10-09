@@ -50,6 +50,7 @@ const EVENT_EFFECTS = Object.freeze({
   'checkout.session.async_payment_succeeded': 'ACTIVATE',
   'invoice.paid': 'RENEW',
   'invoice.payment_failed': 'PAST_DUE',
+  'invoice.voided': 'RELEASE_UPGRADE',
   'subscription.deleted': 'CANCEL_AT_PERIOD_END',
   'charge.refunded': 'REVOKE',
   'charge.dispute.created': 'REVOKE'
@@ -133,27 +134,13 @@ function sweepExpired(state, at) {
     }
   }
   for (const session of state.checkout_sessions || []) {
-    if (session.state === 'OPEN' && session.expires_at <= at) {
+    if (session.state === 'OPEN' && session.provider_id !== 'stripe' && session.expires_at <= at) {
       session.state = 'EXPIRED';
       changed += 1;
-      // Release its reserved credit. The 90-day window is from paid_at, not extended by this.
-      for (const c of state.upgrade_credits || []) {
-        if (c.state === 'RESERVED' && c.reserved_for_checkout_id === session.checkout_id) {
-          c.state = 'ELIGIBLE';
-          c.reserved_for_checkout_id = null;
-          c.reserved_at = null;
-        }
-      }
+      credits.releaseReservations(state, session.checkout_id);
     }
   }
-  for (const c of state.upgrade_credits || []) {
-    if ((c.state === 'ELIGIBLE' || c.state === 'RESERVED') && c.expires_at && c.expires_at <= at) {
-      c.state = 'EXPIRED';
-      c.reserved_for_checkout_id = null;
-      c.reserved_at = null;
-      changed += 1;
-    }
-  }
+  // Payment credits do not expire. Stripe reservations need confirmed provider expiry/voiding.
   return changed;
 }
 
@@ -312,11 +299,14 @@ function rowsFor(state, accountId) {
 function plansView(store, actor, env) {
   const catalog = plans.catalog();
   const provider = payments.describeProvider(env);
-  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso());
+  const current = statusFor(store, actor.account_id);
+  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null);
   return {
     plan_catalog: catalog,
     entitlement: statusFor(store, actor.account_id),
     upgrade_credit: upgradeCredit,
+    upgrade_quotes: upgradeQuotes(store, actor),
+    pending_checkout: pendingCheckout(store, actor),
     payment: {
       state: provider.state,
       provider_id: provider.provider_id,
@@ -327,11 +317,42 @@ function plansView(store, actor, env) {
       purchase_is_possible: provider.is_a_working_payment === true
     },
     plain: provider.state === 'STRIPE_CONFIGURED'
-      ? 'These CAD prices are recorded and Stripe is connected. A one-time purchase earns a once-only CAD 5.95 credit toward a first monthly or annual invoice within 90 days; renewals stay full price.'
+      ? 'Your unused payments for cheaper plans count toward upgrades. The credit applies to the upgrade bill; renewals stay at the regular price.'
       : (provider.state === 'NOT_CONFIGURED'
         ? 'These plans are recorded, but no payment provider is connected, so nothing can be purchased and no access can be activated.'
         : 'These plans are recorded. The connected provider is a TEST ADAPTER, so nothing can actually be purchased.')
   };
+}
+
+function upgradeQuotes(store, actor) {
+  const current = statusFor(store, actor.account_id);
+  const subscribed = current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION;
+  const quoteSet = credits.quotesFor(store, actor.account_id, nowIso(), subscribed ? current.plan_code : null);
+  const busy = store.state().checkout_sessions.some(c => c.account_id === actor.account_id &&
+    ['OPENING', 'OPEN', 'CREDIT_REVOKED'].includes(c.state) && c.plan_code !== 'report_once');
+  return Object.fromEntries(plans.PLAN_CODES.map(code => {
+    const raw = quoteSet[code] || { regular_cents: plans.plan(code).amount_cents, credit_cents: 0,
+      first_invoice_cents: plans.plan(code).amount_cents, renewal_cents: plans.plan(code).amount_cents,
+      eligible: false, currency: 'cad', source_plan_codes: [], remaining_credit_cents: 0 };
+    const isCurrent = subscribed && current.plan_code === code;
+    const higher = !subscribed || plans.plan(code).amount_cents > plans.plan(current.plan_code).amount_cents;
+    const allowed = !isCurrent && higher && !busy;
+    const revision = crypto.createHash('sha256').update(JSON.stringify([actor.account_id, code,
+      raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
+      current.plan_code, current.state, allowed])).digest('hex');
+    const { source_payment_ids, ...safe } = raw;
+    return [code, { ...safe, allowed, is_current: isCurrent, revision,
+      reason: isCurrent ? 'CURRENT_PLAN' : !higher ? 'NOT_AN_UPGRADE' : busy ? 'CHECKOUT_ALREADY_IN_PROGRESS' : raw.reason || null }];
+  }));
+}
+
+function pendingCheckout(store, actor) {
+  const row = store.state().checkout_sessions.filter(c => c.account_id === actor.account_id &&
+    ['OPEN', 'OPENING'].includes(c.state)).at(-1);
+  return row ? { checkout_id: row.checkout_id, plan_code: row.plan_code, case_id: row.case_id || null, redirect_url: row.redirect_url || null,
+    is_subscription_upgrade: row.is_subscription_upgrade === true, payable_cents: row.payable_cents,
+    credit_cents: row.credit_applied_cents || 0, renewal_cents: plans.plan(row.plan_code).amount_cents,
+    currency: row.currency } : null;
 }
 
 /**
@@ -366,104 +387,7 @@ function requireUnlockableReport(store, actor, caseId) {
  * if the provider call fails. `case_id` binds a one-time purchase to the case whose report it will download.
  */
 async function openCheckout(store, actor, input, env) {
-  const body = input || {};
-  const planCode = typeof body.plan_code === 'string' ? body.plan_code : '';
-  if (!plans.isPlanCode(planCode)) throw new ServiceError('UNKNOWN_PLAN', { requested: planCode || null });
-  const caseId = typeof body.case_id === 'string' && body.case_id ? body.case_id : null;
-  const provider = payments.resolveProvider(env);
-  const described = payments.describeProvider(env);
-  if (!provider) {
-    throw new ServiceError('PAYMENT_PROVIDER_NOT_CONFIGURED', {
-      provider_state: described.state,
-      reason: described.reason,
-      exact_external_dependency: described.exact_external_dependency
-    });
-  }
-  /* A one-time unlock is validated only after the provider configuration is known-good, and always BEFORE the
-     provider is CALLED or a checkout row is written (OWNER-PURCHASE-FLOW-001). */
-  if (planCode === 'report_once') requireUnlockableReport(store, actor, caseId);
-  const plan = plans.plan(planCode);
-  const returnUrl = typeof body.return_url === 'string' && /^https?:\/\//.test(body.return_url) ? body.return_url : null;
-
-  const now = nowIso();
-  const checkoutId = newId('chk');
-
-  // Reserve the upgrade credit atomically for a subscription checkout.
-  let reservation = { reserved: false };
-  if (planCode !== 'report_once') {
-    reservation = credits.reserveCredit(store, actor.account_id, checkoutId, now);
-  }
-
-  let opened;
-  try {
-    opened = await provider.createCheckout({
-      account_id: actor.account_id,
-      plan_code: planCode,
-      return_url: returnUrl,
-      checkout_id: checkoutId,
-      apply_upgrade_credit: reservation.reserved === true
-    });
-  } catch (err) {
-    if (reservation.reserved) credits.releaseCredit(store, checkoutId);
-    throw new ServiceError('CHECKOUT_OPEN_FAILED', { reason: err && err.message ? err.message : String(err) });
-  }
-
-  const checkout = store.update((state) => {
-    const created = {
-      checkout_id: checkoutId,
-      account_id: actor.account_id,
-      plan_code: planCode,
-      case_id: caseId,
-      amount_cents: plan.amount_cents,
-      currency: plan.currency,
-      provider_id: provider.provider_id,
-      provider_reference: opened.provider_reference,
-      credit_reserved: reservation.reserved === true,
-      credit_applied_cents: reservation.reserved ? reservation.amount_cents : 0,
-      state: 'OPEN',
-      created_at: now,
-      expires_at: addHours(now, 24)
-    };
-    state.checkout_sessions.push(created);
-    state.entitlements.push({
-      entitlement_id: newId('ent'),
-      account_id: actor.account_id,
-      plan_code: planCode,
-      state: 'PENDING',
-      source: provider.is_a_working_payment ? provider.provider_id : 'TEST_ADAPTER_NOT_A_PAYMENT',
-      access_via: plans.GRANTS[planCode].access_via,
-      checkout_id: created.checkout_id,
-      provider_reference: opened.provider_reference,
-      created_at: now,
-      granted_at: null,
-      expires_at: null,
-      event_ids: []
-    });
-    return created;
-  });
-
-  const quote = planCode === 'report_once'
-    ? null
-    : {
-        reserved: reservation.reserved,
-        credit_cents: reservation.reserved ? reservation.amount_cents : 0,
-        first_invoice_cents: reservation.reserved ? plan.amount_cents - reservation.amount_cents : plan.amount_cents,
-        renewal_cents: plan.amount_cents
-      };
-
-  return {
-    checkout_id: checkout.checkout_id,
-    plan,
-    provider_id: provider.provider_id,
-    provider_is_a_working_payment: provider.is_a_working_payment === true,
-    provider_reference: checkout.provider_reference,
-    /* A redirect is a DESTINATION, never a grant. Nothing downstream reads this URL for authorization. */
-    redirect_url: opened.redirect_url,
-    redirect_grants_nothing: true,
-    upgrade_credit: quote,
-    entitlement: statusFor(store, actor.account_id),
-    plain: 'A checkout intent was opened. Access changes only when the provider sends a signed event that verifies; returning from the redirect does nothing.'
-  };
+  return require("./checkout-purchase.cjs").openCheckout(store, actor, input, env);
 }
 
 /**
@@ -520,6 +444,9 @@ function eventFingerprint(event) {
     event.period_end ? String(event.period_end) : ''
   ];
   if (typeof event.checkout_reference === 'string') relevant.push(event.checkout_reference);
+  if (typeof event.invoice_reference === 'string') relevant.push(event.invoice_reference);
+  if (typeof event.payment_intent === 'string') relevant.push(event.payment_intent);
+  if (Number.isSafeInteger(event.refunded_cents)) relevant.push(String(event.refunded_cents));
   return crypto.createHash('sha256').update(relevant.join('\u0000'), 'utf8').digest('hex');
 }
 
@@ -616,170 +543,7 @@ async function recordEvent(store, input, env) {
     throw new ServiceError('BILLING_EVENT_TYPE_UNSUPPORTED', { event_type: event.type });
   }
 
-  const before = store.state();
-  const fingerprint = eventFingerprint(event);
-  const settled = before.billing_events.find(
-    (row) => row.outcome === 'APPLIED' && (row.event_id === event.event_id || (row.fingerprint && row.fingerprint === fingerprint))
-  );
-  if (settled) {
-    return {
-      accepted: true,
-      duplicate: true,
-      event_id: event.event_id,
-      type: event.type,
-      effect: settled.effect,
-      applied_to: settled.entitlement_id,
-      entitlement: statusFor(store, event.account_reference),
-      plain: 'This event had already been recorded, so nothing changed. Re-sending it cannot grant a second activation.'
-    };
-  }
-
-  const account = before.accounts.find((row) => row.account_id === event.account_reference);
-  if (!account) {
-    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_ACCOUNT_UNKNOWN', event.event_id);
-    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_ACCOUNT_UNKNOWN', entitlement: null };
-  }
-
-  // Only a successful payment grants anything. An unpaid checkout-completed event is recorded and refused.
-  if (effect === 'ACTIVATE' && event.payment_verified === false) {
-    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_UNPAID_CHECKOUT', event.event_id);
-    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_UNPAID_CHECKOUT', entitlement: statusFor(store, account.account_id) };
-  }
-
-  // Activation and actual Stripe deletion bind to their own Checkout. Other existing event contracts retain
-  // their controlling-row behavior; an old deletion must never cancel a newer subscription.
-  const checkout = effect === 'ACTIVATE'
-    ? (before.checkout_sessions || []).find(
-        (row) => row.account_id === account.account_id && row.provider_reference === event.session_reference
-      )
-    : null;
-  if (effect === 'ACTIVATE' && !checkout) {
-    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_CHECKOUT_UNKNOWN', event.event_id);
-    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_CHECKOUT_UNKNOWN', entitlement: statusFor(store, account.account_id) };
-  }
-  if (effect === 'ACTIVATE' && checkout.plan_code !== event.plan_code) {
-    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_PLAN_MISMATCH', event.event_id);
-    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_PLAN_MISMATCH', entitlement: statusFor(store, account.account_id) };
-  }
-
-  const stripeCancellation = provider.provider_id === 'stripe' && effect === 'CANCEL_AT_PERIOD_END';
-  const cancellationCheckout = stripeCancellation ? (before.checkout_sessions || []).find((session) =>
-    session.checkout_id === event.checkout_reference && session.account_id === account.account_id &&
-    session.provider_id === 'stripe' && session.state === 'COMPLETED' && session.plan_code === event.plan_code) : null;
-  const matchesCancellation = (row, session) => Boolean(session) && row.account_id === account.account_id &&
-    row.source === 'stripe' && row.access_via === ACCESS_VIA.SUBSCRIPTION && row.plan_code === event.plan_code &&
-    row.checkout_id === session.checkout_id && row.provider_reference === session.provider_reference &&
-    row.provider_subscription_reference === event.session_reference;
-  if (stripeCancellation && !rowsFor(before, account.account_id).some((row) => matchesCancellation(row, cancellationCheckout))) {
-    recordRejection(store, provider.provider_id, verified.fingerprint, 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH', event.event_id);
-    return { accepted: false, duplicate: false, reason: 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH',
-      entitlement: statusFor(store, account.account_id) };
-  }
-  const at = nowIso();
-  const applied = store.update((state) => {
-    const liveCheckout = checkout ? state.checkout_sessions.find((row) => row.checkout_id === checkout.checkout_id) : null;
-    const rows = rowsFor(state, account.account_id);
-    const liveCancellationCheckout = stripeCancellation ? state.checkout_sessions.find((session) =>
-      session.checkout_id === event.checkout_reference && session.account_id === account.account_id &&
-      session.provider_id === 'stripe' && session.state === 'COMPLETED' && session.plan_code === event.plan_code) : null;
-    const row = effect === 'ACTIVATE'
-      ? rows.find((candidate) => candidate.state === 'PENDING' && candidate.provider_reference === event.session_reference)
-      : (stripeCancellation ? rows.find((candidate) => matchesCancellation(candidate, liveCancellationCheckout)) : controlling(rows, at));
-    if (stripeCancellation && !row) throw new ServiceError('BILLING_EVENT_REJECTED', { reason: 'EVENT_IGNORED_SUBSCRIPTION_MISMATCH' });
-    if (!row) return null;
-    applyEffect(row, effect, event.plan_code, event, at);
-    if (effect === 'ACTIVATE' && provider.provider_id === 'stripe' && /^sub_[A-Za-z0-9_]+$/.test(event.subscription_reference || '')) {
-      row.provider_subscription_reference = event.subscription_reference;
-    }
-    if (effect === 'ACTIVATE' && liveCheckout) liveCheckout.state = 'COMPLETED';
-    row.event_ids = (row.event_ids || []).concat([event.event_id]);
-    row.last_event_type = event.type;
-    row.updated_at = at;
-
-    // B4-PAY-001: credit + download lifecycle, atomic with the entitlement change.
-    if (effect === 'ACTIVATE' && event.plan_code === 'report_once') {
-      const paidAt = event.occurred_at || at;
-      if (!(state.upgrade_credits || []).some((c) => c.payment_id === event.session_reference)) {
-        state.upgrade_credits.push({
-          credit_id: newId('crd'),
-          account_id: account.account_id,
-          payment_id: event.session_reference,
-          payment_intent: event.payment_intent || null,
-          amount_cents: 595,
-          currency: 'cad',
-          state: 'ELIGIBLE',
-          paid_at: paidAt,
-          expires_at: credits.expiresAt(paidAt),
-          reserved_for_checkout_id: null,
-          reserved_at: null,
-          redeemed_at: null,
-          redeemed_checkout_id: null,
-          redeemed_plan_code: null,
-          revoked_reason: null
-        });
-      }
-      if (liveCheckout && liveCheckout.case_id &&
-          !(state.purchased_downloads || []).some((d) => d.account_id === account.account_id && d.case_id === liveCheckout.case_id)) {
-        state.purchased_downloads.push({
-          purchase_id: newId('dl'),
-          account_id: account.account_id,
-          case_id: liveCheckout.case_id,
-          checkout_id: liveCheckout.checkout_id,
-          provider_reference: event.session_reference,
-          created_at: at
-        });
-      }
-    }
-    if (effect === 'ACTIVATE' && event.plan_code !== 'report_once' && liveCheckout) {
-      const reserved = (state.upgrade_credits || []).find(
-        (c) => c.state === 'RESERVED' && c.reserved_for_checkout_id === liveCheckout.checkout_id
-      );
-      if (reserved) {
-        reserved.state = 'REDEEMED';
-        reserved.redeemed_at = at;
-        reserved.redeemed_checkout_id = liveCheckout.checkout_id;
-        reserved.redeemed_plan_code = event.plan_code;
-        reserved.reserved_for_checkout_id = null;
-      }
-    }
-    if (effect === 'REVOKE' && event.payment_intent) {
-      for (const c of state.upgrade_credits || []) {
-        if (c.account_id === account.account_id && c.payment_intent === event.payment_intent && (c.state === 'ELIGIBLE' || c.state === 'RESERVED')) {
-          c.state = 'REVOKED';
-          c.revoked_reason = 'THE_UNDERLYING_PAYMENT_WAS_REFUNDED_OR_DISPUTED';
-          c.reserved_for_checkout_id = null;
-          c.reserved_at = null;
-        }
-      }
-    }
-
-    state.billing_events.push({
-      event_id: event.event_id,
-      provider_id: provider.provider_id,
-      fingerprint,
-      received_at: at,
-      outcome: 'APPLIED',
-      effect,
-      reason: null,
-      entitlement_id: row.entitlement_id,
-      account_id: account.account_id,
-      type: event.type
-    });
-    return { entitlement_id: row.entitlement_id, state: row.state, expires_at: row.expires_at };
-  });
-
-  return {
-    accepted: true,
-    duplicate: false,
-    event_id: event.event_id,
-    type: event.type,
-    effect,
-    applied_to: applied ? applied.entitlement_id : null,
-    entitlement: statusFor(store, account.account_id),
-    plain: effect === 'ACTIVATE'
-      ? 'A verified provider event granted this purchase, and the entitlement is now recorded against the account.'
-      : `A verified provider event applied ${effect}.`
-  };
+  return require("./billing-event-effects.cjs").recordVerifiedEvent(store, event, provider);
 }
 
 /* ------------------------------------------------------------------ leaving, and the read view */
@@ -796,6 +560,7 @@ async function cancelEntitlement(store, actor, input, env) {
   const original = controlling(rowsFor(before, actor.account_id), nowIso());
   let providerCancellation = null;
   let originalCheckout = null;
+  let stoppedUpgrade = null;
   const boundFields = ['entitlement_id', 'account_id', 'plan_code', 'access_via', 'source',
     'checkout_id', 'provider_reference', 'state', 'expires_at'];
   const binding = (row) => JSON.stringify(boundFields.map((field) => row?.[field] ?? null));
@@ -811,9 +576,16 @@ async function cancelEntitlement(store, actor, input, env) {
     const provider = payments.resolveProvider(env);
     if (provider?.provider_id !== 'stripe' || typeof provider.cancelRenewal !== 'function') fail('STRIPE_CANCELLATION_NOT_CONFIGURED');
     try {
+      const pending = before.checkout_sessions.find(c => c.account_id === actor.account_id && c.is_subscription_upgrade &&
+        c.previous_entitlement_id === original.entitlement_id && ['OPEN', 'OPENING', 'CREDIT_REVOKED'].includes(c.state));
+      if (pending) {
+        const stopped = await provider.cancelCheckout({ ...pending, subscription_reference: pending.provider_subscription_reference });
+        if (!stopped.cancelled) fail('PENDING_UPGRADE_CANCELLATION_NOT_CONFIRMED');
+        stoppedUpgrade = pending.checkout_id;
+      }
       providerCancellation = await provider.cancelRenewal({ account_id: actor.account_id,
         checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
-        plan_code: originalCheckout.plan_code });
+        plan_code: originalCheckout.plan_code, subscription_reference: original.provider_subscription_reference });
     } catch (error) { fail(error?.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
     if (providerCancellation?.renewal_cancelled !== true) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
   }
@@ -830,6 +602,12 @@ async function cancelEntitlement(store, actor, input, env) {
       }
     }
     if (!row) return { cancelled: false, reason: 'NO_PURCHASE_IS_RECORDED' };
+    if (stoppedUpgrade) {
+      const pending = state.checkout_sessions.find(c => c.checkout_id === stoppedUpgrade);
+      if (pending && ['OPEN', 'OPENING', 'CREDIT_REVOKED'].includes(pending.state)) {
+        pending.state = 'CANCELLED'; credits.releaseReservations(state, pending.checkout_id);
+      }
+    }
     if (row.state === 'PENDING') {
       row.state = 'CANCELLED';
       row.cancelled_at = at;
@@ -879,7 +657,8 @@ function downloadEntitled(store, actor, caseId) {
 
 /** The upgrade-credit position: eligibility, amount, expiry and remaining time. */
 function creditView(store, actor, now) {
-  return credits.creditView(store, actor.account_id, nowIso(now));
+  const current = statusFor(store, actor.account_id, now);
+  return credits.creditView(store, actor.account_id, nowIso(now), current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION ? current.plan_code : null);
 }
 
 /** What the consumer surface may say about entitlement. No internal identifier and no gate number appears. */
@@ -903,7 +682,9 @@ function entitlementView(store, actor, env) {
       plain: provider.plain,
       exact_external_dependency: provider.exact_external_dependency
     },
-    upgrade_credit: credits.creditView(store, actor.account_id, nowIso()),
+    upgrade_credit: creditView(store, actor),
+    upgrade_quotes: upgradeQuotes(store, actor),
+    pending_checkout: pendingCheckout(store, actor),
     plain: status.entitled
       ? 'This account holds a recorded purchase.'
       : 'This account holds no active purchase. Everything you have already made stays readable, and you can always delete it.'
@@ -933,9 +714,13 @@ module.exports = {
   observed,
   controlling,
   eventFingerprint,
+  applyEffect,
   addDays,
   addHours,
   plansView,
+  upgradeQuotes,
+  pendingCheckout,
+  requireUnlockableReport,
   openCheckout,
   confirmCheckout,
   recordEvent,

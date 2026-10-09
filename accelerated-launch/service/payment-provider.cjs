@@ -172,6 +172,9 @@ function makeTestAdapter(env) {
              whether to use it or fall back to the catalog's own period. */
           period_end: typeof body.period_end === 'string' ? body.period_end : null,
           payment_intent: typeof body.payment_intent === 'string' ? body.payment_intent : null,
+          invoice_reference: typeof body.invoice_reference === 'string' ? body.invoice_reference : null,
+          subscription_reference: typeof body.subscription_reference === 'string' ? body.subscription_reference : null,
+          checkout_reference: typeof body.checkout_reference === 'string' ? body.checkout_reference : null,
           payment_verified: body.payment_verified === false ? false : true,
           occurred_at: typeof body.occurred_at === 'string' ? body.occurred_at : new Date().toISOString()
         }
@@ -205,8 +208,8 @@ const STRIPE_ADAPTER = Object.freeze({
   is_a_working_payment: false,
   required_configuration: STRIPE_ALL_NAMES,
   external_dependency:
-    'a Stripe account with one CAD Price per plan (report_once 595, monthly 795, annual 7950), one once-duration ' +
-    'CAD 595 coupon for the upgrade credit, and one webhook endpoint whose signing secret is supplied through the ' +
+    'a Stripe account with one CAD Price per plan (report_once 595, monthly 795, annual 7950), dynamically calculated ' +
+    'once-duration coupons for verified unused lower-plan payments, and one webhook endpoint whose signing secret is supplied through the ' +
     'environment; the service then makes outbound calls to api.stripe.com',
   why_not_implemented: null,
   implemented_on: 'Node built-ins (node:https + node:crypto) following Stripe REST and Stripe-Signature conventions',
@@ -262,7 +265,21 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     } catch { /* a missing period boundary falls back to the catalog period */ }
   }
 
-  const paymentVerified = type === 'checkout.session.async_payment_succeeded' ? true : session.payment_status === 'paid';
+  let invoiceReference = typeof session.invoice === 'string' ? session.invoice : session.invoice?.id || null;
+  let paymentIntent = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id || null;
+  const paymentVerified = type === 'checkout.session.async_payment_succeeded' ? true :
+    session.payment_status === 'paid' || (session.payment_status === 'no_payment_required' && session.amount_total === 0);
+  if (session.mode === 'subscription' && paymentVerified) {
+    if (!invoiceReference) return { mismatch: 'SUBSCRIPTION_PAYMENT_RECEIPT_MISSING' };
+    const receipt = await stripe.retrieveInvoice(secretKey, invoiceReference, base);
+    if (receipt.status !== 200 || receipt.json.currency !== session.currency ||
+        receipt.json.amount_paid !== session.amount_total || receipt.json.status !== 'paid' ||
+        (typeof receipt.json.subscription === 'string' ? receipt.json.subscription : receipt.json.subscription?.id) !==
+          (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id)) {
+      return { mismatch: 'SUBSCRIPTION_PAYMENT_RECEIPT_MISMATCH' };
+    }
+    paymentIntent = typeof receipt.json.payment_intent === 'string' ? receipt.json.payment_intent : receipt.json.payment_intent?.id || null;
+  }
   return {
     event_id: eventId,
     type,
@@ -274,7 +291,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     amount_cents: Number.isInteger(session.amount_total) ? session.amount_total : null,
     currency: typeof session.currency === 'string' ? session.currency : null,
     period_end: periodEnd,
-    payment_intent: session.payment_intent || null,
+    payment_intent: paymentIntent,
+    invoice_reference: invoiceReference,
     payment_verified: paymentVerified
   };
 }
@@ -288,6 +306,7 @@ async function resolveFromSubscription(secretKey, base, subscriptionId) {
     return {
       accountRef: md.account_id || null,
       planCode: md.plan_code || null,
+      checkoutId: md.checkout_id || null,
       periodEnd: sub.json.current_period_end ? new Date(sub.json.current_period_end * 1000).toISOString() : null
     };
   } catch {
@@ -300,17 +319,24 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
   const subId = typeof invoice.subscription === 'string' ? invoice.subscription : (invoice.subscription && invoice.subscription.id);
   const resolved = subId ? await resolveFromSubscription(secretKey, base, subId) : null;
   if (!resolved || !resolved.accountRef || !resolved.planCode) return null;
+  const lines = invoice.lines?.data || [];
+  const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
+  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code) === priceId);
+  if (!invoicePlan || lines[0].quantity !== 1 || invoice.currency !== 'cad') return null;
   return {
     event_id: eventId,
     type,
     account_reference: resolved.accountRef,
-    plan_code: resolved.planCode,
+    plan_code: invoicePlan,
     session_reference: subId,
-    amount_cents: Number.isInteger(invoice.amount_due) ? invoice.amount_due : null,
+    subscription_reference: subId,
+    checkout_reference: resolved.checkoutId,
+    invoice_reference: invoice.id,
+    amount_cents: Number.isInteger(invoice.amount_paid) ? invoice.amount_paid : null,
     currency: typeof invoice.currency === 'string' ? invoice.currency : null,
-    period_end: resolved.periodEnd,
+    period_end: lines[0].period?.end ? new Date(lines[0].period.end * 1000).toISOString() : resolved.periodEnd,
     payment_intent: invoice.payment_intent || null,
-    payment_verified: type === 'invoice.paid'
+    payment_verified: type === 'invoice.paid' && invoice.status === 'paid'
   };
 }
 
@@ -337,6 +363,14 @@ async function normalizeSubscriptionEvent(env, secretKey, base, subscription, ev
 
 /** Normalise `charge.refunded` / `charge.dispute.created` — resolves the account from the payment intent. */
 async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type) {
+  if (type === 'charge.dispute.created' && charge.charge) {
+    const chargeId = typeof charge.charge === 'string' ? charge.charge : charge.charge.id;
+    const got = await stripe.retrieveCharge(secretKey, chargeId, base);
+    const disputedPi = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.payment_intent?.id;
+    if (got.status !== 200 || got.json?.id !== chargeId ||
+        disputedPi && (typeof got.json.payment_intent === 'string' ? got.json.payment_intent : got.json.payment_intent?.id) !== disputedPi) return null;
+    charge = got.json;
+  }
   const piId = typeof charge.payment_intent === 'string' ? charge.payment_intent : (charge.payment_intent && charge.payment_intent.id);
   let accountRef = null;
   let planCode = null;
@@ -350,6 +384,20 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
       }
     } catch { /* leave unresolved */ }
   }
+  // Subscription metadata is not copied onto its payment intent. Follow the charge's invoice.
+  if (!accountRef && charge.invoice) {
+    const invoiceId = typeof charge.invoice === 'string' ? charge.invoice : charge.invoice.id;
+    const fetched = await stripe.retrieveInvoice(secretKey, invoiceId, base);
+    const invoice = fetched.json;
+    const subId = typeof invoice?.subscription === 'string' ? invoice.subscription : invoice?.subscription?.id;
+    const resolved = fetched.status === 200 && subId ? await resolveFromSubscription(secretKey, base, subId) : null;
+    if (resolved?.accountRef) {
+      accountRef = resolved.accountRef;
+      const price = invoice.lines?.data?.[0]?.price;
+      const priceId = typeof price === 'string' ? price : price?.id;
+      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p) === priceId) || resolved.planCode;
+    }
+  }
   if (!accountRef) return null;
   return {
     event_id: eventId,
@@ -361,6 +409,7 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
     currency: typeof charge.currency === 'string' ? charge.currency : null,
     period_end: null,
     payment_intent: piId,
+    refunded_cents: type === 'charge.refunded' && Number.isSafeInteger(charge.amount_refunded) ? charge.amount_refunded : null,
     payment_verified: true
   };
 }
@@ -377,7 +426,7 @@ async function normalizeStripeEvent(env, secretKey, base, rawEvent) {
   let normalized = null;
   if (type === 'checkout.session.completed' || type === 'checkout.session.async_payment_succeeded') {
     normalized = await normalizeCheckoutEvent(env, secretKey, base, obj, eventId, type);
-  } else if (type === 'invoice.paid' || type === 'invoice.payment_failed') {
+  } else if (type === 'invoice.paid' || type === 'invoice.payment_failed' || type === 'invoice.voided') {
     normalized = await normalizeInvoiceEvent(env, secretKey, base, obj, eventId, type);
   } else if (type === 'customer.subscription.deleted' || type === 'subscription.deleted') {
     if (type === 'customer.subscription.deleted') {
@@ -420,7 +469,6 @@ function priceIdFor(env, planCode) {
 function makeStripeAdapter(env) {
   const secretKey = env.STRIPE_SECRET_KEY;
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
-  const couponId = typeof env[STRIPE_UPGRADE_CREDIT_COUPON] === 'string' ? env[STRIPE_UPGRADE_CREDIT_COUPON] : null;
   const origins = parseOrigins(env);
   const base = typeof env.CRP_STRIPE_API_BASE === 'string' && env.CRP_STRIPE_API_BASE ? env.CRP_STRIPE_API_BASE : undefined;
 
@@ -452,10 +500,87 @@ function makeStripeAdapter(env) {
       params['payment_intent_data[metadata][plan_code]'] = planCode;
       params['payment_intent_data[metadata][checkout_id]'] = req.checkout_id || '';
     }
-    if (req.apply_upgrade_credit && couponId) {
-      params['discounts[0][coupon]'] = couponId;
+    if (req.credit_coupon_id) {
+      params['discounts[0][coupon]'] = req.credit_coupon_id;
     }
     return { mode, priceId, params };
+  }
+
+  const objectId = value => typeof value === 'string' ? value : value?.id;
+  function refuse(code) { const error = new Error(code); error.code = code; throw error; }
+  function uncertain(code) { const error = new Error(code); error.code = code; error.provider_write_started = true; throw error; }
+  async function providerWrite(promise) {
+    try { return await promise; } catch (error) { error.provider_write_started = true; throw error; }
+  }
+  async function creditCoupon(req) {
+    if (!Number.isInteger(req.credit_amount_cents) || req.credit_amount_cents < 0 ||
+        req.credit_amount_cents > plans.plan(req.plan_code).amount_cents) refuse('INVALID_SERVER_CREDIT');
+    if (!req.credit_amount_cents) return null;
+    const id = `crp_upgrade_${req.checkout_id}`;
+    const made = await stripe.createCoupon(secretKey, { id, name: 'Your upgrade credit',
+      amount_off: req.credit_amount_cents, currency: 'cad', duration: 'once', max_redemptions: 1 }, base);
+    if (made.status !== 200 || made.json?.amount_off !== req.credit_amount_cents ||
+        made.json.currency !== 'cad' || made.json.duration !== 'once') refuse('UPGRADE_CREDIT_COUPON_NOT_CONFIRMED');
+    return made.json.id;
+  }
+  async function confirmedPrice(planCode) {
+    const found = await stripe.retrievePrice(secretKey, priceIdFor(env, planCode), base);
+    if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json)) refuse('CONFIGURED_PRICE_MISMATCH');
+    return found.json;
+  }
+  async function ownedSubscription(req) {
+    let subscriptionId = req.subscription_reference;
+    if (!subscriptionId) {
+      const session = await stripe.retrieveSession(secretKey, req.provider_reference, base);
+      if (session.status !== 200 || session.json?.client_reference_id !== req.account_id ||
+          session.json.metadata?.account_id !== req.account_id || session.json.metadata?.checkout_id !== req.existing_checkout_id ||
+          session.json.mode !== 'subscription' || session.json.status !== 'complete') refuse('UPGRADE_CHECKOUT_MISMATCH');
+      subscriptionId = objectId(session.json.subscription);
+    }
+    if (!/^sub_[A-Za-z0-9_]+$/.test(subscriptionId || '')) refuse('UPGRADE_SUBSCRIPTION_MISSING');
+    const fetched = await stripe.retrieveSubscription(secretKey, subscriptionId, base);
+    const sub = fetched.json;
+    const mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey)?.[1];
+    if (fetched.status !== 200 || sub?.id !== subscriptionId || sub.livemode !== (mode === 'live') ||
+        sub.metadata?.account_id !== req.account_id ||
+        !(sub.metadata?.checkout_id === req.existing_checkout_id && sub.metadata?.plan_code === req.existing_plan_code ||
+          req.resume && sub.metadata?.checkout_id === req.checkout_id && sub.metadata?.plan_code === req.plan_code &&
+          sub.metadata?.previous_checkout_id === req.existing_checkout_id)) refuse('UPGRADE_SUBSCRIPTION_MISMATCH');
+    return sub;
+  }
+
+  async function upgradeInvoice(sub, req) {
+    let invoice = sub.latest_invoice;
+    if (typeof invoice === 'string') invoice = (await providerWrite(stripe.retrieveInvoice(secretKey, invoice, base))).json;
+    const price = invoice?.lines?.data?.[0]?.price;
+    if (!/^in_[A-Za-z0-9_]+$/.test(invoice?.id || '') || objectId(invoice.subscription) !== sub.id ||
+        invoice.currency !== 'cad' || invoice.amount_due !== plans.plan('annual').amount_cents - req.credit_amount_cents ||
+        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual') || invoice.lines.data[0].quantity !== 1) {
+      uncertain('UPGRADE_INVOICE_MISMATCH');
+    }
+    return invoice;
+  }
+  function upgradeResult(sub, invoice, req) {
+    return { provider_reference: invoice.id, subscription_reference: sub.id,
+      redirect_url: invoice.status === 'paid' ? req.return_url : invoice.hosted_invoice_url,
+      expires_at: sub.pending_update?.expires_at ? new Date(sub.pending_update.expires_at * 1000).toISOString() : null,
+      mode: 'EXISTING_SUBSCRIPTION_UPGRADE', is_a_working_payment: true };
+  }
+  async function restoreUpgrade(req) {
+    const request = req.provider_request;
+    if (!request || !req.is_subscription_upgrade) refuse('RESTORE_UPGRADE_BINDING_MISSING');
+    const sub = await ownedSubscription({ ...request, resume: true });
+    if (sub.metadata.checkout_id === request.existing_checkout_id) return { restored: true };
+    const invoice = await upgradeInvoice(sub, request);
+    if (!['void', 'uncollectible'].includes(invoice.status) || sub.pending_update ||
+        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly')) refuse('RESTORE_UPGRADE_NOT_VOID');
+    const changed = await stripe.updateSubscription(secretKey, sub.id, {
+      'metadata[account_id]': request.account_id, 'metadata[plan_code]': request.existing_plan_code,
+      'metadata[checkout_id]': request.existing_checkout_id, 'metadata[previous_checkout_id]': ''
+    }, base, `crp-restore-${request.checkout_id}`);
+    if (changed.status !== 200 || changed.json.metadata?.checkout_id !== request.existing_checkout_id ||
+        changed.json.metadata?.plan_code !== request.existing_plan_code || changed.json.metadata?.account_id !== request.account_id) refuse('RESTORE_UPGRADE_NOT_CONFIRMED');
+    return { restored: true };
   }
 
   return Object.freeze({
@@ -466,6 +591,7 @@ function makeStripeAdapter(env) {
     /** Open a hosted Checkout Session. Async: it calls api.stripe.com. */
     async createCheckout(request) {
       const req = request || {};
+      if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('CHECKOUT_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
       const priceId = priceIdFor(env, req.plan_code);
       if (!priceId) {
         const err = new Error(`STRIPE_PRICE_NOT_CONFIGURED:${req.plan_code}`);
@@ -477,21 +603,153 @@ function makeStripeAdapter(env) {
         err.code = 'RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS';
         throw err;
       }
-      const { params } = sessionParams(req);
-      const result = await stripe.createCheckoutSession(secretKey, params, base);
+      await confirmedPrice(req.plan_code);
+      const coupon = await creditCoupon(req);
+      const { params } = sessionParams({ ...req, credit_coupon_id: coupon });
+      const result = await providerWrite(stripe.createCheckoutSession(secretKey, params, base, `crp-checkout-${req.checkout_id}`));
       if (result.status !== 200) {
         const err = new Error(`STRIPE_CHECKOUT_FAILED:${result.status}`);
         err.status = result.status;
         err.code = 'STRIPE_CHECKOUT_FAILED';
+        err.provider_write_started = result.status >= 500;
         throw err;
       }
       return {
         provider_reference: result.json.id,
         redirect_url: result.json.url,
         mode: result.json.mode,
+        expires_at: result.json.expires_at ? new Date(result.json.expires_at * 1000).toISOString() : null,
         is_a_working_payment: true
       };
     },
+
+    /** Replace the owned monthly item. Stripe keeps it monthly until the upgrade invoice is paid. */
+    async upgradeSubscription(req) {
+      if (req.existing_plan_code !== 'monthly' || req.plan_code !== 'annual' ||
+          !isAllowedOrigin(req.return_url, origins)) refuse('INVALID_SUBSCRIPTION_UPGRADE');
+      const sub = await ownedSubscription(req);
+      if (req.resume && sub.metadata?.checkout_id === req.checkout_id) {
+        return upgradeResult(sub, await upgradeInvoice(sub, req), req);
+      }
+      if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('UPGRADE_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
+      const items = sub.items?.data || [];
+      if (!req.resume && (sub.status !== 'active' || sub.collection_method !== 'charge_automatically' || sub.schedule || sub.pending_update ||
+          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly'))) {
+        refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
+      }
+      if (items.length !== 1 || !/^si_/.test(items[0].id || '')) refuse('UPGRADE_SUBSCRIPTION_ITEMS_MISMATCH');
+      await confirmedPrice('annual');
+      const coupon = await creditCoupon(req);
+      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual'),
+        'items[0][quantity]': 1, billing_cycle_anchor: 'now', proration_behavior: 'none',
+        payment_behavior: 'pending_if_incomplete', cancel_at_period_end: false,
+        'metadata[account_id]': req.account_id, 'metadata[plan_code]': 'annual', 'metadata[checkout_id]': req.checkout_id,
+        'metadata[previous_checkout_id]': req.existing_checkout_id, 'expand[0]': 'latest_invoice' };
+      if (coupon) params['discounts[0][coupon]'] = coupon;
+      else params.discounts = '';
+      const changed = await providerWrite(stripe.updateSubscription(secretKey, sub.id, params, base, `crp-upgrade-${req.checkout_id}`));
+      if (changed.status !== 200) {
+        if (changed.status >= 500) uncertain('SUBSCRIPTION_UPGRADE_NOT_CONFIRMED');
+        refuse('SUBSCRIPTION_UPGRADE_NOT_CONFIRMED');
+      }
+      if (changed.json?.id !== sub.id) uncertain('SUBSCRIPTION_UPGRADE_NOT_CONFIRMED');
+      return upgradeResult(changed.json, await upgradeInvoice(changed.json, req), req);
+    },
+
+    /** Read old receipts from their owned Checkout/subscription, never infer catalog-price cash. */
+    async readPaidReceipts(req) {
+      const receipts = [], seenSubscriptions = new Set();
+      const liveMode = /^(?:sk|rk)_(test|live)_/.exec(secretKey)?.[1] === 'live';
+      async function receipt(object, planCode, paymentId, amount, paidAt) {
+        const intent = objectId(object.payment_intent);
+        let refunded = false, disputed = false, refundedCents = 0;
+        if (intent) {
+          const pi = await stripe.retrievePaymentIntent(secretKey, intent, base);
+          if (pi.status !== 200 || pi.json.currency !== 'cad' || pi.json.status !== 'succeeded') refuse('PAYMENT_HISTORY_INTENT_UNRESOLVED');
+          const chargeId = objectId(pi.json.latest_charge);
+          if (chargeId) {
+            const charge = await stripe.retrieveCharge(secretKey, chargeId, base);
+            if (charge.status !== 200 || objectId(charge.json.payment_intent) !== intent) refuse('PAYMENT_HISTORY_CHARGE_UNRESOLVED');
+            refunded = charge.json.refunded === true;
+            refundedCents = charge.json.amount_refunded || 0;
+            disputed = charge.json.disputed === true;
+          }
+        }
+        receipts.push({ payment_id: paymentId, payment_intent: intent || null, account_id: req.account_id,
+          plan_code: planCode, currency: 'cad', amount_cents: amount, paid_at: paidAt,
+          verified_payment: true, refunded, refunded_cents: refundedCents, disputed });
+      }
+      for (const checkout of req.checkouts || []) {
+        let subId = checkout.provider_subscription_reference;
+        if (/^cs_/.test(checkout.provider_reference)) {
+          const fetched = await stripe.retrieveSession(secretKey, checkout.provider_reference, base);
+          const session = fetched.json;
+          if (fetched.status !== 200 || session.client_reference_id !== req.account_id ||
+              session.metadata?.account_id !== req.account_id || session.metadata?.checkout_id !== checkout.checkout_id ||
+              session.livemode !== liveMode || session.status !== 'complete') refuse('PAYMENT_HISTORY_CHECKOUT_MISMATCH');
+          if (session.mode === 'payment' && session.payment_status === 'paid' && session.currency === 'cad' &&
+              Number.isInteger(session.amount_total) && session.metadata.plan_code === 'report_once') {
+            await receipt(session, 'report_once', session.id, session.amount_total,
+              new Date((session.created || 0) * 1000).toISOString());
+          }
+          subId = objectId(session.subscription) || subId;
+        }
+        if (!subId || seenSubscriptions.has(subId)) continue;
+        const got = await stripe.retrieveSubscription(secretKey, subId, base);
+        if (got.status !== 200 || got.json?.metadata?.account_id !== req.account_id || got.json.livemode !== liveMode) {
+          refuse('PAYMENT_HISTORY_SUBSCRIPTION_MISMATCH');
+        }
+        seenSubscriptions.add(subId);
+        let after;
+        do {
+          const page = await stripe.listInvoices(secretKey, subId, base, after);
+          if (page.status !== 200 || !Array.isArray(page.json.data)) refuse('PAYMENT_HISTORY_INVOICES_UNAVAILABLE');
+          for (const invoice of page.json.data) {
+            if (invoice.status !== 'paid' || invoice.paid !== true || invoice.currency !== 'cad' ||
+                invoice.livemode !== liveMode || objectId(invoice.subscription) !== subId ||
+                !Number.isInteger(invoice.amount_paid) || invoice.amount_paid <= 0) continue;
+            const lines = invoice.lines?.data || [];
+            const code = lines.length === 1 && lines[0].quantity === 1
+              ? ['monthly', 'annual'].find(p => priceIdFor(env, p) === objectId(lines[0].price)) : null;
+            if (!code) continue;
+            await receipt(invoice, code, invoice.id, invoice.amount_paid,
+              new Date((invoice.status_transitions?.paid_at || invoice.created) * 1000).toISOString());
+          }
+          if (!page.json.has_more) break;
+          const next = page.json.data.at(-1)?.id;
+          if (!next || next === after) refuse('PAYMENT_HISTORY_PAGINATION_INVALID');
+          after = next;
+        } while (true);
+      }
+      return receipts;
+    },
+
+    async cancelCheckout(req) {
+      if (!req.provider_reference && req.is_subscription_upgrade) {
+        const request = req.provider_request;
+        const sub = await ownedSubscription({ ...request, resume: true });
+        if (sub.metadata.checkout_id === request.existing_checkout_id) return { cancelled: true };
+        req = { ...req, provider_reference: (await upgradeInvoice(sub, request)).id };
+      }
+      if (/^in_/.test(req.provider_reference)) {
+        const got = await stripe.retrieveInvoice(secretKey, req.provider_reference, base);
+        if (got.status !== 200 || objectId(got.json.subscription) !== req.subscription_reference) refuse('VOID_UPGRADE_MISMATCH');
+        const sub = await stripe.retrieveSubscription(secretKey, req.subscription_reference, base);
+        if (sub.status !== 200 || sub.json?.metadata?.account_id !== req.account_id) refuse('VOID_UPGRADE_OWNER_MISMATCH');
+        const stopped = ['void', 'uncollectible'].includes(got.json.status) ? got : await stripe.voidInvoice(secretKey, req.provider_reference, base);
+        const cancelled = stopped.status === 200 && ['void', 'uncollectible'].includes(stopped.json.status);
+        if (cancelled && req.is_subscription_upgrade) await restoreUpgrade(req);
+        return { cancelled };
+      }
+      const got = await stripe.retrieveSession(secretKey, req.provider_reference, base);
+      if (got.status !== 200 || got.json.client_reference_id !== req.account_id ||
+          got.json.metadata?.checkout_id !== req.checkout_id) refuse('EXPIRE_CHECKOUT_OWNER_MISMATCH');
+      if (got.json.status === 'expired') return { cancelled: true };
+      const stopped = await stripe.expireCheckout(secretKey, req.provider_reference, base);
+      return { cancelled: stopped.status === 200 && stopped.json.status === 'expired' };
+    },
+
+    restoreUpgrade,
 
     /** Verify a webhook signature and normalise the event. Async: it resolves the plan/period server-side. */
     async verifyEvent(request) {
@@ -512,17 +770,36 @@ function makeStripeAdapter(env) {
     /** Server-side re-verification of a checkout. Retrieves the session and decides paid from the provider. */
     async queryCheckout(request) {
       const req = request || {};
+      if (/^in_[A-Za-z0-9_]+$/.test(req.provider_reference || '')) {
+        const got = await stripe.retrieveInvoice(secretKey, req.provider_reference, base);
+        const paid = got.status === 200 && got.json.status === 'paid' && got.json.paid === true;
+        return { paid, expired: got.status === 200 && ['void', 'uncollectible'].includes(got.json.status),
+          outcome: paid ? 'PROVIDER_CONFIRMED_PAID' : 'NOT_PAID_AT_PROVIDER' };
+      }
       const result = await stripe.retrieveSession(secretKey, req.provider_reference, base);
       if (result.status !== 200) return { outcome: 'STRIPE_RETRIEVE_FAILED', paid: false };
       const session = result.json;
-      const paid = session.payment_status === 'paid' &&
+      const paid = (session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) &&
         (session.mode === 'payment' || session.subscription);
-      return { outcome: paid ? 'PROVIDER_CONFIRMED_PAID' : 'NOT_PAID_AT_PROVIDER', paid, session };
+      return { outcome: paid ? 'PROVIDER_CONFIRMED_PAID' : 'NOT_PAID_AT_PROVIDER', paid,
+        expired: session.status === 'expired', session };
     },
 
     /** Resolve this account's completed Checkout before cancelling its actual Stripe renewal. */
     async cancelRenewal(request) {
       const req = request || {};
+      if (/^in_[A-Za-z0-9_]+$/.test(req.provider_reference || '')) {
+        const sub = await ownedSubscription({ account_id: req.account_id, existing_plan_code: req.plan_code,
+          existing_checkout_id: req.checkout_id, subscription_reference: req.subscription_reference });
+        let confirmed = sub;
+        if (sub.cancel_at_period_end !== true && sub.status !== 'canceled') {
+          const changed = await stripe.cancelSubscriptionRenewal(secretKey, sub.id, base, `crp-cancel-${req.checkout_id}`);
+          confirmed = changed.json;
+          if (changed.status !== 200 || confirmed?.id !== sub.id || confirmed.cancel_at_period_end !== true ||
+              confirmed.metadata?.account_id !== req.account_id) refuse('CANCELLATION_NOT_CONFIRMED_BY_PROVIDER');
+        }
+        return { renewal_cancelled: true, subscription_reference: sub.id, cancel_at_period_end: true };
+      }
       function refuse(code) { const error = new Error(code); error.code = code; throw error; }
       const keyMode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
       if (!keyMode || !req.account_id || !req.checkout_id ||
@@ -536,7 +813,8 @@ function makeStripeAdapter(env) {
       const session = fetched.json;
       const lineItems = session?.line_items?.data;
       if (fetched.status !== 200 || session?.id !== req.provider_reference || session.mode !== 'subscription' ||
-          session.status !== 'complete' || session.payment_status !== 'paid' || session.livemode !== liveMode ||
+          session.status !== 'complete' ||
+          !(session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) || session.livemode !== liveMode ||
           session.client_reference_id !== req.account_id || !metadataMatches(session) ||
           !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code)) {
         refuse('CANCELLATION_CHECKOUT_MISMATCH');
@@ -618,7 +896,6 @@ function describeProvider(env) {
   if (requested === STRIPE_ADAPTER.provider_id) {
     const required = STRIPE_CONFIGURATION_NAMES.concat(STRIPE_PRICE_CONFIGURATION_NAMES, [STRIPE_APP_ORIGINS]);
     const missing = required.filter((name) => !e[name]);
-    const couponMissing = !e[STRIPE_UPGRADE_CREDIT_COUPON];
     const configured = missing.length === 0;
     const secretKey = typeof e.STRIPE_SECRET_KEY === 'string' ? e.STRIPE_SECRET_KEY : '';
     const keyMode = secretKey.startsWith('sk_live_') ? 'live' : (secretKey.startsWith('sk_test_') ? 'test' : 'unknown');
@@ -629,7 +906,7 @@ function describeProvider(env) {
       is_a_working_payment: configured,
       configured,
       key_mode: keyMode,
-      missing_configuration: missing.concat(couponMissing ? [STRIPE_UPGRADE_CREDIT_COUPON] : []),
+      missing_configuration: missing,
       reason: configured ? 'STRIPE_CONFIGURED_NOT_YET_VERIFIED_AGAINST_TEST_MODE' : 'STRIPE_CONFIGURATION_INCOMPLETE',
       plain: configured
         ? 'Stripe is connected with the recorded CAD prices. Nothing is charged until you choose a plan and complete checkout.'

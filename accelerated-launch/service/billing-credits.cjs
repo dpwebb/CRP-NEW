@@ -29,7 +29,9 @@ function normalized(row) {
   const consumed = row.consumed_cents === undefined
     ? (row.state === CREDIT_STATES.REDEEMED ? row.amount_cents : 0) : row.consumed_cents;
   if (!validAmount(consumed) || consumed > row.amount_cents) return null;
-  const remaining = row.amount_cents - consumed;
+  const refunded = row.refunded_cents || 0;
+  if (!validAmount(refunded) || refunded > row.amount_cents) return null;
+  const remaining = Math.max(0, row.amount_cents - consumed - refunded);
   if (row.remaining_amount_cents !== undefined && row.remaining_amount_cents !== remaining) return null;
   // A historically fully-redeemed receipt is never reset to eligible by migration.
   if (row.state === CREDIT_STATES.REDEEMED && remaining !== 0) return null;
@@ -85,7 +87,7 @@ function quote(state, accountId, nowIso, targetPlan, currentPlan) {
   const isCurrent = currentPlan === targetPlan;
   const allowed = !currentPlan || !plans.isPlanCode(currentPlan) ||
     plans.BASE_PRICE_CAD_CENTS[targetPlan] > plans.BASE_PRICE_CAD_CENTS[currentPlan];
-  const credit = allowed ? Math.min(available, target.amount_cents) : 0;
+  const credit = allowed ? plans.applicableCredit(available, target.amount_cents) : 0;
   return { plan_code: targetPlan, currency: target.currency, regular_cents: target.amount_cents,
     credit_cents: credit, first_invoice_cents: target.amount_cents - credit,
     renewal_cents: target.amount_cents, eligible: credit > 0,
@@ -162,7 +164,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
       return reservationView(existing, targetPlan);
     }
     const candidates = usableCredits(state, accountId, nowIso, targetPlan);
-    let needed = plans.BASE_PRICE_CAD_CENTS[targetPlan];
+    let needed = plans.applicableCredit(sumAmounts(candidates), plans.BASE_PRICE_CAD_CENTS[targetPlan]);
     const allocated = [];
     for (const candidate of candidates) {
       if (needed === 0) break;
@@ -278,6 +280,29 @@ function revokeCreditsForPaymentIntent(store, accountId, paymentIntent) {
   return store.update(state => revokePayment(state, accountId, paymentIntent));
 }
 
+/** Provider refunds are cumulative totals, so replay cannot deduct the same refund twice. */
+function refundPayment(state, accountId, paymentIntent, paymentId, refundedCents) {
+  normalizeRows(state);
+  const affected = new Set();
+  for (const row of state.upgrade_credits || []) {
+    if (row.account_id !== accountId || !((validId(paymentIntent) && row.payment_intent === paymentIntent) ||
+        (validId(paymentId) && row.payment_id === paymentId))) continue;
+    if (!validAmount(refundedCents) || refundedCents > row.amount_cents) throw new Error('REFUND_AMOUNT_MISMATCH');
+    if (refundedCents <= (row.refunded_cents || 0)) continue;
+    if (row.reserved_for_checkout_id) affected.add(row.reserved_for_checkout_id);
+    clearReservation(row);
+    row.refunded_cents = refundedCents;
+    row.remaining_amount_cents = Math.max(0, row.amount_cents - row.consumed_cents - refundedCents);
+    const fullyRefunded = refundedCents === row.amount_cents;
+    const alreadyRevoked = row.state === CREDIT_STATES.REVOKED || row.disputed;
+    row.refunded = fullyRefunded;
+    row.state = fullyRefunded || alreadyRevoked ? CREDIT_STATES.REVOKED
+      : row.remaining_amount_cents ? CREDIT_STATES.ELIGIBLE : CREDIT_STATES.REDEEMED;
+  }
+  const ids = [...affected];
+  return { affected_checkout_ids: ids, checkout_ids: ids };
+}
+
 function expireCredits(store) {
   return store.update(state => {
     const expired = (state.upgrade_credits || []).filter(row => row.state === CREDIT_STATES.EXPIRED).length;
@@ -299,5 +324,5 @@ function creditView(store, accountId, nowIso, currentPlan) {
 
 module.exports = { CREDIT_STATES, CREDIT_AMOUNT_CENTS, CREDIT_CURRENCY, expiresAt,
   usableCredits, recordPayment, creditFromPayment, reserveCredit, releaseReservations,
-  settleReservations, releaseCredit, redeemCredit, revokePayment,
+  settleReservations, releaseCredit, redeemCredit, revokePayment, refundPayment,
   revokeCreditsForPaymentIntent, expireCredits, creditView, quotesFor };

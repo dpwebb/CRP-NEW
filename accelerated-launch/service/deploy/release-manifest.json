@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-09T00:11:14.351Z",
+  "generated_at": "2026-10-09T01:20:59.128Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -45,8 +45,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 73,
-      "digest": "447DC1CB2AED79F7BD3E19D24CB300437F633B6721C57406AC22B8C551846D1D",
+      "file_count": 77,
+      "digest": "27C3D8E1523DDB05B192726D85461AD0E3CA41396885062013918AF1EEDEE863",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -70,7 +70,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "540825AE9574794137EBBBCCB7A320ECBD0A61E3E2F1A302895534D4DBB88A7F"
+          "sha256": "AF92D06348FB3151DF4F4FB1F2311A13BA0469EDD53B485A78CF2917B621F63E"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -81,8 +81,20 @@
           "sha256": "84958F0B2F13E93FD644914E2B05F1137CCB492D350DB2C5FBCBCC098F3F56A5"
         },
         {
+          "file": "accelerated-launch/service/assessment-pdf.cjs",
+          "sha256": "4C768DAAC2DC6731EA3CDD24355E30F42B0F226B96E91E77050D8E01C7DFE96E"
+        },
+        {
           "file": "accelerated-launch/service/billing-credits.cjs",
-          "sha256": "378C254E3AAB0C6C3685816B162817A54267C5ACA1F3A40D58BA884EAFB97835"
+          "sha256": "0C309403D472E3D1CB67F5E926038C3EE953ACDB2A4CA88E86B62B43AF0020E5"
+        },
+        {
+          "file": "accelerated-launch/service/billing-event-effects.cjs",
+          "sha256": "5D910E6FE559BBA3C5F2C9A4687E57D93513DDDFD297DEC16504F9158EB13772"
+        },
+        {
+          "file": "accelerated-launch/service/billing-reconciliation.cjs",
+          "sha256": "F955AD633CCCE48BD851FC62C8893873B1BA66227F1869DAE0DD80261F320BD2"
         },
         {
           "file": "accelerated-launch/service/build-subscription-value-evidence.cjs",
@@ -107,6 +119,10 @@
         {
           "file": "accelerated-launch/service/cases.cjs",
           "sha256": "85FC58CC8F60E1905F730F5532AC2B6BA6F988DE494DF1219BF2C6F93FDE3426"
+        },
+        {
+          "file": "accelerated-launch/service/checkout-purchase.cjs",
+          "sha256": "736E3371CBDB3B7E2149BFE84CC1FB1BFD518C7832F770F105776C78B279BD6F"
         },
         {
           "file": "accelerated-launch/service/clarification.cjs",
@@ -154,11 +170,11 @@
         },
         {
           "file": "accelerated-launch/service/entitlement.cjs",
-          "sha256": "D28D2AD49456201282237122D0185D001A78C2510F1D88857583EBF0320CC6BF"
+          "sha256": "2801CF405FFF39B68FF7114C7AF1690F7263AF3C5B65EF807AD91D3366D3A11C"
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
-          "sha256": "D578E88E909D3FD14F065B89BD65C53D829C0F9E571B514C81639E6C7FC28D6E"
+          "sha256": "C7DE669CF41D2D99D3A1350CEAD6157A0B11EBFDC9270A77FF5B4702734819CE"
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
@@ -226,7 +242,7 @@
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "68D6F42A045E108B4752D5E3416116C3287BB7232122FB2A02FD3706FBA3AE70"
+          "sha256": "E1C154ABB85D8EC8A924E26EB5D74B33BA5E7B8F4D45982E318A5C0956D6F4A0"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -250,7 +266,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-pdf.cjs",
-          "sha256": "4F5A85F48088E7C2E113E8EEC85CA3D28A162A6BD9B6209B8BC935D75B505904"
+          "sha256": "6AA5906420E95CD08D9974A0DEBFDA01BE062D7C95613978A7DC482CFC9E7BFC"
         },
         {
           "file": "accelerated-launch/service/packet-report-exhibits.cjs",
@@ -274,11 +290,11 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "BE7CFA30AFDA34608515E027B222FDDB0A7CFE38DCB78213B93187C8E07532A7"
+          "sha256": "89E16E5B9C6BCEABB8611CB4464AD80169730004D4B4A25365B2E588B5F7F492"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
-          "sha256": "6963D3119417002621BB5F3211BB44DE1B6E2D4ED470D68DF3A904FD2FD7F103"
+          "sha256": "A10F4F4A0A5315D40403708EE461B03787D42DC4106285E1460AA9CDD85E03C8"
         },
         {
           "file": "accelerated-launch/service/privacy.cjs",
@@ -326,7 +342,7 @@
         },
         {
           "file": "accelerated-launch/service/stripe.cjs",
-          "sha256": "4094A020D50302429297DC10276D20C60678D97ECBFED518B8510D899E9213B6"
+          "sha256": "9D9EDC70CC8ED953125DCBF9C954C7DEB4F31DFEA2E372CCDF44B17CE22FC93A"
         },
         {
           "file": "accelerated-launch/service/support.cjs",
@@ -334,7 +350,7 @@
         },
         {
           "file": "accelerated-launch/service/upgrade-credit.cjs",
-          "sha256": "650D3C7B568E7BD9756B78C9BBD28C1F8BDD298F7433569414B680A26B7F35DA"
+          "sha256": "6F28D815A98B62D5CAB175399262442BFBD1657CCABBDCDEBE9B3F51ED8B5922"
         },
         {
           "file": "accelerated-launch/service/uploads.cjs",
@@ -470,11 +486,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "A9F45E8E4CCD42F534A26C58C1905526EEF1C30DFD728C44E9F07B5A73C135C9",
+      "digest": "B9258EDEB79BDB0A9517F89F2F3D123202E4117359D450713DAC2319CA06FB8F",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "FE6CDC6C46B1EDF323BBC29748D7A021DB42331B4FA73B59C3E2560E71DC1CEF"
+          "sha256": "B74570B3F42E5DC812B3E269C1F5110D309C6A2F1EF9E42664CC221489037A0F"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -486,11 +502,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "4D459B95A55CE91813CC933163B3E28360857297509A2CC8B442CE82C02D7B68"
+          "sha256": "CBAFCE3512570D13F741117FA1AB8C59D3E2BEED51924BCCCD6EBB90EA31549C"
         }
       ]
     }
   ],
-  "manifest_digest": "53CBDEBF04E7F7E6EFC9E2FA5364890EFE07A11F91A57C731D25F3CA5758CA66",
-  "total_file_count": 111
+  "manifest_digest": "502DFF69F5E8509D900079F0B0A2020E6765559921A1DA5176E93A3882EC4EFE",
+  "total_file_count": 115
 }

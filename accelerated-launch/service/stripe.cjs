@@ -204,7 +204,30 @@ function retrievePaymentIntent(secretKey, paymentIntentId, base) {
 
 /** Create a once-duration fixed-amount CAD coupon for the upgrade credit (test-mode provisioning only). */
 function createCoupon(secretKey, params, base) {
-  return request({ method: 'POST', path: '/v1/coupons', secretKey, params, base });
+  return request({ method: 'POST', path: '/v1/coupons', secretKey, params, base, idempotencyKey: params.id || null });
+}
+
+function updateSubscription(secretKey, subscriptionId, params, base, idempotencyKey) {
+  return request({ method: 'POST', path: `/v1/subscriptions/${subscriptionId}`, secretKey, params, base, idempotencyKey });
+}
+function retrieveInvoice(secretKey, invoiceId, base) {
+  return request({ method: 'GET', path: `/v1/invoices/${invoiceId}`, secretKey, base });
+}
+function listInvoices(secretKey, subscriptionId, base, after) {
+  const query = new URLSearchParams({ subscription: subscriptionId, limit: '100' });
+  if (after) query.set('starting_after', after);
+  return request({ method: 'GET', path: `/v1/invoices?${query}`, secretKey, base });
+}
+function retrieveCharge(secretKey, chargeId, base) {
+  return request({ method: 'GET', path: `/v1/charges/${chargeId}`, secretKey, base });
+}
+function expireCheckout(secretKey, sessionId, base) {
+  return request({ method: 'POST', path: `/v1/checkout/sessions/${sessionId}/expire`, secretKey, base,
+    idempotencyKey: `crp-expire-${sessionId}` });
+}
+function voidInvoice(secretKey, invoiceId, base) {
+  return request({ method: 'POST', path: `/v1/invoices/${invoiceId}/void`, secretKey, base,
+    idempotencyKey: `crp-void-${invoiceId}` });
 }
 
 /** Create a Price under a Product (test-mode provisioning only). */
@@ -231,6 +254,12 @@ module.exports = {
   cancelSubscriptionRenewal,
   retrievePaymentIntent,
   createCoupon,
+  updateSubscription,
+  retrieveInvoice,
+  listInvoices,
+  retrieveCharge,
+  expireCheckout,
+  voidInvoice,
   createPrice,
   createProduct
 };

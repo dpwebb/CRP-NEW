@@ -26,15 +26,18 @@ function upgradeQuote({ accountId, purchase, purchases, targetPlan, now }) {
     if (usedIds.has(value.payment_id) || (intent && usedIntents.has(intent))) continue;
     const consumed = value.consumed_cents === undefined ? 0 : value.consumed_cents;
     if (!Number.isSafeInteger(consumed) || consumed < 0 || consumed > value.amount_cents) continue;
-    const remaining = value.remaining_amount_cents === undefined ? value.amount_cents - consumed : value.remaining_amount_cents;
-    if (!Number.isSafeInteger(remaining) || remaining <= 0 || remaining !== value.amount_cents - consumed) continue;
+    const refunded = value.refunded_cents || 0;
+    if (!Number.isSafeInteger(refunded) || refunded < 0 || refunded > value.amount_cents) continue;
+    const expected = Math.max(0, value.amount_cents - consumed - refunded);
+    const remaining = value.remaining_amount_cents === undefined ? expected : value.remaining_amount_cents;
+    if (!Number.isSafeInteger(remaining) || remaining <= 0 || remaining !== expected) continue;
     usedIds.add(value.payment_id);
     if (intent) usedIntents.add(intent);
     available += remaining;
     if (!Number.isSafeInteger(available)) throw new Error('UPGRADE_CREDIT_TOTAL_OUT_OF_RANGE');
     eligible.push(value);
   }
-  const credit = Math.min(available, plan.amount_cents);
+  const credit = plans.applicableCredit(available, plan.amount_cents);
   return { currency: 'cad', regular_cents: plan.amount_cents, credit_cents: credit,
     first_invoice_cents: plan.amount_cents - credit, renewal_cents: plan.amount_cents,
     eligible: credit > 0, reason: credit > 0 ? 'VERIFIED_UNUSED_LOWER_PLAN_PAYMENTS' : 'NO_ELIGIBLE_PURCHASE',
