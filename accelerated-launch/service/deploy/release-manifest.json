@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-09T23:07:22.846Z",
+  "generated_at": "2026-10-09T23:44:09.097Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -74,7 +74,7 @@
     {
       "id": "RUNTIME",
       "file_count": 84,
-      "digest": "BDAB918CB3EA739863BA7328DC121046260547765F89D4DA1F69C1D0E9AAFC36",
+      "digest": "45852F452B185569C4F7A63C9B242E1B8B75664B9BC4F42A8DF495E23FA98A85",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -98,7 +98,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "0A10F77A60CEB90E5F10EE947946ADD63DD8FB25F4EFC03667E4EA1214559575"
+          "sha256": "D8B85185C0E3028C6C5EB20A7026156AF81FE59F33992C7C40BF8F58D594C5E1"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -541,12 +541,12 @@
     },
     {
       "id": "SERVED_ASSETS",
-      "file_count": 7,
-      "digest": "0F3A49B64F5D5769FD3EE8D67352DC624A8427208E849CE6F54EED4C25BB34AD",
+      "file_count": 10,
+      "digest": "E5EE0D771452AE47B5AFAF4E113D3581B101A70A639C3B78E23ED9445E2CC0C1",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "86CA417D329F128AF79B4A9A7DE99CE415C8518E8DAECE0A16D07F668A9266FC"
+          "sha256": "10CA47EC5D4FF9308DEBE5412BB06AE4153E7B72E52510DE0DCC7A96B53A336E"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -569,12 +569,24 @@
           "sha256": "8DB041FD3E2405468E697A91B2A5964D933788CFB7EC631A84C80C7CE1B22EFE"
         },
         {
+          "file": "accelerated-launch/service/ui/score-simulator.css",
+          "sha256": "A007DF50C37C89B7D47ED9FECFF994D141F0B78B300B4E7B30703B3096D89174"
+        },
+        {
+          "file": "accelerated-launch/service/ui/score-simulator.html",
+          "sha256": "349A27EF8799ABF2AA5DF76E0C9A5147780D8E25435F9E2DF4C372FF97CEE1A1"
+        },
+        {
+          "file": "accelerated-launch/service/ui/score-simulator.js",
+          "sha256": "18C76736B2BDD2680E65A29C16FCB097DC68E9E85CDBB18BB236D3C73D902E68"
+        },
+        {
           "file": "accelerated-launch/service/ui/style.css",
           "sha256": "CBAFCE3512570D13F741117FA1AB8C59D3E2BEED51924BCCCD6EBB90EA31549C"
         }
       ]
     }
   ],
-  "manifest_digest": "375903D2BE7B3A55C6FED199CD6596555C11DB014AD5300B10BE2339CF017B20",
-  "total_file_count": 132
+  "manifest_digest": "81E99AA4E97AD91E4EFEE8C4F4F04FF23ED7703A53E3BE2BEA507EF0F3BBF73D",
+  "total_file_count": 135
 }

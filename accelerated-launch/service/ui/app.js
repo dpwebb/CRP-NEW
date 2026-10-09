@@ -153,7 +153,7 @@ function banner() {
   } else {
     node.className = 'banner';
     node.innerHTML = surface && surface.preview_mode
-      ? '<strong>Staging preview · test payments only.</strong> Use test cards and fictional reports, never real cards or private reports.'
+      ? '<strong>Staging preview · test payments only.</strong> Use test cards and fictional reports, never real cards or private reports. <a href="/score-simulator.html" target="_blank" rel="noopener">Try the fictional score simulator</a>.'
       : '<strong>Preview · not open to the public yet.</strong> Payments are unavailable in this preview.';
   }
 }

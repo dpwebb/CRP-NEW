@@ -82,6 +82,7 @@ const STATIC_TYPES = Object.freeze({
 });
 const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
+const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 
 
 /**
@@ -757,7 +758,7 @@ function buildCaseHandlers(store, logger, surface) {
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
   if (!STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
-    STAGING_REFERRAL_ASSETS.includes(urlPath))) return null;
+    (STAGING_REFERRAL_ASSETS.includes(urlPath) || STAGING_SCORE_SIMULATOR_ASSETS.includes(urlPath)))) return null;
   const file = path.resolve(UI_DIR, urlPath === '/' ? 'index.html' : urlPath.slice(1));
   if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
   return {
