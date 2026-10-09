@@ -72,7 +72,7 @@ async function run(service, check) {
   const laterIssue = results.renderResultSet(later).issues[0];
   check.equal(laterIssue.consumer_label, null, 'current-file review does not invent a historical breach');
   check.match(laterIssue.uncertainty, /current credit file/, 'the qualified request stays usable');
-  check.equal(results.teaserFor(laterIssue).confidence_label, null, 'elapsed time alone cannot create a breach teaser');
+  check.equal(results.teaserFor(laterIssue), null, 'elapsed time alone cannot create a breach teaser');
   check.equal(issues.consumerLabel({ basis_type: 'LIMITATION_ASSESSMENT', confidence: 'DEFINITE', eligible: true }), 'INFORMATION', 'court-claim arithmetic remains informational even in old eligible records');
   check.equal(issues.consumerLabel({ classification: 'VIOLATION', adapter_id: 'RETIRED-UNKNOWN-ADAPTER' }), null, 'retired adapters cannot acquire an active label');
   check.equal(issues.consumerLabel({ classification: 'UNRESOLVED', confidence: 'DEFINITE', rule_assessment: {},

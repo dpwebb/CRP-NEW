@@ -413,8 +413,8 @@ async function runConsumerPath(service, check, evidence) {
   check.equal(view.assessment_summary.distinct_total, 3, 'the assessed case carries three reporting issues');
   check.equal(view.assessment_summary.information_total, 1, 'court timing is counted separately as information');
   check.equal(view.assessment_summary.by_confidence.potential, 3, 'the reporting issues retain their internal confidence');
-  check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'and the teaser ranks them with the additions');
-  check.ok(!/violation|definite/i.test(String(view.assessment_summary.teaser.title)), 'while claiming no violation');
+  check.equal(view.assessment_summary.teaser.severity, 'MISSING_DATE', 'the supported blank-date violation takes the preview');
+  check.equal(view.assessment_summary.teaser.confidence_label, 'VIOLATION', 'the preview uses the sole consumer breach term');
   const limitationItems = view.result.issues.filter((i) => i.limitation_concern === true);
   check.equal(limitationItems.length, 1, 'exactly one of the four is the court-limitation concern');
   const item = limitationItems[0];

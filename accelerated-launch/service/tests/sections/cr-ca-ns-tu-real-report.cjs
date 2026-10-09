@@ -181,7 +181,7 @@ async function runRealReport(service, check, evidence) {
   check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
   check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
     'and none of them is asserted as a violation or a probable violation');
-  check.equal(view.assessment_summary.teaser.severity, 'ADD_CONTENT', 'the teaser is ranked as a missing detail');
+  check.equal(view.assessment_summary.teaser.severity, 'MISSING_DATE', 'the teaser is ranked as a printed blank date');
   check.ok(!/definite|violation/i.test(String(view.assessment_summary.teaser.title)),
     'and the teaser title never claims a violation');
   const byAccount = {};
@@ -373,5 +373,4 @@ module.exports = {
   id: 'cr-ca-ns-tu-real-report',
   title: 'BLOCKER-REPORT-DATA-TO-ISSUE-001: the supplied real TransUnion Canada report assessed under Nova Scotia — supported findings, the reporting-period limb and the paid boundaries'
 };
-
 

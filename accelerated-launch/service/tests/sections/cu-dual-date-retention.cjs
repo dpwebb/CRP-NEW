@@ -117,7 +117,7 @@ async function runHttpControls(service, check, evidence) {
   check.equal(card.source_evidence.normalized_value, '2019-06-01', 'with the printed value normalized, before the rule own 180-day shift');
   check.ok(card.source_evidence.page !== null && card.source_evidence.page !== undefined, 'and the page the reader recorded');
   check.ok(!/CA-NS-CRA|CCRAA-1785|"adapter_id"/.test(JSON.stringify(card)), 'while no internal adapter or rule identifier is exposed');
-  check.equal(later.view.assessment_summary.teaser.title, 'An entry may now be too old to report', 'the free teaser names the later-expiry concern');
+  check.equal(later.view.assessment_summary.teaser, null, 'later expiry alone does not create a disputable VIOLATION preview');
   check.ok(later.view.result.retention_dual_date.summary.inside_at_report_outside_at_assessment >= 1, 'the dual-date summary records the entry, once per limb that measures it');
   check.equal(later.view.result.retention_dual_date.summary.rule_violations_emitted, 0, 'the date-comparison stage emits no rule violation on its own');
   check.ok(!/"adapter_id"/.test(JSON.stringify(later.view.result.retention_dual_date)), 'and the rendered comparison exposes no internal identifiers either');

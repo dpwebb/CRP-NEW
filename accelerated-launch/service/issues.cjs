@@ -18,6 +18,7 @@ const crypto = require('node:crypto');
 const accountDisplay = require('./account-display.cjs');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
+const { PREVIEW_ORDER, PREVIEW_CATEGORY_BY_CHECK } = require('./common-error-checklist.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
@@ -1322,6 +1323,16 @@ function publicBases(bases) {
   }).map((basis, index) => projectConsumerIssue(basis, consumerLabel(bases[index])));
 }
 
+// Derive the presentation category from assessed rules before internal check IDs are removed. A merged
+// content issue uses its strongest supported breach basis; its wrapper is not itself a time-limit breach.
+function previewCategoryFor(issue) {
+  if (consumerLabel(issue) !== 'VIOLATION') return null;
+  const categories = [issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION ? 'REPORTING_TIME_LIMIT'
+    : PREVIEW_CATEGORY_BY_CHECK[issue.check_id], ...(issue.supported_bases || []).map(previewCategoryFor)]
+    .filter(category => PREVIEW_ORDER.includes(category));
+  return PREVIEW_ORDER.find(category => categories.includes(category)) || null;
+}
+
 /** The consumer-facing view of one issue: no internal adapter/check ids, no machine classification leaks. */
 function publicIssue(issue) {
   const src = issue.source || null;
@@ -1337,6 +1348,8 @@ function publicIssue(issue) {
     account_number_in_report: issue.record_index,
     record_kind: issue.record ? issue.record.kind_label : null
   };
+  const previewCategory = previewCategoryFor(issue);
+  if (previewCategory) out.preview_category = previewCategory;
   if (issue.basis_type !== BASIS_TYPE.STATUTORY_RETENTION && COMPLETENESS_CHECK_IDS.has(issue.check_id)) {
     out.missing_detail = true;
   }

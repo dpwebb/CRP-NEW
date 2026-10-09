@@ -25,6 +25,24 @@ const CHECKS = Object.freeze([
     'A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.']
 ].map(([check_id, label, description]) => Object.freeze({ check_id, label, ...(description ? { description } : {}) })));
 
+// Owner's unpaid-preview order. These describe supported reporting breaches, not court-deadline information
+// or review observations. A category does not establish a breach or make an issue packet-eligible.
+const PREVIEW_ORDER = Object.freeze([
+  'REPORTING_TIME_LIMIT', 'DUPLICATE_REPORTING', 'DATE_CONFLICT', 'PAYMENT_HISTORY_CONFLICT',
+  'STATUS_AMOUNT_CONFLICT', 'MISSING_DATE', 'RESPONSIBILITY_IDENTITY', 'RE_AGING'
+]);
+const PREVIEW_CATEGORY_BY_CHECK = Object.freeze(Object.fromEntries([
+  ['DUPLICATE_REPORTING', ['DUPLICATE-REPORTING', 'COLLECTION-ORIGINAL-BOTH-DUE']],
+  ['DATE_CONFLICT', ['ACCOUNT-DATES-CONTRADICTORY', 'REPORTED-DATES-OUT-OF-ORDER', 'LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE']],
+  ['PAYMENT_HISTORY_CONFLICT', ['PAYMENT-HISTORY-INCONSISTENCY']],
+  ['STATUS_AMOUNT_CONFLICT', ['STATUS-DATE-CONTRADICTION', 'BALANCE-PAYMENT-INCONSISTENCY',
+    'REVOLVING-BALANCE-ZERO-LIMIT', 'PAID-SETTLED-SHOWN-UNPAID']],
+  ['MISSING_DATE', ['ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
+    'CLOSURE-STATED-WITHOUT-A-CLOSED-DATE', 'REQUIRED-REPORT-DATA-VISIBLY-MISSING']],
+  ['RESPONSIBILITY_IDENTITY', ['RESPONSIBILITY-INCONSISTENCY']],
+  ['RE_AGING', ['POTENTIAL-RE-AGING-SIGNAL']]
+].flatMap(([category, checks]) => checks.map(check => ['COMMON-ERROR-' + check, category]))));
+
 function checklistFor(evaluation) {
   const common = evaluation && evaluation.common_errors && evaluation.common_errors.performed || [];
   const byId = new Map(common.map((item) => [item.check_id, item]));
@@ -52,4 +70,4 @@ function checklistFor(evaluation) {
   });
 }
 
-module.exports = { CHECKS, checklistFor };
+module.exports = { CHECKS, checklistFor, PREVIEW_ORDER, PREVIEW_CATEGORY_BY_CHECK };

@@ -621,7 +621,7 @@ function reportStatus(view) {
     const line = complete
       ? (total > 0 ? 'Review the issues we found and choose any you want to dispute.' : noIssue)
       : (total > 0
-        ? `We found ${total} reporting issue${total === 1 ? '' : 's'} in the information we could review. See the summary and the one we show you, then unlock the rest if you want it.`
+        ? `We found ${total} reporting issue${total === 1 ? '' : 's'} in the information we could review. See your summary before you buy.`
         : noIssue);
     return `<div class="note"><strong>Your results are ready</strong><br>${line}</div>
       <button class="primary" id="view-results">View my results</button>`;
@@ -940,7 +940,7 @@ function startCheckout(planCode) {
  */
 function freeSummaryBlock(view) {
   const summary = view.assessment_summary || {};
-  const teaser = summary.teaser || null;
+  const teaser = summary.teaser?.confidence_label === 'VIOLATION' ? summary.teaser : null;
   const total = Number(summary.distinct_total || 0);
   const counts = total > 0
     ? `<p class="evidence">Reporting issues found: <b>${total}</b></p>`
@@ -950,7 +950,8 @@ function freeSummaryBlock(view) {
       ${teaser.confidence_label === 'VIOLATION' ? '<span class="pill">VIOLATION</span>' : ''}
       <h3>${esc(teaser.title || '')}</h3>
       <p>${esc(teaser.explanation || '')}</p>
-      <p class="evidence">One issue is previewed here. The complete assessment, the report facts and the next steps for every issue are part of the unlock or a subscription.</p>
+      <p class="evidence">This is the most serious violation we found that you can dispute.</p>
+      <p class="evidence">Unlock this report or choose a subscription to see all the issues we found and what you can do next.</p>
     </div>`
     : '';
   return `<div class="obs">

@@ -595,6 +595,7 @@ function publicResult(rendered, savedEvaluation = null, extraction = null) {
       const current = accounts?.get(issue.issue_id);
       const renamed = current?.account_identity?.name && current.account_identity.name !== issue.account_identity?.name;
       const view = current ? { ...issue, account_identity: current.account_identity || null,
+        preview_category: current.preview_category || null,
         ...(renamed ? { explanation: current.explanation, source_facts: current.source_facts } : {}) } : issue;
       return issues.projectConsumerIssue(view, issues.consumerLabel(issue) || labels.get(issue.issue_id) || null);
     }),

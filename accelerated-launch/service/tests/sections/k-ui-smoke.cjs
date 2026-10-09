@@ -445,9 +445,12 @@ async function run(t, check) {
   check.ok(/Reporting issues found: <b>1<\/b>/.test(panel.innerHTML), 'the results step shows the distinct total');
   check.ok(!/violations:|potential issues:/.test(panel.innerHTML), 'without confidence tier counts');
   check.ok(/VIOLATION/.test(panel.innerHTML) && /Two details on the report cannot both be right/.test(panel.innerHTML), 'with the teaser title and the sole breach label');
+  check.ok(/This is the most serious violation we found that you can dispute\./.test(panel.innerHTML), 'plain wording explains why this one example was chosen');
   check.ok(/id="buy-report_once"/.test(panel.innerHTML) && /\$5\.95 CAD/.test(panel.innerHTML), 'and the one-time unlock choice with its recorded price');
   check.ok(/id="buy-monthly"/.test(panel.innerHTML) && /id="buy-annual"/.test(panel.innerHTML), 'and the two subscription choices');
   check.ok(!/Check: <b>/.test(panel.innerHTML) && !/id="packet-block"/.test(panel.innerHTML), 'while the complete findings and the packet stay out of the free view');
+  vm.runInContext('state.view = { ...FREE_VIEW, assessment_summary: { ...FREE_VIEW.assessment_summary, teaser: { ...FREE_VIEW.assessment_summary.teaser, confidence_label: null } } }; render();', ctx);
+  check.ok(!/most serious violation|Two details on the report cannot both be right/.test(panel.innerHTML), 'an old unlabeled review teaser is not surfaced as a violation');
 
   /* The ONE-TIME unlocked state: complete findings, the download, and no packet. */
   vm.runInContext('state.view = ONE_TIME_VIEW; state.step = 3; render();', ctx);

@@ -512,86 +512,29 @@ function availabilitySummary(evaluation) {
 
 /* ---------------------------------------------------- the free results summary (OWNER-PURCHASE-FLOW-001) */
 
-/**
- * The documented SEVERITY order used to choose the free teaser. It ranks the KIND of concern, never the strength
- * of the evidence: a definite classification does not by itself establish greater harm, so confidence is never
- * consulted here. Ties inside a rank break on the stable issue id, so one report always shows the same teaser.
- *
- *   REMOVE_ENTRY  — an entry a recorded rule says should not be reported at all (a period exceeded, or content a
- *                   rule prohibits including); the remedy would be its removal.
- *   ADD_CONTENT   — a recorded rule requires a detail the entry does not print; the remedy would be an addition.
- *   INCONSISTENCY — the report contradicts itself; no rule requires or prohibits content.
- */
-const SEVERITY_ORDER = Object.freeze(['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY']);
-
+// One owner-approved priority order from the active checklist. Rank the supported breach type, never the
+// internal confidence. Ties use the stable issue ID; public summaries contain no internal check identifiers.
+const SEVERITY_ORDER = require('./common-error-checklist.cjs').PREVIEW_ORDER;
 const TEASER_TITLE = Object.freeze({
-  RETENTION: 'An entry kept longer than the recorded rule allows',
-  INCLUSION: 'Content a recorded rule prohibits is being reported',
-  OMISSION: 'A detail a recorded rule requires is missing from an entry',
-  INCONSISTENCY: 'Two details on the report cannot both be right',
-  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): a COMPLETENESS item that names no rule. The entry
-     states an event the report itself prints and leaves the caption for it without a date, so the remedy would
-     be an addition — and the title never claims that a rule requires the detail. */
-  FACTUAL_COMPLETENESS: 'An entry shows an event without the date for it',
-  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): a court-limitation concern. Its rank is the addition rank,
-     because the useful next step is to verify dates the report does not show, and its title never claims that
-     the bureau broke a reporting rule. */
-  LIMITATION: 'A debt may be outside the time limit for a court claim',
-  REPORTING_PERIOD_REVIEW: 'Debt information may have been too old to include in a consumer report',
-  /* OWNER dual-date retention (Batch 33): the period appears to have ended since the report was issued. Ranked
-     with the additions — the useful next step is to check the current file — and never titled as a finding. */
-  LATER_EXPIRY: 'An entry may now be too old to report'
+  REPORTING_TIME_LIMIT: 'An entry is past the usual credit-report time limit',
+  DUPLICATE_REPORTING: 'The same debt appears more than once',
+  DATE_CONFLICT: 'Account dates do not match',
+  PAYMENT_HISTORY_CONFLICT: 'The same month has two different payment records',
+  STATUS_AMOUNT_CONFLICT: 'Account status or amounts do not match',
+  MISSING_DATE: 'An account date is left blank',
+  RESPONSIBILITY_IDENTITY: 'The account has conflicting responsibility details',
+  RE_AGING: 'The first missed-payment date was moved later'
 });
 
-/** The factual COMPLETENESS items: an event the report prints whose own caption carries no date. They name no
- *  rule, so they are ranked as an addition for the teaser, and they are titled as what the report shows rather
- *  than as a requirement of any recorded rule. The mark is the PUBLIC `missing_detail` flag, because the summary
- *  is computed from the public issues and never from an internal check id. */
-function isCompletenessItem(issue) {
-  return Boolean(issue) && issue.missing_detail === true;
-}
-
-/** A court-limitation concern, marked on the PUBLIC issue so the summary can rank and title it. */
 function isLimitationConcern(issue) {
   return Boolean(issue) && issue.limitation_concern === true;
 }
-
-/** OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued. */
-function isLaterExpiryConcern(issue) {
-  return Boolean(issue) && issue.later_expiry_concern === true;
-}
-
-function isReportingPeriodConcern(issue) {
-  return Boolean(issue) && issue.reporting_period_concern === true;
-}
-
 function severityRankOf(issue) {
-  if (issue.basis_type === 'STATUTORY_RETENTION') return 0;
-  if (issue.basis_type === 'CONTENT_FINDING') {
-    /* The public issue names what was included (`content_included`); an omission carries the recorded rule's
-       required-detail label instead, so the two content remedies stay distinguishable without internal fields. */
-    return (issue.content_included && issue.content_included.length) ? 0 : 1;
-  }
-  /* A completeness item whose remedy is an addition ranks with the additions; every other factual observation
-     stays an inconsistency. */
-  if (isCompletenessItem(issue)) return 1;
-  /* OWNER dual-date retention (Batch 33): a period that appears to have ended since the report was issued ranks
-     with the additions too — the next step is to check the current file, not to treat the old report as wrong. */
-  if (isLaterExpiryConcern(issue)) return 1;
-  if (isReportingPeriodConcern(issue)) return 1;
-  return 2;
+  return SEVERITY_ORDER.indexOf(issue.preview_category);
 }
-
-function teaserTitleFor(issue, rank) {
-  if (isLimitationConcern(issue)) return TEASER_TITLE.LIMITATION;
-  if (isLaterExpiryConcern(issue)) return TEASER_TITLE.LATER_EXPIRY;
-  if (isReportingPeriodConcern(issue)) return TEASER_TITLE.REPORTING_PERIOD_REVIEW;
-  if (isCompletenessItem(issue)) return TEASER_TITLE.FACTUAL_COMPLETENESS;
-  if (rank === 2) return TEASER_TITLE.INCONSISTENCY;
-  if (issue.basis_type === 'CONTENT_FINDING') {
-    return rank === 1 ? TEASER_TITLE.OMISSION : TEASER_TITLE.INCLUSION;
-  }
-  return TEASER_TITLE.RETENTION;
+function isPreviewCandidate(issue) {
+  return issue.eligible === true && issues.consumerLabel(issue) === 'VIOLATION'
+    && !isLimitationConcern(issue) && issue.basis_type !== 'LIMITATION_ASSESSMENT' && severityRankOf(issue) >= 0;
 }
 
 /** The first sentence of a text, so the teaser stays short. Never invents a sentence that is not there. */
@@ -617,14 +560,21 @@ function redactIdentifiers(text, issue) {
 }
 
 function teaserFor(issue) {
+  if (!issue || !isPreviewCandidate(issue)) return null;
   const rank = severityRankOf(issue);
   return {
     issue_id: issue.issue_id,
     severity: SEVERITY_ORDER[rank],
-    title: teaserTitleFor(issue, rank),
+    title: TEASER_TITLE[issue.preview_category],
     confidence: issue.confidence,
     confidence_label: issues.consumerLabel(issue),
-    explanation: firstSentence(redactIdentifiers(issue.explanation, issue))
+    explanation: issue.preview_category === 'RE_AGING'
+      ? 'The first missed-payment date is later than the date for the same account on an earlier report.'
+      : issue.preview_category === 'DATE_CONFLICT'
+        ? 'The account dates conflict with when the account opened, closed or was reported.'
+        : (firstSentence(redactIdentifiers(issue.explanation, issue)) || '')
+          + (issue.preview_category === 'REPORTING_TIME_LIMIT' && issue.confidence !== 'DEFINITE'
+            ? ' The report does not settle every detail that affects this time limit.' : '')
   };
 }
 
@@ -643,7 +593,7 @@ function summariseAssessment(rendered) {
     else if (issue.confidence === 'PROBABLE') by.probable_violation += 1;
     else if (issue.confidence === 'POTENTIAL') by.potential += 1;
   }
-  const ranked = rows.slice().sort((a, b) => (severityRankOf(a) - severityRankOf(b))
+  const ranked = rows.filter(isPreviewCandidate).sort((a, b) => (severityRankOf(a) - severityRankOf(b))
     || (a.issue_id < b.issue_id ? -1 : (a.issue_id > b.issue_id ? 1 : 0)));
   return {
     distinct_total: rows.length,

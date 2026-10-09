@@ -312,7 +312,10 @@ async function run(service, check) {
   await freePage.locator('#file').setInputFiles({
     name: 'fictional-report.pdf',
     mimeType: 'application/pdf',
-    buffer: buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor A  Balance $100  Opened 01/01/2020  Closed 01/01/2019'] }] })
+    buffer: buildPdf({ pages: [{ lines: ['Equifax  Consumer Credit Report', 'Report Date: June 12, 2026',
+      'Fictional Creditor Opened 01/01/2020 Closed 01/01/2021 Balance $100', 'Account Number ****1234',
+      'Fictional Creditor Opened 01/01/2020 Closed 01/01/2021 Balance $100', 'Account Number ****1234',
+      'Fictional Other Creditor Opened 01/01/2020 Closed 01/01/2021 Status Open Balance $200.00'] }] })
   });
   await freePage.locator('#upload').click();
   await freePage.waitForFunction(() => /Your report is uploaded/.test(document.getElementById('panel').innerText), null, { timeout: 20000 });
@@ -332,9 +335,12 @@ async function run(service, check) {
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(1200);
   const summaryText = await freePage.locator('#panel').innerText();
-  check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 1/.test(summaryText), 'the browser shows the distinct issue count to a free account');
+  check.ok(/SUMMARY — FREE/.test(summaryText) && /Reporting issues found: 2/.test(summaryText), 'the browser shows the two distinct issues to a free account');
   check.ok(!/violations:|potential issues:/.test(summaryText), 'without confidence tier counts');
   check.ok(/VIOLATION/.test(summaryText), 'with the sole consumer breach label');
+  check.ok(/The same debt appears more than once/.test(summaryText) && /This is the most serious violation we found that you can dispute\./.test(summaryText),
+    'the browser previews the higher-priority duplicate and explains why it was selected');
+  check.equal((summaryText.match(/\bVIOLATION\b/g) || []).length, 1, 'the unpaid browser shows exactly one violation example');
   check.ok(/Unlock this report/.test(summaryText) && /\$5\.95 CAD/.test(summaryText) && /Monthly/.test(summaryText) && /Annual/.test(summaryText), 'and the purchase choices with their recorded prices');
   check.ok(!/Check: /.test(summaryText) && !/id="packet-block"/.test(await freePage.content()), 'while the complete findings and the packet stay locked');
   const shot = `${process.env.TEMP || '.'}/crp-unpaid-summary.png`;
@@ -488,7 +494,8 @@ async function run(service, check) {
     await dualPage.locator('#steps button[data-step="3"]').click();
     await dualPage.waitForTimeout(1200);
     const dualSummary = await dualPage.locator('#panel').innerText();
-    check.ok(/too old to report/.test(dualSummary), 'the free summary teaser names the entry that may now be too old to report');
+    check.ok(!/too old to report|most serious violation|\bVIOLATION\b/.test(dualSummary),
+      'later-expiry review alone does not become a free VIOLATION example');
     check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(dualSummary), 'and states the date the report was assessed');
     check.ok(!/id="packet-block"/.test(await dualPage.content()), 'while the complete assessment stays locked for a free account');
   } finally {

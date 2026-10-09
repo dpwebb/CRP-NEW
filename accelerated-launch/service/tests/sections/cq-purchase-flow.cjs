@@ -117,18 +117,22 @@ async function run(service, check) {
   /* ---- 2. Severity is independent of confidence, and ties break stably ---- */
   const synthetic = results.summariseAssessment({
     issues: [
-      { issue_id: 'b', basis_type: 'FACTUAL_CONSISTENCY', confidence: 'DEFINITE', explanation: 'Two printed details cannot both be right.' },
-      { issue_id: 'a', basis_type: 'STATUTORY_RETENTION', confidence: 'PROBABLE', explanation: 'An entry is kept longer than the recorded rule allows.' }
+      { issue_id: 'b', basis_type: 'FACTUAL_CONSISTENCY', confidence: 'DEFINITE', consumer_label: 'VIOLATION', eligible: true,
+        preview_category: 'DATE_CONFLICT', explanation: 'Two printed details cannot both be right.' },
+      { issue_id: 'a', basis_type: 'STATUTORY_RETENTION', confidence: 'PROBABLE', consumer_label: 'VIOLATION', eligible: true,
+        preview_category: 'REPORTING_TIME_LIMIT', explanation: 'An entry is kept longer than the recorded rule allows.' }
     ]
   });
   check.equal(synthetic.teaser.issue_id, 'a', 'the teaser follows the documented severity order, never the confidence');
-  check.equal(synthetic.teaser.severity, 'REMOVE_ENTRY', 'and names the concern kind it ranked on');
+  check.equal(synthetic.teaser.severity, 'REPORTING_TIME_LIMIT', 'and names the supported reporting time-limit category');
   check.equal(synthetic.by_confidence.violation, 1, 'the definite issue is still counted as a violation');
   check.equal(synthetic.by_confidence.probable_violation, 1, 'and the probable one in its own category');
   const tied = results.summariseAssessment({
     issues: [
-      { issue_id: 'zzz', basis_type: 'STATUTORY_RETENTION', confidence: 'POTENTIAL', explanation: 'x' },
-      { issue_id: 'aaa', basis_type: 'STATUTORY_RETENTION', confidence: 'DEFINITE', explanation: 'y' }
+      { issue_id: 'zzz', basis_type: 'STATUTORY_RETENTION', confidence: 'POTENTIAL', consumer_label: 'VIOLATION', eligible: true,
+        preview_category: 'REPORTING_TIME_LIMIT', explanation: 'x' },
+      { issue_id: 'aaa', basis_type: 'STATUTORY_RETENTION', confidence: 'DEFINITE', consumer_label: 'VIOLATION', eligible: true,
+        preview_category: 'REPORTING_TIME_LIMIT', explanation: 'y' }
     ]
   });
   check.equal(tied.teaser.issue_id, 'aaa', 'equal severity breaks on the stable issue id');

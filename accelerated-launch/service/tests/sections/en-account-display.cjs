@@ -93,7 +93,10 @@ async function run(t, check) {
   }
   const evaluation = { ...ctx.evaluation, common_errors: common.runCommonErrorChecks({ extraction: old }) };
   const rendered = results.renderResultSet({ extraction: old, evaluation });
-  for (const issue of rendered.issues) issue.account_identity = { name: 'Account entry ' + issue.account_number_in_report };
+  for (const issue of rendered.issues) {
+    issue.account_identity = { name: 'Account entry ' + issue.account_number_in_report };
+    delete issue.preview_category;
+  }
   t.service.store.update(state => {
     state.files.push({ file_id: FILE, account_id: owner.account_id, case_id: caseId,
       presentation_id: 'PR-01', supported_format: true, stored_bytes: bytes.length,
@@ -113,6 +116,8 @@ async function run(t, check) {
     const visible = view.result.issues.find(issue => issue.account_identity?.entries);
     check.equal(visible.account_identity.name, names.join(' / '), 'an already-uploaded report gets the agency label on normal read');
     check.ok(names.every(name => visible.explanation.includes(name)), 'saved display wording uses the same source-bound names');
+    check.equal(visible.preview_category, 'DUPLICATE_REPORTING', 'an exact saved issue recovers its assessed preview category');
+    check.equal(view.assessment_summary.teaser.severity, 'DUPLICATE_REPORTING', 'the historical summary uses the recovered category');
     check.equal(fingerprint(), before, 'reading labels leaves all historical stored bytes, facts and results unchanged');
     check.equal(reads, 1, 'the verified original is read once for both account display names');
     const saved = (await t.request('GET', `/api/cases/${caseId}/results/en-old-result`, { token: owner.token }));

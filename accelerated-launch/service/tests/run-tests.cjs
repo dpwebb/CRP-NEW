@@ -108,6 +108,7 @@ const SECTION_FILES = [
   'el-collection-court-period.cjs',
   'em-collection-comparison.cjs',
   'en-account-display.cjs',
+  'eo-violation-preview-priority.cjs',
   'ed-account-browser.cjs',
   'ef-account-recovery.cjs',
   'dh-ca-reader-completion.cjs',

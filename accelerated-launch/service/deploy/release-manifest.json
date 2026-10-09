@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-08T21:28:44.564Z",
+  "generated_at": "2026-10-09T00:11:14.351Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -46,7 +46,7 @@
     {
       "id": "RUNTIME",
       "file_count": 73,
-      "digest": "CCE3A4A32D5BA5008DC9FB5AB8267E69F82BFF4F67E9203B5E5700BC02F58163",
+      "digest": "447DC1CB2AED79F7BD3E19D24CB300437F633B6721C57406AC22B8C551846D1D",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -114,7 +114,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "D49DAAF563B729701EB1271359AF1636B3B54220958783C277A499EB7B4CE889"
+          "sha256": "A3F9E4831C451FC085C21FA76A9653277DCBA63154608E2AAF1B8C6792C54938"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -222,11 +222,11 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "BCD817B2629C3FE28AE5A2A9D71CD57B87546ACF6DA133117C0A4846A1096DF1"
+          "sha256": "7574AA397B26F56493D6D0FCF172BCB40AB52EA00990810DF0C8B18472982F15"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "7227A1C7E93AC7A88E0D2EEC7E52FBA3B7859DF4EBF3B107EB4EC8A6EDB17AEB"
+          "sha256": "68D6F42A045E108B4752D5E3416116C3287BB7232122FB2A02FD3706FBA3AE70"
         },
         {
           "file": "accelerated-launch/service/limitation-assessment.cjs",
@@ -310,7 +310,7 @@
         },
         {
           "file": "accelerated-launch/service/results.cjs",
-          "sha256": "62AB9A3E40178BAD8BB1302992C5741B31E4BFD10C242C7ADBFABA540E33460A"
+          "sha256": "F1816099DC7A0E3C07BD39398FF566CD4C3C9A54FFC4978D681004ADB614DF85"
         },
         {
           "file": "accelerated-launch/service/retention.cjs",
@@ -470,11 +470,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "7BF18F3D7C3D65373991B5022372C8CD57BB0E27FF4629877CF023AEE4B89EB4",
+      "digest": "A9F45E8E4CCD42F534A26C58C1905526EEF1C30DFD728C44E9F07B5A73C135C9",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "D70B02CF2A084A245BDAB74A0F108039DD25AC612B041C329CA84DE6770536E9"
+          "sha256": "FE6CDC6C46B1EDF323BBC29748D7A021DB42331B4FA73B59C3E2560E71DC1CEF"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -491,6 +491,6 @@
       ]
     }
   ],
-  "manifest_digest": "5EF1CB128E5B1D908D1543815718014877B88922FC18B2180100869AA0994AFB",
+  "manifest_digest": "53CBDEBF04E7F7E6EFC9E2FA5364890EFE07A11F91A57C731D25F3CA5758CA66",
   "total_file_count": 111
 }
