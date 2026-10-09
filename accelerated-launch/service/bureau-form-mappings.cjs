@@ -78,7 +78,14 @@ const MAPS = {
       return {name:box(p,97.5,y+2,221,18),account:box(p,329.4,y+2,246,18),reason:box(p,37,y-84.32,537,19),details:box(p,37,y-131.14,537,29)};
     })
   },
-  'ca-transunion': { version: VERSION, mode: 'NATIVE_ACROFORM', pages: 2, capacity: 6, name_parts: false },
+  'ca-transunion': { version: VERSION, mode: 'NATIVE_ACROFORM', pages: 2, capacity: 6, name_parts: true,
+    // The original has one text widget above four printed name labels, not four fields.
+    name_columns: [
+      { key:'family_name', label:'family name', x:51, width:54 },
+      { key:'given_name', label:'given name', x:110, width:63 },
+      { key:'middle_name', label:'middle name', x:178, width:74 },
+      { key:'suffix', label:'suffix', x:257, width:55 }
+    ] },
   'us-experian': { version: VERSION, mode: 'NATIVE_ACROFORM', pages: 2, capacity: 3, name_parts: true }
 };
 module.exports = { VERSION, MAPS, CANADA_PROVINCES, province };

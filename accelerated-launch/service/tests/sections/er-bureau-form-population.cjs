@@ -50,7 +50,9 @@ async function run(t,check) {
   }
   const tu=descriptors.find(f=>f.id==='ca-transunion'), tuData=payload(tu), filledTu=forms.populateForm(tu,tuData);
   const tuForm=(await lib.PDFDocument.load(filledTu.bytes)).getForm();
-  check.equal(tuForm.getTextField('Name').getText(),'Zoë Fiction','native form contains non-ASCII consumer name');
+  check.equal(tuForm.getTextField('Name').getText(),'Fiction Zoë Émile','native form stores explicit name components in original last-first-middle order');
+  check.deepEqual(filledTu.fields.filter(field=>field.field==='Name').map(field=>[field.label,field.value]),[['family name','Fiction'],['given name','Zoë'],['middle name','Émile']],'native single name widget retains each explicit component without guessing a split');
+  check.equal(forms.missingFormFields(tu,{profile:{full_name:'Zoë Fiction',region:'NS'}}).length,2,'TU printed name columns require actual given and family names, not an invented split');
   check.equal(tuForm.getTextField('Account1').getText(),'****1230','native field preserves printed masked number without inferring digits');
   check.equal(tuForm.getDropdown('Prov1').getSelected()[0],'NS','native original dropdown is selected');
   check.deepEqual(tuForm.getDropdown('Prov1').getOptions(),[' ','AB','BC','MB','NB','NL','NS','NT','NU','ON','PE','QC','SK','YT'],'original province options remain available');
@@ -58,6 +60,9 @@ async function run(t,check) {
   check.equal(tuForm.getRadioGroup('request that it be incorporated into').getSelected(),undefined,'consumer consent is never selected automatically');
   check.equal(tuForm.getTextField('Signature').getText(),undefined,'consumer signature remains blank');
   check.equal(tuForm.getTextField('SIN').getText(),undefined,'generic Canadian nine-digit reference is not asserted as a SIN');
+  const tuLong=payload(tu);tuLong.profile.family_name='Fictional-Family '.repeat(12).trim();
+  const tuLongFilled=forms.populateForm(tu,tuLong);
+  check.ok(tuLongFilled.fields.some(field=>field.label==='family name'&&field.type==='CONTINUATION'&&field.value===tuLong.profile.family_name),'long family name remains complete on continuation instead of entering another name column');
   check.ok(descriptors.filter(f=>f.country==='CA'&&f.bureau==='EQUIFAX').every(f=>!forms.populateForm(f,payload(f)).fields.some(value=>value.label==='identity reference')),'original Canadian SIN boxes stay blank without a specifically collected SIN');
   const alias=payload(tu);alias.profile.region='Québec';
   check.equal((await lib.PDFDocument.load(forms.populateForm(tu,alias).bytes)).getForm().getDropdown('Prov1').getSelected()[0],'QC','known full province name maps exactly to an original option');
@@ -99,5 +104,20 @@ async function run(t,check) {
   const caEq=descriptors.find(f=>f.id==='ca-equifax-account'), freeStreet=payload(caEq);delete freeStreet.profile.street_number;delete freeStreet.profile.street_name;freeStreet.profile.address_line1='12345 Long Example Street with Complete Address';
   check.ok(forms.populateForm(caEq,freeStreet).fields.some(f=>f.value===freeStreet.profile.address_line1&&f.type==='CONTINUATION'),'unstructured complete street address survives a small original box without a new component gate');
   check.ok(forms.populateForm(usEq,unitData).fields.some(f=>f.label==='dispute details'&&f.value===unitData.items[0].request),'filled form uses the consumer letter request before internal evaluator wording');
+  for(const target of [tu,ex,usEq]) {
+    const grouped=payload(target);grouped.items[0].record_index=0;
+    grouped.items[1]={...grouped.items[0],issue_id:'second-issue',letter_item:2,request:'The balance and past-due amount do not match. Please check and correct the amounts.'};
+    const populated=forms.populateForm(target,grouped);
+    check.equal(populated.account_entry_count,1,'two selected issues for one explicit report record use one original account slot: '+target.id);
+    check.equal(populated.selected_item_count,2,'grouping retains both selected issues: '+target.id);
+    check.ok(populated.fields.some(field=>field.value.includes('See items 1 and 2 in my letter')),'grouped form links every numbered letter request: '+target.id);
+    check.ok(grouped.items.every(item=>populated.fields.some(field=>field.value.includes(item.request))),'grouped form and linked continuation preserve every selected request: '+target.id);
+    grouped.items[1].record_index=1;
+    const separate=forms.populateForm(target,grouped);
+    check.equal(separate.account_entry_count,2,'distinct records sharing a company and masked number remain separate original entries: '+target.id);
+    check.equal(separate.fields.filter(field=>field.label==='company or agency').length,2,'distinct same-mask record identities each receive their own slot: '+target.id);
+    delete grouped.items[0].record_index;delete grouped.items[1].record_index;
+    check.equal(forms.populateForm(target,grouped).account_entry_count,2,'matching name and mask without explicit record index never merge: '+target.id);
+  }
 }
 module.exports={id:'er-bureau-form-population',title:'Original bureau templates, native controls, populated evidence and readable overflow',run};

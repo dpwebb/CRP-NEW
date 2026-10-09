@@ -34,6 +34,19 @@ function applicableItems(descriptor, payload) {
     return /personal|identity|name|address/.test(kind) || payload.settings?.purpose==='PERSONAL' || payload.settings?.purpose==='NEW_ADDRESS';
   });
 }
+function groupAccountItems(items) {
+  const result=[], byRecord=new Map();
+  for(const item of items) {
+    const index=item.record_index;
+    const key=Number.isInteger(index)&&index>=0?`number:${index}`:typeof index==='string'&&index.length?`string:${index}`:null;
+    if(key===null||!byRecord.has(key)) {result.push(item);if(key!==null)byRecord.set(key,result.length-1);continue;}
+    const at=byRecord.get(key), first=result[at], members=[...(first.form_items||[first]),item];
+    result[at]={...first,form_items:members,
+      name:[...new Set(members.map(value=>clean(value.name)).filter(Boolean))].join(' / '),
+      account_reference:[...new Set(members.map(value=>clean(value.account_reference)).filter(Boolean))].join(' / ')};
+  }
+  return result;
+}
 
 async function populate(descriptor, payload) {
   const map=MAPS[descriptor.id];
@@ -47,7 +60,8 @@ async function populate(descriptor, payload) {
   const face=fontkit.create(fontBytes), font=await doc.embedFont(fontBytes,{subset:true});
   const form=doc.getForm(), native_fields=inventory(form), fields=[], continued=[];
   const pages=doc.getPages(), profile=payload.profile||{}, settings=payload.settings||{}, items=applicableItems(descriptor,payload);
-  const accountItems=items.filter(item=>!/personal|identity/.test(single(item.kind).toLowerCase()));
+  const personalItems=items.filter(item=>/personal|identity/.test(single(item.kind).toLowerCase()));
+  const accountItems=groupAccountItems(items.filter(item=>!personalItems.includes(item)));
   // Unsupported glyphs are refused rather than silently printed as empty boxes.
   const validate=value=>{for(const ch of clean(value)) if(!/\s/.test(ch)&&!face.hasGlyphForCodePoint(ch.codePointAt(0))) throw new Error('GLYPH');};
   function record(label,value,printed,page,type='OVERLAY',field) { fields.push({label,value:clean(value),printed_value:clean(printed),page:page+1,type,...(field?{field}:{})}); }
@@ -106,6 +120,25 @@ async function populate(descriptor, payload) {
     const widgetRef=widgets[0].P(),page=Math.max(0,pages.findIndex(p=>p.ref.toString()===widgetRef?.toString()));
     record(label,value,printed,page,'TEXT',name);
   }
+  function nativeNameParts() {
+    const parts=map.name_columns.map(column=>({...column,value:clean(profile[column.key])}));
+    if(!parts.some(part=>part.value))return;
+    const field=form.getTextField('Name'), widget=field.acroField.getWidgets()[0], bounds=widget.getRectangle();
+    const page=Math.max(0,pages.findIndex(p=>p.ref.toString()===widget.P()?.toString()));
+    for(const part of parts) {
+      validate(part.value);part.printed=part.value;
+      part.size=part.value?Math.min(10,(part.width/font.widthOfTextAtSize(part.value,10))*10):10;
+      if(part.size<8){overflow(part.label,part.value);part.printed='See page';part.size=8;}
+      if(part.value)record(part.label,part.value,part.printed,page,'TEXT','Name');
+    }
+    // Keep the source's single widget. Each explicit component is displayed above its
+    // own printed Last / First / Middle / Jr-Sr label, with no inferred name split.
+    field.setText(parts.map(part=>part.value).filter(Boolean).join(' '));field.setFontSize(10);
+    field.updateAppearances(font,()=>parts.filter(part=>part.printed).flatMap(part=>[
+      lib.beginText(),lib.setFillingRgbColor(0,0,0),lib.setFontAndSize(font.name,part.size),
+      lib.moveText(part.x-bounds.x,(bounds.height-part.size)/2+1),lib.showText(font.encodeText(part.printed)),lib.endText()
+    ]));
+  }
   function nativeChoice(name,value,label=name) {
     const field=form.getField(name);
     if(!(field instanceof PDFDropdown||field instanceof PDFRadioGroup||field instanceof PDFOptionList)||field.isReadOnly()||!field.getOptions().includes(value)) return false;
@@ -129,9 +162,12 @@ async function populate(descriptor, payload) {
   const fullName=clean(profile.full_name||payload.correspondence?.consumer_name);
   const streetName=clean(descriptor.country==='US'?[profile.address_line1,profile.address_line2].filter(Boolean).join(', '):
     descriptor.id==='ca-equifax-public-record'?[profile.street_name||profile.address_line1,profile.address_line2].filter(Boolean).join(', '):profile.street_name||profile.address_line1);
-  const itemReason=item=>clean(item.request||item.explanation||`Please check this entry. See item ${item.letter_item||items.indexOf(item)+1} in my letter.`);
-  const itemLink=item=>`See item ${item.letter_item||items.indexOf(item)+1} in my letter for the details and copies.`;
-  const accountValue=item=>item.account_reference||`See letter item ${item.letter_item||items.indexOf(item)+1}`;
+  const letterNumbers=item=>[...new Set((item.form_items||[item]).map(member=>member.letter_item||items.indexOf(member)+1))];
+  const numberList=values=>values.length<3?values.join(' and '):values.slice(0,-1).join(', ')+' and '+values.at(-1);
+  const itemReason=item=>item.form_items?item.form_items.map(member=>`Item ${letterNumbers(member)[0]}: ${clean(member.request||member.explanation||'Please check this entry.')}`).join('\n'):
+    clean(item.request||item.explanation||`Please check this entry. See item ${letterNumbers(item)[0]} in my letter.`);
+  const itemLink=item=>`See ${letterNumbers(item).length>1?'items':'item'} ${numberList(letterNumbers(item))} in my letter for the details and copies.`;
+  const accountValue=item=>item.account_reference||`See letter ${letterNumbers(item).length>1?'items':'item'} ${numberList(letterNumbers(item))}`;
   for(const item of accountItems)if(!item.account_reference)overflow('Entry without a printed account number',`${item.name||'Entry'}\nReport reference: ${item.report_reference||'See attached report'}\nLocation: ${location(item.source_location)||'See the marked copy with my letter'}\n${itemLink(item)}`);
   if(descriptor.country==='US'&&settings.no_ssn_issued)overflow('Social Security number','I have never been issued a Social Security number.');
   if(map.mode==='ORIGINAL_OVERLAY') {
@@ -168,12 +204,12 @@ async function populate(descriptor, payload) {
     }
     if(map.comments&&items.length)overlay('comments',`Please check the entries listed in my attached letter. The letter explains what I am disputing and includes my supporting copies.`,map.comments);
   }else if(descriptor.id==='ca-transunion') {
-    nativeText('Name',fullName,'full name');nativeText('Address',profile.address_line1,'street address');nativeText('Apartment',profile.address_line2,'unit or apartment');nativeText('City',profile.city,'city');nativeText('Postal Code',profile.postal_code,'postal code');
+    nativeNameParts();nativeText('Address',profile.address_line1,'street address');nativeText('Apartment',profile.address_line2,'unit or apartment');nativeText('City',profile.city,'city');nativeText('Postal Code',profile.postal_code,'postal code');
     if(profile.region&&!nativeChoice('Prov1',province(profile.region),'province'))overflow('province',profile.region);
     nativeText('Address2',profile.previous_address,'previous address');nativeText('DOB',dateUs(clean(profile.date_of_birth)),'date of birth');nativeText('Home Phone optional',profile.phone,'phone');nativeText('EMail',profile.contact_email,'email');
     // The optional SIN is left blank: this app has not collected a specifically identified SIN.
     if(fullName||items.length)nativeChoice('Would you like your investigation','Mailed','Results by mail');nativeText('Date',dateUs(clean(payload.letter_date)),'letter date');
-    for(let i=0;i<Math.min(6,accountItems.length);i++){const item=accountItems[i],context=`${item.name} - ${item.account_reference||'number not printed'}`;nativeText('Company'+(i+1),item.name,'company or agency',context);nativeText('Account'+(i+1),accountValue(item),'account reference',context);nativeText('Other'+(i+1),itemLink(item),'reason',context);}
+    for(let i=0;i<Math.min(6,accountItems.length);i++){const item=accountItems[i],context=`${item.name} - ${item.account_reference||'number not printed'}`;nativeText('Company'+(i+1),item.name,'company or agency',context);nativeText('Account'+(i+1),accountValue(item),'account reference',context);nativeText('Other'+(i+1),item.form_items?`${itemReason(item)}\n${itemLink(item)}`:itemLink(item),'reason',context);}
     if(items.length)nativeText('AdditionalComments','Please read my attached letter. It explains each entry I am disputing and includes supporting copies.','additional comments');
   }else if(descriptor.id==='us-experian') {
     nativeText('Name:',[profile.given_name,profile.family_name].filter(Boolean).join(' '),'name');nativeText('Middle Initial:',clean(profile.middle_name).slice(0,1),'middle initial');nativeText('Generation:',profile.suffix,'suffix');nativeText('Date of Birth',dateUs(clean(profile.date_of_birth)),'date of birth');
@@ -181,13 +217,13 @@ async function populate(descriptor, payload) {
     nativeText('Enter email',profile.contact_email,'email');
     const ssn=digits(settings.identity_reference);if(ssn.length===9&&/^[\d\s-]+$/.test(clean(settings.identity_reference))) {nativeText('Social Security number:_1',ssn.slice(0,3),'SSN first part');nativeText('Social Security number:_2',ssn.slice(3,5),'SSN middle part');nativeText('Social Security number:_3',ssn.slice(5),'SSN last part');}
     if(profile.previous_address)overflow('previous addresses',profile.previous_address);
-    for(let i=0;i<Math.min(accountItems.length,3);i++){const suffix=i?'_'+i:'',item=accountItems[i],context=`${item.name} - ${item.account_reference||'number not printed'}`;nativeText('Company name'+suffix,item.name,'company or agency',context);nativeText('Your partial account number'+suffix,accountValue(item),'account reference',context);nativeChoice('I believe this item is incorrect because (Choose only one)'+suffix,'Other','dispute reason');nativeText('Other - Must explain:'+suffix,itemLink(item),'reason details',context);}
+    for(let i=0;i<Math.min(accountItems.length,3);i++){const suffix=i?'_'+i:'',item=accountItems[i],context=`${item.name} - ${item.account_reference||'number not printed'}`;nativeText('Company name'+suffix,item.name,'company or agency',context);nativeText('Your partial account number'+suffix,accountValue(item),'account reference',context);nativeChoice('I believe this item is incorrect because (Choose only one)'+suffix,'Other','dispute reason');nativeText('Other - Must explain:'+suffix,item.form_items?`${itemReason(item)}\n${itemLink(item)}`:itemLink(item),'reason details',context);}
   }
   for(let i=map.capacity;i<accountItems.length;i++) {
     const item=accountItems[i];
-    overflow(`Letter item ${item.letter_item||i+1}`,`${item.name||'Entry'}\nAccount reference: ${item.account_reference||'Not printed on my report'}\n${itemReason(item)}\n${itemLink(item)}`);
+    overflow(`Letter ${letterNumbers(item).length>1?'items':'item'} ${numberList(letterNumbers(item))}`,`${item.name||'Entry'}\nAccount reference: ${item.account_reference||'Not printed on my report'}\n${itemReason(item)}\n${itemLink(item)}`);
   }
-  for(const item of items.filter(item=>!accountItems.includes(item)))overflow(`Letter item ${item.letter_item||items.indexOf(item)+1}`,`${item.name||'Personal information'}\n${itemReason(item)}\n${itemLink(item)}`);
+  for(const item of personalItems)overflow(`Letter item ${item.letter_item||items.indexOf(item)+1}`,`${item.name||'Personal information'}\n${itemReason(item)}\n${itemLink(item)}`);
   // Every full value survives small form spaces. Continuation is separate from the unchanged original artwork.
   if(continued.length) {
     let page,y;
@@ -205,7 +241,7 @@ async function populate(descriptor, payload) {
   }
   // Keep native controls and their original supported options. Do not flatten or auto-sign/consent.
   const bytes=fields.length||continued.length?Buffer.from(await doc.save({useObjectStreams:false,addDefaultPage:false,updateFieldAppearances:false})):original;
-  return {bytes:bytes.toString('base64'),sha256:hash(bytes),page_count:doc.getPageCount(),fields,native_fields,continuation_count:continued.length,selected_item_count:items.length,template_sha256:descriptor.sha256,mapping_version:descriptor.mapping_version};
+  return {bytes:bytes.toString('base64'),sha256:hash(bytes),page_count:doc.getPageCount(),fields,native_fields,continuation_count:continued.length,selected_item_count:items.length,account_entry_count:accountItems.length,template_sha256:descriptor.sha256,mapping_version:descriptor.mapping_version};
 }
 if(require.main===module){
   try{
@@ -214,4 +250,4 @@ if(require.main===module){
     populate(descriptor,payload).then(value=>process.stdout.write(JSON.stringify(value))).catch(()=>{process.stdout.write('{"error":"FORM_POPULATION_FAILED"}');process.exitCode=1;});
   }catch{process.stdout.write('{"error":"FORM_POPULATION_FAILED"}');process.exitCode=1;}
 }
-module.exports={populate,applicableItems};
+module.exports={populate,applicableItems,groupAccountItems};
