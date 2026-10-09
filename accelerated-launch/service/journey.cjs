@@ -448,8 +448,8 @@ function demonstrationDownload(store, actor, caseId) {
 }
 
 /**
- * The paid assessment-report download. It is a reading of the consumer's own report: the supported results,
- * the classes they belong to, and the limitations — never a finding and never a bureau-response packet.
+ * The paid assessment-report download: the consumer's supported issues and their own source-linked facts.
+ * It remains a report review, separate from the subscriber's selected bureau dispute packet.
  */
 /* Pure report-body builder: the consumer-facing downloaded assessment text. `rendered` is the persisted
    result set (the same object the on-screen results consume), so the report and the on-screen results can
@@ -546,14 +546,18 @@ function assessmentReportBody(rendered, producedAt) {
   return lines.join('\n');
 }
 
-function assessmentReport(store, actor, caseId) {
+function assessmentReport(store, actor, caseId, context = {}) {
   cases.requireOwnedCase(store, actor, caseId);
   const row = latestResultFor(store, caseId);
   if (!row) throw new ServiceError('NO_RESULT_TO_DOWNLOAD');
+  const subscriber = entitlement.subscriptionAccess(store, actor);
+  const pdf = require('./assessment-pdf.cjs').renderAssessmentPdf(
+    publicResult(row.rendered, row.evaluation, row.extraction), row.created_at,
+    { ...context, plan_code: context.plan_code || (subscriber.subscribed ? subscriber.status.plan_code : 'report_once') });
   return {
-    filename: `CRP-assessment-report-${caseId}.txt`,
-    content_type: 'text/plain; charset=utf-8',
-    body: assessmentReportBody(publicResult(row.rendered, row.evaluation, row.extraction), row.created_at),
+    filename: `CRP-credit-report-review-${caseId}.pdf`,
+    content_type: 'application/pdf',
+    body: pdf.bytes,
     is_a_response_packet: false
   };
 }

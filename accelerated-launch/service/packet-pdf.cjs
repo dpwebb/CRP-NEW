@@ -147,4 +147,64 @@ function renderPacketPdf(text) {
   chunks.push(Buffer.from(`xref\n0 ${objects.length}\n0000000000 65535 f \n${offsets.slice(1).map(offset => `${String(offset).padStart(10, '0')} 00000 n \n`).join('')}trailer\n<< /Size ${objects.length} /Root ${catalog} 0 R >>\nstartxref\n${length}\n%%EOF\n`));
   return { bytes: Buffer.concat(chunks), page_count: pages.length, layout: pages };
 }
-module.exports = { renderPacketPdf };
+/** Additive drawing surface for branded assessment reports. Existing packet rendering is unchanged. */
+function measurePdfText(text, size = 11) {
+  const face = font();
+  return [...String(text)].reduce((sum, character) => sum + face.width(character) * size / 1000, 0);
+}
+function wrapPdfText(text, size, width) { return wrap(String(text), size, width, font()); }
+
+function renderDrawingPdf(pages, { title = 'Credit Regulator Pro report' } = {}) {
+  const face = font();
+  const characters = [...new Set(pages.flatMap(page => page.filter(item => item.type === 'text')
+    .flatMap(item => [...String(item.text)])))];
+  if (characters.length >= 65535) throw new Error('PDF_CHARACTER_LIMIT');
+  const cid = new Map(characters.map((character, index) => [character, index + 1]));
+  const encode = value => [...String(value)].map(character => cid.get(character).toString(16).padStart(4, '0')).join('');
+  const number = value => Number(value.toFixed(3));
+  const color = value => (value || [0, 0, 0]).map(number).join(' ');
+  const objects = [null];
+  const add = object => { objects.push(Buffer.isBuffer(object) ? object : Buffer.from(object)); return objects.length - 1; };
+  const stream = (bytes, extra = '') => Buffer.concat([Buffer.from(`<< /Length ${bytes.length} ${extra} >>\nstream\n`), bytes, Buffer.from('\nendstream')]);
+  const catalog = add(''), pageTree = add('');
+  const fontFile = add(stream(zlib.deflateSync(face.bytes), `/Filter /FlateDecode /Length1 ${face.bytes.length}`));
+  const descriptor = add(`<< /Type /FontDescriptor /FontName /NotoSans-Regular /Flags 32 /FontBBox [${face.bbox.join(' ')}] /ItalicAngle 0 /Ascent ${Math.round(face.ascent)} /Descent ${Math.round(face.descent)} /CapHeight 714 /StemV 80 /FontFile2 ${fontFile} 0 R >>`);
+  const glyphMap = Buffer.alloc((characters.length + 1) * 2);
+  characters.forEach((character, index) => glyphMap.writeUInt16BE(face.glyph(character.codePointAt(0)), (index + 1) * 2));
+  const gid = add(stream(glyphMap));
+  const descendant = add(`<< /Type /Font /Subtype /CIDFontType2 /BaseFont /NotoSans-Regular /CIDSystemInfo << /Registry (Adobe) /Ordering (Identity) /Supplement 0 >> /FontDescriptor ${descriptor} 0 R /CIDToGIDMap ${gid} 0 R /DW 600 /W [1 [${characters.map(character => Math.round(face.width(character))).join(' ')}]] >>`);
+  const mappings = [];
+  for (let index = 0; index < characters.length; index += 100) {
+    const group = characters.slice(index, index + 100);
+    mappings.push(`${group.length} beginbfchar`, ...group.map((character, offset) => `<${(index + offset + 1).toString(16).padStart(4, '0')}> <${unicodeHex(character)}>`), 'endbfchar');
+  }
+  const cmap = add(stream(Buffer.from(`/CIDInit /ProcSet findresource begin\n12 dict begin\nbegincmap\n/CIDSystemInfo << /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def\n/CMapName /CRPAssessmentUnicode def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n${mappings.join('\n')}\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend`)));
+  const type0 = add(`<< /Type /Font /Subtype /Type0 /BaseFont /NotoSans-Regular /Encoding /Identity-H /DescendantFonts [${descendant} 0 R] /ToUnicode ${cmap} 0 R >>`);
+  const ids = pages.map(items => {
+    const commands = items.filter(item => item.type !== 'link').map(item => {
+      if (item.type === 'rect') return `q ${color(item.fill)} rg ${item.stroke ? `${color(item.stroke)} RG ${item.line_width || 1} w` : ''} ${number(item.x)} ${number(item.y)} ${number(item.width)} ${number(item.height)} re ${item.stroke ? 'B' : 'f'} Q`;
+      if (item.type === 'line') return `q ${color(item.color)} RG ${item.width || 1} w ${number(item.x)} ${number(item.y)} m ${number(item.x2)} ${number(item.y2)} l S Q`;
+      return `q ${color(item.color)} rg ${item.bold ? `${color(item.color)} RG 0.22 w` : ''} BT /F1 ${item.size} Tf ${item.bold ? '2 Tr ' : ''}1 0 0 1 ${number(item.x)} ${number(item.y)} Tm <${encode(item.text)}> Tj ET Q`;
+    });
+    const annotations = items.filter(item => item.type === 'link').map(item => {
+      if (!/^https:\/\//i.test(item.url)) return null;
+      const uri = Buffer.from(item.url, 'utf8').toString('hex');
+      return add(`<< /Type /Annot /Subtype /Link /Rect [${number(item.x)} ${number(item.y)} ${number(item.x + item.width)} ${number(item.y + item.height)}] /Border [0 0 0] /A << /S /URI /URI <${uri}> >> >>`);
+    }).filter(Boolean);
+    const content = add(stream(Buffer.from(commands.join('\n'))));
+    return add(`<< /Type /Page /Parent ${pageTree} 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 ${type0} 0 R >> >> /Contents ${content} 0 R ${annotations.length ? `/Annots [${annotations.map(id => `${id} 0 R`).join(' ')}]` : ''} >>`);
+  });
+  objects[catalog] = Buffer.from(`<< /Type /Catalog /Pages ${pageTree} 0 R >>`);
+  objects[pageTree] = Buffer.from(`<< /Type /Pages /Count ${ids.length} /Kids [${ids.map(id => `${id} 0 R`).join(' ')}] >>`);
+  const info = add(`<< /Title <FEFF${unicodeHex(title)}> /Author (Credit Regulator Pro) /Creator (Credit Regulator Pro) >>`);
+  const chunks = [Buffer.from('%PDF-1.7\n%\xE2\xE3\xCF\xD3\n', 'latin1')], offsets = [0];
+  let length = chunks[0].length;
+  for (let index = 1; index < objects.length; index++) {
+    offsets.push(length);
+    const item = Buffer.concat([Buffer.from(`${index} 0 obj\n`), objects[index], Buffer.from('\nendobj\n')]);
+    chunks.push(item); length += item.length;
+  }
+  chunks.push(Buffer.from(`xref\n0 ${objects.length}\n0000000000 65535 f \n${offsets.slice(1).map(offset => `${String(offset).padStart(10, '0')} 00000 n \n`).join('')}trailer\n<< /Size ${objects.length} /Root ${catalog} 0 R /Info ${info} 0 R >>\nstartxref\n${length}\n%%EOF\n`));
+  return { bytes: Buffer.concat(chunks), page_count: pages.length, layout: pages };
+}
+module.exports = { renderPacketPdf, renderDrawingPdf, measurePdfText, wrapPdfText };
