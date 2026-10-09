@@ -17,7 +17,9 @@ const caFacts = require('../../ca-consumer-file-facts.cjs');
 const { extractFacts } = require('../../../../internal-validation/ca-ns-last-payment-six-year/extraction.cjs');
 const fixtures = require('../../../../internal-validation/ca-ns-last-payment-six-year/tests/fixtures.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
-const { packetText, zipEntries, comparableText } = require('../packet-pdf-assertions.cjs');
+const { packetText, comparableText } = require('../packet-pdf-assertions.cjs');
+const { pdfPages, matchingPage, sameRenderedPage } = require('./eh-packet-report-exhibits.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const CHECK = 'COMMON-ERROR-DUPLICATE-REPORTING';
 const FILE = 'a'.repeat(32), MEMBER = 'MEMBER-' + 'b'.repeat(24);
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -220,26 +222,38 @@ async function run(t, check) {
     && assessment.includes('Fictional Collector 2'), 'downloaded assessment keeps both unequal amounts and collection agency headings');
   check.equal(assessment.includes(MEMBER), false, 'downloaded assessment never prints the private member equality token');
   packets.selectIssues(store, actor, 'ei-case', [selected.issue_id]);
-  packets.setCorrespondence(store, actor, 'ei-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' });
+  packets.setCorrespondence(store, actor, 'ei-case', { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test',
+    bureau_reference: 'FICT-BUREAU-0075' });
   packets.setReportFiles(store, actor, 'ei-case', [FILE]);
   const preview = packets.packetView(store, actor, 'ei-case').packet.correspondence_preview;
   packets.approvePacket(store, actor, 'ei-case');
-  const zip = packets.packetDownload(store, actor, 'ei-case'), printed = packets.packetPrint(store, actor, 'ei-case');
-  const entries = zipEntries(zip.body), text = packetText(zip);
-  check.equal(zip.content_type, 'application/zip', 'selected collection source report yields a real ZIP');
-  check.deepEqual(entries.find(entry => entry.name.startsWith('report-'))?.bytes, original, 'the ZIP preserves the exact two-page original report bytes');
-  check.deepEqual(entries.find(entry => entry.name === '01-correspondence.pdf')?.bytes, printed.body, 'ZIP and inline print have the same approved actual PDF');
-  check.equal(comparableText(text), comparableText(preview), 'the printed correspondence equals the full consumer-reviewed preview');
-  check.ok(text.includes('606') && text.includes('817') && text.includes('page 1') && text.includes('page 2'), 'approved PDF states both amounts and their separate evidence pages');
+  const download = packets.packetDownload(store, actor, 'ei-case'), printed = packets.packetPrint(store, actor, 'ei-case');
+  const pages = pdfPages(download.body), text = packetText(download);
+  check.equal(download.content_type, 'application/pdf', 'selected collection source pages yield one complete PDF');
+  check.deepEqual(download.body, printed.body, 'download and inline print use the same approved complete PDF');
+  check.equal(comparableText(pages[0]), comparableText(preview), 'the first PDF page equals the full consumer-reviewed one-issue letter');
+  check.ok(pages[0].includes('FICT-BUREAU-0075'), 'the consumer’s supplied bureau account/file number appears on the letter page');
+  check.equal(/PRINT AND MAIL|EVIDENCE REFERENCES|Download your packet/i.test(pages[0]), false,
+    'the business letter keeps evidence references inline and consumer printing instructions out');
+  check.ok(text.includes('606') && text.includes('817') && /page 1/i.test(pages[0]) && /page 2/i.test(pages[0]), 'complete PDF includes both original amounts and their letter page references');
   check.ok(text.includes('Fictional Collector 1') && text.includes('Fictional Collector 2'), 'both collector headings appear in the actual packet');
-  check.ok(comparableText(text).includes('VIOLATION') && comparableText(text).includes('original creditor') && comparableText(text).includes('which account this debt came from'), 'actual correspondence retains the owner term and original-account request across PDF line wrapping');
+  check.ok(comparableText(pages[0]).includes('original creditor') && comparableText(pages[0]).includes('which account this debt came from'),
+    'the human business letter retains the consumer’s original-account request across PDF line wrapping');
+  check.equal(/probable violation|potential violation/i.test(pages[0]), false, 'the letter does not reintroduce retired consumer violation labels');
   check.equal(text.includes(MEMBER), false, 'private member token is absent from preview/PDF');
-  check.ok(/Member number matched from the report/i.test(text), 'approved actual PDF correctly names the member-number evidence');
+  check.ok(/matching account details/i.test(pages[0]), 'the human letter states the corroborated matching account concern in plain English');
   check.equal(/court claim|qualifying payment|judgment/i.test(text), false, 'duplicate packet does not include proactive court inquiries');
   const out = path.resolve(__dirname, '../../out/batch67-collection-pair'); fs.mkdirSync(out, { recursive: true });
-  fs.writeFileSync(path.join(out, 'approved-collection-packet.zip'), zip.body);
-  fs.writeFileSync(path.join(out, 'approved-collection-correspondence.pdf'), printed.body);
+  fs.writeFileSync(path.join(out, 'approved-collection-packet.pdf'), download.body);
   fs.writeFileSync(path.join(out, 'approved-collection-preview.txt'), preview);
+  for (const page of [1, 2]) {
+    const includedPage = matchingPage(download.body, pdfPages(original)[page - 1]);
+    check.equal(includedPage, page + 1, 'each corroborated collection source page follows the one-page letter in order');
+    sameRenderedPage(check, out, original, page, download.body, includedPage, 'duplicate collection report page ' + page);
+  }
+  const editable = await PDFDocument.load(download.body);
+  check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
+    'the complete collection packet retains an editable consumer letter');
   const originalContext = clone(state.results[0]);
   const originalPacket = clone(state.packets[0]);
   state.results[0].evaluation.limitation_assessment = clone(timingContext.evaluation.limitation_assessment);
@@ -275,7 +289,7 @@ async function run(t, check) {
   state.results[0].extraction.records[0].fact_sources['account.member_reference'].location.line += 1;
   let stale; try { packets.packetDownload(store, actor, 'ei-case'); } catch (caught) { stale = caught.code; }
   check.equal(stale, 'PACKET_APPROVAL_STALE', 'a changed still-matching member source location requires fresh approval');
-  return { scope: 'shared collection source contract and actual packet PDF/ZIP; reader admission covered separately',
+  return { scope: 'shared collection source contract and complete editable packet PDF; reader admission covered separately',
     owner_member_account_criterion: true, ordinary_matching_preserved: true, original_report_pages: 2,
     packet_proof: path.relative(path.resolve(__dirname, '../../../../'), out), physical_print_or_mail: false };
 }
