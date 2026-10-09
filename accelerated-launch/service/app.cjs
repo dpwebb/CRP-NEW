@@ -260,6 +260,7 @@ function loadJurisdictionSurface() {
     note: 'You choose the place your report is assessed for. We tell you what we can read and check for that place before you upload anything.',
     /* B4 item 7: the supported countries, bureaus, formats, checks and limitations, before payment and upload. */
     presentations: formats.listSupportedFormats(),
+    general_report_path: require('./coverage-matrix.cjs').loadMatrix().general_intake,
     presentation_scope: formats.presentationScope(),
     check_classes: CHECK_CLASSES,
     paid_actions: entitlement.PAID_ACTIONS.slice(),
@@ -377,9 +378,10 @@ function buildHandlers(store, logger, surface) {
       json: {
         ok: true,
         formats: formats.listSupportedFormats(),
+        general_report_path: require('./coverage-matrix.cjs').loadMatrix().general_intake,
         presentation_scope: formats.presentationScope(),
         upload_limits: uploads.uploadLimits(),
-        note: 'Five report presentations are supported, each with its own admission path and its own evidence. Two are Canadian and independent: the Equifax Canada specimen is admitted by its own pinned digest and by nothing else, and the TransUnion Canada consumer disclosure is admitted by a measured structural contract in a module of its own. A file that resembles a supported format but does not satisfy the contract it is measured against is refused, and the refusal names the predicate it failed. One of the five — the United Kingdom family — is evidenced from a 2007 example whose currency for present-day files is NOT established.'
+        note: require('./coverage-matrix.cjs').readSupportQualification()
       }
     })
   };

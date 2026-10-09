@@ -349,6 +349,8 @@ const PAIRED_CAPTIONS = Object.freeze({
   CLOSED: 'date', 'CLOSED DATE': 'date', 'DATE CLOSED': 'date',
   'ACCOUNT START DATE': 'date', 'ACCOUNT END DATE': 'date',
   'FIRST DELINQUENCY DATE': 'date', 'DATE OF FIRST DELINQUENCY': 'date', 'FIRST DATE OF DELINQUENCY': 'date',
+  'CHARGE OFF DATE': 'date', 'CHARGED OFF DATE': 'date', 'DATE CHARGED OFF': 'date',
+  'WRITE-OFF DATE': 'date', 'WRITE OFF DATE': 'date',
   'LAST PAYMENT DATE': 'date', 'DATE OF LAST PAYMENT': 'date', 'LAST PAYMENT': 'date',
   'LAST PAYMENT MADE': 'date', 'FIRST REPORTED': 'date'
 });
@@ -713,6 +715,7 @@ function detectMissingPages(pages) {
 
 function labelForDate(textBefore) {
   const tail = String(textBefore || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (/(?:CHARGE[D]? OFF DATE|DATE CHARGED OFF|WRITE OFF DATE)$/.test(tail)) return 'CHARGE OFF DATE';
   if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$|FIRST DATE OF DELINQUENCY$/.test(tail)) return 'FIRST DELINQUENCY DATE';
   if (/(?:DATE OF )?LAST PAYMENT(?: DATE| MADE)?$/.test(tail)) return 'LAST PAYMENT DATE';
   if (/(?:DATE )?FIRST REPORTED(?: DATE)?$/.test(tail)) return 'FIRST REPORTED';
@@ -1336,12 +1339,19 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
      common-error checks compare COMPATIBLE facts only. A printed amount is not an assertion that the account
      is or is not in any particular state. */
   const amountsByLabel = labeledAmounts(line.text);
-  if (facts.amounts.length > 0 && !Object.values(amountsByLabel).some((value) => value.numeric == null)
-    && trusted && decisiveWordsTrusted(line, facts.amounts[0]) !== false) {
-    canonical.facts['account.amountRaw'] = facts.amounts[0];
-    const numeric = printedAmount(facts.amounts[0]);
-    if (numeric != null) canonical.facts['account.amount'] = numeric;
-    if (facts.amounts[0].indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
+  // A limit, scheduled payment or past-due amount is not an amount owed.
+  // Prefer the own balance caption; retain the legacy generic reading only
+  // when no recognized monetary caption gives the token another meaning.
+  const balance = amountsByLabel['account.balance'];
+  const dueAmount = balance && balance.numeric != null
+    ? { raw: balance.raw, numeric: balance.numeric, label: line.caption_label || balance.label }
+    : !Object.keys(amountsByLabel).length && facts.amounts.length
+      ? { raw: facts.amounts[0], numeric: printedAmount(facts.amounts[0]), label: 'Amount' } : null;
+  if (dueAmount && dueAmount.numeric != null && trusted && decisiveWordsTrusted(line, dueAmount.raw) !== false) {
+    canonical.facts['account.amountRaw'] = dueAmount.raw;
+    canonical.facts['account.amount'] = dueAmount.numeric;
+    canonical.amountLabel = dueAmount.label;
+    if (dueAmount.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
   }
   for (const [key, val] of Object.entries(amountsByLabel)) {
     const usable = trusted && val.numeric != null && decisiveWordsTrusted(line, val.raw) !== false;
@@ -1349,6 +1359,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
       state: usable ? 'VALUE' : 'UNRESOLVED', status: usable ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED',
       reason: usable ? null : val.reason || 'UNTRUSTED_VALUE', location: lineLocation(line), kind: 'amount' };
     if (usable) {
+      resolved += 1;
       canonical.facts[key] = val.numeric;
       canonical.facts[`${key}Raw`] = val.raw;
       if (val.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
@@ -1410,8 +1421,11 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   /* Keep the exact line-level source for ordinary-account values used in an accuracy assessment.
      The fact map alone is not a printed reading: it must carry its own raw token and location. */
   if (printedStatus) {
+    const literalStatus = new RegExp(`^\\s*(?:(?:(?:ACCOUNT\\s+)?STATUS|ACCOUNT\\s+STATE)\\s*[:\\-]\\s*(?:IS\\s+)?|(?:(?:THIS|THE)\\s+)?ACCOUNT\\s+(?:IS\\s+|REPORTED\\s+AS\\s+)?|)(${STATUS_PATTERN})[.!]?\\s*$`, 'i')
+      .test(String(line.text || ''));
     printed.Status = { label: line.caption_label || (/^\s*((?:ACCOUNT\s+)?STATUS|ACCOUNT\s+STATE)\s*:/i.exec(String(line.text)) || [])[1] || 'Status', state: statusTrusted ? 'VALUE' : 'UNRESOLVED',
       raw: line.column_field === 'status' ? line.column_raw : printedStatus.raw, normalized: statusTrusted ? printedStatus.value : null,
+      literal_statement: literalStatus,
       status: statusTrusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', reason: statusTrusted ? null : 'UNTRUSTED_VALUE',
       location: lineLocation(line), kind: 'status' };
   }
@@ -1457,7 +1471,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
       location: lineLocation(line), kind: 'amount' };
   }
   if (canonical.facts['account.amount'] != null && canonical.facts['account.amountRaw'] != null) {
-    printed['account.amount'] = { label: 'Amount', state: 'VALUE',
+    printed['account.amount'] = { label: canonical.amountLabel || 'Amount', state: 'VALUE',
       raw: canonical.facts['account.amountRaw'], normalized: canonical.facts['account.amount'],
       location: lineLocation(line), kind: 'amount' };
   }
@@ -1828,7 +1842,7 @@ function buildRecords(pages, convention) {
           && (JUDGMENT_CONTENT_LINE_RE.test(up) || CRIMINAL_CONTENT_LINE_RE.test(up)
             || JUDGMENT_TRUNCATION_MARKERS.test(up)));
       const hasValue = hasDate || Boolean(line.column_field) || facts.dates.some((d) => CLOSURE_LABELS.includes(d.label)
-        || OPENED_LABELS.includes(d.label) || ['LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE', 'FIRST REPORTED'].includes(d.label))
+        || OPENED_LABELS.includes(d.label) || ['LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE', 'FIRST REPORTED', 'CHARGE OFF DATE'].includes(d.label))
         || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
         || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text)
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
@@ -1836,7 +1850,9 @@ function buildRecords(pages, convention) {
       if (!hasValue) continue;
       const trusted = line.trusted !== false;
       const kind = collectionEntry || collectionNameBoundary ? 'GENERAL_COLLECTION'
-        : line.column_field ? 'GENERAL_ACCOUNT' : recordKind(line.text);
+        : line.column_field || (hasStatus && current
+          && ['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(current.kind))
+          ? 'GENERAL_ACCOUNT' : recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
       const isAccountIntro = kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(up) || explicitAccountIdentity(line.text))
@@ -2176,6 +2192,53 @@ function bindCollectionSources(record) {
   return record;
 }
 
+// An empty native caption is evidence of a printed blank, not a guessed date.
+// Keep that evidence separate from an unreadable value, N/A, a missing column,
+// or an absent caption. Multiple physical captions cannot choose one answer.
+function bindPrintedOmissionEvidence(record) {
+  const printed = record.printed || {};
+  const captions = [
+    ['Closed Date', ['CLOSED', 'CLOSED DATE', 'DATE CLOSED', 'CLOSED_DATE', 'ACCOUNT END DATE']],
+    ['First Delinquency Date', ['FIRST DELINQUENCY DATE', 'DATE OF FIRST DELINQUENCY', 'FIRST DATE OF DELINQUENCY']],
+    ['Charge Off Date', ['CHARGE OFF DATE', 'CHARGED OFF DATE', 'DATE CHARGED OFF', 'WRITE-OFF DATE', 'WRITE OFF DATE']]
+  ];
+  let hasBlank = false;
+  for (const [canonical, aliases] of captions) {
+    const readings = Object.values(printed).filter((reading) => reading?.kind === 'date'
+      && aliases.includes(captionName(reading.label)));
+    const own = [...new Map(readings.map((reading) =>
+      [`${reading.location?.page}:${reading.location?.line}`, reading])).values()];
+    const blank = own.length === 1 && own[0];
+    if (!blank || blank.state !== 'UNRESOLVED' || blank.reason !== 'PRINTED_DATE_BLANK'
+      || blank.raw !== '' || blank.location?.source !== 'NATIVE_TEXT'
+      || blank.location?.trusted !== true) continue;
+    printed[canonical] = { ...blank, state: 'LABEL_PRINTED_WITHOUT_VALUE', trusted: true };
+    hasBlank = true;
+  }
+  const statusReadings = Object.values(printed).filter((reading) => reading?.kind === 'status');
+  const ownStatus = [...new Map(statusReadings.map((reading) =>
+    [`${reading.location?.page}:${reading.location?.line}`, reading])).values()];
+  const status = ownStatus.length === 1 && ownStatus[0];
+  const supportedStatus = status && ['CLOSED', 'IN COLLECTION', 'CHARGED OFF', 'CHARGE OFF']
+    .includes(status.normalized);
+  if (supportedStatus && status.literal_statement === true && status.state === 'VALUE' && status.status === 'RESOLVED' && !status.reason
+    && status.location?.trusted === true && status.normalized === record.facts?.['account.status']
+    && record.fact_sources?.['account.status']?.trusted !== false) {
+    record.report_status_statements = [{ raw_value: status.raw, meaning: status.raw,
+      source_field: status.label, caption_count: 1, trusted: true, location: status.location }];
+    // An own event plus its own printed blank supports this completeness check
+    // even when the entry supplies no unrelated resolved date or amount.
+    const heading = printed['account.reported_identity'];
+    if (hasBlank && record.reason === 'NO_RESOLVED_DATE_OR_AMOUNT_ON_THIS_ENTRY'
+      && heading?.state === 'VALUE' && heading.location?.trusted === true
+      && heading.normalized === record.facts?.['account.reported_identity']) {
+      record.status = 'RESOLVED';
+      record.reason = null;
+    }
+  }
+  return record;
+}
+
 function findReferenceDate(pages, convention) {
   const candidates = [];
   for (const page of pages) {
@@ -2275,7 +2338,7 @@ function extract(model, opts) {
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
   }
-  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map((record) =>
+  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their

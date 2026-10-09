@@ -145,8 +145,12 @@ async function run(t, check) {
   check.equal(inconsistent.findings.find((issue) => issue.check_id === 'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY')?.classification,
     'PROBABLE_VIOLATION', 'the sourced past-due contradiction remains selectable');
   const noBalance = assess(['Fictional Creditor Opened 01/01/2020 Credit Limit $100.00 Past Due $120.00']);
-  check.equal(noBalance.extraction.records[0].facts['account.amount'], 100,
-    'independent amount extraction remains available for its legitimate uses');
+  check.equal(noBalance.extraction.records[0].facts['account.amount'], undefined,
+    'a printed credit limit is never a generic amount owed');
+  check.equal(noBalance.extraction.records[0].facts['account.creditLimit'], 100,
+    'the independent printed credit limit keeps its own meaning');
+  check.equal(noBalance.extraction.records[0].facts['account.pastDueAmount'], 120,
+    'the independent printed past-due amount keeps its own meaning');
   check.equal(noBalance.extraction.records[0].facts['account.balance'], undefined,
     'a printed credit limit is not an extracted current balance');
   check.equal(noBalance.findings.some((issue) => issue.check_id === 'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY'), false,

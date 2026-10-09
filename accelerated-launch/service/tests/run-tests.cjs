@@ -20,6 +20,8 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'et-supported-coverage-evidence.cjs',
+  'eu-general-omission-delivery.cjs',
   'a-isolation.cjs',
   'ax-consumer-privacy.cjs',
   'b-jurisdiction-and-refusals.cjs',

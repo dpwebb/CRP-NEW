@@ -42,6 +42,12 @@ async function run(t, check) {
       country + ' dated evidence cannot silently become a current-layout claim');
   }
   const matrix = coverage.loadMatrix();
+  const advertised = (await t.request('GET', '/api/formats')).json;
+  check.equal(advertised.formats.length, 5, 'API dedicated presentation count preserves its admission meaning');
+  check.deepEqual(advertised.general_report_path, matrix.general_intake,
+    'formats API separately exposes the live GENERAL reader and check boundary');
+  check.deepEqual((await t.request('GET', '/api/jurisdictions')).json.surface.general_report_path, matrix.general_intake,
+    'jurisdiction API exposes the same supported shared path before upload');
   const gbContract = formats.presentationScope().GB.general_field_contract;
   check.equal(gbContract.scope, 'CURRENT_GENERAL_CONSUMER_FIELDS', 'current UK field support is separately scoped to GENERAL');
   check.equal(formats.presentationScope().GB.present_day_support_claimed, false,

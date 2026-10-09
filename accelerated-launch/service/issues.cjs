@@ -329,11 +329,13 @@ const POTENTIAL_WORDING = Object.freeze({
     explain: (i) => {
       const e = i.evidence || {};
       const ratings = e.adverse_payment_ratings || [];
-      const codes = (e.collection_or_cancellation_codes || []).map((c) => `${c.code} - ${c.meaning_as_the_report_prints_it}`);
+      const statements = e.collection_or_cancellation_codes || [];
+      const codes = statements.map((c) => c.literal_statement ? c.meaning_as_the_report_prints_it
+        : `${c.code} - ${c.meaning_as_the_report_prints_it}`);
       const months = ratings.length === 1 ? 'one month' : `${ratings.length} months`;
       const what = ratings.length
         ? `a bad-debt payment rating printed for ${months} (most recently ${ratings[0].code} - ${ratings[0].meaning_as_the_report_prints_it})`
-        : `a collection or cancellation code (${codes.join('; ')})`;
+        : `a collection or cancellation ${statements.some((c) => c.literal_statement) ? 'status' : 'code'} (${codes.join('; ')})`;
       return `This report presents ${entryLabel(i)} as a debt in trouble, printing ${what}, while its "First Delinquency Date" caption prints with no date at all. The entry shows no date for when the delinquency began.`;
     },
     uncertainty: 'The report prints the caption and leaves the value empty rather than printing a date, so no delinquency date can be read from this entry. The underlying date may still exist in the file the creditor supplied. This is a completeness question to verify, not an established reporting issue.',
@@ -346,7 +348,7 @@ const POTENTIAL_WORDING = Object.freeze({
         : `${c.period || ''}${c.code ? ` (${c.code}${c.meaning_as_the_report_prints_it ? ` - ${c.meaning_as_the_report_prints_it}` : ''})` : ''}`.trim());
       return `This report prints ${entryLabel(i)} with a write-off (${codes.join('; ')}) while its "Charge Off Date" caption prints with no date at all, so the entry shows no date for the write-off event.`;
     },
-    uncertainty: 'The report prints the write-off in the account history and leaves the charge-off caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
+    uncertainty: 'The report states the write-off and leaves the charge-off caption empty rather than printing a date. This is a completeness question to verify, not an established reporting issue.',
     request: 'please confirm the charge-off date for this account and have that date printed on this entry'
   },
   'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': {

@@ -184,7 +184,7 @@ async function gbCurrency(t, check, evidence) {
   check.equal(gbFamily.CURRENCY_EVIDENCE.evidence_vintage, '1 June 2007', 'with the vintage named');
   const gb = formats.presentationScope().GB;
   check.equal(gb.present_day_support_claimed, false, 'and the coverage surface says the same');
-  check.ok(/not established/i.test(gb.plain), 'in plain language a consumer can read');
+  check.ok(/not certified/i.test(gb.plain), 'the current whole-layout boundary is stated in plain language');
 
   const attempts = gbFamily.CURRENCY_EVIDENCE.current_evidence_attempts;
   evidence.gb = {
@@ -209,8 +209,10 @@ async function messagingAndRelease(t, check, evidence) {
   const registryIds = formats.EXTRACTION_ADAPTERS.map((entry) => entry.presentation_id).sort();
   check.deepEqual(presentations.map((entry) => entry.presentation_id).sort(), registryIds,
     'every registered presentation is advertised, and nothing else is');
-  check.equal(presentations.filter((entry) => entry.present_day_support_claimed === false).length, 1,
-    'exactly one advertised presentation says it does not claim present-day support');
+  check.deepEqual(presentations.filter((entry) => entry.present_day_support_claimed === false)
+    .map((entry) => entry.presentation_id).sort(),
+  ['FAM-AU-EQX-CONSUMER', 'FAM-GB-EXP-CONSUMER', 'US-CONSUMER-DISCLOSURE'].sort(),
+  'dated Australian, UK and US family evidence does not assert current complete-layout support');
   check.ok(/1 June 2007/.test(JSON.stringify(presentations.filter((entry) => entry.present_day_support_claimed === false))),
     'and it names the 2007 example that bounds it');
   check.ok(surface.json.surface.entitlement.plain.startsWith(require('../../payment-provider.cjs').describeProvider(process.env).plain),
@@ -221,7 +223,9 @@ async function messagingAndRelease(t, check, evidence) {
 
   const formatsView = await t.request('GET', '/api/formats');
   check.equal(formatsView.json.formats.length, registryIds.length, 'the formats endpoint advertises the same set');
-  check.ok(/NOT established/.test(formatsView.json.note), 'and its note is honest about the one family whose currency is not established');
+  check.ok(/2015 and 2016/.test(formatsView.json.note) && /2007/.test(formatsView.json.note)
+    && /do not certify every current report layout/.test(formatsView.json.note),
+  'the formats endpoint bounds all three dated layouts and the separate general path');
 
   const scope = surface.json.surface.presentation_scope;
   check.equal(scope.CA.family_admitted, true, 'the Canadian scope reports that a family IS admitted for the country');

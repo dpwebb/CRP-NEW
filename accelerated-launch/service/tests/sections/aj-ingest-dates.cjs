@@ -75,7 +75,10 @@ async function run(t, check) {
       ]
     }]
   }]);
-  check.equal(decisiveLow[0].status, 'EXTRACTION_UNRESOLVED', 'a line with a high mean but an untrusted date word yields no resolved fact');
+  check.equal(decisiveLow[0].facts['overdue.originalListingDate'], undefined,
+    'an untrusted date word never becomes a resolved anchor even when the line mean is high');
+  check.equal(decisiveLow[0].facts['account.balance'], 1240,
+    'the independent readable balance survives the unreadable date');
   const decisiveDateField = Object.values(decisiveLow[0].printed).find((f) => f.kind === 'date' && f.raw === '01/01/2021');
   check.ok(decisiveDateField, 'the degraded date reading is preserved');
   check.equal(decisiveDateField.state, 'UNRESOLVED', 'and it is unresolved, not a value');

@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-09T04:27:38.890Z",
+  "generated_at": "2026-10-09T08:37:40.962Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -74,7 +74,7 @@
     {
       "id": "RUNTIME",
       "file_count": 80,
-      "digest": "FEF8728A4EE310F2E36C2E790EC8EAFAC598D045504B0090791B91E7FF7801BE",
+      "digest": "0B7E5F371A22C7AF22720188B587924EFB91B2ACB10FA28631E4D4C80E531333",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -98,7 +98,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "E91467BC97B4B0B6DF1D1ADB6A4608219DBD1559837D390725FADD35BE1DDDAC"
+          "sha256": "D0DEAA2E4D9227A66A4405B8B29836F7C9A704EC634BCAFBD085946FCC7CA514"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -178,7 +178,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "1F479BE06BB2F7B835EBB963BE82715EA6F4C173EAD2AAC2D44CBC1248EF532C"
+          "sha256": "F2EFA3F65C60C6C2F71F704519D09DBA9ABE34C90FD6E3F81F27297989818340"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -194,7 +194,7 @@
         },
         {
           "file": "accelerated-launch/service/coverage-matrix.cjs",
-          "sha256": "7A039689FB7637D3D835AE1A7F2CA7230DEB67D579D404A2A359AF53620546C9"
+          "sha256": "4A49A30751D8AAEF291CA0FFC5BE133D597EDF9ED0A5BCFCB904F3E70BE94B77"
         },
         {
           "file": "accelerated-launch/service/demo.cjs",
@@ -242,7 +242,7 @@
         },
         {
           "file": "accelerated-launch/service/finding-coverage.cjs",
-          "sha256": "7D90AFC06FD832BAFF2A74D1F3C0F941CA5CC543668F95A62E717F3C98A4BDDE"
+          "sha256": "043A2AD6A76E93A254E859A2EB63C9DD714F53F055E46CA779B486C1A5CB04C7"
         },
         {
           "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
@@ -266,7 +266,7 @@
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
-          "sha256": "C3814404E7DDD003EEFD07B96D5BDD88F734A03D39FACA6A30055535588D79AC"
+          "sha256": "6D717FD2EB1DE448E87552AC10FB6BCC81D17A4D12D0C7B3DFD9D35615523D0F"
         },
         {
           "file": "accelerated-launch/service/gb-general-field-contract.cjs",
@@ -274,11 +274,11 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "9E80BE2AAE5991454D7E524DC405C28A8C9AE7C8375800EC325539FC0DC0B9A1"
+          "sha256": "46563340C350CB61D4915D934B421115977AB213EA7A798DC2D6CD49C2A22289"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "7574AA397B26F56493D6D0FCF172BCB40AB52EA00990810DF0C8B18472982F15"
+          "sha256": "A713C4AC192601D43F646A9620F32499F3B145C7A5161605E9408379741E062C"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -483,7 +483,7 @@
     {
       "id": "RULE_CONFIGURATION_TOP_LEVEL",
       "file_count": 9,
-      "digest": "A94055DA71E4792080479DAFA865515D802A3DD0C2D084791479D7A86A269989",
+      "digest": "247B372CE9D8063D453A8F60FFCDF404FC27089B9B4CC092F43AFAB22240A5F1",
       "files": [
         {
           "file": "accelerated-launch/benchmark-ingestion.cjs",
@@ -495,7 +495,7 @@
         },
         {
           "file": "accelerated-launch/coverage-matrix.json",
-          "sha256": "10A363E0EFC3666B8AF8B0E1C1CFA771335598D4FE69EB2D3A40BAFD69F79349"
+          "sha256": "94D8562D330E355F113C2E4555E29E1238DC729C8AE710272D053BA130EEC08C"
         },
         {
           "file": "accelerated-launch/jurisdiction-router.cjs",
@@ -547,6 +547,6 @@
       ]
     }
   ],
-  "manifest_digest": "80731CA9BD1D42902860CDFAF8C7BD6B6FB84965144F8BCABA3C64BDE757EFCF",
+  "manifest_digest": "133F36EB9B5DC1EB7E5D43E53458A23AC9A45A0563A7965E93234A583353DA43",
   "total_file_count": 125
 }

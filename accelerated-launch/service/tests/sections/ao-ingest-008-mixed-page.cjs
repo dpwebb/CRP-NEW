@@ -2,7 +2,7 @@
 /* ao-ingest-008-mixed-page.cjs — OWNER-ACCEPT-009 GAP-INGEST-008 (single-page partial-text recovery).
  * A page carrying SUBSTANTIAL native text AND an embedded image-only account/table region must recover that
  * region through bounded local OCR. Exercises: useful recovery, no duplicate extraction on a fully readable
- * page, conflicting readings kept unresolved, an unreadable image region with honest messaging, and the
+ * page, distinct own readings preserved without an invented account match, an unreadable image region with honest messaging, and the
  * equivalent layout with the image region in a different position. */
 const fs = require('node:fs');
 const os = require('node:os');
@@ -11,6 +11,9 @@ const { buildPdfDocumentModel } = require('../../../../internal-validation/ca-ns
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const { buildMixedPagePdf, freezeExpected } = require('../../../../SOURCE_CAPTURES/ACCEPT-009/build-mixed-page-pdf.cjs');
 const formats = require('../../formats.cjs');
+const { sourceForField } = require('../../report-fact-sources.cjs');
+const engine = require('../../evaluation.cjs');
+const issues = require('../../issues.cjs');
 
 async function run(t, check) {
   const evidence = {};
@@ -55,7 +58,9 @@ async function run(t, check) {
     check.equal(nativeOnly.ext.reading_state.image_only_pages.length, 0, 'and no image-only pass was triggered');
     check.equal(nativeOnly.ext.reading_state.complete, true, 'the reading is complete without any OCR pass');
 
-    /* 3. conflicting readings kept unresolved (no substitution) */
+    /* 3. same creditor name at different physical entries is not proof of one
+       account. Both own values remain usable; neither replaces the other. The
+       same-physical-location disagreement refusal is exercised by am-fdt-recovery. */
     const conflict = extractBytes(buildMixedPagePdf({
       nativeLines: ['Equifax Consumer Credit Report', 'Report Date: June 12, 2026', 'Creditor B Balance $100'],
       imageLines: ['Creditor B Balance $200']
@@ -64,8 +69,17 @@ async function run(t, check) {
       .filter((r) => (r.facts || {})['account.reported_identity'] === 'CREDITOR B')
       .map((r) => r.facts['account.balance']);
     check.deepEqual([...new Set(amounts)].sort(), [100, 200], 'conflicting native and OCR values are both preserved, never substituted');
-    check.ok(conflict.ext.records.filter((r) => (r.facts || {})['account.reported_identity'] === 'CREDITOR B').every((r) => r.status !== 'RESOLVED'), 'the materially disagreeing balance is withheld (no resolved conclusion)');
-    check.equal(conflict.ext.reading_state.complete, false, 'the conflicting reading is reported as incomplete, not silently resolved');
+    const ownEntries = conflict.ext.records.filter((r) => r.facts['account.reported_identity'] === 'CREDITOR B');
+    check.equal(ownEntries.length, 2, 'the reader retains two distinct physical account entries');
+    check.ok(ownEntries.every((r) => r.status === 'RESOLVED'
+      && sourceForField(r, 'account.balance')?.normalized_value === r.facts['account.balance']),
+    'each readable own balance remains source-linked instead of depending on an unrelated date');
+    check.deepEqual(ownEntries.map((r) => sourceForField(r, 'account.balance').location.source).sort(),
+      ['LOCAL_OCR', 'NATIVE_TEXT'], 'the separate native and image readings retain their actual sources');
+    check.equal(conflict.ext.reading_state.complete, true, 'two clear distinct entries are readable, even when their balances differ');
+    check.equal(issues.issuesFor({ extraction: conflict.ext, evaluation: engine.evaluateCase({
+      country: 'US', region: 'US-NY', extraction: conflict.ext }) }).filter((issue) => issue.rule_assessment).length,
+    0, 'a creditor name alone never turns the different balances into a violation');
 
     /* 4. unreadable image region, honest incomplete-review messaging */
     const unreadable = extractBytes(buildMixedPagePdf({

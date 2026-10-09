@@ -30,6 +30,10 @@ const specs = [
     'Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds.'],
   ['cx-all82-required-report-data', ['applicable_assessment', 'behavioral_coverage'],
     'All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence.'],
+  ['eu-general-omission-delivery', ['applicable_assessment', 'consumer_delivery', 'behavioral_coverage'],
+    'Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check.'],
+  ['dl-general-caption-sources', ['usable_intake', 'consumer_delivery'],
+    'The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions.'],
   ['ct-owner-common-error-scope', ['jurisdiction_inventory', 'applicable_assessment', 'behavioral_coverage'],
     'The same 19-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.'],
   ['z-general-intake', ['usable_intake'],
@@ -95,7 +99,7 @@ const evidence = {
   },
   remaining: {
     reader_coverage: 'These supported shared paths do not establish every field mapping or every checklist item for every report layout.',
-    current_gb_format: 'CURRENT_GB_SUPPORT_IS_ESTABLISHED remains a separate current-format evidence dependency for the dedicated GB family; general intake and shared checklist delivery do not close it.',
+    current_gb_format: 'The current bounded UK GENERAL consumer field contract is supported separately. The dedicated Experian example remains historical; whole present-day bureau layout certification is not claimed or required for these supported journeys.',
     hosted_paid_journey: hostedReason,
     production_readiness: 'OPEN; production configuration, release controls and owner authorization are separate.'
   },

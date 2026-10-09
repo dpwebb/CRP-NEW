@@ -123,6 +123,10 @@ async function gbFieldContract(t, check) {
     const legacy = synthetic(['Equifax Credit Report', 'Report Date: 2026-06-12', 'Creditor: Cedar Bank',
       ...(maskState === 'absent' ? [] : ['Account Number: XXXX1234']),
       'Account Type: Credit Card', 'Balance: 100', 'Credit Limit: 0']);
+    // Preserve this controlled legacy assembly branch explicitly. Ordinary own
+    // numeric captions now resolve the native record instead of leaving it here.
+    legacy.records[0].status = 'EXTRACTION_UNRESOLVED';
+    legacy.records[0].reason = 'CONTROLLED_LEGACY_UNRESOLVED_RECORD';
     if (maskState === 'untrusted') legacy.records[0].fact_sources = { ...legacy.records[0].fact_sources,
       'account.masked_identifier': { raw_value: 'XXXX1234', normalized_value: 'MASK-1234',
         location: { page: 1, line: 4, trusted: false } } };
