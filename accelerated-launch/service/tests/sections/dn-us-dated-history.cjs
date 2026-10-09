@@ -206,12 +206,12 @@ async function run(t, check) {
     check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves the report cells and published definition');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'the approved history packet downloads');
-    check.ok(download.text.includes('May 2025') && download.text.includes('printed "OK"') && download.text.includes('printed "30"'),
+    const packetWords = download.text.replace(/\s+/g, ' ');
+    check.ok(packetWords.includes('May 2025') && packetWords.includes('"OK"') && packetWords.includes('"30"'),
       'packet states both own printed codes and their reporting period');
-    const joinedPacket = download.text.replace(/\s/g, '');
-    check.ok(download.text.includes('Published code definition: OK') && download.text.includes('Published code definition: 30')
-      && joinedPacket.includes(definitions.SOURCE.title.replace(/\s/g, '')) && joinedPacket.includes(definitions.SOURCE.url.replace(/\s/g, '')),
-      'packet separately cites the published definitions with their title and URL');
+    check.ok(packetWords.includes('Current, terms met') && packetWords.includes('30 days past due')
+      && selected.source_facts.filter(fact => fact.definition_source?.url === definitions.SOURCE.url).length >= 2,
+    'plain letter explains both sourced code meanings while the selected evidence retains the published definition attribution');
     check.equal(/page undefined|probable violation|potential violation/.test(download.text.toLowerCase()), false,
       'consumer packet has no invented source page or obsolete verdict');
     const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
@@ -226,13 +226,13 @@ async function run(t, check) {
       await page.locator('[data-open="' + caseId + '"]').click();
       await page.locator('#steps button[data-step="4"]').click();
       await page.waitForSelector('#packet-block');
-      await page.waitForFunction(() => document.body.innerText.includes('Published code definition:'));
-      const text = await page.locator('#packet-block').innerText();
-      check.ok(text.includes('Published code definition:') && text.includes(definitions.SOURCE.title)
-        && text.includes(definitions.SOURCE.url), 'the actual packet review screen cites the external published basis');
+      await page.waitForSelector('#packet-letter');
+      const text = await page.locator('#packet-letter').inputValue();
+      check.ok(text.includes('Current, terms met') && text.includes('30 days past due'),
+        'the editable letter on the actual review screen explains both supported code meanings');
       check.equal(text.includes('printed Current, terms met') || text.includes('printed 30 days past due'), false,
         'published meanings are not falsely labelled as words printed in the report');
-      check.ok(text.includes('printed OK') && text.includes('printed 30'), 'the actual screen still distinguishes both printed report codes');
+      check.ok(text.includes('"OK"') && text.includes('"30"'), 'the actual letter still distinguishes both printed report codes');
     } finally { await browser.close(); }
     for (const [label, mutate] of [
       ['code source', (record) => { record.facts['account.paymentHistoryCells'][0].location.x0 += 1; }],

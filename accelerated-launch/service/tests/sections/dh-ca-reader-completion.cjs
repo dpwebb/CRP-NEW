@@ -116,7 +116,8 @@ async function run(t, check) {
       check.equal(issues.publicIssue(paid[0]).consumer_label, 'VIOLATION', 'a valid spaced monetary value supports the existing breach');
       check.equal(paid[0].source_facts.find((fact) => fact.field === 'account.balance').raw_value, rawValue,
         'the violation retains the complete amount source');
-      check.ok(approvedPacket(ctx, paid[0]).includes(rawValue), 'the approved packet retains the spaced printed amount');
+      check.match(approvedPacket(ctx, paid[0]), /current balance of 100\b/,
+        'the approved human letter preserves the sourced positive amount without requiring the retired raw-value appendix');
     }
   }
   for (const caption of ['Balance', 'Amount']) {
@@ -140,7 +141,8 @@ async function run(t, check) {
   check.equal(historyIssue?.classification, 'PROBABLE_VIOLATION', 'known contradictory same-period performance remains supported');
   check.equal(issues.publicIssue(historyIssue).consumer_label, 'VIOLATION', 'the supported history breach has the sole public term');
   const body = approvedPacket(history, historyIssue);
-  check.match(body, /VIOLATION/, 'the existing approved history packet remains usable');
+  check.match(body, /Please check the payment-history cells/,
+    'the existing approved history packet makes a plain correction request');
   check.ok(historyIssue.source_facts.every((fact) => body.includes(String(fact.raw_value))), 'the packet retains both printed codes');
   for (const code of ['X', '0', 'unrecognized']) {
     const ctx = read([block({ rows: [{ period: 'Oct 2025', mop: '1' }, { period: 'Oct 2025', mop: code }] })]);

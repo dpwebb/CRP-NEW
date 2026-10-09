@@ -161,8 +161,8 @@ async function run(t, check) {
       'the consumer approves the source-linked recovered history');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'the approved packet containing the recovered glyph downloads');
-    check.ok(download.text.includes('printed "30"') && download.text.includes('printed "OK"')
-      && download.text.includes('May 2025'), 'the packet states the physically printed codes and their own period');
+    check.ok(download.text.includes('"30"') && download.text.includes('"OK"')
+      && download.text.includes('May 2025'), 'the human letter states the physically printed codes and their own period');
     t.service.store.update((state) => {
       state.results.find((result) => result.case_id === caseId).extraction.records[0].facts['account.paymentHistoryCells']
         .find((cell) => cell.code === '30').location.recovery.source_sha256 = 'changed';

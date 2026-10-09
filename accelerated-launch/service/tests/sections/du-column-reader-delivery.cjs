@@ -90,7 +90,8 @@ async function run(t, check) {
     check.equal(/potential violation|probable violation|COMMON-ERROR-/i.test(assessment.text), false,
       'assessment text contains no obsolete verdict or internal check ID');
     const body = await approve(reading, issue);
-    check.ok(body.includes('VIOLATION') && body.includes('Current Balance') && body.includes('page 1'),
+    check.ok(body.includes('Cedar Bank') && body.includes('Paid in Full') && body.includes('Current Balance')
+      && body.includes('$100') && body.includes('report page 1'),
       'the approved packet carries the actual own balance source');
     check.equal(/potential violation|probable violation|COMMON-ERROR-|undefined/i.test(body), false,
       'the recovered packet has no obsolete verdict or invented source');
@@ -104,7 +105,8 @@ async function run(t, check) {
   check.ok(reaging, 'own recovered identity and dates support the owned earlier/current anchor comparison');
   if (reaging) {
     const body = await approve(current, reaging);
-    check.ok(body.includes('Earlier report 2025-10-07') && body.includes('Current report 2026-10-07'),
+    check.ok(body.includes('2025-10-07') && body.includes('2026-10-07')
+      && body.includes('earlier report dated October 7, 2025') && body.includes('report dated October 7, 2026'),
       'the approved changed-anchor packet carries both owned report dates');
     check.ok(body.includes('2018-01-01') && body.includes('2020-01-01'), 'both actual original-delinquency readings reach the packet');
     const record = current.stored.extraction.records.find((row) => row.facts?.['account.masked_identifier'] === 'MASK-5432');
@@ -139,8 +141,10 @@ async function run(t, check) {
     check.equal(historyIssue.source_facts.filter((fact) => fact.source_field === 'Ratings Key').length, 2,
       'each decisive code includes its own literal printed key');
     const body = await approve(history, historyIssue);
-    check.ok(body.includes('Rating:') && body.includes('Category:') && body.includes('Ratings Key')
-      && body.includes('May 2024') && body.includes('OK Current') && body.includes('30 30 Days Late'),
+    const historyWords = body.replace(/\s+/g, ' ');
+    check.ok(historyWords.includes('Rating:') && historyWords.includes('Category:') && historyWords.includes('Ratings Key')
+      && historyWords.includes('May 2024') && historyWords.includes('"OK" (Current)')
+      && historyWords.includes('"30" (30 Days Late)'),
       'packet review states the actual captions, separate calendar sources and printed code meanings');
     const caseId = history.caseId;
     const records = history.stored.extraction.records;

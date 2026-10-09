@@ -159,10 +159,15 @@ async function run(service, check) {
     check.equal((await service.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'the consumer approves the selected native history evidence');
     const download = await service.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'the selected approved history packet downloads');
-    check.ok(download.text.includes('printed "1"') && download.text.includes('printed "0"'), 'both conflicting own report codes remain printed evidence');
-    const joinedPacket = download.text.replace(/\s/g, '');
-    check.ok(joinedPacket.includes(definitions.GB_SOURCE.url.replace(/\s/g, '')) && joinedPacket.includes(definitions.GB_CAIS_SOURCE.url.replace(/\s/g, '')),
-      'code meanings remain separate published citations in the packet');
+    const packetWords = download.text.replace(/\s+/g, ' ');
+    check.ok(packetWords.includes('"1"') && packetWords.includes('"0"'), 'both conflicting own report codes remain stated in the human letter');
+    check.ok(packetWords.includes('December 2025') && packetWords.includes('January 1, 2026')
+      && packetWords.includes('File updated for the period to') && packetWords.includes('most recent month comes first')
+      && offered.source_facts.some(fact => fact.definition_source?.url === definitions.GB_SOURCE.url)
+      && offered.source_facts.some(fact => fact.definition_source?.url === definitions.GB_CAIS_SOURCE.url)
+      && offered.source_facts.some(fact => fact.definition_source?.kind === 'HISTORY_PERIOD'
+        && fact.definition_source.url === definitions.GB_SOURCE.url),
+    'plain letter explains the history order and selected evidence retains separate published code and period definitions');
     check.equal(/page undefined|probable violation|potential violation/i.test(download.text), false, 'packet has no invented source page or retired breach label');
   }
   return { source_artifact: 'PUB-009 accepted historical native source, plus separately pinned Experian UK guide and CAIS code definitions',

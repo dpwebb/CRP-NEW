@@ -11,6 +11,7 @@ const issues = require('../../issues.cjs');
 const { sourceForField, reportReference } = require('../../report-fact-sources.cjs');
 const { nativePdf } = require('./dv-au-reference-delivery.cjs');
 const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const DATE_CHECK = 'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE';
 const INDEPENDENT = 'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY';
 const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -153,7 +154,14 @@ async function run(t, check) {
       check.equal(issues.issuesFor(stalePair).filter((issue) => issue.check_id === id && issue.eligible).length, 0,
         'persisted detection cannot resurrect the rejected pair through legacy fallback for ' + id);
     }
-    const pairView = (await t.request('GET', pairEndpoint + '/packet', { token: pairOwner.token })).json.view;
+    const pairResponse = await t.request('GET', pairEndpoint + '/packet', { token: pairOwner.token });
+    check.equal(pairResponse.status, 200, 'the selector remains usable after paired evidence is rejected');
+    if (pairResponse.status !== 200) throw new Error('rejected paired source GET /packet: ' + pairResponse.text);
+    const pairView = pairResponse.json.view;
+    check.ok(pairView.packet.approval_stale && !pairView.packet.preview_ready,
+      'obsolete selected evidence is visibly stale and cannot be reviewed as a current packet');
+    check.ok(pairView.packet.letter_preview_url === null && pairView.packet.form_previews.length === 0,
+      'obsolete selected evidence cannot retain misleading letter or bureau-form preview links');
     check.equal(pairView.eligible_issues.some((issue) => issue.issue_id === pairIssue.issue_id), false, 'stale paired finding is absent from the actual selector');
     check.equal((await t.request('GET', pairEndpoint + '/packet-download', { token: pairOwner.token })).status, 409, 'stale paired finding cannot download under old approval');
     pairAmend((extraction) => { extraction.records = extraction.records.filter((record) => record.record_index !== supportingIndex); });
@@ -207,8 +215,14 @@ async function run(t, check) {
   check.equal((await t.request('POST', endpoint + '/packet/approve', { token: owner.token })).status, 200, 'consumer can approve independent evidence with date withheld');
   const final = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
   check.equal(final.status, 200, 'independent approved packet remains usable');
-  check.ok(final.text.includes('VIOLATION'), 'consumer terminology remains VIOLATION');
-  check.ok(!final.text.includes('reference date 2026-01-04'), 'rejected report date is absent from the selected packet');
+  check.equal(selected.consumer_label, 'VIOLATION', 'the supported finding retains the sole consumer term');
+  const finalDocument = await PDFDocument.load(final.bytes);
+  const finalLetter = finalDocument.getForm().getFields().filter(field => /^CRP_letter_page_\d+$/.test(field.getName()))
+    .map(field => field.getText()).join('\n');
+  check.ok(finalLetter.includes('opening date comes after the closing date') && finalLetter.includes('Please'),
+    'the actual editable letter preserves the independent account-date correction request');
+  check.equal(/2026-01-04|January 4, 2026|4 January 2026/.test(finalLetter), false,
+    'the generated letter excludes the rejected report date while the original source page remains unchanged');
   return { scope: 'own family date -> assembly -> checklist -> selected approved packet', boundaries: 'rejected sources cannot resurrect through scalar identities; independent violations survive' };
 }
 

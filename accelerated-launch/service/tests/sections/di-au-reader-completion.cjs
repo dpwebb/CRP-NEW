@@ -287,10 +287,17 @@ async function run(t, check) {
     check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: owner.token })).status, 200, 'the consumer approves the history packet');
     const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
     check.equal(downloaded.status, 200, 'the approved history packet downloads');
-    check.ok(downloaded.text.includes('Cedar Bank') && downloaded.text.includes('Jan 2015') && downloaded.text.includes(ON_TIME)
-      && downloaded.text.includes(OVERDUE), 'the downloaded packet states both printed meanings and their own disputed period/account');
-    check.ok(downloaded.text.includes('Graphical repayment symbol') && downloaded.text.includes('Report-defined repayment symbol meaning'),
-      'the downloaded packet locates the graphical cell and its separate printed legend honestly');
+    const composed = require('../../packets.cjs').packetPrint(t.service.store, owner, caseId);
+    check.deepEqual(composed.sections.filter(section => section.kind === 'report').map(section => section.source_pages), [[3]],
+      'the complete PDF includes only the actual disputed graphical-history and own-legend page');
+    check.ok(composed.body.equals(downloaded.bytes), 'the actual download is the same complete reviewed and approved PDF');
+    const packetWords = downloaded.text.replace(/\s+/g, ' ');
+    check.ok(packetWords.includes('Cedar Bank') && packetWords.includes('January 2015')
+      && packetWords.includes(ON_TIME.replace(/\s+/g, ' ')) && packetWords.includes(OVERDUE.replace(/\s+/g, ' ')),
+    'the downloaded packet states both sourced meanings and their own disputed period/account');
+    check.ok(packetWords.includes('Please check the payment-history cells') && packetWords.includes('report page')
+      && selectable.source_facts.some(fact => fact.source_field === 'Report-defined repayment symbol meaning' && fact.location?.page),
+    'the letter makes a plain request and the selected evidence retains the separate physical legend location');
     check.equal(downloaded.text.includes(positive.extraction.records[0].facts['account.paymentHistoryCells'][0].raw_symbol.sha256), false,
       'the private image-match hash is not consumer packet wording');
     for (const [name, change] of [

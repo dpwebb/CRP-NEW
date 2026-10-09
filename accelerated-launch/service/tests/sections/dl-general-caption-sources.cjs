@@ -173,15 +173,18 @@ async function gbFieldContract(t, check) {
     check.equal(approval.status, 200, region + ' consumer approves the selected evidence');
     const download = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, region + ' actual approved packet downloads');
-    const ownCreditor = download.text.includes('Cedar & Pine Bank'), ownMask = download.text.includes('XXXX1234');
-    const ownValues = download.text.includes('£100') && download.text.includes('£0');
-    const ownLocations = download.text.includes('page 1, line 12') && download.text.includes('page 1, line 14');
-    const ownVerdict = download.text.includes('VIOLATION') && !/probable violation|potential violation/i.test(download.text);
+    const packetWords = download.text.replace(/\s+/g, ' ');
+    const ownCreditor = packetWords.includes('Cedar & Pine Bank'), ownMask = packetWords.includes('XXXX1234');
+    const ownValues = packetWords.includes('£100') && packetWords.includes('£0');
+    const ownLocations = packetWords.includes('report page 1') && packetWords.includes('Current Balance:')
+      && packetWords.includes('Credit Limit / Overdraft Limit:');
+    const ownRequest = packetWords.includes('Please check the credit limit and balance')
+      && !/probable violation|potential violation/i.test(packetWords);
     check.ok(ownCreditor, region + ' downloaded packet names the own printed creditor');
     check.ok(ownMask, region + ' downloaded packet retains the own masked account suffix');
-    check.ok(ownValues && ownLocations, region + ' downloaded packet retains decisive values and their physical source locations');
-    check.ok(ownVerdict, region + ' downloaded packet uses the sole consumer verdict');
-    const ownedEvidence = ownCreditor && ownMask && ownValues && ownLocations && ownVerdict;
+    check.ok(ownValues && ownLocations, region + ' packet retains decisive values on the original captioned page and a plain page reference');
+    check.ok(ownRequest, region + ' human letter makes the selected correction request without retired verdict wording');
+    const ownedEvidence = ownCreditor && ownMask && ownValues && ownLocations && ownRequest;
     if ([opened.status, upload.status, assessed.status, choice.status, correspondence.status, reviewed.status, approval.status, download.status]
       .every((status, index) => status === (index < 3 ? 201 : 200)) && ownedEvidence && selected.consumer_label === 'VIOLATION'
       && physicalFacts.length === 3 && physicalFacts.every((fact) => fact.location?.bbox && fact.location?.caption_location?.bbox)) approvedDownloads++;
@@ -324,7 +327,9 @@ async function run(t, check) {
     check.equal((await t.request('POST', '/api/cases/' + current + '/packet/approve', { token: owner.token })).status, 200, 'consumer approves paired evidence');
     const download = await t.request('GET', '/api/cases/' + current + '/packet-download', { token: owner.token });
     check.equal(download.status, 200, 'approved changed-anchor packet downloads');
-    check.ok(download.text.includes('2018-01-01') && download.text.includes('2020-01-01') && download.text.includes('page 1, line 12'), 'packet retains both anchors and physical value line');
+    check.ok(download.text.includes('2018-01-01') && download.text.includes('2020-01-01')
+      && download.text.includes('report page 1') && download.text.includes('First Delinquency Date:'),
+    'packet retains both original anchor readings and the plain reference to their unchanged source pages');
     t.service.store.update((state) => { sourceForField(state.results.find((r) => r.case_id === current).extraction.records[0], 'tradeline.firstDelinquencyDate').location.caption_location.line += 1; });
     check.equal((await t.request('GET', '/api/cases/' + current + '/packet-download', { token: owner.token })).status, 409, 'changed caption provenance invalidates approval');
   }

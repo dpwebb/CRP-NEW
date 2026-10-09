@@ -6,13 +6,19 @@ const formats = require('../../formats.cjs');
 const engine = require('../../evaluation.cjs');
 const issues = require('../../issues.cjs');
 const { comparableText } = require('../packet-pdf-assertions.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
+async function downloadedLetter(bytes) {
+  const document = await PDFDocument.load(bytes);
+  return document.getForm().getFields().filter(field => /^CRP_letter_page_\d+$/.test(field.getName()))
+    .map(field => field.getText()).join('\n');
+}
 const regions = Object.keys(require('../../../adapters/applicability-records.json').region_applicability_index);
 const SPECS = [
-  ['COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE', 'Closed', 'Closed Date'],
-  ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'In Collection', 'First Delinquency Date'],
-  ['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE', 'Charged Off', 'Charge Off Date'],
-  ['COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', null, null]
-].map(([check_id, status, caption]) => ({ check_id, status, caption }));
+  ['COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE', 'Closed', 'Closed Date', 'space for the closing date is blank'],
+  ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'In Collection', 'First Delinquency Date', 'space for the first missed-payment date is blank'],
+  ['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE', 'Charged Off', 'Charge Off Date', 'space for that date is blank'],
+  ['COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', null, null, 'original account and its collection both show money owed']
+].map(([check_id, status, caption, plain_fact]) => ({ check_id, status, caption, plain_fact }));
 let sequence = 0;
 function linesFor(spec, value = '') {
   const header = ['Equifax Consumer Credit Report', 'Report Date: 2026-10-09'];
@@ -44,7 +50,7 @@ async function run(t, check) {
   check.equal(regions.length, 82, 'the native shared-source rules reach the canonical 82 selections');
   for (const spec of SPECS) {
     const lines = linesFor(spec);
-    // A second independent violation proves that selection does not leak its account into the packet.
+    // Selection controls the letter. The original relevant page also retains other printed entries unchanged.
     const extra = ['Creditor: Fictional Unselected Bank', 'Account Number: ****9876',
       'Date Opened: January 1, 2025', 'Closed Date: January 1, 2020'];
     const positive = native(t, lines.concat(extra));
@@ -139,13 +145,21 @@ async function run(t, check) {
       await t.preparePostalPacket(owner, id);
       const approved = await t.request('POST', endpoint + '/packet/approve', { token: owner.token });
       const downloaded = await t.request('GET', endpoint + '/packet-download', { token: owner.token });
-      const text = comparableText(downloaded.text);
-      const matched = downloaded.status === 200 && text.includes('Fictional Cedar Bank')
-        && text.includes(comparableText(selected.rule_assessment.requirement))
-        && text.includes('VIOLATION') && !text.includes('Fictional Unselected Bank');
+      const text = downloaded.status === 200 ? comparableText(await downloadedLetter(downloaded.bytes)) : '';
+      const matched = downloaded.status === 200 && text.toUpperCase().includes('FICTIONAL CEDAR BANK')
+        && text.includes(spec.plain_fact) && text.includes('Please') && text.includes('report page 1')
+        && text.includes('****5432') && !text.toUpperCase().includes('FICTIONAL UNSELECTED BANK');
       check.ok(choice.status === 200 && approved.status === 200 && approved.json.view.packet.selected_count === 1,
         'consumer selection and approval bind precisely this issue');
-      check.ok(matched, 'actual packet retains the selected account/rule and excludes the unselected account');
+      check.ok(matched, 'actual editable letter makes the selected factual request and excludes the unselected account');
+      check.ok(downloaded.status === 200 && comparableText(downloaded.text).includes('Fictional Unselected Bank'),
+        'the relevant original report page remains intact, including other entries printed on that same page');
+      if (downloaded.status === 200) {
+        const composed = require('../../packets.cjs').packetPrint(t.service.store, owner, id);
+        check.deepEqual(composed.sections.filter(section => section.kind === 'report').map(section => section.source_pages), [[1]],
+          'the complete packet includes the exact original source page for the selected blank or linked pair');
+        check.ok(composed.body.equals(downloaded.bytes), 'the approved complete PDF matches the printed packet byte for byte');
+      }
       check.equal((await t.request('GET', endpoint + '/packet-download', { token: stranger.token })).status, 403,
         'another account cannot download the approved evidence');
       if (matched && choice.status === 200 && approved.status === 200) downloads += 1;
@@ -157,7 +171,8 @@ async function run(t, check) {
         selected: downloads === 4, approved: downloads === 4, downloaded: downloads === 4, source_linked: allRegions === 82 },
       benign: { issues: findings(benign.extraction, 'US-CA', spec.check_id).length },
       missing_source: { issues: findings(missing.extraction, 'US-CA', spec.check_id).length },
-      packet: { approved_downloads: downloads, selected_content_matched: downloads === 4, unselected_content_absent: downloads === 4 } });
+      packet: { approved_downloads: downloads, selected_content_matched: downloads === 4, unselected_content_absent: downloads === 4,
+        unselected_content_scope: 'generated letter; original relevant report pages remain unchanged' } });
   }
   return { exercise_class: 'FICTIONAL_NATIVE_PDF_UPLOAD', checks: evidence,
     boundary: 'Native general-caption and same-report linked-pair mechanisms; no admission or dedicated-layout currency expansion.' };

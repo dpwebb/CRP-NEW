@@ -12,6 +12,13 @@ const issues = require('../../issues.cjs');
 const common = require('../../common-errors.cjs');
 const { sourceForField } = require('../../report-fact-sources.cjs');
 const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
+const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
+
+async function downloadedLetter(bytes) {
+  const document = await PDFDocument.load(bytes);
+  return document.getForm().getFields().filter(field => /^CRP_letter_page_\d+$/.test(field.getName()))
+    .map(field => field.getText()).join('\n');
+}
 
 const LIABILITY = 'CONSUMER_CREDIT_LIABILITY', OVERDUE = 'OVERDUE_ACCOUNT';
 const REFERENCE = { [LIABILITY]: 'liability.accountReference', [OVERDUE]: 'overdue.accountReference' };
@@ -175,9 +182,15 @@ async function run(t, check) {
   check.equal((await t.request('POST', `/api/cases/${caseId}/packet/approve`, { token: actor.token })).status, 200, 'the consumer approves the reference evidence');
   const downloaded = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });
   check.equal(downloaded.status, 200, 'the selected and approved packet downloads');
+  const composed = require('../../packets.cjs').packetPrint(t.service.store, actor, caseId);
+  check.deepEqual(composed.sections.filter(section => section.kind === 'report').map(section => section.source_pages), [[3, 4]],
+    'the single PDF contains the two exact own evidence pages, excluding the unrelated cover and summary');
+  check.ok(composed.body.equals(downloaded.bytes), 'approved print and download contain identical complete PDF bytes');
   check.ok(downloaded.text.includes('LIAB-REF-1') && downloaded.text.includes('OVER-REF-1'), 'the downloaded packet contains both own printed references');
-  check.ok(downloaded.text.includes('Account Number') && downloaded.text.includes('CURRENT Listing > Account Number')
-    && downloaded.text.includes('page 3') && downloaded.text.includes('page 4'), 'the packet states the literal captions and own pages');
+  const packetWords = downloaded.text.replace(/\s+/g, ' ');
+  check.ok(packetWords.includes('Account Number') && packetWords.includes('Current Listing')
+    && packetWords.includes('report page 3') && packetWords.includes('report page 4'),
+  'the packet includes the original printed captions and plain references to both own pages');
   check.equal(/liability\.accountReference|overdue\.accountReference|masked_identifier|continuing-account/.test(downloaded.text), false,
     'consumer wording contains no internal reference fields or identity claims');
 
@@ -214,7 +227,10 @@ async function run(t, check) {
     'the consumer can approve the newly redacted reference evidence');
   const redactedDownload = await t.request('GET', `/api/cases/${caseId}/packet-download`, { token: actor.token });
   check.equal(redactedDownload.status, 200, 'the approved redacted packet downloads');
-  check.equal(/LIAB-REF-1|OVER-REF-1/.test(redactedDownload.text), false, 'packet content and evidence index both hide the redacted references');
+  check.equal(/LIAB-REF-1|OVER-REF-1/.test(await downloadedLetter(redactedDownload.bytes)), false,
+    'the editable human letter excludes optional references marked private');
+  check.ok(redactedDownload.text.includes('LIAB-REF-1') && redactedDownload.text.includes('OVER-REF-1'),
+    'the consumer-approved original report copies preserve their printed references unchanged');
   t.service.store.update((state) => { state.results.find((r) => r.case_id === caseId).extraction.records = savedRecords; });
   return { source: 'fictional native AU PDF using accepted PUB-012 captions',
     packet_journey: 'upload -> independent VIOLATION -> own optional reference -> selection -> approval -> download',

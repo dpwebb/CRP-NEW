@@ -79,7 +79,7 @@ async function run(t, check) {
     'rejection of an independent shared date leaves the valid legacy payment anchor intact');
   const packet = download(paid, issue);
   check.match(packet, /PAID IN FULL/, 'the approved packet preserves the full decisive phrase');
-  check.match(packet, /100\.00/, 'the approved packet preserves its printed balance');
+  check.match(packet, /current balance of 100\b/, 'the approved human letter preserves its sourced balance amount');
   check.equal(/page (?:undefined|null)/.test(packet), false, 'packet sources never print a missing page');
   for (const status of ['PAID AS AGREED', 'CURRENT', 'UNPAID', 'SETTLED', 'PAID PARTIALLY'])
     check.equal(canadian(status).findings.some((item) => item.check_id === PAID), false,
@@ -167,7 +167,10 @@ async function run(t, check) {
   check.ok(zeroLimit?.eligible, 'a complete amount with the measured as-of annotation preserves the supported US rule');
   const nativePacket = download({ extraction: native.extraction,
     evaluation: numeric.assessed }, zeroLimit);
-  check.match(nativePacket, /VIOLATION/, 'the selected supported numeric rule still reaches an approved verification packet');
+  check.ok(nativePacket.includes('Cedar Bank') && nativePacket.includes('$1,234.50 as of 06/03/2015')
+    && nativePacket.includes('$0.00') && nativePacket.includes('Please check the credit limit and balance')
+    && nativePacket.includes('report page 1'),
+  'the selected numeric breach reaches a human request with its own measured amount, limit, account and page');
   for (const [raw, expected] of [['−$100', -100], ['–$100', null], ['—$100', null]])
     check.equal(amounts.printedAmount(formats.usFamily.sanitizeValue(raw)), expected,
       'a sign-like prefix cannot be stripped to turn credit or uncertainty into positive debt');
