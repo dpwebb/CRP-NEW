@@ -3,7 +3,7 @@
  * k-ui-smoke.cjs — the consumer surface actually renders.
  *
  * OWNER-ALL82-001 / B2. The HTTP suite proves the service's behaviour; this section proves the private UI
- * consumes it without error and shows the plain-language path, including the demonstration banner and the
+ * consumes it without error and shows the plain-language path, including uploaded report results and the
  * packet review. It runs `ui/app.js` in a `node:vm` context with a small DOM and `fetch` stub — the same
  * technique the repository already uses to check the static consumer site (`wizard-check.cjs`).
  *
@@ -139,20 +139,19 @@ const CASE_VIEW = {
   case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS', status: 'OPEN' },
   status_label: 'Open — you have not recorded a next step yet',
   files: [{
-    file_id: 'demo_1',
-    original_filename: 'DEMONSTRATION-INPUT-NOT-A-CREDIT-REPORT',
-    stored_bytes: 0,
-    container: 'IN_MEMORY_MODEL_NOT_A_FILE',
-    supported_format: false,
-    recognised_as: null,
+    file_id: 'uploaded_1',
+    original_filename: 'fictional-report.pdf',
+    stored_bytes: 100,
+    container: 'pdf',
+    supported_format: true,
+    recognised_as: 'Equifax Canada consumer report',
     refusal_reason: null,
     format_predicates: [],
-    demonstration: true,
-    extraction: { presentation_evidence: false, extraction_ran: true, accounts_read: 2, account_statuses: [], result_status: 'RESOLVED' }
+    extraction: { admitted: true, presentation_evidence: true, extraction_ran: true, accounts_read: 2, account_statuses: [], result_status: 'RESOLVED' }
   }],
   assessment_access: STUB_ACCESS_FULL,
   assessment_summary: STUB_SUMMARY,
-  result: DEMONSTRATION_RESULT,
+  result: { support: 'REPORT_SUPPORT', issues: [{ issue_id: 'i1', eligible: true, consumer_label: 'VIOLATION', explanation: 'The opened date is later than the closed date.', source_location: { section: 'Accounts', page: 16, line: 32 }, account_identity: { name: 'FICTIONAL CREDITOR' }, rule_assessment: { requirement: 'The opening date must not be later than the closing date.' } }] },
   reviewed: false,
   download: {
     response_draft_available: false,
@@ -239,10 +238,7 @@ function makeResponder() {
     if (method === 'POST' && url === '/api/cases') return { status: 201, body: { ok: true, case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS' } } };
     if (method === 'GET' && url === '/api/cases/case_stub') return { status: 200, body: { ok: true, view: { ...CASE_VIEW, reviewed: state.reviewed } } };
     if (method === 'POST' && url === '/api/cases/case_stub/files') return { status: 201, body: { ok: true, receipt: { file_id: 'f_uploaded', format_detection: { supported: true, refusal_reason: null } } } };
-    if (method === 'POST' && url === '/api/cases/case_stub/demonstration') {
-      return { status: 201, body: { ok: true, demonstration: true, counts_as_report_support: false, label: 'INTERACTIVE DEMONSTRATION — NOT A CREDIT REPORT — NOT REPORT SUPPORT', result: DEMONSTRATION_RESULT } };
-    }
-    if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: DEMONSTRATION_RESULT } };
+    if (method === 'POST' && url === '/api/cases/case_stub/evaluate') return { status: 201, body: { ok: true, result: CASE_VIEW.result } };
     if (method === 'GET' && (url === '/api/billing/plans' || url === '/api/pricing')) {
       return { status: 200, body: { ok: true, plan_catalog: { currency: 'cad', plans: [
         { plan_code: 'report_once', label: 'CRP One-Time Credit Report', amount_display: '$5.95 CAD', interval: 'one_time', grants: ['the complete assessment of the report already uploaded for this case'] },
@@ -316,17 +312,17 @@ async function run(t, check) {
   check.equal(filePosts.length, 3, 'Step2 report plus two additional files each produce their own upload');
   vm.runInContext('state.step = 2; render();', ctx);
 
-  /* Step 3: run the labelled demonstration. */
-  await dom.elementById('demo').onclick();
-  await tick();
-  check.ok(dom.calls.includes('POST /api/cases/case_stub/demonstration'), 'the demonstration is requested from the service');
-  check.ok(/INTERACTIVE DEMONSTRATION/.test(dom.nodes.get('support-banner').innerHTML), 'the banner labels the demonstration explicitly');
-  check.ok(/Checks performed/.test(panel.innerHTML), 'the results step renders the check count');
+  /* Step 3: view the actual uploaded report result; sample invitations and their action are retired. */
+  check.ok(!/Try a sample report|Try the sample|id="demo"|id="scenario"/.test(panel.innerHTML), 'the report step no longer invites sample use');
+  check.ok(!dom.nodes.has('demo') && !dom.calls.some(c => /\/demonstration/.test(c)), 'no sample control is wired or sample assessment requested');
+  vm.runInContext('state.step = 3; render();', ctx);
+  check.ok(!/INTERACTIVE DEMONSTRATION/.test(dom.nodes.get('support-banner').innerHTML), 'uploaded report results are not labelled demonstration');
+  check.ok(/VIOLATION/.test(panel.innerHTML) && /FICTIONAL CREDITOR/.test(panel.innerHTML), 'the result states the breach label and printed account name');
   check.ok(/page/.test(panel.innerHTML) && />16</.test(panel.innerHTML), 'and the evidence location is shown to the consumer');
   check.ok(!/What this result does not say/.test(panel.innerHTML), 'owner imperative: blanket qualification lists are not surfaced');
-  check.ok(/checks listed in this report/.test(panel.innerHTML), 'actual assessment scope is stated without legal-advice disclaimers');
+  check.ok(/opening date must not be later/.test(panel.innerHTML) && !/legal advice/.test(panel.innerHTML), 'the breached rule is stated without legal-advice disclaimers');
   check.ok(!/NOT_REPORT_SUPPORT/.test(panel.innerHTML), 'the raw support token is never rendered');
-  check.ok(!/A quick clarification/.test(panel.innerHTML), 'a labelled demonstration never surfaces the clarification block');
+  check.ok(!/A quick clarification/.test(panel.innerHTML), 'the uploaded result asks no unneeded questions');
 
   /* The optional clarification block appears only for a real report result, with benefit, I-don't-know and Skip. */
   ctx.REPORT_VIEW = REPORT_VIEW;
@@ -456,7 +452,7 @@ async function run(t, check) {
   vm.runInContext('state.view = ONE_TIME_VIEW; state.step = 3; render();', ctx);
   check.ok(/We did not find a reporting issue/.test(panel.innerHTML), 'a one-time unlock shows the result of its issue assessment');
   check.ok(/id="download-assessment"/.test(panel.innerHTML), 'and offers the assessment download');
-  check.ok(/Dispute packets, report history and subsequent-report comparison are part of a subscription\./.test(panel.innerHTML), 'and explains that packets need a subscription');
+  check.ok(/SUBSCRIPTION BENEFITS/.test(panel.innerHTML) && /Print and mail your disputes/.test(panel.innerHTML) && /Compare your next report/.test(panel.innerHTML), 'the report explains subscriber packet and comparison benefits');
   check.ok(!/id="packet-block"/.test(panel.innerHTML), 'with no packet block for a one-time unlock');
   vm.runInContext('state.step = 4; render();', ctx);
   check.ok(/Dispute packets are part of a subscription\./.test(panel.innerHTML) && /id="go-billing"/.test(panel.innerHTML), 'the review step points a one-time unlock at the plans instead of the packet');

@@ -5,7 +5,7 @@
  * Server enforcement: configured prices and purchase types are returned by the plans view; billing views and
  * actions require authentication and are account-scoped; cancellation is at period end (access continues, it
  * does not refund or immediately terminate); an unpaid account is refused paid actions; a one-time payment
- * earns an eligible once-only upgrade credit.
+ * earns an unused lower-plan payment credit toward an upgrade.
  * Consumer interface: the Billing step shows each configured plan's price/currency/purchase type and grants,
  * the recorded access state, the renewal behavior, and the upgrade credit; cancellation appears only for a
  * subscription.
@@ -68,7 +68,7 @@ async function run(t, check) {
   const paid = await t.unpaidAccount('billing-paid@example.test');
   const paidCase = await t.assessedCase(paid);
   await t.pay(paid, 'report_once', paidCase);
-  const subscriber = await t.account('billing-subscriber@example.test');
+  const subscriber = await t.unpaidAccount('billing-subscriber@example.test');
   await t.pay(subscriber, 'monthly');
 
   const plans = await t.request('GET', '/api/billing/plans', { token: unpaid.token });
@@ -118,7 +118,13 @@ async function run(t, check) {
     if (url === '/api/session') return { status: 401, body: { ok: false, error: { code: 'AUTHENTICATION_REQUIRED', message: 'Sign in to continue.' } } };
     if (url === '/api/billing/plans') {
       if (responderState.billingDeferred) return { deferred: responderState.billingDeferred, status: 200 };
-      return { status: 200, body: { ok: true, ...PLANS_BODY, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: responderState.cancelAtPeriodEnd }, upgrade_credit: { eligible: responderState.credit, credit_cents: 595, currency: 'cad', expires_at: null, remaining_ms: 0, reserved_now: false } } };
+      const upgrade_quotes = Object.fromEntries(PLANS_BODY.plan_catalog.plans.map(p => {
+        const is_current = responderState.entitled && responderState.access_via === 'SUBSCRIPTION' && p.plan_code === responderState.plan_code;
+        const allowed = !(responderState.entitled && responderState.access_via === 'SUBSCRIPTION' && (p.plan_code === 'report_once' || is_current));
+        const credit_cents = responderState.credit && allowed && p.plan_code !== 'report_once' ? 595 : 0;
+        return [p.plan_code, { eligible: credit_cents > 0, regular_cents: p.amount_cents, first_invoice_cents: p.amount_cents - credit_cents, credit_cents, renewal_cents: p.amount_cents, currency: 'cad', allowed, is_current, revision: `billing-fixture-${p.plan_code}-${credit_cents}` }];
+      }));
+      return { status: 200, body: { ok: true, ...PLANS_BODY, upgrade_quotes, entitlement: { entitled: responderState.entitled, state: responderState.entitled ? 'ACTIVE' : 'NO_SUBSCRIPTION', access_via: responderState.access_via, plan_code: responderState.plan_code, expires_at: null, cancel_at_period_end: responderState.cancelAtPeriodEnd }, upgrade_credit: { eligible: responderState.credit, credit_cents: responderState.credit ? 595 : 0, currency: 'cad', expires_at: null, reserved_now: false } } };
     }
     if (method === 'POST' && url === '/api/billing/checkout') return responderState.checkoutFails ? { status: 503, body: { ok: false, error: { code: 'PAYMENT_PROVIDER_NOT_CONFIGURED', message: 'No payment provider is connected.' } } } : { status: 201, body: { ok: true, checkout: { redirect_grants_nothing: true, redirect_url: 'https://example.test/checkout' } } };
     if (method === 'POST' && url === '/api/entitlement/cancel') return responderState.cancelFails ? { status: 409, body: { ok: false, error: { code: 'NO_ACTIVE_PURCHASE_TO_CANCEL', message: 'There is no purchase recorded for this account to cancel.' } } } : { status: 200, body: { ok: true, cancellation: { at_period_end: true, plain: 'Your purchase will not renew.' } } };
@@ -147,7 +153,7 @@ async function run(t, check) {
   check.ok(/one-time purchase/.test(billingBox.innerHTML), 'one-time purchase type is shown');
   check.ok(/renews monthly/.test(billingBox.innerHTML) && /renews annually/.test(billingBox.innerHTML), 'recurring renewal is shown');
   check.ok(/You have no active paid plan/.test(billingBox.innerHTML), 'the unpaid access state is shown');
-  check.ok(/No upgrade credit is currently available/.test(billingBox.innerHTML), 'no upgrade credit is shown when none is held');
+  check.ok(/Every unused payment for a lower plan counts toward an upgrade/.test(billingBox.innerHTML), 'the credit benefit is explained without inventing a balance');
   check.ok(!/cancelEntitlement/.test(billingBox.innerHTML), 'no cancellation control appears for a non-subscription account');
 
   /* A subscribed account sees the renewal explanation and a cancellation control. */
@@ -159,7 +165,9 @@ async function run(t, check) {
   await tick(); await tick();
   check.ok(/renews automatically/.test(dom.elementById('billingView').innerHTML), 'a subscription shows its renewal behavior');
   check.ok(/Cancel renewal/.test(dom.elementById('billingView').innerHTML), 'a subscription shows a cancellation control');
-  check.ok(/CAD 5\.95/.test(dom.elementById('billingView').innerHTML), 'an eligible upgrade credit is shown');
+  check.ok(/\$5\.95 CAD/.test(dom.elementById('billingView').innerHTML) && /\$73\.55 CAD/.test(dom.elementById('billingView').innerHTML), 'the annual upgrade shows the server credit and adjusted price');
+  check.ok(/CURRENT PLAN/.test(dom.elementById('billingView').innerHTML) && !/id="checkout-monthly"|id="checkout-report_once"/.test(dom.elementById('billingView').innerHTML), 'an active subscriber cannot buy the same or a lower plan again');
+  check.ok(/Then \$79\.50 CAD per year/.test(dom.elementById('billingView').innerHTML), 'the regular annual renewal price is separate from today\'s discounted amount');
 
   responderState.cancelAtPeriodEnd = true;
   vm.runInContext('state.step = 8; render();', ctx);
@@ -172,7 +180,10 @@ async function run(t, check) {
 
   /* Checkout failure never displays success or changes access locally. */
   responderState.checkoutFails = true;
-  await dom.elementById('checkout-monthly').onclick();
+  await dom.elementById('checkout-annual').onclick();
+  await tick(); await tick();
+  check.ok(/Review your yearly upgrade/.test(dom.elementById('billingView').innerHTML), 'an existing subscription upgrade requires review before billing the saved payment method');
+  await dom.elementById('confirm-upgrade-annual').onclick();
   await tick(); await tick();
   check.ok(/Refused:/.test(panel.innerHTML), 'a failed checkout shows a refusal, not success');
   check.ok(!/Checkout opened/.test(panel.innerHTML), 'a failed checkout never claims a checkout was opened');
@@ -191,6 +202,8 @@ async function run(t, check) {
   await dom.elementById('signout').onclick();
   await tick(); await tick();
   check.equal(vm.runInContext('state.billing', ctx), null, 'billing state is cleared on sign-out');
+  check.equal(vm.runInContext('state.upgrade_quotes', ctx), null, 'account-specific upgrade quotes are cleared on sign-out');
+  check.equal(vm.runInContext('state.upgrade_credit', ctx), null, 'account-specific credit is cleared on sign-out');
 
   /* A delayed billing response after sign-out never renders the previous account's information. */
   let resolveBilling;

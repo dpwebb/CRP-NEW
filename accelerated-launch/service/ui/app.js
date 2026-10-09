@@ -26,6 +26,8 @@ const state = {
   entitlement: null,
   payment: null,
   upgrade_credit: null,
+  upgrade_quotes: null,
+  upgrade_confirmation: null,
   result_list: [],
   support: null,
   billing: null,
@@ -135,6 +137,7 @@ function renderSteps() {
 
 function navigateStep(step) {
   if (state.step === STEP.REVIEW && packetLeave) return packetLeave(step);
+  if (step !== STEP.BILLING) state.upgrade_confirmation = null;
   state.step = step; render();
 }
 
@@ -147,7 +150,7 @@ function banner() {
   } else {
     node.className = 'banner';
     node.innerHTML = surface && surface.preview_mode
-      ? '<strong>Staging preview · test payments only.</strong> Use test cards and public samples, never real cards or private reports.'
+      ? '<strong>Staging preview · test payments only.</strong> Use test cards and fictional reports, never real cards or private reports.'
       : '<strong>Preview · not open to the public yet.</strong> Payments are unavailable in this preview.';
   }
 }
@@ -178,26 +181,40 @@ function access() {
   /* A credit message appears only where it bears on a purchase decision (the billing view), never as a
      standing "not eligible" line on the report screen. */
   if (credit && credit.eligible) {
-    parts.push(`<strong>Upgrade credit:</strong> CAD ${(credit.credit_cents / 100).toFixed(2)} off your first monthly or yearly bill${credit.expires_at ? `, until ${esc(readableDate(credit.expires_at))}` : ''}.`);
+    parts.push(`<strong>Your upgrade credit:</strong> ${esc(money(credit.credit_cents, credit.currency))} from unused payments toward a higher plan.`);
   }
   return `<div class="note">${parts.join('<br>')}</div>`;
 }
 
 /** Refresh the account's access state after anything that could change it. */
 async function refreshAccess() {
+  const ensureAccount = accountContext();
   try {
     const data = await api('GET', '/api/entitlement');
+    ensureAccount();
     if (data && data.entitlement) state.entitlement = data.entitlement;
     if (data && data.payment) state.payment = data.payment;
-    if (data && data.upgrade_credit) state.upgrade_credit = data.upgrade_credit;
-  } catch {
+    state.upgrade_credit = data.upgrade_credit || null;
+    state.upgrade_quotes = data.upgrade_quotes || null;
+  } catch (error) {
+    if (error.cancelled) throw error;
+    ensureAccount();
     state.entitlement = null;
     state.payment = null;
+    state.upgrade_credit = null;
+    state.upgrade_quotes = null;
+    state.upgrade_confirmation = null;
   }
   try {
     /* The purchase choices appear on the results step as well as in billing, so the catalogue is loaded once. */
-    state.billing = await api('GET', '/api/billing/plans');
-  } catch {
+    const billing = await api('GET', '/api/billing/plans');
+    ensureAccount();
+    state.billing = billing;
+    if (billing.upgrade_quotes) state.upgrade_quotes = billing.upgrade_quotes;
+    if (billing.upgrade_credit) state.upgrade_credit = billing.upgrade_credit;
+  } catch (error) {
+    if (error.cancelled) throw error;
+    ensureAccount();
     state.billing = null;
   }
 }
@@ -454,8 +471,11 @@ function renderAccountDetails(panel) {
     state.view = null;
     state.entitlement = null;
     state.payment = null;
+    state.upgrade_credit = null;
+    state.upgrade_quotes = null;
     state.support = null;
     state.billing = null;
+    state.upgrade_confirmation = null;
     state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null; state.checkoutReturn = null;
     state.step = 0;
     state.notice = 'Signed out.';
@@ -746,12 +766,7 @@ function renderReport(panel) {
     Keep the report header, date and every page.</div></details>
     <div id="upload-progress" role="status" aria-live="polite">${batch.map(x => esc(x.file.name) + ': ' + esc(x.message || x.status)).join('<br>')}</div>
     <h2>Files on this case</h2>
-    ${files.length ? files.map(fileCard).join('') : '<p class="lede">No file has been uploaded for this case yet.</p>'}
-    <h2>Try a sample report</h2>
-    <p class="lede">These results are examples, not results from your report.</p>
-    <label for="scenario">Sample</label>
-    <select id="scenario">${(view.demonstration_scenarios || []).map((s) => `<option value="${esc(s)}">${esc(s)}</option>`).join('')}</select>
-    <button class="secondary" id="demo">Try the sample</button>`;
+    ${files.length ? files.map(fileCard).join('') : '<p class="lede">No file has been uploaded for this case yet.</p>'}`;
 
   const caseId = state.caseId, ensureAccount = accountContext(), sequence = renderSequence;
   const ensureReport = () => { ensureAccount(); if (state.caseId !== caseId || state.step !== STEP.REPORT || sequence !== renderSequence) throw cancelledAction(); };
@@ -777,13 +792,6 @@ function renderReport(panel) {
     el('upload-progress').after(clear);
   }
   if (!uploadLimits) api('GET', '/api/formats').then(data => { uploadLimits = data.upload_limits; }).catch(() => {});
-
-  el('demo').onclick = () => run(async () => {
-    const data = await api('POST', `/api/cases/${state.caseId}/demonstration`, { scenario: el('scenario').value });
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
-    state.step = 3;
-    state.notice = `${data.label}. Nothing here counts as report support.`;
-  });
 
   /* The one next action the status offers, wired to the case's own state. */
   const viewResults = el('view-results');
@@ -866,6 +874,57 @@ function planPrice(code) {
   return `${plan.amount_display}${suffix}`;
 }
 
+function money(cents, currency = 'cad') {
+  return Number.isSafeInteger(cents) && cents >= 0
+    ? `$${(cents / 100).toFixed(2)} ${String(currency).toUpperCase()}` : '';
+}
+function upgradeQuote(code) {
+  const quotes = state.billing?.upgrade_quotes || state.upgrade_quotes;
+  const quote = quotes && quotes[code];
+  return quote && ['regular_cents', 'first_invoice_cents', 'credit_cents', 'renewal_cents'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
+    ? quote : null;
+}
+function canChoosePlan(code) {
+  const quote = upgradeQuote(code);
+  if (quote) return quote.allowed !== false && !quote.is_current;
+  const ent = state.entitlement || {};
+  const rank = { report_once: 0, monthly: 1, annual: 2 };
+  return !(ent.entitled && ent.access_via === 'SUBSCRIPTION' && rank[code] <= rank[ent.plan_code]);
+}
+function purchasePrice(code) {
+  const quote = upgradeQuote(code);
+  return quote && quote.allowed !== false && !quote.is_current
+    ? `${money(quote.first_invoice_cents, quote.currency)} today` : planPrice(code);
+}
+function priceDetails(code) {
+  const quote = upgradeQuote(code);
+  const interval = code === 'annual' ? 'year' : 'month';
+  if (!quote) {
+    return `<p class="evidence">${code === 'report_once' ? 'One-time purchase. No renewal.' : `${esc(planPrice(code))}. Renews until you cancel.`}${state.upgrade_credit?.eligible && code !== 'report_once' ? ' Checkout will confirm your upgrade credit and final price.' : ''}</p>`;
+  }
+  const credit = quote.credit_cents > 0 && quote.allowed !== false && !quote.is_current
+    ? `<div class="credit-equation" aria-label="Upgrade price"><span><small>Plan price</small><b>${esc(money(quote.regular_cents, quote.currency))}</b></span><span class="equation-sign" aria-hidden="true">−</span><span><small>Your credit</small><b>${esc(money(quote.credit_cents, quote.currency))}</b></span><span class="equation-sign" aria-hidden="true">=</span><span class="equation-total"><small>Pay today</small><b>${esc(money(quote.first_invoice_cents, quote.currency))}</b></span></div>` : '';
+  const remaining = credit && quote.remaining_credit_cents > 0
+    ? `<p class="evidence">${esc(money(quote.remaining_credit_cents, quote.currency))} remains for a later upgrade.</p>` : '';
+  return `${credit}${remaining}<p class="evidence">${code === 'report_once' ? 'One-time purchase. No renewal.' : `Then ${esc(money(quote.renewal_cents, quote.currency))} per ${interval}. Renews until you cancel.`}</p>`;
+}
+function subscriptionBenefits(title = 'More help with every report') {
+  const icons = [
+    '<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/>',
+    '<path d="M20 8a8 8 0 0 0-14-3L3 8m0-5v5h5M4 16a8 8 0 0 0 14 3l3-3m0 5v-5h-5"/>',
+    '<path d="M3 7h7l2-3h9v16H3zM7 11h10M7 15h7"/>'
+  ];
+  const features = [
+    ['Print and mail your disputes', 'Choose the issues. Review and approve your packet. Print it and send it to your bureau.'],
+    ['Compare your next report', 'See which issues remain, change or no longer appear when you upload a newer report.'],
+    ['Keep your reports together', 'Find your saved reports and results in your account while your subscription is active.']
+  ];
+  return `<section class="subscription-benefits" aria-label="Subscription benefits"><span class="pill">SUBSCRIPTION BENEFITS</span><h2>${esc(title)}</h2><div class="benefit-grid">${features.map(([heading, detail], index) => `<div class="benefit-card"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icons[index]}</svg><h3>${heading}</h3><p>${detail}</p></div>`).join('')}</div></section>`;
+}
+function subscriptionChoices(prefix = 'buy') {
+  return ['monthly', 'annual'].filter(canChoosePlan).map(code => `<div class="subscription-choice"><button class="secondary" id="${prefix}-${code}">${code === 'annual' ? 'Yearly' : 'Monthly'} — ${esc(purchasePrice(code))}</button>${priceDetails(code)}</div>`).join('');
+}
+
 /** The return URL remembers a report, never payment or access. The protected view supplies both. */
 function checkoutReturnContext() {
   if (typeof location === 'undefined' || !location.search) return null;
@@ -885,6 +944,8 @@ async function restoreCheckoutReport(context) {
     if (!data.view || data.view.case?.case_id !== context.caseId) throw new Error('Report unavailable');
     state.caseId = context.caseId; state.view = data.view;
     state.entitlement = access.entitlement || null; state.payment = access.payment || null; state.upgrade_credit = access.upgrade_credit || null;
+    state.upgrade_quotes = access.upgrade_quotes || null;
+    state.billing = null;
     state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
     const confirmed = context.planCode === 'report_once' ? data.view.assessment_access?.complete_assessment : data.view.assessment_access?.dispute_packet;
     state.checkoutReturn = confirmed || context.cancelled ? null : { ...context, status: 'pending' };
@@ -909,18 +970,42 @@ function wireCheckoutReturn() {
 }
 
 /** Start a purchase for one plan. The one-time unlock is bound to this case on the server, which validates it. */
-function startCheckout(planCode) {
+function startCheckout(planCode, confirmedUpgrade = false) {
   return run(async () => {
+    const ensureAccount = accountContext();
     if (state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId) throw new Error('Select Check payment before starting another checkout.');
+    if (!canChoosePlan(planCode)) throw new Error('This plan is already included in your subscription. Choose a higher plan to upgrade.');
+    if (state.entitlement?.entitled && state.entitlement.access_via === 'SUBSCRIPTION') {
+      const quote = upgradeQuote(planCode);
+      if (!quote || typeof quote.revision !== 'string' || !quote.revision) throw new Error('Your upgrade price is unavailable. Refresh your plans and try again.');
+      if (!confirmedUpgrade) {
+        state.upgrade_confirmation = { account_id: state.account.account_id, plan_code: planCode, quote: { ...quote } };
+        state.step = STEP.BILLING;
+        return;
+      }
+      const review = state.upgrade_confirmation;
+      if (!review || review.account_id !== state.account?.account_id || review.plan_code !== planCode || !sameUpgradePrice(review.quote, quote)) {
+        state.upgrade_confirmation = null;
+        throw new Error('Your upgrade price changed. Review the updated price before confirming.');
+      }
+    }
     const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
     const context = state.caseId && state.view?.case?.case_id === state.caseId
       ? `?checkout=return&report=${encodeURIComponent(state.caseId)}&plan=${encodeURIComponent(planCode)}` : '';
     const body = { plan_code: planCode, return_url: base + context };
     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
+    if (confirmedUpgrade && state.entitlement?.access_via === 'SUBSCRIPTION') body.quote_revision = upgradeQuote(planCode).revision;
     let opened;
     try {
       opened = await api('POST', '/api/billing/checkout', body);
+      ensureAccount();
     } catch (err) {
+      ensureAccount();
+      if (err && err.code === 'STALE_UPGRADE_QUOTE') {
+        state.upgrade_confirmation = null;
+        await refreshAccess();
+        ensureAccount();
+      }
       /* The server refuses a one-time unlock with no eligible report, and refreshes the screen when the report is
          already unlocked, so the consumer sees their results instead of another purchase. */
       if (err && err.code === 'REPORT_ALREADY_UNLOCKED' && state.caseId) {
@@ -929,9 +1014,28 @@ function startCheckout(planCode) {
       }
       throw err;
     }
-    state.notice = 'Checkout opened. We will check your payment when you return.';
-    if (opened.checkout && /^https:\/\/checkout\.stripe\.com\//.test(opened.checkout.redirect_url || '')) location.assign(opened.checkout.redirect_url);
+    state.notice = opened.checkout?.is_subscription_upgrade || opened.checkout?.mode === 'EXISTING_SUBSCRIPTION_UPGRADE'
+      ? 'Your yearly upgrade was requested. We will confirm your payment before changing your access.'
+      : 'Checkout opened. We will check your payment when you return.';
+    state.upgrade_confirmation = null;
+    const redirect = opened.checkout?.redirect_url || '';
+    if (/^https:\/\/(?:checkout|invoice)\.stripe\.com\//.test(redirect) || redirect === body.return_url) location.assign(redirect);
   });
+}
+
+function sameUpgradePrice(left, right) {
+  return !!left && !!right && ['credit_cents', 'regular_cents', 'first_invoice_cents', 'renewal_cents', 'currency', 'allowed', 'is_current', 'revision'].every(key => left[key] === right[key]);
+}
+
+function upgradeConfirmationBlock() {
+  const review = state.upgrade_confirmation;
+  if (!review || review.account_id !== state.account?.account_id) return '';
+  const quote = upgradeQuote(review.plan_code);
+  if (!canChoosePlan(review.plan_code) || !sameUpgradePrice(review.quote, quote)) {
+    state.upgrade_confirmation = null;
+    return '<div class="note" role="status">Your upgrade price changed. Review the updated price before confirming.</div>';
+  }
+  return `<section class="upgrade-confirmation" aria-label="Review yearly upgrade"><h3>Review your yearly upgrade</h3>${priceDetails(review.plan_code)}<p><b>Pay today: ${esc(money(quote.first_invoice_cents, quote.currency))}</b></p><p>When you confirm, we change your plan and charge the amount shown to your saved payment method.</p><p>Your yearly plan renews at ${esc(money(quote.renewal_cents, quote.currency))} each year until you cancel.</p><button class="primary" id="confirm-upgrade-${esc(review.plan_code)}">Confirm yearly upgrade</button><button class="secondary" id="cancel-upgrade">Keep my current plan</button></section>`;
 }
 
 /**
@@ -966,11 +1070,10 @@ function freeSummaryBlock(view) {
     <span class="pill">UNLOCK THE REST</span>
     <h3>Choose what you want next</h3>
     <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
-    <button class="primary" id="buy-report_once">Unlock this report — ${esc(planPrice('report_once'))}</button>
-    <button class="secondary" id="buy-monthly">Monthly — ${esc(planPrice('monthly'))}</button>
-    <button class="secondary" id="buy-annual">Annual — ${esc(planPrice('annual'))}</button>
-    <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and the assessment download for that report. Dispute packets, report history and comparison are part of a subscription.</p>
-  </div>`}`;
+    ${canChoosePlan('report_once') ? `<button class="primary" id="buy-report_once">Unlock this report — ${esc(purchasePrice('report_once'))}</button>` : ''}
+    ${subscriptionChoices()}
+    <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and a PDF report to keep. Dispute packets, report history and comparison are part of a subscription.</p>
+  </div>${subscriptionBenefits('Ready to take the next step?')}`}`;
 }
 
 /** A one-time unlocked report: the complete findings, the download, and the subscriber note. */
@@ -978,10 +1081,10 @@ function oneTimeNextStepsBlock() {
   return `<div class="obs">
     <span class="pill">UNLOCKED REPORT</span>
     <h3>Next steps for this report</h3>
-    <p class="evidence">This unlock covers this report. Dispute packets, report history and subsequent-report comparison are part of a subscription.</p>
-    <button class="primary" id="download-assessment">Download my assessment</button>
-    <button class="secondary" id="go-subscribe">See subscription plans</button>
-  </div>`;
+    <p class="evidence">Keep your full report as a PDF. It includes the issues we found, the report facts and clear next steps.</p>
+    <button class="primary" id="download-assessment">Download my report (PDF)</button>
+  </div>${subscriptionBenefits('Turn your results into a dispute packet')}
+  ${state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
 }
 
 function renderResults(panel) {
@@ -1001,7 +1104,7 @@ function renderResults(panel) {
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
       : '<div class="note">Your report has not been checked yet. Select Check my report.</div>'}
     ${summary && access.complete_assessment && result && !demo
-      ? (access.dispute_packet ? `${clarificationBlock(view)}${(result.issues || []).some(issue => issue.eligible) ? '<button class="primary" id="create-packet">Create my dispute packet</button>' : ''}<button class="secondary" id="download-assessment">Download my assessment</button>` : oneTimeNextStepsBlock())
+      ? (access.dispute_packet ? `${clarificationBlock(view)}${(result.issues || []).some(issue => issue.eligible) ? '<button class="primary" id="create-packet">Create my dispute packet</button>' : ''}<button class="secondary" id="download-assessment">Download my report (PDF)</button>${subscriptionBenefits('Included with your subscription')}` : oneTimeNextStepsBlock())
       : ''}`;
 
   el('evaluate').onclick = () => checkReport();
@@ -1745,6 +1848,7 @@ function renderCase(panel) {
     state.notice = 'Case deleted. Its stored file and results are gone, and the case id no longer resolves.';
   });
   el('deleteAccount').onclick = () => run(async () => {
+    accountEpoch++;
     await api('DELETE', '/api/account');
     state.account = null;
     state.accountProfile = null; state.accountDocuments = [];
@@ -1753,6 +1857,8 @@ function renderCase(panel) {
     state.view = null;
     state.support = null;
     state.billing = null;
+    state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
+    state.upgrade_confirmation = null;
     state.step = 0;
     state.notice = 'Account deleted, along with every case and stored file.';
   });
@@ -1856,12 +1962,12 @@ function intervalLabel(interval) {
 
 function renderBilling(panel) {
   if (!state.account) {
-    panel.innerHTML = `${notices()}<h1>Billing</h1><p class="lede">Sign in to see your billing information. It belongs to your account.</p>`;
+    panel.innerHTML = `${notices()}<h1>Plans</h1><p class="lede">Sign in to see your plan and upgrade credit.</p>`;
     return;
   }
   panel.innerHTML = `
-    <h1>Billing</h1>
-    <p class="lede">See your plan and prices. You can cancel your subscription renewal here.</p>
+    <h1>Your plan and upgrades</h1>
+    <p class="lede">See what you have, what you can add and what you will pay.</p>
     ${notices()}
     <div class="obs" id="billingView">Loading your billing information…</div>`;
 
@@ -1888,6 +1994,11 @@ function renderBillingView(data) {
   const pay = data.payment || {};
   const credit = data.upgrade_credit || {};
   const plansList = (data.plan_catalog && data.plan_catalog.plans) || [];
+  state.billing = data;
+  state.entitlement = data.entitlement || null;
+  state.payment = data.payment || null;
+  state.upgrade_credit = data.upgrade_credit || null;
+  state.upgrade_quotes = data.upgrade_quotes || null;
 
   const accessLine = ent.entitled
     ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
@@ -1908,34 +2019,51 @@ function renderBillingView(data) {
     : '';
 
   const creditLine = credit.eligible
-    ? `You can save <b>CAD ${(credit.credit_cents / 100).toFixed(2)}</b> on your first subscription bill${credit.expires_at ? `, until ${esc(readableDate(credit.expires_at))}` : ''}.`
-    : 'No upgrade credit is currently available.';
+    ? `You have <b>${esc(money(credit.credit_cents, credit.currency))}</b> from unused lower-plan payments. We apply your credit when you upgrade.`
+    : credit.reserved_now ? 'Your upgrade credit is held for your open checkout. Finish or cancel that checkout before starting another.'
+      : 'Every unused payment for a lower plan counts toward an upgrade.';
 
   const checkingPayment = state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId;
-  const planCards = checkingPayment ? '' : plansList.map((p) => `
-    <div class="obs">
-      <span class="pill">${esc(p.label)}</span>
-      <h3>${esc(p.amount_display)} — ${esc(intervalLabel(p.interval))}</h3>
-      <p class="evidence">${p.plan_code === 'report_once' ? 'Full assessment and download for one report. No dispute packet.' : 'Full assessments, dispute packets and report comparisons.'}</p>
-      <button class="secondary" id="checkout-${esc(p.plan_code)}">Start checkout</button>
-    </div>`).join('');
+  const planCards = checkingPayment ? '' : plansList.map((p) => {
+    const quote = upgradeQuote(p.plan_code);
+    const current = quote ? quote.is_current : ent.entitled && ent.access_via === 'SUBSCRIPTION' && ent.plan_code === p.plan_code;
+    const allowed = canChoosePlan(p.plan_code);
+    return `<article class="plan-card${current ? ' current-plan' : ''}">
+      <span class="pill">${current ? 'CURRENT PLAN' : p.plan_code === 'report_once' ? 'ONE REPORT' : 'SUBSCRIPTION'}</span>
+      <h3>${esc(planName(p.plan_code))}</h3>
+      <p class="plan-price">${esc(allowed && quote ? money(quote.first_invoice_cents, quote.currency) : p.amount_display)}${allowed && quote ? '<small>today</small>' : ''}</p>
+      <p class="evidence">${esc(intervalLabel(p.interval))}</p>
+      <p>${p.plan_code === 'report_once' ? 'Full results and a PDF for one report. No dispute packet.' : 'Full results, print and mail dispute packets, saved reports and comparisons.'}</p>
+      ${allowed ? priceDetails(p.plan_code) : `<p class="evidence">${current ? 'This is your current subscription.' : quote?.reason === 'CHECKOUT_ALREADY_IN_PROGRESS' ? 'Finish your open checkout before choosing another plan.' : 'Included in your current subscription.'}</p>`}
+      ${allowed ? `<button class="${p.plan_code === 'report_once' ? 'secondary' : 'primary'}" id="checkout-${esc(p.plan_code)}">${ent.entitled && ent.access_via === 'SUBSCRIPTION' ? 'Review' : ent.entitled && p.plan_code !== 'report_once' ? 'Upgrade to' : 'Choose'} ${p.plan_code === 'report_once' ? 'one report' : p.plan_code === 'annual' ? 'yearly' : 'monthly'}${ent.entitled && ent.access_via === 'SUBSCRIPTION' ? ' upgrade' : ''}</button>` : ''}
+    </article>`;
+  }).join('');
 
   box.innerHTML = `
     <h3>Your access</h3>
     <p class="evidence">${accessLine}</p>
     <p class="evidence">${renewalLine}</p>
     ${cancelBlock}
-    ${checkingPayment ? '' : `<h3>Plans and prices</h3>
-    <p class="evidence">Prices are in CAD. A one-time purchase does not renew. A subscription renews until you cancel it. Cancelling stops the next charge. Your access lasts until the date shown above.</p>
-    ${planCards}`}
+    ${Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
+    ${checkingPayment ? '' : upgradeConfirmationBlock()}
+    ${subscriptionBenefits('Keep going with a subscription')}
+    ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
+    <p class="evidence">Prices are in CAD. A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
+    <div class="purchase-plan-grid">${planCards}</div>`}
     <p class="evidence">${esc(paymentSentence(pay))}</p>
-    <h3>Upgrade credit</h3>
-    <p class="evidence">${creditLine}</p>`;
+    ${checkingPayment ? '' : '<p class="evidence">Checkout confirms your final price before you pay.</p>'}`;
 
   for (const p of plansList) {
     const btn = el('checkout-' + p.plan_code);
-    if (btn) btn.onclick = () => startCheckout(p.plan_code);
+    if (btn && canChoosePlan(p.plan_code)) btn.onclick = () => startCheckout(p.plan_code);
   }
+  const confirming = state.upgrade_confirmation;
+  const confirm = confirming && el('confirm-upgrade-' + confirming.plan_code);
+  if (confirm) confirm.onclick = () => startCheckout(confirming.plan_code, true);
+  const cancelUpgrade = el('cancel-upgrade');
+  if (cancelUpgrade) cancelUpgrade.onclick = () => { state.upgrade_confirmation = null; renderBillingView(data); };
+  const refreshPayment = el('refresh-billing-payment');
+  if (refreshPayment) refreshPayment.onclick = () => run(async () => { await refreshAccess(); });
   const cancel = el('cancelEntitlement');
   if (cancel) cancel.onclick = () => run(async () => {
     const result = await api('POST', '/api/entitlement/cancel', {});
