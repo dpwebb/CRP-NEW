@@ -136,7 +136,7 @@ async function purchaseSurface(t, check, evidence) {
   });
   check.equal(headerAttempt.status, 402, 'an invented header grants nothing');
 
-  /* A CHECKOUT WITH NO PROVIDER CONNECTED REFUSES, AND NAMES THE EXACT EXTERNAL DEPENDENCY. */
+  /* No provider means no checkout; exact integration dependencies remain internal. */
   const savedProvider = process.env.CRP_PAYMENT_PROVIDER;
   const savedFlag = process.env[payments.TEST_ADAPTER_FLAG];
   delete process.env.CRP_PAYMENT_PROVIDER;
@@ -145,7 +145,8 @@ async function purchaseSurface(t, check, evidence) {
     const noProvider = await t.request('POST', '/api/billing/checkout', { token: unpaid.token, body: { plan_code: 'report_once' } });
     check.equal(noProvider.status, 503, 'with no provider connected, a checkout is refused rather than pretended');
     check.equal(noProvider.json.error.code, 'PAYMENT_PROVIDER_NOT_CONFIGURED', 'and the refusal names that');
-    check.ok(/stripe/i.test(JSON.stringify(noProvider.json)), 'and records the exact external dependency');
+    check.ok(/stripe/i.test(payments.describeProvider(process.env).exact_external_dependency), 'the internal provider record retains its exact external dependency');
+    check.ok(/No payment provider is connected/.test(noProvider.json.error.message), 'the consumer receives the simple unavailable-payment message');
     const noProviderEvent = await t.request('POST', '/api/billing/events', {
       raw: '{"id":"x"}',
       headers: { 'Content-Type': 'application/json', 'x-crp-signature': 't=1,v1=00' }
@@ -202,7 +203,14 @@ async function activationAndIdempotency(t, check, evidence) {
   check.equal(confirm.json.error.code, 'CHECKOUT_NOT_CONFIRMED_BY_PROVIDER', 'and names the reason');
   check.equal((await t.request('GET', '/api/entitlement', { token: buyer.token })).json.entitlement.entitled, false, 'and nothing was granted');
 
-  const payment = await t.pay(buyer, 'report_once', caseId);
+  const purchase = checkout.json.checkout;
+  const paymentEvent = { id: 'test_evt_complete_existing_' + Date.now(), type: 'checkout.session.completed',
+    account_reference: buyer.account_id, plan_code: 'report_once', session_reference: purchase.provider_reference,
+    amount_cents: purchase.plan.amount_cents, currency: purchase.plan.currency, occurred_at: new Date().toISOString() };
+  const settledPurchase = await t.postEvent(paymentEvent);
+  check.equal(settledPurchase.status, 200, 'the existing open purchase settles through a signed provider event');
+  const payment = { checkout_id: purchase.checkout_id, reference: purchase.provider_reference,
+    event: paymentEvent, response: settledPurchase.json.event };
   check.equal(payment.response.duplicate, false, 'a verified provider event activates the purchase');
   const activated = await t.request('GET', '/api/entitlement', { token: buyer.token });
   check.equal(activated.json.entitlement.entitled, true, 'and the account is entitled afterwards');
@@ -281,7 +289,7 @@ async function verificationFailures(t, check, evidence) {
   check.equal(stale.json.error.detail.reason, 'SIGNATURE_TIMESTAMP_OUTSIDE_THE_ACCEPTED_WINDOW', 'naming the window');
 
   /* An event type this build does not implement. */
-  const unsupported = await t.postEvent(Object.assign({}, good, { id: `test_evt_unsupported_${Date.now()}`, type: 'invoice.voided' }));
+  const unsupported = await t.postEvent(Object.assign({}, good, { id: `test_evt_unsupported_${Date.now()}`, type: 'invoice.updated' }));
   check.equal(unsupported.status, 400, 'an event type that is not implemented is refused rather than ignored');
   check.equal(unsupported.json.error.code, 'BILLING_EVENT_TYPE_UNSUPPORTED', 'and the refusal names it');
 
@@ -339,18 +347,17 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
 
   /* A FAILED PAYMENT GIVES A SHORT GRACE; CONSUMER CANCELLATION KEEPS PAID TIME; A REFUND ENDS IT AT ONCE. */
   const subscriber = await t.unpaidAccount('entitlement-subscriber@example.test');
-  await t.pay(subscriber, 'monthly');
+  const subscriptionPayment = await t.pay(subscriber, 'monthly');
   const active = await t.request('GET', '/api/entitlement', { token: subscriber.token });
   check.equal(active.json.entitlement.state, 'ACTIVE', 'the subscriber is active');
   check.equal(active.json.entitlement.access_via, 'SUBSCRIPTION', 'through a subscription, not a credit');
 
-  const failedCheckout = await t.openCheckout(subscriber, 'monthly');
   const failed = await t.postEvent({
     id: `test_evt_failed_${Date.now()}`,
     type: 'invoice.payment_failed',
     account_reference: subscriber.account_id,
     plan_code: 'monthly',
-    session_reference: failedCheckout.json.checkout.provider_reference,
+    session_reference: subscriptionPayment.reference,
     occurred_at: new Date().toISOString()
   });
   check.equal(failed.status, 200, 'a failed payment is processed');
@@ -366,17 +373,16 @@ async function expiryCancellationAndRevocation(t, check, evidence) {
   check.equal(cancelled.json.cancellation.entitlement.cancel_at_period_end, true, 'and the account is marked as not renewing');
   const canonicalCancellation = await t.postEvent({ id: 'test_evt_canonical_cancellation_' + Date.now(),
     type: 'subscription.deleted', account_reference: subscriber.account_id, plan_code: 'monthly',
-    session_reference: failedCheckout.json.checkout.provider_reference });
+    session_reference: subscriptionPayment.reference });
   check.equal(canonicalCancellation.status, 200, 'the synthetic adapter canonical cancellation contract is preserved');
   check.equal(canonicalCancellation.json.event.effect, 'CANCEL_AT_PERIOD_END', 'the existing synthetic event retains its cancellation effect');
 
-  const refundCheckout = await t.openCheckout(subscriber, 'monthly');
   const refunded = await t.postEvent({
     id: `test_evt_refund_${Date.now()}`,
     type: 'charge.refunded',
     account_reference: subscriber.account_id,
     plan_code: 'monthly',
-    session_reference: refundCheckout.json.checkout.provider_reference,
+    session_reference: subscriptionPayment.reference,
     occurred_at: new Date().toISOString()
   });
   check.equal(refunded.status, 200, 'a refund is processed');
@@ -435,6 +441,7 @@ async function stripeRenewalCancellation(t, check, evidence) {
     mock.fixture.session.status = 'complete'; mock.fixture.session.payment_status = 'paid';
     mock.fixture.session.amount_total = plans.plan(plan).amount_cents;
     mock.fixture.subscription.id = mock.fixture.session.subscription;
+    mock.fixture.subscription.status = 'active';
     mock.fixture.subscription.cancel_at_period_end = false;
     mock.fixture.subscription.current_period_end = Math.floor(Date.now() / 1000) + (plan === 'annual' ? 365 : 30) * 86400;
     const returnUrl = t.base + '/?checkout=return&report=case_' + 'a'.repeat(32) + '&plan=' + plan;
@@ -538,6 +545,22 @@ async function stripeRenewalCancellation(t, check, evidence) {
     mock.fixture.updateResponse = { ...structuredClone(mock.fixture.subscription), cancel_at_period_end: true };
     const replaced = t.request('POST', '/api/entitlement/cancel', { token: replacement.actor.token });
     await began;
+    // End the old paid purchase through a real signed provider refund, rather than opening a second
+    // subscription while monthly access is active. Its delayed cancellation response still must not
+    // mutate the legitimate subsequent yearly subscription.
+    const oldIntent = mock.fixture.invoice.payment_intent;
+    const oldChargeId = mock.fixture.intents[oldIntent].latest_charge;
+    mock.fixture.charges[oldChargeId].refunded = true;
+    mock.fixture.charges[oldChargeId].amount_refunded = mock.fixture.charges[oldChargeId].amount;
+    mock.fixture.subscription.status = 'canceled';
+    mock.fixture.subscriptions[olderSubscription.id] = structuredClone(mock.fixture.subscription);
+    const endOld = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_replacement_refund',
+      type: 'charge.refunded', livemode: false, created: Math.floor(Date.now() / 1000),
+      data: { object: structuredClone(mock.fixture.charges[oldChargeId]) } });
+    const oldEnded = await t.request('POST', '/api/billing/events', { raw: endOld.raw, headers: endOld.headers });
+    check.equal(oldEnded.json?.event?.accepted, true, 'the old monthly purchase ends through a verified provider refund');
+    check.equal((await t.request('GET', '/api/entitlement', { token: replacement.actor.token })).json.entitlement.entitled,
+      false, 'old monthly access has genuinely ended before a new yearly purchase');
     const newerSubscription = await activate('replacement-annual', 'annual', replacement.actor);
     releaseUpdate();
     check.equal((await replaced).status, 409, 'a newly controlling subscription is not cancelled by an older response');
