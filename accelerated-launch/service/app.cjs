@@ -29,6 +29,7 @@ const evaluation = require('./evaluation.cjs');
 const entitlement = require('./entitlement.cjs');
 const retention = require('./retention.cjs');
 const payments = require('./payment-provider.cjs');
+const referrals = require('./referral-staging.cjs');
 const { CHECKS: COMMON_ERROR_CHECKLIST } = require('./common-error-checklist.cjs');
 
 const UI_DIR = path.join(__dirname, 'ui');
@@ -80,6 +81,7 @@ const STATIC_TYPES = Object.freeze({
   '.svg': 'image/svg+xml'
 });
 const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg']);
+const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
 
 
 /**
@@ -168,6 +170,9 @@ const ROUTES = Object.freeze([
   ['GET', '/api/billing/plans', true, 'billingPlans'],
   ['POST', '/api/billing/checkout', true, 'openCheckout'],
   ['POST', '/api/billing/confirm', true, 'confirmCheckout'],
+  ['GET', '/api/referrals', true, 'referralDashboard'],
+  ['POST', '/api/referrals/enroll', true, 'referralEnroll'],
+  ['POST', '/api/referrals/attribute', true, 'referralAttribute'],
   ['GET', '/api/entitlement', true, 'entitlementView'],
   ['POST', '/api/entitlement/cancel', true, 'cancelEntitlement'],
   ['POST', '/api/cases', true, 'createCase'],
@@ -431,6 +436,13 @@ function buildBillingHandlers(store, logger) {
       await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
       return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } };
     },
+
+    referralDashboard: ({ actor }) => ({ status: 200, json: { ok: true,
+      referral: referrals.dashboard(store, actor, env) } }),
+    referralEnroll: ({ actor, body }) => ({ status: 201, json: { ok: true,
+      referral: referrals.enroll(store, actor, body, env) } }),
+    referralAttribute: ({ actor, body }) => ({ status: 200, json: { ok: true,
+      attribution: referrals.attribute(store, actor, body, env) } }),
 
     cancelEntitlement: async ({ body, actor }) => {
       const cancellation = await entitlement.cancelEntitlement(store, actor, body, env);
@@ -744,7 +756,8 @@ function buildCaseHandlers(store, logger, surface) {
  */
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
-  if (!STATIC_ALLOWLIST.includes(urlPath)) return null;
+  if (!STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
+    STAGING_REFERRAL_ASSETS.includes(urlPath))) return null;
   const file = path.resolve(UI_DIR, urlPath === '/' ? 'index.html' : urlPath.slice(1));
   if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
   return {

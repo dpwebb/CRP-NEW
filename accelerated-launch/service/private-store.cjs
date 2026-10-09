@@ -48,7 +48,8 @@ const EMPTY_STATE = Object.freeze({
   billing_events: [],
   checkout_sessions: [],
   upgrade_credits: [],
-  purchased_downloads: []
+  purchased_downloads: [],
+  referral_snapshots: []
 });
 
 /** A missing key in an older file is an empty list, never undefined, so a v1 file stays readable. */

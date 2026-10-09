@@ -167,6 +167,7 @@ function makeTestAdapter(env) {
           plan_code: body.plan_code,
           session_reference: body.session_reference,
           amount_cents: Number.isInteger(body.amount_cents) ? body.amount_cents : null,
+          refunded_cents: Number.isSafeInteger(body.refunded_cents) ? body.refunded_cents : null,
           currency: typeof body.currency === 'string' ? body.currency : null,
           /* A provider states the paid period's end. It is carried through; `entitlement.periodFor` decides
              whether to use it or fall back to the catalog's own period. */
@@ -242,11 +243,15 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
   if (!accountRef || !planCode || !plans.isPlanCode(planCode)) return null;
 
   let priceId = null;
+  let verifiedTaxCents = Number.isSafeInteger(session.total_details?.amount_tax) ? session.total_details.amount_tax : null;
   try {
     const fetched = await stripe.retrieveSession(secretKey, session.id, base);
     if (fetched.status === 200) {
       const items = fetched.json.line_items && fetched.json.line_items.data;
       if (items && items.length && items[0].price) priceId = items[0].price.id;
+      if (Number.isSafeInteger(fetched.json.total_details?.amount_tax)) {
+        verifiedTaxCents = fetched.json.total_details.amount_tax;
+      }
     }
   } catch { /* fall back to configured-id check below */ }
 
@@ -289,6 +294,7 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     subscription_reference: session.mode === 'subscription'
       ? (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id) || null : null,
     amount_cents: Number.isInteger(session.amount_total) ? session.amount_total : null,
+    tax_cents: verifiedTaxCents,
     currency: typeof session.currency === 'string' ? session.currency : null,
     period_end: periodEnd,
     payment_intent: paymentIntent,

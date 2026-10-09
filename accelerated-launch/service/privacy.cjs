@@ -5,6 +5,7 @@ const retention = require('./retention.cjs');
 function dashboard(store, actor) {
   const state = store.state();
   const owned = state.cases.filter(row => row.account_id === actor.account_id);
+  const referrals = state.referral_snapshots?.[0] || {};
   return {
     cases: owned.map(row => ({ case_id: row.case_id, country: row.country, region: row.region, status: row.status,
       documents: state.files.filter(file => file.account_id === actor.account_id && file.case_id === row.case_id && file.stored_blob !== false).map(file => ({
@@ -14,6 +15,11 @@ function dashboard(store, actor) {
       result_count: state.results.filter(result => result.account_id === actor.account_id && result.case_id === row.case_id).length
     })),
     account_documents: require('./account-documents.cjs').listDocuments(store, actor).map(file => ({ file_id: file.file_id, name: file.original_filename, stored_bytes: file.stored_bytes })),
+    referral: {
+      enrolled: (referrals.members || []).some(row => row.account_id === actor.account_id),
+      attribution_saved: (referrals.purchases || []).some(row => row.customer_id === actor.account_id),
+      reward_count: (referrals.rewards || []).filter(row => row.referrer_id === actor.account_id).length
+    },
     retention: { mode: 'UNTIL_DELETED', adjustable: false, plain: retention.policyView().policy.report_bytes },
     deletion: {
       scope: 'ACTIVE_SERVICE_DATA',

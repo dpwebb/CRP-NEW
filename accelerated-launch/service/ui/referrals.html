@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Referral test workspace · Credit Regulator Pro</title>
+  <link rel="stylesheet" href="/referrals.css">
+  <script defer src="/referrals.js"></script>
+</head>
+<body>
+  <header><a href="/">← Back to CRP</a><span>STAGING · TEST PURCHASES ONLY</span></header>
+  <main>
+    <p class="eyebrow">REFERRAL TEST WORKSPACE</p>
+    <h1>Share CRP and review rewards</h1>
+    <p class="lead">This staging workspace tests referral tracking. No payouts are sent from this page.</p>
+    <div id="status" role="status">Loading your referral workspace…</div>
+    <section class="card" id="enrollCard" hidden>
+      <h2>Get a referral code</h2>
+      <p>Joining has no reward. If another referrer introduced you, enter their code.</p>
+      <form id="enrollForm"><label>Introducer code (optional)<input id="introducer" autocomplete="off" maxlength="12"></label><button>Join referral program</button></form>
+    </section>
+    <section class="card" id="memberCard" hidden>
+      <h2>Your referral code</h2><div class="code" id="code"></div>
+      <p>Share this code with a new customer before they buy. The customer can enter it below while signed in.</p>
+    </section>
+    <section class="card">
+      <h2>Use a referral code before purchase</h2>
+      <p>Enter the code of the person who referred you. A purchase already completed cannot be assigned afterward.</p>
+      <form id="attributeForm"><label>Referrer code<input id="referrer" required autocomplete="off" maxlength="12"></label><button>Save referral</button></form>
+    </section>
+    <section class="card" id="rewardsCard" hidden>
+      <h2>Your reward activity</h2>
+      <p>Levels 1–3 earn 15%, 10% and 5% of the verified first purchase price before tax. After 14 days, 90% is scheduled for a Friday batch. The other 10% is held for 180 days, then scheduled for a Friday batch.</p>
+      <div id="rewards"></div>
+      <p class="quiet">Customer names, reports, findings and packets are never shown here. These staging entries do not initiate a payment.</p>
+    </section>
+  </main>
+</body>
+</html>

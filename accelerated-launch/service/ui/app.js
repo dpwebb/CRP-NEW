@@ -145,6 +145,7 @@ function navigateStep(step) {
 
 function banner() {
   const node = el('support-banner');
+  el('referral-preview-link').hidden = !surface?.preview_mode;
   const inDemo = state.view && state.view.result && state.view.result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
   if (inDemo) {
     node.className = 'banner demo';
