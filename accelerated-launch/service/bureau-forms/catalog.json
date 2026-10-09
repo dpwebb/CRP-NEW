@@ -1,61 +1,101 @@
 {
-  "version": "2026-10-08-postal-v1",
-  "reviewed_on": "2026-10-08",
+  "version": "2026-10-09-populated-original-v1",
+  "reviewed_on": "2026-10-09",
   "forms": [
     {
       "id": "ca-equifax-account",
       "bureau": "EQUIFAX",
-      "instructions": "Fill in the form. Sign where asked. Print it with your letter and copies.",
+      "instructions": "Check the filled form. Sign where asked. Print it with your letter and copies.",
       "source_url": "https://assets.equifax.com/assets/canada/english/Accounts_Dispute_Form_EN.pdf",
       "sha256": "c7b9e9742f94fef44cb3d6fcf066418f4127193a0c297a81f11b82c8312b4383",
       "country": "CA",
       "purpose": "ACCOUNT",
       "label": "Equifax account form",
-      "filename": "ca-equifax-account.pdf"
+      "filename": "ca-equifax-account.pdf",
+      "population_mode": "ORIGINAL_OVERLAY",
+      "template_page_count": 5,
+      "native_controls": []
     },
     {
       "id": "ca-equifax-public-record",
       "bureau": "EQUIFAX",
-      "instructions": "Fill in the form. Sign where asked. Print it with your letter and copies.",
+      "instructions": "Check the filled form. Sign where asked. Print it with your letter and copies.",
       "source_url": "https://assets.equifax.com/assets/canada/english/Public_Records_Dispute_Form_EN.pdf",
       "sha256": "430bf36366c216aab02d864d3dacf23b962af182aee4d6ce9b89be6b29ab4a3f",
       "country": "CA",
       "purpose": "PUBLIC_RECORD",
       "label": "Equifax collection and public record form",
-      "filename": "ca-equifax-public-record.pdf"
+      "filename": "ca-equifax-public-record.pdf",
+      "population_mode": "ORIGINAL_OVERLAY",
+      "template_page_count": 3,
+      "native_controls": []
     },
     {
       "id": "ca-equifax-personal",
       "bureau": "EQUIFAX",
-      "instructions": "Fill in the form. Sign where asked. Print it with your letter and copies.",
+      "instructions": "Check the filled form. Sign where asked. Print it with your letter and copies.",
       "source_url": "https://assets.equifax.com/assets/canada/english/Personal_Info_Dispute_Form_EN.pdf",
       "sha256": "190342aa231c4911aa06864b4c252aa29c4fb837178cdc1d09c4ff14fb56de06",
       "country": "CA",
       "purpose": "PERSONAL",
       "label": "Equifax personal information form",
-      "filename": "ca-equifax-personal.pdf"
+      "filename": "ca-equifax-personal.pdf",
+      "population_mode": "ORIGINAL_OVERLAY",
+      "template_page_count": 3,
+      "native_controls": []
     },
     {
       "id": "ca-transunion",
       "sha256": "348355c40129c97b84ecfb31877ff6e3b4f31a222cc17cdb204f6ee0938cca5e",
       "bureau": "TRANSUNION",
-      "instructions": "Fill in and sign both pages. Sign each extra page, including the evidence pages. The form shows an older address. Mail everything to the Hamilton address in this letter.",
+      "instructions": "Check the filled form. Sign both pages and each added page, including evidence pages. The original form shows an older address. Mail everything to the Hamilton address in this letter.",
       "source_url": "https://www.transunion.ca/content/dam/transunion/ca/consumer/documents/Credit-Investigation-Request-Form-en.pdf",
       "country": "CA",
       "purpose": "ALL",
       "label": "TransUnion investigation form",
-      "filename": "ca-transunion.pdf"
+      "filename": "ca-transunion.pdf",
+      "population_mode": "NATIVE_ACROFORM",
+      "template_page_count": 2,
+      "native_controls": [
+        "text",
+        "province dropdown",
+        "mail or email radio",
+        "checkbox",
+        "consumer consent radio left blank"
+      ]
     },
     {
       "id": "us-equifax",
       "bureau": "EQUIFAX",
-      "instructions": "Fill in the form. Sign where asked. Print it with your letter and copies.",
+      "instructions": "Check the filled form. Sign where asked. Print it with your letter and copies.",
       "source_url": "https://assets.equifax.com/assets/personal/Dispute.pdf",
       "sha256": "5697e47d925b57ea0105d68f78f3d57ba0a4da807924ec1b28fb6c4f1be72576",
       "country": "US",
       "purpose": "ALL",
       "label": "Equifax dispute form",
-      "filename": "us-equifax.pdf"
+      "filename": "us-equifax.pdf",
+      "population_mode": "ORIGINAL_OVERLAY",
+      "template_page_count": 5,
+      "native_controls": []
+    },
+    {
+      "id": "us-experian",
+      "country": "US",
+      "bureau": "EXPERIAN",
+      "purpose": "ALL",
+      "filename": "us-experian.pdf",
+      "label": "Experian dispute form",
+      "source_url": "https://www.experian.com/blogs/ask-experian/wp-content/themes/exp/pdf/dispute-form.pdf",
+      "source_page_url": "https://www.experian.com/blogs/ask-experian/credit-education/faqs/instructions-for-disputing-by-mail/",
+      "sha256": "077f61efe7cecf5ff86504bf5ea2edcfec167346ddb388f756c8491e7cc04243",
+      "instructions": "Check the filled form. Print it with your letter and copies.",
+      "population_mode": "NATIVE_ACROFORM",
+      "template_page_count": 2,
+      "native_controls": [
+        "text",
+        "dispute reason radio",
+        "checkbox"
+      ]
     }
   ]
 }
