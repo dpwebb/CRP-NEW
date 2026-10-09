@@ -14,6 +14,7 @@ class StripeUpgradeFixture {
     this.intents = new Map(); this.charges = new Map(); this.coupons = new Map();
     this.calls = []; this.sequence = 0; this.pageSize = 2; this.failUpgrade = false;
     this.idempotent = new Map(); this.loseUpgradeResponse = false;
+    this.invoiceReadOverrides = new Map();
     this.server = http.createServer(async (req, res) => {
       let raw = ''; for await (const chunk of req) raw += chunk;
       const url = new URL(req.url, 'http://fixture.invalid');
@@ -111,9 +112,24 @@ class StripeUpgradeFixture {
     let started; const ready = new Promise(resolve => { started = resolve; });
     this.upgradeGate = { gate, started }; return { ready, release };
   }
-  signed(type, object, id) {
+  // The webhook endpoint version can differ from the REST version pinned by CRP.
+  // Basil removes these legacy invoice/line fields; the REST map above retains them.
+  webhookInvoice(invoice) {
+    const object = clone(invoice);
+    const subscriptionId = typeof object.subscription === 'string' ? object.subscription : object.subscription?.id;
+    object.parent = { type: 'subscription_details', subscription_details: {
+      subscription: subscriptionId, metadata: clone(this.subscriptions.get(subscriptionId)?.metadata || {}) } };
+    delete object.subscription; delete object.payment_intent;
+    object.lines.data = object.lines.data.map(line => {
+      const priceId = typeof line.price === 'string' ? line.price : line.price?.id;
+      line.pricing = { type: 'price_details', price_details: { price: priceId, product: 'prod_fixture_invoice' } };
+      delete line.price; return line;
+    });
+    return object;
+  }
+  signed(type, object, id, eventPatch = {}) {
     const body = { id: id || 'evt_fixture_' + ++this.sequence, object: 'event', type,
-      created: second(), livemode: false, data: { object: clone(object) } };
+      created: second(), livemode: false, data: { object: clone(object) }, ...eventPatch };
     const raw = JSON.stringify(body), at = second();
     return { raw, headers: { 'Content-Type': 'application/json',
       'stripe-signature': 't=' + at + ',v1=' + crypto.createHmac('sha256', SECRET).update(at + '.' + raw).digest('hex') } };
@@ -193,6 +209,7 @@ class StripeUpgradeFixture {
       return yes({ object: 'list', data: list.slice(start, start + this.pageSize), has_more: start + this.pageSize < list.length });
     }
     if (call.path.startsWith('/v1/invoices/')) {
+      if (call.method === 'GET' && this.invoiceReadOverrides.has(id)) return clone(this.invoiceReadOverrides.get(id));
       const invoice = this.invoices.get(id); if (!invoice) return missing();
       if (call.method === 'POST' && call.path.endsWith('/void')) return yes(this.voidInvoice(id));
       return yes(invoice);

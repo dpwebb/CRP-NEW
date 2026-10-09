@@ -11,10 +11,12 @@ async function run(t, check) {
   t.service = createService({ dataDir: t.dataDir, logSink: line => t.logs.push(line) });
   const store = t.service.store;
   const read = () => store.state();
-  const events = async (type, object, eventId) => {
-    const signed = mock.signed(type, object, eventId);
+  const events = async (type, object, eventId, eventPatch) => {
+    const signed = mock.signed(type, object, eventId, eventPatch);
     return t.request('POST', '/api/billing/events', signed);
   };
+  const invoiceEvents = (type, invoice, eventId, eventPatch = {}) => events(type,
+    mock.webhookInvoice(invoice), eventId, { api_version: '2025-04-30.basil', ...eventPatch });
   const purchase = (actor, plan, extras = {}) => t.request('POST', '/api/billing/checkout', {
     token: actor.token, body: { plan_code: plan, return_url: t.base + '/?checkout=return', ...extras } });
   const resetHistory = actor => store.update(state => {
@@ -109,7 +111,7 @@ async function run(t, check) {
     check.ok(upgradeCall.idempotency_key.startsWith('crp-upgrade-'), 'provider mutation uses a bound idempotency key');
     const pendingInvoice = mock.invoices.get(upgrade.json.checkout.provider_reference);
     check.equal(pendingInvoice.amount_due, quote.first_invoice_cents, 'provider invoice matches the displayed annual amount');
-    const failedPayment = await events('invoice.payment_failed', pendingInvoice);
+    const failedPayment = await invoiceEvents('invoice.payment_failed', pendingInvoice);
     check.equal(failedPayment.status, 200, 'valid signed failed pending payment is processed');
     check.equal((await status(actor)).plan_code, 'monthly', 'failed pending invoice does not widen access');
     check.equal(creditsFor(actor).filter(row => row.state === 'RESERVED').reduce((sum, row) => sum + row.reserved_amount_cents, 0),
@@ -118,9 +120,17 @@ async function run(t, check) {
     async function rejectedInvoice(patch, label) {
       const altered = clone(pendingInvoice);
       Object.assign(altered, { status: 'paid', paid: true, amount_paid: altered.amount_due, ...patch });
-      const response = await events('invoice.paid', altered);
-      check.ok(response.status < 500 && (response.status >= 400 || response.json.event.accepted === false), label + ' is rejected');
-      check.equal((await status(actor)).plan_code, 'monthly', label + ' grants no annual access');
+      const before = creditsFor(actor).map(row => ({ credit_id: row.credit_id,
+        remaining: row.remaining_amount_cents, consumed: row.consumed_cents, reserved: row.reserved_amount_cents }));
+      mock.invoiceReadOverrides.set(pendingInvoice.id, { body: altered });
+      try {
+        const response = await invoiceEvents('invoice.paid', altered);
+        check.ok(response.status < 500 && (response.status >= 400 || response.json.event.accepted === false), label + ' is rejected');
+        check.equal((await status(actor)).plan_code, 'monthly', label + ' grants no annual access');
+        check.deepEqual(creditsFor(actor).map(row => ({ credit_id: row.credit_id,
+          remaining: row.remaining_amount_cents, consumed: row.consumed_cents, reserved: row.reserved_amount_cents })), before,
+          label + ' neither spends reserved credit nor records new cash');
+      } finally { mock.invoiceReadOverrides.delete(pendingInvoice.id); }
     }
     await rejectedInvoice({ amount_paid: pendingInvoice.amount_due + 1 }, 'altered net amount');
     await rejectedInvoice({ currency: 'usd' }, 'altered currency');
@@ -134,11 +144,66 @@ async function run(t, check) {
     await rejectedInvoice({}, 'different account binding');
     month.subscription.metadata.account_id = originalAccount;
 
+    await rejectedInvoice({ livemode: true }, 'canonical receipt from live mode');
+    month.subscription.livemode = true;
+    await rejectedInvoice({}, 'owned subscription from live mode');
+    month.subscription.livemode = false;
+    const invoiceReadCalls = () => mock.calls.filter(call => call.method === 'GET' && call.path === '/v1/invoices/' + pendingInvoice.id);
+    const awaitingPaid = { ...clone(pendingInvoice), status: 'paid', paid: true, amount_paid: pendingInvoice.amount_due };
+    const refusedRead = async (override, label) => {
+      const before = creditsFor(actor).map(row => ({ credit_id: row.credit_id,
+        remaining: row.remaining_amount_cents, consumed: row.consumed_cents, reserved: row.reserved_amount_cents }));
+      mock.invoiceReadOverrides.set(pendingInvoice.id, override);
+      const priorReads = invoiceReadCalls().length;
+      try {
+        const result = await invoiceEvents('invoice.paid', awaitingPaid);
+        check.ok(result.status < 500 && (result.status >= 400 || result.json.event.accepted === false), label + ' refuses activation');
+        check.equal(invoiceReadCalls().length, priorReads + 1, label + ' checks the signed invoice ID at the provider');
+        check.equal((await status(actor)).plan_code, 'monthly', label + ' preserves already paid monthly access');
+        check.deepEqual(creditsFor(actor).map(row => ({ credit_id: row.credit_id,
+          remaining: row.remaining_amount_cents, consumed: row.consumed_cents, reserved: row.reserved_amount_cents })), before,
+          label + ' preserves cash receipts and reservations');
+      } finally { mock.invoiceReadOverrides.delete(pendingInvoice.id); }
+    };
+    await refusedRead({ status: 404, body: { error: { message: 'fictional invoice missing' } } }, 'missing canonical invoice');
+    await refusedRead({ body: { ...awaitingPaid, id: 'in_different_receipt' } }, 'different canonical invoice ID');
+    await refusedRead({ body: { ...awaitingPaid, status: 'open', paid: false } }, 'unpaid canonical invoice');
+    for (const [eventPatch, objectPatch, label] of [
+      [{ livemode: true }, {}, 'live webhook envelope'],
+      [{}, { livemode: true }, 'live webhook invoice']
+    ]) {
+      const readsBeforeMode = invoiceReadCalls().length;
+      const refusedMode = await invoiceEvents('invoice.paid', { ...awaitingPaid, ...objectPatch }, null, eventPatch);
+      check.ok(refusedMode.status < 500 && (refusedMode.status >= 400 || refusedMode.json.event.accepted === false), label + ' is rejected in test mode');
+      check.equal(invoiceReadCalls().length, readsBeforeMode, label + ' cannot trigger a provider receipt read');
+      check.equal((await status(actor)).plan_code, 'monthly', label + ' grants no annual access');
+    }
+    const invalidSigned = mock.signed('invoice.paid', mock.webhookInvoice(awaitingPaid), null, { api_version: '2025-04-30.basil' });
+    invalidSigned.raw += ' ';
+    const beforeSignatureRead = invoiceReadCalls().length;
+    const badSignature = await t.request('POST', '/api/billing/events', invalidSigned);
+    check.equal(badSignature.status, 400, 'modified modern webhook fails the signature gate');
+    check.equal(badSignature.json.error.code, 'BILLING_EVENT_SIGNATURE_INVALID', 'modified bytes receive the governed signature refusal');
+    check.equal(invoiceReadCalls().length, beforeSignatureRead, 'invalid signature reads no provider receipt');
+
     const paidAnnual = mock.payInvoice(pendingInvoice.id);
     const paidEvent = 'evt_annual_confirmed';
-    const confirmation = await events('invoice.paid', paidAnnual, paidEvent);
+    const modernPaid = mock.webhookInvoice(paidAnnual);
+    check.equal(modernPaid.subscription, undefined, 'Basil webhook has no legacy invoice subscription field');
+    check.equal(modernPaid.payment_intent, undefined, 'Basil webhook has no legacy invoice payment-intent field');
+    check.equal(modernPaid.parent.subscription_details.subscription, month.subscription.id, 'Basil webhook prints the actual parent subscription');
+    check.equal(modernPaid.lines.data[0].price, undefined, 'Basil webhook has no legacy line price field');
+    check.equal(modernPaid.lines.data[0].pricing.price_details.price, PRICES.annual, 'Basil webhook uses nested pricing details');
+    const paidReadStart = invoiceReadCalls().length;
+    const confirmation = await invoiceEvents('invoice.paid', paidAnnual, paidEvent);
     check.equal(confirmation.status, 200, 'signed exact upgrade invoice is processed: ' + confirmation.text);
     check.equal(confirmation.json.event.accepted, true, 'exact paid invoice activates annual access');
+    check.equal(invoiceReadCalls().length, paidReadStart + 1, 'modern paid event retrieves its canonical provider invoice once');
+    check.equal(invoiceReadCalls().at(-1).api_version, '2024-06-20', 'canonical invoice read uses the pinned REST version independent of the webhook version');
+    check.equal(creditsFor(actor).find(row => row.payment_id === paidAnnual.id).amount_cents, quote.first_invoice_cents,
+      'modern event records only the canonical net cash paid');
+    check.equal(creditsFor(actor).find(row => row.payment_id === paidAnnual.id).payment_intent, paidAnnual.payment_intent,
+      'modern event retains the canonical payment intent for refunds and receipt deduplication');
     const activeYear = (await status(actor));
     check.equal(activeYear.plan_code, 'annual', 'annual access follows the signed payment');
     check.equal(read().entitlements.find(row => row.entitlement_id === oldEntitlement.entitlement_id).plan_code,
@@ -152,15 +217,20 @@ async function run(t, check) {
       .reduce((sum, allocation) => sum + allocation.amount_cents, 0), quote.credit_cents,
       'actual ledger allocations equal the provider-verified upgrade discount');
     const receiptCount = creditsFor(actor).length;
-    const sameEvent = await events('invoice.paid', paidAnnual, paidEvent);
+    const lateFailed = await invoiceEvents('invoice.payment_failed', { ...clone(paidAnnual), status: 'open', paid: false, amount_paid: 0 });
+    check.ok(lateFailed.status < 500 && (lateFailed.status >= 400 || lateFailed.json.event.accepted === false),
+      'late payment-failed snapshot cannot override its now-paid canonical invoice');
+    check.equal((await status(actor)).state, 'ACTIVE', 'late failed snapshot preserves the confirmed paid annual period');
+    check.equal(creditsFor(actor).length, receiptCount, 'late failed snapshot neither remints nor removes paid cash');
+    const sameEvent = await invoiceEvents('invoice.paid', paidAnnual, paidEvent);
     check.equal(sameEvent.json.event.duplicate, true, 'same event ID is idempotent');
-    const freshId = await events('invoice.paid', paidAnnual);
+    const freshId = await invoiceEvents('invoice.paid', paidAnnual);
     check.equal(freshId.json.event.duplicate, true, 'same invoice with a fresh event ID is idempotent');
     check.equal(creditsFor(actor).length, receiptCount, 'replays mint no additional credit');
     const yearRenewal = mock.invoice(month.subscription, 'annual', 7950);
     yearRenewal.lines.data[0].period.end += 366 * 86400;
     mock.payInvoice(yearRenewal.id);
-    check.equal((await events('invoice.paid', yearRenewal)).json.event.accepted, true, 'annual renewal uses its normal full price');
+    check.equal((await invoiceEvents('invoice.paid', yearRenewal)).json.event.accepted, true, 'modern annual renewal uses its normal full price');
     const afterRenewal = await status(actor);
     check.ok(afterRenewal.expires_at > activeYear.expires_at, 'verified renewal extends annual access');
     const lateOldMonth = await events('invoice.paid', history1);
@@ -177,7 +247,7 @@ async function run(t, check) {
     const voidUpgrade = await purchase(voidActor, 'annual', { quote_revision: voidQuote.revision });
     check.equal(voidUpgrade.status, 201, 'second account opens a pending upgrade');
     const voidInvoice = mock.voidInvoice(voidUpgrade.json.checkout.provider_reference);
-    check.equal((await events('invoice.voided', voidInvoice)).json.event.accepted, true, 'signed void releases its pending upgrade');
+    check.equal((await invoiceEvents('invoice.voided', voidInvoice)).json.event.accepted, true, 'modern signed void releases its pending upgrade');
     check.equal((await getPlans(voidActor)).upgrade_quotes.annual.credit_cents, 795, 'void restores unused monthly cash credit');
     check.equal((await status(voidActor)).plan_code, 'monthly', 'void preserves prior monthly access');
     check.equal(voidMonth.subscription.metadata.plan_code, 'monthly', 'void restores monthly provider metadata before another upgrade');
