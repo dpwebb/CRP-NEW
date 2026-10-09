@@ -35,6 +35,7 @@ const caFormatScope = require('./format-families/ca-consumer-format-scope.cjs');
 const caFacts = require('./ca-consumer-file-facts.cjs');
 const generalIntake = require('./general-intake.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
+const gbGeneralFields = require('./gb-general-field-contract.cjs');
 
 /**
  * B4 continuation — the service's own PDF model builder.
@@ -105,6 +106,7 @@ const EXTRACTION_ADAPTERS = Object.freeze([
     evidenced_sha256: PR_01_CONTRACT.evidenced_sha256,
     /* B4: what the evidence for this entry does and does not establish, so no message has to guess. */
     evidence_currency: 'SUPPORTED_PRESENTATION_FOR_ONE_SELECTED_UNIT',
+    present_day_support_claimed: true,
     evidence_scope: caFormatScope.FAMILY_ADMISSION.reason,
     boundary: PR_01_CONTRACT.boundary
   }),
@@ -136,6 +138,8 @@ const EXTRACTION_ADAPTERS = Object.freeze([
     evidenced_artifact_id: auFamily.FAMILY_CONTRACT.evidenced_artifact_id,
     evidenced_sha256: auFamily.FAMILY_CONTRACT.evidenced_sha256,
     evidence_currency: 'EVIDENCED_FROM_ONE_CAPTURED_PUBLIC_SAMPLE',
+    present_day_support_claimed: false,
+    evidence_vintage: '2016 report date; captured public sample',
     boundary: auFamily.FAMILY_CONTRACT.boundary[0]
   }),
   Object.freeze({
@@ -150,6 +154,8 @@ const EXTRACTION_ADAPTERS = Object.freeze([
     evidenced_artifact_id: usFamily.FAMILY_CONTRACT.evidenced_artifact_id,
     evidenced_sha256: usFamily.FAMILY_CONTRACT.evidenced_sha256,
     evidence_currency: 'EVIDENCED_FROM_ONE_CAPTURED_OFFICIAL_CONSUMER_SAMPLE',
+    present_day_support_claimed: false,
+    evidence_vintage: '2015 official educational sample',
     boundary: usFamily.FAMILY_CONTRACT.boundary[0]
   }),
   Object.freeze({
@@ -163,7 +169,7 @@ const EXTRACTION_ADAPTERS = Object.freeze([
     container: 'PDF',
     evidenced_artifact_id: gbFamily.FAMILY_CONTRACT.evidenced_artifact_id,
     evidenced_sha256: gbFamily.FAMILY_CONTRACT.evidenced_sha256,
-    /* B4: this is the ONLY entry whose currency is NOT established, and it says so here rather than in prose. */
+    /* Historical structural evidence is distinct from the current GENERAL field contract. */
     evidence_currency: gbFamily.CURRENCY_EVIDENCE.status,
     present_day_support_claimed: gbFamily.CURRENCY_EVIDENCE.present_day_support_claimed,
     boundary: gbFamily.FAMILY_CONTRACT.boundary[0]
@@ -186,15 +192,17 @@ function listSupportedFormats() {
     container: a.container,
     read_support_is: a.admission_path,
     evidence_currency: a.evidence_currency,
-    present_day_support_claimed: a.present_day_support_claimed === false ? false : true,
+    present_day_support_claimed: a.present_day_support_claimed === true,
     note: a.admission_path === 'EXACT_SPECIMEN_DIGEST'
       ? 'Read support is evidenced for this ONE specimen only, by its own pinned digest. A structurally similar file is refused, and so is another real Equifax Canada report — this admission does not widen with a second document.'
       : 'Read support is evidenced for this format FAMILY, by measured structure, from the artifact named in evidenced_artifact_id. A file that does not satisfy the family structure is refused, and the refusal names the predicate it failed.',
     currency_note: a.evidence_currency === 'HISTORICAL_DEMONSTRATION_EVIDENCE_ONLY'
-      ? 'This family is evidenced from a captured example dated 1 June 2007 that is marked on its own face as fictitious. It evidences STRUCTURE ONLY: present-day GB support is NOT claimed, and the vintage is a named blocker.'
+      ? 'This dedicated family is evidenced from a captured example dated 1 June 2007 that is marked on its own face as fictitious. It evidences structure only; current whole-layout support is not certified. The current GENERAL consumer field contract is recorded separately.'
       : (a.evidence_currency === tuCaFamily.CURRENCY_EVIDENCE.status
         ? 'This family is evidenced from ONE real present-day TransUnion Canada consumer disclosure. The STRUCTURE it measures is admitted; a different product, print date or language is refused by the same predicates.'
-        : 'The currency of this evidence is recorded in evidence_currency; no broader claim is made than it supports.')
+        : (a.present_day_support_claimed === false
+          ? `This family is evidenced from a ${a.evidence_vintage}. It supports the measured structure; current whole-layout support is not certified.`
+          : 'The currency of this evidence is recorded in evidence_currency; no broader claim is made than it supports.'))
   }));
 }
 
@@ -224,7 +232,18 @@ function presentationScope() {
       present_day_support_claimed: gbFamily.CURRENCY_EVIDENCE.present_day_support_claimed,
       evidence_vintage: gbFamily.CURRENCY_EVIDENCE.evidence_vintage,
       currency_validated: gbFamily.CURRENCY_EVIDENCE.currency_validated,
-      plain: 'The United Kingdom family is evidenced from one captured consumer report example dated 1 June 2007 and marked on its own face as fictitious. Its currency for present-day GB files is not established, and no present-day GB support is claimed.'
+      general_field_contract: {
+        contract_id: gbGeneralFields.ID,
+        presentation_id: generalIntake.GENERAL_PRESENTATION_ID,
+        scope: 'CURRENT_GENERAL_CONSUMER_FIELDS',
+        regions: [...gbGeneralFields.REGIONS],
+        source_version: gbGeneralFields.SOURCE.version,
+        source_url: gbGeneralFields.SOURCE.url,
+        source_locator: gbGeneralFields.SOURCE.locator,
+        whole_current_layout_certified: false,
+        boundary: gbGeneralFields.SOURCE.boundary
+      },
+      plain: 'The dedicated Experian United Kingdom family uses a fictitious example dated 1 June 2007; its current layout is not certified. Separately, the general reader supports the documented TransUnion V9.0 April 2025 consumer fields across all four UK regions. This field contract does not certify a complete current bureau PDF layout.'
     }
   };
 }
@@ -236,7 +255,7 @@ function adapterFor(presentationId) {
 /** A display name for a recognised presentation, including the general intake path (B6-INGEST-002). */
 function displayNameFor(presentationId, bureau) {
   if (presentationId === generalIntake.GENERAL_PRESENTATION_ID) {
-    return `${bureau ? bureau + ' ' : ''}credit report (general intake — bureau and report-content plausibility)`;
+    return `${bureau ? bureau + ' ' : ''}credit report`;
   }
   const adapter = adapterFor(presentationId);
   return adapter ? adapter.display_name : null;

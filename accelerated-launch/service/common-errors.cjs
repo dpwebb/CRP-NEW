@@ -556,6 +556,7 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'account.balance'
   ], ['account.masked_identifier', 'account.reported_identity', 'account.amount']],
+  required_record_kind: 'GENERAL_COLLECTION',
   additional_evidence: 'CORROBORATED_COLLECTION_AND_ORIGINAL_PAIR_IN_ONE_REPORT' }
 });
 
@@ -604,8 +605,9 @@ function fullCapabilityRows(presentationId, fieldAvailable, performed) {
     rows[id] = {
       field_sets: spec.field_sets.map((set) => [...set]),
       field_ready: spec.field_sets.length ? scopeAdmitted && spec.field_sets.some(set => fieldAvailable(set,
-        id === 'COMMON-ERROR-DUPLICATE-REPORTING' && COLLECTION_PAIR_FIELD_SETS.includes(set))) : null,
+        id === 'COMMON-ERROR-DUPLICATE-REPORTING' && COLLECTION_PAIR_FIELD_SETS.includes(set), spec.required_record_kind)) : null,
       reader_scope_admitted: scopeAdmitted,
+      ...(spec.required_record_kind ? { required_record_kind: spec.required_record_kind } : {}),
       additional_evidence: spec.additional_evidence || null,
       ...(performed ? { detector_performed: performed.has(id) } : {})
     };
@@ -655,7 +657,8 @@ function formatCapability(extraction) {
     family_id: (extraction && extraction.family_id) || null,
     checks,
     all_factual_checks: fullCapabilityRows(extraction && extraction.presentation_id,
-      (set, collectionOnly) => usableByRecord.some((onRecord, index) => (!collectionOnly || isCollection(records[index]))
+      (set, collectionOnly, requiredKind) => usableByRecord.some((onRecord, index) => (!collectionOnly || isCollection(records[index]))
+        && (!requiredKind || records[index].kind === requiredKind)
         && set.every((f) => onRecord.has(f))),
       new Set(runCommonErrorChecks({ extraction }).performed.map((item) => item.check_id)))
   };
@@ -727,8 +730,9 @@ function presentationCapability(presentationId) {
   return {
     presentation_id: presentationId,
     checks,
-    all_factual_checks: fullCapabilityRows(presentationId, (required, collectionOnly) => (!collectionOnly
-      || ['PR-01', 'GENERAL-BUREAU-REPORT'].includes(presentationId)) && required.every((f) => set.has(f))),
+    all_factual_checks: fullCapabilityRows(presentationId, (required, collectionOnly, requiredKind) => (!collectionOnly
+      || ['PR-01', 'GENERAL-BUREAU-REPORT'].includes(presentationId))
+      && (!requiredKind || presentationId === 'GENERAL-BUREAU-REPORT') && required.every((f) => set.has(f))),
     retained_fields_without_a_usable_check: (PRESENTATION_RETAINED_NOT_USABLE[presentationId] || []).map((row) => Object.assign({}, row)),
     basis: 'This records what the READER can structurally produce from the presentation it is evidenced on, not what one specimen happened to print. A field a single report does not print is NOT evidence that the presentation never prints it, and a retained-but-unusable value is NOT a usable check.'
   };
@@ -856,9 +860,13 @@ function adverseEntryWithoutADelinquencyAnchor(records) {
 /* 12. A write-off the report's OWN legend defines, printed on an entry whose charge-off caption carries no date.
    The report says the debt was written off and gives the reader no charge-off date for it. */
 function writeOffWithoutAChargeOffDate(records) {
+  // A literal positive charge-off status means the same loss event. Keep its
+  // actual phrase and own source; negated phrases and date captions are not statuses.
+  const writeOffEvents = (record) => codesMeaning(record, /write-?off/i).concat(
+    codesMeaning(record, /^charge(?:d)?[ -]+off$/i).filter((event) => event.literal_statement));
   const relevant = (r) => Boolean(r) && r.status === 'RESOLVED'
     && captionPrintedWithoutValue(r, 'Charge Off Date')
-    && codesMeaning(r, /write-?off/i).length > 0;
+    && writeOffEvents(r).length > 0;
   if (!records.some(relevant)) return null;
   const matches = [];
   for (const r of records) {
@@ -866,7 +874,7 @@ function writeOffWithoutAChargeOffDate(records) {
     const caption = printedCaption(r, 'Charge Off Date');
     matches.push(match(r, 'WRITE_OFF_PRINTED_WITHOUT_A_CHARGE_OFF_DATE', {
       charge_off_caption: { state: caption.state, reason: caption.reason || null, location: caption.location || null },
-      write_off_codes: codeEvidence(codesMeaning(r, /write-?off/i))
+      write_off_codes: codeEvidence(writeOffEvents(r))
     }));
   }
   return entry('COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',

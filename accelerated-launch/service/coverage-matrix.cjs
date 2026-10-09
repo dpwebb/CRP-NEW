@@ -15,10 +15,29 @@
 
 const formats = require('./formats.cjs');
 const matrixData = require('../coverage-matrix.json');
+const commonErrors = require('./common-errors.cjs');
 
 /** Return a fresh copy of the authored matrix, so callers can never mutate the cached module singleton. */
 function loadMatrix() {
-  return JSON.parse(JSON.stringify(matrixData));
+  const matrix = JSON.parse(JSON.stringify(matrixData));
+  // Derive machine-readable check coverage from the reader's current fact contract.
+  // Authored source/layout evidence remains separate; fields alone prove no violation.
+  const capability = (id) => ({
+    shared_fact_fields: [...(commonErrors.PRESENTATION_FIELD_CAPABILITY[id] || [])],
+    checklist_capability: commonErrors.presentationCapability(id).all_factual_checks,
+    basis: 'Reader capability only. Actual report facts, source evidence, account pairing and consumer packet delivery are measured separately.'
+  });
+  if (matrix.general_intake) Object.assign(matrix.general_intake, capability(matrix.general_intake.presentation_id));
+  for (const rows of Object.values(matrix.markets || {})) {
+    for (const row of rows) {
+      if (row.presentation_id) Object.assign(row, capability(row.presentation_id));
+      else if (row.support_state === 'MISSING') {
+        row.support_scope = 'DEDICATED_LAYOUT_EVIDENCE_MISSING';
+        row.general_intake_available = true;
+      }
+    }
+  }
+  return matrix;
 }
 
 const NUMBER_WORDS = Object.freeze(['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']);
@@ -54,7 +73,8 @@ function readSupportQualification() {
   return (
     `We have tested this service on ${numberWord(rows.length)} report layouts: ` +
     names.join(', ') +
-    '. For other bureaus we read a report in a general way when we can see which bureau issued it and the page looks like a credit report. ' +
+    '. The US and Australia examples are dated 2015 and 2016; the UK Experian example is dated 2007. These examples do not certify every current report layout. ' +
+    'We also read recognizable bureau reports in a general way, including the supported UK TransUnion consumer fields. ' +
     'We then use the facts we can read. If a document is not a credit report, or we cannot read it, we say which of the two it is and what to do next.'
   );
 }
@@ -82,9 +102,8 @@ const SUPPORTED_STATES = Object.freeze(['SUPPORTED_EXACT_SPECIMEN', 'SUPPORTED_F
  * Cross-check the authored matrix against the registry, so the JSON and the running adapters cannot disagree.
  * Returns `{ ok, problems }`; the test section asserts `ok` is true.
  */
-function validation() {
+function validation(matrix = loadMatrix()) {
   const problems = [];
-  const matrix = loadMatrix();
   const registry = new Map(supportedPresentations().map((r) => [r.presentation_id, r]));
 
   for (const id of Object.keys(READ_SUPPORT_LABELS)) {
@@ -107,7 +126,22 @@ function validation() {
       if (reg.read_support_is !== row.admission_path) {
         problems.push(`${market} ${row.bureau}: admission_path mismatch (matrix ${row.admission_path}, registry ${reg.read_support_is})`);
       }
+      if (row.evidence?.present_day !== reg.present_day_support_claimed) {
+        problems.push(`${market} ${row.bureau}: current-layout currency mismatch`);
+      }
     }
+  }
+
+  const general = matrix.general_intake;
+  if (general?.presentation_id !== 'GENERAL-BUREAU-REPORT'
+    || general?.admission_path !== 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY') problems.push('GENERAL intake scope mismatch');
+  const expected = formats.presentationScope().GB.general_field_contract;
+  const current = general?.current_field_contracts?.find((row) => row.contract_id === expected.contract_id);
+  if (!current || current.scope !== expected.scope || current.country !== 'GB'
+    || current.source_version !== expected.source_version || current.source_locator !== expected.source_locator
+    || current.whole_current_layout_certified !== false
+    || JSON.stringify(current.regions) !== JSON.stringify(expected.regions)) {
+    problems.push('current UK GENERAL field contract mismatch');
   }
 
   return { ok: problems.length === 0, problems };

@@ -2,15 +2,22 @@
   "artifact": "coverage-matrix.json",
   "work_order": "B6-INGEST-002",
   "authority": "Owner-authorized consumer-credit-report ingestion expansion, 2026-10-01",
-  "status": "MEASURED — supported rows are cross-checked against the registered adapters at runtime. B6-INGEST-002 adds a general intake path: any plausible bureau report (bureau identity plus report-like content) is read and its readable facts extracted, labelled example-backed extraction, never a validated family. This file distinguishes validated presentation families / exact specimens from that general intake, and claims no present-day GB support.",
+  "status": "MEASURED — dedicated admission and source currency are checked against the registered adapters. GENERAL intake reads supported source-linked facts from recognizable bureau reports without certifying an entire layout. Current UK GENERAL field support is separate from the historical Experian family. Historical samples do not certify every current report layout.",
   "general_intake": {
     "presentation_id": "GENERAL-BUREAU-REPORT",
     "admission_path": "BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY",
     "accepts": "any document that identifies a credit bureau and prints report-like content (accounts, balances, payment status, report dates, collections, inquiries, public records)",
     "does_not_require": "a known layout, pinned specimen digest, official specimen or exact heading sequence",
     "insufficient": "a bureau name/logo alone",
-    "extraction": "reference date, account/collection/inquiry/public-record entries with page/line locations, raw values, normalized dates and per-field uncertainty",
-    "assessments": "a general report-fact consistency check (any entry date later than the report's own date); statutory checks stay bound to their own presentations",
+    "extraction": "own report reference date, creditor and collection agency, masked account and member references, balances, past due, credit limit, payment amount, account type, status, responsibility, supported account dates and dated readable payment-history cells with each field's source locations",
+    "assessments": "active common-error checklist checks supplied by each record's own source-linked facts, source-supported account pairs and owned earlier-report comparison; jurisdiction-specific reporting periods remain limited to accepted applicable mappings; court deadlines are consumer information only",
+    "jurisdiction_scope": "all 82 selected jurisdictions; shared checks run only when the particular report supplies the needed facts and source evidence",
+    "current_field_contracts": [{
+      "contract_id": "GB-TU-GENERAL-FIELDS-V9-2025", "country": "GB", "regions": ["GB-ENG", "GB-NIR", "GB-SCT", "GB-WLS"],
+      "scope": "CURRENT_GENERAL_CONSUMER_FIELDS", "source_version": "V9.0 | April 2025",
+      "source_locator": "section 5.8, printed pages 15-17", "whole_current_layout_certified": false,
+      "boundary": "Supported published consumer captions and their meanings on GENERAL; no complete current bureau PDF geometry, populated specimen or TransUnion history-code interpretation is certified."
+    }],
     "labels": "example-backed extraction, never a validated presentation family; no claim of authenticity or universal accuracy",
     "refusals": "UNRELATED_DOCUMENT for a clearly unrelated document, UNREADABLE_DOCUMENT for a report that could not be read"
   },
@@ -30,8 +37,8 @@
         "support_state": "SUPPORTED_FAMILY", "presentation_id": "FAM-TU-CA-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
         "evidence": { "artifacts": ["LEG-CONSUMER-TU-CA"], "currency": "EVIDENCED_FROM_ONE_REAL_PRESENT_DAY_SPECIMEN", "present_day": true },
         "reading": { "native_or_scan": "native text on every page (12/12), RC4 copy-permitted" },
-        "extraction_fields": ["file reference date", "tradeline Reported/Last Payment/Status dates", "enquiry Date"],
-        "compatible_assessments": ["2 report-fact consistency checks (CA-TU-FACT-*)", "no statutory unit is seated here"],
+        "extraction_fields": ["own file reference date and creditor heading", "account opened, closed, last-payment, first-delinquency and charge-off dates when printed", "account type and individual/joint responsibility", "monthly balance, payment, past due, credit limit, terms and high credit", "dated MOP history with the report's own code legend", "explicit blank date captions and report-defined closure, write-off or collection narrative", "enquiry Date"],
+        "compatible_assessments": ["active common-error account-date, balance/past-due, revolving zero-limit and payment-history checks when own facts support them", "source-proven adverse, write-off and closure date omissions", "similar entries for review; no invented masked account identifier or duplicate match"],
         "boundary": "one real specimen evidences the structure; a different product, print date or language is refused"
       },
       {
@@ -74,7 +81,7 @@
         "reading": { "native_or_scan": "native text on every page (9/9)" },
         "extraction_fields": ["application/electoral/public-record/credit-account dates", "previous searches", "retention policy statements", "own lender/type/joint heading and balance/credit-limit", "ongoing payment-history periods from own period-to caption and published issuer ordering; type-specific published code meanings"],
         "compatible_assessments": ["active common-error account-date and source-supported ongoing payment-history paths", "2 report-fact consistency checks (GB-FACT-*)", "1 printed-policy observation (GB-PRINTED-RETENTION-POLICY-ON-ITEM)"],
-        "boundary": "present-day GB support is NOT claimed; the 2007 example evidences structure only"
+        "boundary": "current dedicated Experian whole-layout support is not certified; the 2007 example evidences structure only. Current supported UK GENERAL fields are recorded separately."
       },
       {
         "bureau": "Equifax", "country": "GB", "channel": "consumer", "support_state": "MISSING",
@@ -98,8 +105,8 @@
         "support_state": "SUPPORTED_FAMILY", "presentation_id": "FAM-AU-EQX-CONSUMER", "admission_path": "EVIDENCED_STRUCTURAL_CONTRACT",
         "evidence": { "artifacts": ["PUB-012"], "currency": "EVIDENCED_FROM_ONE_CAPTURED_PUBLIC_SAMPLE", "present_day": false, "vintage_note": "Mar17 URL; cover prints a 2016 report date" },
         "reading": { "native_or_scan": "native text (14 pages)" },
-        "extraction_fields": ["credit enquiries", "overdue account original-listing date", "consumer credit liability dates", "date will be deleted"],
-        "compatible_assessments": ["AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y (APPLICABLE branch not exercised on the sample on hand)"],
+        "extraction_fields": ["own report reference date and credit provider", "credit enquiries", "overdue original-listing date and separately named current/original overdue amounts", "consumer liability opened, closed and reopened dates", "account type and credit limit", "repayment-history cells matched to their own printed month, year and glyph legend", "literal Current Repayment Status; never promoted to lifecycle-open status", "bureau listing reference; never substituted for a masked creditor account identifier", "date will be deleted"],
+        "compatible_assessments": ["active common-error account-date and source-supported payment-history checks", "similar entries for review", "jurisdiction-specific reporting-period support only within the active checklist and accepted applicable mappings; independent statutory findings are retired"],
         "boundary": "one captured public sample evidences the structure"
       },
       {
@@ -119,9 +126,9 @@
     { "rank": 2, "market": "US", "bureau": "TransUnion", "channel": "consumer", "reason": "same US consumer market; print-image and TUXML are out-of-channel", "blocker": "no genuine consumer disclosure specimen" },
     { "rank": 3, "market": "AU", "bureau": "Experian", "channel": "consumer", "reason": "official integrated Experian/illion route is live", "blocker": "no report specimen" },
     { "rank": 4, "market": "AU", "bureau": "illion", "channel": "consumer", "reason": "official integrated Experian/illion route is live", "blocker": "no report specimen" },
-    { "rank": 5, "market": "GB", "bureau": "Experian", "channel": "consumer", "reason": "only the 2007 fictitious training sample exists; current GB remains blocked", "blocker": "no current consumer report specimen" },
-    { "rank": 6, "market": "GB", "bureau": "Equifax", "channel": "consumer", "reason": "current GB support cannot be claimed without it", "blocker": "no consumer report specimen" },
-    { "rank": 7, "market": "GB", "bureau": "TransUnion", "channel": "consumer", "reason": "current GB support cannot be claimed without it", "blocker": "no consumer report specimen" },
+    { "rank": 5, "market": "GB", "bureau": "Experian", "channel": "consumer", "reason": "the dedicated family uses the 2007 fictitious training sample; GENERAL remains available for readable supported facts", "blocker": "no complete current dedicated consumer layout specimen" },
+    { "rank": 6, "market": "GB", "bureau": "Equifax", "channel": "consumer", "reason": "no dedicated current layout is certified; GENERAL remains available", "blocker": "no dedicated consumer report specimen" },
+    { "rank": 7, "market": "GB", "bureau": "TransUnion", "channel": "consumer", "reason": "current V9 consumer fields are supported on GENERAL; no complete dedicated export geometry is certified", "blocker": "no dedicated consumer report specimen" },
     { "rank": 8, "market": "CA", "bureau": "Equifax", "channel": "consumer", "reason": "PR-01 is digest-only; a second specimen or an official layout spec would promote it to a family", "blocker": "one specimen only" },
     { "rank": 9, "market": "CA", "bureau": "TransUnion", "channel": "consumer", "reason": "the family is evidenced by one specimen; a second variant would widen it", "blocker": "one specimen only" }
   ]
