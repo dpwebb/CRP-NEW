@@ -23,14 +23,15 @@ async function stripe(route){const r=await fetch('https://api.stripe.com/v1/'+ro
   for(const user of rows.users){
     const email=user.email.trim().toLowerCase();assert.ok(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));assert.ok(!seen.has(email));seen.add(email);
     const password=rows.user_passwords.find(r=>r.user_id===user.id);assert.ok(password&&moduleAt('legacy-password').validLegacyPasswordHash(password.password_hash));
-    mapped.set(user.id,{account_id:'acc_legacy_'+sha(String(user.id)).slice(0,24),email,legacy_password_bcrypt:password.password_hash,
+    assert.ok(!mapped.has(String(user.id)));
+    mapped.set(String(user.id),{account_id:'acc_legacy_'+sha(String(user.id)).slice(0,24),email,legacy_password_bcrypt:password.password_hash,
       created_at:user.created_at,failed_sign_ins:0,legacy_import:{source_user_sha256:sha(String(user.id)),source_export_sha256:sha(sourceBytes)}});
   }
   const profileKeys={full_name:'full_name',address_line1:'address_line1',address_line2:'address_line2',city:'city',province:'region',postal_code:'postal_code',date_of_birth:'date_of_birth',phone:'phone'};
-  for(const old of rows.user_account){const next=mapped.get(old.user_id);assert.ok(next);next.profile={};for(const [from,to]of Object.entries(profileKeys))if(old[from]!=null){let value=String(old[from]);if(to==='date_of_birth'&&/^\d{4}-\d{2}-\d{2}/.test(value))value=value.slice(0,10);next.profile[to]=value;}next.profile.contact_email=old.email||next.email;}
+  for(const old of rows.user_account){const next=mapped.get(String(old.user_id));assert.ok(next);next.profile={};for(const [from,to]of Object.entries(profileKeys))if(old[from]!=null){let value=String(old[from]);if(to==='date_of_birth'&&/^\d{4}-\d{2}-\d{2}/.test(value))value=value.slice(0,10);next.profile[to]=value;}next.profile.contact_email=old.email||next.email;}
   const access=[];
   for(const old of rows.subscriptions){
-    const next=mapped.get(old.user_id);assert.ok(next);
+    const next=mapped.get(String(old.user_id));assert.ok(next);
     const subscription=await stripe('subscriptions/'+encodeURIComponent(old.stripe_subscription_id));
     assert.equal(subscription.livemode,true);assert.equal(subscription.customer,old.stripe_customer_id);
     assert.equal(subscription.metadata?.userId,String(old.user_id));
@@ -53,7 +54,7 @@ async function stripe(route){const r=await fetch('https://api.stripe.com/v1/'+ro
   }
   assert.equal(rows.report_artifact.length,1);assert.equal(rows.consumer_identification_document.length,1);
   const oldReport=rows.report_artifact[0],oldId=rows.consumer_identification_document[0];
-  assert.ok(mapped.has(oldReport.user_id)&&mapped.has(oldId.user_id));
+  assert.ok(mapped.has(String(oldReport.user_id))&&mapped.has(String(oldId.user_id)));
   const recovered=(file,expected)=>{if(!file||!fs.existsSync(file))return null;assert.equal(fs.realpathSync(file),file);const bytes=fs.readFileSync(file);assert.equal(sha(bytes),expected);return bytes;};
   const report=recovered(reportPath,oldReport.sha256),id=recovered(idPath,oldId.sha256);
   const receipt={mode,build_id:'crp-v1-'+manifest.manifest_digest.slice(0,16).toLowerCase(),manifest_digest:manifest.manifest_digest,
@@ -70,10 +71,10 @@ async function stripe(route){const r=await fetch('https://api.stripe.com/v1/'+ro
     const store=new(moduleAt('private-store').PrivateStore)(data);
     try{
       store.update(state=>{assert.equal(state.accounts.length,0);state.accounts.push(...mapped.values());state.entitlements.push(...access);});
-      const actor=mapped.get(oldReport.user_id),caseRow=moduleAt('cases').createCase(store,actor,{country:'CA',region:'CA-NS'});
+      const actor=mapped.get(String(oldReport.user_id)),caseRow=moduleAt('cases').createCase(store,actor,{country:'CA',region:'CA-NS'});
       const reportReceipt=moduleAt('uploads').receiveReport(store,actor,caseRow,{originalFilename:oldReport.data.fileName||'credit-report.pdf',mimeType:'application/pdf',declaredBytes:report.length,contentBase64:report.toString('base64')});
       moduleAt('journey').evaluateCase(store,actor,caseRow.case_id);
-      const document=moduleAt('account-documents').receiveDocument(store,mapped.get(oldId.user_id),{document_type:'IDENTITY',document_kind:'IDENTIFICATION',originalFilename:oldId.file_name,mimeType:oldId.file_type,declaredBytes:id.length,contentBase64:id.toString('base64')});
+      const document=moduleAt('account-documents').receiveDocument(store,mapped.get(String(oldId.user_id)),{document_type:'IDENTITY',document_kind:'IDENTIFICATION',originalFilename:oldId.file_name,mimeType:oldId.file_type,declaredBytes:id.length,contentBase64:id.toString('base64')});
       store.update(state=>{state.cases.find(c=>c.case_id===caseRow.case_id).legacy_import={source_report_sha256:oldReport.sha256,source_selection:'explicit recorded CA / NS',source_export_sha256:sha(sourceBytes)};});
       receipt.actual_private_files=store.state().files.length;receipt.current_checklist_reassessed=true;receipt.legacy_findings_imported=0;receipt.passed=true;
     }finally{
