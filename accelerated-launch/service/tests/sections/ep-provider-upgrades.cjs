@@ -327,6 +327,63 @@ async function run(t, check) {
     check.equal((await events('charge.refunded', fullCurrentRefund)).json.event.accepted, true, 'a later full cumulative refund is processed');
     check.equal((await status(partialCurrentActor)).entitled, false, 'a full refund still revokes the refunded subscription access');
 
+    const delayedActor = await t.unpaidAccount('ep-delayed-monthly@example.test');
+    const delayedMonth = await pay(delayedActor, 'monthly');
+    const newerMonthly = mock.invoice(delayedMonth.subscription, 'monthly', 795);
+    newerMonthly.lines.data[0].period.start += 31 * 86400;
+    newerMonthly.lines.data[0].period.end += 31 * 86400;
+    mock.payInvoice(newerMonthly.id);
+    check.equal((await invoiceEvents('invoice.paid', newerMonthly)).json.event.accepted, true,
+      'newer canonical monthly renewal establishes the currently paid period');
+    const delayedRow = () => read().entitlements.find(row => row.account_id === delayedActor.account_id && row.access_via === 'SUBSCRIPTION');
+    const paidIdentity = () => {
+      const row = delayedRow();
+      return { state: row.state, expires_at: row.expires_at, plan_code: row.plan_code,
+        current_payment_intent: row.current_payment_intent, current_payment_id: row.current_payment_id };
+    };
+    const currentMonthlyIdentity = paidIdentity();
+    check.equal(currentMonthlyIdentity.current_payment_intent, newerMonthly.payment_intent,
+      'current monthly payment identity belongs to the newer paid invoice');
+    check.equal(currentMonthlyIdentity.current_payment_id, newerMonthly.id, 'current monthly receipt is the newer paid invoice');
+    check.equal(currentMonthlyIdentity.expires_at, new Date(newerMonthly.lines.data[0].period.end * 1000).toISOString(),
+      'newer monthly renewal records its canonical paid-through date');
+    const initialMonthly = mock.invoices.get(delayedMonth.session.invoice);
+    const historicalMonthly = mock.historicalInvoice(delayedMonth.subscription.id, 795, {
+      created: initialMonthly.lines.data[0].period.start - 31 * 86400,
+      status_transitions: { paid_at: initialMonthly.lines.data[0].period.start - 31 * 86400 },
+      lines: { data: [{ ...clone(initialMonthly.lines.data[0]), period: {
+        start: initialMonthly.lines.data[0].period.start - 31 * 86400,
+        end: initialMonthly.lines.data[0].period.start } }] }
+    });
+    resetHistory(delayedActor);
+    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 2385,
+      'owned history imports the older monthly cash alongside both newer unused payments');
+    const historicalReceipts = () => creditsFor(delayedActor).filter(row => row.payment_id === historicalMonthly.id);
+    check.equal(historicalReceipts().length, 1, 'older canonical cash is imported as one owned receipt');
+    check.equal(historicalReceipts()[0].remaining_amount_cents, 795, 'older unused payment remains available for an upgrade');
+    const cashBeforeDelayed = creditsFor(delayedActor).length;
+    const delayedPaid = await invoiceEvents('invoice.paid', historicalMonthly);
+    check.equal(delayedPaid.json.event.accepted, true, 'delayed modern paid webhook recognizes the older canonical receipt');
+    check.deepEqual(paidIdentity(), currentMonthlyIdentity,
+      'delayed same-plan invoice preserves current payment identity, state and newer expiry');
+    check.equal(creditsFor(delayedActor).length, cashBeforeDelayed, 'delayed webhook cannot mint the imported payment a second time');
+    check.equal((await invoiceEvents('invoice.paid', historicalMonthly)).json.event.duplicate, true,
+      'a repeated delayed monthly webhook remains idempotent');
+    check.equal(historicalReceipts().length, 1, 'delayed replay retains exactly one older cash receipt');
+    const historicalRefund = mock.refundIntent(historicalMonthly.payment_intent);
+    check.equal((await events('charge.refunded', historicalRefund)).json.event.accepted, true,
+      'full refund of the older monthly receipt is processed');
+    check.deepEqual(paidIdentity(), currentMonthlyIdentity,
+      'refund of delayed older cash preserves the independently paid newer monthly access');
+    check.equal((await status(delayedActor)).entitled, true, 'consumer keeps access through the newer paid monthly period');
+    check.equal(historicalReceipts()[0].remaining_amount_cents, 0, 'refunded older cash no longer funds an upgrade');
+    check.equal((await getPlans(delayedActor)).upgrade_quotes.annual.credit_cents, 1590,
+      'only the two unrefunded unused monthly payments remain available');
+    const newerRefund = mock.refundIntent(newerMonthly.payment_intent);
+    check.equal((await events('charge.refunded', newerRefund)).json.event.accepted, true,
+      'full refund of the actual current monthly receipt is processed');
+    check.equal((await status(delayedActor)).entitled, false, 'refund of the current newer receipt still revokes its paid access');
+
     const refundActor = await t.unpaidAccount('ep-refund@example.test');
     const refundMonth = await pay(refundActor, 'monthly');
     const refundedRenewal = mock.historicalInvoice(refundMonth.subscription.id, 795);
