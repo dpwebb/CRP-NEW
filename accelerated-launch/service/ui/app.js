@@ -948,13 +948,19 @@ function ownedPendingCheckout() {
   return state.account?.account_id && state.pending_checkout_account_id === state.account.account_id
     ? state.pending_checkout : null;
 }
+function currentReportPaymentPending() {
+  const pending = ownedPendingCheckout();
+  return !!state.caseId && (pending?.plan_code === 'report_once' && pending.case_id === state.caseId
+    || state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId);
+}
 function pendingPaymentBlock(forReport = false) {
   const pending = ownedPendingCheckout();
   if (!pending) return '';
   if (forReport) {
     const context = state.checkoutReturn;
-    if (context?.status !== 'pending' || context.caseId !== state.caseId || context.planCode !== pending.plan_code) return '';
-    if (pending.plan_code === 'report_once' && pending.case_id !== state.caseId) return '';
+    if (pending.plan_code === 'report_once') {
+      if (!state.caseId || pending.case_id !== state.caseId) return '';
+    } else if (context?.status !== 'pending' || context.caseId !== state.caseId || context.planCode !== pending.plan_code) return '';
   }
   const pricing = Number.isSafeInteger(pending.payable_cents) && pending.payable_cents >= 0
     ? `<p class="evidence">Payment amount: <b>${esc(money(pending.payable_cents, pending.currency))}</b>${pending.credit_cents > 0 ? ` after ${esc(money(pending.credit_cents, pending.currency))} credit` : ''}.${pending.plan_code !== 'report_once' && Number.isSafeInteger(pending.renewal_cents) ? ` Then ${esc(money(pending.renewal_cents, pending.currency))} per ${pending.plan_code === 'annual' ? 'year' : 'month'}.` : ''}</p>` : '';
@@ -1144,7 +1150,7 @@ function freeSummaryBlock(view) {
     ${summary.information_total ? '<p class="evidence">Your assessment also includes information about court time limits. This is separate from reporting issues and is not a dispute reason.</p>' : ''}
     ${preview}
   </div>
-  ${state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId ? '' : `<div class="obs">
+  ${currentReportPaymentPending() ? '' : `<div class="obs">
     <span class="pill">UNLOCK THE REST</span>
     <h3>Choose what you want next</h3>
     <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
@@ -1162,7 +1168,7 @@ function oneTimeNextStepsBlock() {
     <p class="evidence">Keep your full report as a PDF. It includes the issues we found, the report facts and clear next steps.</p>
     <button class="primary" id="download-assessment">Download my report (PDF)</button>
   </div>${subscriptionBenefits('Turn your results into a dispute packet')}
-  ${state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
+  ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
 }
 
 function renderResults(panel) {
@@ -2105,7 +2111,7 @@ function renderBillingView(data) {
     : credit.reserved_now ? 'Your upgrade credit is held for your open checkout. Finish or cancel that checkout before starting another.'
       : 'Every unused payment for a lower plan counts toward an upgrade.';
 
-  const checkingPayment = state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId;
+  const checkingPayment = currentReportPaymentPending();
   const planCards = checkingPayment ? '' : plansList.map((p) => {
     const quote = upgradeQuote(p.plan_code);
     const current = quote ? quote.is_current : ent.entitled && ent.access_via === 'SUBSCRIPTION' && ent.plan_code === p.plan_code;

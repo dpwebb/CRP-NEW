@@ -227,6 +227,25 @@ async function run(t, check) {
   data.pending_checkout.case_id = returnedView.case.case_id;
   await vm.runInContext('restoreCheckoutReport(RETURN_CONTEXT)', ctx); vm.runInContext('render();', ctx);
   check.ok(/id="continue-payment"/.test(panel.innerHTML), 'the matching owned one-off Results can resume their existing payment');
+
+  /* A saved report can be reopened without a checkout return URL. */
+  ctx.DATA = data;
+  vm.runInContext('state.checkoutReturn = null; rememberPendingCheckout(DATA); state.step = STEP.RESULTS; render();', ctx);
+  check.ok(/id="continue-payment"/.test(panel.innerHTML), 'reopened owned Results retain payment resume without checkout-return context');
+  check.ok(!/id="buy-(?:report_once|monthly|annual)"/.test(panel.innerHTML), 'reopened pending Results suppress fresh purchases until the existing payment finishes');
+  checkoutResponse = { redirect_url: data.pending_checkout.redirect_url };
+  const beforeReopenedResume = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').length;
+  await dom.get('continue-payment').onclick(); await tick(); await tick();
+  const reopenedResumes = dom.calls.filter(c => c.method === 'POST' && c.url === '/api/billing/checkout').slice(beforeReopenedResume);
+  check.equal(reopenedResumes.length, 1, 'reopened report resumes one existing checkout');
+  check.deepEqual(reopenedResumes[0].body, { plan_code: 'report_once', resume_checkout_id: 'chk_other_report' }, 'fresh-return resume sends the existing report payment ID without new amounts');
+  vm.runInContext('state.step = STEP.BILLING; render();', ctx); await tick(); await tick();
+  check.ok(/id="continue-payment"/.test(box.innerHTML) && !/id="buy-(?:report_once|monthly|annual)"/.test(box.innerHTML), 'Plans for the reopened pending report offer its existing payment instead of fresh purchases');
+  data.pending_checkout.case_id = 'case_other_report';
+  vm.runInContext('state.checkoutReturn = null; rememberPendingCheckout(DATA); state.step = STEP.RESULTS; render();', ctx);
+  check.ok(!/id="continue-payment"/.test(panel.innerHTML), 'fresh Results never resume another report payment');
+  check.ok(/id="buy-report_once"/.test(panel.innerHTML), 'another report payment does not replace this report’s own purchase choice');
+
   data.pending_checkout = { ...data.pending_checkout, state: 'CREDIT_REVOKED' };
   vm.runInContext('state.step = STEP.BILLING; render();', ctx); await tick(); await tick();
   check.ok(!/id="continue-payment"/.test(box.innerHTML), 'an explicitly revoked checkout is never offered as a resumable payment');
