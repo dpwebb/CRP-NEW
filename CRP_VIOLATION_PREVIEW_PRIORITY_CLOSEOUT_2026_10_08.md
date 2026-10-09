@@ -2,7 +2,9 @@
 
 ## Status
 
-Implementation closed. Staging verification pending. Production remains open.
+Implementation closed. Measured staging verification passed. Production remains open.
+
+Runtime source **68d2786cee62ff418a515e0e0581ac8eb1fabb53** was committed/pushed and activated at **2026-10-09T00:31:14.438Z**. All 111 deployed hashes and five public health/served-asset checks passed. Test billing and `launch_ready=false` remain.
 
 ## Consumer outcome
 
@@ -33,8 +35,12 @@ The checklist owns the priority categories. `issues.cjs` derives a safe presenta
 
 Candidate: **crp-v1-53cbdebf04e7f7e6**. Manifest: **53CBDEBF04E7F7E6EFC9E2FA5364890EFE07A11F91A57C731D25F3CA5758CA66**. **111 shipped files**.
 
-## Staging verification boundary
+## Staging verification and boundary
 
 The owner-linked saved case is absent from the current staging data. Do not claim direct verification of that case or reconstruct private/deleted data. A new fictional unpaid report was ingested normally on staging before this release: it contains a duplicate and a lower-priority open/closed-status conflict. Its old preview selected the status conflict. Verification after deployment must show the duplicate on the same saved assessment, one VIOLATION example, protected paid reads, and unchanged retained file/result hashes, without re-upload or re-assessment.
 
-The source package must match committed candidate bytes and frozen tested hashes. The owner's unrelated modification to `IMPORTANT 2026-10-7.txt` is preserved outside source staging and deployment. Restricted staging snapshot, rollback, test billing and `launch_ready=false` remain required. Independent production gates remain open.
+The initial post-release HTTP proof at **00:31:22Z** served the duplicate from that original saved assessment, before an additional fictional re-assessment was created during browser verification at **00:31:28Z**. The browser visibly shows one VIOLATION, “The same debt appears more than once,” and the priority explanation. The full-result list, assessment download and packet reads each remain **402**; no payment or checkout was made. The original result's read-only projection also chooses the duplicate. Its original file/result-record digest remains **2c8019f23ce67dabf10e5e81506013d5e7ced67072c4b69aae40cb52bf9a3bb4**, and original report bytes match the restricted activation backup. There is one upload and two separately retained fictional assessments; do not describe the final history as a single unchanged result count.
+
+Ignored proof: `out/staging-violation-preview-2026-10-08/` contains package, activation, public-source and protected-route receipts. `out/batch69/` contains the final full gate, before/after staging screenshots, original-result/byte verification and the honest unavailable-linked-case record. Synthetic account credentials and test artifacts remain local/ignored.
+
+The source package matches committed candidate bytes and frozen tested hashes. The owner's unrelated modification to `IMPORTANT 2026-10-7.txt` is unchanged and preserved outside source staging and deployment. The restricted **76-file** staging snapshot and rollback release are retained at `/opt/crp-wizard-staging/backups/before-crp-v1-53cbdebf04e7f7e6-1791505873`. Independent production gates remain open.
