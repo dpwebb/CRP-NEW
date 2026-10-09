@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation candidate built. Final frozen regression and measured staging verification are pending. Production remains open.
+Implementation CLOSED. Final frozen regression passes 13,001 assertions, with zero failures or skips. Measured staging verification is pending. Production remains open.
 
 ## Owner request delivered
 
@@ -32,6 +32,8 @@ For a nonzero first bill below CAD 0.50, apply a slightly smaller credit so the 
 - Actual report field keys are replaced with readable labels such as Date opened and Date closed. Final visual review confirms this in the owned HTTP download. The final full run restarts after that repair; the interrupted prior run is not release evidence.
 - Full frozen totals, source hashes, closure records and release provenance will be recorded after the candidate passes.
 - The first completed full run found three historical test assumptions (same-plan repurchase for later cases and old wording), with 12,993 passed, 3 failed and no skips. Those sections now reuse one verified subscription and check current purchase terms; all 156 affected assertions pass. Shipped runtime bytes are unchanged. A new complete run supplies the release evidence.
+- Final full run: **13,001 passed / 0 failed / 0 skipped**, all **143 sections completed**, **246 source hashes** still matching, no source drift or unrun sections, and **17/17 implementation closure records** re-derived. The complete process exits 0. Frozen manifest **69EF065334B3386A96DE911A60EF3C9A9E6BB7F02A40AE59BBDC10FEDED07B2E**, **115 shipped files**.
+- A fresh fictional monthly purchase on the preceding staging release is confirmed by the actual Stripe test Checkout and its matching applied signed webhook. The candidate will use this existing paid account to verify historical-credit import and the in-place yearly upgrade after deployment. This does not yet establish the candidate's hosted upgrade outcome.
 
 ## Release boundaries
 
