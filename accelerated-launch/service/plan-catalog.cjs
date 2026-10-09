@@ -111,7 +111,9 @@ function catalog() {
     currency: BILLING_CURRENCY,
     not_granted: NOT_GRANTED.slice(),
     note: 'One currency, priced once. Uploading a report and having it assessed are free. A purchase unlocks the reading of the report that was assessed — nothing more, and nothing that is not in this list.',
-    upgrade_offer: { credit_cents: 595, currency: 'cad', valid_days: 90, applies_to: ['monthly', 'annual'], first_invoice_only: true },
+    upgrade_offer: { currency: 'cad', applies_to: ['monthly', 'annual'], first_invoice_only: true,
+      cumulative: true, expires: false, lower_priced_plans_only: true,
+      plain: 'Your unused payments for lower-priced plans count toward an upgrade. Any credit left over stays in your account.' },
     catalog_digest: digest
   };
 }

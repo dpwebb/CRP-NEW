@@ -1,23 +1,46 @@
 'use strict';
-// Pure policy only. Stripe integration must reserve/redeem atomically; client claims never establish payment.
+// Pure quote policy. Transactional reservation/redemption lives in billing-credits.cjs.
 const plans = require('./plan-catalog.cjs');
-const WINDOW_MS = 90 * 24 * 60 * 60 * 1000;
-function upgradeQuote({accountId, purchase, targetPlan, now}) {
-  if (!['monthly','annual'].includes(targetPlan)) throw Error('SUBSCRIPTION_UPGRADE_REQUIRED');
+// Retained for old imports; upgrade credit no longer has a time window.
+const WINDOW_MS = null;
+
+function upgradeQuote({ accountId, purchase, purchases, targetPlan, now }) {
+  if (!['monthly', 'annual'].includes(targetPlan)) throw new Error('SUBSCRIPTION_UPGRADE_REQUIRED');
+  const at = Date.parse(now);
+  if (!Number.isFinite(at)) throw new Error('EXPLICIT_VALID_CURRENT_TIME_REQUIRED');
   const plan = plans.plan(targetPlan);
-  const quote = {currency:'cad', regular_cents:plan.amount_cents, credit_cents:0,
-    first_invoice_cents:plan.amount_cents, renewal_cents:plan.amount_cents,
-    eligible:false, reason:'NO_ELIGIBLE_PURCHASE', expires_at:null};
-  if (!purchase) return quote;
-  const paidAt = Date.parse(purchase.paid_at), at = Date.parse(now);
-  if (!Number.isFinite(at)) throw Error('EXPLICIT_VALID_CURRENT_TIME_REQUIRED');
-  if (!accountId || purchase.account_id !== accountId || purchase.verified_payment !== true ||
-      purchase.plan_code !== 'report_once' || purchase.currency !== 'cad' || purchase.amount_cents !== 595 ||
-      purchase.status !== 'paid' || purchase.refunded || purchase.disputed || purchase.credit_redeemed ||
-      !purchase.payment_id || !Number.isFinite(paidAt) || paidAt > at) return quote;
-  quote.expires_at = new Date(paidAt + WINDOW_MS).toISOString();
-  if (at >= paidAt + WINDOW_MS) return {...quote,reason:'UPGRADE_WINDOW_EXPIRED'};
-  return {...quote, eligible:true, reason:'VERIFIED_ONE_TIME_PAYMENT_WITHIN_90_DAYS',
-    payment_id:purchase.payment_id, credit_cents:595, first_invoice_cents:plan.amount_cents-595};
+  const rows = Array.isArray(purchases) ? purchases : (purchase ? [purchase] : []);
+  const usedIds = new Set();
+  const usedIntents = new Set();
+  const eligible = [];
+  let available = 0;
+  for (const value of rows) {
+    if (!value || !accountId || value.account_id !== accountId || value.verified_payment !== true ||
+        !plans.isPlanCode(value.plan_code) || plans.BASE_PRICE_CAD_CENTS[value.plan_code] >= plan.amount_cents ||
+        value.currency !== 'cad' || !Number.isSafeInteger(value.amount_cents) || value.amount_cents <= 0 ||
+        value.status !== 'paid' || value.refunded || value.disputed || value.credit_redeemed ||
+        value.credit_reserved || ['RESERVED', 'REDEEMED', 'REVOKED'].includes(value.state) ||
+        typeof value.payment_id !== 'string' || !value.payment_id ||
+        !Number.isFinite(Date.parse(value.paid_at)) || Date.parse(value.paid_at) > at) continue;
+    const intent = typeof value.payment_intent === 'string' && value.payment_intent ? value.payment_intent : null;
+    if (usedIds.has(value.payment_id) || (intent && usedIntents.has(intent))) continue;
+    const consumed = value.consumed_cents === undefined ? 0 : value.consumed_cents;
+    if (!Number.isSafeInteger(consumed) || consumed < 0 || consumed > value.amount_cents) continue;
+    const remaining = value.remaining_amount_cents === undefined ? value.amount_cents - consumed : value.remaining_amount_cents;
+    if (!Number.isSafeInteger(remaining) || remaining <= 0 || remaining !== value.amount_cents - consumed) continue;
+    usedIds.add(value.payment_id);
+    if (intent) usedIntents.add(intent);
+    available += remaining;
+    if (!Number.isSafeInteger(available)) throw new Error('UPGRADE_CREDIT_TOTAL_OUT_OF_RANGE');
+    eligible.push(value);
+  }
+  const credit = Math.min(available, plan.amount_cents);
+  return { currency: 'cad', regular_cents: plan.amount_cents, credit_cents: credit,
+    first_invoice_cents: plan.amount_cents - credit, renewal_cents: plan.amount_cents,
+    eligible: credit > 0, reason: credit > 0 ? 'VERIFIED_UNUSED_LOWER_PLAN_PAYMENTS' : 'NO_ELIGIBLE_PURCHASE',
+    expires_at: null, available_credit_cents: available, remaining_credit_cents: available - credit,
+    source_plan_codes: plans.PLAN_CODES.filter(code => eligible.some(value => value.plan_code === code)),
+    source_payment_ids: eligible.map(value => value.payment_id),
+    ...(eligible.length === 1 ? { payment_id: eligible[0].payment_id } : {}) };
 }
-module.exports = {upgradeQuote, WINDOW_MS};
+module.exports = { upgradeQuote, WINDOW_MS };
