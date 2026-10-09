@@ -299,7 +299,7 @@ async function runSubscriberPacket(service, check, evidence, real) {
   check.equal(approved.status, 200, 'and approve the packet it built');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: sub.token });
   check.equal(download.status, 200, 'and download the approved packet');
-  check.ok(comparableText(download.text).includes(chosen.request_wording), 'the approved correspondence carries the selected reporting-period verification request');
+  check.ok(/Please check the Last Payment Date and.*6-year reporting period/i.test(comparableText(download.text)), 'the approved correspondence asks in plain language to check the selected last-payment anchor and six-year reporting period');
   check.ok(comparableText(download.text).includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
   check.ok(/remove or correct this debt information/i.test(comparableText(download.text)), 'the packet asks for correction of the aged debt information');
   check.ok(!/positive account|negative account|adverse debt/i.test(comparableText(download.text)), 'the packet assigns no positive or negative account value');
@@ -373,4 +373,3 @@ module.exports = {
   id: 'cr-ca-ns-tu-real-report',
   title: 'BLOCKER-REPORT-DATA-TO-ISSUE-001: the supplied real TransUnion Canada report assessed under Nova Scotia — supported findings, the reporting-period limb and the paid boundaries'
 };
-

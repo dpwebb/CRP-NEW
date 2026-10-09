@@ -207,7 +207,7 @@ async function run(service, check) {
   check.ok(comparableText(dl.text).includes(gb.explanation), 'the downloaded correspondence carries the reviewed issue');
   check.ok(comparableText(dl.text).includes(`Recorded rule: ${CITATION}`), 'naming the recorded rule behind the finding');
   check.ok(/- verification/.test(comparableText(dl.text)) && !/- correction/.test(comparableText(dl.text)), 'with a verification request, never a correction demand');
-  check.ok(/rectify whichever is inaccurate/.test(comparableText(dl.text)), 'asking for rectification of the inaccurate value');
+  check.ok(/correct whichever is inaccurate/.test(comparableText(dl.text)), 'asking in plain language for correction of the inaccurate value');
   check.ok(/OPENED: printed "01\/01\/2020"/.test(comparableText(dl.text)), 'and the raw printed opened reading under its report caption in the evidence references');
   check.ok(/CLOSED: printed "01\/01\/2019"/.test(comparableText(dl.text)), 'with the raw printed closed reading under its report caption');
   check.ok(/read as 2020-01-01/.test(comparableText(dl.text)), 'with its normalization');

@@ -286,6 +286,8 @@ async function run(service, check) {
   check.ok(tuSel, 'the TU-CA account-dates issue is offered for selection');
   await service.request('POST', `/api/cases/${tuCase.case_id}/packet/select`, { token: owner.token, body: { issue_ids: [tuSel.issue_id] } });
   await service.request('POST', `/api/cases/${tuCase.case_id}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Dana Whitfield', contact: 'dana.whitfield@example.test' } } });
+  const canadianProfile = await service.request('PUT', '/api/account/profile', { token: owner.token, body: { profile: { country: 'CA', region: 'ON' } } });
+  check.equal(canadianProfile.status, 200, 'the fictional Canadian packet uses an explicitly saved Ontario address rather than the earlier England profile');
   await service.preparePostalPacket(owner, tuCase.case_id);
   await service.request('POST', `/api/cases/${tuCase.case_id}/packet/approve`, { token: owner.token });
   const tuDl = await service.request('GET', `/api/cases/${tuCase.case_id}/packet-download`, { token: owner.token });

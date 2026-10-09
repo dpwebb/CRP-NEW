@@ -1,13 +1,13 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-09T02:17:43.481Z",
+  "generated_at": "2026-10-09T04:27:38.890Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
     {
       "id": "RUNTIME_ASSETS",
-      "file_count": 8,
-      "digest": "44E2880E9C53EC5AB6554F564D78B93BF11CB9DB0B4BA9FB5EFBAF4DDB895A0E",
+      "file_count": 15,
+      "digest": "D51837DFB4DFF2B4F8BD8D93FF561951E2ED45CB552B77C3C545DBB7832F223C",
       "files": [
         {
           "file": "accelerated-launch/service/packet-fonts/NotoSans-Regular.ttf",
@@ -35,18 +35,46 @@
         },
         {
           "file": "accelerated-launch/service/bureau-forms/catalog.json",
-          "sha256": "B12F419C6F42C5702FBDC46F7A7E8350E9E5AB808742A9998CC57E098FA37B62"
+          "sha256": "421623162A12DED5A21FF7CB293F6B868C4D29E5856939EAFB35088149AD6C19"
         },
         {
           "file": "accelerated-launch/service/bureau-forms/us-equifax.pdf",
           "sha256": "5697E47D925B57EA0105D68F78F3D57BA0A4DA807924EC1B28FB6C4F1BE72576"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-forms/us-experian.pdf",
+          "sha256": "077F61EFE7CECF5FF86504BF5EA2EDCFEC167346DDB388F756C8491E7CC04243"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/fontkit-1.1.1.min.js",
+          "sha256": "D8DF561B9FBA98E24F2E5130E40948809281BBBC55A20C412359F1A0A5EB35A6"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/fontkit-LICENSE.txt",
+          "sha256": "7AB986B8CB4A27F8AC7CB0D72924C621A1A0418967B5AE9AC38C9FE981643AB8"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/fontkit-README.md",
+          "sha256": "7315FCC54511F5FFC906969C39333F93CD47F5217AB014FE45ACFF14BD5EC4C0"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/pdf-lib-1.17.1.min.js",
+          "sha256": "0F9A5CAD07941F0826586C94E089D89B918C46E5C17CF2D5A3C6F666E3BC694F"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/pdf-lib-LICENSE.md",
+          "sha256": "F2C9FC00FDB66EB99AC156BA52D734AF66D8D309F65753AE809AD34EE2883BCB"
+        },
+        {
+          "file": "accelerated-launch/service/pdf-vendor/provenance.json",
+          "sha256": "B730ACB9C554B5335BDF3C09B2CE0A37E98C382E5488251D7D7C74D3B91D97E0"
         }
       ]
     },
     {
       "id": "RUNTIME",
-      "file_count": 77,
-      "digest": "90AF75FF95A0FEA0253B2C89126042E482899C02573BA4F24E5F62C5B6B56525",
+      "file_count": 80,
+      "digest": "FEF8728A4EE310F2E36C2E790EC8EAFAC598D045504B0090791B91E7FF7801BE",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -62,7 +90,7 @@
         },
         {
           "file": "accelerated-launch/service/account-profile.cjs",
-          "sha256": "72EB8C9BF2BD61577BEB9AD0A5E1A230B3B1B0C233D224CD903521B8EA66BCC0"
+          "sha256": "E5D6105D1858A576718B0B2E88DF7471156E4C9D535112AF55708A1F50F9FF56"
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -70,7 +98,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "AF92D06348FB3151DF4F4FB1F2311A13BA0469EDD53B485A78CF2917B621F63E"
+          "sha256": "E91467BC97B4B0B6DF1D1ADB6A4608219DBD1559837D390725FADD35BE1DDDAC"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -105,8 +133,16 @@
           "sha256": "2BB8D42EA05279A3D4C3279E9146DD35797E95A9E7FB4CA841086F882C09F3F6"
         },
         {
+          "file": "accelerated-launch/service/bureau-form-mappings.cjs",
+          "sha256": "D140571193A9672D915620F2696194B2C95F109ADD41C36EF31343A9162D5EA4"
+        },
+        {
+          "file": "accelerated-launch/service/bureau-form-worker.cjs",
+          "sha256": "82368834EA362A8E4B34EBC8EC9BEE678206CF8D8748F1EDBFB7B01776D03EF4"
+        },
+        {
           "file": "accelerated-launch/service/bureau-forms.cjs",
-          "sha256": "F5FB485C12889EB60E7CBA1695233326F453390C365362E7C9552CF4AC1C5656"
+          "sha256": "548B17653B68CA5664AEEE4F9D897A4258AF8035F0173F4D12331249B0A8A26F"
         },
         {
           "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
@@ -147,6 +183,10 @@
         {
           "file": "accelerated-launch/service/comparison.cjs",
           "sha256": "FD79A54061F76551B0D261D6EEE0AEF842C401B9FE84697C77F690258969DB6E"
+        },
+        {
+          "file": "accelerated-launch/service/consumer-dispute-letter.cjs",
+          "sha256": "023D2836D262B07E616883A273C6B1119DFDE91486C07FEB9A20306A19EC80F7"
         },
         {
           "file": "accelerated-launch/service/content-assessments.cjs",
@@ -266,7 +306,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-pdf.cjs",
-          "sha256": "6AA5906420E95CD08D9974A0DEBFDA01BE062D7C95613978A7DC482CFC9E7BFC"
+          "sha256": "D610E35A46C10BA9A7DE0BB6C99BA2A82D02535EB6FF57E7A58FB0B6B4BEB90B"
         },
         {
           "file": "accelerated-launch/service/packet-report-exhibits.cjs",
@@ -274,11 +314,11 @@
         },
         {
           "file": "accelerated-launch/service/packet-support.cjs",
-          "sha256": "3BBC69806C442CFD157E1C35FD5BBC50ED3735848E34C70E01EF7A744A131D6C"
+          "sha256": "90A2EEE5099E2FCFB1A1BB5A87E54680BCC45424DDC1EAE729601C5607720DF4"
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "7C186EE778FDD77FC9B0B313C365560CF3673C53B14610BB8BCDFA99212BB1CB"
+          "sha256": "D15CB460AF7727EBE2EDB1513101B1AC72601998B955655FA8C874C7B165066A"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -486,11 +526,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 4,
-      "digest": "B9258EDEB79BDB0A9517F89F2F3D123202E4117359D450713DAC2319CA06FB8F",
+      "digest": "CEB9C008519DA43A4DD9478A42B81C6B10AB5C09C23192C5693A71E95AB1AB7D",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "B74570B3F42E5DC812B3E269C1F5110D309C6A2F1EF9E42664CC221489037A0F"
+          "sha256": "94A4F83A6BE05EC662CB002D04B6A658714249BAA562A81F01560755A9ED81A2"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -507,6 +547,6 @@
       ]
     }
   ],
-  "manifest_digest": "6671D7A0DD3C9D270575AD1DC11FA7244FCEEB06E5A79313603D271C119FE325",
-  "total_file_count": 115
+  "manifest_digest": "80731CA9BD1D42902860CDFAF8C7BD6B6FB84965144F8BCABA3C64BDE757EFCF",
+  "total_file_count": 125
 }
