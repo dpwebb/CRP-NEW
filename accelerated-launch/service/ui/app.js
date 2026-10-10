@@ -4,8 +4,10 @@
 
 const STEP_VIEWS = Object.freeze({
   ACCOUNT: { label: 'Account', render: renderAccount }, JURISDICTION: { label: 'Upload report', render: renderJurisdiction },
-  REPORT: { label: 'Your report', render: renderReport }, RESULTS: { label: 'Results', render: renderResults },
-  REVIEW: { label: 'Print your packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
+  REPORT: { label: 'Check report', render: renderReport }, RESULTS: { label: 'Review results', render: renderResults },
+  CHOOSE: { label: 'Choose disputes', render: renderReview },
+  PREPARE: { label: 'Prepare documents', render: renderReview },
+  REVIEW: { label: 'Review and approve packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
   CASE: { label: 'Privacy and deletion', render: renderCase }, SUPPORT: { label: 'Help', render: renderSupport },
   BILLING: { label: 'Plans', render: renderBilling }
 });
@@ -129,16 +131,16 @@ function renderSteps() {
   }
   el('breadcrumb').textContent = STEPS[state.step];
   const inJourney = state.step <= STEP.REVIEW;
-  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of 5` : 'Your tools';
+  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of 7` : 'Your tools';
   el('step-label').textContent = STEPS[state.step];
-  el('bar').style.width = `${Math.min(state.step + 1, 5) / 5 * 100}%`;
+  el('bar').style.width = `${Math.min(state.step + 1, 7) / 7 * 100}%`;
   const progress = el('journey-progress');
-  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', '5'); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, 5))); }
+  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', '7'); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, 7))); }
   progress.hidden = !inJourney;
 }
 
 function navigateStep(step) {
-  if (state.step === STEP.REVIEW && packetLeave) return packetLeave(step);
+  if ((state.step === STEP.CHOOSE || state.step === STEP.PREPARE || state.step === STEP.REVIEW) && packetLeave) return packetLeave(step);
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
   state.step = step; render();
 }
@@ -478,8 +480,8 @@ function renderAccountDetails(panel) {
     state.accountProfile = saved.profile;
     const answer = await api('GET', `/api/cases/${returning.caseId}`); ensureReturn();
     state.view = answer.view; state.packetReturn = null;
-    state.step = answer.view.result_id === returning.resultId ? STEP.REVIEW : STEP.RESULTS;
-    state.notice = state.step === STEP.REVIEW ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
+    state.step = answer.view.result_id === returning.resultId ? (returning.step || STEP.REVIEW) : STEP.RESULTS;
+    state.notice = state.step !== STEP.RESULTS ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
   });
   el('signout').onclick = () => run(async () => {
     accountEpoch++;
@@ -1213,7 +1215,7 @@ function renderResults(panel) {
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
-  if (packet) packet.onclick = () => navigateStep(STEP.REVIEW);
+  if (packet) packet.onclick = () => navigateStep(STEP.CHOOSE);
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -1463,7 +1465,7 @@ function renderReview(panel) {
   const access = view.assessment_access || {};
   if (!access.dispute_packet) {
     panel.innerHTML = `
-      <h1>Review and download</h1>
+      <h1>Choose disputes</h1>
       <p class="lede">Dispute packets are part of a subscription.</p>
       ${notices()}
       <div class="note">A one-time purchase includes the full assessment and its download. A subscription also includes dispute packets.</div>
@@ -1472,9 +1474,11 @@ function renderReview(panel) {
     return;
   }
   const result = view.result;
+  const choosing = state.step === STEP.CHOOSE;
+  const preparing = state.step === STEP.PREPARE;
   panel.innerHTML = `
-    <h1>Review and download</h1>
-    <p class="lede">Choose your issues. Save and review your packet. Approve it, then print it and mail it to the bureau.</p>
+    <h1>${choosing ? 'Choose disputes' : preparing ? 'Prepare your documents' : 'Review and approve packet'}</h1>
+    <p class="lede">${choosing ? 'Select the issues you want the bureau to check or correct.' : preparing ? 'Check what your bureau asks you to include. Upload your identification and proof of address as needed, then choose the copies for your packet.' : 'Check your chosen issues and every page. Approve this version before downloading or printing it.'}</p>
     ${notices()}
     ${result ? `<div class="obs">
       <span class="pill ${view.reviewed ? '' : 'stop'}">${view.reviewed ? 'REVIEWED BY YOU' : 'NOT YET REVIEWED'}</span>
@@ -1517,7 +1521,7 @@ function packetSupportingDocuments(pv) {
   return `<h3>Prepare for the bureau</h3>
     <div class="row"><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
-    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Add contact details or documents</button></p>
+    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Upload identification or proof of address</button></p>
     <div id="packet-bureau-checklist">${bureauChecklist(req, view.missing || [])}</div>
     <h4>Choose documents to include</h4>
     ${(view.documents || []).map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${(view.selected_document_ids || []).includes(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
@@ -1576,11 +1580,17 @@ function renderPacketBlock(pv) {
       ${comparisonFactList(i)}
     </label>`).join('');
   return `
+    <div id="packet-selection">
     <h2>Your dispute packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
+    <button class="primary" id="packet-choose-next">Continue to document preparation</button>
+    </div>
+    <div id="packet-details">
     <p class="evidence">We put your letter, report pages, document copies and bureau forms in one PDF.</p>
     ${packetSupportingDocuments(pv)}
+    <button class="primary" id="packet-prepare-next">Continue to packet review</button>
+    <div id="packet-review-controls">
     ${packetReportCopies(packet)}
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
@@ -1612,6 +1622,8 @@ function renderPacketBlock(pv) {
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download your PDF</button>
       ${packet.download_available ? `<p class="note" id="packet-ready-status">Download your PDF and print every page. Sign and date where shown. Mail it to the bureau address in your letter. Keep a copy.</p>` : ''}
       ${surface?.preview_mode === true && packet.download_available ? '<p class="note demo"><strong>Staging preview:</strong> See how an optional paid mailing step could look. This sample cannot take payment or mail your packet.<br><a href="/mailing-preview.html" target="_blank" rel="noopener">Review the mailing design</a></p>' : ''}
+    </div>
+    </div>
     </div>`;
 }
 
@@ -1645,6 +1657,12 @@ async function wirePacket(panel) {
   try { ensureOrigin(); } catch { return; }
   block.innerHTML = renderPacketBlock(pv);
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
+  const choosing = state.step === STEP.CHOOSE;
+  const preparing = state.step === STEP.PREPARE;
+  el('packet-choose-next').hidden = !choosing;
+  el('packet-details').hidden = choosing;
+  el('packet-prepare-next').hidden = !preparing;
+  el('packet-review-controls').hidden = preparing;
 
   /* The current visible selection and wording, captured at action time so a save or an approve can never
      silently use an older saved version while the consumer sees a changed one. */
@@ -1700,6 +1718,21 @@ async function wirePacket(panel) {
   };
 
   const save = el('packet-save');
+  const continueToReview = el('packet-choose-next');
+  if (continueToReview) continueToReview.onclick = () => run(async () => {
+    if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
+    const ensureCurrent = await persistSelection(); ensureCurrent();
+    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.step = STEP.PREPARE;
+    state.notice = 'Your choices are saved. Check the bureau requirements and add your documents.';
+  });
+  el('packet-prepare-next').onclick = () => run(async () => {
+    if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
+    const ensureCurrent = await persistSelection(); ensureCurrent();
+    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.step = STEP.REVIEW;
+    state.notice = 'Your document choices are saved. Review every page before approving.';
+  });
   if (save) save.onclick = () => run(async () => {
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
@@ -1761,7 +1794,7 @@ async function wirePacket(panel) {
   packetLeave = step => run(async () => {
     const ensureCurrent = await persistSelection(); ensureCurrent();
     if (step === STEP.ACCOUNT) {
-      state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id };
+      state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id, step: state.step };
       state.accountProfile = null;
     }
     state.step = step;
@@ -1879,7 +1912,7 @@ function renderHistory(panel) {
     <div id="history-body">Loading your reports…</div>`;
   const accountId = state.account.account_id;
   api('GET', '/api/history').then((data) => {
-    if (state.step !== 5 || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
+    if (state.step !== STEP.HISTORY || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
     const rows = data.assessments || [];
     const list = rows.length
       ? `<ul class="plain">${rows.map((r) => `<li>${esc(historyOption(r))} · ${esc(r.jurisdiction || '')} · ${esc(String(r.issue_count))} reporting issue(s)${r.information_count ? ` · court time-limit information for ${esc(String(r.information_count))} account(s)` : ''} <span class="evidence">assessment recorded ${esc(String(r.recorded_at || '').slice(0, 10))}</span></li>`).join('')}</ul>`
@@ -1939,7 +1972,7 @@ function renderCase(panel) {
   const privacyAccount = state.account && state.account.account_id;
   const privacyCase = state.caseId;
   api('GET', '/api/privacy').then(data => {
-    if (state.step !== 6 || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
+    if (state.step !== STEP.CASE || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
     const inventory = el('privacyInventory');
     if (!inventory) return;
     inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
@@ -2014,7 +2047,7 @@ function renderSupport(panel) {
   const seq = ++supportSeq;
 
   api('GET', '/api/support').then((data) => {
-    if (state.step !== 7 || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
+    if (state.step !== STEP.SUPPORT || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
     const box = el('supportInfo');
     if (!box) return;
     const summary = supportSummaryText(data);
@@ -2059,7 +2092,7 @@ function renderSupport(panel) {
     el('copySummary').onclick = () => doCopy(summary, 'Summary');
     el('retrySupport').onclick = () => renderSupport(panel);
   }).catch(() => {
-    if (state.step !== 7 || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
+    if (state.step !== STEP.SUPPORT || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
     const box = el('supportInfo');
     if (!box) return;
     box.innerHTML = `<div class="note stop">Your support reference could not be loaded.</div><button class="secondary" id="retrySupport">Try again</button>`;
@@ -2094,10 +2127,10 @@ function renderBilling(panel) {
   const seq = ++billingSeq;
 
   api('GET', '/api/billing/plans').then((data) => {
-    if (state.step !== 8 || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
+    if (state.step !== STEP.BILLING || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
     renderBillingView(data);
   }).catch(() => {
-    if (state.step !== 8 || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
+    if (state.step !== STEP.BILLING || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
     const box = el('billingView');
     if (!box) return;
     box.innerHTML = `<div class="note stop">Your billing information could not be loaded.</div><button class="secondary" id="retryBilling">Try again</button>`;

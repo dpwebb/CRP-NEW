@@ -84,7 +84,7 @@ async function run(service, check) {
     await page.waitForSelector('#evaluate');
     await page.locator('#evaluate').click();
     await page.waitForFunction(() => document.body.innerText.includes('Your results are ready.'), null, { timeout: 15000 });
-    await page.locator('#steps button[data-step="4"]').click();
+    await page.locator('#steps button[data-step="6"]').click();
     await page.waitForSelector('#packet-block');
     await page.waitForTimeout(600);
     return { page, context, reportBytes };
@@ -143,7 +143,7 @@ async function run(service, check) {
       await page.waitForFunction(expected => document.querySelectorAll('a[href^="/api/account/documents/"]').length === expected, expectedCount);
     }
     if (await page.locator('#account-continue').innerText() === 'Return to my packet') await page.locator('#account-continue').click();
-    else await page.locator('#steps button[data-step="4"]').click();
+    else await page.locator('#steps button[data-step="6"]').click();
     await page.waitForSelector('#packet-bureau');
     check.equal(await page.locator('#packet-channel').count(), 0, 'the consumer packet has a mail-only path with no submission-method selector');
     if (withDocuments) {
@@ -170,6 +170,21 @@ async function run(service, check) {
   check.ok(/Mail your packet to:/.test(potBlock), 'the consumer review states where to mail the packet');
   check.ok(/Equifax checklist/.test(potBlock), 'with the sourced bureau checklist');
   check.ok(/Review and edit/.test(potBlock), 'and gives the consumer one simple review and edit step');
+  await page.locator('#steps button[data-step="4"]').click();
+  await page.waitForSelector('#packet-choose-next:visible');
+  await page.locator('[data-check-issue]').first().check();
+  await page.locator('#packet-choose-next').click();
+  await page.waitForSelector('#packet-prepare-next:visible');
+  check.ok(/Prepare your documents/.test(await page.locator('#panel').innerText()), 'the selected issue leads to document preparation before packet review');
+  check.ok(/Official instructions/.test(await page.locator('#packet-bureau-checklist').innerText()), 'document preparation shows the selected bureau instructions');
+  await page.locator('#packet-account-details').click();
+  await page.waitForSelector('#account-document-upload');
+  check.ok(/Documents for disputes/.test(await page.locator('#panel').innerText()), 'the preparation step offers the existing private document uploader');
+  await page.locator('#account-continue').click();
+  await page.waitForSelector('#packet-prepare-next:visible');
+  check.equal(await page.locator('[data-check-issue]:checked').count(), 1, 'returning from document upload preserves the dispute choice');
+  await page.locator('#packet-prepare-next').click();
+  await page.waitForSelector('#packet-save:visible');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
   await page.locator('[data-check-issue]').first().check();
   await page.locator('#packet-wording').fill('Please verify these two dates.');
@@ -488,7 +503,7 @@ async function run(service, check) {
   await genPage.waitForTimeout(700);
   const genPanelText = await genPage.locator('#panel').innerText();
   check.ok(/Assessed on \d{4}-\d{2}-\d{2}/.test(genPanelText), 'the complete assessment states the date it was assessed');
-  await genPage.locator('#steps button[data-step="4"]').click();
+  await genPage.locator('#steps button[data-step="6"]').click();
   await genPage.waitForTimeout(600);
   check.ok(/Information about court time limits/.test(genPanelText), 'paid results separate court information from reporting issues');
   check.ok(/INFORMATION/.test(genPanelText), 'court cards show INFORMATION');
@@ -553,7 +568,7 @@ async function run(service, check) {
   check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');
   check.ok(/arose through the passage of time/.test(dualPanel), 'and that the concern arose through the passage of time');
   check.ok(/Date of first delinquency on the collection entry/.test(dualPanel), 'and names the printed field the way the report does');
-  await dualOpened.page.locator('#steps button[data-step="4"]').click();
+  await dualOpened.page.locator('#steps button[data-step="6"]').click();
   await dualOpened.page.waitForSelector('#packet-block');
   await dualOpened.page.waitForTimeout(600);
   const dualBlock = await dualOpened.page.locator('#packet-block').innerText();

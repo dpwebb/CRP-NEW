@@ -269,11 +269,11 @@ async function run(t, check) {
 
   const panel = dom.nodes.get('panel');
   check.ok(dom.calls.includes('GET /api/jurisdictions'), 'the UI loads the jurisdiction surface on boot');
-  check.ok(/Your account/.test(panel.innerHTML), 'the first step renders without error');
+  check.ok(/Create your account/.test(panel.innerHTML), 'the first step renders without error');
   check.ok(dom.calls.includes('GET /api/pricing'), 'the public configured price catalogue is loaded before sign-in');
   check.ok(/Free/.test(panel.innerHTML) && /No dispute packet/.test(panel.innerHTML) && /Subscription/.test(panel.innerHTML), 'first visit makes the free, one-report and subscriber packet boundary clear before registration');
   check.ok(/\$5\.95 CAD/.test(panel.innerHTML) && /\$7\.95 CAD/.test(panel.innerHTML) && /\$79\.50 CAD/.test(panel.innerHTML), 'all three configured plan prices are visible before account creation');
-  check.ok(/Step 1 of 5/.test(dom.elementById('stepcount').textContent), 'the main journey has five steps');
+  check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
 
@@ -332,8 +332,9 @@ async function run(t, check) {
   check.ok(/I don't know/.test(panel.innerHTML) && /Skip/.test(panel.innerHTML), 'and offers "I don\'t know" and "Skip"');
   vm.runInContext('state.view = state._savedView; state.step = 3; render();', ctx);
 
-  /* Step 4: the review and download boundary. */
+  /* Step 5: choose disputes before document preparation and packet review. */
   vm.runInContext('state.step = 4; render();', ctx);
+  check.ok(/Choose disputes/.test(panel.innerHTML) && /Step 5 of 7/.test(dom.elementById('stepcount').textContent), 'issue selection has its own visible step');
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(panel.innerHTML),
     'the packet review does not repeat obsolete draft, observation-only or demonstration claims');
   check.ok(!/id="draft"|id="download"/.test(panel.innerHTML), 'and does not offer legacy draft or demonstration controls');
@@ -346,8 +347,12 @@ async function run(t, check) {
   check.ok(/Your review is saved\./.test(panel.innerHTML), 'the saved review has a simple confirmation');
   check.ok(!dom.calls.some((c) => /response-draft|demonstration-download/.test(c)), 'reviewing the packet requests neither obsolete endpoint');
 
-  /* Step 5: case status and deletion controls. */
+  vm.runInContext('state.step = 5; render();', ctx);
+  check.ok(/Prepare your documents/.test(panel.innerHTML) && /Step 6 of 7/.test(dom.elementById('stepcount').textContent), 'document preparation follows issue selection');
   vm.runInContext('state.step = 6; render();', ctx);
+  check.ok(/Review and approve packet/.test(panel.innerHTML) && /Step 7 of 7/.test(dom.elementById('stepcount').textContent), 'review and approval follow issue selection');
+  /* Privacy and deletion remain outside the numbered journey. */
+  vm.runInContext('state.step = 8; render();', ctx);
   await tick();
   await tick();
   check.ok(dom.calls.includes('GET /api/privacy'), 'privacy dashboard loads authenticated inventory');

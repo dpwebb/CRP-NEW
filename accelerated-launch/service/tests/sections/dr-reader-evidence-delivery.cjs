@@ -203,7 +203,7 @@ async function run(t, check) {
       await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
-      await page.locator('#steps button[data-step="4"]').click(); await page.waitForSelector('#packet-block');
+      await page.locator('#steps button[data-step="6"]').click(); await page.waitForSelector('#packet-block');
       await page.waitForFunction(() => document.querySelector('#packet-block').innerText.includes('What the payment period means'));
       const text = await page.locator('#packet-block').innerText();
       check.ok(text.includes('What the payment period means') && text.includes('What the payment code means')

@@ -70,7 +70,7 @@ function harness(responder, { autoRead = true } = {}) {
   };
   const openPacket = (id, approved = false) => {
     context.nextCase = id;
-    evaluate('state.caseId = nextCase; state.step = 4;');
+    evaluate('state.caseId = nextCase; state.step = 6;');
     block.isConnected = false; block = element('packet-block');
     node('packet-download').disabled = !approved; node('packet-approve').disabled = approved;
     node('packet-bureau').value = 'TRANSUNION'; node('packet-channel').value = 'POSTAL'; node('packet-purpose').value = 'ACCOUNT';
@@ -249,7 +249,7 @@ async function packetDraftDocumentReturn() {
   assert.equal(wording.body.wording, 'Keep these draft words', 'leaving for documents saves the visible draft first');
   h.evaluate('renderAccountDetails(document.getElementById("panel"))'); await until(() => h.evaluate('state.accountProfile !== null'), 'loaded account return details');
   h.evaluate('state.accountProfile.full_name = "Updated Consumer";'); await h.node('account-continue').onclick();
-  assert.equal(h.evaluate('state.step'), 4, 'document detour returns to the same packet rather than report upload');
+  assert.equal(h.evaluate('state.step'), 6, 'document detour returns to the same packet rather than report upload');
   assert.equal(h.evaluate('state.caseId'), 'caseA'); assert.equal(h.evaluate('state.packetReturn'), null);
   assert.equal(h.calls.find(row => row.method === 'PUT').body.profile.full_name, 'Updated Consumer', 'return saves the current contact details before refreshing the packet');
 }

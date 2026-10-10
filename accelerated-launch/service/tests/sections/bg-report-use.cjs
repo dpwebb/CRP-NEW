@@ -276,7 +276,7 @@ async function run(t, check) {
   const submitted = (postedBodies[0] && postedBodies[0].answers) || [];
   check.ok(submitted.some((a) => a.question_id === 'report-use' && a.answer === 'credit_transaction'), 'the wizard submits the purpose through the real flow');
   check.ok(submitted.some((a) => a.question_id === 'report-use-amount' && a.purpose === 'credit_transaction' && a.answer === 'below_50k'), 'the wizard submits the conditional amount through the real flow');
-  vm.runInContext('state.step = 4; render();', uiCtx);
+  vm.runInContext('state.step = 6; render();', uiCtx);
   check.equal(uiElement('footer-disclaimer').hidden, true, 'the disclaimer is hidden on the review/download step');
 
   /* 14. Integration coverage: the wizard (in a VM) drives the ACTUAL local service over HTTP (no mocked fetch).

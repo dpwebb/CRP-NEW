@@ -127,7 +127,7 @@ async function run(t, check) {
   dom.elementById('password').value = 'a-long-enough-password';
   await dom.elementById('create').onclick();
   await tick();
-  vm.runInContext('state.step = 7; render();', ctx);
+  vm.runInContext('state.step = 9; render();', ctx);
   await tick(); await tick();
   check.ok(/Support/.test(panel.innerHTML), 'the Support step is reachable from the wizard');
   check.ok(/does not send a message/.test(panel.innerHTML), 'the copy explanation states nothing is sent and nothing is submitted');
@@ -164,7 +164,7 @@ async function run(t, check) {
 
   /* Retrieval failure → error + retry that recovers. */
   responderState.supportFails = true;
-  vm.runInContext('state.step = 7; render();', ctx);
+  vm.runInContext('state.step = 9; render();', ctx);
   await tick(); await tick();
   check.ok(/could not be loaded/.test(dom.elementById('supportInfo').innerHTML), 'retrieval failure is reported truthfully');
   responderState.supportFails = false;
@@ -175,7 +175,7 @@ async function run(t, check) {
   /* Stale information is cleared on sign-out and a delayed response never renders the old account's data. */
   let resolveSupport;
   responderState.supportDeferred = new Promise((r) => { resolveSupport = r; });
-  vm.runInContext('state.step = 7; render();', ctx);
+  vm.runInContext('state.step = 9; render();', ctx);
   await tick();
   vm.runInContext('state.step = 0; render();', ctx);
   await tick(); await tick();
