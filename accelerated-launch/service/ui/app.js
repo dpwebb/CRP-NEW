@@ -260,9 +260,10 @@ function footerDisclaimer() {
 function renderAccount(panel) {
   if (state.account) { renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
+  const signInEntry = location.hash === '#signin';
   panel.innerHTML = `
-    <h1>Your account</h1>
-    <p class="lede">Create an account to upload your report. Already have an account? Sign in.</p>
+    <h1>${signInEntry ? 'Log in to your account' : 'Create your account'}</h1>
+    <p class="lede">${signInEntry ? 'Enter your email and password to continue to your reports.' : 'Create an account to upload your report. Already have an account? Log in.'}</p>
     ${firstVisitPlans()}
     ${notices()}
     <div class="row">
@@ -271,12 +272,11 @@ function renderAccount(panel) {
         <input id="email" type="email" autocomplete="username" placeholder="you@example.com">
       </div>
       <div>
-        <label for="password">Password (at least 12 characters)</label>
-        <input id="password" type="password" autocomplete="new-password">
+        <label for="password">${signInEntry ? 'Password' : 'Password (at least 12 characters)'}</label>
+        <input id="password" type="password" autocomplete="${signInEntry ? 'current-password' : 'new-password'}">
       </div>
     </div>
-    <button class="primary" id="create">Create account</button>
-    <button class="secondary" id="signin">Sign in</button>
+    ${signInEntry ? '<button class="primary" id="signin">Log in</button><button class="secondary" id="create">Create account</button>' : '<button class="primary" id="create">Create account</button><button class="secondary" id="signin">Log in</button>'}
     <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
     `;
 
@@ -2219,6 +2219,6 @@ function renderBillingView(data) {
   el('activity').textContent = state.activity.join('\n');
   render();
   if (!state.account && (location.hash === '#create' || location.hash === '#signin')) {
-    el(location.hash.slice(1))?.focus();
+    el('email')?.focus();
   }
 })();
