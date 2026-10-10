@@ -137,7 +137,7 @@ async function run(service, check) {
      packet step, so a late boot render cannot overwrite state.step. */
   await waitFor(() => vm.runInContext('state.step', ctx) === 1);
 
-  vm.runInContext(`state.caseId = "${c.case_id}"; state.view = __VIEW; state.step = 4; render();`, ctx);
+  vm.runInContext(`state.caseId = "${c.case_id}"; state.view = __VIEW; state.step = 6; render();`, ctx);
   await waitFor(() => dom.elementById('packet-save').onclick != null);
   const panelEl = dom.elementById('panel');
   const block = panelEl.querySelector('#packet-block');
@@ -279,7 +279,7 @@ async function run(service, check) {
   check.equal((await service.request('GET', `/api/cases/${postCaseB.case_id}/report-download`, { token: postOwner.token })).status, 402, 'while the complete assessment needs the unlock or a subscription');
 
   /* Billing states prices and purchase terms before purchase, with no internal readiness text. */
-  vm.runInContext('state.step = 8; render();', postCtx);
+  vm.runInContext('state.step = 10; render();', postCtx);
   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
   const billingBox = post.elementById('billingView').innerHTML;
   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');

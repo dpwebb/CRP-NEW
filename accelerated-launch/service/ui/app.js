@@ -4,8 +4,10 @@
 
 const STEP_VIEWS = Object.freeze({
   ACCOUNT: { label: 'Account', render: renderAccount }, JURISDICTION: { label: 'Upload report', render: renderJurisdiction },
-  REPORT: { label: 'Your report', render: renderReport }, RESULTS: { label: 'Results', render: renderResults },
-  REVIEW: { label: 'Print your packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
+  REPORT: { label: 'Check report', render: renderReport }, RESULTS: { label: 'Review results', render: renderResults },
+  CHOOSE: { label: 'Choose disputes', render: renderReview },
+  PREPARE: { label: 'Prepare documents', render: renderReview },
+  REVIEW: { label: 'Review and approve packet', render: renderReview }, HISTORY: { label: 'Saved reports', render: renderHistory },
   CASE: { label: 'Privacy and deletion', render: renderCase }, SUPPORT: { label: 'Help', render: renderSupport },
   BILLING: { label: 'Plans', render: renderBilling }
 });
@@ -14,6 +16,7 @@ const STEPS = STEP_KEYS.map(key => STEP_VIEWS[key].label);
 const STEP = Object.freeze(Object.fromEntries(STEP_KEYS.map((key, index) => [key, index])));
 const state = {
   step: 0,
+  surfaceError: null,
   account: null,
   accountProfile: null,
   accountDocuments: [],
@@ -71,12 +74,13 @@ function note(line) {
 }
 
 async function api(method, path, body) {
-  const res = await fetch(path, {
+  let res;
+  try { res = await fetch(path, {
     method,
     credentials: 'same-origin',
     headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body ? JSON.stringify(body) : undefined
-  });
+  }); } catch { throw new Error('We could not connect to the CRP service. Please try again shortly.'); }
   note(`${method} ${path} -> ${res.status}`);
   let data = {};
   try { data = await res.json(); } catch { data = {}; }
@@ -129,22 +133,23 @@ function renderSteps() {
   }
   el('breadcrumb').textContent = STEPS[state.step];
   const inJourney = state.step <= STEP.REVIEW;
-  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of 5` : 'Your tools';
+  el('stepcount').textContent = inJourney ? `Step ${state.step + 1} of 7` : 'Your tools';
   el('step-label').textContent = STEPS[state.step];
-  el('bar').style.width = `${Math.min(state.step + 1, 5) / 5 * 100}%`;
+  el('bar').style.width = `${Math.min(state.step + 1, 7) / 7 * 100}%`;
   const progress = el('journey-progress');
-  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', '5'); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, 5))); }
+  if (progress.setAttribute) { progress.setAttribute('aria-valuemax', '7'); progress.setAttribute('aria-valuenow', String(Math.min(state.step + 1, 7))); }
   progress.hidden = !inJourney;
 }
 
 function navigateStep(step) {
-  if (state.step === STEP.REVIEW && packetLeave) return packetLeave(step);
+  if ((state.step === STEP.CHOOSE || state.step === STEP.PREPARE || state.step === STEP.REVIEW) && packetLeave) return packetLeave(step);
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
   state.step = step; render();
 }
 
 function banner() {
   const node = el('support-banner');
+  el('referral-preview-link').hidden = !surface?.preview_mode;
   const inDemo = state.view && state.view.result && state.view.result.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT';
   const preview = surface?.preview_mode === true;
   const live = surface?.entitlement?.payment_mode === 'live';
@@ -243,6 +248,10 @@ function notices() {
 function render() {
   renderSequence++;
   packetLeave = null;
+  document.body?.classList?.toggle('auth-entry', !state.account && state.step === STEP.ACCOUNT);
+  document.title = !state.account && state.step === STEP.ACCOUNT
+    ? `${state.recoveryMode ? 'Reset password' : location.hash === '#signin' ? 'Log in' : 'Create account'} — Credit Regulator Pro`
+    : 'Credit Regulator Pro — Check your credit report';
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
   banner();
   renderSteps();
@@ -261,13 +270,23 @@ function footerDisclaimer() {
 
 /* ------------------------------------------------------------------ step 0: account */
 
+const SIGNUP_PROFILE_FIELDS = [
+  ['full_name', 'Full name', 'text', 'name'], ['date_of_birth', 'Date of birth', 'date', 'bday'],
+  ['phone', 'Phone number', 'tel', 'tel'], ['address_line1', 'Street address', 'text', 'address-line1'],
+  ['address_line2', 'Apartment or unit', 'text', 'address-line2'], ['city', 'City or town', 'text', 'address-level2'],
+  ['region', 'Province, state or county', 'text', 'address-level1'], ['postal_code', 'Postal or ZIP code', 'text', 'postal-code'],
+  ['country', 'Country', 'text', 'country-name']
+];
+
 function renderAccount(panel) {
   if (state.account) { renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
+  const signInEntry = location.hash === '#signin';
   panel.innerHTML = `
-    <h1>Your account</h1>
-    <p class="lede">Create an account to upload your report. Already have an account? Sign in.</p>
-    ${firstVisitPlans()}
+    <div class="auth-heading"><a class="auth-brand" href="landing.html"><span class="mark" aria-hidden="true">C</span><span>Credit Regulator <b>PRO</b></span></a><a href="landing.html">← Back to home</a></div>
+    <h1>${signInEntry ? 'Log in to your account' : 'Create your account'}</h1>
+    <p class="lede">${signInEntry ? 'Enter your email and password to continue.' : 'Start with your email and a password. You can upload your report after signing in.'}</p>
+    ${location.protocol === 'file:' ? '<p class="note" id="local-preview-note">This saved page is a visual preview. To create an account, <a href="https://staging.creditregulatorpro.com/index.html#create">open the running staging site</a>.</p>' : ''}
     ${notices()}
     <div class="row">
       <div>
@@ -275,29 +294,38 @@ function renderAccount(panel) {
         <input id="email" type="email" autocomplete="username" placeholder="you@example.com">
       </div>
       <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="new-password">
-        <p class="small">For a new account, use at least 12 characters.</p>
+        <label for="password">${signInEntry ? 'Password' : 'Password (at least 12 characters)'}</label>
+        <input id="password" type="password" autocomplete="${signInEntry ? 'current-password' : 'new-password'}">
       </div>
     </div>
-    <button class="primary" id="create">Create account</button>
-    <button class="secondary" id="signin">Sign in</button>
+    ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><h2 id="signup-details-title">Your personal details</h2>
+      <p class="evidence">Add these now so your packet can use them later. You can edit or finish them in your account. Your sign-in email will be used for replies unless you change it there.</p>
+      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></section>`}
+    ${signInEntry ? '<button class="primary" id="signin">Log in</button><button class="secondary" id="create">Create account</button>' : '<button class="primary" id="create">Create account</button><button class="secondary" id="signin">Log in</button>'}
     <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
+    <p class="evidence">No report, identification, or payment is needed to create an account.</p>
+    ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
     `;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value });
-  el('create').onclick = () => run(async () => {
+  el('create').onclick = () => {
+    if (signInEntry) { location.hash = '#create'; render(); return; }
+    return run(async () => {
+    if (location.protocol === 'file:') throw new Error('Open the running staging site to create an account.');
+    const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
     accountEpoch++;
-    const data = await api('POST', '/api/accounts', credentials());
+    const data = await api('POST', '/api/accounts', { ...credentials(), profile });
     state.account = data.account;
-    state.accountProfile = null; state.accountDocuments = [];
+    state.accountProfile = data.profile || null; state.accountDocuments = [];
     state.accountSecurity = null; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     state.checkoutReturn = null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
-  });
+    });
+  };
   el('signin').onclick = () => run(async () => {
+    if (location.protocol === 'file:') throw new Error('Open the running staging site to log in.');
     accountEpoch++;
     const data = await api('POST', '/api/sessions', credentials());
     state.account = data.account;
@@ -313,15 +341,6 @@ function renderAccount(panel) {
   el('forgot-password').onclick = () => { state.recoveryMode = true; state.error = null; render(); };
 }
 
-function firstVisitPlans() {
-  const plans = state.publicPricing?.plans || [];
-  const price = code => esc(plans.find(plan => plan.plan_code === code)?.amount_display || 'Price unavailable');
-  return `<section class="first-visit-plans" aria-label="Plans and prices"><h2>Choose after you see your free summary</h2>
-    <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
-    <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
-    <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
-    <p class="evidence">Prices are in CAD. You choose a plan before paying.</p></section>`;
-}
 
 function recoveryKeyBlock() {
   return state.recoveryKey ? `<section class="note recovery-key"><h2>Save your recovery key</h2>
@@ -348,7 +367,8 @@ function wireRecoveryKey() {
 }
 
 function renderRecovery(panel) {
-  panel.innerHTML = `<h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
+  panel.innerHTML = `<div class="auth-heading"><a class="auth-brand" href="landing.html"><span class="mark" aria-hidden="true">C</span><span>Credit Regulator <b>PRO</b></span></a><a href="landing.html">← Back to home</a></div>
+    <h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
     ${recoveryKeyBlock()}
     ${state.recoveryKey ? '' : `<label for="recover-email">Email address</label><input id="recover-email" type="email" autocomplete="username">
     <label for="recover-key">Saved recovery key</label><input id="recover-key" type="password" autocomplete="off">
@@ -395,6 +415,16 @@ const DOCUMENT_KIND_LABELS = {
   INSURANCE_STATEMENT: 'Home insurance statement', FINANCIAL_STATEMENT: 'Financial statement',
   DEED: 'Property deed', ADDRESS_PAY_STUB: 'Pay stub showing address', PHONE_BILL: 'Phone bill', MORTGAGE_STATEMENT: 'Mortgage statement'
 };
+const US_IDENTIFIER_DOCUMENT_KINDS = new Set(['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099']);
+function documentKindsForAccount() {
+  const country = String(state.accountProfile?.country || '').trim().toUpperCase();
+  const gbOrAu = ['GB', 'UK', 'UNITED KINGDOM', 'GREAT BRITAIN', 'ENGLAND', 'SCOTLAND', 'WALES', 'NORTHERN IRELAND',
+    'AU', 'AUSTRALIA', 'COMMONWEALTH OF AUSTRALIA'].includes(country) ||
+    ['GB', 'AU'].includes(state.view?.case?.country);
+  return Object.entries(DOCUMENT_KIND_LABELS)
+    .filter(([kind]) => !gbOrAu || !US_IDENTIFIER_DOCUMENT_KINDS.has(kind))
+    .sort((a, b) => Number(a[0] === '1099') - Number(b[0] === '1099'));
+}
 let accountDetailsSequence = 0;
 function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
@@ -430,7 +460,7 @@ function renderAccountDetails(panel) {
     <button class="primary" id="account-save">Save contact details</button>
     <h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
     <div class="row"><div><label for="account-document-type">Purpose</label><select id="account-document-type"><option value="IDENTITY">Identification</option><option value="ADDRESS">Proof of address</option><option value="SUPPORTING">Other supporting document</option></select></div>
-    <div><label for="account-document-kind">Document</label><select id="account-document-kind">${Object.entries(DOCUMENT_KIND_LABELS).sort((a, b) => Number(a[0] === '1099') - Number(b[0] === '1099')).map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
+    <div><label for="account-document-kind">Document</label><select id="account-document-kind">${documentKindsForAccount().map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
     <label for="account-document-file">PDF, PNG or JPEG, up to 10 MB</label><input id="account-document-file" type="file" accept="application/pdf,image/png,image/jpeg">
     <button class="secondary" id="account-document-upload">Upload document</button>
     <div>${state.accountDocuments.length ? state.accountDocuments.map(doc => `<p><a href="/api/account/documents/${encodeURIComponent(doc.file_id)}">${esc(doc.original_filename)}</a> — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)} <button class="secondary" data-delete-document="${esc(doc.file_id)}">Remove</button></p>`).join('') : '<p class="evidence">No documents uploaded yet.</p>'}</div>
@@ -483,8 +513,8 @@ function renderAccountDetails(panel) {
     state.accountProfile = saved.profile;
     const answer = await api('GET', `/api/cases/${returning.caseId}`); ensureReturn();
     state.view = answer.view; state.packetReturn = null;
-    state.step = answer.view.result_id === returning.resultId ? STEP.REVIEW : STEP.RESULTS;
-    state.notice = state.step === STEP.REVIEW ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
+    state.step = answer.view.result_id === returning.resultId ? (returning.step || STEP.REVIEW) : STEP.RESULTS;
+    state.notice = state.step !== STEP.RESULTS ? 'Your saved packet is ready. Review your updated details.' : 'Your report has a newer result. Review it before preparing a packet.';
   });
   el('signout').onclick = () => run(async () => {
     accountEpoch++;
@@ -544,6 +574,7 @@ function renderJurisdiction(panel) {
     <h1>Upload your credit report</h1>
     <p class="lede">Choose your current location, select your credit bureau and upload your report.</p>
     ${notices()}
+    ${state.surfaceError ? `<p class="note stop">We could not load the available locations. ${esc(state.surfaceError)}</p>` : ''}
     ${recoveryKeyBlock()}
     <div class="row">
       <div>
@@ -1218,7 +1249,7 @@ function renderResults(panel) {
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
-  if (packet) packet.onclick = () => navigateStep(STEP.REVIEW);
+  if (packet) packet.onclick = () => navigateStep(STEP.CHOOSE);
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -1468,7 +1499,7 @@ function renderReview(panel) {
   const access = view.assessment_access || {};
   if (!access.dispute_packet) {
     panel.innerHTML = `
-      <h1>Review and download</h1>
+      <h1>Choose disputes</h1>
       <p class="lede">Dispute packets are part of a subscription.</p>
       ${notices()}
       <div class="note">A one-time purchase includes the full assessment and its download. A subscription also includes dispute packets.</div>
@@ -1477,9 +1508,11 @@ function renderReview(panel) {
     return;
   }
   const result = view.result;
+  const choosing = state.step === STEP.CHOOSE;
+  const preparing = state.step === STEP.PREPARE;
   panel.innerHTML = `
-    <h1>Review and download</h1>
-    <p class="lede">Choose your issues. Save and review your packet. Approve it, then print it and mail it to the bureau.</p>
+    <h1>${choosing ? 'Choose disputes' : preparing ? 'Prepare your documents' : 'Review and approve packet'}</h1>
+    <p class="lede">${choosing ? 'Select the issues you want the bureau to check or correct.' : preparing ? 'Check what your bureau asks you to include. Upload your identification and proof of address as needed, then choose the copies for your packet.' : 'Check your chosen issues and every page. Approve this version before downloading or printing it.'}</p>
     ${notices()}
     ${result ? `<div class="obs">
       <span class="pill ${view.reviewed ? '' : 'stop'}">${view.reviewed ? 'REVIEWED BY YOU' : 'NOT YET REVIEWED'}</span>
@@ -1519,10 +1552,11 @@ function bureauChecklist(requirements, missing = []) {
 function packetSupportingDocuments(pv) {
   const view = pv.support || {}, settings = view.settings || {}, req = view.requirements;
   const bureau = settings.bureau || req?.bureau || '';
+  const country = req?.country || state.view?.case?.country;
   return `<h3>Prepare for the bureau</h3>
     <div class="row"><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
-    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Add contact details or documents</button></p>
+    <p class="evidence">Your saved contact details are included. <button class="secondary" id="packet-account-details">Upload identification or proof of address</button></p>
     <div id="packet-bureau-checklist">${bureauChecklist(req, view.missing || [])}</div>
     <h4>Choose documents to include</h4>
     ${(view.documents || []).map(doc => `<div><label><input type="checkbox" data-packet-document="${esc(doc.file_id)}" ${(view.selected_document_ids || []).includes(doc.file_id) ? 'checked' : ''}>${esc(doc.original_filename)} — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)}</label>
@@ -1533,7 +1567,7 @@ function packetSupportingDocuments(pv) {
     <div id="packet-us-identity" ${req?.country === 'US' ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence${req?.ssn_required ? '' : ' (optional)'}</label>
     <input id="packet-identity-reference" type="password" autocomplete="off" maxlength="20" value="${esc(settings.identity_reference || '')}">
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
-    <label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea>`;
+    <div id="packet-other-identity-section" ${country === 'GB' || country === 'AU' ? 'hidden' : ''}><label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea></div>`;
 }
 function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
@@ -1581,11 +1615,17 @@ function renderPacketBlock(pv) {
       ${comparisonFactList(i)}
     </label>`).join('');
   return `
+    <div id="packet-selection">
     <h2>Your dispute packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
+    <button class="primary" id="packet-choose-next">Continue to document preparation</button>
+    </div>
+    <div id="packet-details">
     <p class="evidence">We put your letter, report pages, document copies and bureau forms in one PDF.</p>
     ${packetSupportingDocuments(pv)}
+    <button class="primary" id="packet-prepare-next">Continue to packet review</button>
+    <div id="packet-review-controls">
     ${packetReportCopies(packet)}
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
@@ -1617,6 +1657,8 @@ function renderPacketBlock(pv) {
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download your PDF</button>
       ${packet.download_available ? `<p class="note" id="packet-ready-status">Download your PDF and print every page. Sign and date where shown. Mail it to the bureau address in your letter. Keep a copy.</p>` : ''}
       ${surface?.preview_mode === true && packet.download_available ? '<p class="note demo"><strong>Staging preview:</strong> See how an optional paid mailing step could look. This sample cannot take payment or mail your packet.<br><a href="/mailing-preview.html" target="_blank" rel="noopener">Review the mailing design</a></p>' : ''}
+    </div>
+    </div>
     </div>`;
 }
 
@@ -1650,6 +1692,12 @@ async function wirePacket(panel) {
   try { ensureOrigin(); } catch { return; }
   block.innerHTML = renderPacketBlock(pv);
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
+  const choosing = state.step === STEP.CHOOSE;
+  const preparing = state.step === STEP.PREPARE;
+  el('packet-choose-next').hidden = !choosing;
+  el('packet-details').hidden = choosing;
+  el('packet-prepare-next').hidden = !preparing;
+  el('packet-review-controls').hidden = preparing;
 
   /* The current visible selection and wording, captured at action time so a save or an approve can never
      silently use an older saved version while the consumer sees a changed one. */
@@ -1674,7 +1722,7 @@ async function wirePacket(panel) {
       use_account_profile: true, document_ids, identity_shows_address: el('packet-id-address').checked,
       verification_requested: el('packet-verification-requested').checked, copies_confirmed: el('packet-copies-confirmed').checked,
       identity_reference: el('packet-identity-reference').value, no_ssn_issued: el('packet-no-ssn').checked,
-      other_identity_details: el('packet-other-identity').value,
+      other_identity_details: el('packet-other-identity-section').hidden ? '' : el('packet-other-identity').value,
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
   let edits = 0;
@@ -1705,6 +1753,21 @@ async function wirePacket(panel) {
   };
 
   const save = el('packet-save');
+  const continueToReview = el('packet-choose-next');
+  if (continueToReview) continueToReview.onclick = () => run(async () => {
+    if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
+    const ensureCurrent = await persistSelection(); ensureCurrent();
+    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.step = STEP.PREPARE;
+    state.notice = 'Your choices are saved. Check the bureau requirements and add your documents.';
+  });
+  el('packet-prepare-next').onclick = () => run(async () => {
+    if (!currentSelection().length) throw new Error('Choose at least one issue to continue.');
+    const ensureCurrent = await persistSelection(); ensureCurrent();
+    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.step = STEP.REVIEW;
+    state.notice = 'Your document choices are saved. Review every page before approving.';
+  });
   if (save) save.onclick = () => run(async () => {
     const ensureCurrent = await persistSelection();
     const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
@@ -1766,7 +1829,7 @@ async function wirePacket(panel) {
   packetLeave = step => run(async () => {
     const ensureCurrent = await persistSelection(); ensureCurrent();
     if (step === STEP.ACCOUNT) {
-      state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id };
+      state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id, step: state.step };
       state.accountProfile = null;
     }
     state.step = step;
@@ -1782,6 +1845,7 @@ async function wirePacket(panel) {
       if (sequence !== checklistSequence || !el('packet-bureau-checklist')) return;
       el('packet-bureau-checklist').innerHTML = bureauChecklist(answer.requirements, answer.missing);
       el('packet-us-identity').hidden = answer.requirements.country !== 'US';
+      el('packet-other-identity-section').hidden = ['GB', 'AU'].includes(answer.requirements.country);
     } catch (error) { if (!error.cancelled && sequence === checklistSequence && state.caseId === caseId && renderSequence === rendered && el('packet-bureau-checklist')) el('packet-bureau-checklist').textContent = error.message; }
   };
   for (const id of ['packet-bureau', 'packet-purpose', 'packet-id-address', 'packet-verification-requested', 'packet-copies-confirmed', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {
@@ -1884,7 +1948,7 @@ function renderHistory(panel) {
     <div id="history-body">Loading your reports…</div>`;
   const accountId = state.account.account_id;
   api('GET', '/api/history').then((data) => {
-    if (state.step !== 5 || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
+    if (state.step !== STEP.HISTORY || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
     const rows = data.assessments || [];
     const list = rows.length
       ? `<ul class="plain">${rows.map((r) => `<li>${esc(historyOption(r))} · ${esc(r.jurisdiction || '')} · ${esc(String(r.issue_count))} reporting issue(s)${r.information_count ? ` · court time-limit information for ${esc(String(r.information_count))} account(s)` : ''} <span class="evidence">assessment recorded ${esc(String(r.recorded_at || '').slice(0, 10))}</span></li>`).join('')}</ul>`
@@ -1944,7 +2008,7 @@ function renderCase(panel) {
   const privacyAccount = state.account && state.account.account_id;
   const privacyCase = state.caseId;
   api('GET', '/api/privacy').then(data => {
-    if (state.step !== 6 || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
+    if (state.step !== STEP.CASE || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
     const inventory = el('privacyInventory');
     if (!inventory) return;
     inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
@@ -2019,7 +2083,7 @@ function renderSupport(panel) {
   const seq = ++supportSeq;
 
   api('GET', '/api/support').then((data) => {
-    if (state.step !== 7 || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
+    if (state.step !== STEP.SUPPORT || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
     const box = el('supportInfo');
     if (!box) return;
     const summary = supportSummaryText(data);
@@ -2064,7 +2128,7 @@ function renderSupport(panel) {
     el('copySummary').onclick = () => doCopy(summary, 'Summary');
     el('retrySupport').onclick = () => renderSupport(panel);
   }).catch(() => {
-    if (state.step !== 7 || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
+    if (state.step !== STEP.SUPPORT || !state.account || state.account.account_id !== accountId || seq !== supportSeq) return;
     const box = el('supportInfo');
     if (!box) return;
     box.innerHTML = `<div class="note stop">Your support reference could not be loaded.</div><button class="secondary" id="retrySupport">Try again</button>`;
@@ -2099,10 +2163,10 @@ function renderBilling(panel) {
   const seq = ++billingSeq;
 
   api('GET', '/api/billing/plans').then((data) => {
-    if (state.step !== 8 || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
+    if (state.step !== STEP.BILLING || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
     renderBillingView(data);
   }).catch(() => {
-    if (state.step !== 8 || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
+    if (state.step !== STEP.BILLING || !state.account || state.account.account_id !== accountId || seq !== billingSeq) return;
     const box = el('billingView');
     if (!box) return;
     box.innerHTML = `<div class="note stop">Your billing information could not be loaded.</div><button class="secondary" id="retryBilling">Try again</button>`;
@@ -2201,12 +2265,13 @@ function renderBillingView(data) {
 /* ------------------------------------------------------------------ bootstrap */
 
 (async function start() {
+  if (location.protocol === 'file:') { render(); el('email')?.focus(); return; }
   try {
     const data = await api('GET', '/api/jurisdictions');
     surface = data.surface;
     note(`jurisdiction surface loaded: ${surface.regions.length} regions`);
   } catch (err) {
-    state.error = err.message;
+    state.surfaceError = err.message;
   }
   try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; }
   catch { state.publicPricing = null; }
@@ -2223,4 +2288,7 @@ function renderBillingView(data) {
   }
   el('activity').textContent = state.activity.join('\n');
   render();
+  if (!state.account && (location.hash === '#create' || location.hash === '#signin')) {
+    el('email')?.focus();
+  }
 })();

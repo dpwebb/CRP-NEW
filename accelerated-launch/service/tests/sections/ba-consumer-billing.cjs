@@ -144,7 +144,7 @@ async function run(t, check) {
   dom.elementById('password').value = 'a-long-enough-password';
   await dom.elementById('create').onclick();
   await tick();
-  vm.runInContext('state.step = 8; render();', ctx);
+  vm.runInContext('state.step = 10; render();', ctx);
   await tick(); await tick();
   const billingBox = dom.elementById('billingView');
   check.ok(/Plans and prices/.test(billingBox.innerHTML), 'the Billing step shows the plans');
@@ -161,7 +161,7 @@ async function run(t, check) {
   responderState.access_via = 'SUBSCRIPTION';
   responderState.plan_code = 'monthly';
   responderState.credit = true;
-  vm.runInContext('state.step = 8; render();', ctx);
+  vm.runInContext('state.step = 10; render();', ctx);
   await tick(); await tick();
   check.ok(/renews automatically/.test(dom.elementById('billingView').innerHTML), 'a subscription shows its renewal behavior');
   check.ok(/Cancel renewal/.test(dom.elementById('billingView').innerHTML), 'a subscription shows a cancellation control');
@@ -170,12 +170,12 @@ async function run(t, check) {
   check.ok(/Then \$79\.50 CAD per year/.test(dom.elementById('billingView').innerHTML), 'the regular annual renewal price is separate from today\'s discounted amount');
 
   responderState.cancelAtPeriodEnd = true;
-  vm.runInContext('state.step = 8; render();', ctx);
+  vm.runInContext('state.step = 10; render();', ctx);
   await tick(); await tick();
   check.ok(/Renewal is cancelled/.test(dom.elementById('billingView').innerHTML) && !/Your subscription renews automatically/.test(dom.elementById('billingView').innerHTML), 'cancelled subscription has one truthful renewal explanation while paid access remains');
   check.ok(!/id="cancelEntitlement"/.test(dom.elementById('billingView').innerHTML), 'cancelled renewal does not offer another cancellation button');
   responderState.cancelAtPeriodEnd = false;
-  vm.runInContext('state.step = 8; render();', ctx);
+  vm.runInContext('state.step = 10; render();', ctx);
   await tick(); await tick();
 
   /* Checkout failure never displays success or changes access locally. */
@@ -208,7 +208,7 @@ async function run(t, check) {
   /* A delayed billing response after sign-out never renders the previous account's information. */
   let resolveBilling;
   responderState.billingDeferred = new Promise((r) => { resolveBilling = r; });
-  vm.runInContext('state.account = { account_id: "acc_stub", email: "stub@example.test" }; state.step = 8; render();', ctx);
+  vm.runInContext('state.account = { account_id: "acc_stub", email: "stub@example.test" }; state.step = 10; render();', ctx);
   await tick();
   vm.runInContext('state.step = 0; render();', ctx);
   await tick(); await tick();

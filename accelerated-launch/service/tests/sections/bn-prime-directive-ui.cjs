@@ -114,7 +114,7 @@ async function run(t, check) {
   check.ok(/Create my dispute packet/.test(panel.innerHTML), 'subscribers see a clear next action from their supported results');
 
   /* Step 4: the correction-packet selection/review/edit/approve/download flow renders. */
-  vm.runInContext('state.step = 4; render();', ctx);
+  vm.runInContext('state.step = 6; render();', ctx);
   await tick(); await tick(); await tick();
   const packetBlock = panel.children.get('#packet-block');
   check.ok(packetBlock, 'the review step mounts the correction-packet block');
