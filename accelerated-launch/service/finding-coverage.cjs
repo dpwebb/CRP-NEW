@@ -71,6 +71,8 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ['REQUIRED-REPORT-DATA-VISIBLY-MISSING', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], [], 'GROUPING_ONLY'],
   ['PAID-SETTLED-SHOWN-UNPAID', ['cy-common-error-predicate-repairs', 'df-us-common-error-reader'], ['du-column-reader-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
   ['LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', ['cw-common-error-rule-assessment', 'de-tu-ca-common-error-sources'], ['de-tu-ca-common-error-sources'], 'NATIVE_READER_AND_DOWNSTREAM_FAMILY_CONTROL'],
+  ['REPORTING-PERIOD-EXCEEDED', ['cr-ca-ns-tu-real-report', 'cu-dual-date-retention'],
+    ['cr-ca-ns-tu-real-report'], 'SOURCE_LINKED_REAL_REPORT_AND_DATE_BOUNDARY_CONTROLS'],
   ['COLLECTION-ORIGINAL-BOTH-DUE', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD']
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
   .concat([[PERIOD_ITEM, { assessment: ['by-packet-reconciliation', 'cs-limitation-and-payment-history', 'el-collection-court-period'],
