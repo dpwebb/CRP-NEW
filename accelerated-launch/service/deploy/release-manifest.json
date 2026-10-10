@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-10T15:26:35.150Z",
+  "generated_at": "2026-10-10T15:28:08.113Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -484,7 +484,7 @@
     {
       "id": "RULE_CONFIGURATION",
       "file_count": 7,
-      "digest": "C552219FEC88298ED1FA0CEE811191554905BAA1C5A95863A5EE0F0A9563413E",
+      "digest": "BF3CF65C29EFAE801DA1EF2EB34B96D8841C55711988C0545787E40116FEB5DE",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
@@ -504,7 +504,7 @@
         },
         {
           "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
-          "sha256": "51F98EC15C2DD1A3C5CB6CFD23A43C3401194B8BCCD874FFA9F988635D51946F"
+          "sha256": "25630CF7FAE85F382F397F349DB80F89FFC52261857193B6667A6B31D05E9D3C"
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
@@ -627,6 +627,6 @@
       ]
     }
   ],
-  "manifest_digest": "AD1E8E4BC725E93E552E36A1D057C4CA9C7E721850FDCFCE236F2FEF9FE79408",
+  "manifest_digest": "6B77550E20FF0E5522AE9D15B9EF4E3137686390E1ABEB0EEB6CEB4EE5342DED",
   "total_file_count": 145
 }

@@ -1,10 +1,10 @@
 {
-  "authority": "OWNER-ALL82-001 / B1 \u2014 reusable legacy rule adapters + concrete implementation catalog",
+  "authority": "OWNER-ALL82-001 / B1 — reusable legacy rule adapters + concrete implementation catalog",
   "catalog_policy": "A recorded legacy mapping is a CANDIDATE, never a working function. Inventoried modules and recorded mappings are not counted as working functionality. Only an adapter that has run its tests is reported as implemented.",
   "inputs": {
     "coverage_ledger": "0ba85b52a7f645f1f8e022e7409e005a7dd2b032c066bd2719ba399e81e0b23b",
     "jurisdiction_data": "c6a6cbcca2e0db81e189f9fe5d7e7bbb2de0ddad4c5c1616a53ac0a024a49906",
-    "adapter_configs": "5d9762cc35520c30fde3bd61173c3136cc80c012c5e9c69a64c665925925c772",
+    "adapter_configs": "f12828cf9fcee4ed9a9b33dcb699022b56f9b9eb0949855922dbb5e288c8e281",
     "applicability_records": "de53f2e9d92642dc0424a2139c8dd92ad0842c5858952487b73f6fbe2c10afbf"
   },
   "record_classification_counts": {
@@ -664,7 +664,7 @@
         "legacy_jurisdiction_reference": "US_FEDERAL",
         "jurisdiction_status": "COUNTRY_WIDE_SOURCE",
         "period_years": 7,
-        "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see \u00a7 605(c))",
+        "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see § 605(c))",
         "rule_kinds": [
           "LEGACY_SOL_ROW",
           "charge_off",
@@ -1679,7 +1679,7 @@
       "legacy_jurisdiction_reference": "US_FEDERAL",
       "jurisdiction_status": "COUNTRY_WIDE_SOURCE",
       "period_years": 7,
-      "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see \u00a7 605(c))",
+      "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see § 605(c))",
       "rule_kinds": [
         "LEGACY_SOL_ROW",
         "charge_off",
@@ -2907,7 +2907,7 @@
         "CRP-LSRC-0354"
       ],
       "citation": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
-      "limb": "FIRST_LIMB_ONLY \u2014 six years after the last payment was made on the debt",
+      "limb": "FIRST_LIMB_ONLY — six years after the last payment was made on the debt",
       "anchor_mode": "SINGLE_FIELD",
       "anchor_field": "tradeline.lastPaymentDate",
       "period_years": 6,
@@ -2918,23 +2918,24 @@
       },
       "presentation_required": [
         "PR-01",
-        "FAM-TU-CA-CONSUMER"
+        "FAM-TU-CA-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
       ],
-      "presentation_admission_note": "BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair, 2026-10-06): this limb's recorded anchor is a TRADELINE field, and the config itself recorded the divergence ('the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record'). The TransUnion Canada consumer presentation prints last-payment dates ON its tradelines and its reader maps them to that same shared fact with the printed page/line location, so the limb is admitted to this presentation as well. The owner correction of October 9 authorizes a source-linked checklist reporting-period VIOLATION when this admitted limb establishes that debt information remained in a Nova Scotia consumer report more than six years after its printed last payment. Satisfactory status or zero balance does not add an exception absent from s. 10(3)(c). The default-date limb remains unseated; unresolved dates or provenance cannot establish a violation.",
+      "presentation_admission_note": "BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair, 2026-10-06): this limb's recorded anchor is a TRADELINE field, and the config itself recorded the divergence ('the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record'). The TransUnion Canada consumer presentation prints last-payment dates ON its tradelines and its reader maps them to that same shared fact with the printed page/line location. October 10 Creator testing found that the general reader also maps an ordinary TransUnion Canada synthetic report's printed Last Payment Date and Report Date to those same source-linked fields while the rule refused only the presentation. Admit the general presentation for this exact Nova Scotia last-payment limb; retain its existing evidence, date, applicability, exception and conclusion predicates. The default-date limb remains unseated; unresolved dates or provenance cannot establish a violation.",
       "output_permission": {
         "max_conclusion": "violation",
         "finding_allowed": true,
         "packet_eligible": true
       },
-      "recorded_input_divergence": "the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record \u2014 recorded, not resolved",
+      "recorded_input_divergence": "the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record — recorded, not resolved",
       "excluded": [
-        "the default-date limb \u2014 FACT-05 is unseated on PR-01",
-        "every other rule unit, jurisdiction, bureau, presentation and channel",
+        "the default-date limb — FACT-05 is unseated on PR-01",
+        "every other rule unit, jurisdiction and unsupported presentation or channel",
         "any consumer-visible output of any class"
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c) \u2014 six years after the last payment on the debt; the admitted text records no exception",
+        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c) — six years after the last payment on the debt; the admitted text records no exception",
         "items": []
       },
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
@@ -2972,7 +2973,7 @@
       },
       "exceptions": {
         "recorded": true,
-        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(e) \u2014 six years after the discharge; the admitted text records 'a second bankruptcy is excepted by the section'. GAP-FINDING-002 revisit: a 'second bankruptcy' requires establishing a DISTINCT bankruptcy event identity (a separate case/court); the report extraction produces only discharge dates, and distinct dates alone cannot distinguish a second bankruptcy from a duplicate listing or a cross-bureau copy of the same event. The exception is therefore not determinable from the report.",
+        "basis": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(e) — six years after the discharge; the admitted text records 'a second bankruptcy is excepted by the section'. GAP-FINDING-002 revisit: a 'second bankruptcy' requires establishing a DISTINCT bankruptcy event identity (a separate case/court); the report extraction produces only discharge dates, and distinct dates alone cannot distinguish a second bankruptcy from a duplicate listing or a cross-bureau copy of the same event. The exception is therefore not determinable from the report.",
         "items": [
           {
             "id": "second-bankruptcy",
@@ -3013,7 +3014,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "the 'where available' address and the assignee alternative are off-report and are handled as the unsupported branch \u2014 never a finding",
+        "basis": "the 'where available' address and the assignee alternative are off-report and are handled as the unsupported branch — never a finding",
         "items": []
       },
       "finding_gate": "DISABLED_PENDING_LEGAL_GATES: the assignment alternative ('known to have been assigned' + 'where available') is off-report and its absence on the report does not establish the creditor branch, so no omission finding is sound from report evidence alone; and the edition currency (R.S.N.S. 1989 c.93 in force vs the 2023 Revision c. C-53) has no affirmative proclamation/commencement evidence, only 'no proclamation retrieved'. finding_allowed stays false and the ceiling stays observation until those legal gates are resolved by architect decision. The extraction and evaluation path is complete and tested.",
@@ -3049,7 +3050,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "s.10(3)(f) has no off-report exception \u2014 the dismissed/set-aside/withdrawn/stayed disposition is a report-printed fact",
+        "basis": "s.10(3)(f) has no off-report exception — the dismissed/set-aside/withdrawn/stayed disposition is a report-printed fact",
         "items": []
       },
       "finding_gate": "ENABLED (2026-10-04): legal applicability and the corrected semantic/evidence gates pass. The official Proclamations page (https://nslegislature.ca/legislation/proclamations-nova-scotia-statutes, captured 2026-09-30, og:updated_time 2026-09-25, sha256 01980C5D0F9D38434554B3789AA92C3BC501AAE661E9DDFB51CD6A6B4700D631) records R.S. 1989 in force February 22, 1990 and no 2023-Revision proclamation; the 2023 c. C-53 re-number is s.12(3)(h) (not (f)). Charge identity + bound disposition + semantic classification + source value/record-identity agreement are tested through the classifier. packet_eligible stays false. NS judgment assignment remains independently unresolved.",
@@ -3064,7 +3065,7 @@
         "CRP-LSRC-0362"
       ],
       "citation": "Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a)",
-      "limb": "RECORDED PROVISION (located 2026-10-04): Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a) \u2014 'any credit information based on evidence that is not the best evidence reasonably available' (within '9(3) A consumer reporting agency shall not include in a consumer report,'; s. 9 is 'Procedures of agencies', s. 9(2) 'Information included in consumer report', s. 9(3) 'Idem'). Applicable edition: the consolidation in force (consolidation period from July 1, 2026 to the e-Laws currency date; last amendment 2025, c. 24, Sched. 6, which amends s. 12(3) and not s. 9). Source identity: Government of Ontario, e-Laws. Paragraph (a)'s wording is located from a published rendering corroborated by the authoritative consolidated index and by this row's admitted legacy atomic rule `ca-on.cra.s9_3_a.best_evidence_basis`; the authoritative full-page render was unavailable in this environment and that limitation is retained. Full record: SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic, and it claims no commencement date.",
+      "limb": "RECORDED PROVISION (located 2026-10-04): Consumer Reporting Act (Ontario), R.S.O. 1990, c. C.33, s. 9(3)(a) — 'any credit information based on evidence that is not the best evidence reasonably available' (within '9(3) A consumer reporting agency shall not include in a consumer report,'; s. 9 is 'Procedures of agencies', s. 9(2) 'Information included in consumer report', s. 9(3) 'Idem'). Applicable edition: the consolidation in force (consolidation period from July 1, 2026 to the e-Laws currency date; last amendment 2025, c. 24, Sched. 6, which amends s. 12(3) and not s. 9). Source identity: Government of Ontario, e-Laws. Paragraph (a)'s wording is located from a published rendering corroborated by the authoritative consolidated index and by this row's admitted legacy atomic rule `ca-on.cra.s9_3_a.best_evidence_basis`; the authoritative full-page render was unavailable in this environment and that limitation is retained. Full record: SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic, and it claims no commencement date.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -3091,7 +3092,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
       "finding_gate": "ENABLED (2026-10-04): legal applicability and the evidence gate pass. CRP-LSRC-0362 is an EXACT CA-ON row, owner-accepted, instrument class STATUTE_OR_REGULATION with no confirmation required, and its legacy atomic rule ca-on.cra.s9_3_a.best_evidence_basis is an EXACT recorded mapping with the operational mapping ESTABLISHED. Its recorded basis is the provision's own located wording (not the legacy rule id and not an earlier gloss), with the applicable edition, source identity and retrieval limitation recorded in SOURCE_CAPTURES/CA-ON-ORDINARY-REPORT/crp-lsrc-0362-provision-retrieval.json. The maximum conclusion is probable_violation, never violation: the report establishes that its own two printed values cannot both be right, and nothing in the report establishes which of them is unreliable or whether a benign explanation applies. The same printed conflict reaches the consumer as ONE issue carrying both supported bases (the factual conflict and this recorded rule) with one verification request; the internal classifications stay separate inside that issue. packet_eligible stays false; a PROBABLE content finding is packet-eligible by confidence, not by a widened per-rule permission.",
@@ -3105,8 +3106,8 @@
       "ledger_row_ids": [
         "CRP-LSRC-0407"
       ],
-      "citation": "UK GDPR \u2014 Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
-      "limb": "RECORDED PROVISION (retrieved 2026-10-04, official publisher legislation.gov.uk): Article 5(1)(d) \u2014 '(d) accurate and, where necessary, kept up to date; every reasonable step must be taken to ensure that personal data that are inaccurate, having regard to the purposes for which they are processed, are erased or rectified without delay (accuracy)'; Article 16 \u2014 'The data subject shall have the right to obtain from the controller without undue delay the rectification of inaccurate personal data concerning him or her. Taking into account the purposes of the processing, the data subject shall have the right to have incomplete personal data completed, including by means of providing a supplementary statement.' Applicable edition: the edition in force (latest available revised version); the publisher records no textual amendment to Article 5(1)(d) or Article 16 (the recorded 2025 amendments fall on Article 5(1)(b), 5(1)(e) and the inserted Article 5(3)). Territorial extent: the instrument's own recorded 'U.K.' extent, recorded as relation GB-UK-GDPR-ACCURACY-COUNTRY-WIDE. Full record: SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic and claims no commencement date.",
+      "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+      "limb": "RECORDED PROVISION (retrieved 2026-10-04, official publisher legislation.gov.uk): Article 5(1)(d) — '(d) accurate and, where necessary, kept up to date; every reasonable step must be taken to ensure that personal data that are inaccurate, having regard to the purposes for which they are processed, are erased or rectified without delay (accuracy)'; Article 16 — 'The data subject shall have the right to obtain from the controller without undue delay the rectification of inaccurate personal data concerning him or her. Taking into account the purposes of the processing, the data subject shall have the right to have incomplete personal data completed, including by means of providing a supplementary statement.' Applicable edition: the edition in force (latest available revised version); the publisher records no textual amendment to Article 5(1)(d) or Article 16 (the recorded 2025 amendments fall on Article 5(1)(b), 5(1)(e) and the inserted Article 5(3)). Territorial extent: the instrument's own recorded 'U.K.' extent, recorded as relation GB-UK-GDPR-ACCURACY-COUNTRY-WIDE. Full record: SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json. Temporal applicability is a condition of attribution and is NOT the same as retention arithmetic: this rule performs no retention arithmetic and claims no commencement date.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -3129,7 +3130,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values are accurate is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the controller's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values are accurate is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the controller's own records — is never inferred.",
         "items": []
       },
       "finding_gate": "ENABLED (2026-10-04): legal applicability and the evidence gate pass. CRP-LSRC-0407 is an owner-accepted row whose instrument class is STATUTE_OR_REGULATION with no confirmation required and whose legacy atomic rule uk.accuracy_duty.gdpr5 is an ESTABLISHED recorded mapping. Its recorded basis is the provision's own words retrieved from the official publisher, with the applicable edition, territorial extent and retrieval limitation recorded in SOURCE_CAPTURES/GB-UK-GDPR-ACCURACY/crp-lsrc-0407-provision-retrieval.json. The maximum conclusion is probable_violation, never violation: the report establishes that its own two printed values cannot both be right, and nothing in the report establishes which of them is inaccurate or whether a benign explanation applies. The same printed conflict reaches the consumer as ONE issue carrying both supported bases with one verification request. packet_eligible stays false; a PROBABLE content finding is packet-eligible by confidence, not by a widened per-rule permission.",
@@ -3143,7 +3144,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0004"
       ],
-      "citation": "FCRA \u00a7 605(a)(1) \u2014 15 U.S.C. \u00a7 1681c(a)(1)",
+      "citation": "FCRA § 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
       "limb": "cases under title 11 or a similar provision, from the date of entry of the order for relief or the date of adjudication",
       "anchor_mode": "PRIORITY_CHAIN",
       "period_years": 10,
@@ -3173,9 +3174,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "15 U.S.C. \u00a7 1681c(b): the \u00a7 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
         "source": {
-          "provision": "15 U.S.C. \u00a7 1681c(b)",
+          "provision": "15 U.S.C. § 1681c(b)",
           "artifact": "packages\\backend\\src\\services\\legalRules.ts",
           "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
         },
@@ -3225,7 +3226,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0005"
       ],
-      "citation": "FCRA \u00a7 605(a)(2) \u2014 15 U.S.C. \u00a7 1681c(a)(2)",
+      "citation": "FCRA § 605(a)(2) — 15 U.S.C. § 1681c(a)(2)",
       "limb": "civil suits and civil judgments, from the date of entry or the end of the governing statute of limitations if that is longer",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3255,9 +3256,9 @@
       "observation_incomplete": "the statute-of-limitations alternative (whichever is longer) is not computed; the seven-year comparison is a minimum, not the full legal threshold",
       "exceptions": {
         "recorded": true,
-        "basis": "15 U.S.C. \u00a7 1681c(b): the \u00a7 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
         "source": {
-          "provision": "15 U.S.C. \u00a7 1681c(b)",
+          "provision": "15 U.S.C. § 1681c(b)",
           "artifact": "packages\\backend\\src\\services\\legalRules.ts",
           "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
         },
@@ -3307,7 +3308,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0006"
       ],
-      "citation": "FCRA \u00a7 605(a)(3) \u2014 15 U.S.C. \u00a7 1681c(a)(3)",
+      "citation": "FCRA § 605(a)(3) — 15 U.S.C. § 1681c(a)(3)",
       "limb": "paid tax liens, from the date the lien was paid",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3336,9 +3337,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "15 U.S.C. \u00a7 1681c(b): the \u00a7 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
         "source": {
-          "provision": "15 U.S.C. \u00a7 1681c(b)",
+          "provision": "15 U.S.C. § 1681c(b)",
           "artifact": "packages\\backend\\src\\services\\legalRules.ts",
           "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
         },
@@ -3388,7 +3389,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0007"
       ],
-      "citation": "FCRA \u00a7 605(a)(4) \u2014 15 U.S.C. \u00a7 1681c(a)(4)",
+      "citation": "FCRA § 605(a)(4) — 15 U.S.C. § 1681c(a)(4)",
       "limb": "accounts placed for collection or charged to profit and loss, from the delinquency that preceded the collection or charge-off",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3401,7 +3402,7 @@
         "US-CONSUMER-DISCLOSURE",
         "GENERAL-BUREAU-REPORT"
       ],
-      "start_record": "the recorded start is 'the delinquency that preceded the collection or charge-off'. An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection record is the commencement of that delinquency, and \u00a7 605(c)(1) moves the reporting period 180 days after it. A generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, sale, update or payment date is never substituted.",
+      "start_record": "the recorded start is 'the delinquency that preceded the collection or charge-off'. An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection record is the commencement of that delinquency, and § 605(c)(1) moves the reporting period 180 days after it. A generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, sale, update or payment date is never substituted.",
       "output_permission": {
         "max_conclusion": "violation",
         "finding_allowed": true,
@@ -3413,15 +3414,15 @@
         "collection.delinquencyDate"
       ],
       "anchor_day_offset": 180,
-      "anchor_day_offset_basis": "FCRA \u00a7 605(c)(1): the seven-year period begins 180 days after the commencement of the delinquency that immediately preceded the collection or charge-off.",
+      "anchor_day_offset_basis": "FCRA § 605(c)(1): the seven-year period begins 180 days after the commencement of the delinquency that immediately preceded the collection or charge-off.",
       "record_kinds": [
         "GENERAL_COLLECTION"
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "15 U.S.C. \u00a7 1681c(b): the \u00a7 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
         "source": {
-          "provision": "15 U.S.C. \u00a7 1681c(b)",
+          "provision": "15 U.S.C. § 1681c(b)",
           "artifact": "packages\\backend\\src\\services\\legalRules.ts",
           "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
         },
@@ -3471,7 +3472,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0003"
       ],
-      "citation": "FCRA \u00a7 605(a)(5) \u2014 15 U.S.C. \u00a7 1681c(a)(5)",
+      "citation": "FCRA § 605(a)(5) — 15 U.S.C. § 1681c(a)(5)",
       "limb": "other adverse item of information, seven years from the date of the adverse item",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3492,7 +3493,7 @@
         "packet_eligible": false
       },
       "not_implemented_limbs": [
-        "FCRA \u00a7 605(c)'s 180-day clock-start adjustment (legacy fcra605cYearsElapsed) is recorded but is NOT applied by this adapter; applying it changes which clock runs and is a separate change"
+        "FCRA § 605(c)'s 180-day clock-start adjustment (legacy fcra605cYearsElapsed) is recorded but is NOT applied by this adapter; applying it changes which clock runs and is a separate change"
       ],
       "anchor_field": "reportedAccount.adverseRatingDate",
       "record_kinds": [
@@ -3515,9 +3516,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "15 U.S.C. \u00a7 1681c(b): the \u00a7 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+        "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
         "source": {
-          "provision": "15 U.S.C. \u00a7 1681c(b)",
+          "provision": "15 U.S.C. § 1681c(b)",
           "artifact": "packages\\backend\\src\\services\\legalRules.ts",
           "sha256": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
         },
@@ -3571,7 +3572,7 @@
         "CRP-LSRC-0165",
         "CRP-LSRC-0166"
       ],
-      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law \u00a7 380-j(f)(1)(ii)",
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(ii)",
       "limb": "a judgment, where the judgment was satisfied within five years of entry",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 5,
@@ -3603,9 +3604,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2): the \u00a7 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
         "source": {
-          "provision": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2)",
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
           "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
           "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
           "verified_at": "2026-09-26"
@@ -3656,7 +3657,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0167"
       ],
-      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law \u00a7 380-j(f)(1)(iii)",
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(iii)",
       "limb": "a paid tax lien, from the date the lien was paid",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3685,9 +3686,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2): the \u00a7 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
         "source": {
-          "provision": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2)",
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
           "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
           "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
           "verified_at": "2026-09-26"
@@ -3738,7 +3739,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0168"
       ],
-      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law \u00a7 380-j(f)(1)(i)",
+      "citation": "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(i)",
       "limb": "a bankruptcy, from the date of adjudication of the most recent bankruptcy",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 14,
@@ -3767,9 +3768,9 @@
       ],
       "exceptions": {
         "recorded": true,
-        "basis": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2): the \u00a7 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
+        "basis": "N.Y. Gen. Bus. Law § 380-j(f)(2): the § 380-j(f)(1) retention periods do not apply to a consumer report to be used in connection with (i) a credit transaction involving a principal amount of $50,000 or more; (ii) the underwriting of life insurance involving a face amount of $50,000 or more; or (iii) the employment of an individual at an annual salary of $25,000 or more",
         "source": {
-          "provision": "N.Y. Gen. Bus. Law \u00a7 380-j(f)(2)",
+          "provision": "N.Y. Gen. Bus. Law § 380-j(f)(2)",
           "artifact": "SOURCE_CAPTURES/PHASE5-001N/retrieved/R07-US-NY-public-law-380-j.html",
           "sha256": "144FBBA71ACF6391B978C1427C2555ADFFA0EB72932AFD81C984B7E04D51AFCC",
           "verified_at": "2026-09-26"
@@ -3820,7 +3821,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0171"
       ],
-      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code \u00a7 1785.13(a)(1)",
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(1)",
       "limb": "a bankruptcy, from the date of the order for relief",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 10,
@@ -3849,7 +3850,7 @@
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Civ. Code \u00a7 1785.13(a)(1) \u2014 ten years from the date of the order for relief; the admitted text records no exception",
+        "basis": "Civ. Code § 1785.13(a)(1) — ten years from the date of the order for relief; the admitted text records no exception",
         "items": []
       },
       "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
@@ -3862,7 +3863,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0264"
       ],
-      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code \u00a7 1785.13(a)(4)",
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(4)",
       "limb": "paid tax liens that, from the date of payment, antedate the report by more than seven years",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3890,10 +3891,10 @@
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Civ. Code \u00a7 1785.13(a)(4) \u2014 seven years from the date of payment; the official text records no exception and no statute-of-limitations alternative",
+        "basis": "Civ. Code § 1785.13(a)(4) — seven years from the date of payment; the official text records no exception and no statute-of-limitations alternative",
         "items": []
       },
-      "source_retrieval_note": "OWNER-CANDIDATE-005 (2026-10-04): the period is recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code \u00a7 1785.13(a)(4) \u2014 'Paid tax liens that, from the date of payment, antedate the report by more than seven years.'), which the accepted corpus maps to CRP-LSRC-0264 with effectiveFrom=null. The corpus's recorded-gap publication basis did not record the period; the official text supplies it. Source identity corrected to CRP-LSRC-0264's recorded artifact (legalCorpus/rules.ca.ts, 7DDBF5C4), not legalRules.ts.",
+      "source_retrieval_note": "OWNER-CANDIDATE-005 (2026-10-04): the period is recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(4) — 'Paid tax liens that, from the date of payment, antedate the report by more than seven years.'), which the accepted corpus maps to CRP-LSRC-0264 with effectiveFrom=null. The corpus's recorded-gap publication basis did not record the period; the official text supplies it. Source identity corrected to CRP-LSRC-0264's recorded artifact (legalCorpus/rules.ca.ts, 7DDBF5C4), not legalRules.ts.",
       "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
     },
@@ -3904,7 +3905,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0265"
       ],
-      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code \u00a7 1785.13(a)(5), (b)",
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(5), (b)",
       "limb": "accounts placed for collection (internally or by referral to a third party, whichever is earlier) or charged to profit and loss, from 180 days after the delinquency that immediately preceded the collection or charge-off",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3917,7 +3918,7 @@
         "US-CONSUMER-DISCLOSURE",
         "GENERAL-BUREAU-REPORT"
       ],
-      "start_record": "the recorded start is 'the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action', moved 180 days later by \u00a7 1785.13(b). An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection/charge-off record is that commencement; a generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, charge-off, sale, transfer, update or payment date is never substituted.",
+      "start_record": "the recorded start is 'the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action', moved 180 days later by § 1785.13(b). An explicitly labelled 'Date of First Delinquency' / 'DOFD' on the collection/charge-off record is that commencement; a generic 'Delinquency'/'Delinquent' word, an unrelated 'Update Date', the collection-placement, charge-off, sale, transfer, update or payment date is never substituted.",
       "output_permission": {
         "max_conclusion": "violation",
         "finding_allowed": true,
@@ -3928,16 +3929,16 @@
         "collection.delinquencyDate"
       ],
       "anchor_day_offset": 180,
-      "anchor_day_offset_basis": "Civ. Code \u00a7 1785.13(b): the seven-year period commences upon the expiration of the 180-day period beginning on the date of the commencement of the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action; where more than one such action is taken, the period commences concurrently for all on the date of the first action.",
+      "anchor_day_offset_basis": "Civ. Code § 1785.13(b): the seven-year period commences upon the expiration of the 180-day period beginning on the date of the commencement of the delinquency that immediately preceded the collection activity, charge to profit and loss, or similar action; where more than one such action is taken, the period commences concurrently for all on the date of the first action.",
       "record_kinds": [
         "GENERAL_COLLECTION"
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Civ. Code \u00a7 1785.13(a)(5) \u2014 seven years from the 180-day-shifted delinquency; the official text records no exception and no report-use exemption (the federal \u00a7 1681c(b) exemptions do not attach to this state rule)",
+        "basis": "Civ. Code § 1785.13(a)(5) — seven years from the 180-day-shifted delinquency; the official text records no exception and no report-use exemption (the federal § 1681c(b) exemptions do not attach to this state rule)",
         "items": []
       },
-      "source_retrieval_note": "OWNER-CANDIDATE-006 (2026-10-04): the trigger, 180-day start and concurrent timing are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code \u00a7 1785.13(a)(5)+(b)), which the accepted corpus maps to CRP-LSRC-0265 with effectiveFrom=null. The 180-day start matches the federal \u00a7 605(c)(1) rule verbatim, so the existing anchor_day_offset=180 machinery is reused; the mapping is demonstrated from the two official texts, not assumed. Charge-off-only records share the same delinquency anchor (COLLECTION/CHARGE-OFF context) and are included.",
+      "source_retrieval_note": "OWNER-CANDIDATE-006 (2026-10-04): the trigger, 180-day start and concurrent timing are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(5)+(b)), which the accepted corpus maps to CRP-LSRC-0265 with effectiveFrom=null. The 180-day start matches the federal § 605(c)(1) rule verbatim, so the existing anchor_day_offset=180 machinery is reused; the mapping is demonstrated from the two official texts, not assumed. Charge-off-only records share the same delinquency anchor (COLLECTION/CHARGE-OFF context) and are included.",
       "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
     },
@@ -3948,7 +3949,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0268"
       ],
-      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code \u00a7 1785.13(a)(8)",
+      "citation": "Consumer Credit Reporting Agencies Act (California), Civ. Code § 1785.13(a)(8)",
       "limb": "any other adverse information that antedates the report by more than seven years",
       "anchor_mode": "SINGLE_FIELD",
       "period_years": 7,
@@ -3961,7 +3962,7 @@
         "US-CONSUMER-DISCLOSURE",
         "GENERAL-BUREAU-REPORT"
       ],
-      "start_record": "the recorded start is 'the date of the adverse item' under \u00a7 1785.13(a)(8) (any other adverse information), with \u00a7 1785.13(b) moving the seven-year period (for paragraphs (5) and (8)) 180 days after the delinquency commencement 'with respect to any account that is placed for collection (internally or by referral to a third party, whichever is earlier), charged to profit and loss, or subjected to any similar action'. The supported event-date timing (rating's own date, NO 180-day offset) is NOT yet established: absence of COLLECTION/CHARGE-OFF wording does not establish that (b) is inapplicable because (b) also covers 'any similar action'. Collection/charge-off accounts are governed by the (a)(5) collection branch (US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y, anchor_day_offset: 180).",
+      "start_record": "the recorded start is 'the date of the adverse item' under § 1785.13(a)(8) (any other adverse information), with § 1785.13(b) moving the seven-year period (for paragraphs (5) and (8)) 180 days after the delinquency commencement 'with respect to any account that is placed for collection (internally or by referral to a third party, whichever is earlier), charged to profit and loss, or subjected to any similar action'. The supported event-date timing (rating's own date, NO 180-day offset) is NOT yet established: absence of COLLECTION/CHARGE-OFF wording does not establish that (b) is inapplicable because (b) also covers 'any similar action'. Collection/charge-off accounts are governed by the (a)(5) collection branch (US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y, anchor_day_offset: 180).",
       "output_permission": {
         "max_conclusion": "observation",
         "finding_allowed": false,
@@ -3969,11 +3970,11 @@
       },
       "finding_disabled": {
         "disabled": true,
-        "reason": "OWNER-CANDIDATE-007 correction (2026-10-04): the supported event-date timing branch is NOT established. Absence of COLLECTION/CHARGE-OFF wording does not establish that \u00a7 1785.13(b) is inapplicable, because (b) also applies to 'any similar action'. This adapter is fail closed (finding_allowed: false) until an admitted evidence basis establishes event-date applicability or supplies the (b) delinquency-based timing.",
-        "enabling_evidence_required": "an admitted report-evidenced account/action context with source provenance that positively establishes the account was NOT placed for collection, charged off, or subjected to a similar action \u2014 or the delinquency commencement required by (b) for a collection/charge-off/similar account."
+        "reason": "OWNER-CANDIDATE-007 correction (2026-10-04): the supported event-date timing branch is NOT established. Absence of COLLECTION/CHARGE-OFF wording does not establish that § 1785.13(b) is inapplicable, because (b) also applies to 'any similar action'. This adapter is fail closed (finding_allowed: false) until an admitted evidence basis establishes event-date applicability or supplies the (b) delinquency-based timing.",
+        "enabling_evidence_required": "an admitted report-evidenced account/action context with source provenance that positively establishes the account was NOT placed for collection, charged off, or subjected to a similar action — or the delinquency commencement required by (b) for a collection/charge-off/similar account."
       },
       "applicability_rule": "ADVERSE_RATING_ACTION_CONTEXT",
-      "applicability_note": "tri-state account/action context, resolved PER RECORD with source provenance. (1) ESTABLISHED (b) CONTEXT \u2014 the record prints COLLECTION / CHARGE-OFF / PLACED FOR COLLECTION (reportedAccount.accountActionContext = COLLECTION_OR_CHARGE_OFF) \u2014 is NOT_APPLICABLE here: the (a)(5) collection branch governs with delinquency-based timing and the 180-day offset. (2) ESTABLISHED SUPPORTED EVENT-DATE CONTEXT is APPLICABLE (event-date timing, no 180-day offset), but NO admitted evidence basis produces this state yet, so it is unreachable until such evidence is admitted. (3) UNKNOWN / CONFLICTING / UNSUPPORTED context \u2014 including an unlabelled 'similar action' (repossession, foreclosure, write-off) whose legal meaning this build does NOT assign \u2014 is APPLICABILITY_UNRESOLVED and emits NO finding.",
+      "applicability_note": "tri-state account/action context, resolved PER RECORD with source provenance. (1) ESTABLISHED (b) CONTEXT — the record prints COLLECTION / CHARGE-OFF / PLACED FOR COLLECTION (reportedAccount.accountActionContext = COLLECTION_OR_CHARGE_OFF) — is NOT_APPLICABLE here: the (a)(5) collection branch governs with delinquency-based timing and the 180-day offset. (2) ESTABLISHED SUPPORTED EVENT-DATE CONTEXT is APPLICABLE (event-date timing, no 180-day offset), but NO admitted evidence basis produces this state yet, so it is unreachable until such evidence is admitted. (3) UNKNOWN / CONFLICTING / UNSUPPORTED context — including an unlabelled 'similar action' (repossession, foreclosure, write-off) whose legal meaning this build does NOT assign — is APPLICABILITY_UNRESOLVED and emits NO finding.",
       "anchor_field": [
         "reportedAccount.adverseRatingDate"
       ],
@@ -3982,10 +3983,10 @@
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Civ. Code \u00a7 1785.13(a)(8) \u2014 seven years from the date of the adverse information; the official text records no exception (the \u00a7 1785.13(d) ten-year outer limit is a separate rule, CRP-LSRC-0269, not an exception to (a)(8))",
+        "basis": "Civ. Code § 1785.13(a)(8) — seven years from the date of the adverse information; the official text records no exception (the § 1785.13(d) ten-year outer limit is a separate rule, CRP-LSRC-0269, not an exception to (a)(8))",
         "items": []
       },
-      "source_retrieval_note": "OWNER-CANDIDATE-007 (B, 2026-10-04): the period and the (b) applicability are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code \u00a7 1785.13(a)(8)+(b), Stats. 2024 Ch. 520 SB 1061): '(8) Any other adverse information that antedates the report by more than seven years.' and '(b) The seven-year period specified in paragraphs (5) and (8) ... with respect to any account that is placed for collection ..., charged to profit and loss, or subjected to any similar action, upon the expiration of the 180-day period ...'. Because (b) applies to (8) only for collection/charge-off/similar accounts, this residual branch applies the rating's own date with NO 180-day offset and defers collection/charge-off accounts to the (a)(5) branch; the offset is never invented here. The corpus maps (a)(8) to CRP-LSRC-0268 (legalCorpus/rules.ca.ts, 7DDBF5C4).",
+      "source_retrieval_note": "OWNER-CANDIDATE-007 (B, 2026-10-04): the period and the (b) applicability are recorded from the official California legislature text (leginfo.legislature.ca.gov, Civ. Code § 1785.13(a)(8)+(b), Stats. 2024 Ch. 520 SB 1061): '(8) Any other adverse information that antedates the report by more than seven years.' and '(b) The seven-year period specified in paragraphs (5) and (8) ... with respect to any account that is placed for collection ..., charged to profit and loss, or subjected to any similar action, upon the expiration of the 180-day period ...'. Because (b) applies to (8) only for collection/charge-off/similar accounts, this residual branch applies the rating's own date with NO 180-day offset and defers collection/charge-off accounts to the (a)(5) branch; the offset is never invented here. The corpus maps (a)(8) to CRP-LSRC-0268 (legalCorpus/rules.ca.ts, 7DDBF5C4).",
       "source_version": "7DDBF5C4B4743367841128F7A5DD1B699617C6A4E7B567ACBAFDD8B84B681B80",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.ca.ts"
     },
@@ -4027,12 +4028,12 @@
         "packet_eligible": true
       },
       "excluded": [
-        "every other AU limb recorded in the relation \u2014 they are listed there as not report-evidenced on this family",
+        "every other AU limb recorded in the relation — they are listed there as not report-evidenced on this family",
         "any consumer-visible output of any class"
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 3 (information of a kind referred to in s. 6N(d) or (e)) \u2014 five years from the day the request was made; the admitted text records no exception",
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 3 (information of a kind referred to in s. 6N(d) or (e)) — five years from the day the request was made; the admitted text records no exception",
         "items": []
       },
       "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
@@ -4068,7 +4069,7 @@
         "sha256": "3f6d5b3787cd15ecc8bc4a1a231d16b27968b195fe49d9ee667e25ec6648b00a",
         "printed_field": "Original Listing > Date",
         "evidence_record": "SOURCE_CAPTURES/REPORT_FORMAT_BASELINE_2026-09-30/PUB-012.pdf page 10, section 'Overdue Accounts'",
-        "why_this_is_the_recorded_start": "the recorded start is 'the day the credit reporting body collected the default information'. The admitted family prints the bureau's own original listing date on the record, and it also prints its own 'Date will be Deleted' \u2014 which the extractor reads separately and the result reports as the report's own statement, never as the rule's answer",
+        "why_this_is_the_recorded_start": "the recorded start is 'the day the credit reporting body collected the default information'. The admitted family prints the bureau's own original listing date on the record, and it also prints its own 'Date will be Deleted' — which the extractor reads separately and the result reports as the report's own statement, never as the rule's answer",
         "ambiguity_rule": "the anchor is the ORIGINAL LISTING date. If a record prints no 'Original Listing' block, the anchor is UNRESOLVED. It is NEVER taken from the current-listing date"
       },
       "output_permission": {
@@ -4078,7 +4079,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 4 (default information) \u2014 five years from the day the body collected it; the admitted text records no exception",
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 4 (default information) — five years from the day the body collected it; the admitted text records no exception",
         "items": []
       },
       "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
@@ -4125,13 +4126,13 @@
       },
       "applicability_note": "resolved PER RECORD. A record printing its own Closed Date is APPLICABLE. A record printing a blank Closed Date and an explicit repayment status that does not state termination is NOT_APPLICABLE. A record printing neither is APPLICABILITY_UNRESOLVED: a blank Closed Date alone proves neither state. No real closed liability record appears in the captured sample, so the APPLICABLE branch is exercised only on synthetic input, which establishes no real closed-account presentation evidence.",
       "excluded": [
-        "every other AU limb recorded in the relation \u2014 they are listed there as not report-evidenced on this family",
+        "every other AU limb recorded in the relation — they are listed there as not report-evidenced on this family",
         "any consumer-visible output of any class",
         "any finding of any class"
       ],
       "exceptions": {
         "recorded": false,
-        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 1 (consumer credit liability information) \u2014 two years from the day the account was terminated; the admitted text records no exception",
+        "basis": "Privacy Act 1988 (Cth) s. 20W table, item 1 (consumer credit liability information) — two years from the day the account was terminated; the admitted text records no exception",
         "items": []
       },
       "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
@@ -4222,7 +4223,7 @@
           }
         ]
       },
-      "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official King\u2019s Printer publication and is recorded on ledger row CRP-LSRC-0339. The record kind is the reader\u2019s own TU_CA_TRADELINE, and the anchor is a printed date carrying its own source location. The ceiling is PROBABLE because the date the debt was incurred is not printed. packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-05): the provision was retrieved verbatim from the official King’s Printer publication and is recorded on ledger row CRP-LSRC-0339. The record kind is the reader’s own TU_CA_TRADELINE, and the anchor is a printed date carrying its own source location. The ceiling is PROBABLE because the date the debt was incurred is not printed. packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts",
       "applicability_rule": "ADVERSE_DEBT_EVIDENCE_ON_THIS_RECORD",
@@ -4290,7 +4291,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0389"
       ],
-      "citation": "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1974, Cap. C-18, s. 9(3)(d) \u2014 official consolidation current to 30 March 2026 (amended 2025, c.11; published under chapter C-20)",
+      "citation": "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1974, Cap. C-18, s. 9(3)(d) — official consolidation current to 30 March 2026 (amended 2025, c.11; published under chapter C-20)",
       "limb": "a consumer reporting agency shall not include in a consumer report information as to any judgment against the consumer unless mention is made of the name and where available, the address of the judgment creditor as given at the date of entry of the judgment and the amount",
       "anchor_mode": "CONTENT_OMISSION",
       "period_years": 0,
@@ -4340,7 +4341,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0389"
       ],
-      "citation": "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1974, Cap. C-18, s. 9(3)(j) \u2014 official consolidation current to 30 March 2026 (amended 2025, c.11; published under chapter C-20)",
+      "citation": "Consumer Reporting Act (Prince Edward Island), R.S.P.E.I. 1974, Cap. C-18, s. 9(3)(j) — official consolidation current to 30 March 2026 (amended 2025, c.11; published under chapter C-20)",
       "limb": "a consumer reporting agency shall not include in a consumer report information regarding any criminal charges against the consumer where the charges have been dismissed, set aside or not proceeded with",
       "anchor_mode": "CONTENT_INCLUSION",
       "period_years": 0,
@@ -4365,7 +4366,7 @@
         "basis": "s.39(1)(g) records no off-report exception: the dismissed / not-proceeded disposition is a report-printed fact",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Prince Edward Island consolidation (current to 30 March 2026) on ledger row CRP-LSRC-0389. PEI own disposition wording governs \u2014 dismissed, set aside or not proceeded with; a withdrawn or stayed charge is NOT claimed under this limb, because importing another province wider categories would invent authority. Period-less CONTENT_INCLUSION; packet-eligible so the consumer chooses it. BATCH-17: the printed disposition CATEGORY is the decisive, source-linked predicate (dismissed / set aside / not proceeded with); withdrawn, stayed, convicted and any unresolved or ambiguous association produce no finding.",
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Prince Edward Island consolidation (current to 30 March 2026) on ledger row CRP-LSRC-0389. PEI own disposition wording governs — dismissed, set aside or not proceeded with; a withdrawn or stayed charge is NOT claimed under this limb, because importing another province wider categories would invent authority. Period-less CONTENT_INCLUSION; packet-eligible so the consumer chooses it. BATCH-17: the printed disposition CATEGORY is the decisive, source-linked predicate (dismissed / set aside / not proceeded with); withdrawn, stayed, convicted and any unresolved or ambiguous association produce no finding.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalCorpus\\\\rules.canada.ts",
       "content_inclusion": {
@@ -4374,7 +4375,7 @@
           "SET_ASIDE",
           "NOT_PROCEEDED"
         ],
-        "why": "the provision names its own categories \u2014 dismissed, set aside or not proceeded with \u2014 so the printed CATEGORY decides; a withdrawn or stayed charge is never claimed under this limb, and an ambiguous, unbound or unclassified disposition carries no category and therefore no finding"
+        "why": "the provision names its own categories — dismissed, set aside or not proceeded with — so the printed CATEGORY decides; a withdrawn or stayed charge is never claimed under this limb, and an ambiguous, unbound or unclassified disposition carries no category and therefore no finding"
       }
     },
     {
@@ -4384,8 +4385,8 @@
       "ledger_row_ids": [
         "CRP-LSRC-0313"
       ],
-      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) \u2014 applying to organizations in the Northwest Territories (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
-      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 \u2014 personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Northwest Territories (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -4412,10 +4413,10 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred \u2014 the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     },
@@ -4426,8 +4427,8 @@
       "ledger_row_ids": [
         "CRP-LSRC-0313"
       ],
-      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) \u2014 applying to organizations in the Nunavut (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
-      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 \u2014 personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Nunavut (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -4454,10 +4455,10 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred \u2014 the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     },
@@ -4468,8 +4469,8 @@
       "ledger_row_ids": [
         "CRP-LSRC-0313"
       ],
-      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) \u2014 applying to organizations in the Yukon (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
-      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 \u2014 personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
+      "citation": "Personal Information Protection and Electronic Documents Act, S.C. 2000, c. 5, Schedule 1, clause 4.6 (Accuracy) — applying to organizations in the Yukon (Office of the Privacy Commissioner of Canada: organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA)",
+      "limb": "RECORDED PROVISION: PIPEDA, Schedule 1, clause 4.6 — personal information shall be as accurate, complete, and up-to-date as is necessary for the purposes for which it is to be used. Where the report own two printed values conflict, the information it prints cannot both be accurate; the finding is PROBABLE only, and no retention period and no shall-not-report prohibition is relied on.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -4496,10 +4497,10 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred \u2014 the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-06): applicability is established from official material, not inferred — the Office of the Privacy Commissioner of Canada states that organizations in the Northwest Territories, Yukon and Nunavut are considered federally regulated and are therefore covered by PIPEDA, on the page recording PIPEDA application to private-sector organizations in the course of a commercial activity, the Accuracy principle among the ten Schedule 1 principles, and personal information including credit records and loan records (PIPEDA requirements in brief, retrieved 2026-10-06). The duty is Schedule 1 clause 4.6; NO retention period and NO shall-not-report prohibition is relied on. Ceiling probable_violation: the report establishes that its own two printed values cannot both be accurate, and neither which is wrong nor whether a benign explanation applies. packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     },
@@ -4510,7 +4511,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0338"
       ],
-      "citation": "Business Practices and Consumer Protection Act (British Columbia), S.B.C. 2004, c. 2, s. 109(1)(b) \u2014 Act current to September 22, 2026",
+      "citation": "Business Practices and Consumer Protection Act (British Columbia), S.B.C. 2004, c. 2, s. 109(1)(b) — Act current to September 22, 2026",
       "limb": "A reporting agency must not include in a report given under section 108(1)(a) any of the following: ... (b) information not based on the most reliable evidence reasonably available.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
@@ -4538,10 +4539,10 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official King's Printer consolidation of Part 6 (current to September 22, 2026). The duty is s.109(1)(b) \u2014 an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented; the recorded gap on s.109(1)(m)/(n)/(o) stays open and separate. Ceiling probable_violation; packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official King's Printer consolidation of Part 6 (current to September 22, 2026). The duty is s.109(1)(b) — an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented; the recorded gap on s.109(1)(m)/(n)/(o) stays open and separate. Ceiling probable_violation; packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     },
@@ -4602,8 +4603,8 @@
       "ledger_row_ids": [
         "CRP-LSRC-0391"
       ],
-      "citation": "Act respecting the protection of personal information in the private sector (Quebec), CQLR c. P-39.1, s. 11 \u2014 personal information held on another person must be up to date and accurate when used to make a decision about that person",
-      "limb": "RECORDED PROVISION: CQLR c. P-39.1, s. 11 \u2014 every person carrying on an enterprise must ensure that any personal information held on another person is up to date and accurate when used to make a decision in relation to the person concerned. Where the report own two printed values conflict the information cannot both be up to date and accurate; the finding is PROBABLE only.",
+      "citation": "Act respecting the protection of personal information in the private sector (Quebec), CQLR c. P-39.1, s. 11 — personal information held on another person must be up to date and accurate when used to make a decision about that person",
+      "limb": "RECORDED PROVISION: CQLR c. P-39.1, s. 11 — every person carrying on an enterprise must ensure that any personal information held on another person is up to date and accurate when used to make a decision in relation to the person concerned. Where the report own two printed values conflict the information cannot both be up to date and accurate; the finding is PROBABLE only.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
       "closed_field": "liability.closedDate",
@@ -4630,7 +4631,7 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
       "finding_gate": "ENABLED (2026-10-06): retrieved from the official LegisQuebec consolidation (French and official English). The recorded lead (Civil Code of Quebec art. 30, row CRP-LSRC-0391) concerns psychiatric custody and is UNRELATED to credit reporting, and c. P-40.1 (row CRP-LSRC-0342) holds no consumer-report content duty; the operative duty is c. P-39.1 s. 11. Accuracy only, no retention period; ceiling probable_violation.",
@@ -4644,7 +4645,7 @@
       "ledger_row_ids": [
         "CRP-LSRC-0392"
       ],
-      "citation": "The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(b) \u2014 no credit reporting agency shall include in a credit report any information not based on the most reliable evidence reasonably available",
+      "citation": "The Credit Reporting Act (Saskatchewan), S.S. 2004, c. C-43.2, s. 18(b) — no credit reporting agency shall include in a credit report any information not based on the most reliable evidence reasonably available",
       "limb": "Content of credit report, s.18(b): no credit reporting agency shall include in a credit report any information not based on the most reliable evidence reasonably available.",
       "anchor_mode": "CONTENT_RELIABILITY",
       "opened_field": "liability.openedDate",
@@ -4672,10 +4673,10 @@
       },
       "exceptions": {
         "recorded": false,
-        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge \u2014 the furnisher's own records \u2014 is never inferred.",
+        "basis": "The located provision states no exception. Whether the printed values came from the best evidence reasonably available is not resolvable from the report itself, so no exception is evaluated here and the conclusion ceiling stays PROBABLE_VIOLATION. Off-report knowledge — the furnisher's own records — is never inferred.",
         "items": []
       },
-      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Saskatchewan Queen's Printer chapter C-43.2 text (Publications Centre archive), and the Financial and Consumer Affairs Authority current page confirms that a Saskatchewan credit reporting agency \"must be licensed and is governed by The Credit Reporting Act\", so no successor statute applies. The duty relied on is s.18(b) \u2014 information not based on the most reliable evidence reasonably available \u2014 an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented and the retention paragraphs (s.18(d),(e),(f),(g),(k),(n)) stay separate and unimplemented. Ceiling probable_violation; packet_eligible stays false.",
+      "finding_gate": "ENABLED (2026-10-06): retrieved verbatim from the official Saskatchewan Queen's Printer chapter C-43.2 text (Publications Centre archive), and the Financial and Consumer Affairs Authority current page confirms that a Saskatchewan credit reporting agency \"must be licensed and is governed by The Credit Reporting Act\", so no successor statute applies. The duty relied on is s.18(b) — information not based on the most reliable evidence reasonably available — an ACCURACY/CONTENT duty, not a retention period, so no legal-event anchor is used or invented and the retention paragraphs (s.18(d),(e),(f),(g),(k),(n)) stay separate and unimplemented. Ceiling probable_violation; packet_eligible stays false.",
       "source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
       "source_artifact": "packages\\backend\\src\\services\\legalCorpus\\rules.canada.ts"
     },
@@ -9221,10 +9222,10 @@
             "us.negative_info.7y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9236,10 +9237,10 @@
             "us.bankruptcy.10y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9251,10 +9252,10 @@
             "us.judgment.7y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9266,25 +9267,25 @@
             "us.tax_lien_paid.7y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
           "source_entry_id": "CRP-LSRC-0007",
           "legacy_jurisdiction_reference": "US_FEDERAL",
           "period_years": 7,
-          "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see \u00a7 605(c))",
+          "period_start_as_recorded": "the delinquency that preceded the collection or charge-off (see § 605(c))",
           "legacy_rule_ids": [
             "us.collection.7y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9302,10 +9303,10 @@
             "uk.search.12m"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9317,10 +9318,10 @@
             "au.credit_enquiry.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9332,10 +9333,10 @@
             "au.default.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9347,10 +9348,10 @@
             "au.payment_info.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9362,10 +9363,10 @@
             "au.new_arrangement.2y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9377,10 +9378,10 @@
             "au.court_proceedings.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9392,10 +9393,10 @@
             "au.serious_credit_infringement.7y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9407,10 +9408,10 @@
             "au.consumer_credit_liability.2y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9422,10 +9423,10 @@
             "au.repayment_history.2y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9437,10 +9438,10 @@
             "au.bankruptcy.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9452,10 +9453,10 @@
             "au.personal_insolvency_agreement.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         },
         {
@@ -9467,10 +9468,10 @@
             "au.debt_agreement.5y"
           ],
           "work_items": [
-            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED \u2014 the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
-            "ANCHOR_FIELD_EVIDENCE \u2014 the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
-            "REGISTER_DISPOSITION_UNRESOLVED \u2014 the per-ID rescreen disposition is UNRESOLVED for every row",
-            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES \u2014 upload, isolation and billing are not implemented"
+            "COUNTRY_WIDE_TO_SELECTED_REGION_RELATION_REQUIRED — the country-wide record must be tied to the selected region by a recorded relation before any region selection can use it",
+            "ANCHOR_FIELD_EVIDENCE — the recorded start is a legal event; whether the region's admitted presentation prints a field carrying it is not yet established",
+            "REGISTER_DISPOSITION_UNRESOLVED — the per-ID rescreen disposition is UNRESOLVED for every row",
+            "REPORT_FORMAT_AND_APPLICATION_DEPENDENCIES — upload, isolation and billing are not implemented"
           ]
         }
       ]
@@ -9487,7 +9488,7 @@
     "Country-wide candidates are surfaced by a MECHANICAL country-token test only, which confirms nothing.",
     "Legacy source files were scanned read-only; no legacy code was executed and none was copied in.",
     "No report content, identifier or credential was read, written or transmitted by this builder.",
-    "Legacy symbols recorded MODULE_LOCAL_NOT_IMPORTABLE exist in the checkout but are not exported, so they cannot be reused without editing the legacy file \u2014 they are recorded, not counted as reusable.",
+    "Legacy symbols recorded MODULE_LOCAL_NOT_IMPORTABLE exist in the checkout but are not exported, so they cannot be reused without editing the legacy file — they are recorded, not counted as reusable.",
     "A national relation reached through the region pattern US-* covers US states and US territories alike; territory coverage is the least confirmed part of that relation and is not separately evidenced."
   ]
 }

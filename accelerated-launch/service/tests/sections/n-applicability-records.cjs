@@ -302,7 +302,7 @@ async function surfaceAvailability(t, check) {
   for (const region of surface.regions) {
     counts[region.availability.state] = (counts[region.availability.state] || 0) + 1;
     if (region.availability.state === 'SUPPORTED') {
-      check.equal(region.checklist_items, 20,
+      check.equal(region.checklist_items, 21,
         `${region.value}: the shared checklist scope is available before upload`);
       check.ok(region.supported_format_families.length >= 1, `${region.value}: names its available reader paths`);
       check.equal(region.working_assessment, true);
