@@ -178,21 +178,19 @@ async function runRealReport(service, check, evidence) {
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: actor.token })).json.view;
   const publicIssues = view.result.issues;
   check.equal(view.assessment_summary.distinct_total, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the paid assessment reports the two historical-period concerns and the later-expiry concern');
-  check.equal(view.assessment_summary.by_confidence.potential, 7 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'all of them are potential issues to verify');
-  check.equal(view.assessment_summary.by_confidence.violation + view.assessment_summary.by_confidence.probable_violation, 0,
-    'and none of them is asserted as a violation or a probable violation');
-  check.equal(view.assessment_summary.teaser.severity, 'MISSING_DATE', 'the teaser is ranked as a printed blank date');
-  check.ok(!/definite|violation/i.test(String(view.assessment_summary.teaser.title)),
-    'and the teaser title never claims a violation');
+  check.equal(view.assessment_summary.by_confidence.potential, 5 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'the remaining factual issues are potential verification matters');
+  check.equal(view.assessment_summary.by_confidence.violation, 2,
+    'the two sourced Nova Scotia six-year breaches are counted as violations');
+  check.equal(view.assessment_summary.teaser.severity, 'REPORTING_TIME_LIMIT', 'the reporting-time violations lead the preview');
   const byAccount = {};
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
   check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 2, 'ROGERS COMMUNICATIONS CANADA INC': 2 },
     'the issues stay associated with the accounts the report shows them on');
-  const reportingPeriod = publicIssues.filter((i) => i.reporting_period_concern === true);
-  check.equal(reportingPeriod.length, 2, 'the two older closed debt entries receive historical reporting-period concerns');
-  check.ok(reportingPeriod.every((i) => i.confidence === 'POTENTIAL' && /correct or remove/.test(i.explanation)),
-    'the old debt information supports a direct correction request without claiming proof of a violation');
-  check.ok(reportingPeriod.every((i) => i.source_evidence.page && i.source_evidence.line && i.account_identity.name),
+  const reportingPeriod = publicIssues.filter((i) => i.basis_type === 'STATUTORY_RETENTION');
+  check.equal(reportingPeriod.length, 2, 'the two older closed debt entries receive sourced reporting-period violations');
+  check.ok(reportingPeriod.every((i) => i.confidence === 'DEFINITE' && i.consumer_label === 'VIOLATION' && i.request_type === 'CORRECTION'),
+    'the six-year rule is classified and presented as a correction-ready violation');
+  check.ok(reportingPeriod.every((i) => i.source_facts[0]?.location?.page && i.source_facts[0]?.location?.line && i.account_identity.name),
     'both concerns preserve the account association and recorded report location');
   check.ok(reportingPeriod.every((i) => i.explanation.includes(i.account_identity.name)),
     'each reporting-period card names its tradeline in the explanation');
@@ -227,10 +225,10 @@ async function runRealReport(service, check, evidence) {
   check.equal(paymentHistory.withheld_candidates.length, 7, 'while every candidate it refused to raise is recorded with its reason');
   check.ok(paymentHistory.withheld_candidates.every((c) => c.reason && c.missing_prerequisite),
     'each with the innocent explanation and the prerequisite it would need');
-  check.ok(publicIssues.every((i) => i.limitation_concern ? i.request_type === null && i.eligible === false : i.request_type === 'VERIFICATION' && i.eligible === true),
-    'only independent reporting issues remain available for disputes');
-  check.ok(publicIssues.every((i) => !i.citation),
-    'none of them names a legal rule, because none of them asserts one');
+  check.ok(publicIssues.every((i) => i.limitation_concern ? i.request_type === null && i.eligible === false : i.eligible === true),
+    'reporting issues remain selectable while court timing remains information only');
+  check.ok(reportingPeriod.every((i) => /10\(3\)\(c\)/.test(i.citation || '')),
+    'the two reporting violations retain their Nova Scotia source citation');
   evidence.real_report.issue_inventory = publicIssues.map((i) => ({
     account: i.account_identity.name,
     kind: i.limitation_concern ? 'court-limitation' : (i.missing_detail ? 'missing-detail' : 'other'),
@@ -254,12 +252,12 @@ async function runNovaScotiaLimb(service, check, evidence, real) {
     'with the printed value of that date beside it');
   const exceeded = obs.filter((o) => /More than 6 years/.test(o.headline));
   check.equal(exceeded.length, 2, 'two entries are older than six years since the last payment the report prints');
-  check.ok(exceeded.every((o) => o.is_a_finding === false && o.classification === null),
-    'and both stay observations, because an aged but satisfactory, zero-balance entry is not asserted to be unlawful');
+  check.ok(exceeded.every((o) => o.is_a_finding === true && o.classification === 'VIOLATION'),
+    'both sourced exceeded entries are findings regardless of satisfactory status or zero balance');
   check.ok((view.result.checks_not_run || []).every((c) => !/10\(3\)\(c\)/.test(c.citation || '')),
     'the presentation refusal that hid this limb on every TransUnion account is gone');
-  check.equal((view.result.issues || []).filter((i) => i.citation).length, 0,
-    'and the limb adds no consumer issue of its own');
+  check.equal((view.result.issues || []).filter((i) => /10\(3\)\(c\)/.test(i.citation || '')).length, 2,
+    'and the limb adds both violations to consumer issues');
   evidence.real_report.limb = obs.map((o) => ({
     account_number_in_report: o.account_number_in_report, measures_from: o.measures_from,
     printed_value: o.evidence.printed_value, is_a_finding: o.is_a_finding
@@ -285,8 +283,8 @@ async function runSubscriberPacket(service, check, evidence, real) {
   const view = (await service.request('GET', `/api/cases/${caseId}`, { token: sub.token })).json.view;
   const publicIssues = view.result.issues;
   check.equal(view.result.issues.length, 9 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'a subscriber sees the same supported issues on the real report');
-  const chosen = view.result.issues.find((i) => i.reporting_period_concern === true);
-  check.ok(chosen, 'the subscriber can select a historically old debt-information concern');
+  const chosen = view.result.issues.find((i) => i.basis_type === 'STATUTORY_RETENTION' && i.consumer_label === 'VIOLATION');
+  check.ok(chosen, 'the subscriber can select a sourced six-year reporting violation');
   const packetView = await service.request('GET', `/api/cases/${caseId}/packet`, { token: sub.token });
   check.equal(packetView.status, 200, 'the subscriber can open the packet flow for this report');
   const selected = await service.request('POST', `/api/cases/${caseId}/packet/select`, { token: sub.token, body: { issue_ids: [chosen.issue_id] } });
@@ -299,9 +297,9 @@ async function runSubscriberPacket(service, check, evidence, real) {
   check.equal(approved.status, 200, 'and approve the packet it built');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: sub.token });
   check.equal(download.status, 200, 'and download the approved packet');
-  check.ok(/Please check the Last Payment Date and.*6-year reporting period/i.test(comparableText(download.text)), 'the approved correspondence asks in plain language to check the selected last-payment anchor and six-year reporting period');
+  check.ok(/Please remove this debt information because the printed Last Payment Date shows that its six-year reporting period had ended/i.test(comparableText(download.text)), 'the approved correspondence states the sourced last-payment and six-year correction request');
   check.ok(comparableText(download.text).includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
-  check.ok(/remove or correct this debt information/i.test(comparableText(download.text)), 'the packet asks for correction of the aged debt information');
+  check.ok(/remove this debt information/i.test(comparableText(download.text)), 'the packet asks to remove the aged debt information');
   check.ok(!/positive account|negative account|adverse debt/i.test(comparableText(download.text)), 'the packet assigns no positive or negative account value');
   evidence.real_report.packet = { selected_issue: chosen.issue_id, account: chosen.account_identity.name };
   void real;

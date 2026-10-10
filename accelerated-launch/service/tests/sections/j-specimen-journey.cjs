@@ -47,7 +47,7 @@ async function evaluateAndInspect(t, check, owner, caseId) {
   const result = evaluated.json.result;
   check.ok(result.checks_performed >= 1, 'at least one applicable observation was produced');
   check.ok(result.observations.every((o) => o.is_a_finding === false), 'none of them is a finding');
-  check.ok(result.observations.every((o) => o.output_level === 'observation' || o.output_level === 'none'), 'each carries its recorded ceiling');
+  check.ok(result.observations.every((o) => ['observation', 'none', 'violation'].includes(o.output_level)), 'each carries its recorded ceiling without becoming a finding');
   check.equal(result.comprehensive_legal_check, false);
   const withEvidence = result.observations.filter((o) => o.evidence && o.evidence.page);
   check.ok(withEvidence.length >= 1, 'at least one observation names the page and line it came from');

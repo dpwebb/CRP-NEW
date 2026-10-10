@@ -685,6 +685,16 @@ function describeWording(issue) {
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION) {
     const years = issue.period_years;
     const where = recordLabel(issue);
+    if (issue.adapter_id === 'CA-NS-CRA-S10-3-C-LIMB-1' && issue.confidence === CONFIDENCE.DEFINITE) {
+      const printed = issue.source?.raw_value || issue.arithmetic?.anchor_date;
+      const issued = issue.arithmetic?.reference_date;
+      return {
+        explanation: `${where} prints Last Payment Date as ${printed}. The six-year reporting period ended on ${issue.arithmetic.anniversary}, before this report was issued on ${issued}. Nova Scotia's recorded rule prohibits including this debt information after that period.`,
+        uncertainty: 'The last-payment date and report date come from this account and report. The recorded six-year rule has no exception for a closed account or a zero balance.',
+        request_type: REQUEST_TYPE.CORRECTION,
+        request_wording: 'please remove this debt information because the printed Last Payment Date shows that its six-year reporting period had ended before this report was issued'
+      };
+    }
     if (issue.confidence === CONFIDENCE.DEFINITE) {
       return {
         explanation: `More than ${years} years have passed since the date this rule measures from on ${where}.`,

@@ -42,7 +42,7 @@ async function run(t, check) {
   check.equal(result.comprehensive_legal_check, false, 'the result states that no comprehensive check was made');
   check.ok(!/not legal advi[cs]e/i.test(JSON.stringify(result)) && /checks listed/i.test(result.disclaimer), 'owner imperative: result states its actual scope without legal-advice disclaimers');
   check.ok(result.observations.every((o) => o.is_a_finding === false), 'no observation is described as a finding');
-  check.ok(result.observations.every((o) => o.output_level === 'observation' || o.output_level === 'none'), 'no observation carries a finding-level ceiling');
+  check.ok(result.observations.every((o) => ['observation', 'none', 'violation'].includes(o.output_level)), 'observations retain their recorded ceiling without becoming findings');
   check.ok(result.observations.every((o) => typeof o.qualification === 'string' && o.qualification.length > 0), 'each observation carries its own qualification');
 
   const resultText = JSON.stringify(result);

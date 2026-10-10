@@ -53,7 +53,7 @@ test('packet eligibility is narrow and conditional, and finding permission is re
   /* OWNER-POTENTIAL-ISSUE-001 extended this set from the three bounded California rules to the enumerated
      per-finding authorization in rule-adapters.cjs (PACKET_ELIGIBLE_RULE_IDS); it is never a blanket flag. */
   const PACKET_ELIGIBLE = new Set(adapters.PACKET_ELIGIBLE_RULE_IDS);
-  assert.equal(PACKET_ELIGIBLE.size, 13, 'exactly thirteen admitted findings are packet-eligible');
+  assert.equal(PACKET_ELIGIBLE.size, 14, 'exactly fourteen admitted findings are packet-eligible');
   for (const a of adapters.ADAPTERS) {
     assert.equal(typeof a.output_permission.packet_eligible, 'boolean', `${a.adapter_id} packet_eligible is boolean`);
     if (a.output_permission.packet_eligible === true) {
@@ -88,9 +88,26 @@ test('CA-NS applies and evaluates a six-year period as exceeded', () => {
   assert.equal(r.outcome, 'PERIOD_EXCEEDED');
   assert.equal(r.anchor.field, 'tradeline.lastPaymentDate');
   assert.equal(r.arithmetic.anniversary, '2021-03-01');
-  assert.equal(r.output_ceiling, 'observation');
+  assert.equal(r.output_ceiling, 'violation');
   assert.equal(r.finding_emitted, false);
-  assert.equal(r.packet_eligible, false);
+  assert.equal(r.packet_eligible, true);
+});
+
+test('CA-NS emits a sourced debt-reporting violation for the printed 2013 payment on a 2026 report', () => {
+  const source = { raw_value: 'Oct 03, 2013', normalized_value: '2013-10-03',
+    location: { page: 3, line: 32 }, normalization: { from: 'Oct 03, 2013', to: '2013-10-03' } };
+  const request = { country: 'CA', region: 'CA-NS', presentation: 'FAM-TU-CA-CONSUMER',
+    facts: { 'tradeline.lastPaymentDate': '2013-10-03' },
+    fact_sources: { 'tradeline.lastPaymentDate': source }, referenceDate: '2026-01-10' };
+  const found = adapters.runAdapter(NS, request);
+  assert.equal(found.finding?.classification, 'VIOLATION');
+  assert.equal(found.finding_emitted, true);
+  assert.equal(found.arithmetic.anniversary, '2019-10-03');
+  assert.equal(found.packet_eligible, true);
+  const noSource = adapters.runAdapter(NS, { ...request, fact_sources: {} });
+  assert.equal(noSource.finding_emitted, false, 'date arithmetic without its report source is not a finding');
+  const boundary = adapters.runAdapter(NS, { ...request, referenceDate: '2019-10-03' });
+  assert.equal(boundary.finding_emitted, false, 'the sixth anniversary is still within the reporting period');
 });
 
 test('CA-NS applies and evaluates a six-year period as not exceeded', () => {
@@ -360,11 +377,9 @@ test('the bankruptcy adapter ages only from the clearly labelled discharge date,
   assert.equal(r.finding_emitted, false);
 });
 
-/* OWNER-ALL82-001 / B4 continuation and OWNER-EVIDENCE-001. "Keep the original CA-NS statutory admission
-   exact-specimen and observation-only. Broader factual format support does not broaden statutory permission."
-   The discharge date is now accepted as a reported fact (SINGLE_FIELD), but the limb stays bound to PR-01, so
-   a second Canadian presentation runs zero statutory checks here. */
-test('the bankruptcy adapter is still bound to PR-01, like every other Nova Scotia limb', () => {
+/* The bankruptcy limb stays bound to PR-01. The separate debt-reporting limb now admits
+   sourced TransUnion Canada findings under the owner's later reporting-period correction. */
+test('the bankruptcy adapter is still bound to PR-01', () => {
   const r = adapters.runAdapter(NS_BANKRUPTCY, {
     country: 'CA', region: 'CA-NS', presentation: 'FAM-TU-CA-CONSUMER',
     facts: { 'bankruptcy.dischargeDate': '2012-01-01' }, referenceDate: '2022-05-01'
