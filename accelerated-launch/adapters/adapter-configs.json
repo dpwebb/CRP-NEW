@@ -39,9 +39,10 @@
       },
       "presentation_required": [
         "PR-01",
-        "FAM-TU-CA-CONSUMER"
+        "FAM-TU-CA-CONSUMER",
+        "GENERAL-BUREAU-REPORT"
       ],
-      "presentation_admission_note": "BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair, 2026-10-06): this limb's recorded anchor is a TRADELINE field, and the config itself recorded the divergence ('the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record'). The TransUnion Canada consumer presentation prints last-payment dates ON its tradelines and its reader maps them to that same shared fact with the printed page/line location, so the limb is admitted to this presentation as well. The owner correction of October 9 authorizes a source-linked checklist reporting-period VIOLATION when this admitted limb establishes that debt information remained in a Nova Scotia consumer report more than six years after its printed last payment. Satisfactory status or zero balance does not add an exception absent from s. 10(3)(c). The default-date limb remains unseated; unresolved dates or provenance cannot establish a violation.",
+      "presentation_admission_note": "BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair, 2026-10-06): this limb's recorded anchor is a TRADELINE field, and the config itself recorded the divergence ('the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record'). The TransUnion Canada consumer presentation prints last-payment dates ON its tradelines and its reader maps them to that same shared fact with the printed page/line location. October 10 Creator testing found that the general reader also maps an ordinary TransUnion Canada synthetic report's printed Last Payment Date and Report Date to those same source-linked fields while the rule refused only the presentation. Admit the general presentation for this exact Nova Scotia last-payment limb; retain its existing evidence, date, applicability, exception and conclusion predicates. The default-date limb remains unseated; unresolved dates or provenance cannot establish a violation.",
       "output_permission": {
         "max_conclusion": "violation",
         "finding_allowed": true,
@@ -50,7 +51,7 @@
       "recorded_input_divergence": "the admitted legacy rule record names a tradeline field; the evidenced presentation prints the field on a collection record — recorded, not resolved",
       "excluded": [
         "the default-date limb — FACT-05 is unseated on PR-01",
-        "every other rule unit, jurisdiction, bureau, presentation and channel",
+        "every other rule unit, jurisdiction and unsupported presentation or channel",
         "any consumer-visible output of any class"
       ],
       "exceptions": {

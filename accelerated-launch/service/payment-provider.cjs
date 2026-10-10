@@ -167,6 +167,7 @@ function makeTestAdapter(env) {
           plan_code: body.plan_code,
           session_reference: body.session_reference,
           amount_cents: Number.isInteger(body.amount_cents) ? body.amount_cents : null,
+          refunded_cents: Number.isSafeInteger(body.refunded_cents) ? body.refunded_cents : null,
           currency: typeof body.currency === 'string' ? body.currency : null,
           /* A provider states the paid period's end. It is carried through; `entitlement.periodFor` decides
              whether to use it or fall back to the catalog's own period. */
@@ -235,6 +236,14 @@ function priceMatchesCatalog(planCode, priceObj) {
   return Boolean(priceObj.recurring) && priceObj.recurring.interval === interval;
 }
 
+/** Use Stripe's itemized invoice tax, including an explicit empty list for zero tax. */
+function verifiedInvoiceTaxCents(invoice) {
+  const amounts = invoice?.total_tax_amounts;
+  if (!Array.isArray(amounts) || !amounts.every(item => Number.isSafeInteger(item?.amount) && item.amount >= 0)) return null;
+  const tax = amounts.reduce((sum, item) => sum + item.amount, 0);
+  return Number.isSafeInteger(tax) && Number.isSafeInteger(invoice.amount_paid) && tax <= invoice.amount_paid ? tax : null;
+}
+
 /** Normalise `checkout.session.completed` / `checkout.session.async_payment_succeeded`. */
 async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, type) {
   const accountRef = session.client_reference_id || (session.metadata && session.metadata.account_id);
@@ -242,11 +251,15 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
   if (!accountRef || !planCode || !plans.isPlanCode(planCode)) return null;
 
   let priceId = null;
+  let verifiedTaxCents = Number.isSafeInteger(session.total_details?.amount_tax) ? session.total_details.amount_tax : null;
   try {
     const fetched = await stripe.retrieveSession(secretKey, session.id, base);
     if (fetched.status === 200) {
       const items = fetched.json.line_items && fetched.json.line_items.data;
       if (items && items.length && items[0].price) priceId = items[0].price.id;
+      if (Number.isSafeInteger(fetched.json.total_details?.amount_tax)) {
+        verifiedTaxCents = fetched.json.total_details.amount_tax;
+      }
     }
   } catch { /* fall back to configured-id check below */ }
 
@@ -278,6 +291,7 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
           (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id)) {
       return { mismatch: 'SUBSCRIPTION_PAYMENT_RECEIPT_MISMATCH' };
     }
+    verifiedTaxCents = verifiedInvoiceTaxCents(receipt.json);
     paymentIntent = typeof receipt.json.payment_intent === 'string' ? receipt.json.payment_intent : receipt.json.payment_intent?.id || null;
   }
   return {
@@ -289,6 +303,7 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     subscription_reference: session.mode === 'subscription'
       ? (typeof session.subscription === 'string' ? session.subscription : session.subscription?.id) || null : null,
     amount_cents: Number.isInteger(session.amount_total) ? session.amount_total : null,
+    tax_cents: verifiedTaxCents,
     currency: typeof session.currency === 'string' ? session.currency : null,
     period_end: periodEnd,
     payment_intent: paymentIntent,
@@ -344,6 +359,7 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
     checkout_reference: resolved.checkoutId,
     invoice_reference: invoice.id,
     amount_cents: Number.isInteger(invoice.amount_paid) ? invoice.amount_paid : null,
+    tax_cents: verifiedInvoiceTaxCents(invoice),
     currency: typeof invoice.currency === 'string' ? invoice.currency : null,
     period_end: lines[0].period?.end ? new Date(lines[0].period.end * 1000).toISOString() : resolved.periodEnd,
     payment_intent: invoice.payment_intent || null,

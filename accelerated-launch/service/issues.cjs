@@ -89,6 +89,7 @@ const POTENTIAL_ISSUE_CHECK_IDS = Object.freeze([
   'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL',
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY',
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER',
+  'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY',
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY',
@@ -177,6 +178,7 @@ function reportIdentityFor(record) {
 const EVIDENCE_FACT_FIELDS = Object.freeze({
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': ['liability.openedDate', 'liability.closedDate'],
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': ['reportedAccount.dateOpened', 'reportedAccount.firstReported'],
+  'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE': ['report.referenceDate', 'reportedAccount.reportedDate'],
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': ['account.status', 'liability.closedDate'],
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': [],
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': ['account.balance', 'account.amount', 'account.pastDueAmount'],
@@ -248,6 +250,11 @@ function contentFindingFacts(requiredFacts) {
 
 /** Recorded issue-specific request wording (recorded before enabling each path — never blanket). */
 const POTENTIAL_WORDING = Object.freeze({
+  'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE': {
+    explain: (i) => `This report is dated ${(i.evidence || {}).report_date}, but lists ${recordLabel(i)} as reported on ${(i.evidence || {}).reported_date}. The reported date is later than the report itself.`,
+    uncertainty: 'The dates conflict. The report does not show which date needs correction.',
+    request: 'please verify the report date and this account\'s reported date, and correct the inconsistent date'
+  },
   'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': {
     explain: (i) => `The same account lists ${i.evidence.earlier_anchor} as the first missed-payment date in the earlier report dated ${i.evidence.earlier_report_date}. The current report lists ${i.evidence.current_anchor} for that date and is dated ${i.evidence.current_report_date}. The date has moved forward.`,
     uncertainty: 'The later report may have corrected the old date or show a new period of missed payments. Ask the bureau to check the account history.',
@@ -321,10 +328,9 @@ const POTENTIAL_WORDING = Object.freeze({
     uncertainty: 'Both entries may describe the same debt. Seeing both does not prove that the debt is being collected twice or that the balance is wrong.',
     request: 'please verify how the original account and collection balances relate and correct any duplicate or inaccurate amount'
   },
-  /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three completeness items read from an entry's own
-     printed material and the meanings the report itself prints for its codes. Each is a potential issue to
-     VERIFY — a completeness question about what the report prints, never a claim that a rule was broken and
-     never an invented date. */
+  /* The adverse-date check uses the report's own status and explicit blank. The date's
+     consequence depends on the jurisdiction and bureau; an absent disclosed value does
+     not establish that the bureau's internal file lacks the date or that an entry expired. */
   'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': {
     explain: (i) => {
       const e = i.evidence || {};
@@ -334,12 +340,23 @@ const POTENTIAL_WORDING = Object.freeze({
         : `${c.code} - ${c.meaning_as_the_report_prints_it}`);
       const months = ratings.length === 1 ? 'one month' : `${ratings.length} months`;
       const what = ratings.length
-        ? `a bad-debt payment rating printed for ${months} (most recently ${ratings[0].code} - ${ratings[0].meaning_as_the_report_prints_it})`
+        ? `a bad-debt payment rating for ${months} (most recently ${ratings[0].code} - ${ratings[0].meaning_as_the_report_prints_it})`
         : `a collection or cancellation ${statements.some((c) => c.literal_statement) ? 'status' : 'code'} (${codes.join('; ')})`;
-      return `This report presents ${entryLabel(i)} as a debt in trouble, printing ${what}, while its "First Delinquency Date" caption prints with no date at all. The entry shows no date for when the delinquency began.`;
+      const region = i.rule_assessment?.jurisdiction || '';
+      const bureau = i.report_identity?.bureau || '';
+      const consequence = region.startsWith('CA-') && /transunion/i.test(bureau)
+        ? 'TransUnion Canada says it removes adverse accounts and collections six years after the account first went delinquent. With this date blank, you cannot check that removal date from this report.'
+        : region.startsWith('US-')
+          ? 'For a collection or charge-off, the U.S. reporting period is measured from the delinquency that preceded it. With this date blank, you cannot check that starting point from this report.'
+          : region.startsWith('GB-')
+            ? 'The first missed-payment date helps you check the account history. A UK default has its own default date, so this blank does not establish when a default record must be removed.'
+            : region.startsWith('AU-')
+              ? 'The first missed-payment date helps you check the account history. Australia measures default-information retention from when the credit reporting body collected that information, so this blank does not establish its removal date.'
+              : 'Without the date, you cannot check when the reported delinquency began against this account’s payment history.';
+      return `This report presents ${entryLabel(i)} as a debt in trouble, printing ${what}, while its "First Delinquency Date" caption has no date. ${consequence}`;
     },
-    uncertainty: 'The report prints the caption and leaves the value empty rather than printing a date, so no delinquency date can be read from this entry. The underlying date may still exist in the file the creditor supplied. This is a completeness question to verify, not an established reporting issue.',
-    request: 'please confirm the date this debt first became delinquent and have that date printed on this entry'
+    uncertainty: 'The date may exist in the bureau or creditor records. This report does not establish the date or prove that the account has exceeded its reporting period.',
+    request: 'please verify when this account first became delinquent, correct the blank date on this entry, and check whether the adverse information remains within the applicable reporting period'
   },
   'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': {
     explain: (i) => {
@@ -938,6 +955,9 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         account_identity: accountIdentityFor(record),
         source_facts: sourceFactsFor(record, EVIDENCE_FACT_FIELDS[entry.check_id] || [])
       };
+      if (evaluation.presentation === 'FAM-TU-CA-CONSUMER' && !issue.report_identity?.bureau) {
+        issue.report_identity = { ...issue.report_identity, bureau: 'TransUnion Canada' };
+      }
       issue.account_identity = accountDisplay.identityForIssue(issue, extraction);
       if (entry.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' && sr.evidence && sr.evidence.original_record != null) {
         const original = recordFor(extraction, sr.evidence.original_record);
@@ -945,7 +965,8 @@ function potentialIssues(extraction, commonErrors, evaluation) {
       }
       const assessment = commonErrorRuleAssessment.assess(issue, record, evaluation, extraction);
       if (!assessment && commonErrorRuleAssessment.hasUnusableDecisiveSource(issue, record, extraction)) continue;
-      if (['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL'].includes(entry.check_id) && !assessment) continue;
+      if (['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE',
+        'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL'].includes(entry.check_id) && !assessment) continue;
       if (assessment) {
         issue.classification = assessment.classification;
         if (assessment.classification === 'PROBABLE_VIOLATION') issue.confidence = CONFIDENCE.PROBABLE;

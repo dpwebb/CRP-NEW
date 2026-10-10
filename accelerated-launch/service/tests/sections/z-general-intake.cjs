@@ -7,6 +7,8 @@
 
 const generalIntake = require('../../general-intake.cjs');
 const formats = require('../../formats.cjs');
+const commonErrors = require('../../common-errors.cjs');
+const issues = require('../../issues.cjs');
 const { makeSyntheticModel } = require('../../../../internal-validation/ca-ns-last-payment-six-year/document-model.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 
@@ -67,6 +69,32 @@ async function run(t, check) {
   const general = bureauModel(['Equifax  Consumer Credit Report', 'Prepared Date: June 12, 2026', 'Account  Balance $1,240  Opened 01/01/2020']);
   check.equal(generalIntake.detect(general).outcome, 'GENERAL', 'bureau plus content is GENERAL');
 
+  const pairedHeading = makeSyntheticModel({ pages: [[
+    'Equifax Consumer Credit Report', 'Report Date: 2026/01/10', 'Accounts - Revolving',
+    'Sample Motor Finance', 'Account', 'Number', '****4130', 'Balance', '$100 CAD',
+    'Past Due', '$125 CAD', 'Accounts - Revolving (continued)', 'Example Community Bank',
+    'Account', 'Number', '****6486', 'Balance', '$0 CAD'
+  ]] });
+  const pairedExtraction = formats.extractWithSharedAdapter(pairedHeading, { mode: 'REPORT', country: 'CA' });
+  check.equal(pairedExtraction.records[0].facts['account.reported_identity'], 'SAMPLE MOTOR FINANCE', 'plain creditor heading belongs to the first account');
+  check.equal(pairedExtraction.records[1].facts['account.reported_identity'], 'EXAMPLE COMMUNITY BANK', 'continued heading starts a separate account');
+  check.equal(pairedExtraction.records[0].facts['account.balance'], 100, 'complete CAD balance resolves');
+  check.equal(pairedExtraction.records[0].facts['account.pastDueAmount'], 125, 'complete CAD past-due amount resolves');
+  check.equal(pairedExtraction.records[1].facts['account.balance'], 0, 'the second account keeps its own balance');
+  const accountDateCaptions = [
+    { country: 'CA', header: 'Equifax Canada Consumer Credit Report', date: '2026/06/22', caption: 'Last Reported: 2026/07/22' },
+    { country: 'GB', header: 'Equifax UK Statutory Credit Report', date: '22/06/2026', caption: 'As of: 23/06/2026' },
+    { country: 'AU', header: 'Equifax Australia Consumer Credit Report', date: '22/06/2026', caption: 'Last Updated: 23/06/2026' },
+    { country: 'US', header: 'Equifax US Credit File Disclosure', date: '07/13/2026', caption: 'Last Updated Date: 08/14/2026' }
+  ];
+  for (const sample of accountDateCaptions) {
+    const model = makeSyntheticModel({ pages: [[sample.header, `Report Date: ${sample.date}`,
+      'Creditor Name: Sample Motor Finance', sample.caption]] });
+    const result = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: sample.country });
+    check.ok(Boolean(result.records[0]?.facts['reportedAccount.reportedDate']),
+      `${sample.country} account-owned ${sample.caption.split(':')[0]} is source-linked as a reporting date`);
+  }
+
   const bureauOnly = bureauModel(['Equifax', 'Trusted credit information since 1899']);
   check.equal(generalIntake.detect(bureauOnly).outcome, 'UNRELATED', 'bureau branding alone is UNRELATED');
   check.equal(generalIntake.detect(bureauOnly).reason, 'BUREAU_IDENTITY_BUT_NO_CREDIT_REPORT_CONTENT', 'names the missing content');
@@ -83,6 +111,13 @@ async function run(t, check) {
   check.equal(ext.reference_date.normalized, '2026-06-12', 'reads the report date');
   check.equal(ext.records.length, 1, 'one account entry read');
   check.equal(ext.records[0].status, 'RESOLVED', 'with a resolved date');
+  check.equal(ext.extraction_coverage.records.length, 1, 'internal coverage inventories the extracted account');
+  check.ok(ext.extraction_coverage.records[0].fact_fields.length > 0, 'internal coverage names recovered fact fields');
+  check.equal(JSON.stringify(ext.extraction_coverage).includes('1,240'), false, 'coverage inventory does not copy printed amounts');
+  const unbound = generalIntake.extractionCoverage([{ page: 1 }], ext.records,
+    [{ page: 1, cells: [{ period: '2025-01' }] }], ['UNBOUND']);
+  check.equal(unbound.unbound_history_grids, 1, 'a visible but unbound history grid remains measurable');
+  check.equal(unbound.history_grids[0].record_index, null, 'an unbound grid is never assigned to a nearby account');
   const dateFields = Object.values(ext.records[0].printed).filter((f) => f.kind === 'date' && f.state === 'VALUE');
   check.ok(dateFields.length >= 1, 'a date field was read');
   check.equal(dateFields[0].raw, '01/01/2020', 'raw value preserved');
@@ -96,6 +131,45 @@ async function run(t, check) {
   const twoExt = generalIntake.extract(twoRecords, { country: 'US' });
   check.equal(twoExt.bureau, 'TransUnion', 'a different bureau is read');
   check.equal(twoExt.records.length, 2, 'two entries stay separate');
+
+  const missingPaymentSeed = bureauModel([
+    'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10', 'Account Information',
+    'Creditor Name: Example Community Bank', 'Account Number: ****2952',
+    'Opened Date: 2022-03-15', 'Reported Date: 2026-06-22', 'Status: Current',
+    'Creditor Name: Sample Motor Finance', 'Account Number: ****9819',
+    'Opened Date: 2021-11-04', 'Reported Date: 2026-06-22',
+    'Last Payment Date: 2025-12-15', 'Status: Closed'
+  ]);
+  const missingPaymentExt = generalIntake.extract(missingPaymentSeed, { country: 'CA' });
+  check.equal(missingPaymentExt.records.length, 2, 'seeded account sections remain separate');
+  check.deepEqual(missingPaymentExt.records.map((r) => r.facts['account.reported_identity']),
+    ['EXAMPLE COMMUNITY BANK', 'SAMPLE MOTOR FINANCE'], 'each account retains its own identity');
+  check.ok(!missingPaymentExt.records[0].facts['tradeline.lastPaymentDate'],
+    'a missing first-account payment date is never borrowed from the next account');
+  check.equal(missingPaymentExt.records[1].facts['tradeline.lastPaymentDate'], '2025-12-15',
+    'the printed second-account payment date stays with that account');
+  check.ok(missingPaymentExt.records.every((r) => Object.values(r.printed || {}).some((p) =>
+    p.kind === 'date' && p.label === 'REPORTED DATE' && p.normalized === '2026-06-22')),
+  'both accounts retain their printed reported dates');
+  const dated = commonErrors.runCommonErrorChecks({ extraction: missingPaymentExt });
+  const future = dated.performed.find((c) => c.check_id === 'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE');
+  check.equal(future.state, 'POTENTIAL_ISSUE', 'future account reported dates are detected');
+  check.deepEqual(future.source_records.map((r) => r.record_index), [1, 2],
+    'the detection preserves both account identities');
+  const datedIssues = issues.issuesFor({ extraction: missingPaymentExt,
+    evaluation: { region: 'CA-NS', presentation: 'GENERAL-BUREAU-REPORT', results: [], common_errors: dated } });
+  const futureIssues = datedIssues.filter((i) => i.check_id === future.check_id);
+  check.equal(futureIssues.length, 2, 'both date conflicts reach the issue path');
+  check.ok(futureIssues.every((i) => i.eligible && i.source_facts.length === 2),
+    'each issue remains selectable with both report and account date sources');
+  const ordinaryDates = generalIntake.extract(bureauModel([
+    'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-07-10',
+    'Creditor Name: Example Community Bank', 'Opened Date: 2022-03-15',
+    'Reported Date: 2026-06-22', 'Status: Current'
+  ]), { country: 'CA' });
+  const ordinaryCheck = commonErrors.runCommonErrorChecks({ extraction: ordinaryDates }).performed
+    .find((c) => c.check_id === future.check_id);
+  check.equal(ordinaryCheck.state, 'NOT_DETECTED', 'a reported date before the report date stays clean');
 
   const detection = formats.detectSupportedFormat(general, { country: 'US' });
   check.equal(detection.supported, true, 'shared detector admits the general report');
@@ -120,12 +194,53 @@ async function run(t, check) {
   check.equal(uploaded.status, 201, 'a plausible bureau report uploads');
   check.equal(uploaded.json.receipt.format_detection.supported, true, 'detected as supported');
   check.equal(uploaded.json.receipt.format_detection.presentation_id, generalIntake.GENERAL_PRESENTATION_ID, 'as a general report');
+  check.equal(JSON.stringify(uploaded.json).includes('extraction_coverage'), false, 'private coverage is not exposed in the upload receipt');
 
   await t.request('POST', `/api/cases/${caseRow.case_id}/evaluate`, { token: owner.token });
   const view = (await t.request('GET', `/api/cases/${caseRow.case_id}`, { token: owner.token })).json.view;
   check.equal(view.result.assessment.performed_by_kind.STATUTORY_RULE_COMPARISON, 0, 'no statutory check on the general report');
   check.ok(view.result.checks_not_run.length > 0, 'statutory checks are named as not run');
   check.ok(view.result.assessment.factual_summary, 'the general factual surface ran');
+
+  const dateCase = (await t.request('POST', '/api/cases', { token: owner.token,
+    body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  const datePdf = buildPdf({ pages: [{ lines: [
+    'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10', 'Account Information',
+    'Creditor Name: Fictional Cedar Bank', 'Account Number: ****2952',
+    'Opened Date: 2022-03-15', 'Reported Date: 2026-06-22', 'Status: Current',
+    'Creditor Name: Fictional Motor Finance', 'Account Number: ****9819',
+    'Opened Date: 2021-11-04', 'Reported Date: 2025-12-15', 'Status: Closed'
+  ] }] });
+  const dateEndpoint = `/api/cases/${dateCase.case_id}`;
+  const dateUpload = await t.request('POST', dateEndpoint + '/files', { token: owner.token,
+    body: uploadBody(datePdf, 'fictional-reported-date.pdf') });
+  const dateEvaluation = await t.request('POST', dateEndpoint + '/evaluate', { token: owner.token });
+  check.ok(dateUpload.status === 201 && dateEvaluation.status === 201,
+    'fictional native report reaches the ordinary upload and assessment path');
+  const datePacket = (await t.request('GET', dateEndpoint + '/packet', { token: owner.token })).json.view;
+  const dateChoices = datePacket.eligible_issues.filter((i) => i.check_kind === future.label);
+  check.equal(dateChoices.length, 1, 'only the future-dated account is offered for this violation');
+  check.ok(dateChoices[0]?.eligible && dateChoices[0]?.consumer_label === 'VIOLATION'
+    && dateChoices[0]?.source_facts?.length === 2,
+  'the selectable violation retains report and account date evidence');
+  const dateChoice = await t.request('POST', dateEndpoint + '/packet/select', { token: owner.token,
+    body: { issue_ids: dateChoices.map((i) => i.issue_id) } });
+  await t.request('POST', dateEndpoint + '/packet/correspondence', { token: owner.token,
+    body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
+  await t.preparePostalPacket(owner, dateCase.case_id);
+  const dateApproval = await t.request('POST', dateEndpoint + '/packet/approve', { token: owner.token });
+  const dateDownload = await t.request('GET', dateEndpoint + '/packet-download', { token: owner.token });
+  check.ok(dateChoice.status === 200 && dateApproval.status === 200 && dateDownload.status === 200,
+    'consumer selection, approval and complete packet download succeed for this violation');
+  if (dateDownload.status === 200) {
+    const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
+    const document = await PDFDocument.load(dateDownload.bytes);
+    const letter = document.getForm().getFields().filter((f) => /^CRP_letter_page_\d+$/.test(f.getName()))
+      .map((f) => f.getText()).join('\n');
+    check.ok(letter.includes('FICTIONAL CEDAR BANK') && letter.includes('June 22, 2026')
+      && !letter.includes('FICTIONAL MOTOR FINANCE'),
+    'the editable letter names the selected account and excludes the benign account');
+  }
 
   const logoCase = (await t.request('POST', '/api/cases', { token: owner.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
   const logoPdf = buildPdf({ pages: [{ lines: ['Equifax', 'Trusted credit information since 1899'] }] });

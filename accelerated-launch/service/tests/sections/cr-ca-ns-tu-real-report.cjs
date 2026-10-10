@@ -186,6 +186,15 @@ async function runRealReport(service, check, evidence) {
   for (const i of publicIssues) byAccount[i.account_identity.name] = (byAccount[i.account_identity.name] || 0) + 1;
   check.deepEqual(byAccount, { FIDO: 3 + publicIssues.filter((i) => i.later_expiry_concern === true).length, 'CAPITAL ONE BANK': 2, 'BANK OF NOVA SCOTIA': 2, 'ROGERS COMMUNICATIONS CANADA INC': 2 },
     'the issues stay associated with the accounts the report shows them on');
+  const fidoMissingDate = publicIssues.find((i) => i.account_identity.name === 'FIDO'
+    && i.source_facts?.some((fact) => fact.source_field === 'First Delinquency Date' && fact.omitted_value));
+  check.ok(fidoMissingDate && fidoMissingDate.consumer_label === 'VIOLATION'
+    && /First Delinquency Date/.test(fidoMissingDate.explanation)
+    && /cannot check (when the reported delinquency began|that removal date)/.test(fidoMissingDate.explanation),
+  'the FIDO violation tells the consumer why the blank first delinquency date matters: ' + JSON.stringify({
+    explanation: fidoMissingDate?.explanation, source_facts: fidoMissingDate?.source_facts }));
+  check.ok(!/six-year.*court|court.*six-year/i.test(fidoMissingDate.explanation),
+    'the missing reporting anchor is never presented as a six-year court limitation');
   const reportingPeriod = publicIssues.filter((i) => i.basis_type === 'STATUTORY_RETENTION');
   check.equal(reportingPeriod.length, 2, 'the two older closed debt entries receive sourced reporting-period violations');
   check.ok(reportingPeriod.every((i) => i.confidence === 'DEFINITE' && i.consumer_label === 'VIOLATION' && i.request_type === 'CORRECTION'),

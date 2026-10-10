@@ -12,6 +12,7 @@ const CHECKS = Object.freeze([
   ['COMMON-ERROR-DUPLICATE-REPORTING', 'Duplicate account and collection entries'],
   ['COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING', 'Similar accounts to review'],
   ['COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER', 'Account first reported before it was opened'],
+  ['COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE', 'Account reported after the report date'],
   ['COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL', 'First missed-payment date moved to a later date'],
   ['COMMON-ERROR-IDENTITY-REVIEW', 'Names, addresses and personal details to review'],
   ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'Bad debt or collection without a first missed-payment date'],
@@ -21,6 +22,7 @@ const CHECKS = Object.freeze([
   ['COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID', 'Paid or settled account still shown as unpaid'],
   ['COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', 'Last-payment or first missed-payment date errors'],
   ['COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', 'Original debt and its collection both showing money owed'],
+  ['COMMON-ERROR-REPORTING-PERIOD-EXCEEDED', 'Entry appears after its applicable credit-reporting period'],
   ['LIMITATION-PERIOD-COURT-CLAIM', 'Court deadlines and credit-report time limits',
     'A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.']
 ].map(([check_id, label, description]) => Object.freeze({ check_id, label, ...(description ? { description } : {}) })));
@@ -33,7 +35,8 @@ const PREVIEW_ORDER = Object.freeze([
 ]);
 const PREVIEW_CATEGORY_BY_CHECK = Object.freeze(Object.fromEntries([
   ['DUPLICATE_REPORTING', ['DUPLICATE-REPORTING', 'COLLECTION-ORIGINAL-BOTH-DUE']],
-  ['DATE_CONFLICT', ['ACCOUNT-DATES-CONTRADICTORY', 'REPORTED-DATES-OUT-OF-ORDER', 'LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE']],
+  ['DATE_CONFLICT', ['ACCOUNT-DATES-CONTRADICTORY', 'REPORTED-DATES-OUT-OF-ORDER',
+    'ENTRY-REPORTED-AFTER-REPORT-DATE', 'LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE']],
   ['PAYMENT_HISTORY_CONFLICT', ['PAYMENT-HISTORY-INCONSISTENCY']],
   ['STATUS_AMOUNT_CONFLICT', ['STATUS-DATE-CONTRADICTION', 'BALANCE-PAYMENT-INCONSISTENCY',
     'REVOLVING-BALANCE-ZERO-LIMIT', 'PAID-SETTLED-SHOWN-UNPAID']],
@@ -64,6 +67,11 @@ function checklistFor(evaluation) {
       return { ...item, state: courtClaim && reportingPeriod ? 'PERFORMED'
         : courtClaim || reportingPeriod ? 'PARTIALLY_PERFORMED' : 'NOT_PERFORMED',
       components: { court_claim: courtClaim, reporting_period: reportingPeriod } };
+    }
+    if (item.check_id === 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED') {
+      const performed = Boolean(evaluation && evaluation.retention_dual_date
+        && evaluation.retention_dual_date.performed && evaluation.retention_dual_date.performed.length);
+      return { ...item, state: performed ? 'PERFORMED' : 'NOT_PERFORMED' };
     }
     const performed = byId.has(item.check_id);
     return { ...item, state: performed ? 'PERFORMED' : 'NOT_PERFORMED' };

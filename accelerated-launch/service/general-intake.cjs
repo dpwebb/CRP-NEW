@@ -352,7 +352,7 @@ const PAIRED_CAPTIONS = Object.freeze({
   'CHARGE OFF DATE': 'date', 'CHARGED OFF DATE': 'date', 'DATE CHARGED OFF': 'date',
   'WRITE-OFF DATE': 'date', 'WRITE OFF DATE': 'date',
   'LAST PAYMENT DATE': 'date', 'DATE OF LAST PAYMENT': 'date', 'LAST PAYMENT': 'date',
-  'LAST PAYMENT MADE': 'date', 'FIRST REPORTED': 'date'
+  'LAST PAYMENT MADE': 'date', 'FIRST REPORTED': 'date', 'LAST REPORTED': 'date'
 });
 const captionName = (text) => String(text || '').trim().replace(/[:\-]\s*$/, '').replace(/\s+/g, ' ').toUpperCase();
 
@@ -715,6 +715,10 @@ function detectMissingPages(pages) {
 
 function labelForDate(textBefore) {
   const tail = String(textBefore || '').toUpperCase().replace(/[^A-Z ]/g, ' ').replace(/\s+/g, ' ').trim();
+  if (/\bREPORTED DATE$/.test(tail)) return 'REPORTED DATE';
+  if (/\bLAST REPORTED$/.test(tail)) return 'LAST REPORTED';
+  if (/\bLAST UPDATED(?: DATE)?$/.test(tail)) return 'LAST UPDATED';
+  if (/\bAS OF$/.test(tail)) return 'AS OF';
   if (/(?:CHARGE[D]? OFF DATE|DATE CHARGED OFF|WRITE OFF DATE)$/.test(tail)) return 'CHARGE OFF DATE';
   if (/(?:DATE OF )?FIRST DELINQUENCY(?: DATE)?$|FIRST DATE OF DELINQUENCY$/.test(tail)) return 'FIRST DELINQUENCY DATE';
   if (/(?:DATE OF )?LAST PAYMENT(?: DATE| MADE)?$/.test(tail)) return 'LAST PAYMENT DATE';
@@ -1186,8 +1190,9 @@ function canonicalAssessmentFields(text, dates, convention, currentKind, trusted
       };
       if (kind === null) kind = 'CONSUMER_CREDIT_LIABILITY';
     } else if (['GENERAL_ACCOUNT', 'GENERAL_COLLECTION', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(currentKind) && ['DAY', 'MONTH'].includes(d.precision)
-      && ['FIRST REPORTED', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
+      && ['FIRST REPORTED', 'REPORTED DATE', 'LAST REPORTED', 'LAST UPDATED', 'AS OF', 'LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE'].includes(up)) {
       const field = up === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
+        : ['REPORTED DATE', 'LAST REPORTED', 'LAST UPDATED', 'AS OF'].includes(up) ? 'reportedAccount.reportedDate'
         : up === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate' : 'tradeline.firstDelinquencyDate';
       facts[field] = d.normalized;
       facts[field + 'Precision'] = d.precision;
@@ -1288,7 +1293,7 @@ function maskedIdentifierToken(text) {
 }
 
 function explicitAccountIdentity(text) {
-  const match = /^\s*(ACCOUNT\s+NAME|CREDITOR|LENDER|CREDIT\s+PROVIDER|ORGANISATION\s+NAME)\s*:\s*(.+)$/i.exec(String(text || '').trim());
+  const match = /^\s*(ACCOUNT\s+NAME|CREDITOR(?:\s+NAME)?|LENDER|CREDIT\s+PROVIDER|ORGANISATION\s+NAME)\s*:\s*(.+)$/i.exec(String(text || '').trim());
   if (!match) return null;
   const raw = match[2].split(/\s+(?=ACCOUNT\s+(?:NUMBER|TYPE|STATUS|STATE|START\s+DATE|END\s+DATE)|OPENED|CLOSED|(?:CURRENT\s+)?BALANCE|CREDIT\s+LIMIT|STATUS|RESPONSIBILITY|REGULAR\s+PAYMENT\s+VALUE)/i)[0].trim();
   const normalized = raw.toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -1350,7 +1355,8 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     const field = CLOSURE_LABELS.includes(d.label) ? 'closed_date' : OPENED_LABELS.includes(d.label) ? 'opened_date'
       : d.label === 'LAST PAYMENT DATE' ? 'tradeline.lastPaymentDate'
         : d.label === 'FIRST DELINQUENCY DATE' ? 'tradeline.firstDelinquencyDate'
-          : d.label === 'FIRST REPORTED' ? 'reportedAccount.firstReported' : null;
+          : d.label === 'FIRST REPORTED' ? 'reportedAccount.firstReported'
+            : ['REPORTED DATE', 'LAST REPORTED', 'LAST UPDATED', 'AS OF'].includes(d.label) ? 'reportedAccount.reportedDate' : null;
     if (field && (!trusted || !d.normalized || decisiveWordsTrusted(line, d.raw) === false)) {
       canonical.canonicalPrinted[field] = { label: line.caption_label || d.textBefore.trim().replace(/:\s*$/, '') || d.label,
         state: 'UNRESOLVED', status: 'EXTRACTION_UNRESOLVED', raw: d.raw, normalized: null,
@@ -1394,7 +1400,7 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
   if (statusTrusted) canonical.facts['account.status'] = printedStatus.value;
   /* BLOCKER-FDT-001 / duplicate corroboration: an account-intro line contributes its printed account/creditor
      identity as a normalized, non-identifying token. A continuation line never adds one. */
-  if (kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase()) || explicitAccountIdentity(line.text))
+  if (kind === 'GENERAL_ACCOUNT' && (line.heading_identity || ACCOUNT_INTRO_RE.test(String(line.text || '').toUpperCase()) || explicitAccountIdentity(line.text))
     && !ACCOUNT_NUMBER_LABEL_RE.test(String(line.text || '').toUpperCase()) && !isAccountStatusLine(line.text)
     && PAIRED_CAPTIONS[captionName(String(line.text).split(':')[0])] !== 'date'
     && !facts.dates.some((date) => PAIRED_CAPTIONS[captionName(date.textBefore)] === 'date')
@@ -1779,6 +1785,7 @@ function buildRecords(pages, convention) {
   let collectionSection = false;
   let previousPage = null;
   for (const page of pages) {
+    let accountSection = false;
     // A new physical page cannot lend its anonymous fields to a collection on the previous page.
     // An explicit collection continuation heading is the supported exception.
     const firstContent = page.lines.find((line) => String(line.text || '').trim()
@@ -1791,7 +1798,22 @@ function buildRecords(pages, convention) {
     previousPage = page.page;
     // A physical card's missing heading cannot borrow the preceding page's record.
     if (page.lines.some((line) => line.column_boundary || line.column_reset)) current = null;
-    for (const line of pairedCaptionLines(page.lines)) {
+    const pairedLines = pairedCaptionLines(page.lines);
+    for (let lineIndex = 0; lineIndex < pairedLines.length; lineIndex += 1) {
+      const originalLine = pairedLines[lineIndex];
+      const originalText = String(originalLine.text || '').trim();
+      if (/^ACCOUNTS\s*-\s*[A-Z ]+(?:\s*\(CONTINUED\))?\s*$/i.test(originalText)) {
+        accountSection = originalLine.trusted !== false;
+        current = null;
+        collectionSection = false;
+        continue;
+      }
+      const nextText = String(pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim())?.text || '').trim();
+      const headingIdentity = accountSection && originalLine.trusted !== false
+        && /^[A-Z][A-Z0-9 &'.-]{3,80}$/i.test(originalText)
+        && /^(?:ACCOUNT|ACCOUNT NUMBER|ACCT)$/i.test(nextText)
+        && !/^(?:BALANCE|STATUS|PAYMENT|CREDIT|PAST DUE|ACCOUNT|SUMMARY)$/i.test(originalText);
+      const line = headingIdentity ? { ...originalLine, heading_identity: true } : originalLine;
       if (line.column_reset) { current = null; continue; }
       const text = String(line.text || '').trim();
       if (COLLECTION_SECTION_RE.test(text)) {
@@ -1799,7 +1821,8 @@ function buildRecords(pages, convention) {
       }
       if (COLLECTION_CONTINUED_RE.test(text)) { collectionSection = line.trusted !== false; continue; }
       if (/^(?:ACCOUNTS|ACCOUNT INFORMATION|TRADELINES|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|SUMMARY|PERSONAL INFORMATION|EMPLOYMENT|EMPLOYERS)\s*:?\s*$/i.test(text)) {
-        if (collectionSection || current?.kind === 'GENERAL_COLLECTION') current = null;
+        if (collectionSection || current?.kind === 'GENERAL_COLLECTION'
+          || /^(?:PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES)\s*:?\s*$/i.test(text)) current = null;
         collectionSection = false;
       }
       if (/^(?:CO[- ]?APPLICANTS|JOINT HOLDERS|RELATED PARTIES|FINANCIAL ASSOCIATES|EMPLOYMENT|EMPLOYERS)(?:\s|\/|$)/i.test(text)) {
@@ -1827,7 +1850,8 @@ function buildRecords(pages, convention) {
       if (/\b(?:are reportable|bureaus suppress|exercise (?:your|the) parser)\b/i.test(text)) continue;
       const ownCaption = captionName(String(line.text).split(':')[0]);
       if (COLUMN_BOUNDARY_CAPTIONS[ownCaption] === 'ignored') continue;
-      if (/^\s*(REPORT DATE|DATE OF REPORT|PREPARED(?: ON)?|REQUEST DATE|AS OF)\s*:/i.test(line.text)) continue;
+      if (/^\s*(REPORT DATE|DATE OF REPORT|PREPARED(?: ON)?|REQUEST DATE)\s*:/i.test(line.text)
+        || /^\s*AS OF\s*:/i.test(line.text) && !current) continue;
       const facts = lineFacts(line, convention);
       const hasDate = facts.dates.some((d) => d.normalized);
       const up = String(line.text || '').toUpperCase();
@@ -1858,6 +1882,7 @@ function buildRecords(pages, convention) {
         && (memberNameCaption ? collectionSection && !current
           : current?.kind !== 'GENERAL_COLLECTION' || collectionHasValues));
       const hasCollectionName = Boolean(collectionIdentity && current?.kind === 'GENERAL_COLLECTION');
+      const hasInquiryIdentity = /^\s*ENQUIRY\s+ORGANISATION\s*:\s*\S/i.test(text);
       const hasCollectionMember = current?.kind === 'GENERAL_COLLECTION' && /^\s*MEMBER\s+NUMBER\s*:/i.test(text);
       // A plain account heading after a collection still closes it, even without a date or balance.
       const collectionAccountExit = current?.kind === 'GENERAL_COLLECTION' && /^\s*(?:ACCOUNT|ACCOUNT NAME|TRADELINE)\s*:\s*\S/i.test(text)
@@ -1873,18 +1898,19 @@ function buildRecords(pages, convention) {
       const hasValue = hasDate || Boolean(line.column_field) || facts.dates.some((d) => CLOSURE_LABELS.includes(d.label)
         || OPENED_LABELS.includes(d.label) || ['LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE', 'FIRST REPORTED', 'CHARGE OFF DATE'].includes(d.label))
         || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
-        || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text)
+        || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text) || headingIdentity
         || hasPublicRecordHeader || hasHistoricalVerification || Boolean(current && current._hvAccumulating)
-        || hasStatus || hasIdentifier || hasPublicRecordContent || collectionEntry || collectionNameBoundary || collectionAccountExit || hasCollectionMember || hasCollectionName;
+        || hasStatus || hasIdentifier || hasPublicRecordContent || collectionEntry || collectionNameBoundary || collectionAccountExit || hasCollectionMember || hasCollectionName || hasInquiryIdentity;
       if (!hasValue) continue;
       const trusted = line.trusted !== false;
-      const kind = collectionEntry || collectionNameBoundary ? 'GENERAL_COLLECTION'
+      const kind = headingIdentity ? 'GENERAL_ACCOUNT' : collectionEntry || collectionNameBoundary ? 'GENERAL_COLLECTION'
+        : hasInquiryIdentity ? 'GENERAL_INQUIRY'
         : line.column_field || (hasStatus && current
           && ['GENERAL_ACCOUNT', 'REPORTED_ACCOUNT', 'CONSUMER_CREDIT_LIABILITY'].includes(current.kind))
           ? 'GENERAL_ACCOUNT' : recordKind(line.text);
       const isNonAccount = kind !== 'GENERAL_ACCOUNT';
       const isPublicRecordHeader = hasPublicRecordHeader;
-      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && (ACCOUNT_INTRO_RE.test(up) || explicitAccountIdentity(line.text))
+      const isAccountIntro = kind === 'GENERAL_ACCOUNT' && (headingIdentity || ACCOUNT_INTRO_RE.test(up) || explicitAccountIdentity(line.text))
         && !ACCOUNT_NUMBER_LABEL_RE.test(up) && !hasAccountType && !isAccountStatusLine(line.text)
         && PAIRED_CAPTIONS[ownCaption] !== 'date' && (!line.column_field || line.column_boundary)
         && !facts.dates.some((date) => PAIRED_CAPTIONS[captionName(date.textBefore)] === 'date')
@@ -1941,7 +1967,7 @@ function buildRecords(pages, convention) {
         /* Collection and public-record headings open a record for their own continuation fields.
            Other non-account lines remain standalone. OWNER-CANDIDATE-002: a judgment public-record
            line (without a header) also opens a record its creditor/amount/assignee continuation lines join. */
-        current = (finalKind === 'GENERAL_COLLECTION' || isPublicRecordHeader || (finalKind === 'GENERAL_PUBLIC_RECORD' && /JUDGMENT|JUDGEMENT|CIVIL SUIT|CIVIL ACTION/i.test(up))) ? record : null;
+        current = (finalKind === 'GENERAL_COLLECTION' || finalKind === 'GENERAL_INQUIRY' || isPublicRecordHeader || (finalKind === 'GENERAL_PUBLIC_RECORD' && /JUDGMENT|JUDGEMENT|CIVIL SUIT|CIVIL ACTION/i.test(up))) ? record : null;
         continue;
       }
 
@@ -2144,7 +2170,8 @@ function bindOrdinarySources(record) {
     'account.type': 'account.type', 'account.responsibility': 'account.responsibility',
     'liability.openedDate': 'opened_date', 'reportedAccount.dateOpened': 'opened_date',
     'liability.closedDate': 'closed_date', 'tradeline.firstDelinquencyDate': 'tradeline.firstDelinquencyDate',
-    'tradeline.lastPaymentDate': 'tradeline.lastPaymentDate', 'reportedAccount.firstReported': 'reportedAccount.firstReported'
+    'tradeline.lastPaymentDate': 'tradeline.lastPaymentDate', 'reportedAccount.firstReported': 'reportedAccount.firstReported',
+    'reportedAccount.reportedDate': 'reportedAccount.reportedDate'
   };
   record.fact_sources = { ...(record.fact_sources || {}) };
   for (const [field, base] of Object.entries(mapping)) {
@@ -2153,6 +2180,7 @@ function bindOrdinarySources(record) {
     const dateLabel = field === 'tradeline.firstDelinquencyDate' ? 'FIRST DELINQUENCY DATE'
       : field === 'tradeline.lastPaymentDate' ? 'LAST PAYMENT DATE'
         : field === 'reportedAccount.firstReported' ? 'FIRST REPORTED'
+          : field === 'reportedAccount.reportedDate' ? 'REPORTED DATE'
           : field === 'liability.openedDate' || field === 'reportedAccount.dateOpened' ? 'OPENED'
             : field === 'liability.closedDate' ? 'CLOSED' : null;
     if (dateLabel) readings.push(...Object.values(record.printed || {}).filter((reading) =>
@@ -2315,6 +2343,35 @@ function summaryFor(records, status, reason) {
   return { status, reason, records_read: records.length, resolved_fact_count: records.filter((r) => r.status === 'RESOLVED').length, by_kind: byKind };
 }
 
+/* Internal coverage inventory. It records structural evidence and field names only: no report text,
+   account names, amounts or identifiers. A visible grid that cannot be tied to exactly one account
+   must remain measurable instead of disappearing when assessment proceeds on other records. */
+function extractionCoverage(pages, records, grids, gridBindings) {
+  const entries = records.map((record) => ({
+    record_index: record.record_index,
+    kind: record.kind,
+    page: record.location?.page || null,
+    line: record.location?.line || null,
+    status: record.status,
+    fact_fields: Object.keys(record.facts || {}).sort(),
+    printed_fields: Object.keys(record.printed || {}).sort()
+  }));
+  const history_grids = grids.map((grid, index) => ({
+    page: grid.page || null,
+    cell_count: Array.isArray(grid.cells) ? grid.cells.length : 0,
+    binding: gridBindings[index] || 'UNBOUND',
+    record_index: Number.isInteger(gridBindings[index]) ? gridBindings[index] : null
+  }));
+  return {
+    version: 1,
+    scope: 'GENERAL_BUREAU_REPORT_INTERNAL',
+    pages_examined: pages.length,
+    records: entries,
+    history_grids,
+    unbound_history_grids: history_grids.filter((grid) => grid.binding === 'UNBOUND').length
+  };
+}
+
 function refused(result, outcome, reason) {
   return Object.assign(result, {
     admitted: false, outcome, reason,
@@ -2387,7 +2444,8 @@ function extract(model, opts) {
   /* OWNER-ACCEPT-009 (geometry): assemble payment-history grids from positioned words, then attach each grid's
      cells and legend to the record its account line identifies. Ambiguous alignment is left unresolved. */
   const grids = paymentHistoryGrid.assembleGrids(pages);
-  for (const grid of grids) {
+  const gridBindings = [];
+  for (const [gridIndex, grid] of grids.entries()) {
     const identity = grid.account ? accountIdentityToken(grid.account) : null;
     /* OWNER-ACCEPT-009 item 1: a grid is attached to a record only by a COMPATIBLE account/section boundary
        (same page, same printed account identity), never merely because a record is nearby. When more than one
@@ -2397,7 +2455,8 @@ function extract(model, opts) {
       : records.filter((r) => r.location && r.location.page === grid.page);
     const samePage = candidates.filter((r) => r.location && r.location.page === grid.page);
     const target = samePage.length === 1 ? samePage[0] : (candidates.length === 1 ? candidates[0] : null);
-    if (!target) continue;
+    if (!target) { gridBindings[gridIndex] = 'UNBOUND'; continue; }
+    gridBindings[gridIndex] = target.record_index;
     target.facts['account.paymentHistoryLegend'] = grid.legend;
     target.facts['account.paymentHistoryCells'] = grid.cells;
     target.facts['account.paymentHistoryGrid'] = { page: grid.page, source: grid.source, heading: grid.heading, layout: grid.layout, legend_transformations: grid.legend_transformations, continued_from_page: grid.continued_from_page || null, location: grid.location };
@@ -2417,6 +2476,7 @@ function extract(model, opts) {
   const reading_state = fdt.detectIncompleteReading(model, pages, records);
   const reading_limitations = fdt.buildReadingLimitations(reading_state);
   const recovery_audit = fdt.recoveryAudit(nativeBefore, pages);
+  const extraction_coverage = extractionCoverage(pages, records, grids, gridBindings);
   const status = records.some((r) => r.status === 'RESOLVED') ? FACT_STATUS.RESOLVED : (records.length ? FACT_STATUS.EXTRACTION_UNRESOLVED : FACT_STATUS.ABSENT_FROM_REPORT);
   const reportedFactPolicy = loadPolicy();
   const factual_view = {
@@ -2449,6 +2509,7 @@ function extract(model, opts) {
     reading_state,
     reading_limitations,
     recovery_audit,
+    extraction_coverage,
     identity_groups,
     summary: summaryFor(records, status, status === FACT_STATUS.RESOLVED ? null : 'NO_RESOLVED_RECORD_FACT_COULD_BE_READ'),
     evidence_readings: {
@@ -2479,6 +2540,7 @@ module.exports = {
   nativeText,
   detect,
   extract,
+  extractionCoverage,
   buildRecords,
   collectPages,
   dedupePages,

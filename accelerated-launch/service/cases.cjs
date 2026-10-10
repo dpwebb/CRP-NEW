@@ -139,6 +139,7 @@ function deleteAccount(store, actor) {
     state.entitlements = (state.entitlements || []).filter((e) => e.account_id !== actor.account_id);
     state.billing_events = (state.billing_events || []).filter((e) => e.account_id !== actor.account_id);
     state.checkout_sessions = (state.checkout_sessions || []).filter((c) => c.account_id !== actor.account_id);
+    require('./referral-staging.cjs').purgeAccount(state, actor.account_id);
     return owned;
   });
   const removedBlobs = files.filter((f) => f.stored_blob !== false && store.deleteBlob(f.file_id)).length;
