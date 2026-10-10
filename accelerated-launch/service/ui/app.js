@@ -1611,6 +1611,7 @@ function renderPacketBlock(pv) {
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Open PDF to print</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download your PDF</button>
       ${packet.download_available ? `<p class="note" id="packet-ready-status">Download your PDF and print every page. Sign and date where shown. Mail it to the bureau address in your letter. Keep a copy.</p>` : ''}
+      ${surface?.preview_mode === true && packet.download_available ? '<p class="note demo"><strong>Staging preview:</strong> See how an optional paid mailing step could look. This sample cannot take payment or mail your packet.<br><a href="/mailing-preview.html" target="_blank" rel="noopener">Review the mailing design</a></p>' : ''}
     </div>`;
 }
 

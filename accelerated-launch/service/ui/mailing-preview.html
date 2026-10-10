@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mail my packet · CRP concept preview</title>
+  <link rel="stylesheet" href="mailing-preview.css">
+  <script defer src="mailing-preview.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="mark">C</span><span>Credit Regulator<span class="pro">PRO</span></span></div>
+    <p class="workspace-label">YOUR WORKSPACE</p>
+    <div class="step done"><span class="num">✓</span> Upload report</div>
+    <div class="step done"><span class="num">✓</span> Review issues</div>
+    <div class="step done"><span class="num">✓</span> Choose disputes</div>
+    <div class="step done"><span class="num">✓</span> Approve packet</div>
+    <div class="step current"><span class="num">5</span> Mail your packet</div>
+    <div class="sidebar-bottom">Your packet is ready. Mailing is an optional service.</div>
+  </aside>
+  <div class="shell">
+    <header class="topbar"><span><a href="/">← Back to your packet</a> <span class="slash">/</span> Optional mailing</span><span class="prototype">DESIGN PREVIEW · NO LIVE MAILING</span></header>
+    <main>
+      <div class="eyebrow">AFTER PACKET APPROVAL</div>
+      <h1>How would you like to send your packet?</h1>
+      <p class="intro">Your approved packet is ready to download. You can mail it yourself or review a paid printing and mailing option.</p>
+      <div class="layout">
+        <section class="main-column" aria-label="Mailing choices">
+          <div class="card packet"><div class="packet-icon" aria-hidden="true">▤</div><div><strong>Approved dispute packet</strong><p>Sample packet · <span id="packetPages">8</span> pages · PDF ready</p></div><span class="status">READY</span></div>
+          <div class="card">
+            <div class="section-heading"><span class="section-number">1</span><div><h2>Choose how to send it</h2><p>You can always download and mail it yourself.</p></div></div>
+            <div class="choice-row"><span class="choice-icon">↧</span><div><strong>Download and mail it yourself</strong><p>Print the packet and take it to the post office.</p></div><span class="free">No CRP mailing fee</span></div>
+            <div class="choice-row selected"><span class="choice-icon">✉</span><div><strong>Have it printed and mailed</strong><p>Choose a postal service and review the price before paying.</p></div><span class="selected-mark" aria-hidden="true">✓</span></div>
+          </div>
+          <div class="card">
+            <div class="section-heading"><span class="section-number">2</span><div><h2>Review mailing details</h2><p>These are sample details for this design preview.</p></div></div>
+            <div class="fields"><label>Destination country<select id="country"><option value="CA">Canada</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="AU">Australia</option></select></label><label>Packet length<select id="pages"><option value="3">3 pages</option><option value="8" selected>8 pages</option><option value="20">20 pages</option></select></label></div>
+            <div class="destination"><span class="mini-label">MAIL TO · SAMPLE DESTINATION</span><strong>Credit reporting agency</strong><span>Address confirmed during packet review</span></div>
+            <h3>Postal service</h3><div id="services" class="services" role="radiogroup" aria-label="Postal service"></div>
+            <p class="quiet">Service names and proof of mailing differ by country. Final availability depends on the mailing provider.</p>
+          </div>
+        </section>
+        <aside class="summary-column" aria-label="Price preview">
+          <div class="card summary"><span class="mini-label">ESTIMATED PRICE</span><div class="price" id="price">—</div><p id="serviceSummary">For your selected mailing service</p><div class="rule"></div><div class="summary-line"><span>Printing and postage</span><span>Included</span></div><div class="summary-line"><span>Tax on this purchase</span><span>Calculated at checkout</span></div><div class="rule"></div><p class="estimate-note">Illustrative price only. No live supplier quote is connected. Your actual price and any tax would be shown before payment.</p><button id="previewNext" type="button">Preview approval step <span aria-hidden="true">→</span></button><p class="safe-note">Nothing will be charged or mailed from this preview.</p></div>
+          <details class="reviewer card"><summary>Reviewer: see price calculation</summary><div class="reviewer-lines"><div><span>Illustrative provider cost</span><strong id="providerCost">—</strong></div><div><span>CRP markup (50%)</span><strong id="markup">—</strong></div><div><span>Consumer subtotal</span><strong id="consumerSubtotal">—</strong></div></div><p>Values are invented for layout review, not supplier offers. Final pricing requires a verified current quote for the exact packet and service.</p></details>
+        </aside>
+      </div>
+    </main>
+  </div>
+  <dialog id="approvalDialog"><div class="dialog-top"><span class="section-number">3</span><button id="closeDialog" type="button" aria-label="Close">×</button></div><h2>Review and approve mailing</h2><p>In the finished service, you would review the exact PDF, destination, postal service, final price and tax. Mailing would start only after your approval and confirmed payment.</p><div class="dialog-summary"><div><span>Packet</span><strong>Approved dispute packet</strong></div><div><span>Service</span><strong id="dialogService">—</strong></div><div><span>Illustrative subtotal</span><strong id="dialogPrice">—</strong></div></div><div class="dialog-actions"><button id="backDialog" type="button">Back to choices</button><button type="button" disabled>Pay and mail · unavailable in preview</button></div></dialog>
+</body>
+</html>
