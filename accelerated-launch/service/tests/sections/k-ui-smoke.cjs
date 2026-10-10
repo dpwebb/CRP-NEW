@@ -288,6 +288,8 @@ async function run(t, check) {
     const documentKinds = vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx);
     check.ok(!documentKinds.some(kind => ['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099'].includes(kind)), `${country} account document choices omit US identifier documents`);
   }
+  ctx.signupCountry = 'England';
+  check.ok(!vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx).includes('SOCIAL_SECURITY'), 'an England address also omits US identifier documents');
   vm.runInContext('state.accountProfile = null', ctx);
   check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');

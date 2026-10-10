@@ -413,7 +413,8 @@ const DOCUMENT_KIND_LABELS = {
 const US_IDENTIFIER_DOCUMENT_KINDS = new Set(['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099']);
 function documentKindsForAccount() {
   const country = String(state.accountProfile?.country || '').trim().toUpperCase();
-  const gbOrAu = ['GB', 'UK', 'UNITED KINGDOM', 'GREAT BRITAIN', 'AU', 'AUSTRALIA'].includes(country) ||
+  const gbOrAu = ['GB', 'UK', 'UNITED KINGDOM', 'GREAT BRITAIN', 'ENGLAND', 'SCOTLAND', 'WALES', 'NORTHERN IRELAND',
+    'AU', 'AUSTRALIA', 'COMMONWEALTH OF AUSTRALIA'].includes(country) ||
     ['GB', 'AU'].includes(state.view?.case?.country);
   return Object.entries(DOCUMENT_KIND_LABELS)
     .filter(([kind]) => !gbOrAu || !US_IDENTIFIER_DOCUMENT_KINDS.has(kind))
