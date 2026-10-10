@@ -84,4 +84,4 @@ function setProfile(store, actor, input) {
   });
 }
 
-module.exports = { getProfile, setProfile, PROFILE_FIELDS, FIELD_LIMITS };
+module.exports = { getProfile, setProfile, validatedPatch, PROFILE_FIELDS, FIELD_LIMITS };

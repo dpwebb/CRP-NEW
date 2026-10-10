@@ -259,7 +259,12 @@ function makeResponder() {
 
 async function run(t, check) {
   const source = fs.readFileSync(UI_JS, 'utf8');
-  const dom = makeContext(makeResponder());
+  const responder = makeResponder();
+  let signupBody = null;
+  const dom = makeContext((method, url, options) => {
+    if (method === 'POST' && url === '/api/accounts') signupBody = JSON.parse(options.body);
+    return responder(method, url, options);
+  });
   const ctx = dom.context;
 
   vm.runInContext(source, ctx, { filename: 'ui/app.js' });
@@ -274,6 +279,16 @@ async function run(t, check) {
   check.ok(/Email address/.test(panel.innerHTML) && /Password \(at least 12 characters\)/.test(panel.innerHTML), 'the entry screen presents account fields immediately');
   check.ok(!/Price unavailable|Monthly:|Yearly:/.test(panel.innerHTML), 'plan details do not interrupt account creation');
   check.ok(/No report, identification, or payment is needed/.test(panel.innerHTML), 'account creation does not request packet documents or payment');
+  check.ok(/signup-date_of_birth/.test(panel.innerHTML) && /signup-phone/.test(panel.innerHTML), 'signup offers date of birth and phone');
+  check.ok(!/signup-(?:ssn|sin|national_insurance|tax_file_number)/i.test(panel.innerHTML), 'signup does not ask for national identifiers');
+  for (const country of ['GB', 'AU']) {
+    ctx.signupCountry = country;
+    const packetFields = vm.runInContext('packetSupportingDocuments({ support: { requirements: { country: signupCountry, bureau: "TRANSUNION", label: "Fictional bureau", items: [], sources: [] }, catalog: [], documents: [] } })', ctx);
+    check.ok(/id="packet-us-identity" hidden/.test(packetFields) && /id="packet-other-identity-section" hidden/.test(packetFields), `${country} packet preparation does not ask for national identifier details`);
+    const documentKinds = vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx);
+    check.ok(!documentKinds.some(kind => ['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099'].includes(kind)), `${country} account document choices omit US identifier documents`);
+  }
+  vm.runInContext('state.accountProfile = null', ctx);
   check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
@@ -281,9 +296,15 @@ async function run(t, check) {
   /* Step 1: create an account. */
   dom.elementById('email').value = 'stub@example.test';
   dom.elementById('password').value = 'a-long-enough-password';
+  dom.elementById('signup-full_name').value = 'Fictional Consumer';
+  dom.elementById('signup-date_of_birth').value = '1990-03-02';
+  dom.elementById('signup-phone').value = '555-0142';
   await dom.elementById('create').onclick();
   await tick();
   check.ok(dom.calls.includes('POST /api/accounts'), 'creating an account calls the service');
+  check.equal(signupBody.profile.full_name, 'Fictional Consumer', 'signup sends the consumer name with account creation');
+  check.equal(signupBody.profile.date_of_birth, '1990-03-02', 'signup sends date of birth with account creation');
+  check.equal(signupBody.profile.phone, '555-0142', 'signup sends phone with account creation');
   check.ok(/Upload your credit report/.test(panel.innerHTML), 'Step2 guides the consumer directly to report upload');
   check.ok(/where you live now/.test(panel.innerHTML) && /different or previous address/.test(panel.innerHTML), 'the selection explains how the current location is used');
   check.ok(/Use the PDF from your bureau/.test(panel.innerHTML) && /File sizes and help/.test(panel.innerHTML), 'simple file preparation and detailed limits appear before uploading');

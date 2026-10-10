@@ -265,6 +265,14 @@ function footerDisclaimer() {
 
 /* ------------------------------------------------------------------ step 0: account */
 
+const SIGNUP_PROFILE_FIELDS = [
+  ['full_name', 'Full name', 'text', 'name'], ['date_of_birth', 'Date of birth', 'date', 'bday'],
+  ['phone', 'Phone number', 'tel', 'tel'], ['address_line1', 'Street address', 'text', 'address-line1'],
+  ['address_line2', 'Apartment or unit', 'text', 'address-line2'], ['city', 'City or town', 'text', 'address-level2'],
+  ['region', 'Province, state or county', 'text', 'address-level1'], ['postal_code', 'Postal or ZIP code', 'text', 'postal-code'],
+  ['country', 'Country', 'text', 'country-name']
+];
+
 function renderAccount(panel) {
   if (state.account) { renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
@@ -285,6 +293,9 @@ function renderAccount(panel) {
         <input id="password" type="password" autocomplete="${signInEntry ? 'current-password' : 'new-password'}">
       </div>
     </div>
+    ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><h2 id="signup-details-title">Your personal details</h2>
+      <p class="evidence">Add these now so your packet can use them later. You can edit or finish them in your account. Your sign-in email will be used for replies unless you change it there.</p>
+      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></section>`}
     ${signInEntry ? '<button class="primary" id="signin">Log in</button><button class="secondary" id="create">Create account</button>' : '<button class="primary" id="create">Create account</button><button class="secondary" id="signin">Log in</button>'}
     <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
     <p class="evidence">No report, identification, or payment is needed to create an account.</p>
@@ -292,18 +303,22 @@ function renderAccount(panel) {
     `;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value });
-  el('create').onclick = () => run(async () => {
+  el('create').onclick = () => {
+    if (signInEntry) { location.hash = '#create'; render(); return; }
+    return run(async () => {
     if (location.protocol === 'file:') throw new Error('Open the running staging site to create an account.');
+    const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
     accountEpoch++;
-    const data = await api('POST', '/api/accounts', credentials());
+    const data = await api('POST', '/api/accounts', { ...credentials(), profile });
     state.account = data.account;
-    state.accountProfile = null; state.accountDocuments = [];
+    state.accountProfile = data.profile || null; state.accountDocuments = [];
     state.accountSecurity = null; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     state.checkoutReturn = null;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
-  });
+    });
+  };
   el('signin').onclick = () => run(async () => {
     if (location.protocol === 'file:') throw new Error('Open the running staging site to log in.');
     accountEpoch++;
@@ -395,6 +410,15 @@ const DOCUMENT_KIND_LABELS = {
   INSURANCE_STATEMENT: 'Home insurance statement', FINANCIAL_STATEMENT: 'Financial statement',
   DEED: 'Property deed', ADDRESS_PAY_STUB: 'Pay stub showing address', PHONE_BILL: 'Phone bill', MORTGAGE_STATEMENT: 'Mortgage statement'
 };
+const US_IDENTIFIER_DOCUMENT_KINDS = new Set(['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099']);
+function documentKindsForAccount() {
+  const country = String(state.accountProfile?.country || '').trim().toUpperCase();
+  const gbOrAu = ['GB', 'UK', 'UNITED KINGDOM', 'GREAT BRITAIN', 'AU', 'AUSTRALIA'].includes(country) ||
+    ['GB', 'AU'].includes(state.view?.case?.country);
+  return Object.entries(DOCUMENT_KIND_LABELS)
+    .filter(([kind]) => !gbOrAu || !US_IDENTIFIER_DOCUMENT_KINDS.has(kind))
+    .sort((a, b) => Number(a[0] === '1099') - Number(b[0] === '1099'));
+}
 let accountDetailsSequence = 0;
 function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
@@ -430,7 +454,7 @@ function renderAccountDetails(panel) {
     <button class="primary" id="account-save">Save contact details</button>
     <h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
     <div class="row"><div><label for="account-document-type">Purpose</label><select id="account-document-type"><option value="IDENTITY">Identification</option><option value="ADDRESS">Proof of address</option><option value="SUPPORTING">Other supporting document</option></select></div>
-    <div><label for="account-document-kind">Document</label><select id="account-document-kind">${Object.entries(DOCUMENT_KIND_LABELS).sort((a, b) => Number(a[0] === '1099') - Number(b[0] === '1099')).map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
+    <div><label for="account-document-kind">Document</label><select id="account-document-kind">${documentKindsForAccount().map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
     <label for="account-document-file">PDF, PNG or JPEG, up to 10 MB</label><input id="account-document-file" type="file" accept="application/pdf,image/png,image/jpeg">
     <button class="secondary" id="account-document-upload">Upload document</button>
     <div>${state.accountDocuments.length ? state.accountDocuments.map(doc => `<p><a href="/api/account/documents/${encodeURIComponent(doc.file_id)}">${esc(doc.original_filename)}</a> — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)} <button class="secondary" data-delete-document="${esc(doc.file_id)}">Remove</button></p>`).join('') : '<p class="evidence">No documents uploaded yet.</p>'}</div>
@@ -1522,6 +1546,7 @@ function bureauChecklist(requirements, missing = []) {
 function packetSupportingDocuments(pv) {
   const view = pv.support || {}, settings = view.settings || {}, req = view.requirements;
   const bureau = settings.bureau || req?.bureau || '';
+  const country = req?.country || state.view?.case?.country;
   return `<h3>Prepare for the bureau</h3>
     <div class="row"><div><label for="packet-bureau">Bureau</label><select id="packet-bureau"><option value="">Choose bureau</option>${(view.catalog || []).map(row => `<option value="${row.id}" ${row.id === bureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select></div>
     <div><label for="packet-purpose">What you are correcting</label><select id="packet-purpose">${[['ACCOUNT', 'Account information'], ['PUBLIC_RECORD', 'Collections or public records'], ['PERSONAL', 'Personal information'], ['NEW_ADDRESS', 'Add a new address']].map(([value, label]) => `<option value="${value}" ${(settings.purpose || view.suggested_purpose || 'ACCOUNT') === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div></div>
@@ -1536,7 +1561,7 @@ function packetSupportingDocuments(pv) {
     <div id="packet-us-identity" ${req?.country === 'US' ? '' : 'hidden'}><label for="packet-identity-reference">Social Security number for bureau correspondence${req?.ssn_required ? '' : ' (optional)'}</label>
     <input id="packet-identity-reference" type="password" autocomplete="off" maxlength="20" value="${esc(settings.identity_reference || '')}">
     <label><input id="packet-no-ssn" type="checkbox" ${settings.no_ssn_issued ? 'checked' : ''}>I have never been issued an SSN</label></div>
-    <label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea>`;
+    <div id="packet-other-identity-section" ${country === 'GB' || country === 'AU' ? 'hidden' : ''}><label for="packet-other-identity">Other identification details requested by the bureau (optional)</label><textarea id="packet-other-identity" maxlength="500">${esc(settings.other_identity_details || '')}</textarea></div>`;
 }
 function packetReportCopies(packet) {
   if (!Array.isArray(packet.report_exhibits)) return '';
@@ -1691,7 +1716,7 @@ async function wirePacket(panel) {
       use_account_profile: true, document_ids, identity_shows_address: el('packet-id-address').checked,
       verification_requested: el('packet-verification-requested').checked, copies_confirmed: el('packet-copies-confirmed').checked,
       identity_reference: el('packet-identity-reference').value, no_ssn_issued: el('packet-no-ssn').checked,
-      other_identity_details: el('packet-other-identity').value,
+      other_identity_details: el('packet-other-identity-section').hidden ? '' : el('packet-other-identity').value,
       document_dates: Object.fromEntries(document_ids.map(id => [id, el('packet-document-date-' + id).value])) };
   };
   let edits = 0;
@@ -1814,6 +1839,7 @@ async function wirePacket(panel) {
       if (sequence !== checklistSequence || !el('packet-bureau-checklist')) return;
       el('packet-bureau-checklist').innerHTML = bureauChecklist(answer.requirements, answer.missing);
       el('packet-us-identity').hidden = answer.requirements.country !== 'US';
+      el('packet-other-identity-section').hidden = ['GB', 'AU'].includes(answer.requirements.country);
     } catch (error) { if (!error.cancelled && sequence === checklistSequence && state.caseId === caseId && renderSequence === rendered && el('packet-bureau-checklist')) el('packet-bureau-checklist').textContent = error.message; }
   };
   for (const id of ['packet-bureau', 'packet-purpose', 'packet-id-address', 'packet-verification-requested', 'packet-copies-confirmed', 'packet-no-ssn', 'packet-identity-reference', 'packet-other-identity']) if (el(id)) el(id).onchange = () => {

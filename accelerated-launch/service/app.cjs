@@ -319,7 +319,7 @@ function buildHandlers(store, logger, surface) {
       logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
       return {
         status: 201,
-        json: { ok: true, account: created.account, signed_in: true, recovery_key: created.recovery_key },
+        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key },
         headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
       };
     },

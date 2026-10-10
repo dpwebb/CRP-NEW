@@ -15,6 +15,7 @@
 const crypto = require('node:crypto');
 const net = require('node:net');
 const { ServiceError } = require('./errors.cjs');
+const profiles = require('./account-profile.cjs');
 
 const MIN_PASSWORD_LENGTH = 12;
 const MAX_FAILED_ATTEMPTS = 8;
@@ -163,6 +164,8 @@ function createAccount(store, input) {
   const email = normalizeEmail(input && input.email);
   const password = input && input.password;
   validateAccountDetails(email, password);
+  const profile = input && Object.hasOwn(input, 'profile') ? profiles.validatedPatch(input.profile) : null;
+  if (profile && !profile.contact_email) profile.contact_email = email;
   const saltHex = crypto.randomBytes(16).toString('hex');
   const passwordHash = hashPassword(password, saltHex);
   const session = createSessionRow(null);
@@ -179,6 +182,7 @@ function createAccount(store, input) {
       created_at: nowIso(),
       failed_sign_ins: 0
     };
+    if (profile) created.profile = profile;
     state.accounts.push(created);
     session.row.account_id = created.account_id;
     state.sessions.push(session.row);

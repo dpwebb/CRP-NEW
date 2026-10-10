@@ -43,6 +43,22 @@ async function run(t, check) {
   refusal(check, () => profiles.getProfile(store, null), 'AUTHENTICATION_REQUIRED', 'profile requires a resolved account');
   refusal(check, () => documents.listDocuments(store, null), 'AUTHENTICATION_REQUIRED', 'documents require a resolved account');
 
+  const beforeSignup = store.state().accounts.length;
+  refusal(check, () => accounts.createAccount(store, { email: 'bad-signup@example.test', password: 'a-long-enough-password',
+    profile: { date_of_birth: 'not-a-date' } }), 'INVALID_REQUEST', 'invalid birth date refuses the whole signup');
+  refusal(check, () => accounts.createAccount(store, { email: 'id-signup@example.test', password: 'a-long-enough-password',
+    profile: { tax_file_number: 'fictional' } }), 'INVALID_REQUEST', 'national identifier field is not accepted at signup');
+  check.equal(store.state().accounts.length, beforeSignup, 'a refused profile creates no account or session');
+  const signup = accounts.createAccount(store, { email: 'profile-signup@example.test', password: 'a-long-enough-password',
+    profile: { full_name: 'Fictional Signup', date_of_birth: '1990-03-02', phone: '555-0142',
+      address_line1: '22 Example Street', city: 'Halifax', region: 'Nova Scotia', postal_code: 'B3J 0A1', country: 'Canada' } });
+  const signupProfile = profiles.getProfile(store, signup.account);
+  check.equal(signupProfile.full_name, 'Fictional Signup', 'signup saves the name on the same account');
+  check.equal(signupProfile.date_of_birth, '1990-03-02', 'signup saves date of birth for later packet use');
+  check.equal(signupProfile.phone, '555-0142', 'signup saves phone for correspondence');
+  check.equal(signupProfile.contact_email, 'profile-signup@example.test', 'sign-in email is the default reply address');
+  check.equal(signupProfile.address_line1, '22 Example Street', 'signup saves address for later packet use');
+
   const saved = profiles.setProfile(store, owner, {
     full_name: '  Fictional Sample  ', date_of_birth: '1992-02-29', phone: '+1 902 555 0100',
     contact_email: 'fictional.contact@example.test', address_line1: '10 Sample Street', address_line2: 'Unit 2',
