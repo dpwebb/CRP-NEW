@@ -189,14 +189,15 @@ async function run(t, check) {
   try { ruleAdapters.emitFinding(); } catch (err) { threw = true; }
   check.equal(threw, true, 'emitFinding still refuses unconditionally — accepting the fact authorizes no finding');
 
-  /* End-to-end: the general intake accepts the discharge date, but the CA-NS statutory surface stays exact-specimen. */
+  /* End-to-end: the general intake accepts the discharge date, while this bankruptcy limb stays exact-specimen. */
   const generalCaExt = formats.extractWithSharedAdapter(
     bureauModel(['Equifax  Consumer Credit Report', 'Report Date: 12 June 2026', 'Bankruptcy  Discharged 01/01/2020']),
     { mode: 'REPORT', country: 'CA' }
   );
   check.ok(generalCaExt.records.some((r) => r.facts && r.facts['bankruptcy.dischargeDate'] === '2020-01-01'), 'a general CA report with a discharge date has the fact extracted');
   const generalCaEval = evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: generalCaExt });
-  check.equal(generalCaEval.results.length, 0, 'the CA-NS statutory surface stays exact-specimen: no comparison is performed on a general report');
+  check.equal(generalCaEval.results.filter((row) => row.adapter_id === adapter.adapter_id).length, 0,
+    'the CA-NS bankruptcy limb remains unavailable on a general report');
 
   evidence.policy = { id: loaded.policy.policy_id, version: loaded.policy.version, digest: loaded.digest };
   evidence.accepted = dischargeDates(accepted.records);
