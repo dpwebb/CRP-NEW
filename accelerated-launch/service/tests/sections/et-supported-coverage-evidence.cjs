@@ -98,6 +98,16 @@ async function run(t, check) {
       && accepted.check_mapping.filter(row => row.scope === 'FACTUAL_REVIEW').every(row => row.boundary.includes('not a classified breach'))
       && accepted.check_mapping.find(row => row.check_id === 'LIMITATION-PERIOD-COURT-CLAIM').boundary.includes('ineligible for packets'),
       'groupings, factual reviews and court information retain their distinct scope');
+    const reportingPeriod = accepted.check_mapping.find(row => row.check_id === 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED');
+    check.equal(reportingPeriod.scope, 'JURISDICTION_SPECIFIC_PERIOD',
+      'the source-proven reporting-period breach is not classified as a review-only observation');
+    check.ok(reportingPeriod.requirement.includes('accepted applicable credit-reporting period')
+      && reportingPeriod.source_requirements.includes('printed triggering date')
+      && reportingPeriod.source_requirements.includes('report reference date')
+      && reportingPeriod.boundary.includes('does not establish every jurisdiction'),
+    'the period mapping requires an accepted local rule and the decisive printed dates without an all-region claim');
+    check.equal(accepted.counting_units.jurisdiction_specific_period_items, 2,
+      'the reporting-period checklist row and the distinct court/reporting-period row are both counted');
     check.ok(accepted.supported_family_paths.some(row => row.exercise_classes.includes('DOWNSTREAM_CONTROLLED_STRUCTURAL_MODEL'))
       && accepted.supported_family_paths.find(row => row.presentation_id === 'FAM-GB-EXP-CONSUMER').boundary.includes('Historical'),
       'downstream family and historical UK specimens are not promoted to current full-layout upload proof');

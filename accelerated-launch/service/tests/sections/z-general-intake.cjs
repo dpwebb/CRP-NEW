@@ -95,6 +95,45 @@ async function run(t, check) {
       `${sample.country} account-owned ${sample.caption.split(':')[0]} is source-linked as a reporting date`);
   }
 
+  for (const heading of ['Personal Information', 'Summary']) {
+    const model = makeSyntheticModel({ pages: [[
+      'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+      'Creditor Name: Example Community Bank', 'Opened Date: 2022-03-15',
+      heading, 'As Of: 2026-06-22'
+    ]] });
+    const extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'CA' });
+    check.equal(extraction.records.length, 1, `${heading} does not create an account`);
+    check.equal(extraction.records[0].facts['reportedAccount.reportedDate'], undefined,
+      `${heading} date is not attached to the preceding account`);
+    const checked = commonErrors.runCommonErrorChecks({ extraction });
+    const found = issues.issuesFor({ extraction, evaluation: {
+      region: 'CA-NS', presentation: 'GENERAL-BUREAU-REPORT', results: [], common_errors: checked
+    } });
+    check.equal(found.filter((item) => item.check_id === 'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE').length, 0,
+      `${heading} report metadata cannot produce a selectable account-date finding`);
+  }
+  const nextPageMetadata = makeSyntheticModel({ pages: [
+    ['TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+      'Creditor Name: Example Community Bank', 'Opened Date: 2022-03-15'],
+    ['Personal Information', 'As Of: 2026-06-22', 'Account Information',
+      'Creditor Name: Sample Motor Finance', 'As Of: 2026-01-05']
+  ] });
+  const nextPageExtraction = formats.extractWithSharedAdapter(nextPageMetadata, { mode: 'REPORT', country: 'CA' });
+  check.equal(nextPageExtraction.records.length, 2, 'an explicit later account restarts parsing after cross-page personal metadata');
+  check.equal(nextPageExtraction.records[0].facts['reportedAccount.reportedDate'], undefined,
+    'a personal-information date on the next page does not leak backward');
+  check.equal(nextPageExtraction.records[1].facts['reportedAccount.reportedDate'], '2026-01-05',
+    'a later account-owned date is still source-linked');
+  const headedRestart = formats.extractWithSharedAdapter(makeSyntheticModel({ pages: [[
+    'Equifax Canada Consumer Credit Report', 'Report Date: 2026-01-10',
+    'Creditor Name: Example Community Bank', 'Personal Information', 'As Of: 2026-06-22',
+    'Accounts - Revolving', 'Sample Motor Finance', 'Account', 'Number', '****4130',
+    'As Of: 2026-01-05'
+  ]] }), { mode: 'REPORT', country: 'CA' });
+  check.equal(headedRestart.records.length, 2, 'a measured Accounts heading reopens account parsing after personal metadata');
+  check.equal(headedRestart.records[1].facts['reportedAccount.reportedDate'], '2026-01-05',
+    'the new headed account retains its own reporting date');
+
   const bureauOnly = bureauModel(['Equifax', 'Trusted credit information since 1899']);
   check.equal(generalIntake.detect(bureauOnly).outcome, 'UNRELATED', 'bureau branding alone is UNRELATED');
   check.equal(generalIntake.detect(bureauOnly).reason, 'BUREAU_IDENTITY_BUT_NO_CREDIT_REPORT_CONTENT', 'names the missing content');
@@ -267,6 +306,30 @@ async function run(t, check) {
 
   /* B6-INGEST-004: assessment-relevant fields connect the existing statutory checks. */
   const evaluation = require('../../evaluation.cjs');
+  const nsPeriodLines = (paymentDate) => [
+    'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+    'Creditor Name: Fictional Cedar Bank', 'Account Number: ****1234',
+    'Opened Date: 2010-01-01', `Last Payment Date: ${paymentDate}`, 'Status: Charged Off'
+  ];
+  const nsPeriodExtraction = (paymentDate) => formats.extractWithSharedAdapter(
+    makeSyntheticModel({ pages: [nsPeriodLines(paymentDate)] }), { mode: 'REPORT', country: 'CA' });
+  const nsRule = 'CA-NS-CRA-S10-3-C-LIMB-1';
+  const nsOld = nsPeriodExtraction('2013-10-03');
+  check.equal(nsOld.presentation_id, 'GENERAL-BUREAU-REPORT', 'the fictional ordinary report uses the general reader');
+  const nsOldEvaluation = evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: nsOld });
+  check.ok(nsOldEvaluation.results.some((row) => row.check.adapter_id === nsRule
+    && row.machine.finding?.classification === 'VIOLATION'),
+  'the source-linked Nova Scotia six-year limb remains active on its admitted general presentation');
+  check.ok(issues.issuesFor({ extraction: nsOld, evaluation: nsOldEvaluation })
+    .some((item) => item.adapter_id === nsRule && item.eligible === true),
+  'the supported finding remains selectable for a packet');
+  const nsRecent = nsPeriodExtraction('2024-10-03');
+  check.ok(!evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: nsRecent }).results
+    .some((row) => row.check.adapter_id === nsRule && row.machine.finding),
+  'a recent printed payment does not produce the Nova Scotia breach');
+  check.ok(!evaluation.evaluateCase({ country: 'CA', region: 'CA-ON', extraction: nsOld }).results
+    .some((row) => row.check.adapter_id === nsRule && row.machine.finding),
+  'the Nova Scotia limb does not leak to another jurisdiction');
   const usAdverse = makeSyntheticModel({ pages: [['Experian  Consumer Credit Report', 'Report Date: June 12, 2026', 'Account 30 days past due as of Jun 2015']] });
   const usAdverseExt = formats.extractWithSharedAdapter(usAdverse, { mode: 'REPORT', country: 'US' });
   check.equal(usAdverseExt.records.length, 1, 'a general US report yields a reported-account record');

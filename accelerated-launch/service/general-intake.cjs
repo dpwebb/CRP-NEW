@@ -1806,6 +1806,7 @@ function buildRecords(pages, convention) {
         accountSection = originalLine.trusted !== false;
         current = null;
         collectionSection = false;
+        nonAccountSection = false;
         continue;
       }
       const nextText = String(pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim())?.text || '').trim();
@@ -1820,6 +1821,11 @@ function buildRecords(pages, convention) {
         current = null; collectionSection = line.trusted !== false; nonAccountSection = false; continue;
       }
       if (COLLECTION_CONTINUED_RE.test(text)) { collectionSection = line.trusted !== false; continue; }
+      // A bare report summary or personal-information heading ends the preceding
+      // account. Dates in those sections cannot become that account's dates.
+      if (/^(?:SUMMARY|PERSONAL INFORMATION)\s*:?\s*$/i.test(text)) {
+        current = null; collectionSection = false; nonAccountSection = true; continue;
+      }
       if (/^(?:ACCOUNTS|ACCOUNT INFORMATION|TRADELINES|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|SUMMARY|PERSONAL INFORMATION|EMPLOYMENT|EMPLOYERS)\s*:?\s*$/i.test(text)) {
         if (collectionSection || current?.kind === 'GENERAL_COLLECTION'
           || /^(?:PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES)\s*:?\s*$/i.test(text)) current = null;
@@ -1829,7 +1835,7 @@ function buildRecords(pages, convention) {
         current = null; nonAccountSection = true; continue;
       }
       if (nonAccountSection) {
-        if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
+        if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNT INFORMATION\b|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
         else continue;
       }
       // Report segmentation already separates bureaus and distinct report dates. Repeated headers

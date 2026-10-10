@@ -32,6 +32,7 @@ function allRegions() {
 
 const OMISSION_UMBRELLA = 'COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING';
 const PERIOD_ITEM = 'LIMITATION-PERIOD-COURT-CLAIM';
+const REPORTING_PERIOD_CHECK = 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED';
 function mappingFor(item) {
   const id = item.check_id;
   const spec = FACTUAL_CHECK_CAPABILITY[id];
@@ -39,6 +40,10 @@ function mappingFor(item) {
     requirement: 'Apply only the accepted jurisdictional reporting-period or court-claim rule with its required source anchor.',
     source_requirements: ['accepted applicable period', 'source-linked triggering date and report reference date'] };
   if (!spec) throw new Error(`Missing common-error capability mapping: ${id}`);
+  if (id === REPORTING_PERIOD_CHECK) return { ...item, scope: 'JURISDICTION_SPECIFIC_PERIOD',
+    requirement: 'Apply only an accepted applicable credit-reporting period to the source-linked triggering date and report reference date.',
+    source_requirements: ['accepted applicable credit-reporting period', 'printed triggering date', 'report reference date'],
+    field_sets: spec.field_sets.map((set) => [...set]), additional_evidence: spec.additional_evidence || null };
   if (id === OMISSION_UMBRELLA) return { ...item, scope: 'GROUPING_ONLY',
     component_checks: [
       'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR',
@@ -239,6 +244,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
       boundary: item.scope === 'GROUPING_ONLY' ? 'Groups the three measured omission checks; never a second violation.'
         : item.scope === 'FACTUAL_REVIEW' ? 'Review observation only; not a classified breach or a free VIOLATION teaser.'
           : item.check_id === PERIOD_ITEM ? 'Applicable sourced reporting periods can support a dispute. Court deadlines remain INFORMATION, ineligible for packets, with no proactive bureau questions.'
+            : item.check_id === REPORTING_PERIOD_CHECK ? 'A breach requires an accepted applicable jurisdictional reporting period, its printed trigger date and the report date; proof in one jurisdiction does not establish every jurisdiction.'
             : 'Supported decisive report sources only; no claim that this rule runs on every layout.',
       reason: complete ? 'Named positive, benign/refusal and delivery sections completed with matching source custody.'
         : nativeRequired.has(item.check_id) ? 'Source-linked native positive/control and selected approved packet proof is incomplete.'
@@ -278,7 +284,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
     counting_units: { note: 'One active checklist item; the omission umbrella is a grouping, not a second violation. Statutory adapters and citations are not active counting units.',
       selected_jurisdictions: regions.length, checklist_items: mapping.length,
       report_data_rule_checks: ruleIds.length, factual_review_checks: reviewIds.length,
-      omission_groupings: 1, jurisdiction_specific_period_items: 1 },
+      omission_groupings: 1, jurisdiction_specific_period_items: mapping.filter((item) => item.scope === 'JURISDICTION_SPECIFIC_PERIOD').length },
     check_mapping: demonstrated,
     supported_family_paths: families,
     measured_all82: measured ? { jurisdictions: 82, own_content_downloads: 82, own_case_identity_downloads: 82,
