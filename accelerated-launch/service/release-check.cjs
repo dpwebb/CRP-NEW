@@ -765,14 +765,14 @@ CHECKS.push(
       const html = read(path.join(SERVICE_DIR, 'ui', 'index.html')) || '';
       const uiJs = read(path.join(SERVICE_DIR, 'ui', 'app.js')) || '';
       if (!/common reporting errors/.test(html) || !/Common-error checklist/.test(uiJs)) problems.push('the UI does not explain the common-error scope');
-      if (!/firstVisitPlans/.test(uiJs) || !/File limits and help/.test(uiJs)) problems.push('first-visit plans or file guidance is missing');
+      if (!/Plans and prices/.test(uiJs) || !/File limits and help/.test(uiJs)) problems.push('plan information or file guidance is missing');
       if (!/Payments are unavailable/.test(uiJs) || !/completing checkout/.test(uiJs)) problems.push('the UI does not state the payment position before payment');
       if (!/No findings available\./.test(uiJs)) problems.push('the UI does not use the approved empty-result wording');
       return {
         passed: problems.length === 0,
         detail: problems.length
           ? problems.join('; ')
-          : `${advertised.length} internal presentation records retain their limitations; the UI explains common-error scope, first-visit plans, file limits, payment availability and an empty result without claiming compliance`,
+          : `${advertised.length} internal presentation records retain their limitations; the UI explains common-error scope, plans, file limits, payment availability and an empty result without claiming compliance`,
         affected_regions: []
       };
     }
