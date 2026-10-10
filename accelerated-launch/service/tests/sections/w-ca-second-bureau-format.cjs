@@ -183,8 +183,8 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
          and the TransUnion Canada presentation prints that field on its own tradelines, so the limb is admitted to
          that presentation as well. Its conclusion ceiling, its packet permission and its single admitted limb are
          unchanged, and the default-date limb stays unseated. */
-      check.deepEqual(adapter.presentation_required, ['PR-01', 'FAM-TU-CA-CONSUMER'],
-        'the last-payment limb is admitted to the TransUnion Canadian presentation whose tradelines print its anchor');
+      check.deepEqual(adapter.presentation_required, ['PR-01', 'FAM-TU-CA-CONSUMER', 'GENERAL-BUREAU-REPORT'],
+        'the last-payment limb is admitted where the source-linked printed anchor is supported');
       continue;
     }
     check.equal(adapter.presentation_required, 'PR-01', `${adapter.adapter_id} is bound to PR-01`);
