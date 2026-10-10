@@ -2218,4 +2218,7 @@ function renderBillingView(data) {
   }
   el('activity').textContent = state.activity.join('\n');
   render();
+  if (!state.account && (location.hash === '#create' || location.hash === '#signin')) {
+    el(location.hash.slice(1))?.focus();
+  }
 })();

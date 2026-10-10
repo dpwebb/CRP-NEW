@@ -81,6 +81,7 @@ const STATIC_TYPES = Object.freeze({
   '.svg': 'image/svg+xml'
 });
 const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg']);
+const STAGING_LANDING_ASSETS = Object.freeze(['/landing.html', '/landing.css']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
@@ -759,9 +760,11 @@ function buildCaseHandlers(store, logger, surface) {
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
   if (!STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
-    (STAGING_REFERRAL_ASSETS.includes(urlPath) || STAGING_MAILING_ASSETS.includes(urlPath) ||
+    (STAGING_LANDING_ASSETS.includes(urlPath) || STAGING_REFERRAL_ASSETS.includes(urlPath) || STAGING_MAILING_ASSETS.includes(urlPath) ||
       STAGING_SCORE_SIMULATOR_ASSETS.includes(urlPath)))) return null;
-  const file = path.resolve(UI_DIR, urlPath === '/' ? 'index.html' : urlPath.slice(1));
+  const file = path.resolve(UI_DIR, urlPath === '/'
+    ? (process.env.CRP_DEPLOYMENT_ENV === 'staging' ? 'landing.html' : 'index.html')
+    : urlPath.slice(1));
   if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
   return {
     status: 200,
