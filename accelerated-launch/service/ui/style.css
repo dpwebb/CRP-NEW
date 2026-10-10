@@ -184,3 +184,24 @@ footer { max-width:1360px; margin:auto; display:flex; justify-content:space-betw
 @media (max-width:1250px) { .purchase-plan-grid { grid-template-columns:1fr; } .plan-card > button { width:auto; } }
 @media (max-width:900px) { .benefit-grid { grid-template-columns:1fr; gap:22px; } .benefit-card { display:grid; grid-template-columns:32px 1fr; column-gap:14px; } .benefit-card svg { grid-row:1/3; } .benefit-card h3 { margin-top:0; } }
 @media (max-width:700px) { .subscription-benefits { padding:20px; } .subscription-benefits h2 { font-size:20px; } .subscription-choices { grid-template-columns:1fr; } .plan-card > button { width:100%; } .upgrade-offer { padding:18px; } }
+
+/* The public landing links open a focused account entry; the wizard begins after sign-in. */
+body.auth-entry .sidebar, body.auth-entry .top, body.auth-entry .intro,
+body.auth-entry .banner, body.auth-entry .support-details, body.auth-entry .progress,
+body.auth-entry .support { display:none; }
+body.auth-entry .shell { margin:0; min-height:100vh; display:flex; flex-direction:column; }
+body.auth-entry main { width:100%; max-width:660px; margin:0 auto; padding:clamp(32px,6vw,76px) 20px 22px; }
+body.auth-entry .columns { display:block; }
+body.auth-entry .card { min-height:0; padding:clamp(24px,5vw,44px); box-shadow:0 20px 60px rgba(19,49,46,.08); }
+body.auth-entry .card h1 { font-size:clamp(28px,4vw,38px); line-height:1.15; margin:30px 0 12px; }
+body.auth-entry .card .row { display:block; }
+body.auth-entry .card .row > div { margin:0 0 12px; }
+body.auth-entry .card button.primary { min-width:180px; }
+body.auth-entry .card .evidence { margin-top:22px; }
+body.auth-entry footer { width:100%; max-width:660px; margin:auto auto 0; padding:18px 20px 30px; flex-wrap:wrap; }
+.auth-heading { display:flex; justify-content:space-between; align-items:center; gap:20px; }
+.auth-heading > a:last-child { color:var(--muted); font-size:13px; }
+.auth-brand { display:flex; align-items:center; gap:10px; color:var(--accent); text-decoration:none; font-size:15px; font-weight:650; }
+.auth-brand .mark { width:36px; height:38px; font-size:23px; }
+.auth-brand b { display:block; color:#5c7843; font-size:10px; letter-spacing:2px; }
+@media (max-width:700px) { body.auth-entry main { padding:18px 14px; } body.auth-entry .card { padding:24px 20px; } }

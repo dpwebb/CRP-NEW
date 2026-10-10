@@ -16,6 +16,7 @@ const STEPS = STEP_KEYS.map(key => STEP_VIEWS[key].label);
 const STEP = Object.freeze(Object.fromEntries(STEP_KEYS.map((key, index) => [key, index])));
 const state = {
   step: 0,
+  surfaceError: null,
   account: null,
   accountProfile: null,
   accountDocuments: [],
@@ -73,12 +74,13 @@ function note(line) {
 }
 
 async function api(method, path, body) {
-  const res = await fetch(path, {
+  let res;
+  try { res = await fetch(path, {
     method,
     credentials: 'same-origin',
     headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body ? JSON.stringify(body) : undefined
-  });
+  }); } catch { throw new Error('We could not connect to the CRP service. Please try again shortly.'); }
   note(`${method} ${path} -> ${res.status}`);
   let data = {};
   try { data = await res.json(); } catch { data = {}; }
@@ -241,6 +243,10 @@ function notices() {
 function render() {
   renderSequence++;
   packetLeave = null;
+  document.body?.classList?.toggle('auth-entry', !state.account && state.step === STEP.ACCOUNT);
+  document.title = !state.account && state.step === STEP.ACCOUNT
+    ? `${state.recoveryMode ? 'Reset password' : location.hash === '#signin' ? 'Log in' : 'Create account'} — Credit Regulator Pro`
+    : 'Credit Regulator Pro — Check your credit report';
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
   banner();
   renderSteps();
@@ -264,9 +270,10 @@ function renderAccount(panel) {
   if (state.recoveryMode) { renderRecovery(panel); return; }
   const signInEntry = location.hash === '#signin';
   panel.innerHTML = `
+    <div class="auth-heading"><a class="auth-brand" href="landing.html"><span class="mark" aria-hidden="true">C</span><span>Credit Regulator <b>PRO</b></span></a><a href="landing.html">← Back to home</a></div>
     <h1>${signInEntry ? 'Log in to your account' : 'Create your account'}</h1>
-    <p class="lede">${signInEntry ? 'Enter your email and password to continue to your reports.' : 'Create an account to upload your report. Already have an account? Log in.'}</p>
-    ${firstVisitPlans()}
+    <p class="lede">${signInEntry ? 'Enter your email and password to continue.' : 'Start with your email and a password. You can upload your report after signing in.'}</p>
+    ${location.protocol === 'file:' ? '<p class="note" id="local-preview-note">This saved page is a visual preview. To create an account, <a href="https://staging.creditregulatorpro.com/index.html#create">open the running staging site</a>.</p>' : ''}
     ${notices()}
     <div class="row">
       <div>
@@ -280,10 +287,13 @@ function renderAccount(panel) {
     </div>
     ${signInEntry ? '<button class="primary" id="signin">Log in</button><button class="secondary" id="create">Create account</button>' : '<button class="primary" id="create">Create account</button><button class="secondary" id="signin">Log in</button>'}
     <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
+    <p class="evidence">No report, identification, or payment is needed to create an account.</p>
+    ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
     `;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value });
   el('create').onclick = () => run(async () => {
+    if (location.protocol === 'file:') throw new Error('Open the running staging site to create an account.');
     accountEpoch++;
     const data = await api('POST', '/api/accounts', credentials());
     state.account = data.account;
@@ -295,6 +305,7 @@ function renderAccount(panel) {
     state.notice = 'Account created and signed in.';
   });
   el('signin').onclick = () => run(async () => {
+    if (location.protocol === 'file:') throw new Error('Open the running staging site to log in.');
     accountEpoch++;
     const data = await api('POST', '/api/sessions', credentials());
     state.account = data.account;
@@ -310,15 +321,6 @@ function renderAccount(panel) {
   el('forgot-password').onclick = () => { state.recoveryMode = true; state.error = null; render(); };
 }
 
-function firstVisitPlans() {
-  const plans = state.publicPricing?.plans || [];
-  const price = code => esc(plans.find(plan => plan.plan_code === code)?.amount_display || 'Price unavailable');
-  return `<section class="first-visit-plans" aria-label="Plans and prices"><h2>Choose after you see your free summary</h2>
-    <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
-    <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
-    <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
-    <p class="evidence">Prices are in CAD. You choose a plan before paying.</p></section>`;
-}
 
 function recoveryKeyBlock() {
   return state.recoveryKey ? `<section class="note recovery-key"><h2>Save your recovery key</h2>
@@ -345,7 +347,8 @@ function wireRecoveryKey() {
 }
 
 function renderRecovery(panel) {
-  panel.innerHTML = `<h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
+  panel.innerHTML = `<div class="auth-heading"><a class="auth-brand" href="landing.html"><span class="mark" aria-hidden="true">C</span><span>Credit Regulator <b>PRO</b></span></a><a href="landing.html">← Back to home</a></div>
+    <h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
     ${recoveryKeyBlock()}
     ${state.recoveryKey ? '' : `<label for="recover-email">Email address</label><input id="recover-email" type="email" autocomplete="username">
     <label for="recover-key">Saved recovery key</label><input id="recover-key" type="password" autocomplete="off">
@@ -541,6 +544,7 @@ function renderJurisdiction(panel) {
     <h1>Upload your credit report</h1>
     <p class="lede">Choose your current location, select your credit bureau and upload your report.</p>
     ${notices()}
+    ${state.surfaceError ? `<p class="note stop">We could not load the available locations. ${esc(state.surfaceError)}</p>` : ''}
     ${recoveryKeyBlock()}
     <div class="row">
       <div>
@@ -2229,12 +2233,13 @@ function renderBillingView(data) {
 /* ------------------------------------------------------------------ bootstrap */
 
 (async function start() {
+  if (location.protocol === 'file:') { render(); el('email')?.focus(); return; }
   try {
     const data = await api('GET', '/api/jurisdictions');
     surface = data.surface;
     note(`jurisdiction surface loaded: ${surface.regions.length} regions`);
   } catch (err) {
-    state.error = err.message;
+    state.surfaceError = err.message;
   }
   try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; }
   catch { state.publicPricing = null; }

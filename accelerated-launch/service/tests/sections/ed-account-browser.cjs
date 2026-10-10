@@ -11,8 +11,14 @@ async function run(service, check) {
   const screenshot = path.join(__dirname, '..', '..', 'out', 'fictional-account-browser.png');
   try {
     await page.goto(service.base + '/');
+    await page.waitForSelector('#email');
+    check.ok(await page.locator('body').evaluate(node => node.classList.contains('auth-entry')), 'a new visitor sees the focused account entry');
+    check.ok(await page.locator('#email').isVisible() && await page.locator('#password').isVisible(), 'account fields are immediately visible');
+    check.equal(await page.locator('.first-visit-plans').count(), 0, 'plan cards do not precede account creation');
+    check.ok(await page.locator('.sidebar').isHidden(), 'wizard navigation waits until after sign-in');
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
     await page.waitForSelector('#open');
+    check.ok(await page.locator('.sidebar').isVisible(), 'the guided workspace appears after sign-in');
     check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 7', 'sign-in opens Step2 of the seven-step main journey');
     check.equal(await page.locator('#open').innerText(), 'Upload your report', 'the primary action clearly names report upload');
     check.ok(!/Open a case|this build can read|any of the 82/.test(await page.locator('#panel').innerText()), 'Step2 removes case/build/region-count jargon');

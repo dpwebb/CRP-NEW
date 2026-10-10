@@ -271,8 +271,9 @@ async function run(t, check) {
   check.ok(dom.calls.includes('GET /api/jurisdictions'), 'the UI loads the jurisdiction surface on boot');
   check.ok(/Create your account/.test(panel.innerHTML), 'the first step renders without error');
   check.ok(dom.calls.includes('GET /api/pricing'), 'the public configured price catalogue is loaded before sign-in');
-  check.ok(/Free/.test(panel.innerHTML) && /No dispute packet/.test(panel.innerHTML) && /Subscription/.test(panel.innerHTML), 'first visit makes the free, one-report and subscriber packet boundary clear before registration');
-  check.ok(/\$5\.95 CAD/.test(panel.innerHTML) && /\$7\.95 CAD/.test(panel.innerHTML) && /\$79\.50 CAD/.test(panel.innerHTML), 'all three configured plan prices are visible before account creation');
+  check.ok(/Email address/.test(panel.innerHTML) && /Password \(at least 12 characters\)/.test(panel.innerHTML), 'the entry screen presents account fields immediately');
+  check.ok(!/Price unavailable|Monthly:|Yearly:/.test(panel.innerHTML), 'plan details do not interrupt account creation');
+  check.ok(/No report, identification, or payment is needed/.test(panel.innerHTML), 'account creation does not request packet documents or payment');
   check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
