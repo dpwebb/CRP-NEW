@@ -16,7 +16,7 @@ async function run(t, check) {
   check.equal(add(receipt('unverified', { verified_payment: false })).created, false, 'unverified bodies mint no credit');
   check.equal(credits.creditFromPayment(store, 'a', 'old_call', 'pi_old_call', paidAt).created, false,
     'compatibility wrapper cannot assume a verified CAD 5.95 payment');
-  for (const patch of [{ currency: 'usd' }, { amount_cents: -1 }, { amount_cents: 1.5 },
+  for (const patch of [{ currency: 'eur' }, { amount_cents: -1 }, { amount_cents: 1.5 },
     { amount_cents: Number.MAX_SAFE_INTEGER + 1 }, { paid_at: 'invalid' },
     { paid_at: new Date(Date.now() + 86400000).toISOString() }, { plan_code: 'unknown' },
     { account_id: null }, { payment_id: null }, { refunded: true }, { disputed: true }]) {

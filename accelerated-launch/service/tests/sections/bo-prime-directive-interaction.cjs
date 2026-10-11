@@ -283,11 +283,9 @@ async function run(service, check) {
   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
   const billingBox = post.elementById('billingView').innerHTML;
   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
-  check.ok(/Base prices are in CAD\./.test(billingBox) && /local currency based on your IP location/.test(billingBox)
-    && /change between your local currency and CAD at checkout/.test(billingBox)
-    && /exchange rate and final amount are shown before you pay/.test(billingBox)
-    && /conversion fee/.test(billingBox) && /card issuer may charge other fees/.test(billingBox)
-    && /renewal amounts can change with exchange rates/.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
+  check.ok(/Prices use your IP location/.test(billingBox) && /Choose CAD, USD, AUD or GBP before paying/.test(billingBox)
+    && /Other or unknown locations see US prices/.test(billingBox)
+    && /fixed prices, with no exchange-rate pricing/.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
     && /Renews until you cancel/.test(billingBox) && /Cancelling a subscription stops the next charge/.test(billingBox)
     && /Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal, cancellation and remaining access before purchase');
   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');

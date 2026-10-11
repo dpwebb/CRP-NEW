@@ -311,7 +311,7 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface) {
+function buildHandlers(store, logger, surface, pricingCurrency) {
   return {
     /* ------------------------------------------------------------ accounts and sessions */
 
@@ -350,8 +350,8 @@ function buildHandlers(store, logger, surface) {
       logger.log({ event: 'ACCOUNT_RECOVERED', outcome: 'OK' });
       return { status: 200, json: { ok: true, ...recovered }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
-    publicPricing: () => {
-      const catalog = require('./plan-catalog.cjs').catalog();
+    publicPricing: async ({ req }) => {
+      const catalog = require('./plan-catalog.cjs').catalog(await pricingCurrency(req));
       const publicPlans = catalog.plans.map(({ plan_code, currency, amount_cents, amount_display, interval, headline }) =>
         ({ plan_code, currency, amount_cents, amount_display, interval, headline }));
       return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency,
@@ -406,18 +406,21 @@ function buildHandlers(store, logger, surface) {
  * signature header go to `entitlement.recordEvent`, which verifies the signature against a configured secret
  * before looking at anything the body says. Everything else here is actor-scoped and never entitlement-gated.
  */
-function buildBillingHandlers(store, logger) {
+function buildBillingHandlers(store, logger, pricingCurrency) {
   const env = process.env;
   return {
     policy: () => ({ status: 200, json: { ok: true, ...retention.policyView(), check_classes: CHECK_CLASSES } }),
 
-    billingPlans: async ({ actor }) => {
+    billingPlans: async ({ actor, req }) => {
       await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
-      return { status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env) } };
+      return { status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env, await pricingCurrency(req)) } };
     },
 
-    openCheckout: async ({ body, actor }) => {
-      const opened = await entitlement.openCheckout(store, actor, body, env);
+    openCheckout: async ({ body, actor, req }) => {
+      const explicit = require('./pricing-location.cjs').requestedCurrency(req, body);
+      const current = entitlement.statusFor(store, actor.account_id);
+      const currency = explicit || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : await pricingCurrency(req));
+      const opened = await entitlement.openCheckout(store, actor, { ...body, currency }, env);
       logger.log({ event: 'CHECKOUT_OPENED', outcome: 'OK' });
       return { status: 201, json: { ok: true, checkout: opened } };
     },
@@ -437,9 +440,9 @@ function buildBillingHandlers(store, logger) {
       return { status: 200, json: { ok: true, event: outcome } };
     },
 
-    entitlementView: async ({ actor }) => {
+    entitlementView: async ({ actor, req }) => {
       await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
-      return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } };
+      return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env, await pricingCurrency(req)) } };
     },
 
     referralDashboard: ({ actor }) => ({ status: 200, json: { ok: true,
@@ -458,7 +461,7 @@ function buildBillingHandlers(store, logger) {
 }
 
 /** Case, upload, evaluation, review and download handlers. */
-function buildCaseHandlers(store, logger, surface) {
+function buildCaseHandlers(store, logger, surface, pricingCurrency) {
   return {
     createCase: ({ body, actor }) => {
       const created = cases.createCase(store, actor, body);
@@ -577,14 +580,14 @@ function buildCaseHandlers(store, logger, surface) {
     },
 
     /** The assessment-report download: the complete assessment of THAT report (one-time unlock) or a subscription. */
-    reportDownload: ({ params, actor }) => {
+    reportDownload: async ({ params, actor, req }) => {
       cases.requireOwnedCase(store, actor, params.caseId);
       const access = entitlement.requireAssessmentAccess(store, actor, params.caseId);
       const owned = cases.requireOwnedCase(store, actor, params.caseId);
       const country = surface.countries.find(c => c.value === owned.country)?.label || owned.country;
       const region = surface.regions.find(r => r.value === owned.region)?.label || owned.region;
       const file = journey.assessmentReport(store, actor, params.caseId, {
-        jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor) });
+        jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor, await pricingCurrency(req)) });
       logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: access.via });
       return {
         status: 200,
@@ -780,11 +783,12 @@ function createService(options) {
   const store = new PrivateStore(opts.dataDir);
   const logger = new Logger(opts.logSink);
   const surface = loadJurisdictionSurface();
+  const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface),
-    buildCaseHandlers(store, logger, surface),
-    buildBillingHandlers(store, logger)
+    buildHandlers(store, logger, surface, pricingCurrency),
+    buildCaseHandlers(store, logger, surface, pricingCurrency),
+    buildBillingHandlers(store, logger, pricingCurrency)
   );
 
   /**

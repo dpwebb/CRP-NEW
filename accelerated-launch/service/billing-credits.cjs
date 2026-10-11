@@ -20,9 +20,9 @@ function expiresAt() { return null; }
 /** Project old, trusted one-report receipts without reviving money already spent. */
 function normalized(row) {
   if (!row || !validId(row.credit_id) || !validId(row.account_id) || !validId(row.payment_id) ||
-      !validAmount(row.amount_cents) || row.currency !== CREDIT_CURRENCY ||
+      !validAmount(row.amount_cents) || !plans.isCurrency(row.currency) ||
       !Number.isFinite(Date.parse(row.paid_at)) || row.verified_payment === false) return null;
-  const legacy = !row.source_plan_code && !row.plan_code && row.amount_cents === CREDIT_AMOUNT_CENTS;
+  const legacy = row.currency === 'cad' && !row.source_plan_code && !row.plan_code && row.amount_cents === CREDIT_AMOUNT_CENTS;
   const sourcePlan = row.source_plan_code || row.plan_code || (legacy ? 'report_once' : null);
   if (!plans.isPlanCode(sourcePlan) || (!legacy && row.verified_payment !== true)) return null;
   if (!Object.values(CREDIT_STATES).includes(row.state)) return null;
@@ -56,18 +56,18 @@ function normalizeRows(state) {
   }
 }
 
-function lowerPlan(sourcePlan, targetPlan) {
+function lowerPlan(sourcePlan, targetPlan, currency = 'cad') {
   return plans.isPlanCode(sourcePlan) && ['monthly', 'annual'].includes(targetPlan) &&
-    plans.BASE_PRICE_CAD_CENTS[sourcePlan] < plans.BASE_PRICE_CAD_CENTS[targetPlan];
+    plans.plan(sourcePlan, currency).amount_cents < plans.plan(targetPlan, currency).amount_cents;
 }
 
 /** Reads are projections. They do not change stored assessments or billing rows. */
-function usableCredits(state, accountId, nowIso, targetPlan = 'annual') {
+function usableCredits(state, accountId, nowIso, targetPlan = 'annual', currency = 'cad') {
   const at = Date.parse(nowIso);
   if (!Number.isFinite(at)) throw new Error('EXPLICIT_VALID_CURRENT_TIME_REQUIRED');
   return (state.upgrade_credits || []).map(normalized).filter(Boolean)
     .filter(row => row.account_id === accountId && row.state === CREDIT_STATES.ELIGIBLE &&
-      row.remaining_amount_cents > 0 && Date.parse(row.paid_at) <= at && lowerPlan(row.source_plan_code, targetPlan))
+      row.currency === currency && row.remaining_amount_cents > 0 && Date.parse(row.paid_at) <= at && lowerPlan(row.source_plan_code, targetPlan, currency))
     .sort((a, b) => String(a.paid_at).localeCompare(String(b.paid_at)) || String(a.payment_id).localeCompare(String(b.payment_id)));
 }
 
@@ -80,14 +80,14 @@ function sumAmounts(rows) {
   return amount;
 }
 
-function quote(state, accountId, nowIso, targetPlan, currentPlan) {
-  const target = plans.plan(targetPlan);
-  const rows = targetPlan === 'report_once' ? [] : usableCredits(state, accountId, nowIso, targetPlan);
+function quote(state, accountId, nowIso, targetPlan, currentPlan, currency = 'cad') {
+  const target = plans.plan(targetPlan, currency);
+  const rows = targetPlan === 'report_once' ? [] : usableCredits(state, accountId, nowIso, targetPlan, currency);
   const available = sumAmounts(rows);
   const isCurrent = currentPlan === targetPlan;
   const allowed = !currentPlan || !plans.isPlanCode(currentPlan) ||
-    plans.BASE_PRICE_CAD_CENTS[targetPlan] > plans.BASE_PRICE_CAD_CENTS[currentPlan];
-  const credit = allowed ? plans.applicableCredit(available, target.amount_cents) : 0;
+    plans.plan(targetPlan, currency).amount_cents > plans.plan(currentPlan, currency).amount_cents;
+  const credit = allowed ? plans.applicableCredit(available, target.amount_cents, currency) : 0;
   return { plan_code: targetPlan, currency: target.currency, regular_cents: target.amount_cents,
     credit_cents: credit, first_invoice_cents: target.amount_cents - credit,
     renewal_cents: target.amount_cents, eligible: credit > 0,
@@ -97,9 +97,9 @@ function quote(state, accountId, nowIso, targetPlan, currentPlan) {
     is_current: isCurrent, allowed };
 }
 
-function quotesFor(store, accountId, nowIso, currentPlan) {
+function quotesFor(store, accountId, nowIso, currentPlan, currency = 'cad') {
   const state = store.state();
-  return Object.fromEntries(plans.PLAN_CODES.map(code => [code, quote(state, accountId, nowIso, code, currentPlan)]));
+  return Object.fromEntries(plans.PLAN_CODES.map(code => [code, quote(state, accountId, nowIso, code, currentPlan, currency)]));
 }
 
 /** Only a verified receipt may mint credit; catalog prices and client claims do not. */
@@ -107,7 +107,7 @@ function recordPayment(state, payment) {
   const value = payment || {};
   if (value.verified_payment !== true) return { created: false, credit: null, reason: 'PAYMENT_NOT_VERIFIED' };
   if (!validId(value.account_id) || !validId(value.payment_id) || !plans.isPlanCode(value.plan_code) ||
-      !validAmount(value.amount_cents) || value.currency !== CREDIT_CURRENCY ||
+      !validAmount(value.amount_cents) || !plans.isCurrency(value.currency) ||
       !Number.isFinite(Date.parse(value.paid_at)) || Date.parse(value.paid_at) > Date.now() ||
       value.refunded || value.disputed) return { created: false, credit: null, reason: 'INVALID_VERIFIED_PAYMENT' };
   if (value.amount_cents === 0) return { created: false, credit: null, reason: 'NO_CASH_PAYMENT' };
@@ -145,7 +145,7 @@ function creditFromPayment(store, accountId, paymentId, paymentIntent, paidAt, d
 }
 
 /** Reserve all contributing receipts in the same store update. */
-function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'monthly') {
+function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'monthly', currency = 'cad') {
   if (!validId(checkoutId) || !['monthly', 'annual'].includes(targetPlan)) {
     return { reserved: false, reason: 'INVALID_UPGRADE_RESERVATION' };
   }
@@ -154,7 +154,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
     const existing = state.upgrade_credits.filter(row => row.state === CREDIT_STATES.RESERVED &&
       row.reserved_for_checkout_id === checkoutId);
     if (existing.length) {
-      if (existing.some(row => row.account_id !== accountId || row.reserved_plan_code !== targetPlan)) {
+      if (existing.some(row => row.account_id !== accountId || row.reserved_plan_code !== targetPlan || row.currency !== currency)) {
         return { reserved: false, reason: 'RESERVATION_OWNER_OR_PLAN_MISMATCH' };
       }
       const total = existing.reduce((sum, row) => sum + row.reserved_amount_cents, 0);
@@ -163,8 +163,8 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
       }
       return reservationView(existing, targetPlan);
     }
-    const candidates = usableCredits(state, accountId, nowIso, targetPlan);
-    let needed = plans.applicableCredit(sumAmounts(candidates), plans.BASE_PRICE_CAD_CENTS[targetPlan]);
+    const candidates = usableCredits(state, accountId, nowIso, targetPlan, currency);
+    let needed = plans.applicableCredit(sumAmounts(candidates), plans.plan(targetPlan, currency).amount_cents, currency);
     const allocated = [];
     for (const candidate of candidates) {
       if (needed === 0) break;
@@ -179,7 +179,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
       needed -= amount;
     }
     if (!allocated.length) return { reserved: false, reason: 'NO_ELIGIBLE_CREDIT', amount_cents: 0,
-      currency: CREDIT_CURRENCY, allocations: [] };
+      currency, allocations: [] };
     const total = allocated.reduce((sum, row) => sum + row.reserved_amount_cents, 0);
     for (const row of allocated) row.reserved_total_cents = total;
     return reservationView(allocated, targetPlan);
@@ -189,7 +189,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
 function reservationView(rows, targetPlan) {
   const amount = rows.reduce((total, row) => total + row.reserved_amount_cents, 0);
   return { reserved: true, credit_id: rows[0].credit_id, credit_ids: rows.map(row => row.credit_id),
-    amount_cents: amount, currency: CREDIT_CURRENCY, plan_code: targetPlan,
+    amount_cents: amount, currency: rows[0].currency, plan_code: targetPlan,
     allocations: rows.map(row => ({ credit_id: row.credit_id, payment_id: row.payment_id,
       source_plan_code: row.source_plan_code, amount_cents: row.reserved_amount_cents })) };
 }
@@ -223,14 +223,15 @@ function settleReservations(state, checkoutId, planCode, nowIso) {
   if (rows.some(row => row.reserved_plan_code && row.reserved_plan_code !== planCode)) {
     return { redeemed: false, reason: 'RESERVATION_PLAN_MISMATCH', amount_cents: 0 };
   }
-  if (rows.some(row => !lowerPlan(row.source_plan_code, planCode))) {
+  const currency = state.checkout_sessions?.find(c => c.checkout_id === checkoutId)?.currency || rows[0].currency;
+  if (rows.some(row => row.currency !== currency || !lowerPlan(row.source_plan_code, planCode, currency))) {
     return { redeemed: false, reason: 'RESERVATION_SOURCE_PLAN_MISMATCH', amount_cents: 0 };
   }
   const amount = rows.reduce((total, row) => total + row.reserved_amount_cents, 0);
   if (rows.some(row => row.reserved_total_cents !== undefined && row.reserved_total_cents !== amount)) {
     return { redeemed: false, reason: 'RESERVATION_ALLOCATION_INCOMPLETE', amount_cents: 0 };
   }
-  if (!validAmount(amount) || amount > plans.BASE_PRICE_CAD_CENTS[planCode]) {
+  if (!validAmount(amount) || amount > plans.plan(planCode, currency).amount_cents) {
     return { redeemed: false, reason: 'RESERVATION_AMOUNT_MISMATCH', amount_cents: 0 };
   }
   for (const row of rows) {
@@ -312,11 +313,11 @@ function expireCredits(store) {
   });
 }
 
-function creditView(store, accountId, nowIso, currentPlan) {
-  const quotes = quotesFor(store, accountId, nowIso, currentPlan);
+function creditView(store, accountId, nowIso, currentPlan, currency = 'cad') {
+  const quotes = quotesFor(store, accountId, nowIso, currentPlan, currency);
   const available = Math.max(...Object.values(quotes).filter(value => value.allowed)
     .map(value => value.available_credit_cents), 0);
-  return { eligible: available > 0, credit_cents: available, currency: CREDIT_CURRENCY,
+  return { eligible: available > 0, credit_cents: available, currency,
     expires_at: null, remaining_ms: null,
     reserved_now: (store.state().upgrade_credits || []).some(row => row.account_id === accountId && row.state === CREDIT_STATES.RESERVED),
     upgrade_quotes: quotes };

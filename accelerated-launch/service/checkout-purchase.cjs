@@ -33,8 +33,11 @@ async function openCheckout(store, actor, input, env) {
   await reconcileOpenCheckouts(store, actor, provider);
   const caseId = typeof body.case_id === 'string' ? body.case_id : null;
   if (code === 'report_once') entitlement.requireUnlockableReport(store, actor, caseId);
-  const plan = plans.plan(code), quote = entitlement.upgradeQuotes(store, actor)[code];
   const current = entitlement.statusFor(store, actor.account_id);
+  const currency = body.currency || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : 'cad');
+  if (!plans.isCurrency(currency)) throw new ServiceError('INVALID_PAYMENT_CURRENCY');
+  if (current.entitled && current.access_via === 'SUBSCRIPTION' && currency !== (current.currency || 'cad')) throw new ServiceError('SUBSCRIPTION_CURRENCY_CHANGE');
+  const plan = plans.plan(code, currency), quote = entitlement.upgradeQuotes(store, actor, currency)[code];
   const isUpgrade = current.entitled && current.access_via === 'SUBSCRIPTION';
   if (isUpgrade && (code !== 'annual' || current.plan_code !== 'monthly')) throw new ServiceError('PLAN_ALREADY_ACTIVE');
   if (isUpgrade && !body.quote_revision) throw new ServiceError('UPGRADE_REVIEW_REQUIRED');
@@ -63,7 +66,7 @@ async function openCheckout(store, actor, input, env) {
   let reservation = { reserved: false, amount_cents: 0 };
   let opened;
   try {
-    if (code !== 'report_once') reservation = credits.reserveCredit(store, actor.account_id, checkoutId, now, code);
+    if (code !== 'report_once') reservation = credits.reserveCredit(store, actor.account_id, checkoutId, now, code, currency);
     const netDue = plan.amount_cents - (reservation.amount_cents || 0);
     if (netDue !== quote.first_invoice_cents) throw new ServiceError('STALE_UPGRADE_QUOTE');
     store.update(state => {
@@ -76,7 +79,7 @@ async function openCheckout(store, actor, input, env) {
         access_via: plans.GRANTS[code].access_via, checkout_id: checkoutId, provider_reference: null,
         created_at: now, granted_at: null, expires_at: null, event_ids: [] });
     });
-    const request = { account_id: actor.account_id, plan_code: code, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
+    const request = { account_id: actor.account_id, plan_code: code, currency, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
       customer_email: store.state().accounts.find(a => a.account_id === actor.account_id)?.email,
       credit_amount_cents: reservation.amount_cents || 0, apply_upgrade_credit: reservation.reserved };
     if (isUpgrade) Object.assign(request, { existing_plan_code: original.plan_code,
@@ -118,7 +121,7 @@ function bindProviderResult(store, actor, checkoutId, opened) {
   });
 }
 function publicCheckout(store, actor, provider, row) {
-  const entitlement = require('./entitlement.cjs'), plan = plans.plan(row.plan_code);
+  const entitlement = require('./entitlement.cjs'), plan = plans.plan(row.plan_code, row.currency);
   return { checkout_id: row.checkout_id, plan, provider_id: provider.provider_id,
     provider_is_a_working_payment: provider.is_a_working_payment === true, provider_reference: row.provider_reference,
     redirect_url: row.redirect_url, redirect_grants_nothing: true, is_subscription_upgrade: row.is_subscription_upgrade,

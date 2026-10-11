@@ -77,9 +77,10 @@ async function recordVerifiedEvent(store, event, provider) {
     if (!row) return refuse('EVENT_IGNORED_SUBSCRIPTION_MISMATCH');
     if (effect === 'CANCEL_AT_PERIOD_END' && row.checkout_id !== event.checkout_reference) return refuse('EVENT_IGNORED_SUBSCRIPTION_MISMATCH');
     if (effect === 'RENEW') {
-      if (!event.invoice_reference || event.payment_verified !== true || event.currency !== 'cad') return refuse('EVENT_IGNORED_UNPAID_INVOICE');
+      const purchase = owned.find(c => c.checkout_id === row.checkout_id);
+      if (!event.invoice_reference || event.payment_verified !== true || event.currency !== (row.currency || purchase?.currency || 'cad')) return refuse('EVENT_IGNORED_UNPAID_INVOICE');
       const first = owned.find(c => c.initial_invoice_reference === event.invoice_reference);
-      const expected = first ? first.payable_cents : plans.plan(event.plan_code).amount_cents;
+      const expected = first ? first.payable_cents : row.plan_amount_cents ?? purchase?.amount_cents ?? plans.plan(event.plan_code, event.currency).amount_cents;
       if (event.amount_cents !== expected) return refuse('EVENT_IGNORED_PAYMENT_AMOUNT_MISMATCH');
       if (event.payment_intent && before.billing_events.some(e => e.account_id === accountId && e.outcome === 'APPLIED' &&
           e.effect === 'REVOKE' && e.payment_intent === event.payment_intent)) return refuse('EVENT_IGNORED_REFUNDED_PAYMENT');
@@ -122,6 +123,8 @@ async function recordVerifiedEvent(store, event, provider) {
         live.current_payment_id = event.invoice_reference || event.session_reference;
       }
       if (effect !== 'RENEW') {
+        live.currency = intent.currency;
+        live.plan_amount_cents = intent.amount_cents;
         intent.state = 'COMPLETED';
         intent.provider_reference ||= event.invoice_reference || event.session_reference;
         intent.initial_invoice_reference = event.invoice_reference || null;

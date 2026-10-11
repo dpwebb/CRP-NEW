@@ -209,7 +209,7 @@ const STRIPE_ADAPTER = Object.freeze({
   is_a_working_payment: false,
   required_configuration: STRIPE_ALL_NAMES,
   external_dependency:
-    'a Stripe account with one CAD Price per plan (report_once 595, monthly 795, annual 7950), dynamically calculated ' +
+    'a Stripe account with one fixed native Price per plan and supported currency, dynamically calculated ' +
     'once-duration coupons for verified unused lower-plan payments, and one webhook endpoint whose signing secret is supplied through the ' +
     'environment; the service then makes outbound calls to api.stripe.com',
   why_not_implemented: null,
@@ -219,21 +219,21 @@ const STRIPE_ADAPTER = Object.freeze({
 
 /** Map a configured Price ID back to the plan it belongs to. */
 function planCodeFromPrice(env, priceId) {
-  for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
-    if (env[STRIPE_PRICE_NAMES[planCode]] === priceId) return planCode;
+  for (const currency of plans.CURRENCIES) for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
+    if (priceIdFor(env, planCode, currency) === priceId) return planCode;
   }
   return null;
 }
 
 /** Verify a Stripe Price object against the owner-approved catalog (currency, amount, cadence). */
-function priceMatchesCatalog(planCode, priceObj) {
-  if (!priceObj || !plans.isPlanCode(planCode)) return false;
-  const plan = plans.plan(planCode);
+function priceMatchesCatalog(planCode, priceObj, currency = 'cad') {
+  if (!priceObj || !plans.isPlanCode(planCode) || !plans.isCurrency(currency)) return false;
+  const plan = plans.plan(planCode, currency);
   if (String(priceObj.currency).toLowerCase() !== plan.currency) return false;
   if (priceObj.unit_amount !== plan.amount_cents) return false;
   if (plan.interval === 'one_time') return priceObj.type === 'one_time';
   const interval = plan.interval === 'month' ? 'month' : 'year';
-  return Boolean(priceObj.recurring) && priceObj.recurring.interval === interval;
+  return Boolean(priceObj.recurring) && priceObj.recurring.interval === interval && (priceObj.recurring.interval_count ?? 1) === 1;
 }
 
 /** Use Stripe's itemized invoice tax, including an explicit empty list for zero tax. */
@@ -244,7 +244,7 @@ function verifiedInvoiceTaxCents(invoice) {
   return Number.isSafeInteger(tax) && Number.isSafeInteger(invoice.amount_paid) && tax <= invoice.amount_paid ? tax : null;
 }
 
-/** Stripe converts presentment, while its CAD amounts remain the verified price/credit ledger.
+/** Preserve historical provider presentment facts separately from the selected native price/credit ledger.
  * Only signed/retrieved provider facts reach this helper. Never accept a browser FX amount.
  */
 function presentmentDetails(object) {
@@ -285,7 +285,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     }
   } catch { /* fall back to configured-id check below */ }
 
-  const configuredId = priceIdFor(env, planCode);
+  if (!plans.isCurrency(session.currency)) return { mismatch: 'UNSUPPORTED_PAYMENT_CURRENCY' };
+  const configuredId = priceIdFor(env, planCode, session.currency);
   if (priceId && configuredId && priceId !== configuredId) {
     return { mismatch: 'PRICE_ID_DOES_NOT_MATCH_THE_PLAN' };
   }
@@ -370,8 +371,8 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
   if (!resolved || !resolved.accountRef || !resolved.planCode) return null;
   const lines = invoice.lines?.data || [];
   const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
-  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code) === priceId);
-  if (!invoicePlan || lines[0].quantity !== 1 || invoice.currency !== 'cad') return null;
+  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code, invoice.currency) === priceId);
+  if (!invoicePlan || lines[0].quantity !== 1 || !plans.isCurrency(invoice.currency)) return null;
   const presentment = await paymentPresentment(secretKey, base, invoice.payment_intent, invoice.amount_paid, invoice.currency);
   return {
     event_id: eventId,
@@ -447,7 +448,7 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
       accountRef = resolved.accountRef;
       const price = invoice.lines?.data?.[0]?.price;
       const priceId = typeof price === 'string' ? price : price?.id;
-      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p) === priceId) || resolved.planCode;
+      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === priceId) || resolved.planCode;
     }
   }
   if (!accountRef) return null;
@@ -509,8 +510,10 @@ function isAllowedOrigin(returnUrl, origins) {
 }
 
 /** The configured Price ID for a plan, or null. */
-function priceIdFor(env, planCode) {
-  const name = STRIPE_PRICE_NAMES[planCode];
+function priceIdFor(env, planCode, currency = 'cad') {
+  if (!plans.isCurrency(currency)) return null;
+  const baseName = STRIPE_PRICE_NAMES[planCode];
+  const name = baseName && (currency === 'cad' ? baseName : baseName + '_' + currency.toUpperCase());
   const value = name ? env[name] : null;
   return typeof value === 'string' && value ? value : null;
 }
@@ -531,13 +534,14 @@ function makeStripeAdapter(env) {
     const req = request || {};
     const planCode = req.plan_code;
     const mode = planCode === 'report_once' ? 'payment' : 'subscription';
-    const priceId = priceIdFor(env, planCode);
+    const priceId = priceIdFor(env, planCode, req.currency || 'cad');
     const cancelledReturn = new URL(req.return_url);
     cancelledReturn.searchParams.set('checkout_cancelled', '1');
     const params = {
       mode,
-      'adaptive_pricing[enabled]': true,
-      'custom_text[submit][message]': "Credit Regulator Pro offers local-currency payment through Stripe. If you choose conversion, the rate shown includes Stripe's conversion fee. Your card issuer may charge other fees.",
+      currency: req.currency || 'cad',
+      'adaptive_pricing[enabled]': false,
+      'custom_text[submit][message]': "Your selected currency and fixed plan price are shown here. Your card issuer may charge other fees.",
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': 1,
       success_url: req.return_url,
@@ -547,8 +551,7 @@ function makeStripeAdapter(env) {
       'metadata[plan_code]': planCode,
       'metadata[checkout_id]': req.checkout_id || ''
     };
-    // Prefill the account's own email. Stripe's documented +location_XX emails
-    // exercise country/IP presentment in Sandbox; production uses actual IP location.
+    // Prefill only the account's own email. Currency is resolved by CRP before checkout.
     if (typeof req.customer_email === 'string') params.customer_email = req.customer_email;
     if (mode === 'subscription') {
       params['subscription_data[metadata][account_id]'] = req.account_id;
@@ -573,18 +576,18 @@ function makeStripeAdapter(env) {
   }
   async function creditCoupon(req) {
     if (!Number.isInteger(req.credit_amount_cents) || req.credit_amount_cents < 0 ||
-        req.credit_amount_cents > plans.plan(req.plan_code).amount_cents) refuse('INVALID_SERVER_CREDIT');
+        req.credit_amount_cents > plans.plan(req.plan_code, req.currency || 'cad').amount_cents) refuse('INVALID_SERVER_CREDIT');
     if (!req.credit_amount_cents) return null;
     const id = `crp_upgrade_${req.checkout_id}`;
     const made = await stripe.createCoupon(secretKey, { id, name: 'Your upgrade credit',
-      amount_off: req.credit_amount_cents, currency: 'cad', duration: 'once', max_redemptions: 1 }, base);
+      amount_off: req.credit_amount_cents, currency: req.currency || 'cad', duration: 'once', max_redemptions: 1 }, base);
     if (made.status !== 200 || made.json?.amount_off !== req.credit_amount_cents ||
-        made.json.currency !== 'cad' || made.json.duration !== 'once') refuse('UPGRADE_CREDIT_COUPON_NOT_CONFIRMED');
+        made.json.currency !== (req.currency || 'cad') || made.json.duration !== 'once') refuse('UPGRADE_CREDIT_COUPON_NOT_CONFIRMED');
     return made.json.id;
   }
-  async function confirmedPrice(planCode) {
-    const found = await stripe.retrievePrice(secretKey, priceIdFor(env, planCode), base);
-    if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json)) refuse('CONFIGURED_PRICE_MISMATCH');
+  async function confirmedPrice(planCode, currency = 'cad') {
+    const found = await stripe.retrievePrice(secretKey, priceIdFor(env, planCode, currency), base);
+    if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json, currency)) refuse('CONFIGURED_PRICE_MISMATCH');
     return found.json;
   }
   async function ownedSubscription(req) {
@@ -613,8 +616,8 @@ function makeStripeAdapter(env) {
     if (typeof invoice === 'string') invoice = (await providerWrite(stripe.retrieveInvoice(secretKey, invoice, base))).json;
     const price = invoice?.lines?.data?.[0]?.price;
     if (!/^in_[A-Za-z0-9_]+$/.test(invoice?.id || '') || objectId(invoice.subscription) !== sub.id ||
-        invoice.currency !== 'cad' || invoice.amount_due !== plans.plan('annual').amount_cents - req.credit_amount_cents ||
-        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual') || invoice.lines.data[0].quantity !== 1) {
+        invoice.currency !== (req.currency || 'cad') || invoice.amount_due !== plans.plan('annual', req.currency || 'cad').amount_cents - req.credit_amount_cents ||
+        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual', req.currency || 'cad') || invoice.lines.data[0].quantity !== 1) {
       uncertain('UPGRADE_INVOICE_MISMATCH');
     }
     return invoice;
@@ -632,7 +635,7 @@ function makeStripeAdapter(env) {
     if (sub.metadata.checkout_id === request.existing_checkout_id) return { restored: true };
     const invoice = await upgradeInvoice(sub, request);
     if (!['void', 'uncollectible'].includes(invoice.status) || sub.pending_update ||
-        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly')) refuse('RESTORE_UPGRADE_NOT_VOID');
+        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly', request.currency || 'cad')) refuse('RESTORE_UPGRADE_NOT_VOID');
     const changed = await stripe.updateSubscription(secretKey, sub.id, {
       'metadata[account_id]': request.account_id, 'metadata[plan_code]': request.existing_plan_code,
       'metadata[checkout_id]': request.existing_checkout_id, 'metadata[previous_checkout_id]': ''
@@ -651,7 +654,7 @@ function makeStripeAdapter(env) {
     async createCheckout(request) {
       const req = request || {};
       if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('CHECKOUT_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
-      const priceId = priceIdFor(env, req.plan_code);
+      const priceId = priceIdFor(env, req.plan_code, req.currency || 'cad');
       if (!priceId) {
         const err = new Error(`STRIPE_PRICE_NOT_CONFIGURED:${req.plan_code}`);
         err.code = 'STRIPE_PRICE_NOT_CONFIGURED';
@@ -662,7 +665,7 @@ function makeStripeAdapter(env) {
         err.code = 'RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS';
         throw err;
       }
-      await confirmedPrice(req.plan_code);
+      await confirmedPrice(req.plan_code, req.currency || 'cad');
       const coupon = await creditCoupon(req);
       const { params } = sessionParams({ ...req, credit_coupon_id: coupon });
       const result = await providerWrite(stripe.createCheckoutSession(secretKey, params, base, `crp-checkout-${req.checkout_id}`));
@@ -692,14 +695,15 @@ function makeStripeAdapter(env) {
       }
       if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('UPGRADE_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
       const items = sub.items?.data || [];
+      if (sub.currency && sub.currency !== (req.currency || 'cad')) refuse('SUBSCRIPTION_CURRENCY_MISMATCH');
       if (!req.resume && (sub.status !== 'active' || sub.collection_method !== 'charge_automatically' || sub.schedule || sub.pending_update ||
-          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly'))) {
+          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly', req.currency || 'cad'))) {
         refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
       }
       if (items.length !== 1 || !/^si_/.test(items[0].id || '')) refuse('UPGRADE_SUBSCRIPTION_ITEMS_MISMATCH');
-      await confirmedPrice('annual');
+      await confirmedPrice('annual', req.currency || 'cad');
       const coupon = await creditCoupon(req);
-      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual'),
+      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual', req.currency || 'cad'),
         'items[0][quantity]': 1, billing_cycle_anchor: 'now', proration_behavior: 'none',
         payment_behavior: 'pending_if_incomplete', cancel_at_period_end: false,
         'metadata[account_id]': req.account_id, 'metadata[plan_code]': 'annual', 'metadata[checkout_id]': req.checkout_id,
@@ -724,7 +728,7 @@ function makeStripeAdapter(env) {
         let refunded = false, disputed = false, refundedCents = 0;
         if (intent) {
           const pi = await stripe.retrievePaymentIntent(secretKey, intent, base);
-          if (pi.status !== 200 || pi.json.currency !== 'cad' || pi.json.status !== 'succeeded') refuse('PAYMENT_HISTORY_INTENT_UNRESOLVED');
+          if (pi.status !== 200 || pi.json.currency !== object.currency || pi.json.status !== 'succeeded') refuse('PAYMENT_HISTORY_INTENT_UNRESOLVED');
           const chargeId = objectId(pi.json.latest_charge);
           if (chargeId) {
             const charge = await stripe.retrieveCharge(secretKey, chargeId, base);
@@ -735,7 +739,7 @@ function makeStripeAdapter(env) {
           }
         }
         receipts.push({ payment_id: paymentId, payment_intent: intent || null, account_id: req.account_id,
-          plan_code: planCode, currency: 'cad', amount_cents: amount, paid_at: paidAt,
+          plan_code: planCode, currency: object.currency, amount_cents: amount, paid_at: paidAt,
           verified_payment: true, refunded, refunded_cents: refundedCents, disputed });
       }
       for (const checkout of req.checkouts || []) {
@@ -746,7 +750,7 @@ function makeStripeAdapter(env) {
           if (fetched.status !== 200 || session.client_reference_id !== req.account_id ||
               session.metadata?.account_id !== req.account_id || session.metadata?.checkout_id !== checkout.checkout_id ||
               session.livemode !== liveMode || session.status !== 'complete') refuse('PAYMENT_HISTORY_CHECKOUT_MISMATCH');
-          if (session.mode === 'payment' && session.payment_status === 'paid' && session.currency === 'cad' &&
+          if (session.mode === 'payment' && session.payment_status === 'paid' && plans.isCurrency(session.currency) && session.currency === (checkout.currency || 'cad') &&
               Number.isInteger(session.amount_total) && session.metadata.plan_code === 'report_once') {
             await receipt(session, 'report_once', session.id, session.amount_total,
               new Date((session.created || 0) * 1000).toISOString());
@@ -764,12 +768,12 @@ function makeStripeAdapter(env) {
           const page = await stripe.listInvoices(secretKey, subId, base, after);
           if (page.status !== 200 || !Array.isArray(page.json.data)) refuse('PAYMENT_HISTORY_INVOICES_UNAVAILABLE');
           for (const invoice of page.json.data) {
-            if (invoice.status !== 'paid' || invoice.paid !== true || invoice.currency !== 'cad' ||
+            if (invoice.status !== 'paid' || invoice.paid !== true || !plans.isCurrency(invoice.currency) ||
                 invoice.livemode !== liveMode || objectId(invoice.subscription) !== subId ||
                 !Number.isInteger(invoice.amount_paid) || invoice.amount_paid <= 0) continue;
             const lines = invoice.lines?.data || [];
             const code = lines.length === 1 && lines[0].quantity === 1
-              ? ['monthly', 'annual'].find(p => priceIdFor(env, p) === objectId(lines[0].price)) : null;
+              ? ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === objectId(lines[0].price)) : null;
             if (!code) continue;
             await receipt(invoice, code, invoice.id, invoice.amount_paid,
               new Date((invoice.status_transitions?.paid_at || invoice.created) * 1000).toISOString());
@@ -875,7 +879,7 @@ function makeStripeAdapter(env) {
           session.status !== 'complete' ||
           !(session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) || session.livemode !== liveMode ||
           session.client_reference_id !== req.account_id || !metadataMatches(session) ||
-          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code)) {
+          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code, req.currency || 'cad')) {
         refuse('CANCELLATION_CHECKOUT_MISMATCH');
       }
       const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;

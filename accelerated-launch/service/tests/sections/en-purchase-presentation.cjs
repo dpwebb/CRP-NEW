@@ -19,8 +19,9 @@ function makeContext(responder) {
     document: { getElementById: get, createElement: element },
     fetch: async (url, options = {}) => {
       const method = options.method || 'GET', body = options.body ? JSON.parse(options.body) : null;
-      calls.push({ method, url, body });
-      const reply = await responder(method, url, body) || { status: 200, body: { ok: true } };
+      const pathname = url.split('?')[0], query = url.split('?')[1] || '';
+      calls.push({ method, url: pathname, query, body });
+      const reply = await responder(method, pathname, body) || { status: 200, body: { ok: true } };
       return { ok: reply.status < 400 && reply.body.ok !== false, status: reply.status, json: async () => reply.body, text: async () => JSON.stringify(reply.body) };
     },
     URL: { createObjectURL: () => 'blob:fixture', revokeObjectURL() {} }, Blob: class Blob {}, FileReader: class FileReader {}
@@ -106,7 +107,7 @@ async function run(t, check) {
   check.ok(/\$3\.95 CAD remains for a later upgrade/.test(panel.innerHTML), 'unused excess credit is shown without reducing the bill below zero');
   check.ok(!/id="create-packet"|id="packet-block"/.test(panel.innerHTML), 'marketing does not grant a one-off purchase subscriber packet access');
   await dom.get('download-assessment').onclick();
-  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === '/api/cases/case_fixture/report-download'), 'the PDF control uses the protected owned-report download route');
+  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === '/api/cases/case_fixture/report-download?currency=cad'), 'the PDF control uses the protected owned-report download route and selected currency');
   await dom.get('buy-monthly').onclick();
   await tick(); await tick();
   const firstPurchase = dom.calls.find(c => c.method === 'POST' && c.url === '/api/billing/checkout');

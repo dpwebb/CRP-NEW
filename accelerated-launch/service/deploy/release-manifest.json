@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T21:29:06.649Z",
+  "generated_at": "2026-10-11T22:12:13.262Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 84,
-      "digest": "694D2A2AE3E56A6CF3F110A432C00DE5CDBBDEBC7C9A2D510DC6ECD67C0F87E4",
+      "file_count": 85,
+      "digest": "C360D5D931CF5A71F9A79622651F816E19F690D2D650C09A7C2091B3CD8F4745",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -90,7 +90,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "6D71500DC074B1E8296270CE9F987D7F5E8249C34C493688D2A1E8A7535421E1"
+          "sha256": "95FF21861940CFA6A452919FFCC36BB73CFEE054848883021306BD1450B1837A"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -106,11 +106,11 @@
         },
         {
           "file": "accelerated-launch/service/billing-credits.cjs",
-          "sha256": "0C309403D472E3D1CB67F5E926038C3EE953ACDB2A4CA88E86B62B43AF0020E5"
+          "sha256": "D201E3FD79885F5B9F71A1CD8638D3BA6786674800186AC4F2FCA7CA9877EB3A"
         },
         {
           "file": "accelerated-launch/service/billing-event-effects.cjs",
-          "sha256": "BC4CF9AF6C56BAF15C06406E2BB5AD5D3FF4BA4FCB07CF400C3C7FB366E2B7D3"
+          "sha256": "9E20ED8B02BDCB6F78DF18BBAF475713A7EDD350D2663FB15D898D6302E28D03"
         },
         {
           "file": "accelerated-launch/service/billing-reconciliation.cjs",
@@ -138,7 +138,7 @@
         },
         {
           "file": "accelerated-launch/service/checkout-purchase.cjs",
-          "sha256": "2182FD2DDF14D612902871E5463DB4502E9D84A464546267F640AF94842EF477"
+          "sha256": "E0EC152B1E67CA87EB7B0753E2A661384050F27739C97526FAFE2410F6930C53"
         },
         {
           "file": "accelerated-launch/service/clarification.cjs",
@@ -190,11 +190,11 @@
         },
         {
           "file": "accelerated-launch/service/entitlement.cjs",
-          "sha256": "2801CF405FFF39B68FF7114C7AF1690F7263AF3C5B65EF807AD91D3366D3A11C"
+          "sha256": "8069244F9530EBC525264E640FCA4D57D9C55E686708B54257207919CB9A052D"
         },
         {
           "file": "accelerated-launch/service/errors.cjs",
-          "sha256": "82FE04B51115CB72BCBF8395C9D6F43072C00CCF5CF06F3232EDDF0E9BB64C04"
+          "sha256": "0B33D84BD151611E606E5BA9BE007847E6DA3FF3DEA81AFA27233CA670C505F0"
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
@@ -322,15 +322,19 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "4D4CDEA8A8DDCED71DA1F3E2938DFBC438DA9232B4B61AB9DCE3959321609593"
+          "sha256": "2CA1E3E0D4608DEBF421B4F908A4F1B85EBAD79E369C6FE2222176A8940032E7"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
-          "sha256": "24B7B75E9371F861CFBE28E875D3BA4B17CF5D9535296401B18330609DE7F8F6"
+          "sha256": "18FC6FC91BBBA7638C7DFD817E7E0940FAB68D029193289F8EC3554AACFC1E9A"
+        },
+        {
+          "file": "accelerated-launch/service/pricing-location.cjs",
+          "sha256": "357D0F6D3D66AA09F047AE97CF6A581ACA4C768D2A7AD07B38C547968630618A"
         },
         {
           "file": "accelerated-launch/service/privacy.cjs",
-          "sha256": "29727A6A68780D3B0EC7545C2EBEAD46914E8D531ED99415E3FF45F913FA81B8"
+          "sha256": "FD134E4BFBC88257832EF020981CE42069AE4364E0B65476B55B3655187B2477"
         },
         {
           "file": "accelerated-launch/service/private-store.cjs",
@@ -394,7 +398,7 @@
         },
         {
           "file": "accelerated-launch/service/upgrade-credit.cjs",
-          "sha256": "6F28D815A98B62D5CAB175399262442BFBD1657CCABBDCDEBE9B3F51ED8B5922"
+          "sha256": "0146A441B36FC1995BE28E6305114E29CFAEBE5FA11545F50605C59A38BA730D"
         },
         {
           "file": "accelerated-launch/service/uploads.cjs",
@@ -534,7 +538,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 20,
-      "digest": "396857ECAAAA6288E179676117E69F1F930ACE338063005AD9B5CB09A9D221B1",
+      "digest": "5A93F722D7F71F87733DAB9E6379DA9965623FE9F0D599B7A2C12DF0750C49F3",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -550,7 +554,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "83995D7712ECDFE7220D0CEB963A13114F38B1EAE190CD7F93C0A0C2901CF2EF"
+          "sha256": "B742CEE7D93856293095D257F74BCF42EF606300B967A22D7F2905D7B0B3F210"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -619,6 +623,6 @@
       ]
     }
   ],
-  "manifest_digest": "3957DC813A0BA7840489BADC0B07DBEE9E30DC1E5925894856E4B94FFE918475",
-  "total_file_count": 143
+  "manifest_digest": "95232B7ABD4D286D75F108A859EA134E285126EEB7AE4A53993DB0B552496E8F",
+  "total_file_count": 144
 }

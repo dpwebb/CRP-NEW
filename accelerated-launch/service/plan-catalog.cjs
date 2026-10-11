@@ -1,14 +1,25 @@
 'use strict';
-/** Owner-approved pricing, 2026-10-01: CAD 5.95 one-time, 7.95 monthly, 79.50 annual.
- * Supersedes legacy USD reference pricing. Payment never expands legal output permissions.
+/** Owner-approved fixed native prices, October 11. No exchange-rate pricing.
+ * Payment currency never expands product permissions.
  */
 
 const crypto = require('node:crypto');
 
 const PLAN_CODES = Object.freeze(['report_once', 'monthly', 'annual']);
 
-/** Base price in CAD cents. THE single source of truth for what a plan costs. */
+/** Historical CAD prices in cents, retained for existing CAD contracts. */
 const BASE_PRICE_CAD_CENTS = Object.freeze({ report_once: 595, monthly: 795, annual: 7950 });
+const NATIVE_PRICES = Object.freeze({
+  cad: BASE_PRICE_CAD_CENTS,
+  usd: Object.freeze({ report_once: 495, monthly: 595, annual: 5950 }),
+  aud: Object.freeze({ report_once: 595, monthly: 795, annual: 7950 }),
+  gbp: Object.freeze({ report_once: 315, monthly: 425, annual: 4250 })
+});
+const CURRENCIES = Object.freeze(Object.keys(NATIVE_PRICES));
+const COUNTRY_CURRENCY = Object.freeze({ CA: 'cad', US: 'usd', AU: 'aud', GB: 'gbp' });
+const MINIMUM_CHARGE = Object.freeze({ cad: 50, usd: 50, aud: 50, gbp: 30 });
+const isCurrency = currency => CURRENCIES.includes(currency);
+const currencyForCountry = country => COUNTRY_CURRENCY[country] || 'usd';
 
 /** Configured minimum CAD charge is $0.50; every amount above clears it. Asserted in `plan()`. */
 const MINIMUM_CHARGE_CAD_CENTS = 50;
@@ -82,19 +93,20 @@ function isPlanCode(value) {
 }
 
 /** One plan as the consumer surface may render it. It carries no provider id, price id or secret. */
-function plan(planCode) {
+function plan(planCode, currency = 'cad') {
   if (!isPlanCode(planCode)) return null;
-  const amount = BASE_PRICE_CAD_CENTS[planCode];
-  if (!Number.isInteger(amount) || amount < MINIMUM_CHARGE_CAD_CENTS) {
+  if (!isCurrency(currency)) throw new Error('UNSUPPORTED_PAYMENT_CURRENCY');
+  const amount = NATIVE_PRICES[currency][planCode];
+  if (!Number.isInteger(amount) || amount < MINIMUM_CHARGE[currency]) {
     throw new Error(`PLAN_PRICE_BELOW_THE_PROVIDER_MINIMUM: ${planCode}`);
   }
   const grant = GRANTS[planCode];
   return {
     plan_code: planCode,
     label: PLAN_LABEL[planCode],
-    currency: BILLING_CURRENCY,
+    currency,
     amount_cents: amount,
-    amount_display: `$${(amount / 100).toFixed(2)} ${BILLING_CURRENCY.toUpperCase()}`,
+    amount_display: `${currency === 'gbp' ? '£' : '$'}${(amount / 100).toFixed(2)} ${currency.toUpperCase()}`,
     interval: PLAN_INTERVAL[planCode],
     headline: grant.headline,
     grants: grant.grants.slice(),
@@ -103,17 +115,17 @@ function plan(planCode) {
 }
 
 /** The whole catalog. `catalog_digest` is a content digest of the prices, for the release check to pin. */
-function catalog() {
-  const plans = PLAN_CODES.map(plan);
+function catalog(currency = 'cad') {
+  const plans = PLAN_CODES.map(code => plan(code, currency));
   const digest = crypto.createHash('sha256').update(JSON.stringify(plans.map((p) => [p.plan_code, p.currency, p.amount_cents, p.interval]))).digest('hex');
   return {
     plans,
-    currency: BILLING_CURRENCY,
+    currency,
     not_granted: NOT_GRANTED.slice(),
-    checkout_pricing: { method: 'STRIPE_ADAPTIVE_PRICING', base_currency: BILLING_CURRENCY,
-      location_source: 'CUSTOMER_IP_AT_STRIPE_CHECKOUT', consumer_currency_choice: true },
-    note: 'Base prices are in CAD. Stripe offers local-currency pricing at checkout, where you can change between your local currency and CAD before paying. Uploading a report and having it assessed are free.',
-    upgrade_offer: { currency: 'cad', applies_to: ['monthly', 'annual'], first_invoice_only: true,
+    checkout_pricing: { method: 'FIXED_NATIVE_PRICES', location_source: 'VISITOR_IP_GEOLOCATION',
+      supported_currencies: CURRENCIES.slice(), fallback_currency: 'usd', consumer_currency_choice: true },
+    note: 'Prices use your IP location. You can change currency before paying. Other or unknown locations use US prices. Uploading and assessing your report are free.',
+    upgrade_offer: { currency, applies_to: ['monthly', 'annual'], first_invoice_only: true,
       cumulative: true, expires: false, lower_priced_plans_only: true,
       plain: 'Your unused payments for lower-priced plans count toward an upgrade. Any credit left over stays in your account.' },
     catalog_digest: digest
@@ -121,14 +133,15 @@ function catalog() {
 }
 
 /** Preserve unused cents when applying them all would create an unchargeable nonzero invoice. */
-function applicableCredit(availableCents, priceCents) {
+function applicableCredit(availableCents, priceCents, currency = 'cad') {
   const credit = Math.min(availableCents, priceCents);
   const due = priceCents - credit;
-  return due > 0 && due < MINIMUM_CHARGE_CAD_CENTS ? priceCents - MINIMUM_CHARGE_CAD_CENTS : credit;
+  return due > 0 && due < MINIMUM_CHARGE[currency] ? priceCents - MINIMUM_CHARGE[currency] : credit;
 }
 
 module.exports = {
   PLAN_CODES,
+  NATIVE_PRICES, CURRENCIES, COUNTRY_CURRENCY, MINIMUM_CHARGE, isCurrency, currencyForCountry,
   BASE_PRICE_CAD_CENTS,
   MINIMUM_CHARGE_CAD_CENTS,
   applicableCredit,

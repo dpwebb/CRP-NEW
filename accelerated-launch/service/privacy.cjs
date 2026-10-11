@@ -7,6 +7,7 @@ function dashboard(store, actor) {
   const owned = state.cases.filter(row => row.account_id === actor.account_id);
   const referrals = state.referral_snapshots?.[0] || {};
   return {
+    pricing_location: 'To choose your starting prices, your IP address is sent to Country.is for a country lookup. Your report and account details are not sent. You can change payment currency before paying.',
     cases: owned.map(row => ({ case_id: row.case_id, country: row.country, region: row.region, status: row.status,
       documents: state.files.filter(file => file.account_id === actor.account_id && file.case_id === row.case_id && file.stored_blob !== false).map(file => ({
         file_id: file.file_id, name: file.original_filename || file.originalFilename || 'Uploaded report',

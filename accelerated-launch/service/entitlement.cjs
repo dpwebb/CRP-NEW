@@ -180,6 +180,7 @@ function statusFor(store, accountId, options) {
     can_read_historical: true,
     access_via: entitled ? (settled.access_via || ACCESS_VIA.NONE) : ACCESS_VIA.NONE,
     plan_code: settled ? settled.plan_code : null,
+    currency: settled?.currency || store.state().checkout_sessions.find(c => c.checkout_id === settled?.checkout_id)?.currency || null,
     granted_at: settled ? settled.granted_at : null,
     expires_at: settled ? settled.expires_at : null,
     cancel_at_period_end: Boolean(settled && settled.cancel_at_period_end),
@@ -296,16 +297,19 @@ function rowsFor(state, accountId) {
  * deliberately NOT paid-gated: they are how an unentitled account becomes entitled, and gating them would make
  * the product unbuyable. They are still actor-scoped, and the actor always comes from the resolved session.
  */
-function plansView(store, actor, env) {
-  const catalog = plans.catalog();
-  const provider = payments.describeProvider(env);
+function plansView(store, actor, env, requestedCurrency = 'cad') {
   const current = statusFor(store, actor.account_id);
-  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null);
+  const pending = store.state().checkout_sessions.find(c => c.account_id === actor.account_id && ['OPEN', 'OPENING'].includes(c.state));
+  const currency = current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : pending?.currency || requestedCurrency;
+  const catalog = plans.catalog(currency);
+  catalog.currency_locked = Boolean(pending) || current.entitled && current.access_via === 'SUBSCRIPTION';
+  const provider = payments.describeProvider(env);
+  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null, currency);
   return {
     plan_catalog: catalog,
     entitlement: statusFor(store, actor.account_id),
     upgrade_credit: upgradeCredit,
-    upgrade_quotes: upgradeQuotes(store, actor),
+    upgrade_quotes: upgradeQuotes(store, actor, currency),
     pending_checkout: pendingCheckout(store, actor),
     payment: {
       state: provider.state,
@@ -324,21 +328,22 @@ function plansView(store, actor, env) {
   };
 }
 
-function upgradeQuotes(store, actor) {
+function upgradeQuotes(store, actor, requestedCurrency = 'cad') {
   const current = statusFor(store, actor.account_id);
   const subscribed = current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION;
-  const quoteSet = credits.quotesFor(store, actor.account_id, nowIso(), subscribed ? current.plan_code : null);
+  const currency = subscribed ? current.currency || 'cad' : requestedCurrency;
+  const quoteSet = credits.quotesFor(store, actor.account_id, nowIso(), subscribed ? current.plan_code : null, currency);
   const busy = store.state().checkout_sessions.some(c => c.account_id === actor.account_id &&
     ['OPENING', 'OPEN', 'CREDIT_REVOKED'].includes(c.state) && c.plan_code !== 'report_once');
   return Object.fromEntries(plans.PLAN_CODES.map(code => {
-    const raw = quoteSet[code] || { regular_cents: plans.plan(code).amount_cents, credit_cents: 0,
-      first_invoice_cents: plans.plan(code).amount_cents, renewal_cents: plans.plan(code).amount_cents,
-      eligible: false, currency: 'cad', source_plan_codes: [], remaining_credit_cents: 0 };
+    const raw = quoteSet[code] || { regular_cents: plans.plan(code, currency).amount_cents, credit_cents: 0,
+      first_invoice_cents: plans.plan(code, currency).amount_cents, renewal_cents: plans.plan(code, currency).amount_cents,
+      eligible: false, currency, source_plan_codes: [], remaining_credit_cents: 0 };
     const isCurrent = subscribed && current.plan_code === code;
-    const higher = !subscribed || plans.plan(code).amount_cents > plans.plan(current.plan_code).amount_cents;
+    const higher = !subscribed || plans.plan(code, currency).amount_cents > plans.plan(current.plan_code, currency).amount_cents;
     const allowed = !isCurrent && higher && !busy;
     const revision = crypto.createHash('sha256').update(JSON.stringify([actor.account_id, code,
-      raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
+      currency, raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
       current.plan_code, current.state, allowed])).digest('hex');
     const { source_payment_ids, ...safe } = raw;
     return [code, { ...safe, allowed, is_current: isCurrent, revision,
@@ -585,7 +590,7 @@ async function cancelEntitlement(store, actor, input, env) {
       }
       providerCancellation = await provider.cancelRenewal({ account_id: actor.account_id,
         checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
-        plan_code: originalCheckout.plan_code, subscription_reference: original.provider_subscription_reference });
+        plan_code: originalCheckout.plan_code, currency: originalCheckout.currency || 'cad', subscription_reference: original.provider_subscription_reference });
     } catch (error) { fail(error?.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
     if (providerCancellation?.renewal_cancelled !== true) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
   }
@@ -656,13 +661,13 @@ function downloadEntitled(store, actor, caseId) {
 }
 
 /** The upgrade-credit position: eligibility, amount, expiry and remaining time. */
-function creditView(store, actor, now) {
+function creditView(store, actor, now, requestedCurrency = 'cad') {
   const current = statusFor(store, actor.account_id, now);
-  return credits.creditView(store, actor.account_id, nowIso(now), current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION ? current.plan_code : null);
+  return credits.creditView(store, actor.account_id, nowIso(now), current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION ? current.plan_code : null, current.currency || requestedCurrency);
 }
 
 /** What the consumer surface may say about entitlement. No internal identifier and no gate number appears. */
-function entitlementView(store, actor, env) {
+function entitlementView(store, actor, env, requestedCurrency = 'cad') {
   const provider = payments.describeProvider(env);
   const status = statusFor(store, actor.account_id);
   return {
@@ -682,8 +687,8 @@ function entitlementView(store, actor, env) {
       plain: provider.plain,
       exact_external_dependency: provider.exact_external_dependency
     },
-    upgrade_credit: creditView(store, actor),
-    upgrade_quotes: upgradeQuotes(store, actor),
+    upgrade_credit: creditView(store, actor, null, requestedCurrency),
+    upgrade_quotes: upgradeQuotes(store, actor, requestedCurrency),
     pending_checkout: pendingCheckout(store, actor),
     plain: status.entitled
       ? 'This account holds a recorded purchase.'

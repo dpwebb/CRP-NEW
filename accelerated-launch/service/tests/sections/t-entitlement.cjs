@@ -449,7 +449,7 @@ async function stripeRenewalCancellation(t, check, evidence) {
       body: { plan_code: plan, return_url: returnUrl } });
     check.equal(checkout.status, 201, label + ': actual Stripe adapter opens this owned mock Checkout');
     const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
-    check.equal(sent.get('adaptive_pricing[enabled]'), 'true', label + ': native currency conversion is explicitly enabled');
+    check.equal(sent.get('adaptive_pricing[enabled]'), 'false', label + ': fixed native pricing disables exchange-rate pricing');
     check.equal(sent.get('customer_email'), t.service.store.state().accounts.find(a => a.account_id === actor.account_id).email,
       label + ': checkout email comes from the authenticated account');
     check.equal(sent.get('success_url'), returnUrl, label + ': Stripe success retains the report return context');

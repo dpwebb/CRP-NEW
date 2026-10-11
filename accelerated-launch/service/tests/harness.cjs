@@ -81,10 +81,10 @@ function temporaryDataDir(tag) {
 }
 
 class TestService {
-  constructor(tag) {
+  constructor(tag, options = {}) {
     this.dataDir = temporaryDataDir(tag || 'run');
     this.logs = [];
-    this.service = createService({ dataDir: this.dataDir, logSink: (line) => this.logs.push(line) });
+    this.service = createService({ dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
     this.server = http.createServer((req, res) => {
       this.service.handle(req, res).catch(() => {
         if (!res.headersSent) {

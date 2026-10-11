@@ -37,6 +37,7 @@ const state = {
   support: null,
   billing: null,
   publicPricing: null,
+  pricingCurrency: null,
   accountSecurity: null,
   recoveryKey: null,
   recoveryMode: false,
@@ -74,6 +75,7 @@ function note(line) {
 }
 
 async function api(method, path, body) {
+  if (method === 'GET' && state.pricingCurrency && ['/api/pricing', '/api/billing/plans', '/api/entitlement'].includes(path)) path += '?currency=' + encodeURIComponent(state.pricingCurrency);
   let res;
   try { res = await fetch(path, {
     method,
@@ -223,6 +225,7 @@ async function refreshAccess() {
     const billing = await api('GET', '/api/billing/plans');
     ensureAccount();
     state.billing = billing;
+    state.pricingCurrency = billing.plan_catalog?.currency || state.pricingCurrency;
     if (billing.upgrade_quotes) state.upgrade_quotes = billing.upgrade_quotes;
     if (billing.upgrade_credit) state.upgrade_credit = billing.upgrade_credit;
     rememberPendingCheckout(billing);
@@ -258,6 +261,7 @@ function render() {
   const panel = el('panel');
   STEP_VIEWS[STEP_KEYS[state.step]].render(panel);
   wireCheckoutReturn();
+  wireCurrencyChoice();
 }
 
 /* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the approved disclaimer belongs to the public landing-page footer.
@@ -370,7 +374,7 @@ function firstVisitPlans() {
     <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
     <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
     <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
-    <p class="evidence">Base prices are in CAD. Stripe offers your local currency based on your IP location. You can change between your local currency and CAD at checkout before paying. The displayed rate includes Stripe’s conversion fee. Your card issuer may charge other fees.</p></section>`;
+    <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices.</p></section>`;
 }
 
 function recoveryKeyBlock() {
@@ -943,6 +947,32 @@ async function wireResultSelector(panel, view) {
 }
 
 
+/** Currency choice changes pricing only; it never uploads or reassesses a report. */
+function currencyChoice() {
+  const locked = state.billing?.plan_catalog?.currency_locked || Boolean(ownedPendingCheckout());
+  const currency = state.pricingCurrency;
+  return `<div class="checkout-currency"><label for="checkout-currency">Payment currency</label><select id="checkout-currency" style="min-height:44px;max-width:100%"${locked ? ' disabled' : ''}>${[['cad','Canada — CAD'],['usd','United States — USD'],['aud','Australia — AUD'],['gbp','United Kingdom — GBP']].map(([code,label]) => `<option value="${code}"${code === currency ? ' selected' : ''}>${label}</option>`).join('')}</select><p class="evidence">${locked ? 'Your subscription or open checkout keeps its selected currency.' : 'Prices use your IP location. Other or unknown locations see US prices. You can change currency before paying.'}</p><p id="currency-status" role="status" aria-live="polite"></p></div>`;
+}
+function wireCurrencyChoice() {
+  const choice = el('checkout-currency');
+  if (!choice) return;
+  choice.onchange = () => run(async () => {
+    const ensureAccount = accountContext(), previous = state.pricingCurrency;
+    choice.disabled = true;
+    el('currency-status').textContent = 'Updating prices…';
+    state.pricingCurrency = choice.value;
+    try {
+      const pricing = await api('GET', '/api/pricing');
+      ensureAccount();
+      state.publicPricing = pricing.plan_catalog;
+      state.upgrade_confirmation = null;
+      await refreshAccess();
+      ensureAccount();
+      state.notice = 'Prices updated to ' + state.pricingCurrency.toUpperCase() + '.';
+    } catch (error) { state.pricingCurrency = previous; throw error; }
+  });
+}
+
 /** The price strings the purchase choices show, taken from the recorded catalogue (never invented). */
 function planPrice(code) {
   const catalog = (state.billing && state.billing.plan_catalog) || state.publicPricing || null;
@@ -954,12 +984,12 @@ function planPrice(code) {
 
 function money(cents, currency = 'cad') {
   return Number.isSafeInteger(cents) && cents >= 0
-    ? `$${(cents / 100).toFixed(2)} ${String(currency).toUpperCase()}` : '';
+    ? `${currency === 'gbp' ? '£' : '$'}${(cents / 100).toFixed(2)} ${String(currency).toUpperCase()}` : '';
 }
 function upgradeQuote(code) {
   const quotes = state.billing?.upgrade_quotes || state.upgrade_quotes;
   const quote = quotes && quotes[code];
-  return quote && ['regular_cents', 'first_invoice_cents', 'credit_cents', 'renewal_cents'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
+  return quote && (!state.pricingCurrency || quote.currency === state.pricingCurrency) && ['regular_cents', 'first_invoice_cents', 'credit_cents', 'renewal_cents'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
     ? quote : null;
 }
 function canChoosePlan(code) {
@@ -1141,7 +1171,8 @@ function startCheckout(planCode, confirmedUpgrade = false) {
     const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
     const context = state.caseId && state.view?.case?.case_id === state.caseId
       ? `?checkout=return&report=${encodeURIComponent(state.caseId)}&plan=${encodeURIComponent(planCode)}` : '';
-    const body = { plan_code: planCode, return_url: base + context };
+    if (!state.pricingCurrency) throw new Error('Your prices are unavailable. Refresh your plans and try again.');
+    const body = { plan_code: planCode, currency: state.pricingCurrency, return_url: base + context };
     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
     if (confirmedUpgrade && state.entitlement?.access_via === 'SUBSCRIPTION') body.quote_revision = upgradeQuote(planCode).revision;
     let opened;
@@ -1219,8 +1250,8 @@ function freeSummaryBlock(view) {
   </div>
   ${currentReportPaymentPending() ? '' : `<div class="obs">
     <span class="pill">UNLOCK THE REST</span>
-    <h3>Choose what you want next</h3>
-    <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
+    <h3>Choose what you want next</h3>${currencyChoice()}
+    <p class="evidence">Nothing renews unless you choose a subscription. Your selected currency and price are shown before you buy.</p>
     ${canChoosePlan('report_once') ? `<button class="primary" id="buy-report_once">Unlock this report — ${esc(purchasePrice('report_once'))}</button>` : ''}
     ${subscriptionChoices()}
     <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and a PDF report to keep. Dispute packets, report history and comparison are part of a subscription.</p>
@@ -1235,7 +1266,7 @@ function oneTimeNextStepsBlock() {
     <p class="evidence">Keep your full report as a PDF. It includes the issues we found, the report facts and clear next steps.</p>
     <button class="primary" id="download-assessment">Download my report (PDF)</button>
   </div>${subscriptionBenefits('Turn your results into a dispute packet')}
-  ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
+  ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}${currencyChoice()}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
 }
 
 function renderResults(panel) {
@@ -1265,7 +1296,7 @@ function renderResults(panel) {
     if (button) button.onclick = () => startCheckout(code);
   }
   const download = el('download-assessment');
-  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download`);
+  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download${state.pricingCurrency ? '?currency=' + state.pricingCurrency : ''}`);
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
@@ -2022,7 +2053,7 @@ function renderCase(panel) {
     inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
       ${(data.account_documents || []).length ? `<h4>Account documents</h4><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
       <h3>Retention</h3><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
-      <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p>`;
+      <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p><p>${esc(data.pricing_location || '')}</p>`;
   }).catch(() => {
     if (state.step === STEP.CASE && state.caseId === privacyCase && el('privacyInventory')) el('privacyInventory').textContent = 'Your inventory could not be loaded. Open this page again to retry.';
   });
@@ -2191,6 +2222,7 @@ function renderBillingView(data) {
   const credit = data.upgrade_credit || {};
   const plansList = (data.plan_catalog && data.plan_catalog.plans) || [];
   state.billing = data;
+  state.pricingCurrency = data.plan_catalog?.currency || state.pricingCurrency;
   state.entitlement = data.entitlement || null;
   state.payment = data.payment || null;
   state.upgrade_credit = data.upgrade_credit || null;
@@ -2246,7 +2278,7 @@ function renderBillingView(data) {
     ${checkingPayment ? '' : upgradeConfirmationBlock()}
     ${subscriptionBenefits('Keep going with a subscription')}
     ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
-    <p class="evidence">Base prices are in CAD. Stripe offers your local currency based on your IP location. You can change between your local currency and CAD at checkout. The exchange rate and final amount are shown before you pay. The displayed rate includes Stripe’s conversion fee. Your card issuer may charge other fees. Local-currency renewal amounts can change with exchange rates.</p>
+    <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices. These are fixed prices, with no exchange-rate pricing.</p>
     <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
     <div class="purchase-plan-grid">${planCards}</div>`}
     <p class="evidence">${esc(paymentSentence(pay))}</p>
@@ -2265,6 +2297,7 @@ function renderBillingView(data) {
   if (refreshPayment) refreshPayment.onclick = () => run(async () => { await refreshAccess(); });
   wirePendingPayment();
   const cancel = el('cancelEntitlement');
+  wireCurrencyChoice();
   if (cancel) cancel.onclick = () => run(async () => {
     const result = await api('POST', '/api/entitlement/cancel', {});
     state.notice = result.plain || 'Cancellation recorded.';
@@ -2282,7 +2315,7 @@ function renderBillingView(data) {
   } catch (err) {
     state.surfaceError = err.message;
   }
-  try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; }
+  try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; state.pricingCurrency = state.publicPricing?.currency || null; }
   catch { state.publicPricing = null; }
   try {
     const session = await api('GET', '/api/session');

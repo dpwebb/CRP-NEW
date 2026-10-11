@@ -308,7 +308,7 @@ async function main() {
     checkout_id: 'chk_unit_annual', return_url: 'http://127.0.0.1:8787/?checkout=return', credit_amount_cents: 795 });
   const annualBody = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
   assert.equal(annualBody.get('line_items[0][price]'), PRICE_IDS.annual, 'yearly Checkout uses its own validated yearly Price');
-  assert.equal(annualBody.get('adaptive_pricing[enabled]'), 'true');
+  assert.equal(annualBody.get('adaptive_pricing[enabled]'), 'false');
   assert.equal(mock.fixture.session.amount_total, 7155, 'the provider fixture bills the exact yearly price less unused monthly cash');
   const ownedCheckout = { checkout_id: 'chk_unit_annual', provider_reference: annual.provider_reference,
     provider_subscription_reference: 'sub_unit_annual' };
@@ -323,11 +323,11 @@ async function main() {
     await adapter.createCheckout({ account_id: 'acc_local_' + plan, plan_code: plan, checkout_id: 'chk_local_' + plan,
       customer_email: 'native+location_GB@example.test', credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' });
     const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
-    assert.equal(sent.get('adaptive_pricing[enabled]'), 'true', plan + ': enable native-currency checkout');
-    assert.match(sent.get('custom_text[submit][message]'), /conversion fee.*card issuer/, plan + ': every checkout entry discloses conversion and issuer fees');
+    assert.equal(sent.get('adaptive_pricing[enabled]'), 'false', plan + ': enable native-currency checkout');
+    assert.match(sent.get('custom_text[submit][message]'), /fixed plan price.*card issuer/, plan + ': every checkout entry discloses conversion and issuer fees');
     assert.equal(sent.get('customer_email'), 'native+location_GB@example.test');
     assert.equal(sent.get('line_items[0][price]'), PRICE_IDS[plan]);
-    assert.equal(sent.has('currency'), false, 'Stripe IP detection is not overridden by a guessed currency');
+    assert.equal(sent.get('currency'), 'cad', 'resolved currency is explicit and fixed before Stripe checkout');
   }
   await assert.rejects(adapter.readPaidReceipts({ account_id: 'acc_foreign', checkouts: [ownedCheckout] }),
     /PAYMENT_HISTORY_CHECKOUT_MISMATCH/, 'another account cannot import this invoice as upgrade cash');
