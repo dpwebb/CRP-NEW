@@ -27,7 +27,7 @@ const baseline=path.join(temp,'baseline.json');
 const file='accelerated-launch/service/issues.cjs';
 fs.writeFileSync(baseline,JSON.stringify({...pass,source_hashes:[{file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.resolve(__dirname,'../../..',file))).digest('hex')}]}));
 const p=plan('HEAD',baseline);frozen(p);
-assert.throws(()=>frozen({...p,changed_files:[]}));
+assert.throws(()=>frozen({...p,changed_files:[...p.changed_files,'__tampered_inventory__']}));
 assert.throws(()=>frozen({...p,baseline:{...p.baseline,sha256:'A'.repeat(64)}}));
 const source=Object.keys(p.source_snapshot).find(f=>f.endsWith('/issues.cjs'));
 assert.throws(()=>frozen({...p,source_snapshot:{...p.source_snapshot,[source]:'A'.repeat(64)}}));
