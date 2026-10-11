@@ -1,0 +1,965 @@
+{
+  "checked_at": "2026-10-11T11:51:22.6386018-03:00",
+  "scope": "Read-only inventory of all remaining Git worktrees; dirty files preserved",
+  "inventory": [
+    {
+      "worktree": "C:/CRP-NEW-agent-au-us",
+      "status_count": 31,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evaluation.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evidence-validator.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-acceptance.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-benchmark.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/issues.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/limitation-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/packets.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/payment-history-analysis.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/release-check.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/results.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/run-tests.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ad-legal-event-facts.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ae-accept-003.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/af-accept-004.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/at-gap-finding-002.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bd-gap-ingest-004.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/be-gap-ingest-005.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bg-report-use.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bi-us-ca-tax-lien.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/br-qualified-assessment.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/l-au-format-family.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/m-au-journey.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/p-us-consumer-format.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-checklist.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-scope.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/CRP-NEW-ca-gb-tests",
+      "status_count": 63,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evaluation.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evidence-validator.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-acceptance.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-benchmark.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/finding-coverage.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/issues.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/limitation-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/packets.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/payment-history-analysis.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/release-check.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/results.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/run-tests.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ab-acceptance-statutory.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/al-common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/as-gap-finding-004.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/aw-consumer-explanations.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bh-ns-dismissed-charge.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bh-ns-judgment-content.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bi-us-ca-tax-lien.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bj-us-ca-collection.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bm-prime-directive-batch1.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bn-prime-directive-ui.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bp-prime-directive-batch2.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bq-format-capability.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bu-gb-tu-ca-fields.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ca-au-ordinary-field.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cc-ca-on-ordinary-report.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cd-gb-uk-gdpr-accuracy.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cf-ca-nl-dismissed-charge.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ci-ca-mb-judgment-content.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cj-ca-pe-judgment-content.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cl-bc-qc-nb-finish.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cr-ca-ns-tu-real-report.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cu-dual-date-retention.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/e-qualifications.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/l-au-format-family.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/m-au-journey.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/n-applicability-records.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/p-us-consumer-format.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/q-record-applicability.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/r-ca-factual-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/s-gb-consumer-format.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/v-presentation-and-release.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-checklist.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-scope.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ct-owner-common-error-scope.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cw-common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cx-all82-required-report-data.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/CRP-NEW-coverage-scope",
+      "status_count": 6,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/finding-coverage.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/release-check.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-checklist.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-scope.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/CRP-NEW-integrated",
+      "status_count": 0,
+      "changed_service_files": []
+    },
+    {
+      "worktree": "C:/CRP-NEW-scope-tests",
+      "status_count": 60,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evaluation.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/evidence-validator.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-acceptance.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/fdt-benchmark.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/finding-coverage.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/issues.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/limitation-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/packets.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/payment-history-analysis.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/release-check.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/results.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/run-tests.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ab-acceptance-statutory.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/al-common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/av-consumer-results.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/aw-consumer-explanations.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bc-gap-ingest-002.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bi-us-ca-tax-lien.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bj-us-ca-collection.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bm-prime-directive-batch1.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bn-prime-directive-ui.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bp-prime-directive-batch2.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bq-format-capability.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bu-gb-tu-ca-fields.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ca-au-ordinary-field.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cc-ca-on-ordinary-report.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cd-gb-uk-gdpr-accuracy.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cr-ca-ns-tu-real-report.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cu-dual-date-retention.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/e-qualifications.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/l-au-format-family.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/m-au-journey.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/n-applicability-records.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/p-us-consumer-format.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/q-record-applicability.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/r-ca-factual-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/s-gb-consumer-format.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/v-presentation-and-release.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-checklist.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-scope.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ct-owner-common-error-scope.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cw-common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/cx-all82-required-report-data.cjs",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/CRP-NEW-sol-release",
+      "status_count": 0,
+      "changed_service_files": []
+    },
+    {
+      "worktree": "C:/CRP-NEW-tu-fixture-date-boundary",
+      "status_count": 7,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/common-error-checklist.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/common-errors.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/issues.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/report-fact-sources.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/z-general-intake.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/Users/webbd/.codex/worktrees/preproduction-audit-repair/CRP-NEW",
+      "status_count": 0,
+      "changed_service_files": []
+    },
+    {
+      "worktree": "C:/Users/webbd/Documents/Codex/crp-mailing-staging-candidate",
+      "status_count": 6,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/deploy/release-manifest.json",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.css",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.html",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.js",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    },
+    {
+      "worktree": "C:/Users/webbd/Documents/Codex/crp-mailing-staging-v2",
+      "status_count": 6,
+      "changed_service_files": [
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/deploy/release-manifest.json",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "matches_current_normalized": false,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.css",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.html",
+          "matches_current_normalized": true,
+          "current_exists": true
+        },
+        {
+          "file": "accelerated-launch/service/ui/mailing-preview.js",
+          "matches_current_normalized": true,
+          "current_exists": true
+        }
+      ]
+    }
+  ],
+  "dispositions": [
+    "TU fixture/date boundary changes already present, including reported date, creditor identity, inquiry continuation and active checklist rule",
+    "UK account type mapping already present with source-linked heading readings and later ambiguity safeguards",
+    "Mailing preview assets match current normalized source; staging-only routes and preview links retained",
+    "Older common-error retirement edits superseded by current 21-item checklist and later source-supported implementations",
+    "Completed auth/seven-step branch changes selectively integrated while preserving later form-free packet, entitlement and approval protections"
+  ]
+}

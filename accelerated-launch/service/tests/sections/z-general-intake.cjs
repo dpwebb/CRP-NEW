@@ -95,6 +95,45 @@ async function run(t, check) {
       `${sample.country} account-owned ${sample.caption.split(':')[0]} is source-linked as a reporting date`);
   }
 
+  for (const heading of ['Personal Information', 'Summary']) {
+    const model = makeSyntheticModel({ pages: [[
+      'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+      'Creditor Name: Example Community Bank', 'Opened Date: 2022-03-15',
+      heading, 'As Of: 2026-06-22'
+    ]] });
+    const extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'CA' });
+    check.equal(extraction.records.length, 1, `${heading} does not create an account`);
+    check.equal(extraction.records[0].facts['reportedAccount.reportedDate'], undefined,
+      `${heading} date is not attached to the preceding account`);
+    const checked = commonErrors.runCommonErrorChecks({ extraction });
+    const found = issues.issuesFor({ extraction, evaluation: {
+      region: 'CA-NS', presentation: 'GENERAL-BUREAU-REPORT', results: [], common_errors: checked
+    } });
+    check.equal(found.filter((item) => item.check_id === 'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE').length, 0,
+      `${heading} report metadata cannot produce a selectable account-date finding`);
+  }
+  const nextPageMetadata = makeSyntheticModel({ pages: [
+    ['TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+      'Creditor Name: Example Community Bank', 'Opened Date: 2022-03-15'],
+    ['Personal Information', 'As Of: 2026-06-22', 'Account Information',
+      'Creditor Name: Sample Motor Finance', 'As Of: 2026-01-05']
+  ] });
+  const nextPageExtraction = formats.extractWithSharedAdapter(nextPageMetadata, { mode: 'REPORT', country: 'CA' });
+  check.equal(nextPageExtraction.records.length, 2, 'an explicit later account restarts parsing after cross-page personal metadata');
+  check.equal(nextPageExtraction.records[0].facts['reportedAccount.reportedDate'], undefined,
+    'a personal-information date on the next page does not leak backward');
+  check.equal(nextPageExtraction.records[1].facts['reportedAccount.reportedDate'], '2026-01-05',
+    'a later account-owned date is still source-linked');
+  const headedRestart = formats.extractWithSharedAdapter(makeSyntheticModel({ pages: [[
+    'Equifax Canada Consumer Credit Report', 'Report Date: 2026-01-10',
+    'Creditor Name: Example Community Bank', 'Personal Information', 'As Of: 2026-06-22',
+    'Accounts - Revolving', 'Sample Motor Finance', 'Account', 'Number', '****4130',
+    'As Of: 2026-01-05'
+  ]] }), { mode: 'REPORT', country: 'CA' });
+  check.equal(headedRestart.records.length, 2, 'a measured Accounts heading reopens account parsing after personal metadata');
+  check.equal(headedRestart.records[1].facts['reportedAccount.reportedDate'], '2026-01-05',
+    'the new headed account retains its own reporting date');
+
   const bureauOnly = bureauModel(['Equifax', 'Trusted credit information since 1899']);
   check.equal(generalIntake.detect(bureauOnly).outcome, 'UNRELATED', 'bureau branding alone is UNRELATED');
   check.equal(generalIntake.detect(bureauOnly).reason, 'BUREAU_IDENTITY_BUT_NO_CREDIT_REPORT_CONTENT', 'names the missing content');
@@ -267,6 +306,30 @@ async function run(t, check) {
 
   /* B6-INGEST-004: assessment-relevant fields connect the existing statutory checks. */
   const evaluation = require('../../evaluation.cjs');
+  const nsPeriodLines = (paymentDate) => [
+    'TransUnion Canada Consumer Disclosure', 'Report Date: 2026-01-10',
+    'Creditor Name: Fictional Cedar Bank', 'Account Number: ****1234',
+    'Opened Date: 2010-01-01', `Last Payment Date: ${paymentDate}`, 'Status: Charged Off'
+  ];
+  const nsPeriodExtraction = (paymentDate) => formats.extractWithSharedAdapter(
+    makeSyntheticModel({ pages: [nsPeriodLines(paymentDate)] }), { mode: 'REPORT', country: 'CA' });
+  const nsRule = 'CA-NS-CRA-S10-3-C-LIMB-1';
+  const nsOld = nsPeriodExtraction('2013-10-03');
+  check.equal(nsOld.presentation_id, 'GENERAL-BUREAU-REPORT', 'the fictional ordinary report uses the general reader');
+  const nsOldEvaluation = evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: nsOld });
+  check.ok(nsOldEvaluation.results.some((row) => row.check.adapter_id === nsRule
+    && row.machine.finding?.classification === 'VIOLATION'),
+  'the source-linked Nova Scotia six-year limb remains active on its admitted general presentation');
+  check.ok(issues.issuesFor({ extraction: nsOld, evaluation: nsOldEvaluation })
+    .some((item) => item.adapter_id === nsRule && item.eligible === true),
+  'the supported finding remains selectable for a packet');
+  const nsRecent = nsPeriodExtraction('2024-10-03');
+  check.ok(!evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: nsRecent }).results
+    .some((row) => row.check.adapter_id === nsRule && row.machine.finding),
+  'a recent printed payment does not produce the Nova Scotia breach');
+  check.ok(!evaluation.evaluateCase({ country: 'CA', region: 'CA-ON', extraction: nsOld }).results
+    .some((row) => row.check.adapter_id === nsRule && row.machine.finding),
+  'the Nova Scotia limb does not leak to another jurisdiction');
   const usAdverse = makeSyntheticModel({ pages: [['Experian  Consumer Credit Report', 'Report Date: June 12, 2026', 'Account 30 days past due as of Jun 2015']] });
   const usAdverseExt = formats.extractWithSharedAdapter(usAdverse, { mode: 'REPORT', country: 'US' });
   check.equal(usAdverseExt.records.length, 1, 'a general US report yields a reported-account record');
@@ -302,6 +365,164 @@ async function run(t, check) {
   const auNoOriginalExt = formats.extractWithSharedAdapter(auNoOriginal, { mode: 'REPORT', country: 'AU' });
   const auNoOriginalEval = evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction: auNoOriginalExt });
   check.equal(auNoOriginalEval.results.some((r) => r.check.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y' && r.machine.state === 'EVALUATED'), false, 'an overdue record without an original-listing date is NOT aged from a current-listing date (missing-fact case)');
+
+  /* Two fictional native-layout cases modeled on the Creator's measured rows. Their printed
+     report-date rows do not match the word row; the collection card is disrupted by a
+     watermark. Only exact, same-row word geometry may recover the source-linked dates. */
+  const nativeWord = (text, x0, y0) => ({ text, x0, y0, x1: x0 + text.length * 5, y1: y0 + 10 });
+  const nativeUSCollection = (dofd, duplicateDate = false, longName = false) => {
+    const lines = [
+      'Report date: 09/17/2026 X', 'TransUnion Credit Report', 'COLLECTIONS (1)',
+      `FIXTURE COLLECTION AGENCY${longName ? ' SERVICES' : ''} X IN COLLECTION`,
+      'Date of First Delinquency (DOFD)', dofd
+    ];
+    if (duplicateDate) lines.splice(2, 0, `Opened Date: ${dofd}`);
+    const model = makeSyntheticModel({ pages: [lines] });
+    model.pages[0].word_boxes = [
+      nativeWord('Report', 200, 10), nativeWord('date:', 240, 10), nativeWord('09/17/2026', 270, 10),
+      nativeWord('TransUnion', 10, 50), nativeWord('Credit', 80, 50), nativeWord('Report', 115, 50),
+      nativeWord('COLLECTIONS', 10, 100), nativeWord('(1)', 85, 100),
+      nativeWord('FIXTURE', 10, 120), nativeWord('COLLECTION', 55, 120), nativeWord('AGENCY', 125, 120),
+      ...(longName ? [nativeWord('SERVICES', 280, 120)] : []),
+      nativeWord('IN', 450, 120), nativeWord('COLLECTION', 470, 120),
+      nativeWord('Date', 300, 140), nativeWord('of', 325, 140), nativeWord('First', 338, 140),
+      nativeWord('Delinquency', 370, 140), nativeWord('(DOFD)', 300, 150), nativeWord(dofd, 300, 160)
+    ];
+    check.equal(generalIntake.collectPages(model)[0].lines[0].trusted, false,
+      'US printed report-date row is untrusted before measured-word recovery');
+    return formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'US' });
+  };
+  const usPeriod = nativeUSCollection('01/15/2018');
+  check.equal(usPeriod.reference_date.normalized, '2026-09-17', 'US native report header date is recovered from its own measured row');
+  check.equal(usPeriod.reference_date.location?.trusted, true, 'US recovered report date has trusted native-word provenance');
+  check.equal(usPeriod.records.length, 1, 'watermark-disrupted numbered collection card yields one record');
+  check.equal(usPeriod.records[0].kind, 'GENERAL_COLLECTION', 'recovered card retains its collection kind');
+  check.equal(usPeriod.records[0].facts['tradeline.firstDelinquencyDate'], '2018-01-15', 'collection DOFD comes from its own measured date row');
+  check.equal(usPeriod.records[0].fact_sources['tradeline.firstDelinquencyDate']?.trusted, true, 'collection DOFD retains trusted provenance');
+  const usPeriodIssues = issues.issuesFor({ extraction: usPeriod,
+    evaluation: evaluation.evaluateCase({ country: 'US', region: 'US-MD', extraction: usPeriod }) });
+  check.ok(usPeriodIssues.some((item) => item.adapter_id === 'FCRA-605A-4-US-NATIONAL-7Y'
+    && item.eligible === true && item.classification === 'PROBABLE_VIOLATION'),
+  'elapsed fictional US collection produces a selectable probable reporting-period issue');
+  const usWithin = nativeUSCollection('01/15/2024');
+  check.equal(usWithin.records[0]?.facts['tradeline.firstDelinquencyDate'], '2024-01-15',
+    'inside-period US guard still reads its own collection date');
+  check.equal(usWithin.records[0]?.fact_sources['tradeline.firstDelinquencyDate']?.trusted, true,
+    'inside-period US guard date remains source-linked');
+  check.ok(!issues.issuesFor({ extraction: usWithin,
+    evaluation: evaluation.evaluateCase({ country: 'US', region: 'US-MD', extraction: usWithin }) })
+    .some((item) => item.adapter_id === 'FCRA-605A-4-US-NATIONAL-7Y' && item.eligible === true),
+  'within-period fictional US collection produces no reporting-period issue');
+  const duplicateDofd = nativeUSCollection('01/15/2018', true);
+  check.ok(!duplicateDofd.records.some((record) => record.kind === 'GENERAL_COLLECTION'
+    && record.facts['tradeline.firstDelinquencyDate'] === '2018-01-15'),
+  'a repeated date elsewhere on the native page cannot be assigned as the collection DOFD');
+  const longAgency = nativeUSCollection('01/15/2018', false, true);
+  check.ok(!longAgency.records.some((record) => record.facts['account.reported_identity'] === 'FIXTURE COLLECTION AGENCY'),
+    'a measured agency word outside the recovery window cannot produce a truncated collector name');
+  for (const caption of ['ACCOUNT NUMBER', 'ORIGINAL CREDITOR', 'SUMMARY', 'ACCOUNT SUMMARY']) {
+    const captionModel = makeSyntheticModel({ pages: [[
+      'TransUnion Credit Report', 'Report Date: 09/17/2026', 'COLLECTIONS',
+      caption, 'IN COLLECTION', 'Collection DOFD: 01/15/2018'
+    ]] });
+    const captionExtraction = formats.extractWithSharedAdapter(captionModel, { mode: 'REPORT', country: 'US' });
+    check.ok(!captionExtraction.records.some((record) => record.facts['account.reported_identity'] === caption),
+      `${caption} is not a collector identity merely because an IN COLLECTION line follows`);
+  }
+
+  const nativeAUClosed = (closedDate) => {
+    const model = makeSyntheticModel({ pages: [[
+      'Report date: 17/09/2026 X', 'Equifax Australia Consumer Credit File',
+      'Creditor Name: SAMPLE RETAIL CREDIT AUSTRALIA', `Closed Date: ${closedDate}`
+    ]] });
+    model.pages[0].word_boxes = [
+      nativeWord('Report', 200, 10), nativeWord('date:', 240, 10), nativeWord('17/09/2026', 270, 10),
+      nativeWord('Equifax', 10, 50), nativeWord('Australia', 60, 50), nativeWord('Consumer', 120, 50),
+      nativeWord('Credit', 175, 50), nativeWord('File', 210, 50),
+      nativeWord('Creditor', 10, 100), nativeWord('Name:', 55, 100), nativeWord('SAMPLE', 100, 100),
+      nativeWord('RETAIL', 140, 100), nativeWord('CREDIT', 180, 100), nativeWord('AUSTRALIA', 220, 100),
+      nativeWord('Closed', 10, 120), nativeWord('Date:', 50, 120), nativeWord(closedDate, 90, 120)
+    ];
+    check.equal(generalIntake.collectPages(model)[0].lines[0].trusted, false,
+      'AU printed report-date row is untrusted before measured-word recovery');
+    return formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'AU' });
+  };
+  const auPeriod = nativeAUClosed('15/08/2023');
+  check.equal(auPeriod.reference_date.normalized, '2026-09-17', 'AU native report date before bureau title remains with that bureau');
+  check.equal(auPeriod.reference_date.location?.trusted, true, 'AU recovered report date has trusted native-word provenance');
+  check.equal(auPeriod.records.length, 1, 'AU native closed liability yields one record');
+  check.equal(auPeriod.records[0].facts['liability.closedDate'], '2023-08-15', 'AU closed date remains account-owned');
+  check.equal(auPeriod.records[0].printed?.closed_date?.location?.trusted, true,
+    'elapsed AU close date retains trusted printed provenance');
+  const auPeriodIssues = issues.issuesFor({ extraction: auPeriod,
+    evaluation: evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction: auPeriod }) });
+  check.ok(auPeriodIssues.some((item) => item.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y'
+    && item.eligible === true && item.classification === 'VIOLATION'),
+  'elapsed fictional AU closed liability produces a selectable reporting-period issue');
+  const auWithin = nativeAUClosed('15/08/2025');
+  check.equal(auWithin.records[0]?.facts['liability.closedDate'], '2025-08-15',
+    'inside-period AU guard still reads its own liability close date');
+  check.equal(auWithin.records[0]?.printed?.closed_date?.location?.trusted, true,
+    'inside-period AU guard close date remains source-linked');
+  check.ok(!issues.issuesFor({ extraction: auWithin,
+    evaluation: evaluation.evaluateCase({ country: 'AU', region: 'AU-NSW', extraction: auWithin }) })
+    .some((item) => item.adapter_id === 'AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y' && item.eligible === true),
+  'within-period fictional AU closed liability produces no reporting-period issue');
+
+  // A mixed page appends OCR words for other checks. OCR-only words must never be
+  // relabelled as a trusted native report date by the measured-word fallback.
+  const mixed = makeSyntheticModel({ pages: [[
+    'Report date: 09/17/2026 X', 'TransUnion Credit Report', 'COLLECTIONS (1)'
+  ]], native_text_incomplete_pages: [1] });
+  mixed.path = 'fictional-mixed-native-ocr.pdf';
+  mixed.pages[0].word_boxes = [nativeWord('TransUnion', 10, 50),
+    nativeWord('Credit', 80, 50), nativeWord('Report', 115, 50)];
+  const localOcr = require('../../ocr/local-ocr.cjs');
+  const originalReadTextLayer = localOcr.readTextLayer;
+  localOcr.readTextLayer = () => ({ available: true, pages: [{ page: 1, lines: [],
+    word_evidence: [nativeWord('Report', 200, 10), nativeWord('date:', 240, 10),
+      nativeWord('09/17/2026', 270, 10)].map(word => ({ ...word, trusted: true })) }] });
+  try {
+    const mixedPages = generalIntake.collectPages(mixed);
+    check.equal(mixedPages[0].native_words.length, 3, 'mixed page retains only its three genuine native words');
+    check.equal(mixedPages[0].words.length, 6, 'mixed page can also carry three OCR words for other checks');
+    const mixedExtraction = formats.extractWithSharedAdapter(mixed, { mode: 'REPORT', country: 'US' });
+    check.equal(mixedExtraction.reference_date.reason, 'NO_REPORT_DATE_FOUND',
+      'OCR-only date words cannot be certified as a native report date');
+  } finally {
+    localOcr.readTextLayer = originalReadTextLayer;
+  }
+
+  const combined = makeSyntheticModel({ pages: [[
+    'TransUnion Credit Report', 'Report date: 09/17/2026 X', 'COLLECTIONS',
+    'Equifax Credit Report', 'Report date: 09/17/2026', 'ACCOUNTS'
+  ]] });
+  combined.pages[0].word_boxes = [
+    nativeWord('TransUnion', 10, 10), nativeWord('Credit', 80, 10), nativeWord('Report', 115, 10),
+    nativeWord('Equifax', 10, 100), nativeWord('Credit', 60, 100), nativeWord('Report', 95, 100),
+    nativeWord('Report', 200, 120), nativeWord('date:', 240, 120), nativeWord('09/17/2026', 270, 120)
+  ];
+  const combinedExtraction = formats.extractWithSharedAdapter(combined, { mode: 'REPORT', country: 'US' });
+  check.equal(combinedExtraction.report_segments[0]?.bureau, 'TransUnion',
+    'same-page combined report retains the first bureau segment');
+  check.equal(combinedExtraction.report_segments[0]?.reference_date?.reason, 'NO_REPORT_DATE_FOUND',
+    'an untrusted first-bureau line cannot borrow the second bureau native date words');
+  check.equal(combinedExtraction.report_segments[1]?.reference_date?.normalized, '2026-09-17',
+    'second bureau keeps its own measured report date');
+  const repeatedBureau = makeSyntheticModel({ pages: [[
+    'TransUnion Credit Report', 'Report date: 09/17/2026 X', 'COLLECTIONS',
+    'TransUnion Credit Report', 'Report date: 09/17/2026', 'ACCOUNTS'
+  ]] });
+  repeatedBureau.pages[0].word_boxes = [
+    ...combined.pages[0].word_boxes.slice(0, 3),
+    nativeWord('TransUnion', 10, 100), nativeWord('Credit', 80, 100), nativeWord('Report', 115, 100),
+    ...combined.pages[0].word_boxes.slice(6)
+  ];
+  const repeatedExtraction = formats.extractWithSharedAdapter(repeatedBureau, { mode: 'REPORT', country: 'US' });
+  check.equal(repeatedExtraction.report_segments[0]?.reference_date?.reason, 'NO_REPORT_DATE_FOUND',
+    'first of two same-bureau sections cannot borrow the later section native date words');
+  check.equal(repeatedExtraction.report_segments[1]?.reference_date?.normalized, '2026-09-17',
+    'later same-bureau section keeps its own measured date');
 
   evidence.general = { bureau: ext.bureau, records: ext.records.length, reference_date: ext.reference_date.normalized };
   evidence.refusals = { unrelated: true, bureau_only: true };

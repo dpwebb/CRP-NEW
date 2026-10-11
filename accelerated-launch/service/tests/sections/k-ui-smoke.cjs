@@ -259,7 +259,12 @@ function makeResponder() {
 
 async function run(t, check) {
   const source = fs.readFileSync(UI_JS, 'utf8');
-  const dom = makeContext(makeResponder());
+  const responder = makeResponder();
+  let signupBody = null;
+  const dom = makeContext((method, url, options) => {
+    if (method === 'POST' && url === '/api/accounts') signupBody = JSON.parse(options.body);
+    return responder(method, url, options);
+  });
   const ctx = dom.context;
 
   vm.runInContext(source, ctx, { filename: 'ui/app.js' });
@@ -269,20 +274,39 @@ async function run(t, check) {
 
   const panel = dom.nodes.get('panel');
   check.ok(dom.calls.includes('GET /api/jurisdictions'), 'the UI loads the jurisdiction surface on boot');
-  check.ok(/Your account/.test(panel.innerHTML), 'the first step renders without error');
+  check.ok(/Create your account/.test(panel.innerHTML), 'the first step renders without error');
   check.ok(dom.calls.includes('GET /api/pricing'), 'the public configured price catalogue is loaded before sign-in');
-  check.ok(/Free/.test(panel.innerHTML) && /No dispute packet/.test(panel.innerHTML) && /Subscription/.test(panel.innerHTML), 'first visit makes the free, one-report and subscriber packet boundary clear before registration');
-  check.ok(/\$5\.95 CAD/.test(panel.innerHTML) && /\$7\.95 CAD/.test(panel.innerHTML) && /\$79\.50 CAD/.test(panel.innerHTML), 'all three configured plan prices are visible before account creation');
-  check.ok(/Step 1 of 5/.test(dom.elementById('stepcount').textContent), 'the main journey has five steps');
+  check.ok(/Email address/.test(panel.innerHTML) && /Password \(at least 12 characters\)/.test(panel.innerHTML), 'the entry screen presents account fields immediately');
+  check.ok(!/Price unavailable|Monthly:|Yearly:/.test(panel.innerHTML), 'plan details do not interrupt account creation');
+  check.ok(/No report, identification, or payment is needed/.test(panel.innerHTML), 'account creation does not request packet documents or payment');
+  check.ok(/signup-date_of_birth/.test(panel.innerHTML) && /signup-phone/.test(panel.innerHTML), 'signup offers date of birth and phone');
+  check.ok(!/signup-(?:ssn|sin|national_insurance|tax_file_number)/i.test(panel.innerHTML), 'signup does not ask for national identifiers');
+  for (const country of ['GB', 'AU']) {
+    ctx.signupCountry = country;
+    const packetFields = vm.runInContext('packetSupportingDocuments({ support: { requirements: { country: signupCountry, bureau: "TRANSUNION", label: "Fictional bureau", items: [], sources: [] }, catalog: [], documents: [] } })', ctx);
+    check.ok(!/id="packet-us-identity"(?! hidden)/.test(packetFields) && !/id="packet-other-identity-section"(?! hidden)/.test(packetFields), `${country} packet preparation does not ask for national identifier details`);
+    const documentKinds = vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx);
+    check.ok(!documentKinds.some(kind => ['SOCIAL_SECURITY', 'SSN_PAY_STUB', 'W2', '1099'].includes(kind)), `${country} account document choices omit US identifier documents`);
+  }
+  ctx.signupCountry = 'England';
+  check.ok(!vm.runInContext('state.accountProfile = { country: signupCountry }; documentKindsForAccount().map(([kind]) => kind)', ctx).includes('SOCIAL_SECURITY'), 'an England address also omits US identifier documents');
+  vm.runInContext('state.accountProfile = null', ctx);
+  check.ok(/Step 1 of 7/.test(dom.elementById('stepcount').textContent), 'the main journey has seven steps');
   check.ok(/Your tools/.test(dom.elementById('steps').innerHTML), 'utilities are shown separately from the numbered main journey');
   check.ok(/Forgot your password/.test(panel.innerHTML), 'account recovery is visible before sign-in');
 
   /* Step 1: create an account. */
   dom.elementById('email').value = 'stub@example.test';
   dom.elementById('password').value = 'a-long-enough-password';
+  dom.elementById('signup-full_name').value = 'Fictional Consumer';
+  dom.elementById('signup-date_of_birth').value = '1990-03-02';
+  dom.elementById('signup-phone').value = '555-0142';
   await dom.elementById('create').onclick();
   await tick();
   check.ok(dom.calls.includes('POST /api/accounts'), 'creating an account calls the service');
+  check.equal(signupBody.profile.full_name, 'Fictional Consumer', 'signup sends the consumer name with account creation');
+  check.equal(signupBody.profile.date_of_birth, '1990-03-02', 'signup sends date of birth with account creation');
+  check.equal(signupBody.profile.phone, '555-0142', 'signup sends phone with account creation');
   check.ok(/Upload your credit report/.test(panel.innerHTML), 'Step2 guides the consumer directly to report upload');
   check.ok(/where you live now/.test(panel.innerHTML) && /different or previous address/.test(panel.innerHTML), 'the selection explains how the current location is used');
   check.ok(/Use the PDF from your bureau/.test(panel.innerHTML) && /File sizes and help/.test(panel.innerHTML), 'simple file preparation and detailed limits appear before uploading');
@@ -332,8 +356,9 @@ async function run(t, check) {
   check.ok(/I don't know/.test(panel.innerHTML) && /Skip/.test(panel.innerHTML), 'and offers "I don\'t know" and "Skip"');
   vm.runInContext('state.view = state._savedView; state.step = 3; render();', ctx);
 
-  /* Step 4: the review and download boundary. */
+  /* Step 5: choose disputes before document preparation and packet review. */
   vm.runInContext('state.step = 4; render();', ctx);
+  check.ok(/Choose disputes/.test(panel.innerHTML) && /Step 5 of 7/.test(dom.elementById('stepcount').textContent), 'issue selection has its own visible step');
   check.ok(!/response draft|recorded output permission|review the observations|nothing will be sent|demonstration file/i.test(panel.innerHTML),
     'the packet review does not repeat obsolete draft, observation-only or demonstration claims');
   check.ok(!/id="draft"|id="download"/.test(panel.innerHTML), 'and does not offer legacy draft or demonstration controls');
@@ -346,8 +371,12 @@ async function run(t, check) {
   check.ok(/Your review is saved\./.test(panel.innerHTML), 'the saved review has a simple confirmation');
   check.ok(!dom.calls.some((c) => /response-draft|demonstration-download/.test(c)), 'reviewing the packet requests neither obsolete endpoint');
 
-  /* Step 5: case status and deletion controls. */
+  vm.runInContext('state.step = 5; render();', ctx);
+  check.ok(/Prepare your documents/.test(panel.innerHTML) && /Step 6 of 7/.test(dom.elementById('stepcount').textContent), 'document preparation follows issue selection');
   vm.runInContext('state.step = 6; render();', ctx);
+  check.ok(/Review and approve packet/.test(panel.innerHTML) && /Step 7 of 7/.test(dom.elementById('stepcount').textContent), 'review and approval follow issue selection');
+  /* Privacy and deletion remain outside the numbered journey. */
+  vm.runInContext('state.step = 8; render();', ctx);
   await tick();
   await tick();
   check.ok(dom.calls.includes('GET /api/privacy'), 'privacy dashboard loads authenticated inventory');

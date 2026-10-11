@@ -1,0 +1,57 @@
+{
+  "build_id": "crp-v1-9ac3f7355ed5d02c",
+  "passed": true,
+  "method": "Direct current static response module behavior; hosted HTTP and browser verification pending",
+  "checks": [
+    {
+      "deployment": "staging",
+      "url": "/",
+      "status": 200,
+      "sha256": "e30006914873a40bb950c403b23c3e14680138fac436f28bf7fd9e36218bb2be"
+    },
+    {
+      "deployment": "staging",
+      "url": "/index.html",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    },
+    {
+      "deployment": "staging",
+      "url": "/?checkout=return&report=case_000000000000000000000000&plan=monthly",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    },
+    {
+      "deployment": "staging",
+      "url": "/?checkout=return&checkout_cancelled=1",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    },
+    {
+      "deployment": "production",
+      "url": "/",
+      "status": 200,
+      "sha256": "e30006914873a40bb950c403b23c3e14680138fac436f28bf7fd9e36218bb2be"
+    },
+    {
+      "deployment": "production",
+      "url": "/index.html",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    },
+    {
+      "deployment": "production",
+      "url": "/?checkout=return&report=case_000000000000000000000000&plan=monthly",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    },
+    {
+      "deployment": "production",
+      "url": "/?checkout=return&checkout_cancelled=1",
+      "status": 200,
+      "sha256": "b69ee4182f3e47ae34473936b6494c0fd48b8cae538c7ebe49c0f278f1ee2b7b"
+    }
+  ],
+  "optional_simulator_staging_only": true,
+  "recorded_at": "2026-10-11T14:51:22.877Z"
+}

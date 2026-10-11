@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Credit score simulator — research prototype</title>
+  <link rel="icon" href="/favicon.svg">
+  <link rel="stylesheet" href="/score-simulator.css">
+  <script src="/score-simulator.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <div class="eyebrow">Staging test add-on · fictional profile</div>
+    <header>
+      <div>
+        <h1>Credit score simulator</h1>
+        <p class="intro">Explore how hypothetical credit-profile changes could affect a <strong>research proxy score</strong>. This tool does not calculate or predict a real credit score.</p>
+      </div>
+      <div class="status">No account connection<br><strong>Local browser only</strong></div>
+    </header>
+
+    <div class="workspace">
+      <form id="simulator" novalidate>
+        <section class="group" aria-labelledby="accounts-title">
+          <h2 id="accounts-title">Accounts management</h2>
+          <div id="accounts-options"></div>
+        </section>
+        <section class="group" aria-labelledby="utilization-title">
+          <h2 id="utilization-title">Credit utilization</h2>
+          <div id="utilization-options"></div>
+        </section>
+        <section class="group" aria-labelledby="habits-title">
+          <h2 id="habits-title">Payment habits</h2>
+          <div id="habits-options"></div>
+        </section>
+      </form>
+
+      <aside class="result" aria-label="Simulation result">
+        <div class="result-head">Scenario comparison <span class="pill">Research proxy</span></div>
+        <div class="scores">
+          <div><span>Current proxy</span><strong id="baseline">690</strong></div>
+          <div><span>Simulated proxy</span><strong id="simulated">—</strong></div>
+        </div>
+        <div id="difference" class="difference">Select a scenario to compare.</div>
+        <p class="fine">Fictional starting profile. A simulated action does not represent a completed action, a dispute result, or a lender score.</p>
+        <div id="summary" class="summary" aria-live="polite"></div>
+        <div id="error" class="error" role="alert"></div>
+        <div class="actions">
+          <button type="submit" form="simulator" class="primary">Simulate</button>
+          <button type="button" id="reset" class="secondary">Reset</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

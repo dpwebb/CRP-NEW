@@ -619,7 +619,7 @@ function collectPages(model) {
   const pages = [];
   for (const p of native) {
     if (p.has_native_text) {
-      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
+      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
       const summary = summaryTableLines(page);
       page.lines = summary === page.lines ? columnCaptionLines(page) : summary;
       pages.push(page);
@@ -1549,6 +1549,28 @@ function reportSegments(pages) {
       p.lines.push(line);
     }
   }
+  // Segment copies share physical-page word arrays. When two named report sections
+
+  // occupy one page, an untrusted line cannot claim the other section's word row.
+
+  const namedSegmentsByPage = new Map();
+
+  for (const segment of segments) if (segment.bureau) for (const page of segment.pages) {
+
+    namedSegmentsByPage.set(page.page, (namedSegmentsByPage.get(page.page) || 0) + 1);
+
+  }
+
+  const sharedBureauPage = (page) => (namedSegmentsByPage.get(page.page) || 0) > 1;
+
+  for (const page of pages) if (sharedBureauPage(page)) page.multi_bureau_same_page = true;
+
+  for (const segment of segments) for (const page of segment.pages) {
+
+    if (sharedBureauPage(page)) page.multi_bureau_same_page = true;
+
+  }
+
   // Repeated headers with the same date (or a dateless continuation) remain one report.
   const merged = [];
   for (const segment of segments) {
@@ -1804,9 +1826,13 @@ function buildRecords(pages, convention) {
     // In some native two-column collection cards, a watermark prevents the text row
     // from matching measured words. Recover the card only when its own measured
     // section, agency, DOFD caption and date form one unambiguous geometric group.
-    if (page.source === 'NATIVE_TEXT' && (page.words || []).length &&
+    if (page.source === 'NATIVE_TEXT' && page.multi_bureau_same_page !== true
+
+      && (page.native_words || []).length &&
+
       !pairedLines.some(line => line.trusted !== false && /\bDOFD\s*:\s*\d/i.test(line.text))) {
-      const words = page.words.filter(word => word.trusted !== false);
+      const words = page.native_words.filter(word => word.trusted !== false);
+
       const sections = words.filter(word => /^COLLECTIONS$/i.test(word.text));
       const dofds = words.filter(word => /^\(?DOFD\)?$/i.test(word.text));
       if (sections.length === 1 && dofds.length === 1 && dofds[0].y0 > sections[0].y0) {
@@ -1818,21 +1844,41 @@ function buildRecords(pages, convention) {
           .sort((a, b) => a.x0 - b.x0) : [];
         const dateWords = words.filter(word => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(word.text)
           && Math.abs(word.x0 - dofd.x0) < 6 && word.y0 > dofd.y0 && word.y0 < dofd.y0 + 17);
+        const omittedHeadingWords = statusWord ? words.filter(word => word.x0 >= 260 && word.x0 < statusWord.x0
+
+          && Math.abs(word.y0 - statusWord.y0) < 2 && !/^IN$/i.test(word.text)
+
+          && /^[A-Z][A-Z0-9&'.-]+$/i.test(word.text)) : [];
+
         const agency = headingWords.map(word => word.text).join(' ');
-        if (headingWords.length >= 2 && dateWords.length === 1 && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateWords[0].text)) {
+        if (headingWords.length >= 2 && omittedHeadingWords.length === 0 && dateWords.length === 1
+
+          && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateWords[0].text)) {
+
           const group = (items) => ({ x0: Math.min(...items.map(w => w.x0)), y0: Math.min(...items.map(w => w.y0)),
             x1: Math.max(...items.map(w => w.x1)), y1: Math.max(...items.map(w => w.y1)) });
           const headingText = `Collection: ${agency}`;
           const dateText = `Collection DOFD: ${dateWords[0].text}`;
-          const headingLine = page.lines.find(line => line.text.includes(agency));
-          const dateLine = page.lines.find(line => line.text.includes(dateWords[0].text));
+          const headingLines = page.lines.filter(line => line.text.includes(agency));
+
+          const dateLines = page.lines.filter(line => line.text.includes(dateWords[0].text));
+
           const insertAt = pairedLines.findIndex(line => /\bCOLLECTIONS\s*\(\d+\)/i.test(line.text));
-          if (headingLine && dateLine && insertAt >= 0) pairedLines.splice(insertAt + 1, 0,
-            { text: headingText, page: page.page, line: headingLine.line, source: 'NATIVE_TEXT', trusted: true,
+          // A repeated value on another record cannot supply this card's line provenance.
+
+          if (headingLines.length === 1 && dateLines.length === 1 && insertAt >= 0
+
+            && headingLines[0].line > pairedLines[insertAt].line
+
+            && dateLines[0].line > headingLines[0].line) pairedLines.splice(insertAt + 1, 0,
+
+            { text: headingText, page: page.page, line: headingLines[0].line, source: 'NATIVE_TEXT', trusted: true,
+
               measured_words: true, bbox: group(headingWords), words: headingWords.map((w, i) => ({ ...w,
                 start: 12 + headingWords.slice(0, i).reduce((n, item) => n + item.text.length + 1, 0),
                 end: 12 + headingWords.slice(0, i).reduce((n, item) => n + item.text.length + 1, 0) + w.text.length })) },
-            { text: dateText, page: page.page, line: dateLine.line, source: 'NATIVE_TEXT', trusted: true,
+            { text: dateText, page: page.page, line: dateLines[0].line, source: 'NATIVE_TEXT', trusted: true,
+
               measured_words: true, bbox: group([dofd, dateWords[0]]), words: [
                 { ...dofd, start: 11, end: 15 },
                 { ...dateWords[0], start: 17, end: dateText.length }
@@ -1847,15 +1893,27 @@ function buildRecords(pages, convention) {
         accountSection = originalLine.trusted !== false;
         current = null;
         collectionSection = false;
+        nonAccountSection = false;
         continue;
       }
-      const nextText = String(pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim())?.text || '').trim();
+      const nextLine = pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim());
+
+      const nextText = String(nextLine?.text || '').trim();
+
       const headingIdentity = accountSection && originalLine.trusted !== false
         && /^[A-Z][A-Z0-9 &'.-]{3,80}$/i.test(originalText)
         && /^(?:ACCOUNT|ACCOUNT NUMBER|ACCT)$/i.test(nextText)
         && !/^(?:BALANCE|STATUS|PAYMENT|CREDIT|PAST DUE|ACCOUNT|SUMMARY)$/i.test(originalText);
       const collectionHeadingIdentity = collectionSection && originalLine.trusted !== false
+        && originalLine.measured_words === true && (originalLine.words || []).length >= 2
+
+        && nextLine?.trusted !== false
+
         && /^[A-Z][A-Z0-9 &'.-]{3,80}$/i.test(originalText)
+        && !COLUMN_BOUNDARY_CAPTIONS[captionName(originalText)]
+
+        && !/^(?:SUMMARY|ACCOUNT SUMMARY|PERSONAL INFORMATION|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|ORIGINAL CREDITOR|DATE OF FIRST DELINQUENCY|DOFD|REPORTABLE UNTIL)$/i.test(originalText)
+
         && /^IN COLLECTION$/i.test(nextText);
       const line = headingIdentity ? { ...originalLine, heading_identity: true }
         : collectionHeadingIdentity ? { ...originalLine, text: `Collection: ${originalText}` } : originalLine;
@@ -1865,6 +1923,11 @@ function buildRecords(pages, convention) {
         current = null; collectionSection = line.trusted !== false; nonAccountSection = false; continue;
       }
       if (COLLECTION_CONTINUED_RE.test(text)) { collectionSection = line.trusted !== false; continue; }
+      // A bare report summary or personal-information heading ends the preceding
+      // account. Dates in those sections cannot become that account's dates.
+      if (/^(?:SUMMARY|PERSONAL INFORMATION)\s*:?\s*$/i.test(text)) {
+        current = null; collectionSection = false; nonAccountSection = true; continue;
+      }
       if (/^(?:ACCOUNTS|ACCOUNT INFORMATION|TRADELINES|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|SUMMARY|PERSONAL INFORMATION|EMPLOYMENT|EMPLOYERS)\s*:?\s*$/i.test(text)) {
         if (collectionSection || current?.kind === 'GENERAL_COLLECTION'
           || /^(?:PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES)\s*:?\s*$/i.test(text)) current = null;
@@ -1874,7 +1937,7 @@ function buildRecords(pages, convention) {
         current = null; nonAccountSection = true; continue;
       }
       if (nonAccountSection) {
-        if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
+        if (line.column_boundary || bureauSectionOf(text) || explicitAccountIdentity(text) || /^\s*(?:PUBLIC RECORD|INQUIR|ENQUIR|CREDIT SEARCH|ACCOUNT INFORMATION\b|ACCOUNTS\b|TRADELINES\b)/i.test(text)) nonAccountSection = false;
         else continue;
       }
       // Report segmentation already separates bureaus and distinct report dates. Repeated headers
@@ -2357,10 +2420,10 @@ function findReferenceDate(pages, convention) {
         // Some native PDFs right-align a report-date header so its text row does not match the
         // page's measured word row. Recover only an exact report-date caption and date token
         // from trusted native words on that same measured row; OCR remains withheld.
-        if (page.source === 'NATIVE_TEXT' && /\bREPORT DATE\s*:/i.test(line.text)) {
+        if (page.source === 'NATIVE_TEXT' && page.multi_bureau_same_page !== true && /\bREPORT DATE\s*:/i.test(line.text)) {
           const raw = (line.text.match(DATE_TOKEN) || [])[0];
           const date = raw && normalizePrintedDate(raw, evidencedConvention);
-          const words = page.words || [];
+          const words = page.native_words || [];
           const value = date?.normalized && words.find(w => w.text === raw && w.trusted !== false);
           if (value) {
             const sameRow = words.filter(w => Math.abs(w.y0 - value.y0) <= 1.5 && w.trusted !== false);
@@ -2492,8 +2555,8 @@ function extract(model, opts) {
      numeric date (day or month above 12) resolves independently; an ambiguous date stays unresolved with both
      interpretations preserved. The consumer's selected jurisdiction is never used, and one field's format never
      supplies another field's convention. */
-  const reference_date = findReferenceDate(pages, null);
   const segments = reportSegments(pages);
+  const reference_date = findReferenceDate(pages, null);
   // A single-bureau PDF may print its report date immediately before its bureau title on
   // the same page. Keep the measured header date with that bureau's following records.
   if (segments.length === 2 && !segments[0].bureau && !segments[0].ambiguous &&
