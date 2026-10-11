@@ -354,7 +354,8 @@ function buildHandlers(store, logger, surface) {
       const catalog = require('./plan-catalog.cjs').catalog();
       const publicPlans = catalog.plans.map(({ plan_code, currency, amount_cents, amount_display, interval, headline }) =>
         ({ plan_code, currency, amount_cents, amount_display, interval, headline }));
-      return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency } } };
+      return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency,
+        checkout_pricing: catalog.checkout_pricing } } };
     },
 
     accountProfile: ({ actor }) => ({ status: 200, json: { ok: true, profile: accountProfile.getProfile(store, actor) } }),

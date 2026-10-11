@@ -370,7 +370,7 @@ function firstVisitPlans() {
     <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
     <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
     <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
-    <p class="evidence">Prices are in CAD. You choose a plan before paying.</p></section>`;
+    <p class="evidence">Base prices are in CAD. Stripe offers your local currency based on your IP location. You can change between your local currency and CAD at checkout before paying.</p></section>`;
 }
 
 function recoveryKeyBlock() {
@@ -2246,7 +2246,8 @@ function renderBillingView(data) {
     ${checkingPayment ? '' : upgradeConfirmationBlock()}
     ${subscriptionBenefits('Keep going with a subscription')}
     ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
-    <p class="evidence">Prices are in CAD. A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
+    <p class="evidence">Base prices are in CAD. Stripe offers your local currency based on your IP location. You can change between your local currency and CAD at checkout. The exchange rate and final amount are shown before you pay. Local-currency renewal amounts can change with exchange rates.</p>
+    <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
     <div class="purchase-plan-grid">${planCards}</div>`}
     <p class="evidence">${esc(paymentSentence(pay))}</p>
     ${checkingPayment ? '' : '<p class="evidence">Checkout confirms your final price before you pay.</p>'}`;

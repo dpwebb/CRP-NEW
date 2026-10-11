@@ -206,6 +206,20 @@ async function main() {
   assert.equal(taxedInvoice.event.tax_cents, 20, 'itemized invoice tax is carried for tax-exclusive referral rewards');
   mock.fixture.invoice.total_tax_amounts = [];
 
+  // A local-currency invoice still verifies its CAD ledger value. Provider PI
+  // presentment must match the invoice's identity, currency and exact cash amount.
+  mock.fixture.intents.pi_monthly_1 = { id: 'pi_monthly_1', amount: 200, currency: 'cad',
+    presentment_details: { presentment_amount: 147, presentment_currency: 'usd' } };
+  const nativeInvoice = await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers });
+  assert.deepEqual(nativeInvoice.event.presentment_details, { amount: 147, currency: 'usd' });
+  assert.equal(nativeInvoice.event.amount_cents, 200);
+  mock.fixture.intents.pi_monthly_1.amount = 201;
+  assert.equal((await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers })).event.presentment_details, null,
+    'a mismatched PaymentIntent cannot supply local-currency facts');
+  mock.fixture.intents.pi_monthly_1.amount = 200;
+  mock.fixture.intents.pi_monthly_1.presentment_details.presentment_amount = -1;
+  assert.equal((await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers })).event.presentment_details, null);
+
   // 2. A bad signature is refused.
   const bad = await adapter.verifyEvent({ rawBody: good.raw, headers: { 'stripe-signature': 't=0,v1=deadbeef' } });
   assert.equal(bad.verified, false, 'bad signature refused');
@@ -294,6 +308,7 @@ async function main() {
     checkout_id: 'chk_unit_annual', return_url: 'http://127.0.0.1:8787/?checkout=return', credit_amount_cents: 795 });
   const annualBody = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
   assert.equal(annualBody.get('line_items[0][price]'), PRICE_IDS.annual, 'yearly Checkout uses its own validated yearly Price');
+  assert.equal(annualBody.get('adaptive_pricing[enabled]'), 'true');
   assert.equal(mock.fixture.session.amount_total, 7155, 'the provider fixture bills the exact yearly price less unused monthly cash');
   const ownedCheckout = { checkout_id: 'chk_unit_annual', provider_reference: annual.provider_reference,
     provider_subscription_reference: 'sub_unit_annual' };
@@ -303,6 +318,16 @@ async function main() {
   assert.equal(receipts[0].amount_cents, 7155, 'reconciliation never replaces discounted cash with the full catalog price');
   assert.equal(receipts[0].plan_code, 'annual', 'historical receipt keeps its original purchased plan');
   assert.equal(receipts[0].verified_payment, true, 'the provider independently confirms the paid receipt');
+
+  for (const plan of ['report_once', 'monthly', 'annual']) {
+    await adapter.createCheckout({ account_id: 'acc_local_' + plan, plan_code: plan, checkout_id: 'chk_local_' + plan,
+      customer_email: 'native+location_GB@example.test', credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' });
+    const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
+    assert.equal(sent.get('adaptive_pricing[enabled]'), 'true', plan + ': enable native-currency checkout');
+    assert.equal(sent.get('customer_email'), 'native+location_GB@example.test');
+    assert.equal(sent.get('line_items[0][price]'), PRICE_IDS[plan]);
+    assert.equal(sent.has('currency'), false, 'Stripe IP detection is not overridden by a guessed currency');
+  }
   await assert.rejects(adapter.readPaidReceipts({ account_id: 'acc_foreign', checkouts: [ownedCheckout] }),
     /PAYMENT_HISTORY_CHECKOUT_MISMATCH/, 'another account cannot import this invoice as upgrade cash');
 

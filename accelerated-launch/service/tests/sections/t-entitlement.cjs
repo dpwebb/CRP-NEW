@@ -449,16 +449,25 @@ async function stripeRenewalCancellation(t, check, evidence) {
       body: { plan_code: plan, return_url: returnUrl } });
     check.equal(checkout.status, 201, label + ': actual Stripe adapter opens this owned mock Checkout');
     const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
+    check.equal(sent.get('adaptive_pricing[enabled]'), 'true', label + ': native currency conversion is explicitly enabled');
+    check.equal(sent.get('customer_email'), t.service.store.state().accounts.find(a => a.account_id === actor.account_id).email,
+      label + ': checkout email comes from the authenticated account');
     check.equal(sent.get('success_url'), returnUrl, label + ': Stripe success retains the report return context');
     const cancelledReturn = new URL(sent.get('cancel_url'));
     check.equal(cancelledReturn.searchParams.get('checkout_cancelled'), '1', label + ': cancelling Checkout has a distinct return hint');
     cancelledReturn.searchParams.delete('checkout_cancelled');
     check.equal(cancelledReturn.href, returnUrl, label + ': cancellation preserves the same origin and report context');
+    mock.fixture.session.presentment_details = { presentment_amount: 999, presentment_currency: 'usd' };
     const signed = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_activate_' + sequence,
       type: 'checkout.session.completed', livemode: false, created: Math.floor(Date.now() / 1000),
       data: { object: { ...mock.fixture.session } } });
     const granted = await t.request('POST', '/api/billing/events', { raw: signed.raw, headers: signed.headers });
     check.equal(granted.json?.event?.accepted, true, label + ': verified mock Stripe event grants this subscription');
+    const paid = t.service.store.state().checkout_sessions.find(c => c.checkout_id === checkout.json.checkout.checkout_id);
+    check.equal(paid.verified_presentment?.currency, 'usd', label + ': the signed local currency is retained');
+    check.equal(paid.verified_presentment?.amount, 999, label + ': local amount is distinct from base-currency payment');
+    check.equal(paid.verified_paid_cents, plans.plan(plan).amount_cents - (paid.credit_applied_cents || 0),
+      label + ': local presentment never changes the verified CAD price or credit');
     return { actor, checkout: checkout.json.checkout };
   }
   function holdUpdate() {

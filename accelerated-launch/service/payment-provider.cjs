@@ -244,6 +244,26 @@ function verifiedInvoiceTaxCents(invoice) {
   return Number.isSafeInteger(tax) && Number.isSafeInteger(invoice.amount_paid) && tax <= invoice.amount_paid ? tax : null;
 }
 
+/** Stripe converts presentment, while its CAD amounts remain the verified price/credit ledger.
+ * Only signed/retrieved provider facts reach this helper. Never accept a browser FX amount.
+ */
+function presentmentDetails(object) {
+  const value = object?.presentment_details;
+  return Number.isSafeInteger(value?.presentment_amount) && value.presentment_amount >= 0 &&
+    /^[a-z]{3}$/.test(value?.presentment_currency || '')
+    ? { amount: value.presentment_amount, currency: value.presentment_currency } : null;
+}
+
+async function paymentPresentment(secretKey, base, paymentIntent, amount, currency) {
+  const id = typeof paymentIntent === 'string' ? paymentIntent : paymentIntent?.id;
+  if (!/^pi_[A-Za-z0-9_]+$/.test(id || '')) return null;
+  try {
+    const got = await stripe.retrievePaymentIntent(secretKey, id, base);
+    return got.status === 200 && got.json.id === id && got.json.currency === currency &&
+      got.json.amount === amount ? presentmentDetails(got.json) : null;
+  } catch { return null; }
+}
+
 /** Normalise `checkout.session.completed` / `checkout.session.async_payment_succeeded`. */
 async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, type) {
   const accountRef = session.client_reference_id || (session.metadata && session.metadata.account_id);
@@ -251,10 +271,12 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
   if (!accountRef || !planCode || !plans.isPlanCode(planCode)) return null;
 
   let priceId = null;
+  let presentment = presentmentDetails(session);
   let verifiedTaxCents = Number.isSafeInteger(session.total_details?.amount_tax) ? session.total_details.amount_tax : null;
   try {
     const fetched = await stripe.retrieveSession(secretKey, session.id, base);
     if (fetched.status === 200) {
+      presentment = presentmentDetails(fetched.json) || presentment;
       const items = fetched.json.line_items && fetched.json.line_items.data;
       if (items && items.length && items[0].price) priceId = items[0].price.id;
       if (Number.isSafeInteger(fetched.json.total_details?.amount_tax)) {
@@ -308,7 +330,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
     period_end: periodEnd,
     payment_intent: paymentIntent,
     invoice_reference: invoiceReference,
-    payment_verified: paymentVerified
+    payment_verified: paymentVerified,
+    presentment_details: presentment
   };
 }
 
@@ -349,6 +372,7 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
   const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
   const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code) === priceId);
   if (!invoicePlan || lines[0].quantity !== 1 || invoice.currency !== 'cad') return null;
+  const presentment = await paymentPresentment(secretKey, base, invoice.payment_intent, invoice.amount_paid, invoice.currency);
   return {
     event_id: eventId,
     type,
@@ -363,7 +387,8 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
     currency: typeof invoice.currency === 'string' ? invoice.currency : null,
     period_end: lines[0].period?.end ? new Date(lines[0].period.end * 1000).toISOString() : resolved.periodEnd,
     payment_intent: invoice.payment_intent || null,
-    payment_verified: type === 'invoice.paid' && invoice.status === 'paid'
+    payment_verified: type === 'invoice.paid' && invoice.status === 'paid',
+    presentment_details: presentment
   };
 }
 
@@ -511,6 +536,7 @@ function makeStripeAdapter(env) {
     cancelledReturn.searchParams.set('checkout_cancelled', '1');
     const params = {
       mode,
+      'adaptive_pricing[enabled]': true,
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': 1,
       success_url: req.return_url,
@@ -520,6 +546,9 @@ function makeStripeAdapter(env) {
       'metadata[plan_code]': planCode,
       'metadata[checkout_id]': req.checkout_id || ''
     };
+    // Prefill the account's own email. Stripe's documented +location_XX emails
+    // exercise country/IP presentment in Sandbox; production uses actual IP location.
+    if (typeof req.customer_email === 'string') params.customer_email = req.customer_email;
     if (mode === 'subscription') {
       params['subscription_data[metadata][account_id]'] = req.account_id;
       params['subscription_data[metadata][plan_code]'] = planCode;

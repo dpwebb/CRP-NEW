@@ -77,6 +77,7 @@ async function openCheckout(store, actor, input, env) {
         created_at: now, granted_at: null, expires_at: null, event_ids: [] });
     });
     const request = { account_id: actor.account_id, plan_code: code, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
+      customer_email: store.state().accounts.find(a => a.account_id === actor.account_id)?.email,
       credit_amount_cents: reservation.amount_cents || 0, apply_upgrade_credit: reservation.reserved };
     if (isUpgrade) Object.assign(request, { existing_plan_code: original.plan_code,
       existing_checkout_id: original.checkout_id, provider_reference: original.provider_reference,
