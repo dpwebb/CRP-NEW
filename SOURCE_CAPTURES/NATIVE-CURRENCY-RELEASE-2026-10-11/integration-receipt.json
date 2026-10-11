@@ -1,0 +1,189 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "passed": true,
+  "applied": [
+    {
+      "file": "fdt-mitigation-evidence.json",
+      "before_sha256": "4125b69a44c5c717a4baeed2a9f775846b55a9b574a9e99ce99bae70c0c18bbf",
+      "after_sha256": "51f4323e0356ab7e3adf5419b4735ba5dc9f94f3ec828f6e651c04ccf030a503",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/fdt-mitigation-evidence.json"
+    },
+    {
+      "file": "clarify-evidence.json",
+      "before_sha256": "1142602c8cb6e14415e50a266f0a0c7d2b25717356910c509a194ef8a1892461",
+      "after_sha256": "6e055b2ed06879ade447c03509959e1c7b0ad48430e602ff738d46395faec990",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/clarify-evidence.json"
+    },
+    {
+      "file": "common-errors-evidence.json",
+      "before_sha256": "35a2066b2990e923b32cf41e8d65c35d5eea54a551477b08bd16722ee6b2bb5d",
+      "after_sha256": "ee3d87dd569dc1c71fa3874afba809fd44cd3e96cb6fe15aed15349c246fc326",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/common-errors-evidence.json"
+    },
+    {
+      "file": "gap-ingest-001-evidence.json",
+      "before_sha256": "0a6cf6c4b7d1127df42fbdf44acd44bf2e75c1994879bff74f5dd78a7d554be6",
+      "after_sha256": "6e4b4848f9cb79f72de65a87948a41936e7e3b47803c6c063cbda0f7e0fb66fa",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-001-evidence.json"
+    },
+    {
+      "file": "gap-ingest-002-evidence.json",
+      "before_sha256": "037cdcf03cdd8ed2333d1702418f69809e6af78bbfc220bb9622836de3623489",
+      "after_sha256": "acdda139dbdb0f70863cb49e4fe994f3ed571764946b1281c0fd0ecf99c51b5a",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-002-evidence.json"
+    },
+    {
+      "file": "gap-ingest-003-evidence.json",
+      "before_sha256": "5848a8789ade9c3989a53c93a58512efabb96d7d675edde76add1f4d67473ece",
+      "after_sha256": "1005fcb1aa20be3d44e7c878be18e256079e9d72dba757af87cb24ade9a1df04",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-003-evidence.json"
+    },
+    {
+      "file": "gap-ingest-004-evidence.json",
+      "before_sha256": "7aa002a57c7230377fee4893489c9960807e28a8327d7194dfdae0213a09d482",
+      "after_sha256": "b82eaeb0c87b3bb35e8446c66fa18969e9633a380e63a1aa8a8426c62a3e185f",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-004-evidence.json"
+    },
+    {
+      "file": "gap-ingest-005-evidence.json",
+      "before_sha256": "e906ea5c72cda8e85cacd8ef6ff51e994e770600d99547be2e53dd68d6ca37d6",
+      "after_sha256": "06fe18e34a1f3bd4aff731e856d43d5750d684820b338aef0dc8325a34798462",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-005-evidence.json"
+    },
+    {
+      "file": "gap-ingest-006-evidence.json",
+      "before_sha256": "220e31a14f73a0291255b1e8c4e4bf1a6c9a36c48e43f70a0cbf804534840858",
+      "after_sha256": "591d36fcfcb7763dd90e98ebdcb7f0ebc33b4f35c8e9d261cd92dc10d243ce3d",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-006-evidence.json"
+    },
+    {
+      "file": "gap-ingest-007-evidence.json",
+      "before_sha256": "0fb37b24322bf66a133e8185c3977bfdbeafc706f2c12ba743ef34192d8ee50f",
+      "after_sha256": "f203f3c091ee1432da79c983e38f20892407886c8d8f181757da8c8de96fcd6a",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-007-evidence.json"
+    },
+    {
+      "file": "gap-ingest-008-evidence.json",
+      "before_sha256": "6535e211155ab5fc6ad0fff28b2745a2cb1c28483641681b8c49d684fc5bf772",
+      "after_sha256": "982109b41c9209cb30420b98223338ed745c826a6f250cf62ffde497e6b97ff9",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-008-evidence.json"
+    },
+    {
+      "file": "gap-ingest-009-evidence.json",
+      "before_sha256": "b9dd0e43a8c7c451c1625c6d5e2978ef5c513380a415ceb9efc7929a04aaead0",
+      "after_sha256": "b8fb944f48eaa207d3dd1325bbd89f8dc4f4b441e4c1d62bf7f9c5c8901dbd44",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-009-evidence.json"
+    },
+    {
+      "file": "gap-ingest-010-evidence.json",
+      "before_sha256": "2503e105cf78ddd266600e29af67016d31bf82ca117c9eddcf735b36fff0d270",
+      "after_sha256": "79917d82b0e2cf318f8f40231f9667b7c2e4e2829e689e16b34e884545807000",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-ingest-010-evidence.json"
+    },
+    {
+      "file": "gap-finding-001-evidence.json",
+      "before_sha256": "f5fce7b1e47422a2bfbe6bf71c81d6f9c94971e185effe8afde9cbeeee7b8ee7",
+      "after_sha256": "3a8f88e2ccafd5f68dbaf3274bae6a8152c1079d0e85b1da0f6b2ffe900536c2",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-finding-001-evidence.json"
+    },
+    {
+      "file": "gap-finding-002-evidence.json",
+      "before_sha256": "feff6c4962a02986e3a04d4742660ecdf4e0c6b5e76fc5bc57c77df04f0d4a0f",
+      "after_sha256": "d73e7d375c40e2cfe71df5b41892ffee8f9361fca4bb988a2af70269989a9f21",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-finding-002-evidence.json"
+    },
+    {
+      "file": "gap-finding-003-evidence.json",
+      "before_sha256": "aa2d55052d8d26be3c1fec95ded31ff516fd60c9d3d8d6d590f5e65ecd2ccd15",
+      "after_sha256": "c59ae5f7119e94c4b4b30bddbad946e4de836cad53b5130d25731c76b0d85c0a",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-finding-003-evidence.json"
+    },
+    {
+      "file": "gap-finding-004-evidence.json",
+      "before_sha256": "dbdbeaefbd18cce4608f05e85594b6564a0f5369e9bbbd5eaa4a74ecf34f04a4",
+      "after_sha256": "3a03e153a4c737349198dab79d628e918b6e2290048f6485fea3778f109811e6",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/gap-finding-004-evidence.json"
+    },
+    {
+      "file": "consumer-results-evidence.json",
+      "before_sha256": "b320c771299439c4966ce6740b12b54f5bb0621a96c394c3a552924648579aa2",
+      "after_sha256": "75f935d6ab321c33dcfd4c6ddecb526d02f4929c6a36345ae5f6dcad092f5a91",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-results-evidence.json"
+    },
+    {
+      "file": "consumer-explanations-evidence.json",
+      "before_sha256": "ce46191df81b2adeab94bdf42d7f59ebf3285c9b21d9cdb89afd7b54d4bf941a",
+      "after_sha256": "1d265e3c09232d4468d7b08ee61ca85bd16a1f1b4af9583aba767187f6c16653",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-explanations-evidence.json"
+    },
+    {
+      "file": "consumer-billing-evidence.json",
+      "before_sha256": "ee7a849d885587b334645260f1dff93035c5420cdd93376d909f19419a957185",
+      "after_sha256": "baf5ff7cf746192cd9520c978f8bc0a31b233a7c6d3f8d3c631d2a17df3bd07a",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-billing-evidence.json"
+    },
+    {
+      "file": "consumer-privacy-evidence.json",
+      "before_sha256": "58d36ea0d199a1614a2039669f65a3b904b3532cf774405dccbf21ba68b5112f",
+      "after_sha256": "f4b30593c6d30c90b34e52db4ff081d5252eb266896f2d67aeda936e81546a8a",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-privacy-evidence.json"
+    },
+    {
+      "file": "consumer-support-evidence.json",
+      "before_sha256": "d6cfd96931a2f5fa124580b411de006d4296ddb4ea2bfa12ebf5e924612c1899",
+      "after_sha256": "754bfb9c003f44347a1d7f5db7849ba3e9c7c26116174f94746eb2df6ae518f8",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-support-evidence.json"
+    },
+    {
+      "file": "consumer-language-imperative-evidence.json",
+      "before_sha256": "d7c657fdb80f1a19b1ba50dae3fb263e607f2df518686dfa07ce23b88d57ec29",
+      "after_sha256": "3275a930af3b3abbb26e23447080989b43081f892f79f901646e0a44cfdd0ce8",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-language-imperative-evidence.json"
+    },
+    {
+      "file": "consumer-incomplete-presentation-evidence.json",
+      "before_sha256": "176f17f99ba1ab489d2e9f965f1ed5b6d8b6c8187974e81f253d4e3d2644310b",
+      "after_sha256": "1eb9abbbf056d2215fda6f38a8d06ec796d8dbba9995ecebb361ca12eaffb8d3",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/consumer-incomplete-presentation-evidence.json"
+    },
+    {
+      "file": "clarification-materiality-evidence.json",
+      "before_sha256": "6d657e236f1e27496d595217f64c96984f3b98f456a0095516087efec7f93539",
+      "after_sha256": "5bd45a15ef4c32568db9ffa6e03a029bb7ae3f457e5dbc8fef74e5327916e2ad",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/clarification-materiality-evidence.json"
+    },
+    {
+      "file": "finding-coverage-evidence.json",
+      "before_sha256": "b24b600d0f62f51afade8b547fa9c85d8223395fdc1c01585d1da0346e4ef1b5",
+      "after_sha256": "1c3a203d674ebddca7440ee1eaada017112620000bf834b320432b75b42ae4bf",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/finding-coverage-evidence.json"
+    },
+    {
+      "file": "all82-facilitation-evidence.json",
+      "before_sha256": "822022beabe565c90eb607d1ccb2dbdcf8011931036b7d00900a365924d7e381",
+      "after_sha256": "1afa83513cb7ab7a51f2241a91d4e961d97271cbfc5debaa40c732ababe2bda1",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/all82-facilitation-evidence.json"
+    },
+    {
+      "file": "dispute-packet-evidence.json",
+      "before_sha256": "4012579c478fb97f0d00e98fffb7db17059c587988a08d271a6ea297c7b1401d",
+      "after_sha256": "95c5d55a5aa1ad1ca01ba53c20c20b4c4383f05c2acc0582084a50567dc56463",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/dispute-packet-evidence.json"
+    },
+    {
+      "file": "report-data-to-issue-evidence.json",
+      "before_sha256": "88933241230aa524bdbee76192baa71094fb817e8a952b87b89f0665cdd1a817",
+      "after_sha256": "b7568aacdffb8ffb5fe8e470e0ef9b9d7e12b45033c0cbda145766ff118cdc2b",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/report-data-to-issue-evidence.json"
+    },
+    {
+      "file": "subscription-value-evidence.json",
+      "before_sha256": "e2bfd4136c3fd8f2ac1062284afa8f4808e3237032165da770152865439ad6e0",
+      "after_sha256": "29d7037c1ea03a919744308d4549ca295c1c4d0b42ed05ea9e95505c7f74aae5",
+      "archive": "native-currency-hosted-2026-10-11/canonical-before-integration/subscription-value-evidence.json"
+    }
+  ],
+  "canonical_evidence_written": true,
+  "old_bytes_archived": true,
+  "recorded_at": "2026-10-11T23:25:38.785Z"
+}

@@ -1,0 +1,75 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "host": "https://creditregulatorpro.com",
+  "passed": true,
+  "actual_browser": true,
+  "ip_country": "CA",
+  "initial_currency": "cad",
+  "ip_pricing_matched": true,
+  "fixed_prices": [
+    {
+      "currency": "cad",
+      "amounts": [
+        595,
+        795,
+        7950
+      ],
+      "status": 200,
+      "passed": true
+    },
+    {
+      "currency": "usd",
+      "amounts": [
+        495,
+        595,
+        5950
+      ],
+      "status": 200,
+      "passed": true
+    },
+    {
+      "currency": "aud",
+      "amounts": [
+        595,
+        795,
+        7950
+      ],
+      "status": 200,
+      "passed": true
+    },
+    {
+      "currency": "gbp",
+      "amounts": [
+        315,
+        425,
+        4250
+      ],
+      "status": 200,
+      "passed": true
+    }
+  ],
+  "layouts": [
+    {
+      "screen": "home",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "screen": "home",
+      "width": 390,
+      "horizontal_overflow": false
+    },
+    {
+      "screen": "signin",
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "screen": "signin",
+      "width": 390,
+      "horizontal_overflow": false
+    }
+  ],
+  "live_charge": false,
+  "measured_at": "2026-10-11T23:26:43.354Z"
+}

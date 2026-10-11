@@ -1,0 +1,359 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "passed": true,
+  "actual_browser": true,
+  "live_charge": false,
+  "results": [
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "report_once",
+      "currency": "cad",
+      "session_id": "cs_test_a1cG9x5UZzTUxPwuBgpdAqNiKkXJ6HabP2zkyKs7AeJ57H0eZHr7wYD6Ya",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:15:15.524Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "monthly",
+      "currency": "cad",
+      "session_id": "cs_test_a1PyrH5ED2V7zU6VxzG440j27zfHlRGHlixwDpCtXEvUrPWAjLeDEj2pDj",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:12:02.298Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "annual",
+      "currency": "cad",
+      "session_id": "cs_test_a1HgJj1WTSl1eEHfDvAe2c4oEDttfspg6guPYHzEiqvZfKSUEeyhubl5m9",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:15:31.993Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "report_once",
+      "currency": "usd",
+      "session_id": "cs_test_a1ofmOUcfK35yq0xbBCDNEdDrnhumxYb8tM9OyJNX64vNxOFLSAruRr5eY",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:15:46.086Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "monthly",
+      "currency": "usd",
+      "session_id": "cs_test_a1SKnyG1djn6igLCUhphdAzWEXHlR8LR1SS8XVXWbwUDKqMj8NHUiR0c3x",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:16:03.597Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "annual",
+      "currency": "usd",
+      "session_id": "cs_test_a15hBfoV0dKKOqEkrVV1A1DPi4Oca5bVTxQB4SBmpN56WIVkHyPW3SQHCW",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:16:20.995Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "report_once",
+      "currency": "aud",
+      "session_id": "cs_test_a1ndhzna2aqZAOKeqa2BoVNG1UJX1HaSmTWwWUk9aAurvIpmXv637ma8EW",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:16:35.675Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "monthly",
+      "currency": "aud",
+      "session_id": "cs_test_a1hEgf0KStBGvTx5fi2wv5vJSgrpvGUGBQtiGrgBldro4uPw3WaHtQpffC",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:16:52.157Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "annual",
+      "currency": "aud",
+      "session_id": "cs_test_a1x1DyWzBfR9k7FYXlMU0CeJNUxYBLVJ2st2Vbhbe7Y7riKmorcQqdRVVp",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:17:08.386Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "report_once",
+      "currency": "gbp",
+      "session_id": "cs_test_a1srizY8boswLuG7GdmbiagbjSFq16NRkoMM62hwgSSSynZwHEmj5LpkQE",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:17:21.341Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "monthly",
+      "currency": "gbp",
+      "session_id": "cs_test_a1tjm5VAyphwuD82YsSkYTzI3BQcers0t61Z0APOqnhLJ6mLw0o0Th1viQ",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:17:40.287Z"
+    },
+    {
+      "build_id": "crp-v1-378b2463903ad652",
+      "plan": "annual",
+      "currency": "gbp",
+      "session_id": "cs_test_a18d4jIGL8PsKhK5TThzPuRkFqWMNKxGwaykhkdHeZEwoCuoSvgp94iet5",
+      "test_only": true,
+      "actual_browser": true,
+      "submitted": true,
+      "provider_return_observed": true,
+      "fixed_price_copy": true,
+      "no_exchange_rate_pricing": true,
+      "mobile_overflow": false,
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true,
+      "measured_at": "2026-10-11T23:17:56.467Z"
+    }
+  ],
+  "refs": [
+    {
+      "file": "native-report_once-cad-browser.json",
+      "sha256": "3e817121a466b731caa8b2864f45a876a68837cb3e44102981ec0572ac9f5627"
+    },
+    {
+      "file": "native-monthly-cad-browser.json",
+      "sha256": "2450f03315b7d1a43a282896c3cce6e61e8aa79f7f8f2db7fe27a68dae154e28"
+    },
+    {
+      "file": "native-annual-cad-browser.json",
+      "sha256": "65aa2463d58325cbcc840b7b71efe291a12c282e1f1dca9d132f9aca6f1e77e0"
+    },
+    {
+      "file": "native-report_once-usd-browser.json",
+      "sha256": "3a4c74d949429a000de652c00fbbaa7cf3406a51fcd43faaf9a77c1bfe0b9103"
+    },
+    {
+      "file": "native-monthly-usd-browser.json",
+      "sha256": "25547a72b087d42659f008f7eff9fa2fa44a3c6639b5ad15f14ff51b8a81849d"
+    },
+    {
+      "file": "native-annual-usd-browser.json",
+      "sha256": "9988148e827f0d4a9d8a37d3cb85b7360e34a721094f1912dc9423b2829fb144"
+    },
+    {
+      "file": "native-report_once-aud-browser.json",
+      "sha256": "d6205b51c1d032e667f0a56bea7e7c68f123ee474e4dc069cacecb12029dd4e4"
+    },
+    {
+      "file": "native-monthly-aud-browser.json",
+      "sha256": "7ff8ed1b4055e1cae22cd76689d2575cd3faf3e9e20cc3cddd09ed55ad467c0b"
+    },
+    {
+      "file": "native-annual-aud-browser.json",
+      "sha256": "89acd4d836331ae0a6909df18165b81feed3368bad1dac117401eda32c05f08d"
+    },
+    {
+      "file": "native-report_once-gbp-browser.json",
+      "sha256": "fa368d7ef53085aa6dd1ac6ec9c5f3c224db47c18164fbc928127f5ed2d08c49"
+    },
+    {
+      "file": "native-monthly-gbp-browser.json",
+      "sha256": "8b0f3d5b103bae6e0e227ea763403c66953efab3afb6110296add9ac8277eec6"
+    },
+    {
+      "file": "native-annual-gbp-browser.json",
+      "sha256": "570654051db9e69a3289b59d699223927047326ebff122feb0e415e9b8db19a4"
+    }
+  ],
+  "measured_at": "2026-10-11T23:18:27.224Z"
+}

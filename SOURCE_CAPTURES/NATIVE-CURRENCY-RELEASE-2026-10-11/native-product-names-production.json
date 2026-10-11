@@ -1,0 +1,31 @@
+{
+  "target": "production",
+  "passed": true,
+  "amounts_or_currencies_changed": false,
+  "bank_or_payout_settings_changed": false,
+  "live_charge": false,
+  "results": [
+    {
+      "plan": "report_once",
+      "product_id": "prod_VPY4JAwmNhQB3L",
+      "before_name": "CRP One-Time Credit Report",
+      "after_name": "Credit Regulator Pro — One report",
+      "currency_independent_name": true
+    },
+    {
+      "plan": "monthly",
+      "product_id": "prod_VPY4PTlJJt7egZ",
+      "before_name": "CRP Monthly Subscription",
+      "after_name": "Credit Regulator Pro — Monthly",
+      "currency_independent_name": true
+    },
+    {
+      "plan": "annual",
+      "product_id": "prod_VPY4RdibwIQgu8",
+      "before_name": "CRP Annual Subscription",
+      "after_name": "Credit Regulator Pro — Yearly",
+      "currency_independent_name": true
+    }
+  ],
+  "measured_at": "2026-10-11T23:22:46.855Z"
+}

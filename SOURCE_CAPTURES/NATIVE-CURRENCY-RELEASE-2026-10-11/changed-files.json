@@ -1,0 +1,31 @@
+{
+  "baseline_commit": "54c0340d45be0bd2745b67ccc4cc33ff8e61be58",
+  "source_commit": "b910f9f714e37e2235f6ef888385052f67fd67ba",
+  "files": [
+    "CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md",
+    "accelerated-launch/service/app.cjs",
+    "accelerated-launch/service/billing-credits.cjs",
+    "accelerated-launch/service/billing-event-effects.cjs",
+    "accelerated-launch/service/checkout-purchase.cjs",
+    "accelerated-launch/service/deploy/release-manifest.json",
+    "accelerated-launch/service/entitlement.cjs",
+    "accelerated-launch/service/errors.cjs",
+    "accelerated-launch/service/payment-provider.cjs",
+    "accelerated-launch/service/plan-catalog.cjs",
+    "accelerated-launch/service/pricing-location.cjs",
+    "accelerated-launch/service/privacy.cjs",
+    "accelerated-launch/service/tests/harness.cjs",
+    "accelerated-launch/service/tests/run-tests.cjs",
+    "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+    "accelerated-launch/service/tests/sections/ec-account-packet-ui.cjs",
+    "accelerated-launch/service/tests/sections/en-purchase-presentation.cjs",
+    "accelerated-launch/service/tests/sections/eo-cumulative-upgrade-credit.cjs",
+    "accelerated-launch/service/tests/sections/ep-provider-upgrades.cjs",
+    "accelerated-launch/service/tests/sections/fg-native-currency-pricing.cjs",
+    "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+    "accelerated-launch/service/tests/stripe-upgrade-fixture.cjs",
+    "accelerated-launch/service/tests/test-stripe-adapter.cjs",
+    "accelerated-launch/service/ui/app.js",
+    "accelerated-launch/service/upgrade-credit.cjs"
+  ]
+}

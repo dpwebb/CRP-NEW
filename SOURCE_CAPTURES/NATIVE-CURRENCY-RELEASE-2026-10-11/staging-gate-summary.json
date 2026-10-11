@@ -1,0 +1,348 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "passed": true,
+  "gates": 30,
+  "criteria": 123,
+  "measurement_receipt_sha256": "eacdb16f17296a972d7c8729cdc21540bd2061c582aa5acbcf1cf2c22658492d",
+  "predicates": [
+    {
+      "id": "final_full_freeze",
+      "passed": true,
+      "refs": [
+        "current-regression-evidence.json"
+      ]
+    },
+    {
+      "id": "immutable_served_source",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json",
+        "native-currency-hosted-2026-10-11/phase2-receipt.json",
+        "native-currency-hosted-2026-10-11/input-manifest.json"
+      ]
+    },
+    {
+      "id": "actual_phase1",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_paid_activation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/provider-paid.json",
+        "native-currency-hosted-2026-10-11/checkout-receipt.json",
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_phase2",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_cleanup",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/provider-cleanup.json",
+        "native-currency-hosted-2026-10-11/cleanup-receipt.json"
+      ]
+    },
+    {
+      "id": "native_order",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "image_order",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "exact_duplicates",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "continuation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "written_dates",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "numeric_dates",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "month_precision",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "reference_dates",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "useful_recovery",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "bounded_unsuccessful",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "upload_limits",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "stable_support",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "support_isolation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "account_isolation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "privacy_inventory",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "current_plan_quotes",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "owned_history",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "chronological_linkage",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "changed_issue",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "history_isolation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_comparison_continuity",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_result",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_plan_quotes",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "own_ocr_locations",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "checklist_source_breach",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_probable_breach",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "no_irrelevant_context_questions",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "consumer_violation_labels",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "serious_clear_unpaid_example",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "plain_consumer_explanations",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "internal_reading_limit_retained",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_current_owner_version",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/review-receipt.json",
+        "native-currency-hosted-2026-10-11/download-receipt.json",
+        "native-currency-hosted-2026-10-11/continuity-receipt.json",
+        "native-currency-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_editable_visual_review",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_exact_source_sequence",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_inline_identity_address",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_forms_retired",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_browser_download_print",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "current_approval_navigation",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/browser-stage-navigation.json",
+        "native-currency-hosted-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "genuine_unused_payment_upgrade",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/upgrade-proof.json",
+        "native-currency-hosted-2026-10-11/cancellation-proof.json"
+      ]
+    },
+    {
+      "id": "reporting_period_directive",
+      "passed": true,
+      "refs": [
+        "native-currency-hosted-2026-10-11/hosted-published-packet-probe.json",
+        "current-regression-evidence.json"
+      ]
+    }
+  ],
+  "additional_billing_verification": {
+    "native_currency_three_plan_checkout": true,
+    "native_payments_sha256": "e07ac9af69129e12c469020376615b35e793fae0a4aa5a95f2ef368281b33b75",
+    "native_cleanup_sha256": "7a42d82734443446d8cfa2bf855ff2b3732bb97fbb4cf8093a4a2a54179fca79"
+  },
+  "recorded_at": "2026-10-11T23:25:44.262Z"
+}

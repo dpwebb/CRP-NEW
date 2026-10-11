@@ -1,0 +1,84 @@
+{
+  "target": "staging",
+  "passed": true,
+  "live_charge": false,
+  "price_cells": 12,
+  "amounts_fixed": true,
+  "settlement_conversion_owner_authorized": true,
+  "results": [
+    {
+      "plan": "report_once",
+      "currency": "cad",
+      "amount": 595,
+      "price_id": "price_1ULsBCKCM3e4JIjW67Vanlab"
+    },
+    {
+      "plan": "report_once",
+      "currency": "usd",
+      "amount": 495,
+      "price_id": "price_1UPUwBKCM3e4JIjWORW4HA89"
+    },
+    {
+      "plan": "report_once",
+      "currency": "aud",
+      "amount": 595,
+      "price_id": "price_1UPUwBKCM3e4JIjWhgyMwwNo"
+    },
+    {
+      "plan": "report_once",
+      "currency": "gbp",
+      "amount": 315,
+      "price_id": "price_1UPUwBKCM3e4JIjWISKhHXIG"
+    },
+    {
+      "plan": "monthly",
+      "currency": "cad",
+      "amount": 795,
+      "price_id": "price_1ULsBDKCM3e4JIjW0AYbmBjq"
+    },
+    {
+      "plan": "monthly",
+      "currency": "usd",
+      "amount": 595,
+      "price_id": "price_1UPUwCKCM3e4JIjWlYDyxyNu"
+    },
+    {
+      "plan": "monthly",
+      "currency": "aud",
+      "amount": 795,
+      "price_id": "price_1UPUwCKCM3e4JIjWU815pkOH"
+    },
+    {
+      "plan": "monthly",
+      "currency": "gbp",
+      "amount": 425,
+      "price_id": "price_1UPUwCKCM3e4JIjWLb8Px18Z"
+    },
+    {
+      "plan": "annual",
+      "currency": "cad",
+      "amount": 7950,
+      "price_id": "price_1ULsBDKCM3e4JIjWlTl2xNrr"
+    },
+    {
+      "plan": "annual",
+      "currency": "usd",
+      "amount": 5950,
+      "price_id": "price_1UPUwDKCM3e4JIjWPq8Rupw0"
+    },
+    {
+      "plan": "annual",
+      "currency": "aud",
+      "amount": 7950,
+      "price_id": "price_1UPUwDKCM3e4JIjW1NhcK92y"
+    },
+    {
+      "plan": "annual",
+      "currency": "gbp",
+      "amount": 4250,
+      "price_id": "price_1UPUwDKCM3e4JIjWkOdKYlV9"
+    }
+  ],
+  "measured_at": "2026-10-11T22:09:50.081Z",
+  "original_env_sha256": "ed13c453ab565a86665b927f88413ab0dc905e2422bf4e20fe783b2301492094"
+}

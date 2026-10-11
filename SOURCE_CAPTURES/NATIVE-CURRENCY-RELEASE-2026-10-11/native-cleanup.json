@@ -1,0 +1,84 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "passed": true,
+  "results": [
+    {
+      "account_id": "acc_b9504ff00cca255c2eccd9ae",
+      "plan": "report_once",
+      "subscription_ended": false,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_26b04de3741f02cb91e10c5d",
+      "plan": "annual",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_83831e59a5a5da612a03f73b",
+      "plan": "report_once",
+      "subscription_ended": false,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_a5d43f05db973c3189a8b0c0",
+      "plan": "monthly",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_95ba54ae931165ad7df70bad",
+      "plan": "annual",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_3e15da32be61ec9581b28929",
+      "plan": "report_once",
+      "subscription_ended": false,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_eab5042f9041aa8b2e21c1ce",
+      "plan": "monthly",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_193a5a407ee83eea39dead1c",
+      "plan": "annual",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_251ae0b167c27c0bdc91fe7f",
+      "plan": "report_once",
+      "subscription_ended": false,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_5bd1bfaf4e00cac7e3897e19",
+      "plan": "monthly",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    },
+    {
+      "account_id": "acc_6be4f5b49bf9311c47ab9a85",
+      "plan": "annual",
+      "subscription_ended": true,
+      "deleted": true,
+      "session_revoked": true
+    }
+  ],
+  "measured_at": "2026-10-11T23:24:54.063Z"
+}

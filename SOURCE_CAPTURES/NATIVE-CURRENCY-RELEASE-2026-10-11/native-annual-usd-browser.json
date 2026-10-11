@@ -1,0 +1,25 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "plan": "annual",
+  "currency": "usd",
+  "session_id": "cs_test_a15hBfoV0dKKOqEkrVV1A1DPi4Oca5bVTxQB4SBmpN56WIVkHyPW3SQHCW",
+  "test_only": true,
+  "actual_browser": true,
+  "submitted": true,
+  "provider_return_observed": true,
+  "fixed_price_copy": true,
+  "no_exchange_rate_pricing": true,
+  "mobile_overflow": false,
+  "layouts": [
+    {
+      "width": 1440,
+      "horizontal_overflow": false
+    },
+    {
+      "width": 390,
+      "horizontal_overflow": false
+    }
+  ],
+  "passed": true,
+  "measured_at": "2026-10-11T23:16:20.995Z"
+}

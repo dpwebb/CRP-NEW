@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "preserved_files": 205,
+  "unrelated_directories": [
+    "branding/",
+    "legal-drafts/"
+  ],
+  "all_original_hashes_unchanged": true,
+  "baseline_file": "accelerated-launch/service/out/your-story-2026-10-11/baseline.json",
+  "baseline_sha256": "4dd89e5081a4b6eae968fcdfe0721e2d2575c36d741cd9c4aa59fdf10d84c110",
+  "checked_at": "2026-10-11T23:27:47.156247+00:00"
+}

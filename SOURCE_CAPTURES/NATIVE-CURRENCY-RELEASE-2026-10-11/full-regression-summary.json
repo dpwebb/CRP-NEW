@@ -1,0 +1,781 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "source_commit": "b910f9f714e37e2235f6ef888385052f67fd67ba",
+  "mode": "FULL_CURRENT_PRODUCT",
+  "totals": {
+    "passed": 14897,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": 153,
+  "source_hashes": 297,
+  "duration_ms": 1158664,
+  "full_receipt_sha256": "ed2bbaa4cc830edb0ffd0cfba1ef2d211a84fee85f4ee8c4d83ef537441e592f",
+  "sections_summary": [
+    {
+      "id": "fg-native-currency-pricing",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ez-reporting-period-directive",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ev-native-account-summary",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "et-supported-coverage-evidence",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "eu-general-omission-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "a-isolation",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ax-consumer-privacy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "b-refusals",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "c-extraction",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "d-records",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "e-qualifications",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "f-deletion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "g-privacy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "h-legacy-parity",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "i-shared-regressions",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "j-specimen-journey",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "k-ui-smoke",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "l-au-format-family",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "m-au-journey",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "n-applicability",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "o-all82-infrastructure",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "p-us-consumer-format",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "q-record-applicability",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "r-ca-factual-assessment",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "s-gb-consumer-format",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "t-entitlement",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "u-hardening",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "v-presentation-and-release",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "w-ca-second-bureau-format",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "x-b4-pay-001",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "em-paid-assessment-pdf",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "en-purchase-presentation",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "eo-cumulative-upgrade-credit",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ep-provider-upgrades",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "er-bureau-forms-retired",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "es-filled-packet-business-letter",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ew-inline-packet-composer",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ex-inline-packet-journey",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ey-legacy-account-continuity",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "y-ingest-coverage-matrix",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "z-general-intake",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ab-acceptance-statutory",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ac-evidence-policy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ad-legal-event-facts",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ae-accept-003",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "af-accept-004",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ag-accept-006",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "aj-ingest-dates",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ak-ingest-008-009-010",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "al-common-errors",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ct-owner-common-error-scope",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cw-common-error-rule-assessment",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cx-all82-required-report-data",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "db-common-error-surface-repairs",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "da-common-error-reader-repairs",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cy-common-error-predicate-repairs",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cz-common-error-packet-repairs",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dc-consumer-violation-term",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dg-owned-reaging",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "de-tu-ca-common-error-sources",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "df-us-common-error-reader",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dm-au-role-packet-evidence",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dl-general-caption-sources",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dn-us-dated-history",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "do-gb-history-definitions",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dp-us-cell-recovery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dq-ca-printed-account-fields",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dr-reader-evidence-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "du-column-reader-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ds-column-caption-fields",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dt-rating-history-rows",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dv-au-reference-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dw-us-history-completion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dx-report-date-custody",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dy-reader-date-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ea-account-profile-documents",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "eb-account-packet-support",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ec-account-packet-ui",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "eh-packet-report-exhibits",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ei-collection-duplicate",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ej-collection-boundaries",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ek-pr01-collection-references",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "el-collection-court-period",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "em-collection-comparison",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "en-account-display",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "eo-violation-preview-priority",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ed-account-browser",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ef-account-recovery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dh-ca-reader-completion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "di-au-reader-completion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dj-gb-reader-completion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "dk-reader-completion-integration",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "am-fdt-recovery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "an-payment-history-grid",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ao-ingest-008-mixed-page",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ap-accept-010-consistency",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "aq-gap-finding-001",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ar-gap-finding-003",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "as-gap-finding-004",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "at-gap-finding-002",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "au-closure-policy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "av-consumer-results",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "aw-consumer-explanations",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ay-consumer-support",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "az-consumer-support-ui",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ba-consumer-billing",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bb-gap-ingest-001",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bc-gap-ingest-002",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bd-gap-ingest-004",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "be-gap-ingest-005",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bf-gap-ingest-006",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bg-report-use",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bh-ns-judgment-content",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bh-ns-dismissed-charge",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bi-us-ca-tax-lien",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bj-us-ca-collection",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bk-us-ca-adverse-rating",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bl-us-ca-correction-packet",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bm-prime-directive-batch1",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bn-prime-directive-ui",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bo-prime-directive-interaction",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bp-prime-directive-batch2",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bq-format-capability",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "br-qualified-assessment",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bs-prime-directive-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bt-ordinary-field-coverage",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bu-gb-tu-ca-fields",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bv-admission-and-upload",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bw-browser-wizzard",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bx-all82-factual-verification",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "by-packet-reconciliation",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "bz-report-history",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ca-au-ordinary-field",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cb-packet-correspondence",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cc-ca-on-ordinary-report",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cd-gb-uk-gdpr-accuracy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ce-tu-ca-account-material",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cf-ca-nl-dismissed-charge",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ch-ca-ab-debt-six-year",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ci-ca-mb-judgment-content",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cj-ca-pe-judgment-content",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ck-ca-territories-pipeda-accuracy",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cl-bc-qc-nb-finish",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cn-au-us-ingestion",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "co-canada-upload-delivery",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cp-consumer-plain-text",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cq-purchase-flow",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cr-ca-ns-tu-real-report",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cs-limitation-and-payment-history",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "ct-assessment-clock",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cu-dual-date-retention",
+      "totals": null,
+      "completed": true
+    },
+    {
+      "id": "cv-accrual-limitation-delivery",
+      "totals": null,
+      "completed": true
+    }
+  ]
+}

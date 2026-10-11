@@ -1,0 +1,91 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "actual_browser": true,
+  "ip_country": "CA",
+  "initial_currency": "cad",
+  "ip_pricing_matched": true,
+  "currency_cases": [
+    {
+      "currency": "usd",
+      "prices": [
+        "4.95",
+        "5.95",
+        "59.50"
+      ],
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "currency": "aud",
+      "prices": [
+        "5.95",
+        "7.95",
+        "79.50"
+      ],
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "currency": "gbp",
+      "prices": [
+        "3.15",
+        "4.25",
+        "42.50"
+      ],
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true
+    },
+    {
+      "currency": "cad",
+      "prices": [
+        "5.95",
+        "7.95",
+        "79.50"
+      ],
+      "layouts": [
+        {
+          "width": 1440,
+          "horizontal_overflow": false
+        },
+        {
+          "width": 390,
+          "horizontal_overflow": false
+        }
+      ],
+      "passed": true
+    }
+  ],
+  "consumer_choice_before_payment": true,
+  "mobile_overflow": false,
+  "keyboard_focus": true,
+  "touch_target_44px": true,
+  "passed": true,
+  "measured_at": "2026-10-11T23:09:31.984Z"
+}

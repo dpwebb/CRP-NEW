@@ -1,0 +1,1741 @@
+diff --git a/accelerated-launch/service/app.cjs b/accelerated-launch/service/app.cjs
+index 240eeda..81a3bf2 100644
+--- a/accelerated-launch/service/app.cjs
++++ b/accelerated-launch/service/app.cjs
+@@ -311,7 +311,7 @@ function availabilityFor(row) {
+ }
+ 
+ /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
+-function buildHandlers(store, logger, surface) {
++function buildHandlers(store, logger, surface, pricingCurrency) {
+   return {
+     /* ------------------------------------------------------------ accounts and sessions */
+ 
+@@ -350,11 +350,12 @@ function buildHandlers(store, logger, surface) {
+       logger.log({ event: 'ACCOUNT_RECOVERED', outcome: 'OK' });
+       return { status: 200, json: { ok: true, ...recovered }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
+     },
+-    publicPricing: () => {
+-      const catalog = require('./plan-catalog.cjs').catalog();
++    publicPricing: async ({ req }) => {
++      const catalog = require('./plan-catalog.cjs').catalog(await pricingCurrency(req));
+       const publicPlans = catalog.plans.map(({ plan_code, currency, amount_cents, amount_display, interval, headline }) =>
+         ({ plan_code, currency, amount_cents, amount_display, interval, headline }));
+-      return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency } } };
++      return { status: 200, json: { ok: true, plan_catalog: { plans: publicPlans, currency: catalog.currency,
++        checkout_pricing: catalog.checkout_pricing } } };
+     },
+ 
+     accountProfile: ({ actor }) => ({ status: 200, json: { ok: true, profile: accountProfile.getProfile(store, actor) } }),
+@@ -405,18 +406,21 @@ function buildHandlers(store, logger, surface) {
+  * signature header go to `entitlement.recordEvent`, which verifies the signature against a configured secret
+  * before looking at anything the body says. Everything else here is actor-scoped and never entitlement-gated.
+  */
+-function buildBillingHandlers(store, logger) {
++function buildBillingHandlers(store, logger, pricingCurrency) {
+   const env = process.env;
+   return {
+     policy: () => ({ status: 200, json: { ok: true, ...retention.policyView(), check_classes: CHECK_CLASSES } }),
+ 
+-    billingPlans: async ({ actor }) => {
++    billingPlans: async ({ actor, req }) => {
+       await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
+-      return { status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env) } };
++      return { status: 200, json: { ok: true, ...entitlement.plansView(store, actor, env, await pricingCurrency(req)) } };
+     },
+ 
+-    openCheckout: async ({ body, actor }) => {
+-      const opened = await entitlement.openCheckout(store, actor, body, env);
++    openCheckout: async ({ body, actor, req }) => {
++      const explicit = require('./pricing-location.cjs').requestedCurrency(req, body);
++      const current = entitlement.statusFor(store, actor.account_id);
++      const currency = explicit || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : await pricingCurrency(req));
++      const opened = await entitlement.openCheckout(store, actor, { ...body, currency }, env);
+       logger.log({ event: 'CHECKOUT_OPENED', outcome: 'OK' });
+       return { status: 201, json: { ok: true, checkout: opened } };
+     },
+@@ -436,9 +440,9 @@ function buildBillingHandlers(store, logger) {
+       return { status: 200, json: { ok: true, event: outcome } };
+     },
+ 
+-    entitlementView: async ({ actor }) => {
++    entitlementView: async ({ actor, req }) => {
+       await require('./billing-reconciliation.cjs').reconcileAccountPayments(store, actor, env);
+-      return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env) } };
++      return { status: 200, json: { ok: true, ...entitlement.entitlementView(store, actor, env, await pricingCurrency(req)) } };
+     },
+ 
+     referralDashboard: ({ actor }) => ({ status: 200, json: { ok: true,
+@@ -457,7 +461,7 @@ function buildBillingHandlers(store, logger) {
+ }
+ 
+ /** Case, upload, evaluation, review and download handlers. */
+-function buildCaseHandlers(store, logger, surface) {
++function buildCaseHandlers(store, logger, surface, pricingCurrency) {
+   return {
+     createCase: ({ body, actor }) => {
+       const created = cases.createCase(store, actor, body);
+@@ -576,14 +580,14 @@ function buildCaseHandlers(store, logger, surface) {
+     },
+ 
+     /** The assessment-report download: the complete assessment of THAT report (one-time unlock) or a subscription. */
+-    reportDownload: ({ params, actor }) => {
++    reportDownload: async ({ params, actor, req }) => {
+       cases.requireOwnedCase(store, actor, params.caseId);
+       const access = entitlement.requireAssessmentAccess(store, actor, params.caseId);
+       const owned = cases.requireOwnedCase(store, actor, params.caseId);
+       const country = surface.countries.find(c => c.value === owned.country)?.label || owned.country;
+       const region = surface.regions.find(r => r.value === owned.region)?.label || owned.region;
+       const file = journey.assessmentReport(store, actor, params.caseId, {
+-        jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor) });
++        jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor, await pricingCurrency(req)) });
+       logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: access.via });
+       return {
+         status: 200,
+@@ -779,11 +783,12 @@ function createService(options) {
+   const store = new PrivateStore(opts.dataDir);
+   const logger = new Logger(opts.logSink);
+   const surface = loadJurisdictionSurface();
++  const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
+   const handlers = Object.assign(
+     {},
+-    buildHandlers(store, logger, surface),
+-    buildCaseHandlers(store, logger, surface),
+-    buildBillingHandlers(store, logger)
++    buildHandlers(store, logger, surface, pricingCurrency),
++    buildCaseHandlers(store, logger, surface, pricingCurrency),
++    buildBillingHandlers(store, logger, pricingCurrency)
+   );
+ 
+   /**
+diff --git a/accelerated-launch/service/billing-credits.cjs b/accelerated-launch/service/billing-credits.cjs
+index f6b3da6..84ee637 100644
+--- a/accelerated-launch/service/billing-credits.cjs
++++ b/accelerated-launch/service/billing-credits.cjs
+@@ -20,9 +20,9 @@ function expiresAt() { return null; }
+ /** Project old, trusted one-report receipts without reviving money already spent. */
+ function normalized(row) {
+   if (!row || !validId(row.credit_id) || !validId(row.account_id) || !validId(row.payment_id) ||
+-      !validAmount(row.amount_cents) || row.currency !== CREDIT_CURRENCY ||
++      !validAmount(row.amount_cents) || !plans.isCurrency(row.currency) ||
+       !Number.isFinite(Date.parse(row.paid_at)) || row.verified_payment === false) return null;
+-  const legacy = !row.source_plan_code && !row.plan_code && row.amount_cents === CREDIT_AMOUNT_CENTS;
++  const legacy = row.currency === 'cad' && !row.source_plan_code && !row.plan_code && row.amount_cents === CREDIT_AMOUNT_CENTS;
+   const sourcePlan = row.source_plan_code || row.plan_code || (legacy ? 'report_once' : null);
+   if (!plans.isPlanCode(sourcePlan) || (!legacy && row.verified_payment !== true)) return null;
+   if (!Object.values(CREDIT_STATES).includes(row.state)) return null;
+@@ -56,18 +56,18 @@ function normalizeRows(state) {
+   }
+ }
+ 
+-function lowerPlan(sourcePlan, targetPlan) {
++function lowerPlan(sourcePlan, targetPlan, currency = 'cad') {
+   return plans.isPlanCode(sourcePlan) && ['monthly', 'annual'].includes(targetPlan) &&
+-    plans.BASE_PRICE_CAD_CENTS[sourcePlan] < plans.BASE_PRICE_CAD_CENTS[targetPlan];
++    plans.plan(sourcePlan, currency).amount_cents < plans.plan(targetPlan, currency).amount_cents;
+ }
+ 
+ /** Reads are projections. They do not change stored assessments or billing rows. */
+-function usableCredits(state, accountId, nowIso, targetPlan = 'annual') {
++function usableCredits(state, accountId, nowIso, targetPlan = 'annual', currency = 'cad') {
+   const at = Date.parse(nowIso);
+   if (!Number.isFinite(at)) throw new Error('EXPLICIT_VALID_CURRENT_TIME_REQUIRED');
+   return (state.upgrade_credits || []).map(normalized).filter(Boolean)
+     .filter(row => row.account_id === accountId && row.state === CREDIT_STATES.ELIGIBLE &&
+-      row.remaining_amount_cents > 0 && Date.parse(row.paid_at) <= at && lowerPlan(row.source_plan_code, targetPlan))
++      row.currency === currency && row.remaining_amount_cents > 0 && Date.parse(row.paid_at) <= at && lowerPlan(row.source_plan_code, targetPlan, currency))
+     .sort((a, b) => String(a.paid_at).localeCompare(String(b.paid_at)) || String(a.payment_id).localeCompare(String(b.payment_id)));
+ }
+ 
+@@ -80,14 +80,14 @@ function sumAmounts(rows) {
+   return amount;
+ }
+ 
+-function quote(state, accountId, nowIso, targetPlan, currentPlan) {
+-  const target = plans.plan(targetPlan);
+-  const rows = targetPlan === 'report_once' ? [] : usableCredits(state, accountId, nowIso, targetPlan);
++function quote(state, accountId, nowIso, targetPlan, currentPlan, currency = 'cad') {
++  const target = plans.plan(targetPlan, currency);
++  const rows = targetPlan === 'report_once' ? [] : usableCredits(state, accountId, nowIso, targetPlan, currency);
+   const available = sumAmounts(rows);
+   const isCurrent = currentPlan === targetPlan;
+   const allowed = !currentPlan || !plans.isPlanCode(currentPlan) ||
+-    plans.BASE_PRICE_CAD_CENTS[targetPlan] > plans.BASE_PRICE_CAD_CENTS[currentPlan];
+-  const credit = allowed ? plans.applicableCredit(available, target.amount_cents) : 0;
++    plans.plan(targetPlan, currency).amount_cents > plans.plan(currentPlan, currency).amount_cents;
++  const credit = allowed ? plans.applicableCredit(available, target.amount_cents, currency) : 0;
+   return { plan_code: targetPlan, currency: target.currency, regular_cents: target.amount_cents,
+     credit_cents: credit, first_invoice_cents: target.amount_cents - credit,
+     renewal_cents: target.amount_cents, eligible: credit > 0,
+@@ -97,9 +97,9 @@ function quote(state, accountId, nowIso, targetPlan, currentPlan) {
+     is_current: isCurrent, allowed };
+ }
+ 
+-function quotesFor(store, accountId, nowIso, currentPlan) {
++function quotesFor(store, accountId, nowIso, currentPlan, currency = 'cad') {
+   const state = store.state();
+-  return Object.fromEntries(plans.PLAN_CODES.map(code => [code, quote(state, accountId, nowIso, code, currentPlan)]));
++  return Object.fromEntries(plans.PLAN_CODES.map(code => [code, quote(state, accountId, nowIso, code, currentPlan, currency)]));
+ }
+ 
+ /** Only a verified receipt may mint credit; catalog prices and client claims do not. */
+@@ -107,7 +107,7 @@ function recordPayment(state, payment) {
+   const value = payment || {};
+   if (value.verified_payment !== true) return { created: false, credit: null, reason: 'PAYMENT_NOT_VERIFIED' };
+   if (!validId(value.account_id) || !validId(value.payment_id) || !plans.isPlanCode(value.plan_code) ||
+-      !validAmount(value.amount_cents) || value.currency !== CREDIT_CURRENCY ||
++      !validAmount(value.amount_cents) || !plans.isCurrency(value.currency) ||
+       !Number.isFinite(Date.parse(value.paid_at)) || Date.parse(value.paid_at) > Date.now() ||
+       value.refunded || value.disputed) return { created: false, credit: null, reason: 'INVALID_VERIFIED_PAYMENT' };
+   if (value.amount_cents === 0) return { created: false, credit: null, reason: 'NO_CASH_PAYMENT' };
+@@ -145,7 +145,7 @@ function creditFromPayment(store, accountId, paymentId, paymentIntent, paidAt, d
+ }
+ 
+ /** Reserve all contributing receipts in the same store update. */
+-function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'monthly') {
++function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'monthly', currency = 'cad') {
+   if (!validId(checkoutId) || !['monthly', 'annual'].includes(targetPlan)) {
+     return { reserved: false, reason: 'INVALID_UPGRADE_RESERVATION' };
+   }
+@@ -154,7 +154,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
+     const existing = state.upgrade_credits.filter(row => row.state === CREDIT_STATES.RESERVED &&
+       row.reserved_for_checkout_id === checkoutId);
+     if (existing.length) {
+-      if (existing.some(row => row.account_id !== accountId || row.reserved_plan_code !== targetPlan)) {
++      if (existing.some(row => row.account_id !== accountId || row.reserved_plan_code !== targetPlan || row.currency !== currency)) {
+         return { reserved: false, reason: 'RESERVATION_OWNER_OR_PLAN_MISMATCH' };
+       }
+       const total = existing.reduce((sum, row) => sum + row.reserved_amount_cents, 0);
+@@ -163,8 +163,8 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
+       }
+       return reservationView(existing, targetPlan);
+     }
+-    const candidates = usableCredits(state, accountId, nowIso, targetPlan);
+-    let needed = plans.applicableCredit(sumAmounts(candidates), plans.BASE_PRICE_CAD_CENTS[targetPlan]);
++    const candidates = usableCredits(state, accountId, nowIso, targetPlan, currency);
++    let needed = plans.applicableCredit(sumAmounts(candidates), plans.plan(targetPlan, currency).amount_cents, currency);
+     const allocated = [];
+     for (const candidate of candidates) {
+       if (needed === 0) break;
+@@ -179,7 +179,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
+       needed -= amount;
+     }
+     if (!allocated.length) return { reserved: false, reason: 'NO_ELIGIBLE_CREDIT', amount_cents: 0,
+-      currency: CREDIT_CURRENCY, allocations: [] };
++      currency, allocations: [] };
+     const total = allocated.reduce((sum, row) => sum + row.reserved_amount_cents, 0);
+     for (const row of allocated) row.reserved_total_cents = total;
+     return reservationView(allocated, targetPlan);
+@@ -189,7 +189,7 @@ function reserveCredit(store, accountId, checkoutId, nowIso, targetPlan = 'month
+ function reservationView(rows, targetPlan) {
+   const amount = rows.reduce((total, row) => total + row.reserved_amount_cents, 0);
+   return { reserved: true, credit_id: rows[0].credit_id, credit_ids: rows.map(row => row.credit_id),
+-    amount_cents: amount, currency: CREDIT_CURRENCY, plan_code: targetPlan,
++    amount_cents: amount, currency: rows[0].currency, plan_code: targetPlan,
+     allocations: rows.map(row => ({ credit_id: row.credit_id, payment_id: row.payment_id,
+       source_plan_code: row.source_plan_code, amount_cents: row.reserved_amount_cents })) };
+ }
+@@ -223,14 +223,15 @@ function settleReservations(state, checkoutId, planCode, nowIso) {
+   if (rows.some(row => row.reserved_plan_code && row.reserved_plan_code !== planCode)) {
+     return { redeemed: false, reason: 'RESERVATION_PLAN_MISMATCH', amount_cents: 0 };
+   }
+-  if (rows.some(row => !lowerPlan(row.source_plan_code, planCode))) {
++  const currency = state.checkout_sessions?.find(c => c.checkout_id === checkoutId)?.currency || rows[0].currency;
++  if (rows.some(row => row.currency !== currency || !lowerPlan(row.source_plan_code, planCode, currency))) {
+     return { redeemed: false, reason: 'RESERVATION_SOURCE_PLAN_MISMATCH', amount_cents: 0 };
+   }
+   const amount = rows.reduce((total, row) => total + row.reserved_amount_cents, 0);
+   if (rows.some(row => row.reserved_total_cents !== undefined && row.reserved_total_cents !== amount)) {
+     return { redeemed: false, reason: 'RESERVATION_ALLOCATION_INCOMPLETE', amount_cents: 0 };
+   }
+-  if (!validAmount(amount) || amount > plans.BASE_PRICE_CAD_CENTS[planCode]) {
++  if (!validAmount(amount) || amount > plans.plan(planCode, currency).amount_cents) {
+     return { redeemed: false, reason: 'RESERVATION_AMOUNT_MISMATCH', amount_cents: 0 };
+   }
+   for (const row of rows) {
+@@ -312,11 +313,11 @@ function expireCredits(store) {
+   });
+ }
+ 
+-function creditView(store, accountId, nowIso, currentPlan) {
+-  const quotes = quotesFor(store, accountId, nowIso, currentPlan);
++function creditView(store, accountId, nowIso, currentPlan, currency = 'cad') {
++  const quotes = quotesFor(store, accountId, nowIso, currentPlan, currency);
+   const available = Math.max(...Object.values(quotes).filter(value => value.allowed)
+     .map(value => value.available_credit_cents), 0);
+-  return { eligible: available > 0, credit_cents: available, currency: CREDIT_CURRENCY,
++  return { eligible: available > 0, credit_cents: available, currency,
+     expires_at: null, remaining_ms: null,
+     reserved_now: (store.state().upgrade_credits || []).some(row => row.account_id === accountId && row.state === CREDIT_STATES.RESERVED),
+     upgrade_quotes: quotes };
+diff --git a/accelerated-launch/service/billing-event-effects.cjs b/accelerated-launch/service/billing-event-effects.cjs
+index b97205e..7188357 100644
+--- a/accelerated-launch/service/billing-event-effects.cjs
++++ b/accelerated-launch/service/billing-event-effects.cjs
+@@ -77,9 +77,10 @@ async function recordVerifiedEvent(store, event, provider) {
+     if (!row) return refuse('EVENT_IGNORED_SUBSCRIPTION_MISMATCH');
+     if (effect === 'CANCEL_AT_PERIOD_END' && row.checkout_id !== event.checkout_reference) return refuse('EVENT_IGNORED_SUBSCRIPTION_MISMATCH');
+     if (effect === 'RENEW') {
+-      if (!event.invoice_reference || event.payment_verified !== true || event.currency !== 'cad') return refuse('EVENT_IGNORED_UNPAID_INVOICE');
++      const purchase = owned.find(c => c.checkout_id === row.checkout_id);
++      if (!event.invoice_reference || event.payment_verified !== true || event.currency !== (row.currency || purchase?.currency || 'cad')) return refuse('EVENT_IGNORED_UNPAID_INVOICE');
+       const first = owned.find(c => c.initial_invoice_reference === event.invoice_reference);
+-      const expected = first ? first.payable_cents : plans.plan(event.plan_code).amount_cents;
++      const expected = first ? first.payable_cents : row.plan_amount_cents ?? purchase?.amount_cents ?? plans.plan(event.plan_code, event.currency).amount_cents;
+       if (event.amount_cents !== expected) return refuse('EVENT_IGNORED_PAYMENT_AMOUNT_MISMATCH');
+       if (event.payment_intent && before.billing_events.some(e => e.account_id === accountId && e.outcome === 'APPLIED' &&
+           e.effect === 'REVOKE' && e.payment_intent === event.payment_intent)) return refuse('EVENT_IGNORED_REFUNDED_PAYMENT');
+@@ -122,12 +123,15 @@ async function recordVerifiedEvent(store, event, provider) {
+         live.current_payment_id = event.invoice_reference || event.session_reference;
+       }
+       if (effect !== 'RENEW') {
++        live.currency = intent.currency;
++        live.plan_amount_cents = intent.amount_cents;
+         intent.state = 'COMPLETED';
+         intent.provider_reference ||= event.invoice_reference || event.session_reference;
+         intent.initial_invoice_reference = event.invoice_reference || null;
+         intent.verified_payment_id = event.invoice_reference || event.session_reference;
+         intent.verified_payment_intent = event.payment_intent || null;
+         intent.verified_paid_cents = event.amount_cents;
++        intent.verified_presentment = event.presentment_details || null;
+         intent.verified_tax_cents = provider.provider_id === 'test-adapter-not-a-payment' ? 0 :
+           (Number.isSafeInteger(event.tax_cents) ? event.tax_cents : null);
+         intent.verified_paid_at = paidAt;
+@@ -169,6 +173,7 @@ async function recordVerifiedEvent(store, event, provider) {
+     state.billing_events.push({ event_id: event.event_id, provider_id: provider.provider_id, fingerprint,
+       received_at: at, outcome: 'APPLIED', effect, reason: null, entitlement_id: live?.entitlement_id || null,
+       account_id: accountId, type: event.type, amount_cents: event.amount_cents, currency: event.currency,
++      presentment_details: event.presentment_details || null,
+       session_reference: event.session_reference || null,
+       invoice_reference: event.invoice_reference || null, payment_intent: event.payment_intent || null,
+       refunded_cents: event.refunded_cents ?? null });
+diff --git a/accelerated-launch/service/checkout-purchase.cjs b/accelerated-launch/service/checkout-purchase.cjs
+index 46e3a73..ada0b2e 100644
+--- a/accelerated-launch/service/checkout-purchase.cjs
++++ b/accelerated-launch/service/checkout-purchase.cjs
+@@ -33,8 +33,11 @@ async function openCheckout(store, actor, input, env) {
+   await reconcileOpenCheckouts(store, actor, provider);
+   const caseId = typeof body.case_id === 'string' ? body.case_id : null;
+   if (code === 'report_once') entitlement.requireUnlockableReport(store, actor, caseId);
+-  const plan = plans.plan(code), quote = entitlement.upgradeQuotes(store, actor)[code];
+   const current = entitlement.statusFor(store, actor.account_id);
++  const currency = body.currency || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : 'cad');
++  if (!plans.isCurrency(currency)) throw new ServiceError('INVALID_PAYMENT_CURRENCY');
++  if (current.entitled && current.access_via === 'SUBSCRIPTION' && currency !== (current.currency || 'cad')) throw new ServiceError('SUBSCRIPTION_CURRENCY_CHANGE');
++  const plan = plans.plan(code, currency), quote = entitlement.upgradeQuotes(store, actor, currency)[code];
+   const isUpgrade = current.entitled && current.access_via === 'SUBSCRIPTION';
+   if (isUpgrade && (code !== 'annual' || current.plan_code !== 'monthly')) throw new ServiceError('PLAN_ALREADY_ACTIVE');
+   if (isUpgrade && !body.quote_revision) throw new ServiceError('UPGRADE_REVIEW_REQUIRED');
+@@ -63,7 +66,7 @@ async function openCheckout(store, actor, input, env) {
+   let reservation = { reserved: false, amount_cents: 0 };
+   let opened;
+   try {
+-    if (code !== 'report_once') reservation = credits.reserveCredit(store, actor.account_id, checkoutId, now, code);
++    if (code !== 'report_once') reservation = credits.reserveCredit(store, actor.account_id, checkoutId, now, code, currency);
+     const netDue = plan.amount_cents - (reservation.amount_cents || 0);
+     if (netDue !== quote.first_invoice_cents) throw new ServiceError('STALE_UPGRADE_QUOTE');
+     store.update(state => {
+@@ -76,7 +79,8 @@ async function openCheckout(store, actor, input, env) {
+         access_via: plans.GRANTS[code].access_via, checkout_id: checkoutId, provider_reference: null,
+         created_at: now, granted_at: null, expires_at: null, event_ids: [] });
+     });
+-    const request = { account_id: actor.account_id, plan_code: code, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
++    const request = { account_id: actor.account_id, plan_code: code, currency, return_url: returnUrl, checkout_id: checkoutId, request_started_at: now,
++      customer_email: store.state().accounts.find(a => a.account_id === actor.account_id)?.email,
+       credit_amount_cents: reservation.amount_cents || 0, apply_upgrade_credit: reservation.reserved };
+     if (isUpgrade) Object.assign(request, { existing_plan_code: original.plan_code,
+       existing_checkout_id: original.checkout_id, provider_reference: original.provider_reference,
+@@ -117,7 +121,7 @@ function bindProviderResult(store, actor, checkoutId, opened) {
+   });
+ }
+ function publicCheckout(store, actor, provider, row) {
+-  const entitlement = require('./entitlement.cjs'), plan = plans.plan(row.plan_code);
++  const entitlement = require('./entitlement.cjs'), plan = plans.plan(row.plan_code, row.currency);
+   return { checkout_id: row.checkout_id, plan, provider_id: provider.provider_id,
+     provider_is_a_working_payment: provider.is_a_working_payment === true, provider_reference: row.provider_reference,
+     redirect_url: row.redirect_url, redirect_grants_nothing: true, is_subscription_upgrade: row.is_subscription_upgrade,
+diff --git a/accelerated-launch/service/deploy/release-manifest.json b/accelerated-launch/service/deploy/release-manifest.json
+index 099901e..8359da8 100644
+--- a/accelerated-launch/service/deploy/release-manifest.json
++++ b/accelerated-launch/service/deploy/release-manifest.json
+@@ -1,6 +1,6 @@
+ {
+   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
+-  "generated_at": "2026-10-11T19:57:07.334Z",
++  "generated_at": "2026-10-11T22:47:07.934Z",
+   "read_only": true,
+   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
+   "groups": [
+@@ -61,8 +61,8 @@
+     },
+     {
+       "id": "RUNTIME",
+-      "file_count": 84,
+-      "digest": "4230E26188FA909821C4911A837C2FC158B3D73B1BE50B3617CCD0A8421F9D39",
++      "file_count": 85,
++      "digest": "7CE9E7C0CC9ECCA4D8F67D3DC4F9017E69FCF3F05292F06D178F5D5512AADEE7",
+       "files": [
+         {
+           "file": "accelerated-launch/service/account-display.cjs",
+@@ -90,7 +90,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/app.cjs",
+-          "sha256": "0C823AC0BBD2CD39C55D3EF384DB046BEDF672221726AF6016E39D019C7D2C16"
++          "sha256": "95FF21861940CFA6A452919FFCC36BB73CFEE054848883021306BD1450B1837A"
+         },
+         {
+           "file": "accelerated-launch/service/applicability.cjs",
+@@ -106,11 +106,11 @@
+         },
+         {
+           "file": "accelerated-launch/service/billing-credits.cjs",
+-          "sha256": "0C309403D472E3D1CB67F5E926038C3EE953ACDB2A4CA88E86B62B43AF0020E5"
++          "sha256": "D201E3FD79885F5B9F71A1CD8638D3BA6786674800186AC4F2FCA7CA9877EB3A"
+         },
+         {
+           "file": "accelerated-launch/service/billing-event-effects.cjs",
+-          "sha256": "7A5DF3C21BBD5E6EA8F2EBFA752088664F6D66E8D4D78E9648CEB8C0BF7F3B32"
++          "sha256": "9E20ED8B02BDCB6F78DF18BBAF475713A7EDD350D2663FB15D898D6302E28D03"
+         },
+         {
+           "file": "accelerated-launch/service/billing-reconciliation.cjs",
+@@ -138,7 +138,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/checkout-purchase.cjs",
+-          "sha256": "736E3371CBDB3B7E2149BFE84CC1FB1BFD518C7832F770F105776C78B279BD6F"
++          "sha256": "E0EC152B1E67CA87EB7B0753E2A661384050F27739C97526FAFE2410F6930C53"
+         },
+         {
+           "file": "accelerated-launch/service/clarification.cjs",
+@@ -190,11 +190,11 @@
+         },
+         {
+           "file": "accelerated-launch/service/entitlement.cjs",
+-          "sha256": "2801CF405FFF39B68FF7114C7AF1690F7263AF3C5B65EF807AD91D3366D3A11C"
++          "sha256": "7FA1EFAB382D7E4529CA83E367316EF93397E6BA744500F758C55629659C5A32"
+         },
+         {
+           "file": "accelerated-launch/service/errors.cjs",
+-          "sha256": "82FE04B51115CB72BCBF8395C9D6F43072C00CCF5CF06F3232EDDF0E9BB64C04"
++          "sha256": "0B33D84BD151611E606E5BA9BE007847E6DA3FF3DEA81AFA27233CA670C505F0"
+         },
+         {
+           "file": "accelerated-launch/service/evaluation.cjs",
+@@ -322,15 +322,19 @@
+         },
+         {
+           "file": "accelerated-launch/service/payment-provider.cjs",
+-          "sha256": "8CAE80729FBE533F631B281F5B6170485023B0BA2DDB2D056B734598B1A8F2CA"
++          "sha256": "B9016E4287087E624C6BBE24C4F86719643E57E5FDA4A93AF2A745A06D4D8E05"
+         },
+         {
+           "file": "accelerated-launch/service/plan-catalog.cjs",
+-          "sha256": "A10F4F4A0A5315D40403708EE461B03787D42DC4106285E1460AA9CDD85E03C8"
++          "sha256": "18FC6FC91BBBA7638C7DFD817E7E0940FAB68D029193289F8EC3554AACFC1E9A"
++        },
++        {
++          "file": "accelerated-launch/service/pricing-location.cjs",
++          "sha256": "4E78759BDB0D47A0E862BA925FEAEE204BB5A3C3618C6AFB49941E9443BF55E3"
+         },
+         {
+           "file": "accelerated-launch/service/privacy.cjs",
+-          "sha256": "29727A6A68780D3B0EC7545C2EBEAD46914E8D531ED99415E3FF45F913FA81B8"
++          "sha256": "FD134E4BFBC88257832EF020981CE42069AE4364E0B65476B55B3655187B2477"
+         },
+         {
+           "file": "accelerated-launch/service/private-store.cjs",
+@@ -394,7 +398,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/upgrade-credit.cjs",
+-          "sha256": "6F28D815A98B62D5CAB175399262442BFBD1657CCABBDCDEBE9B3F51ED8B5922"
++          "sha256": "0146A441B36FC1995BE28E6305114E29CFAEBE5FA11545F50605C59A38BA730D"
+         },
+         {
+           "file": "accelerated-launch/service/uploads.cjs",
+@@ -534,7 +538,7 @@
+     {
+       "id": "SERVED_ASSETS",
+       "file_count": 20,
+-      "digest": "8C54BB86761478D7E935DFA11CC8D8A6CF2BA7792556C2F6C6ECC54B487DF7FD",
++      "digest": "9701D5F2A67EAA9341D8DEC70657D8DF529AA14213C2D070CECD4C5BAD09C3F6",
+       "files": [
+         {
+           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
+@@ -550,7 +554,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/ui/app.js",
+-          "sha256": "D97020591C189542D5290503DA4F954C2D7A70E829881DD6AA57B2523681D942"
++          "sha256": "7D82A24C612AB3CC5A78148B18DC56AE423FAFF1F2C0C4688964FFE1F5B9EF86"
+         },
+         {
+           "file": "accelerated-launch/service/ui/favicon.svg",
+@@ -619,6 +623,6 @@
+       ]
+     }
+   ],
+-  "manifest_digest": "DE359A619A602584970F6AE9BD1ECC1F22F25AAEECE32E9AB8B9E547DB3C3CC6",
+-  "total_file_count": 143
++  "manifest_digest": "378B2463903AD6521601917C1644426CE461C26C79262EB1D5C240776B386E7B",
++  "total_file_count": 144
+ }
+diff --git a/accelerated-launch/service/entitlement.cjs b/accelerated-launch/service/entitlement.cjs
+index fde86e4..55b5a4a 100644
+--- a/accelerated-launch/service/entitlement.cjs
++++ b/accelerated-launch/service/entitlement.cjs
+@@ -180,6 +180,7 @@ function statusFor(store, accountId, options) {
+     can_read_historical: true,
+     access_via: entitled ? (settled.access_via || ACCESS_VIA.NONE) : ACCESS_VIA.NONE,
+     plan_code: settled ? settled.plan_code : null,
++    currency: settled?.currency || store.state().checkout_sessions?.find(c => c.checkout_id === settled?.checkout_id)?.currency || null,
+     granted_at: settled ? settled.granted_at : null,
+     expires_at: settled ? settled.expires_at : null,
+     cancel_at_period_end: Boolean(settled && settled.cancel_at_period_end),
+@@ -296,16 +297,19 @@ function rowsFor(state, accountId) {
+  * deliberately NOT paid-gated: they are how an unentitled account becomes entitled, and gating them would make
+  * the product unbuyable. They are still actor-scoped, and the actor always comes from the resolved session.
+  */
+-function plansView(store, actor, env) {
+-  const catalog = plans.catalog();
+-  const provider = payments.describeProvider(env);
++function plansView(store, actor, env, requestedCurrency = 'cad') {
+   const current = statusFor(store, actor.account_id);
+-  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null);
++  const pending = store.state().checkout_sessions.find(c => c.account_id === actor.account_id && ['OPEN', 'OPENING'].includes(c.state));
++  const currency = current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : pending?.currency || requestedCurrency;
++  const catalog = plans.catalog(currency);
++  catalog.currency_locked = Boolean(pending) || current.entitled && current.access_via === 'SUBSCRIPTION';
++  const provider = payments.describeProvider(env);
++  const upgradeCredit = credits.creditView(store, actor.account_id, nowIso(), current.entitled && current.access_via === 'SUBSCRIPTION' ? current.plan_code : null, currency);
+   return {
+     plan_catalog: catalog,
+     entitlement: statusFor(store, actor.account_id),
+     upgrade_credit: upgradeCredit,
+-    upgrade_quotes: upgradeQuotes(store, actor),
++    upgrade_quotes: upgradeQuotes(store, actor, currency),
+     pending_checkout: pendingCheckout(store, actor),
+     payment: {
+       state: provider.state,
+@@ -324,21 +328,22 @@ function plansView(store, actor, env) {
+   };
+ }
+ 
+-function upgradeQuotes(store, actor) {
++function upgradeQuotes(store, actor, requestedCurrency = 'cad') {
+   const current = statusFor(store, actor.account_id);
+   const subscribed = current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION;
+-  const quoteSet = credits.quotesFor(store, actor.account_id, nowIso(), subscribed ? current.plan_code : null);
++  const currency = subscribed ? current.currency || 'cad' : requestedCurrency;
++  const quoteSet = credits.quotesFor(store, actor.account_id, nowIso(), subscribed ? current.plan_code : null, currency);
+   const busy = store.state().checkout_sessions.some(c => c.account_id === actor.account_id &&
+     ['OPENING', 'OPEN', 'CREDIT_REVOKED'].includes(c.state) && c.plan_code !== 'report_once');
+   return Object.fromEntries(plans.PLAN_CODES.map(code => {
+-    const raw = quoteSet[code] || { regular_cents: plans.plan(code).amount_cents, credit_cents: 0,
+-      first_invoice_cents: plans.plan(code).amount_cents, renewal_cents: plans.plan(code).amount_cents,
+-      eligible: false, currency: 'cad', source_plan_codes: [], remaining_credit_cents: 0 };
++    const raw = quoteSet[code] || { regular_cents: plans.plan(code, currency).amount_cents, credit_cents: 0,
++      first_invoice_cents: plans.plan(code, currency).amount_cents, renewal_cents: plans.plan(code, currency).amount_cents,
++      eligible: false, currency, source_plan_codes: [], remaining_credit_cents: 0 };
+     const isCurrent = subscribed && current.plan_code === code;
+-    const higher = !subscribed || plans.plan(code).amount_cents > plans.plan(current.plan_code).amount_cents;
++    const higher = !subscribed || plans.plan(code, currency).amount_cents > plans.plan(current.plan_code, currency).amount_cents;
+     const allowed = !isCurrent && higher && !busy;
+     const revision = crypto.createHash('sha256').update(JSON.stringify([actor.account_id, code,
+-      raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
++      currency, raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
+       current.plan_code, current.state, allowed])).digest('hex');
+     const { source_payment_ids, ...safe } = raw;
+     return [code, { ...safe, allowed, is_current: isCurrent, revision,
+@@ -585,7 +590,7 @@ async function cancelEntitlement(store, actor, input, env) {
+       }
+       providerCancellation = await provider.cancelRenewal({ account_id: actor.account_id,
+         checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
+-        plan_code: originalCheckout.plan_code, subscription_reference: original.provider_subscription_reference });
++        plan_code: originalCheckout.plan_code, currency: originalCheckout.currency || 'cad', subscription_reference: original.provider_subscription_reference });
+     } catch (error) { fail(error?.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
+     if (providerCancellation?.renewal_cancelled !== true) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
+   }
+@@ -656,13 +661,13 @@ function downloadEntitled(store, actor, caseId) {
+ }
+ 
+ /** The upgrade-credit position: eligibility, amount, expiry and remaining time. */
+-function creditView(store, actor, now) {
++function creditView(store, actor, now, requestedCurrency = 'cad') {
+   const current = statusFor(store, actor.account_id, now);
+-  return credits.creditView(store, actor.account_id, nowIso(now), current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION ? current.plan_code : null);
++  return credits.creditView(store, actor.account_id, nowIso(now), current.entitled && current.access_via === ACCESS_VIA.SUBSCRIPTION ? current.plan_code : null, current.currency || requestedCurrency);
+ }
+ 
+ /** What the consumer surface may say about entitlement. No internal identifier and no gate number appears. */
+-function entitlementView(store, actor, env) {
++function entitlementView(store, actor, env, requestedCurrency = 'cad') {
+   const provider = payments.describeProvider(env);
+   const status = statusFor(store, actor.account_id);
+   return {
+@@ -682,8 +687,8 @@ function entitlementView(store, actor, env) {
+       plain: provider.plain,
+       exact_external_dependency: provider.exact_external_dependency
+     },
+-    upgrade_credit: creditView(store, actor),
+-    upgrade_quotes: upgradeQuotes(store, actor),
++    upgrade_credit: creditView(store, actor, null, requestedCurrency),
++    upgrade_quotes: upgradeQuotes(store, actor, requestedCurrency),
+     pending_checkout: pendingCheckout(store, actor),
+     plain: status.entitled
+       ? 'This account holds a recorded purchase.'
+diff --git a/accelerated-launch/service/errors.cjs b/accelerated-launch/service/errors.cjs
+index 9abd175..70f2378 100644
+--- a/accelerated-launch/service/errors.cjs
++++ b/accelerated-launch/service/errors.cjs
+@@ -12,6 +12,8 @@ const STATUS_BY_CODE = Object.freeze({
+   UNSUPPORTED_OR_MISMATCHED_JURISDICTION: 400,
+   INVALID_ACCOUNT_DETAILS: 400,
+   UNKNOWN_PLAN: 400,
++  INVALID_PAYMENT_CURRENCY: 400,
++  SUBSCRIPTION_CURRENCY_CHANGE: 409,
+   PLAN_ALREADY_ACTIVE: 409,
+   UPGRADE_REVIEW_REQUIRED: 409,
+   STALE_UPGRADE_QUOTE: 409,
+@@ -89,6 +91,8 @@ const MESSAGE_BY_CODE = Object.freeze({
+   UNSUPPORTED_OR_MISMATCHED_JURISDICTION: 'That country and region pair is not one of the supported selections.',
+   INVALID_ACCOUNT_DETAILS: 'Enter a valid email address and a password of at least 12 characters.',
+   UNKNOWN_PLAN: 'That plan is not one this service records.',
++  INVALID_PAYMENT_CURRENCY: 'Choose CAD, USD, AUD or GBP before paying.',
++  SUBSCRIPTION_CURRENCY_CHANGE: 'Your existing subscription keeps its payment currency. Use that currency for this upgrade.',
+   PLAN_ALREADY_ACTIVE: 'Your subscription already covers this plan. You can upgrade from monthly to yearly here.',
+   UPGRADE_REVIEW_REQUIRED: 'Review your upgrade price before confirming the change.',
+   STALE_UPGRADE_QUOTE: 'Your upgrade credit changed. Review the updated price before confirming.',
+diff --git a/accelerated-launch/service/payment-provider.cjs b/accelerated-launch/service/payment-provider.cjs
+index 83ff39f..d272fd1 100644
+--- a/accelerated-launch/service/payment-provider.cjs
++++ b/accelerated-launch/service/payment-provider.cjs
+@@ -209,7 +209,7 @@ const STRIPE_ADAPTER = Object.freeze({
+   is_a_working_payment: false,
+   required_configuration: STRIPE_ALL_NAMES,
+   external_dependency:
+-    'a Stripe account with one CAD Price per plan (report_once 595, monthly 795, annual 7950), dynamically calculated ' +
++    'a Stripe account with one fixed native Price per plan and supported currency, dynamically calculated ' +
+     'once-duration coupons for verified unused lower-plan payments, and one webhook endpoint whose signing secret is supplied through the ' +
+     'environment; the service then makes outbound calls to api.stripe.com',
+   why_not_implemented: null,
+@@ -219,21 +219,22 @@ const STRIPE_ADAPTER = Object.freeze({
+ 
+ /** Map a configured Price ID back to the plan it belongs to. */
+ function planCodeFromPrice(env, priceId) {
+-  for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
+-    if (env[STRIPE_PRICE_NAMES[planCode]] === priceId) return planCode;
++  if (typeof priceId !== 'string' || !priceId) return null;
++  for (const currency of plans.CURRENCIES) for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
++    if (priceIdFor(env, planCode, currency) === priceId) return planCode;
+   }
+   return null;
+ }
+ 
+ /** Verify a Stripe Price object against the owner-approved catalog (currency, amount, cadence). */
+-function priceMatchesCatalog(planCode, priceObj) {
+-  if (!priceObj || !plans.isPlanCode(planCode)) return false;
+-  const plan = plans.plan(planCode);
++function priceMatchesCatalog(planCode, priceObj, currency = 'cad') {
++  if (!priceObj || !plans.isPlanCode(planCode) || !plans.isCurrency(currency)) return false;
++  const plan = plans.plan(planCode, currency);
+   if (String(priceObj.currency).toLowerCase() !== plan.currency) return false;
+   if (priceObj.unit_amount !== plan.amount_cents) return false;
+   if (plan.interval === 'one_time') return priceObj.type === 'one_time';
+   const interval = plan.interval === 'month' ? 'month' : 'year';
+-  return Boolean(priceObj.recurring) && priceObj.recurring.interval === interval;
++  return Boolean(priceObj.recurring) && priceObj.recurring.interval === interval && (priceObj.recurring.interval_count ?? 1) === 1;
+ }
+ 
+ /** Use Stripe's itemized invoice tax, including an explicit empty list for zero tax. */
+@@ -244,6 +245,26 @@ function verifiedInvoiceTaxCents(invoice) {
+   return Number.isSafeInteger(tax) && Number.isSafeInteger(invoice.amount_paid) && tax <= invoice.amount_paid ? tax : null;
+ }
+ 
++/** Preserve historical provider presentment facts separately from the selected native price/credit ledger.
++ * Only signed/retrieved provider facts reach this helper. Never accept a browser FX amount.
++ */
++function presentmentDetails(object) {
++  const value = object?.presentment_details;
++  return Number.isSafeInteger(value?.presentment_amount) && value.presentment_amount >= 0 &&
++    /^[a-z]{3}$/.test(value?.presentment_currency || '')
++    ? { amount: value.presentment_amount, currency: value.presentment_currency } : null;
++}
++
++async function paymentPresentment(secretKey, base, paymentIntent, amount, currency) {
++  const id = typeof paymentIntent === 'string' ? paymentIntent : paymentIntent?.id;
++  if (!/^pi_[A-Za-z0-9_]+$/.test(id || '')) return null;
++  try {
++    const got = await stripe.retrievePaymentIntent(secretKey, id, base);
++    return got.status === 200 && got.json.id === id && got.json.currency === currency &&
++      got.json.amount === amount ? presentmentDetails(got.json) : null;
++  } catch { return null; }
++}
++
+ /** Normalise `checkout.session.completed` / `checkout.session.async_payment_succeeded`. */
+ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, type) {
+   const accountRef = session.client_reference_id || (session.metadata && session.metadata.account_id);
+@@ -251,10 +272,12 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
+   if (!accountRef || !planCode || !plans.isPlanCode(planCode)) return null;
+ 
+   let priceId = null;
++  let presentment = presentmentDetails(session);
+   let verifiedTaxCents = Number.isSafeInteger(session.total_details?.amount_tax) ? session.total_details.amount_tax : null;
+   try {
+     const fetched = await stripe.retrieveSession(secretKey, session.id, base);
+     if (fetched.status === 200) {
++      presentment = presentmentDetails(fetched.json) || presentment;
+       const items = fetched.json.line_items && fetched.json.line_items.data;
+       if (items && items.length && items[0].price) priceId = items[0].price.id;
+       if (Number.isSafeInteger(fetched.json.total_details?.amount_tax)) {
+@@ -263,7 +286,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
+     }
+   } catch { /* fall back to configured-id check below */ }
+ 
+-  const configuredId = priceIdFor(env, planCode);
++  if (!plans.isCurrency(session.currency)) return { mismatch: 'UNSUPPORTED_PAYMENT_CURRENCY' };
++  const configuredId = priceIdFor(env, planCode, session.currency);
+   if (priceId && configuredId && priceId !== configuredId) {
+     return { mismatch: 'PRICE_ID_DOES_NOT_MATCH_THE_PLAN' };
+   }
+@@ -308,7 +332,8 @@ async function normalizeCheckoutEvent(env, secretKey, base, session, eventId, ty
+     period_end: periodEnd,
+     payment_intent: paymentIntent,
+     invoice_reference: invoiceReference,
+-    payment_verified: paymentVerified
++    payment_verified: paymentVerified,
++    presentment_details: presentment
+   };
+ }
+ 
+@@ -346,9 +371,11 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
+   const resolved = subId ? await resolveFromSubscription(secretKey, base, subId) : null;
+   if (!resolved || !resolved.accountRef || !resolved.planCode) return null;
+   const lines = invoice.lines?.data || [];
++  if (lines.length !== 1 || !plans.isCurrency(invoice.currency)) return null;
+   const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
+-  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code) === priceId);
+-  if (!invoicePlan || lines[0].quantity !== 1 || invoice.currency !== 'cad') return null;
++  const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code, invoice.currency) === priceId);
++  if (!invoicePlan || lines[0].quantity !== 1 || !plans.isCurrency(invoice.currency)) return null;
++  const presentment = await paymentPresentment(secretKey, base, invoice.payment_intent, invoice.amount_paid, invoice.currency);
+   return {
+     event_id: eventId,
+     type,
+@@ -363,7 +390,8 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
+     currency: typeof invoice.currency === 'string' ? invoice.currency : null,
+     period_end: lines[0].period?.end ? new Date(lines[0].period.end * 1000).toISOString() : resolved.periodEnd,
+     payment_intent: invoice.payment_intent || null,
+-    payment_verified: type === 'invoice.paid' && invoice.status === 'paid'
++    payment_verified: type === 'invoice.paid' && invoice.status === 'paid',
++    presentment_details: presentment
+   };
+ }
+ 
+@@ -422,7 +450,7 @@ async function normalizeChargeEvent(env, secretKey, base, charge, eventId, type)
+       accountRef = resolved.accountRef;
+       const price = invoice.lines?.data?.[0]?.price;
+       const priceId = typeof price === 'string' ? price : price?.id;
+-      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p) === priceId) || resolved.planCode;
++      planCode = ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === priceId) || resolved.planCode;
+     }
+   }
+   if (!accountRef) return null;
+@@ -484,8 +512,10 @@ function isAllowedOrigin(returnUrl, origins) {
+ }
+ 
+ /** The configured Price ID for a plan, or null. */
+-function priceIdFor(env, planCode) {
+-  const name = STRIPE_PRICE_NAMES[planCode];
++function priceIdFor(env, planCode, currency = 'cad') {
++  if (!plans.isCurrency(currency)) return null;
++  const baseName = STRIPE_PRICE_NAMES[planCode];
++  const name = baseName && (currency === 'cad' ? baseName : baseName + '_' + currency.toUpperCase());
+   const value = name ? env[name] : null;
+   return typeof value === 'string' && value ? value : null;
+ }
+@@ -506,11 +536,14 @@ function makeStripeAdapter(env) {
+     const req = request || {};
+     const planCode = req.plan_code;
+     const mode = planCode === 'report_once' ? 'payment' : 'subscription';
+-    const priceId = priceIdFor(env, planCode);
++    const priceId = priceIdFor(env, planCode, req.currency || 'cad');
+     const cancelledReturn = new URL(req.return_url);
+     cancelledReturn.searchParams.set('checkout_cancelled', '1');
+     const params = {
+       mode,
++      currency: req.currency || 'cad',
++      'adaptive_pricing[enabled]': false,
++      'custom_text[submit][message]': "Your selected currency and fixed plan price are shown here. Your card issuer may charge other fees.",
+       'line_items[0][price]': priceId,
+       'line_items[0][quantity]': 1,
+       success_url: req.return_url,
+@@ -520,6 +553,8 @@ function makeStripeAdapter(env) {
+       'metadata[plan_code]': planCode,
+       'metadata[checkout_id]': req.checkout_id || ''
+     };
++    // Prefill only the account's own email. Currency is resolved by CRP before checkout.
++    if (typeof req.customer_email === 'string') params.customer_email = req.customer_email;
+     if (mode === 'subscription') {
+       params['subscription_data[metadata][account_id]'] = req.account_id;
+       params['subscription_data[metadata][plan_code]'] = planCode;
+@@ -543,18 +578,18 @@ function makeStripeAdapter(env) {
+   }
+   async function creditCoupon(req) {
+     if (!Number.isInteger(req.credit_amount_cents) || req.credit_amount_cents < 0 ||
+-        req.credit_amount_cents > plans.plan(req.plan_code).amount_cents) refuse('INVALID_SERVER_CREDIT');
++        req.credit_amount_cents > plans.plan(req.plan_code, req.currency || 'cad').amount_cents) refuse('INVALID_SERVER_CREDIT');
+     if (!req.credit_amount_cents) return null;
+     const id = `crp_upgrade_${req.checkout_id}`;
+     const made = await stripe.createCoupon(secretKey, { id, name: 'Your upgrade credit',
+-      amount_off: req.credit_amount_cents, currency: 'cad', duration: 'once', max_redemptions: 1 }, base);
++      amount_off: req.credit_amount_cents, currency: req.currency || 'cad', duration: 'once', max_redemptions: 1 }, base);
+     if (made.status !== 200 || made.json?.amount_off !== req.credit_amount_cents ||
+-        made.json.currency !== 'cad' || made.json.duration !== 'once') refuse('UPGRADE_CREDIT_COUPON_NOT_CONFIRMED');
++        made.json.currency !== (req.currency || 'cad') || made.json.duration !== 'once') refuse('UPGRADE_CREDIT_COUPON_NOT_CONFIRMED');
+     return made.json.id;
+   }
+-  async function confirmedPrice(planCode) {
+-    const found = await stripe.retrievePrice(secretKey, priceIdFor(env, planCode), base);
+-    if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json)) refuse('CONFIGURED_PRICE_MISMATCH');
++  async function confirmedPrice(planCode, currency = 'cad') {
++    const found = await stripe.retrievePrice(secretKey, priceIdFor(env, planCode, currency), base);
++    if (found.status !== 200 || !priceMatchesCatalog(planCode, found.json, currency)) refuse('CONFIGURED_PRICE_MISMATCH');
+     return found.json;
+   }
+   async function ownedSubscription(req) {
+@@ -583,8 +618,8 @@ function makeStripeAdapter(env) {
+     if (typeof invoice === 'string') invoice = (await providerWrite(stripe.retrieveInvoice(secretKey, invoice, base))).json;
+     const price = invoice?.lines?.data?.[0]?.price;
+     if (!/^in_[A-Za-z0-9_]+$/.test(invoice?.id || '') || objectId(invoice.subscription) !== sub.id ||
+-        invoice.currency !== 'cad' || invoice.amount_due !== plans.plan('annual').amount_cents - req.credit_amount_cents ||
+-        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual') || invoice.lines.data[0].quantity !== 1) {
++        invoice.currency !== (req.currency || 'cad') || invoice.amount_due !== plans.plan('annual', req.currency || 'cad').amount_cents - req.credit_amount_cents ||
++        invoice.lines?.data?.length !== 1 || objectId(price) !== priceIdFor(env, 'annual', req.currency || 'cad') || invoice.lines.data[0].quantity !== 1) {
+       uncertain('UPGRADE_INVOICE_MISMATCH');
+     }
+     return invoice;
+@@ -602,7 +637,7 @@ function makeStripeAdapter(env) {
+     if (sub.metadata.checkout_id === request.existing_checkout_id) return { restored: true };
+     const invoice = await upgradeInvoice(sub, request);
+     if (!['void', 'uncollectible'].includes(invoice.status) || sub.pending_update ||
+-        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly')) refuse('RESTORE_UPGRADE_NOT_VOID');
++        sub.items?.data?.length !== 1 || objectId(sub.items.data[0].price) !== priceIdFor(env, 'monthly', request.currency || 'cad')) refuse('RESTORE_UPGRADE_NOT_VOID');
+     const changed = await stripe.updateSubscription(secretKey, sub.id, {
+       'metadata[account_id]': request.account_id, 'metadata[plan_code]': request.existing_plan_code,
+       'metadata[checkout_id]': request.existing_checkout_id, 'metadata[previous_checkout_id]': ''
+@@ -621,7 +656,7 @@ function makeStripeAdapter(env) {
+     async createCheckout(request) {
+       const req = request || {};
+       if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('CHECKOUT_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
+-      const priceId = priceIdFor(env, req.plan_code);
++      const priceId = priceIdFor(env, req.plan_code, req.currency || 'cad');
+       if (!priceId) {
+         const err = new Error(`STRIPE_PRICE_NOT_CONFIGURED:${req.plan_code}`);
+         err.code = 'STRIPE_PRICE_NOT_CONFIGURED';
+@@ -632,7 +667,7 @@ function makeStripeAdapter(env) {
+         err.code = 'RETURN_URL_OUTSIDE_CONFIGURED_ORIGINS';
+         throw err;
+       }
+-      await confirmedPrice(req.plan_code);
++      await confirmedPrice(req.plan_code, req.currency || 'cad');
+       const coupon = await creditCoupon(req);
+       const { params } = sessionParams({ ...req, credit_coupon_id: coupon });
+       const result = await providerWrite(stripe.createCheckoutSession(secretKey, params, base, `crp-checkout-${req.checkout_id}`));
+@@ -662,14 +697,15 @@ function makeStripeAdapter(env) {
+       }
+       if (req.resume && Date.now() - Date.parse(req.request_started_at || '') >= 23 * 3600000) uncertain('UPGRADE_RECOVERY_REQUIRES_PROVIDER_CONFIRMATION');
+       const items = sub.items?.data || [];
++      if (sub.currency && sub.currency !== (req.currency || 'cad')) refuse('SUBSCRIPTION_CURRENCY_MISMATCH');
+       if (!req.resume && (sub.status !== 'active' || sub.collection_method !== 'charge_automatically' || sub.schedule || sub.pending_update ||
+-          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly'))) {
++          items.length !== 1 || items[0].quantity !== 1 || objectId(items[0].price) !== priceIdFor(env, 'monthly', req.currency || 'cad'))) {
+         refuse('SUBSCRIPTION_NOT_READY_TO_UPGRADE');
+       }
+       if (items.length !== 1 || !/^si_/.test(items[0].id || '')) refuse('UPGRADE_SUBSCRIPTION_ITEMS_MISMATCH');
+-      await confirmedPrice('annual');
++      await confirmedPrice('annual', req.currency || 'cad');
+       const coupon = await creditCoupon(req);
+-      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual'),
++      const params = { 'items[0][id]': items[0].id, 'items[0][price]': priceIdFor(env, 'annual', req.currency || 'cad'),
+         'items[0][quantity]': 1, billing_cycle_anchor: 'now', proration_behavior: 'none',
+         payment_behavior: 'pending_if_incomplete', cancel_at_period_end: false,
+         'metadata[account_id]': req.account_id, 'metadata[plan_code]': 'annual', 'metadata[checkout_id]': req.checkout_id,
+@@ -694,7 +730,7 @@ function makeStripeAdapter(env) {
+         let refunded = false, disputed = false, refundedCents = 0;
+         if (intent) {
+           const pi = await stripe.retrievePaymentIntent(secretKey, intent, base);
+-          if (pi.status !== 200 || pi.json.currency !== 'cad' || pi.json.status !== 'succeeded') refuse('PAYMENT_HISTORY_INTENT_UNRESOLVED');
++          if (pi.status !== 200 || pi.json.currency !== object.currency || pi.json.status !== 'succeeded') refuse('PAYMENT_HISTORY_INTENT_UNRESOLVED');
+           const chargeId = objectId(pi.json.latest_charge);
+           if (chargeId) {
+             const charge = await stripe.retrieveCharge(secretKey, chargeId, base);
+@@ -705,7 +741,7 @@ function makeStripeAdapter(env) {
+           }
+         }
+         receipts.push({ payment_id: paymentId, payment_intent: intent || null, account_id: req.account_id,
+-          plan_code: planCode, currency: 'cad', amount_cents: amount, paid_at: paidAt,
++          plan_code: planCode, currency: object.currency, amount_cents: amount, paid_at: paidAt,
+           verified_payment: true, refunded, refunded_cents: refundedCents, disputed });
+       }
+       for (const checkout of req.checkouts || []) {
+@@ -716,7 +752,7 @@ function makeStripeAdapter(env) {
+           if (fetched.status !== 200 || session.client_reference_id !== req.account_id ||
+               session.metadata?.account_id !== req.account_id || session.metadata?.checkout_id !== checkout.checkout_id ||
+               session.livemode !== liveMode || session.status !== 'complete') refuse('PAYMENT_HISTORY_CHECKOUT_MISMATCH');
+-          if (session.mode === 'payment' && session.payment_status === 'paid' && session.currency === 'cad' &&
++          if (session.mode === 'payment' && session.payment_status === 'paid' && plans.isCurrency(session.currency) && session.currency === (checkout.currency || 'cad') &&
+               Number.isInteger(session.amount_total) && session.metadata.plan_code === 'report_once') {
+             await receipt(session, 'report_once', session.id, session.amount_total,
+               new Date((session.created || 0) * 1000).toISOString());
+@@ -734,12 +770,12 @@ function makeStripeAdapter(env) {
+           const page = await stripe.listInvoices(secretKey, subId, base, after);
+           if (page.status !== 200 || !Array.isArray(page.json.data)) refuse('PAYMENT_HISTORY_INVOICES_UNAVAILABLE');
+           for (const invoice of page.json.data) {
+-            if (invoice.status !== 'paid' || invoice.paid !== true || invoice.currency !== 'cad' ||
++            if (invoice.status !== 'paid' || invoice.paid !== true || !plans.isCurrency(invoice.currency) ||
+                 invoice.livemode !== liveMode || objectId(invoice.subscription) !== subId ||
+                 !Number.isInteger(invoice.amount_paid) || invoice.amount_paid <= 0) continue;
+             const lines = invoice.lines?.data || [];
+             const code = lines.length === 1 && lines[0].quantity === 1
+-              ? ['monthly', 'annual'].find(p => priceIdFor(env, p) === objectId(lines[0].price)) : null;
++              ? ['monthly', 'annual'].find(p => priceIdFor(env, p, invoice.currency) === objectId(lines[0].price)) : null;
+             if (!code) continue;
+             await receipt(invoice, code, invoice.id, invoice.amount_paid,
+               new Date((invoice.status_transitions?.paid_at || invoice.created) * 1000).toISOString());
+@@ -845,7 +881,7 @@ function makeStripeAdapter(env) {
+           session.status !== 'complete' ||
+           !(session.payment_status === 'paid' || session.payment_status === 'no_payment_required' && session.amount_total === 0) || session.livemode !== liveMode ||
+           session.client_reference_id !== req.account_id || !metadataMatches(session) ||
+-          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code)) {
++          !Array.isArray(lineItems) || lineItems.length !== 1 || lineItems[0]?.price?.id !== priceIdFor(env, req.plan_code, req.currency || 'cad')) {
+         refuse('CANCELLATION_CHECKOUT_MISMATCH');
+       }
+       const subscriptionId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
+diff --git a/accelerated-launch/service/plan-catalog.cjs b/accelerated-launch/service/plan-catalog.cjs
+index 67fbd3c..4824577 100644
+--- a/accelerated-launch/service/plan-catalog.cjs
++++ b/accelerated-launch/service/plan-catalog.cjs
+@@ -1,14 +1,25 @@
+ 'use strict';
+-/** Owner-approved pricing, 2026-10-01: CAD 5.95 one-time, 7.95 monthly, 79.50 annual.
+- * Supersedes legacy USD reference pricing. Payment never expands legal output permissions.
++/** Owner-approved fixed native prices, October 11. No exchange-rate pricing.
++ * Payment currency never expands product permissions.
+  */
+ 
+ const crypto = require('node:crypto');
+ 
+ const PLAN_CODES = Object.freeze(['report_once', 'monthly', 'annual']);
+ 
+-/** Base price in CAD cents. THE single source of truth for what a plan costs. */
++/** Historical CAD prices in cents, retained for existing CAD contracts. */
+ const BASE_PRICE_CAD_CENTS = Object.freeze({ report_once: 595, monthly: 795, annual: 7950 });
++const NATIVE_PRICES = Object.freeze({
++  cad: BASE_PRICE_CAD_CENTS,
++  usd: Object.freeze({ report_once: 495, monthly: 595, annual: 5950 }),
++  aud: Object.freeze({ report_once: 595, monthly: 795, annual: 7950 }),
++  gbp: Object.freeze({ report_once: 315, monthly: 425, annual: 4250 })
++});
++const CURRENCIES = Object.freeze(Object.keys(NATIVE_PRICES));
++const COUNTRY_CURRENCY = Object.freeze({ CA: 'cad', US: 'usd', AU: 'aud', GB: 'gbp' });
++const MINIMUM_CHARGE = Object.freeze({ cad: 50, usd: 50, aud: 50, gbp: 30 });
++const isCurrency = currency => CURRENCIES.includes(currency);
++const currencyForCountry = country => COUNTRY_CURRENCY[country] || 'usd';
+ 
+ /** Configured minimum CAD charge is $0.50; every amount above clears it. Asserted in `plan()`. */
+ const MINIMUM_CHARGE_CAD_CENTS = 50;
+@@ -82,19 +93,20 @@ function isPlanCode(value) {
+ }
+ 
+ /** One plan as the consumer surface may render it. It carries no provider id, price id or secret. */
+-function plan(planCode) {
++function plan(planCode, currency = 'cad') {
+   if (!isPlanCode(planCode)) return null;
+-  const amount = BASE_PRICE_CAD_CENTS[planCode];
+-  if (!Number.isInteger(amount) || amount < MINIMUM_CHARGE_CAD_CENTS) {
++  if (!isCurrency(currency)) throw new Error('UNSUPPORTED_PAYMENT_CURRENCY');
++  const amount = NATIVE_PRICES[currency][planCode];
++  if (!Number.isInteger(amount) || amount < MINIMUM_CHARGE[currency]) {
+     throw new Error(`PLAN_PRICE_BELOW_THE_PROVIDER_MINIMUM: ${planCode}`);
+   }
+   const grant = GRANTS[planCode];
+   return {
+     plan_code: planCode,
+     label: PLAN_LABEL[planCode],
+-    currency: BILLING_CURRENCY,
++    currency,
+     amount_cents: amount,
+-    amount_display: `$${(amount / 100).toFixed(2)} ${BILLING_CURRENCY.toUpperCase()}`,
++    amount_display: `${currency === 'gbp' ? '£' : '$'}${(amount / 100).toFixed(2)} ${currency.toUpperCase()}`,
+     interval: PLAN_INTERVAL[planCode],
+     headline: grant.headline,
+     grants: grant.grants.slice(),
+@@ -103,15 +115,17 @@ function plan(planCode) {
+ }
+ 
+ /** The whole catalog. `catalog_digest` is a content digest of the prices, for the release check to pin. */
+-function catalog() {
+-  const plans = PLAN_CODES.map(plan);
++function catalog(currency = 'cad') {
++  const plans = PLAN_CODES.map(code => plan(code, currency));
+   const digest = crypto.createHash('sha256').update(JSON.stringify(plans.map((p) => [p.plan_code, p.currency, p.amount_cents, p.interval]))).digest('hex');
+   return {
+     plans,
+-    currency: BILLING_CURRENCY,
++    currency,
+     not_granted: NOT_GRANTED.slice(),
+-    note: 'One currency, priced once. Uploading a report and having it assessed are free. A purchase unlocks the reading of the report that was assessed — nothing more, and nothing that is not in this list.',
+-    upgrade_offer: { currency: 'cad', applies_to: ['monthly', 'annual'], first_invoice_only: true,
++    checkout_pricing: { method: 'FIXED_NATIVE_PRICES', location_source: 'VISITOR_IP_GEOLOCATION',
++      supported_currencies: CURRENCIES.slice(), fallback_currency: 'usd', consumer_currency_choice: true },
++    note: 'Prices use your IP location. You can change currency before paying. Other or unknown locations use US prices. Uploading and assessing your report are free.',
++    upgrade_offer: { currency, applies_to: ['monthly', 'annual'], first_invoice_only: true,
+       cumulative: true, expires: false, lower_priced_plans_only: true,
+       plain: 'Your unused payments for lower-priced plans count toward an upgrade. Any credit left over stays in your account.' },
+     catalog_digest: digest
+@@ -119,14 +133,15 @@ function catalog() {
+ }
+ 
+ /** Preserve unused cents when applying them all would create an unchargeable nonzero invoice. */
+-function applicableCredit(availableCents, priceCents) {
++function applicableCredit(availableCents, priceCents, currency = 'cad') {
+   const credit = Math.min(availableCents, priceCents);
+   const due = priceCents - credit;
+-  return due > 0 && due < MINIMUM_CHARGE_CAD_CENTS ? priceCents - MINIMUM_CHARGE_CAD_CENTS : credit;
++  return due > 0 && due < MINIMUM_CHARGE[currency] ? priceCents - MINIMUM_CHARGE[currency] : credit;
+ }
+ 
+ module.exports = {
+   PLAN_CODES,
++  NATIVE_PRICES, CURRENCIES, COUNTRY_CURRENCY, MINIMUM_CHARGE, isCurrency, currencyForCountry,
+   BASE_PRICE_CAD_CENTS,
+   MINIMUM_CHARGE_CAD_CENTS,
+   applicableCredit,
+diff --git a/accelerated-launch/service/pricing-location.cjs b/accelerated-launch/service/pricing-location.cjs
+new file mode 100644
+index 0000000..9fa9502
+--- /dev/null
++++ b/accelerated-launch/service/pricing-location.cjs
+@@ -0,0 +1,46 @@
++'use strict';
++const net=require('node:net');
++const plans=require('./plan-catalog.cjs');
++const {ServiceError}=require('./errors.cjs');
++// Only the local reverse proxy may supply forwarding information. Traefik
++// appends its observed client address; nginx appends its own loopback hop.
++// Walk past only those trusted local hops, never a browser-provided country.
++function visitorIp(req){
++  let ip=req.socket?.remoteAddress||'';
++  if(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(ip)){
++    const forwarded=req.headers?.['x-forwarded-for'];
++    if(typeof forwarded==='string'){
++      const hops=forwarded.split(',').map(value=>value.trim());
++      while(hops.length&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(hops.at(-1)))hops.pop();
++      ip=hops.at(-1)||ip;
++    }
++  }
++  if(ip.startsWith('::ffff:'))ip=ip.slice(7);
++  return net.isIP(ip)?ip:null;
++}
++function publicIp(ip){
++  return net.isIP(ip)&&!(/^(127\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(ip)||/^(::1|::|fc|fd|fe80:)/i.test(ip));
++}
++async function countryFromIp(ip){
++  if(!ip||!publicIp(ip))return null;
++  try{
++    const response=await fetch('https://api.country.is/'+encodeURIComponent(ip),{signal:AbortSignal.timeout(1500),redirect:'error'});
++    if(!response.ok)return null;
++    const value=await response.json();
++    return value.ip===ip&&/^[A-Z]{2}$/.test(value.country||'')?value.country:null;
++  }catch{return null;}
++}
++function requestedCurrency(req,body){
++  const value=body?.currency??new URL(req.url,'http://127.0.0.1').searchParams.get('currency');
++  if(value===null||value===undefined)return null;
++  if(!plans.isCurrency(value))throw new ServiceError('INVALID_PAYMENT_CURRENCY');
++  return value;
++}
++function resolver(lookup=countryFromIp){
++  return async(req,body)=>{
++    const chosen=requestedCurrency(req,body);if(chosen)return chosen;
++    let country=null;try{country=await lookup(visitorIp(req));}catch{}
++    return plans.currencyForCountry(country);
++  };
++}
++module.exports={visitorIp,publicIp,countryFromIp,requestedCurrency,resolver};
+diff --git a/accelerated-launch/service/privacy.cjs b/accelerated-launch/service/privacy.cjs
+index d978b35..949980a 100644
+--- a/accelerated-launch/service/privacy.cjs
++++ b/accelerated-launch/service/privacy.cjs
+@@ -7,6 +7,7 @@ function dashboard(store, actor) {
+   const owned = state.cases.filter(row => row.account_id === actor.account_id);
+   const referrals = state.referral_snapshots?.[0] || {};
+   return {
++    pricing_location: 'To choose your starting prices, your IP address is sent to Country.is for a country lookup. Your report and account details are not sent. You can change payment currency before paying.',
+     cases: owned.map(row => ({ case_id: row.case_id, country: row.country, region: row.region, status: row.status,
+       documents: state.files.filter(file => file.account_id === actor.account_id && file.case_id === row.case_id && file.stored_blob !== false).map(file => ({
+         file_id: file.file_id, name: file.original_filename || file.originalFilename || 'Uploaded report',
+diff --git a/accelerated-launch/service/tests/harness.cjs b/accelerated-launch/service/tests/harness.cjs
+index 352faa1..df035cd 100644
+--- a/accelerated-launch/service/tests/harness.cjs
++++ b/accelerated-launch/service/tests/harness.cjs
+@@ -81,10 +81,10 @@ function temporaryDataDir(tag) {
+ }
+ 
+ class TestService {
+-  constructor(tag) {
++  constructor(tag, options = {}) {
+     this.dataDir = temporaryDataDir(tag || 'run');
+     this.logs = [];
+-    this.service = createService({ dataDir: this.dataDir, logSink: (line) => this.logs.push(line) });
++    this.service = createService({ dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
+     this.server = http.createServer((req, res) => {
+       this.service.handle(req, res).catch(() => {
+         if (!res.headersSent) {
+diff --git a/accelerated-launch/service/tests/run-tests.cjs b/accelerated-launch/service/tests/run-tests.cjs
+index c18f471..3920c61 100644
+--- a/accelerated-launch/service/tests/run-tests.cjs
++++ b/accelerated-launch/service/tests/run-tests.cjs
+@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
+ 
+ const OUT_DIR = path.join(__dirname, '..', 'out');
+ const SECTION_FILES = [
++  'fg-native-currency-pricing.cjs',
+   'ez-reporting-period-directive.cjs',
+   'ev-native-account-summary.cjs',
+   'et-supported-coverage-evidence.cjs',
+diff --git a/accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs b/accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs
+index d59a202..1085f9d 100644
+--- a/accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs
++++ b/accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs
+@@ -282,8 +282,11 @@ async function run(service, check) {
+   vm.runInContext('state.step = STEP.BILLING; render();', postCtx);
+   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
+   const billingBox = post.elementById('billingView').innerHTML;
++  check.ok(/label for="checkout-currency">Payment currency/.test(billingBox) && ['cad', 'usd', 'aud', 'gbp'].every(currency => billingBox.includes('option value="' + currency + '"')), 'Plans exposes the labelled four-currency checkout control');
+   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
+-  check.ok(/Prices are in CAD\./.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
++  check.ok(/Prices use your IP location/.test(billingBox) && /Choose CAD, USD, AUD or GBP before paying/.test(billingBox)
++    && /Other or unknown locations see US prices/.test(billingBox)
++    && /fixed prices, with no exchange-rate pricing/.test(billingBox) && /one-time purchase does not renew/i.test(billingBox)
+     && /Renews until you cancel/.test(billingBox) && /Cancelling a subscription stops the next charge/.test(billingBox)
+     && /Your access lasts until the date shown above/.test(billingBox), 'and states currency, renewal, cancellation and remaining access before purchase');
+   check.ok(!/do not prove working billing/.test(billingBox), 'and never renders the internal billing-readiness sentence');
+diff --git a/accelerated-launch/service/tests/sections/ec-account-packet-ui.cjs b/accelerated-launch/service/tests/sections/ec-account-packet-ui.cjs
+index bc3ae05..43c177d 100644
+--- a/accelerated-launch/service/tests/sections/ec-account-packet-ui.cjs
++++ b/accelerated-launch/service/tests/sections/ec-account-packet-ui.cjs
+@@ -472,9 +472,10 @@ async function checkoutKeepsOwnOriginAndReport() {
+   const h = harness(() => ({ checkout: { redirect_url: 'https://checkout.stripe.com/fictional' } }));
+   h.account('A', 'Fictional A'); h.context.location.origin = 'https://app.example.test';
+   h.context.location.search = '?redirect=https://foreign.example'; h.context.returnCaseId = returnCaseId;
+-  h.evaluate('state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
++  h.evaluate('state.pricingCurrency = "gbp"; state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
+   await h.evaluate('startCheckout("monthly")');
+   const post = h.calls.find(row => row.url === '/api/billing/checkout'), url = new URL(post.body.return_url);
++  assert.equal(post.body.currency, 'gbp', 'checkout preserves the loaded consumer-selected currency');
+   assert.equal(url.origin, 'https://app.example.test'); assert.equal(url.pathname, '/');
+   assert.equal(url.searchParams.get('report'), returnCaseId); assert.equal(url.searchParams.get('plan'), 'monthly');
+   assert.ok(!url.href.includes('foreign.example'), 'an input redirect URL is never used for checkout return');
+diff --git a/accelerated-launch/service/tests/sections/en-purchase-presentation.cjs b/accelerated-launch/service/tests/sections/en-purchase-presentation.cjs
+index 2c6ddf8..4d80b51 100644
+--- a/accelerated-launch/service/tests/sections/en-purchase-presentation.cjs
++++ b/accelerated-launch/service/tests/sections/en-purchase-presentation.cjs
+@@ -19,8 +19,9 @@ function makeContext(responder) {
+     document: { getElementById: get, createElement: element },
+     fetch: async (url, options = {}) => {
+       const method = options.method || 'GET', body = options.body ? JSON.parse(options.body) : null;
+-      calls.push({ method, url, body });
+-      const reply = await responder(method, url, body) || { status: 200, body: { ok: true } };
++      const pathname = url.split('?')[0], query = url.split('?')[1] || '';
++      calls.push({ method, url: pathname, query, body });
++      const reply = await responder(method, pathname, body) || { status: 200, body: { ok: true } };
+       return { ok: reply.status < 400 && reply.body.ok !== false, status: reply.status, json: async () => reply.body, text: async () => JSON.stringify(reply.body) };
+     },
+     URL: { createObjectURL: () => 'blob:fixture', revokeObjectURL() {} }, Blob: class Blob {}, FileReader: class FileReader {}
+@@ -106,7 +107,7 @@ async function run(t, check) {
+   check.ok(/\$3\.95 CAD remains for a later upgrade/.test(panel.innerHTML), 'unused excess credit is shown without reducing the bill below zero');
+   check.ok(!/id="create-packet"|id="packet-block"/.test(panel.innerHTML), 'marketing does not grant a one-off purchase subscriber packet access');
+   await dom.get('download-assessment').onclick();
+-  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === '/api/cases/case_fixture/report-download'), 'the PDF control uses the protected owned-report download route');
++  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === '/api/cases/case_fixture/report-download?currency=cad'), 'the PDF control uses the protected owned-report download route and selected currency');
+   await dom.get('buy-monthly').onclick();
+   await tick(); await tick();
+   const firstPurchase = dom.calls.find(c => c.method === 'POST' && c.url === '/api/billing/checkout');
+diff --git a/accelerated-launch/service/tests/sections/eo-cumulative-upgrade-credit.cjs b/accelerated-launch/service/tests/sections/eo-cumulative-upgrade-credit.cjs
+index b631213..669e5a9 100644
+--- a/accelerated-launch/service/tests/sections/eo-cumulative-upgrade-credit.cjs
++++ b/accelerated-launch/service/tests/sections/eo-cumulative-upgrade-credit.cjs
+@@ -16,7 +16,7 @@ async function run(t, check) {
+   check.equal(add(receipt('unverified', { verified_payment: false })).created, false, 'unverified bodies mint no credit');
+   check.equal(credits.creditFromPayment(store, 'a', 'old_call', 'pi_old_call', paidAt).created, false,
+     'compatibility wrapper cannot assume a verified CAD 5.95 payment');
+-  for (const patch of [{ currency: 'usd' }, { amount_cents: -1 }, { amount_cents: 1.5 },
++  for (const patch of [{ currency: 'eur' }, { amount_cents: -1 }, { amount_cents: 1.5 },
+     { amount_cents: Number.MAX_SAFE_INTEGER + 1 }, { paid_at: 'invalid' },
+     { paid_at: new Date(Date.now() + 86400000).toISOString() }, { plan_code: 'unknown' },
+     { account_id: null }, { payment_id: null }, { refunded: true }, { disputed: true }]) {
+diff --git a/accelerated-launch/service/tests/sections/ep-provider-upgrades.cjs b/accelerated-launch/service/tests/sections/ep-provider-upgrades.cjs
+index 8686aa7..49d8997 100644
+--- a/accelerated-launch/service/tests/sections/ep-provider-upgrades.cjs
++++ b/accelerated-launch/service/tests/sections/ep-provider-upgrades.cjs
+@@ -8,7 +8,7 @@ async function run(t, check) {
+   const mock = await new StripeUpgradeFixture().listen();
+   const values = mock.env(t.base), old = Object.fromEntries(Object.keys(values).map(key => [key, process.env[key]]));
+   Object.assign(process.env, values);
+-  t.service = createService({ dataDir: t.dataDir, logSink: line => t.logs.push(line) });
++  t.service = createService({ dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
+   const store = t.service.store;
+   const read = () => store.state();
+   const events = async (type, object, eventId, eventPatch) => {
+diff --git a/accelerated-launch/service/tests/sections/fg-native-currency-pricing.cjs b/accelerated-launch/service/tests/sections/fg-native-currency-pricing.cjs
+new file mode 100644
+index 0000000..10d7695
+--- /dev/null
++++ b/accelerated-launch/service/tests/sections/fg-native-currency-pricing.cjs
+@@ -0,0 +1,112 @@
++'use strict';
++const { TestService } = require('../harness.cjs');
++const plans = require('../../plan-catalog.cjs');
++const location = require('../../pricing-location.cjs');
++const credits = require('../../billing-credits.cjs');
++const crypto = require('node:crypto');
++const provider = require('../../payment-provider.cjs');
++const { createService } = require('../../app.cjs');
++const { StripeUpgradeFixture } = require('../stripe-upgrade-fixture.cjs');
++async function run(t, check) {
++  check.equal(provider.planCodeFromPrice({}, null), null, 'a missing price cannot resolve to a plan through an absent currency configuration');
++  const legacyStatus = require('../../entitlement.cjs').statusFor({ state: () => ({ entitlements: [] }) }, 'fictional-legacy-owner');
++  check.equal(legacyStatus.currency, null, 'legacy stores without checkout history retain an empty currency instead of throwing');
++  check.equal(legacyStatus.entitled, false, 'missing legacy purchase history never grants access');
++  const expected = { cad: [595, 795, 7950], usd: [495, 595, 5950], aud: [595, 795, 7950], gbp: [315, 425, 4250] };
++  const req = { url: '/api/pricing', socket: { remoteAddress: '127.0.0.1' }, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1' } };
++  check.equal(location.visitorIp(req), '1.1.1.1', 'use proxy-observed final IP, not an injected first address');
++  check.equal(location.visitorIp({ ...req, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1, 127.0.0.1' } }), '1.1.1.1', 'actual Traefik/nginx chain skips the final local proxy hop');
++  check.equal(location.visitorIp({ ...req, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1, ::ffff:127.0.0.1, ::1' } }), '1.1.1.1', 'only trusted local hops are skipped, preserving the observed visitor over a forged prefix');
++  check.equal(location.visitorIp({ ...req, socket: { remoteAddress: '9.9.9.9' } }), '9.9.9.9', 'untrusted remote forwarding header cannot replace peer IP');
++  for (const [country, currency] of [['CA','cad'],['US','usd'],['AU','aud'],['GB','gbp'],['FR','usd'],[null,'usd']]) {
++    const service = await new TestService('native-' + country, { geoLocate: async () => country }).listen();
++    try {
++      const pricing = await service.request('GET', '/api/pricing');
++      check.equal(pricing.json.plan_catalog.currency, currency, String(country) + ' IP lookup selects native price or USD fallback');
++      check.equal(pricing.json.plan_catalog.plans.map(p => p.amount_cents).join(','), expected[currency].join(','), 'all three actual public prices match owner table');
++      const override = await service.request('GET', '/api/pricing?currency=gbp');
++      check.equal(override.json.plan_catalog.currency, 'gbp', 'consumer selection overrides IP');
++    } finally { await service.close(); }
++  }
++  check.equal(await location.resolver(async () => { throw new Error('offline'); })(req), 'usd', 'geolocation outage falls back to US prices');
++  for (const currency of Object.keys(expected)) for (const [i, code] of plans.PLAN_CODES.entries()) {
++    const actor = await t.unpaidAccount('native-' + currency + '-' + code + '@example.test');
++    const caseId = await t.assessedCase(actor);
++    const before = t.service.store.state().results.filter(r => r.case_id === caseId).map(r => r.result_id).join(',');
++    const opened = await t.request('POST', '/api/billing/checkout', { token: actor.token,
++      body: { plan_code: code, case_id: caseId, currency, amount_cents: 1, country: 'US' } });
++    check.equal(opened.status, 201, currency + '/' + code + ' opens owned checkout');
++    const checkout = opened.json.checkout;
++    check.equal(checkout.plan.currency, currency, 'checkout uses explicitly chosen currency');
++    check.equal(checkout.plan.amount_cents, expected[currency][i], 'browser cannot override fixed plan amount');
++    const event = { id: 'test_evt_' + crypto.randomBytes(8).toString('hex'), type: 'checkout.session.completed',
++      account_reference: actor.account_id, plan_code: code, session_reference: checkout.provider_reference,
++      amount_cents: expected[currency][i], currency, occurred_at: new Date().toISOString() };
++    const bad = await t.postEvent({ ...event, id: event.id + '_wrong', currency: currency === 'usd' ? 'cad' : 'usd' });
++    check.equal(bad.json.event.accepted, false, 'signed event in another currency grants no access');
++    const paid = await t.postEvent(event);
++    check.equal(paid.json.event.accepted, true, 'exact signed native amount activates purchase');
++    const view = await t.request('GET', '/api/cases/' + caseId, { token: actor.token });
++    check.equal(view.json.view.assessment_access.complete_assessment, true, 'existing complete assessment unlocked');
++    check.equal(view.json.view.assessment_access.dispute_packet, code !== 'report_once', 'packet remains subscription only');
++    check.equal(t.service.store.state().results.filter(r => r.case_id === caseId).map(r => r.result_id).join(','), before, 'purchase requires no new upload or reassessment');
++    if (code === 'monthly') {
++      const wrong = await t.request('POST', '/api/billing/checkout', { token: actor.token, body: { plan_code: 'annual', currency: currency === 'usd' ? 'cad' : 'usd' } });
++      check.equal(wrong.status, 409, 'subscription cannot switch its contracted currency during upgrade');
++      const billing = await t.request('GET', '/api/billing/plans?currency=usd', { token: actor.token });
++      check.equal(billing.json.plan_catalog.currency, currency, 'active subscription prices retain actual currency');
++    }
++  }
++  const actor = await t.unpaidAccount('native-credit-buckets@example.test');
++  const now = new Date().toISOString();
++  t.service.store.update(state => {
++    for (const currency of ['cad', 'usd']) credits.recordPayment(state, { account_id: actor.account_id,
++      payment_id: 'native_bucket_' + currency, plan_code: 'report_once', amount_cents: plans.plan('report_once', currency).amount_cents,
++      currency, paid_at: now, verified_payment: true });
++  });
++  check.equal(credits.quotesFor(t.service.store, actor.account_id, now, null, 'usd').monthly.credit_cents, 495, 'USD upgrade uses USD cash only');
++  check.equal(credits.quotesFor(t.service.store, actor.account_id, now, null, 'cad').monthly.credit_cents, 595, 'historical CAD credit remains usable in CAD');
++  check.equal(credits.quotesFor(t.service.store, actor.account_id, now, null, 'gbp').monthly.credit_cents, 0, 'no invented foreign-currency conversion of credits');
++  check.equal(plans.applicableCredit(420, 425, 'gbp'), 395, 'GBP credit leaves its native minimum charge');
++  const invalid = await t.request('GET', '/api/pricing?currency=eur');
++  check.equal(invalid.status, 400, 'unsupported currency is refused explicitly');
++  const mock = await new StripeUpgradeFixture().listen();
++  const values = mock.env(t.base), old = Object.fromEntries(Object.keys(values).map(key => [key, process.env[key]]));
++  Object.assign(process.env, values);
++  t.service = createService({ dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
++  try {
++    for (const currency of plans.CURRENCIES) for (const code of plans.PLAN_CODES) {
++      const buyer = await t.unpaidAccount('native-stripe-' + currency + '-' + code + '@example.test');
++      const caseId = await t.assessedCase(buyer);
++      const opened = await t.request('POST', '/api/billing/checkout', { token: buyer.token,
++        body: { plan_code: code, currency, case_id: caseId, return_url: t.base + '/' } });
++      check.equal(opened.status, 201, currency + '/' + code + ' validates native Stripe Price before opening');
++      const request = mock.calls.filter(c => c.path === '/v1/checkout/sessions' && c.method === 'POST').at(-1);
++      check.equal(request.params.currency, currency, 'Stripe Session locks selected native currency');
++      check.equal(request.params['adaptive_pricing[enabled]'], 'false', 'Stripe cannot exchange-rate the fixed price');
++      const session = mock.completeSession(opened.json.checkout.provider_reference);
++      check.equal(session.amount_total, plans.plan(code, currency).amount_cents, 'provider bills exact fixed native amount');
++      const paid = await t.request('POST', '/api/billing/events', mock.signed('checkout.session.completed', session));
++      check.equal(paid.json.event.accepted, true, 'real adapter verifies signed native Stripe-shaped receipt');
++      const billing = await t.request('GET', '/api/billing/plans?currency=' + currency, { token: buyer.token });
++      check.equal(billing.status, 200, 'native receipt reconciliation remains valid');
++      check.equal(billing.json.entitlement.currency, currency, 'stored purchase retains actual charged currency');
++      if (code === 'monthly') {
++        const upgrade = await t.request('POST', '/api/billing/checkout', { token: buyer.token, body: {
++          plan_code: 'annual', currency, quote_revision: billing.json.upgrade_quotes.annual.revision, return_url: t.base + '/' } });
++        check.equal(upgrade.status, 201, 'same-currency native upgrade replaces one subscription');
++        const invoice = mock.payInvoice(upgrade.json.checkout.provider_reference);
++        check.equal(invoice.amount_paid, plans.plan('annual', currency).amount_cents - plans.plan('monthly', currency).amount_cents, 'native paid monthly cash deducted once');
++        const confirmed = await t.request('POST', '/api/billing/events', mock.signed('invoice.paid', mock.webhookInvoice(invoice)));
++        check.equal(confirmed.json.event.accepted, true, 'signed native upgrade invoice activates annual plan');
++      }
++      const cancelled = code === 'report_once' ? null : await t.request('POST', '/api/entitlement/cancel', { token: buyer.token, body: {} });
++      if (cancelled) check.equal(cancelled.status, 200, 'native subscription cancellation remains provider-confirmed');
++    }
++  } finally {
++    for (const [key, value] of Object.entries(old)) if (value === undefined) delete process.env[key]; else process.env[key] = value;
++    await mock.close();
++  }
++  return { fixed_native_price_cells: 12, fictional_transport: true, live_stripe_purchase: false };
++}
++module.exports = { run, id: 'fg-native-currency-pricing', title: 'Fixed native pricing, IP fallback, consumer currency choice, signed payment and currency-isolated credits' };
+diff --git a/accelerated-launch/service/tests/sections/t-entitlement.cjs b/accelerated-launch/service/tests/sections/t-entitlement.cjs
+index 67d52bb..5b3e55f 100644
+--- a/accelerated-launch/service/tests/sections/t-entitlement.cjs
++++ b/accelerated-launch/service/tests/sections/t-entitlement.cjs
+@@ -449,16 +449,25 @@ async function stripeRenewalCancellation(t, check, evidence) {
+       body: { plan_code: plan, return_url: returnUrl } });
+     check.equal(checkout.status, 201, label + ': actual Stripe adapter opens this owned mock Checkout');
+     const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
++    check.equal(sent.get('adaptive_pricing[enabled]'), 'false', label + ': fixed native pricing disables exchange-rate pricing');
++    check.equal(sent.get('customer_email'), t.service.store.state().accounts.find(a => a.account_id === actor.account_id).email,
++      label + ': checkout email comes from the authenticated account');
+     check.equal(sent.get('success_url'), returnUrl, label + ': Stripe success retains the report return context');
+     const cancelledReturn = new URL(sent.get('cancel_url'));
+     check.equal(cancelledReturn.searchParams.get('checkout_cancelled'), '1', label + ': cancelling Checkout has a distinct return hint');
+     cancelledReturn.searchParams.delete('checkout_cancelled');
+     check.equal(cancelledReturn.href, returnUrl, label + ': cancellation preserves the same origin and report context');
+-    const signed = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_activate_' + sequence,
++    mock.fixture.session.presentment_details = { presentment_amount: 999, presentment_currency: 'usd' };
++    const signed = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_activate_' + sequence,
+       type: 'checkout.session.completed', livemode: false, created: Math.floor(Date.now() / 1000),
+       data: { object: { ...mock.fixture.session } } });
+     const granted = await t.request('POST', '/api/billing/events', { raw: signed.raw, headers: signed.headers });
+     check.equal(granted.json?.event?.accepted, true, label + ': verified mock Stripe event grants this subscription');
++    const paid = t.service.store.state().checkout_sessions.find(c => c.checkout_id === checkout.json.checkout.checkout_id);
++    check.equal(paid.verified_presentment?.currency, 'usd', label + ': the signed local currency is retained');
++    check.equal(paid.verified_presentment?.amount, 999, label + ': local amount is distinct from base-currency payment');
++    check.equal(paid.verified_paid_cents, plans.plan(plan).amount_cents - (paid.credit_applied_cents || 0),
++      label + ': local presentment never changes the verified CAD price or credit');
+     return { actor, checkout: checkout.json.checkout };
+   }
+   function holdUpdate() {
+diff --git a/accelerated-launch/service/tests/stripe-upgrade-fixture.cjs b/accelerated-launch/service/tests/stripe-upgrade-fixture.cjs
+index 8bcd100..63cc761 100644
+--- a/accelerated-launch/service/tests/stripe-upgrade-fixture.cjs
++++ b/accelerated-launch/service/tests/stripe-upgrade-fixture.cjs
+@@ -5,7 +5,10 @@ const crypto = require('node:crypto');
+ const clone = value => JSON.parse(JSON.stringify(value));
+ const SECRET = 'whsec_fictional_upgrade_fixture';
+ const PRICES = Object.freeze({ report_once: 'price_report_fixture', monthly: 'price_month_fixture', annual: 'price_year_fixture' });
+-const AMOUNTS = Object.freeze({ report_once: 595, monthly: 795, annual: 7950 });
++const catalog = require('../plan-catalog.cjs');
++const AMOUNTS = catalog.NATIVE_PRICES.cad;
++const priceFor = (code, currency = 'cad') => PRICES[code] + (currency === 'cad' ? '' : '_' + currency);
++const resolvePrice = id => { for (const currency of catalog.CURRENCIES) for (const code of catalog.PLAN_CODES) if (priceFor(code, currency) === id) return { code, currency }; return {}; };
+ const second = () => Math.floor(Date.now() / 1000);
+ 
+ class StripeUpgradeFixture {
+@@ -37,7 +40,7 @@ class StripeUpgradeFixture {
+     this.base = 'http://127.0.0.1:' + this.server.address().port; resolve(this);
+   })); }
+   close() { return new Promise(resolve => this.server.close(resolve)); }
+-  env(origin) { return { CRP_PAYMENT_PROVIDER: 'stripe', STRIPE_SECRET_KEY: 'sk_test_fictional_upgrade_fixture',
++  env(origin) { const native = {}; for (const currency of ['usd', 'aud', 'gbp']) for (const code of catalog.PLAN_CODES) native['STRIPE_PRICE_' + code.toUpperCase() + '_' + currency.toUpperCase()] = priceFor(code, currency); return { ...native, CRP_PAYMENT_PROVIDER: 'stripe', STRIPE_SECRET_KEY: 'sk_test_fictional_upgrade_fixture',
+     STRIPE_PUBLISHABLE_KEY: 'pk_test_fictional_upgrade_fixture',
+     STRIPE_WEBHOOK_SECRET: SECRET, STRIPE_PRICE_REPORT_ONCE: PRICES.report_once,
+     STRIPE_PRICE_MONTHLY: PRICES.monthly, STRIPE_PRICE_ANNUAL: PRICES.annual,
+@@ -46,23 +49,23 @@ class StripeUpgradeFixture {
+     return Object.fromEntries(Object.entries(params).filter(([key]) => key.startsWith(prefix + '['))
+       .map(([key, value]) => [key.slice(prefix.length + 1, -1), value]));
+   }
+-  payment(amount, metadata) {
++  payment(amount, metadata, currency = 'cad') {
+     if (!amount) return null;
+     const id = 'pi_fixture_' + ++this.sequence, charge = 'ch_fixture_' + this.sequence;
+-    this.intents.set(id, { id, object: 'payment_intent', currency: 'cad', amount_received: amount,
++    this.intents.set(id, { id, object: 'payment_intent', currency, amount_received: amount,
+       amount, status: 'succeeded', livemode: false, latest_charge: charge, metadata: { ...metadata } });
+     this.charges.set(charge, { id: charge, object: 'charge', payment_intent: id, amount, amount_refunded: 0,
+-      currency: 'cad', livemode: false, refunded: false, disputed: false });
++      currency, livemode: false, refunded: false, disputed: false });
+     return id;
+   }
+   invoice(subscription, plan, amount, patch = {}) {
+-    const id = 'in_fixture_' + ++this.sequence, from = second();
++    const id = 'in_fixture_' + ++this.sequence, from = second(), currency = subscription.currency || 'cad';
+     const invoice = { id, object: 'invoice', subscription: subscription.id, customer: subscription.customer,
+-      currency: 'cad', livemode: false, status: 'open', paid: false, amount_due: amount, amount_paid: 0,
++      currency, livemode: false, status: 'open', paid: false, amount_due: amount, amount_paid: 0,
+       amount_remaining: amount, created: from, payment_intent: null,
+       hosted_invoice_url: 'https://invoice.stripe.com/i/' + id,
+-      lines: { data: [{ id: 'il_' + id, price: { id: PRICES[plan] }, quantity: 1,
+-        amount: AMOUNTS[plan], period: { start: from, end: from + (plan === 'annual' ? 366 : 31) * 86400 } }] },
++      lines: { data: [{ id: 'il_' + id, price: { id: priceFor(plan, currency) }, quantity: 1,
++        amount: catalog.NATIVE_PRICES[currency][plan], period: { start: from, end: from + (plan === 'annual' ? 366 : 31) * 86400 } }] },
+       status_transitions: { paid_at: null }, ...patch };
+     this.invoices.set(id, invoice); return invoice;
+   }
+@@ -71,7 +74,7 @@ class StripeUpgradeFixture {
+     const invoice = this.invoice(subscription, 'monthly', amount,
+       { created: second() - 86400, status: 'paid', paid: true, amount_paid: amount,
+         amount_remaining: 0, status_transitions: { paid_at: second() - 86400 }, ...patch });
+-    invoice.payment_intent = this.payment(amount, { ...subscription.metadata });
++    invoice.payment_intent = this.payment(amount, { ...subscription.metadata }, subscription.currency);
+     return invoice;
+   }
+   completeSession(id) {
+@@ -80,7 +83,7 @@ class StripeUpgradeFixture {
+     if (session.mode === 'subscription') {
+       const subscription = this.subscriptions.get(session.subscription);
+       subscription.status = 'active'; this.payInvoice(session.invoice);
+-    } else session.payment_intent = this.payment(session.amount_total, session.metadata);
++    } else session.payment_intent = this.payment(session.amount_total, session.metadata, session.currency);
+     return session;
+   }
+   payInvoice(id, patch = {}) {
+@@ -92,7 +95,7 @@ class StripeUpgradeFixture {
+     }
+     Object.assign(invoice, { status: 'paid', paid: true, amount_paid: invoice.amount_due, amount_remaining: 0,
+       status_transitions: { paid_at: second() }, ...patch });
+-    invoice.payment_intent ||= this.payment(invoice.amount_paid, sub?.metadata || {});
++    invoice.payment_intent ||= this.payment(invoice.amount_paid, sub?.metadata || {}, invoice.currency);
+     return invoice;
+   }
+   voidInvoice(id) {
+@@ -143,8 +146,8 @@ class StripeUpgradeFixture {
+     if (key && this.idempotent.has(key)) return yes(this.idempotent.get(key));
+     const saved = body => { if (key) this.idempotent.set(key, clone(body)); return yes(body); };
+     if (call.method === 'GET' && call.path.startsWith('/v1/prices/')) {
+-      const code = Object.keys(PRICES).find(key => PRICES[key] === id);
+-      return code ? yes({ id, currency: 'cad', unit_amount: AMOUNTS[code], livemode: false,
++      const { code, currency } = resolvePrice(id);
++      return code ? yes({ id, currency, unit_amount: catalog.NATIVE_PRICES[currency][code], livemode: false,
+         type: code === 'report_once' ? 'one_time' : 'recurring',
+         ...(code === 'report_once' ? {} : { recurring: { interval: code === 'monthly' ? 'month' : 'year' } }) }) : missing();
+     }
+@@ -154,21 +157,21 @@ class StripeUpgradeFixture {
+       this.coupons.set(coupon.id, coupon); return saved(coupon);
+     }
+     if (call.method === 'POST' && call.path === '/v1/checkout/sessions') {
+-      const code = Object.keys(PRICES).find(key => PRICES[key] === p['line_items[0][price]']);
++      const { code, currency } = resolvePrice(p['line_items[0][price]']);
+       const metadata = this.metadata(p), discount = this.coupons.get(p['discounts[0][coupon]'])?.amount_off || 0;
+       const sessionId = 'cs_fixture_' + ++this.sequence;
+       const session = { id: sessionId, object: 'checkout.session', mode: p.mode, status: 'open',
+-        payment_status: 'unpaid', amount_total: AMOUNTS[code] - discount, currency: 'cad',
++        payment_status: 'unpaid', amount_total: catalog.NATIVE_PRICES[currency][code] - discount, currency,
+         client_reference_id: p.client_reference_id, metadata, livemode: false, created: second(),
+         expires_at: second() + 86400, subscription: null, invoice: null, payment_intent: null,
+-        line_items: { data: [{ price: { id: PRICES[code] }, quantity: 1 }] }, url: 'https://checkout.stripe.com/c/' + sessionId };
++        line_items: { data: [{ price: { id: priceFor(code, currency) }, quantity: 1 }] }, url: 'https://checkout.stripe.com/c/' + sessionId };
+       if (p.mode === 'subscription') {
+         const subId = 'sub_fixture_' + ++this.sequence;
+-        const sub = { id: subId, object: 'subscription', livemode: false, metadata: this.metadata(p, 'subscription_data[metadata]'),
++        const sub = { id: subId, object: 'subscription', currency, livemode: false, metadata: this.metadata(p, 'subscription_data[metadata]'),
+           status: 'incomplete', customer: 'cus_' + p.client_reference_id, collection_method: 'charge_automatically',
+           cancel_at_period_end: false, pending_update: null, schedule: null,
+           current_period_end: second() + (code === 'annual' ? 366 : 31) * 86400,
+-          items: { data: [{ id: 'si_fixture_' + this.sequence, price: { id: PRICES[code] }, quantity: 1 }] } };
++          items: { data: [{ id: 'si_fixture_' + this.sequence, price: { id: priceFor(code, currency) }, quantity: 1 }] } };
+         this.subscriptions.set(sub.id, sub); const invoice = this.invoice(sub, code, session.amount_total);
+         sub.latest_invoice = invoice.id; session.subscription = sub.id; session.invoice = invoice.id;
+       }
+@@ -187,7 +190,7 @@ class StripeUpgradeFixture {
+         if (this.upgradeGate) { const hold = this.upgradeGate; this.upgradeGate = null; hold.started(); await hold.gate; }
+         if (this.failUpgrade) { this.failUpgrade = false; return { status: 400, body: { error: { message: 'fictional definitive upgrade refusal' } } }; }
+         const discount = this.coupons.get(p['discounts[0][coupon]'])?.amount_off || 0;
+-        const invoice = this.invoice(sub, 'annual', AMOUNTS.annual - discount);
++        const invoice = this.invoice(sub, 'annual', catalog.NATIVE_PRICES[sub.currency || 'cad'].annual - discount);
+         sub.pending = { invoice_id: invoice.id, plan_price: p['items[0][price]'], metadata: this.metadata(p) };
+         // Stripe metadata may change before the pending price change is paid.
+         sub.metadata = { ...sub.pending.metadata };
+diff --git a/accelerated-launch/service/tests/test-stripe-adapter.cjs b/accelerated-launch/service/tests/test-stripe-adapter.cjs
+index 9ce69fe..0b5b1b0 100644
+--- a/accelerated-launch/service/tests/test-stripe-adapter.cjs
++++ b/accelerated-launch/service/tests/test-stripe-adapter.cjs
+@@ -206,6 +206,20 @@ async function main() {
+   assert.equal(taxedInvoice.event.tax_cents, 20, 'itemized invoice tax is carried for tax-exclusive referral rewards');
+   mock.fixture.invoice.total_tax_amounts = [];
+ 
++  // A local-currency invoice still verifies its CAD ledger value. Provider PI
++  // presentment must match the invoice's identity, currency and exact cash amount.
++  mock.fixture.intents.pi_monthly_1 = { id: 'pi_monthly_1', amount: 200, currency: 'cad',
++    presentment_details: { presentment_amount: 147, presentment_currency: 'usd' } };
++  const nativeInvoice = await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers });
++  assert.deepEqual(nativeInvoice.event.presentment_details, { amount: 147, currency: 'usd' });
++  assert.equal(nativeInvoice.event.amount_cents, 200);
++  mock.fixture.intents.pi_monthly_1.amount = 201;
++  assert.equal((await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers })).event.presentment_details, null,
++    'a mismatched PaymentIntent cannot supply local-currency facts');
++  mock.fixture.intents.pi_monthly_1.amount = 200;
++  mock.fixture.intents.pi_monthly_1.presentment_details.presentment_amount = -1;
++  assert.equal((await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers })).event.presentment_details, null);
++
+   // 2. A bad signature is refused.
+   const bad = await adapter.verifyEvent({ rawBody: good.raw, headers: { 'stripe-signature': 't=0,v1=deadbeef' } });
+   assert.equal(bad.verified, false, 'bad signature refused');
+@@ -294,6 +308,7 @@ async function main() {
+     checkout_id: 'chk_unit_annual', return_url: 'http://127.0.0.1:8787/?checkout=return', credit_amount_cents: 795 });
+   const annualBody = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
+   assert.equal(annualBody.get('line_items[0][price]'), PRICE_IDS.annual, 'yearly Checkout uses its own validated yearly Price');
++  assert.equal(annualBody.get('adaptive_pricing[enabled]'), 'false');
+   assert.equal(mock.fixture.session.amount_total, 7155, 'the provider fixture bills the exact yearly price less unused monthly cash');
+   const ownedCheckout = { checkout_id: 'chk_unit_annual', provider_reference: annual.provider_reference,
+     provider_subscription_reference: 'sub_unit_annual' };
+@@ -303,6 +318,17 @@ async function main() {
+   assert.equal(receipts[0].amount_cents, 7155, 'reconciliation never replaces discounted cash with the full catalog price');
+   assert.equal(receipts[0].plan_code, 'annual', 'historical receipt keeps its original purchased plan');
+   assert.equal(receipts[0].verified_payment, true, 'the provider independently confirms the paid receipt');
++
++  for (const plan of ['report_once', 'monthly', 'annual']) {
++    await adapter.createCheckout({ account_id: 'acc_local_' + plan, plan_code: plan, checkout_id: 'chk_local_' + plan,
++      customer_email: 'native+location_GB@example.test', credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' });
++    const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
++    assert.equal(sent.get('adaptive_pricing[enabled]'), 'false', plan + ': enable native-currency checkout');
++    assert.match(sent.get('custom_text[submit][message]'), /fixed plan price.*card issuer/, plan + ': every checkout entry discloses conversion and issuer fees');
++    assert.equal(sent.get('customer_email'), 'native+location_GB@example.test');
++    assert.equal(sent.get('line_items[0][price]'), PRICE_IDS[plan]);
++    assert.equal(sent.get('currency'), 'cad', 'resolved currency is explicit and fixed before Stripe checkout');
++  }
+   await assert.rejects(adapter.readPaidReceipts({ account_id: 'acc_foreign', checkouts: [ownedCheckout] }),
+     /PAYMENT_HISTORY_CHECKOUT_MISMATCH/, 'another account cannot import this invoice as upgrade cash');
+ 
+diff --git a/accelerated-launch/service/ui/app.js b/accelerated-launch/service/ui/app.js
+index d412699..03ae310 100644
+--- a/accelerated-launch/service/ui/app.js
++++ b/accelerated-launch/service/ui/app.js
+@@ -37,6 +37,7 @@ const state = {
+   support: null,
+   billing: null,
+   publicPricing: null,
++  pricingCurrency: null,
+   accountSecurity: null,
+   recoveryKey: null,
+   recoveryMode: false,
+@@ -74,6 +75,7 @@ function note(line) {
+ }
+ 
+ async function api(method, path, body) {
++  if (method === 'GET' && state.pricingCurrency && ['/api/pricing', '/api/billing/plans', '/api/entitlement'].includes(path)) path += '?currency=' + encodeURIComponent(state.pricingCurrency);
+   let res;
+   try { res = await fetch(path, {
+     method,
+@@ -223,6 +225,7 @@ async function refreshAccess() {
+     const billing = await api('GET', '/api/billing/plans');
+     ensureAccount();
+     state.billing = billing;
++    state.pricingCurrency = billing.plan_catalog?.currency || state.pricingCurrency;
+     if (billing.upgrade_quotes) state.upgrade_quotes = billing.upgrade_quotes;
+     if (billing.upgrade_credit) state.upgrade_credit = billing.upgrade_credit;
+     rememberPendingCheckout(billing);
+@@ -258,6 +261,7 @@ function render() {
+   const panel = el('panel');
+   STEP_VIEWS[STEP_KEYS[state.step]].render(panel);
+   wireCheckoutReturn();
++  wireCurrencyChoice();
+ }
+ 
+ /* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the approved disclaimer belongs to the public landing-page footer.
+@@ -370,7 +374,7 @@ function firstVisitPlans() {
+     <div class="plan-grid"><div><h3>Free</h3><p>Upload your report. See the issue count and one issue, if we find one.</p></div>
+     <div><h3>One report — ${price('report_once')}</h3><p>See all issues and download the full assessment for that report. No dispute packet. No renewal.</p></div>
+     <div><h3>Subscription</h3><p>Full assessments, dispute packets and report comparisons.</p><p>Monthly: ${price('monthly')}<br>Yearly: ${price('annual')}</p><p>Renews until you cancel.</p></div></div>
+-    <p class="evidence">Prices are in CAD. You choose a plan before paying.</p></section>`;
++    <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices.</p></section>`;
+ }
+ 
+ function recoveryKeyBlock() {
+@@ -943,6 +947,32 @@ async function wireResultSelector(panel, view) {
+ }
+ 
+ 
++/** Currency choice changes pricing only; it never uploads or reassesses a report. */
++function currencyChoice() {
++  const locked = state.billing?.plan_catalog?.currency_locked || Boolean(ownedPendingCheckout());
++  const currency = state.pricingCurrency;
++  return `<div class="checkout-currency"><label for="checkout-currency">Payment currency</label><select id="checkout-currency" style="min-height:44px;max-width:100%"${locked ? ' disabled' : ''}>${[['cad','Canada — CAD'],['usd','United States — USD'],['aud','Australia — AUD'],['gbp','United Kingdom — GBP']].map(([code,label]) => `<option value="${code}"${code === currency ? ' selected' : ''}>${label}</option>`).join('')}</select><p class="evidence">${locked ? 'Your subscription or open checkout keeps its selected currency.' : 'Prices use your IP location. Other or unknown locations see US prices. You can change currency before paying. Upgrade credit applies to payments in the same currency.'}</p><p id="currency-status" role="status" aria-live="polite"></p></div>`;
++}
++function wireCurrencyChoice() {
++  const choice = el('checkout-currency');
++  if (!choice) return;
++  choice.onchange = () => run(async () => {
++    const ensureAccount = accountContext(), previous = state.pricingCurrency;
++    choice.disabled = true;
++    el('currency-status').textContent = 'Updating prices…';
++    state.pricingCurrency = choice.value;
++    try {
++      const pricing = await api('GET', '/api/pricing');
++      ensureAccount();
++      state.publicPricing = pricing.plan_catalog;
++      state.upgrade_confirmation = null;
++      await refreshAccess();
++      ensureAccount();
++      state.notice = 'Prices updated to ' + state.pricingCurrency.toUpperCase() + '.';
++    } catch (error) { state.pricingCurrency = previous; throw error; }
++  });
++}
++
+ /** The price strings the purchase choices show, taken from the recorded catalogue (never invented). */
+ function planPrice(code) {
+   const catalog = (state.billing && state.billing.plan_catalog) || state.publicPricing || null;
+@@ -954,12 +984,12 @@ function planPrice(code) {
+ 
+ function money(cents, currency = 'cad') {
+   return Number.isSafeInteger(cents) && cents >= 0
+-    ? `$${(cents / 100).toFixed(2)} ${String(currency).toUpperCase()}` : '';
++    ? `${currency === 'gbp' ? '£' : '$'}${(cents / 100).toFixed(2)} ${String(currency).toUpperCase()}` : '';
+ }
+ function upgradeQuote(code) {
+   const quotes = state.billing?.upgrade_quotes || state.upgrade_quotes;
+   const quote = quotes && quotes[code];
+-  return quote && ['regular_cents', 'first_invoice_cents', 'credit_cents', 'renewal_cents'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
++  return quote && (!state.pricingCurrency || quote.currency === state.pricingCurrency) && ['regular_cents', 'first_invoice_cents', 'credit_cents', 'renewal_cents'].every(key => Number.isSafeInteger(quote[key]) && quote[key] >= 0)
+     ? quote : null;
+ }
+ function canChoosePlan(code) {
+@@ -1141,7 +1171,8 @@ function startCheckout(planCode, confirmedUpgrade = false) {
+     const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
+     const context = state.caseId && state.view?.case?.case_id === state.caseId
+       ? `?checkout=return&report=${encodeURIComponent(state.caseId)}&plan=${encodeURIComponent(planCode)}` : '';
+-    const body = { plan_code: planCode, return_url: base + context };
++    if (!state.pricingCurrency) throw new Error('Your prices are unavailable. Refresh your plans and try again.');
++    const body = { plan_code: planCode, currency: state.pricingCurrency, return_url: base + context };
+     if (planCode === 'report_once' && state.caseId) body.case_id = state.caseId;
+     if (confirmedUpgrade && state.entitlement?.access_via === 'SUBSCRIPTION') body.quote_revision = upgradeQuote(planCode).revision;
+     let opened;
+@@ -1219,8 +1250,8 @@ function freeSummaryBlock(view) {
+   </div>
+   ${currentReportPaymentPending() ? '' : `<div class="obs">
+     <span class="pill">UNLOCK THE REST</span>
+-    <h3>Choose what you want next</h3>
+-    <p class="evidence">Nothing renews unless you choose a subscription. Prices are in CAD and shown before you buy.</p>
++    <h3>Choose what you want next</h3>${currencyChoice()}
++    <p class="evidence">Nothing renews unless you choose a subscription. Your selected currency and price are shown before you buy.</p>
+     ${canChoosePlan('report_once') ? `<button class="primary" id="buy-report_once">Unlock this report — ${esc(purchasePrice('report_once'))}</button>` : ''}
+     ${subscriptionChoices()}
+     <p class="evidence">Unlocking this report gives you every reporting issue found, the report facts and explanations behind them, the next steps that apply, and a PDF report to keep. Dispute packets, report history and comparison are part of a subscription.</p>
+@@ -1235,7 +1266,7 @@ function oneTimeNextStepsBlock() {
+     <p class="evidence">Keep your full report as a PDF. It includes the issues we found, the report facts and clear next steps.</p>
+     <button class="primary" id="download-assessment">Download my report (PDF)</button>
+   </div>${subscriptionBenefits('Turn your results into a dispute packet')}
+-  ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
++  ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}${currencyChoice()}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
+ }
+ 
+ function renderResults(panel) {
+@@ -1265,7 +1296,7 @@ function renderResults(panel) {
+     if (button) button.onclick = () => startCheckout(code);
+   }
+   const download = el('download-assessment');
+-  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download`);
++  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download${state.pricingCurrency ? '?currency=' + state.pricingCurrency : ''}`);
+   const subscribe = el('go-subscribe');
+   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
+   const packet = el('create-packet');
+@@ -2022,7 +2053,7 @@ function renderCase(panel) {
+     inventory.innerHTML = `<h3>Your stored documents</h3>${(data.cases || []).map(c => `<p>${esc(regionLabel(c.country, c.region))}: ${(c.documents || []).map(d => `${esc(d.name)} (${esc(d.stored_bytes)} bytes)`).join(', ') || 'No stored documents'}; ${esc(c.result_count)} saved results.</p>`).join('') || '<p>No stored cases.</p>'}
+       ${(data.account_documents || []).length ? `<h4>Account documents</h4><ul>${data.account_documents.map(d => `<li>${esc(d.name)} (${esc(d.stored_bytes)} bytes)</li>`).join('')}</ul><p>Manage these documents in Your account.</p>` : ''}
+       <h3>Retention</h3><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
+-      <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p>`;
++      <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p><p>${esc(data.pricing_location || '')}</p>`;
+   }).catch(() => {
+     if (state.step === STEP.CASE && state.caseId === privacyCase && el('privacyInventory')) el('privacyInventory').textContent = 'Your inventory could not be loaded. Open this page again to retry.';
+   });
+@@ -2191,6 +2222,7 @@ function renderBillingView(data) {
+   const credit = data.upgrade_credit || {};
+   const plansList = (data.plan_catalog && data.plan_catalog.plans) || [];
+   state.billing = data;
++  state.pricingCurrency = data.plan_catalog?.currency || state.pricingCurrency;
+   state.entitlement = data.entitlement || null;
+   state.payment = data.payment || null;
+   state.upgrade_credit = data.upgrade_credit || null;
+@@ -2245,8 +2277,9 @@ function renderBillingView(data) {
+     ${!ownedPendingCheckout() && Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
+     ${checkingPayment ? '' : upgradeConfirmationBlock()}
+     ${subscriptionBenefits('Keep going with a subscription')}
+-    ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
+-    <p class="evidence">Prices are in CAD. A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
++    ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>${currencyChoice()}
++    <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices. These are fixed prices, with no exchange-rate pricing.</p>
++    <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
+     <div class="purchase-plan-grid">${planCards}</div>`}
+     <p class="evidence">${esc(paymentSentence(pay))}</p>
+     ${checkingPayment ? '' : '<p class="evidence">Checkout confirms your final price before you pay.</p>'}`;
+@@ -2264,6 +2297,7 @@ function renderBillingView(data) {
+   if (refreshPayment) refreshPayment.onclick = () => run(async () => { await refreshAccess(); });
+   wirePendingPayment();
+   const cancel = el('cancelEntitlement');
++  wireCurrencyChoice();
+   if (cancel) cancel.onclick = () => run(async () => {
+     const result = await api('POST', '/api/entitlement/cancel', {});
+     state.notice = result.plain || 'Cancellation recorded.';
+@@ -2281,7 +2315,7 @@ function renderBillingView(data) {
+   } catch (err) {
+     state.surfaceError = err.message;
+   }
+-  try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; }
++  try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; state.pricingCurrency = state.publicPricing?.currency || null; }
+   catch { state.publicPricing = null; }
+   try {
+     const session = await api('GET', '/api/session');
+diff --git a/accelerated-launch/service/upgrade-credit.cjs b/accelerated-launch/service/upgrade-credit.cjs
+index ec9a4ad..b632a2e 100644
+--- a/accelerated-launch/service/upgrade-credit.cjs
++++ b/accelerated-launch/service/upgrade-credit.cjs
+@@ -4,11 +4,11 @@ const plans = require('./plan-catalog.cjs');
+ // Retained for old imports; upgrade credit no longer has a time window.
+ const WINDOW_MS = null;
+ 
+-function upgradeQuote({ accountId, purchase, purchases, targetPlan, now }) {
++function upgradeQuote({ accountId, purchase, purchases, targetPlan, now, currency = 'cad' }) {
+   if (!['monthly', 'annual'].includes(targetPlan)) throw new Error('SUBSCRIPTION_UPGRADE_REQUIRED');
+   const at = Date.parse(now);
+   if (!Number.isFinite(at)) throw new Error('EXPLICIT_VALID_CURRENT_TIME_REQUIRED');
+-  const plan = plans.plan(targetPlan);
++  const plan = plans.plan(targetPlan, currency);
+   const rows = Array.isArray(purchases) ? purchases : (purchase ? [purchase] : []);
+   const usedIds = new Set();
+   const usedIntents = new Set();
+@@ -16,8 +16,8 @@ function upgradeQuote({ accountId, purchase, purchases, targetPlan, now }) {
+   let available = 0;
+   for (const value of rows) {
+     if (!value || !accountId || value.account_id !== accountId || value.verified_payment !== true ||
+-        !plans.isPlanCode(value.plan_code) || plans.BASE_PRICE_CAD_CENTS[value.plan_code] >= plan.amount_cents ||
+-        value.currency !== 'cad' || !Number.isSafeInteger(value.amount_cents) || value.amount_cents <= 0 ||
++        !plans.isPlanCode(value.plan_code) || plans.plan(value.plan_code, currency).amount_cents >= plan.amount_cents ||
++        value.currency !== currency || !Number.isSafeInteger(value.amount_cents) || value.amount_cents <= 0 ||
+         value.status !== 'paid' || value.refunded || value.disputed || value.credit_redeemed ||
+         value.credit_reserved || ['RESERVED', 'REDEEMED', 'REVOKED'].includes(value.state) ||
+         typeof value.payment_id !== 'string' || !value.payment_id ||
+@@ -37,8 +37,8 @@ function upgradeQuote({ accountId, purchase, purchases, targetPlan, now }) {
+     if (!Number.isSafeInteger(available)) throw new Error('UPGRADE_CREDIT_TOTAL_OUT_OF_RANGE');
+     eligible.push(value);
+   }
+-  const credit = plans.applicableCredit(available, plan.amount_cents);
+-  return { currency: 'cad', regular_cents: plan.amount_cents, credit_cents: credit,
++  const credit = plans.applicableCredit(available, plan.amount_cents, currency);
++  return { currency, regular_cents: plan.amount_cents, credit_cents: credit,
+     first_invoice_cents: plan.amount_cents - credit, renewal_cents: plan.amount_cents,
+     eligible: credit > 0, reason: credit > 0 ? 'VERIFIED_UNUSED_LOWER_PLAN_PAYMENTS' : 'NO_ELIGIBLE_PURCHASE',
+     expires_at: null, available_credit_cents: available, remaining_credit_cents: available - credit,

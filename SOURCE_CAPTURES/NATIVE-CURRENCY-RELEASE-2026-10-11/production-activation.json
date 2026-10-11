@@ -1,0 +1,10 @@
+{
+  "target": "production",
+  "build_id": "crp-v1-378b2463903ad652",
+  "previous_build": "crp-v1-de359a619a602584",
+  "package_receipt_sha256": "20DE4D093DEF44A0219E3E73A0274A545344F26B99EB3202ADE579A8618FCD7B",
+  "staging_acceptance_sha256": "A876817FE90A462F79C6DF6DF9AA4A8C787FA0AA804ADF7DCB9A1A8786E9E47B",
+  "activated_at": "2026-10-11T23:25:56.800Z",
+  "public_smoke": "PASS",
+  "journey_acceptance": "EXACT_BUILD_STAGING_ACCEPTED"
+}

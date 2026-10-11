@@ -1,0 +1,48 @@
+{
+  "fixture_scope": "staging-native-currency-release-20261011",
+  "build_id": "crp-v1-378b2463903ad652",
+  "account_id": "acc_901418750f6b5776233a1547",
+  "case_id": "case_e63109a765435aafe74ac7e3",
+  "recorded_at": "2026-10-11T23:21:42.673Z",
+  "version": "10a81f48ac3d28d894c9a370b14559effcbc9f6b7fbf5073b896d34c58f5a49d",
+  "approved": true,
+  "content_type": "application/pdf",
+  "pdf_sha256": "d515a9a8732e19060cdb88b990072257229605803e6e48ed4a07d4a4af044fdf",
+  "pdf_bytes": 322984,
+  "browser_pdf_sha256": "d515a9a8732e19060cdb88b990072257229605803e6e48ed4a07d4a4af044fdf",
+  "preview_pdf_sha256": "d515a9a8732e19060cdb88b990072257229605803e6e48ed4a07d4a4af044fdf",
+  "print_pdf_sha256": "d515a9a8732e19060cdb88b990072257229605803e6e48ed4a07d4a4af044fdf",
+  "actual_browser_download": true,
+  "preview_download_print_byte_equal": true,
+  "selected_source_pages": [
+    2,
+    3
+  ],
+  "documents": [
+    {
+      "filename": "fictional-passport.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 4,
+      "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-licence.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 5,
+      "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "document_type": "ADDRESS",
+      "packet_page": 6,
+      "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "exact_streams": true,
+      "exact_rendering": true
+    }
+  ],
+  "passed": true
+}

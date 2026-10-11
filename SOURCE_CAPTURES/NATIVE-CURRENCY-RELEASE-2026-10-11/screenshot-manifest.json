@@ -1,0 +1,240 @@
+{
+  "actual_browser": true,
+  "screenshots": [
+    {
+      "file": "currency-choice-aud-1440.png",
+      "sha256": "ad5b8b6ce4b2402ae5f9aeb720c3c98d6dbe0eb8f9c72119edf036c0c21ce3da",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-aud-390.png",
+      "sha256": "b44338b1ad63ae3ac563f26a629286cbd9fbde84b3eddd6a1dfd74a7d8ccddae",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-cad-1440.png",
+      "sha256": "975af43d2fa5b6a1a87c85fa8c842d96586155bcd57181927ea6e4c783448bb6",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-cad-390.png",
+      "sha256": "d9bc1e2ff887cd2b98f22c7d8041071442e21fb37793b0ba3f70d5bcf346845d",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-gbp-1440.png",
+      "sha256": "1981ae38062be4fbf2f081673c4f9a3268fe28a2319918585be8e0d41cf536e3",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-gbp-390.png",
+      "sha256": "c6a2a95a020ba2286a2b1b0fc96327123055b60ef63644f310840fe1ef2fd82c",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-usd-1440.png",
+      "sha256": "b4e9c14a84b6075b5d5ff81627874a913fc18831a2fc833f92eda6c104cbb251",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "currency-choice-usd-390.png",
+      "sha256": "59fcd78b1caae0fa8b500dd4a6785b57f9b219fcb39cf43a1bf28d9ac1e95e15",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "live-home-1440.png",
+      "sha256": "36500c4741c20e739f1614846d7784ee26d1c873f18416f8b672189fd7d04696",
+      "host": "https://creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "live-home-390.png",
+      "sha256": "07974208495fd455d920cd9b3bf59e8f1b9f1a36f0c9e24d700d45786fa127a6",
+      "host": "https://creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "live-signin-1440.png",
+      "sha256": "4686dcb107c448c33f186bf93f930aadf8f63008f05d831d7fb00d91a587c973",
+      "host": "https://creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "live-signin-390.png",
+      "sha256": "5210183a8519a00bba3c7618830d31c85b2f8e37e90267f2970234e83828124d",
+      "host": "https://creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-aud-1440.png",
+      "sha256": "07c618b13f11c3963fec4239659a6b13c8b4afcf95cf2741a46c3b9dcac5e995",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-aud-390.png",
+      "sha256": "7851475f4bd4d4ba0178ea18b5ada47a14a8e14182ab2f6e7e921eb9c53a54ec",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-cad-1440.png",
+      "sha256": "2558500bf6c4f828e3ef6747312b57bd95bf41a558913ac1ef9a1305849d5fd5",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-cad-390.png",
+      "sha256": "00e0d925f925fa5cdbd68f07c793dd12f93fe7cf4e9823f43b64fb35d3104a5f",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-gbp-1440.png",
+      "sha256": "44dda2250b41b5bfcf81ff523a1e36fb329b383e03d4b2ec4da38750b6540d8e",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-gbp-390.png",
+      "sha256": "33e29c6c11578c0b9eb8634cedf485e5c98b9dd72b6ca833e8271bde3dd097ad",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-usd-1440.png",
+      "sha256": "e39a87581f5bd262fea1d4486e8781b9b4120352788d35a4b454cb1e631be2df",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "report_once-usd-390.png",
+      "sha256": "96741bff6f5182f7f9dfca3cf61fae0e50ed3b9f3365742f9afa0df8122bc979",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-aud-1440.png",
+      "sha256": "b051e594ecea4b97ce6c85cebb338b833148fa1b306f7e48731845fa26bff1f6",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-aud-390.png",
+      "sha256": "fd4669d4482e8142133ad8010d52ac42ca34fb2a660d15f583dbc88c986816f5",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-cad-1440.png",
+      "sha256": "f9aabefc86926d12406fbb0bddd95b4ecb32af9c8cbe3be755baeeaa9d3f33eb",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-cad-390.png",
+      "sha256": "3c81ee0ffaaac48b8a1440aab6e6251f41dc7585cfce36fd0da108123cb31a4f",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-gbp-1440.png",
+      "sha256": "85160cc2f09cab6aaa0f6f1c9bd480679b292ed8da24cc8e8d6f2ba58c7d507b",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-gbp-390.png",
+      "sha256": "de5b33b54bc3cad8b8843e83e972a1b1676cf2c7e20a450893736d40c65ce438",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-usd-1440.png",
+      "sha256": "3a7b07658bf389e44dd9d18d9195778a9174b7b5de09457c68eb1cb5945629fa",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "monthly-usd-390.png",
+      "sha256": "96edd95c22ed5ad6d443daaf3184d000ba8b441e4d8a9a0df21d2cac1d4e3335",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-active.png",
+      "sha256": "d97c447d03676de4f8e543e147eeb4fd414cce6091bd4f33b8f8f9edf5349f25",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-aud-1440.png",
+      "sha256": "1d0d9952bc7238e5bad860c126e104035c421c0a5e6895cdbfc5a4bbb6dce1c9",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-aud-390.png",
+      "sha256": "0db469126590f1dea62dc9cbf0f8c02474acd6ecc21e41d918f88be892f5074e",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-cad-1440.png",
+      "sha256": "5023426eed61c17df91604507d773bdb694d4fac0cd0f21c06610bf4eb1a3cb9",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-cad-390.png",
+      "sha256": "9b8ce5ed8de6629581666069867eb53915a4fb0b08a2b9799c0c0e2c746329f6",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-gbp-1440.png",
+      "sha256": "250f07ccd27ec2995406752d7f1733323db6bb0be921fe6b9b976e2b9f5fc2bb",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-gbp-390.png",
+      "sha256": "63232687680428fb2fa76472df43e9676dfbf165b9c0a5a21470e4b79ff537a9",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-usd-1440.png",
+      "sha256": "1e0495de33daa171037e95976c6795354bf3dad798878782bb1bb3f8a444d432",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "annual-usd-390.png",
+      "sha256": "77b096d42f258fc2c8358534912c10dfc0bfcfe6e028582fc730c64256355890",
+      "host": "https://checkout.stripe.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "approved-packet.png",
+      "sha256": "c47b3a8488df9c0b80bd530634f5b58a94ec57637f50ac152533ab0170d7e8d4",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    },
+    {
+      "file": "yearly-upgrade-review.png",
+      "sha256": "2faf9a24f1670048dcc9e2a926d8d27851f3c835db77b163e96c2f5e92259811",
+      "host": "https://staging.creditregulatorpro.com",
+      "build_id": "crp-v1-378b2463903ad652"
+    }
+  ],
+  "scope": "Exact-build native pricing and provider purchase captures. Product names captured before the currency-neutral provider label correction retain their original display scope. No source-relabelled historical screenshots."
+}

@@ -1,0 +1,84 @@
+{
+  "target": "production",
+  "passed": true,
+  "live_charge": false,
+  "price_cells": 12,
+  "amounts_fixed": true,
+  "settlement_conversion_owner_authorized": true,
+  "results": [
+    {
+      "plan": "report_once",
+      "currency": "cad",
+      "amount": 595,
+      "price_id": "price_1UOiyPKCM3e4JIjWtnrRElAc"
+    },
+    {
+      "plan": "report_once",
+      "currency": "usd",
+      "amount": 495,
+      "price_id": "price_1UPV2rKCM3e4JIjWodbKLg10"
+    },
+    {
+      "plan": "report_once",
+      "currency": "aud",
+      "amount": 595,
+      "price_id": "price_1UPV2sKCM3e4JIjWhlYxNKUs"
+    },
+    {
+      "plan": "report_once",
+      "currency": "gbp",
+      "amount": 315,
+      "price_id": "price_1UPV2sKCM3e4JIjW7mDkreSp"
+    },
+    {
+      "plan": "monthly",
+      "currency": "cad",
+      "amount": 795,
+      "price_id": "price_1UOiyPKCM3e4JIjWX2nNJV5J"
+    },
+    {
+      "plan": "monthly",
+      "currency": "usd",
+      "amount": 595,
+      "price_id": "price_1UPV2sKCM3e4JIjWiARgCTcZ"
+    },
+    {
+      "plan": "monthly",
+      "currency": "aud",
+      "amount": 795,
+      "price_id": "price_1UPV2tKCM3e4JIjWAVh3ygSS"
+    },
+    {
+      "plan": "monthly",
+      "currency": "gbp",
+      "amount": 425,
+      "price_id": "price_1UPV2tKCM3e4JIjWAt9sBQUP"
+    },
+    {
+      "plan": "annual",
+      "currency": "cad",
+      "amount": 7950,
+      "price_id": "price_1UOiyPKCM3e4JIjWv84sNgq2"
+    },
+    {
+      "plan": "annual",
+      "currency": "usd",
+      "amount": 5950,
+      "price_id": "price_1UPV2tKCM3e4JIjWujvytBHh"
+    },
+    {
+      "plan": "annual",
+      "currency": "aud",
+      "amount": 7950,
+      "price_id": "price_1UPV2uKCM3e4JIjWzcu4S3mn"
+    },
+    {
+      "plan": "annual",
+      "currency": "gbp",
+      "amount": 4250,
+      "price_id": "price_1UPV2uKCM3e4JIjWQiHVaqwj"
+    }
+  ],
+  "measured_at": "2026-10-11T22:16:44.504Z",
+  "original_env_sha256": "17a2cd046c883c3e8c77b4b8e682d44d6886b86f41711f0c02e781234eee251d"
+}

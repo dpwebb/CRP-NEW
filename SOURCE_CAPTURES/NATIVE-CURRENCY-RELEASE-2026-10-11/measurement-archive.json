@@ -1,0 +1,25 @@
+{
+  "build_id": "crp-v1-378b2463903ad652",
+  "files": [
+    {
+      "file": "full-regression.json.gz",
+      "decompressed_sha256": "ed2bbaa4cc830edb0ffd0cfba1ef2d211a84fee85f4ee8c4d83ef537441e592f",
+      "compressed_sha256": "243dafcad6b27da929f13aa7e3fd53d24be6e57bdbaf9947014c1ab4beb761f3"
+    },
+    {
+      "file": "measurements.json.gz",
+      "decompressed_sha256": "eacdb16f17296a972d7c8729cdc21540bd2061c582aa5acbcf1cf2c22658492d",
+      "compressed_sha256": "c89950298f2f4e0500420d31e766ba3a562e9d660d5e5a214dab77346b8921d5"
+    },
+    {
+      "file": "phase1-receipt.json.gz",
+      "decompressed_sha256": "f5fe5a3a087f008f19576f02182c9cd7214fd2dc302fa7eda3391df2d62bc512",
+      "compressed_sha256": "046c1366cf8ff593a77f162c8b2dc43d59ef3eec3fb78de90ed5cf397a54409a"
+    },
+    {
+      "file": "phase2-receipt.json.gz",
+      "decompressed_sha256": "29fbf8c74285bc956c49ae21999d2fa619958595d45a88da946499e13c000425",
+      "compressed_sha256": "db13b68492011454c084b007b04756986017ad28ce8fc275525e8755683f3d36"
+    }
+  ]
+}

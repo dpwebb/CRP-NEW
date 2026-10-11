@@ -1,0 +1,11 @@
+{
+  "schema": "crp-owner-settlement-amendment-v1",
+  "authority": "Direct owner reply in this task",
+  "owner_response": "Allow conversion for unsupported settlement currencies",
+  "charged_currencies": ["cad", "usd", "aud", "gbp"],
+  "fixed_native_prices_preserved": true,
+  "bank_or_payout_configuration_changed": false,
+  "unsupported_settlement_conversion_authorized": true,
+  "bank_currency_configuration_not_verified": true,
+  "scope": "Settlement conversion does not authorize exchange-rate pricing or changing the consumer's selected charge currency."
+}
