@@ -73,6 +73,11 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ['LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', ['cw-common-error-rule-assessment', 'de-tu-ca-common-error-sources'], ['de-tu-ca-common-error-sources'], 'NATIVE_READER_AND_DOWNSTREAM_FAMILY_CONTROL'],
   ['COLLECTION-ORIGINAL-BOTH-DUE', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD']
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
+  .concat([['COMMON-ERROR-REPORTING-PERIOD-EXCEEDED', {
+    assessment: ['ct-owner-common-error-scope', 'cr-ca-ns-tu-real-report', 'ch-ca-ab-debt-six-year'],
+    packet: ['cr-ca-ns-tu-real-report', 'ch-ca-ab-debt-six-year'],
+    exercise_class: 'SOURCE_LINKED_REPORTING_PERIOD_AND_APPROVED_PACKET'
+  }]])
   .concat([[PERIOD_ITEM, { assessment: ['by-packet-reconciliation', 'cs-limitation-and-payment-history', 'el-collection-court-period'],
     packet: ['by-packet-reconciliation'], exercise_class: 'SCOPED_REPORTING_PERIOD_AND_INFORMATION_ONLY_COURT_CONTROL' }]])));
 

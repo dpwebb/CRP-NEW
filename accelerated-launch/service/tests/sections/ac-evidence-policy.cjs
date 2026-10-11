@@ -196,7 +196,8 @@ async function run(t, check) {
   );
   check.ok(generalCaExt.records.some((r) => r.facts && r.facts['bankruptcy.dischargeDate'] === '2020-01-01'), 'a general CA report with a discharge date has the fact extracted');
   const generalCaEval = evaluation.evaluateCase({ country: 'CA', region: 'CA-NS', extraction: generalCaExt });
-  check.equal(generalCaEval.results.length, 0, 'the CA-NS statutory surface stays exact-specimen: no comparison is performed on a general report');
+  check.equal(generalCaEval.results.filter((row) => row.check?.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y').length, 0,
+    'the CA-NS bankruptcy rule stays exact-specimen even when another general-report rule is assessed');
 
   evidence.policy = { id: loaded.policy.policy_id, version: loaded.policy.version, digest: loaded.digest };
   evidence.accepted = dischargeDates(accepted.records);
