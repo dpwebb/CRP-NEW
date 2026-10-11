@@ -258,11 +258,11 @@ function render() {
   wireCheckoutReturn();
 }
 
-/* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the legal-advice disclaimer is shown ONLY on the main page
-   (step 0) and hidden on every other view — assessment/results, review/download, billing, privacy and support. */
+/* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the approved disclaimer belongs to the public landing-page footer.
+   All workspace views, including dedicated authentication pages, keep it hidden. */
 function footerDisclaimer() {
   const node = el('footer-disclaimer');
-  if (node) node.hidden = state.step !== 0;
+  if (node) node.hidden = true;
 }
 
 /* ------------------------------------------------------------------ step 0: account */

@@ -247,9 +247,11 @@ async function messagingAndRelease(t, check, evidence) {
   check.ok(/reporting issues/.test(uiJs) && !/probable violations and potential errors/.test(uiJs), 'consumer wording states the issue assessment promise without confidence tiers');
   check.ok(/choose (?:any|what) you want to dispute/i.test(uiJs), 'consumer wording connects assessment to consumer-selected disputes');
   /* OWNER-CONSUMER-LANGUAGE-001 (footer-only disclaimer): exactly one in the main-page footer, none elsewhere. */
-  const disclaimerMatches = html.match(/Credit Regulator Pro provides credit-report information, not legal advice\./g) || [];
+  const landingHtml = fs.readFileSync(path.join(__dirname, '../../ui/landing.html'), 'utf8');
+  check.ok(!/not legal advi[cs]e/i.test(html), 'dedicated workspace and account entry contain no disclaimer');
+  const disclaimerMatches = landingHtml.match(/Credit Regulator Pro provides credit-report information, not legal advice\./g) || [];
   check.equal(disclaimerMatches.length, 1, 'exactly one legal-advice disclaimer appears in the main page');
-  check.ok(/<footer[^>]*>[\s\S]*Credit Regulator Pro provides credit-report information, not legal advice\.[\s\S]*<\/footer>/.test(html), 'the single disclaimer is inside the main-page footer');
+  check.ok(/<footer[^>]*>[\s\S]*Credit Regulator Pro provides credit-report information, not legal advice\.[\s\S]*<\/footer>/.test(landingHtml), 'the single disclaimer is inside the main-page footer');
   check.ok(!/not legal advi[cs]e/i.test(uiJs), 'the wizard script (steps, results, explanations) carries no legal-advice disclaimer');
 
   evidence.messaging = {

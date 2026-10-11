@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T14:44:03.159Z",
+  "generated_at": "2026-10-11T15:08:02.271Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -526,11 +526,11 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 15,
-      "digest": "390F717AD7E40A00EAE0F0CD9D7E11B999D0294B1DC65124C98238830946CFBE",
+      "digest": "B4748AA878764A6E7DC724123AC1CC2654D12319C6C592AB026666D6C3E60054",
       "files": [
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "982F121E22BD98E890E1C87D2D4020D029073E85423139FCCEF5A734B53FBD19"
+          "sha256": "28A4CB2C05A307A7E0A34B9496E5BFF19B14327B6A595C716970B540C6A2507E"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -538,15 +538,15 @@
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "B69EE4182F3E47AE34473936B6494C0FD48B8CAE538C7EBE49C0F278F1EE2B7B"
+          "sha256": "4517B0FB3D12356FA4AA3848546F96BDFEB7F7F9904FC186975F80C7BA26DAEE"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
-          "sha256": "5962F80E1ECFE7213312DEB287B662DAC59DAEEC31C7B5C07B8A4F4EC12BA4C8"
+          "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "E30006914873A40BB950C403B23C3E14680138FAC436F28BF7FD9E36218BB2BE"
+          "sha256": "104D1DF54B91A1F88E165CF9C8B65750EA1762A046C7E71CF92DC331774A6DA3"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -591,6 +591,6 @@
       ]
     }
   ],
-  "manifest_digest": "9AC3F7355ED5D02C81739F58D8E28B40157F10CBE128733DC4572E8EADC42B7F",
+  "manifest_digest": "201B92B0858E910B7351E1E95EDFF3E224F53F87F27346592FB8090F86AB21B9",
   "total_file_count": 136
 }
