@@ -134,7 +134,7 @@ async function run(service, check) {
   check.match(surface.check_classes.no_issue_found_means, /does not mean your whole report is correct/,
     'and it never implies that a missing finding means the report is correct');
 
-  const shipped = ['accelerated-launch/service/ui/app.js', 'accelerated-launch/service/ui/index.html',
+  const shipped = ['accelerated-launch/service/ui/app.js', 'accelerated-launch/service/ui/index.html', 'accelerated-launch/service/ui/landing.html',
     'consumer-wizard/dist/app.js', 'consumer-wizard/dist/index.html']
     .map((rel) => [rel, fs.readFileSync(path.join(ROOT, rel), 'utf8')]);
   check.deepEqual(shipped.filter(([, text]) => RETIRED_WORDING.some((re) => re.test(text))).map(([rel]) => rel), [],
@@ -146,8 +146,8 @@ async function run(service, check) {
   const disclaimerCount = shipped.reduce((n, [, text]) => n + (text.match(disclaimerSentence) || []).length, 0);
   check.equal(disclaimerCount, 1, 'the approved legal-advice disclaimer appears exactly once in the client tree');
   check.deepEqual(shipped.filter(([, text]) => /not legal advice/i.test(text)).map(([rel]) => rel),
-    ['accelerated-launch/service/ui/index.html'], 'and its only home is the served main page');
-  const servedMainPage = shipped.find(([rel]) => rel === 'accelerated-launch/service/ui/index.html')[1];
+    ['accelerated-launch/service/ui/landing.html'], 'and its only home is the served main page');
+  const servedMainPage = shipped.find(([rel]) => rel === 'accelerated-launch/service/ui/landing.html')[1];
   check.ok(/<footer[^>]*>[\s\S]*Credit Regulator Pro provides credit-report information, not legal advice\.[\s\S]*<\/footer>/.test(servedMainPage),
     'inside the small footer element of that page');
 
