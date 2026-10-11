@@ -218,7 +218,7 @@ async function run(t, check) {
     const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
     try {
       const page = await browser.newPage(); page.setDefaultTimeout(20000);
-      await page.goto(t.base + '/');
+      await page.goto(t.base + '/index.html#signin');
       await page.locator('#email').fill('dn-history-owner@example.test');
       await page.locator('#password').fill('a-long-enough-password');
       await page.locator('#signin').click();

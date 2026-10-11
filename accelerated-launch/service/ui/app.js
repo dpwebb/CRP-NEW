@@ -233,10 +233,10 @@ async function refreshAccess() {
   }
 }
 
-function notices() {
+function notices(accessible = false) {
   const parts = [];
-  if (state.error) parts.push(`<div class="note stop"><span class="err">Refused:</span> ${esc(state.error)}</div>`);
-  if (state.notice) parts.push(`<div class="note" id="consumer-notice">${esc(state.notice)}</div>`);
+  if (state.error) parts.push(`<div class="note stop"${accessible ? ' role="alert"' : ''}><span class="err">Refused:</span> ${esc(state.error)}</div>`);
+  if (state.notice) parts.push(`<div class="note" id="consumer-notice"${accessible ? ' role="status"' : ''}>${esc(state.notice)}</div>`);
   if (state.checkoutReturn && state.account && (!state.caseId || state.checkoutReturn.caseId === state.caseId)) {
     const pending = state.checkoutReturn.status === 'pending';
     parts.push(`<div class="note${pending ? '' : ' stop'}">${pending ? 'Your payment has not been confirmed yet. Check again before starting another checkout.' : 'We could not open your saved report. Try again, or select a saved report below.'}<br><button class="secondary" id="checkout-return-retry">${pending ? 'Check payment' : 'Try again'}</button></div>`);
@@ -247,6 +247,8 @@ function notices() {
 function render() {
   renderSequence++;
   document.body?.classList?.toggle('auth-entry', !state.account && state.step === STEP.ACCOUNT);
+  document.body?.classList?.toggle('auth-create', !state.account && state.step === STEP.ACCOUNT && !state.recoveryMode && (typeof location === 'undefined' || location.hash !== '#signin'));
+  document.body?.classList?.toggle('auth-recovery', !state.account && state.step === STEP.ACCOUNT && state.recoveryMode);
   document.title = !state.account && state.step === STEP.ACCOUNT ? `${state.recoveryMode ? 'Reset password' : (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
   packetLeave = null;
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
@@ -275,39 +277,56 @@ const SIGNUP_PROFILE_FIELDS = [
   ['country', 'Country', 'text', 'country-name']
 ];
 
+let authPending = false;
+function submitAuth(fn, formId, message) {
+  if (authPending) return Promise.resolve();
+  const form = el(formId);
+  if (form?.reportValidity && !form.reportValidity()) return Promise.resolve();
+  authPending = true;
+  form?.setAttribute?.('aria-busy', 'true');
+  for (const control of form?.querySelectorAll?.('input, button') || []) control.disabled = true;
+  if (el('auth-status')) el('auth-status').textContent = message;
+  return run(fn).finally(() => { authPending = false; });
+}
+
 function renderAccount(panel) {
   if (state.account) { renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
   const signInEntry = (typeof location !== 'undefined' && location.hash === '#signin');
   panel.innerHTML = `
-    <div class="auth-heading"><a class="auth-brand" href="landing.html"><span class="mark" aria-hidden="true">C</span><span>Credit Regulator <b>PRO</b></span></a><a href="landing.html">← Back to home</a></div>
-    <h1>${signInEntry ? 'Log in to your account' : 'Create your account'}</h1>
+    <div class="auth-intro"><p class="story-eyebrow">Your account</p>
+    <h1 id="auth-title" tabindex="-1">${signInEntry ? 'Welcome back.' : 'Create your account.'}</h1>
+    ${signInEntry ? '<p class="auth-subtitle">Log in to your account.</p>' : ''}
     <p class="lede">${signInEntry ? 'Enter your email and password to continue.' : 'Start with your email and a password. You can upload your report after signing in.'}</p>
+    </div><div class="auth-form-card">
     ${(typeof location !== 'undefined' && location.protocol === 'file:') ? '<p class="note" id="local-preview-note">This saved page is a visual preview. To create an account, <a href="https://staging.creditregulatorpro.com/index.html#create">open the running staging site</a>.</p>' : ''}
-    ${notices()}
-    <div class="row">
+    ${notices(true)}<form id="auth-form">
+    <div class="auth-fields">
       <div>
         <label for="email">Email address</label>
-        <input id="email" type="email" autocomplete="username" placeholder="you@example.com">
+        <input id="email" type="email" required autocomplete="username" placeholder="you@example.com">
       </div>
       <div>
-        <label for="password">${signInEntry ? 'Password' : 'Password (at least 12 characters)'}</label>
-        <input id="password" type="password" autocomplete="${signInEntry ? 'current-password' : 'new-password'}">
+        <label for="password">Password</label>
+        <input id="password" type="password" required ${signInEntry ? '' : 'minlength="12" aria-describedby="auth-password-help"'} autocomplete="${signInEntry ? 'current-password' : 'new-password'}">
+        ${signInEntry ? '' : '<p class="auth-helper" id="auth-password-help">At least 12 characters</p>'}
       </div>
     </div>
-    ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><h2 id="signup-details-title">Your personal details</h2>
-      <p class="evidence">Add these now so your packet can use them later. You can edit or finish them in your account. Your sign-in email will be used for replies unless you change it there.</p>
-      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></section>`}
-    ${signInEntry ? '<button class="primary" id="signin">Log in</button><button class="secondary" id="create">Create account</button>' : '<button class="primary" id="create">Create account</button><button class="secondary" id="signin">Log in</button>'}
-    <p><button class="text-button" id="forgot-password">Forgot your password?</button></p>
-    <p class="evidence">No report, identification, or payment is needed to create an account.</p>
+    ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><div class="signup-details-inner"><h2 id="signup-details-title">Your personal details <span class="auth-optional">Optional at signup</span></h2>
+      <p class="signup-explanation">Add these now for a future subscriber packet, or finish them later in your account. Your sign-in email will be used for replies unless you change it there.</p>
+      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div${field === 'full_name' ? ' class="signup-wide"' : ''}><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></div></section>`}
+    <div class="auth-actions">${signInEntry ? '<button type="submit" class="primary" id="signin">Log in <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="create">Create account</button>' : '<button type="submit" class="primary" id="create">Create account <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="signin">Log in</button>'}</div>
+    <p class="auth-forgot"><button type="button" class="text-button" id="forgot-password">Forgot your password?</button></p>
+    <p class="auth-account-note">No report, identification or payment is needed to create an account.</p>
+    <p id="auth-status" class="auth-status" role="status" aria-live="polite"></p>
     ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
-    `;
+    </form></div>`;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value });
-  el('create').onclick = () => {
+  el('create').onclick = (event) => {
+    event?.preventDefault?.();
     if (signInEntry) { location.hash = '#create'; render(); return; }
-    return run(async () => {
+    return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to create an account.');
     const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
     accountEpoch++;
@@ -319,11 +338,12 @@ function renderAccount(panel) {
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
-    });
+    }, 'auth-form', 'Creating your account…');
   };
-  el('signin').onclick = () => {
-    if (!signInEntry && !el('email').value && !el('password').value) { location.hash = '#signin'; render(); return; }
-    return run(async () => {
+  el('signin').onclick = (event) => {
+    event?.preventDefault?.();
+    if (!signInEntry) { location.hash = '#signin'; render(); return; }
+    return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to log in.');
     accountEpoch++;
     const data = await api('POST', '/api/sessions', credentials());
@@ -336,9 +356,10 @@ function renderAccount(panel) {
     state.notice = 'Signed in.';
     const returning = checkoutReturnContext();
     if (returning) await restoreCheckoutReport(returning);
-  });
+  }, 'auth-form', 'Logging in…');
   };
-  el('forgot-password').onclick = () => { state.recoveryMode = true; state.error = null; render(); };
+  el('auth-form').onsubmit = (event) => { event.preventDefault(); return el(signInEntry ? 'signin' : 'create').onclick(); };
+  el('forgot-password').onclick = () => { if (authPending) return; state.recoveryMode = true; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
 }
 
 
@@ -377,23 +398,22 @@ function wireRecoveryKey() {
 }
 
 function renderRecovery(panel) {
-  panel.innerHTML = `<h1>Reset your password</h1><p class="lede">Use the recovery key you saved when you created your account.</p>${notices()}
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Use the recovery key you saved when you created your account.</p></div><div class="auth-form-card">${notices(true)}
     ${recoveryKeyBlock()}
-    ${state.recoveryKey ? '' : `<label for="recover-email">Email address</label><input id="recover-email" type="email" autocomplete="username">
-    <label for="recover-key">Saved recovery key</label><input id="recover-key" type="password" autocomplete="off">
-    <label for="recover-password">New password (at least 12 characters)</label><input id="recover-password" type="password" autocomplete="new-password">
-    <button class="primary" id="recover-account">Reset password</button>
-    <p class="evidence">Without your saved key, we cannot reset your password here.</p>`}
-    <button class="secondary" id="recovery-back">Back to sign in</button>`;
+    ${state.recoveryKey ? '<div class="auth-actions auth-actions-single"><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>' : `<form id="auth-recovery-form"><div class="auth-fields"><div><label for="recover-email">Email address</label><input id="recover-email" required type="email" autocomplete="username"></div>
+    <div><label for="recover-key">Saved recovery key</label><input id="recover-key" required type="password" autocomplete="off"></div>
+    <div><label for="recover-password">New password</label><input id="recover-password" required minlength="12" aria-describedby="recover-password-help" type="password" autocomplete="new-password"><p class="auth-helper" id="recover-password-help">At least 12 characters</p></div></div>
+    <p class="auth-recovery-note">Without your saved key, we cannot reset your password here.</p><div class="auth-actions"><button type="submit" class="primary" id="recover-account">Reset password <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="recovery-back">Back to log in</button></div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>`}</div>`;
   if (state.recoveryKey) wireRecoveryKey();
-  if (el('recover-account')) el('recover-account').onclick = () => run(async () => {
+  if (el('recover-account')) el('recover-account').onclick = (event) => { event?.preventDefault?.(); return submitAuth(async () => {
     const epoch = accountEpoch, rendered = renderSequence;
     const data = await api('POST', '/api/account/recover', { email: el('recover-email').value, recovery_key: el('recover-key').value, password: el('recover-password').value });
     if (epoch !== accountEpoch || rendered !== renderSequence || state.account || !state.recoveryMode) throw cancelledAction();
     state.recoveryKey = data.recovery_key || null;
     state.notice = 'Password reset. Save your new key, then sign in with your new password.';
-  });
-  el('recovery-back').onclick = () => { state.recoveryKey = null; state.recoveryMode = false; render(); };
+  }, 'auth-recovery-form', 'Resetting your password…'); };
+  if (el('auth-recovery-form')) el('auth-recovery-form').onsubmit = (event) => { event.preventDefault(); return el('recover-account').onclick(); };
+  el('recovery-back').onclick = () => { if (authPending) return; state.recoveryKey = null; state.recoveryMode = false; state.error = null; state.notice = null; location.hash = '#signin'; render(); };
 }
 
 const ACCOUNT_CONTACT_FIELDS = [
@@ -2278,3 +2298,13 @@ function renderBillingView(data) {
   render();
   if (!state.account && typeof location !== 'undefined' && ['#create', '#signin'].includes(location.hash)) el('email')?.focus();
 })();
+
+if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', () => {
+  if (state.account || authPending || !['#signin', '#create'].includes(location.hash)) return;
+  state.step = STEP.ACCOUNT;
+  state.recoveryMode = false;
+  state.error = null;
+  state.notice = null;
+  render();
+  el('auth-title')?.focus?.();
+});

@@ -276,9 +276,9 @@ async function run(t, check) {
   check.ok(dom.calls.includes('GET /api/jurisdictions'), 'the UI loads the jurisdiction surface on boot');
   check.ok(/Create your account/.test(panel.innerHTML), 'the first step renders without error');
   check.ok(dom.calls.includes('GET /api/pricing'), 'the public configured price catalogue is loaded before sign-in');
-  check.ok(/Email address/.test(panel.innerHTML) && /Password \(at least 12 characters\)/.test(panel.innerHTML), 'the entry screen presents account fields immediately');
+  check.ok(/Email address/.test(panel.innerHTML) && /<label for="password">Password<\/label>/.test(panel.innerHTML) && /minlength="12"/.test(panel.innerHTML) && /At least 12 characters/.test(panel.innerHTML), 'the entry screen presents labelled credentials and the existing password minimum');
   check.ok(!/Price unavailable|Monthly:|Yearly:/.test(panel.innerHTML), 'plan details do not interrupt account creation');
-  check.ok(/No report, identification, or payment is needed/.test(panel.innerHTML), 'account creation does not request packet documents or payment');
+  check.ok(/No report, identification or payment is needed/.test(panel.innerHTML), 'account creation does not request packet documents or payment');
   check.ok(/signup-date_of_birth/.test(panel.innerHTML) && /signup-phone/.test(panel.innerHTML), 'signup offers date of birth and phone');
   check.ok(!/signup-(?:ssn|sin|national_insurance|tax_file_number)/i.test(panel.innerHTML), 'signup does not ask for national identifiers');
   for (const country of ['GB', 'AU']) {

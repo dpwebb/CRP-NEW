@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T18:47:17.052Z",
+  "generated_at": "2026-10-11T19:57:07.334Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 84,
-      "digest": "84F529A3DEE6CCD93313BA6C12AD9BD8F081431A882A8474AB33E42460B22865",
+      "digest": "4230E26188FA909821C4911A837C2FC158B3D73B1BE50B3617CCD0A8421F9D39",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -90,7 +90,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "05E7879808890763583302F27B3F94C710AE1340B3F9AD54A60772F90BB30D2B"
+          "sha256": "0C823AC0BBD2CD39C55D3EF384DB046BEDF672221726AF6016E39D019C7D2C16"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -533,20 +533,32 @@
     },
     {
       "id": "SERVED_ASSETS",
-      "file_count": 15,
-      "digest": "B4748AA878764A6E7DC724123AC1CC2654D12319C6C592AB026666D6C3E60054",
+      "file_count": 20,
+      "digest": "8C54BB86761478D7E935DFA11CC8D8A6CF2BA7792556C2F6C6ECC54B487DF7FD",
       "files": [
         {
+          "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
+          "sha256": "5894A3649B213CF5B2D673B6E7A871815FD1D120FA68A463592F27DB14EAE323"
+        },
+        {
+          "file": "accelerated-launch/service/ui/OpenSans-Regular.ttf",
+          "sha256": "E64E508B2AA2880F907E470C4550980EC4C0694D103A43F36150AC3F93189BEE"
+        },
+        {
+          "file": "accelerated-launch/service/ui/Roboto-Bold.ttf",
+          "sha256": "EF2AB0E402D5CB9DE893E263A2C44E57F57FEC3974B0D981BFE84DEC3DAE83A1"
+        },
+        {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "28A4CB2C05A307A7E0A34B9496E5BFF19B14327B6A595C716970B540C6A2507E"
+          "sha256": "D97020591C189542D5290503DA4F954C2D7A70E829881DD6AA57B2523681D942"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
-          "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+          "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
         },
         {
           "file": "accelerated-launch/service/ui/index.html",
-          "sha256": "4517B0FB3D12356FA4AA3848546F96BDFEB7F7F9904FC186975F80C7BA26DAEE"
+          "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
         },
         {
           "file": "accelerated-launch/service/ui/landing.css",
@@ -554,7 +566,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "104D1DF54B91A1F88E165CF9C8B65750EA1762A046C7E71CF92DC331774A6DA3"
+          "sha256": "E0DBD840130BE84758390084A9DDB94F3474D939AC9C37B2139972F8B0ECE304"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -593,12 +605,20 @@
           "sha256": "18C76736B2BDD2680E65A29C16FCB097DC68E9E85CDBB18BB236D3C73D902E68"
         },
         {
+          "file": "accelerated-launch/service/ui/story-font-license.txt",
+          "sha256": "20F7835D86AF589F46E762FEB51AB57EC0DD60F7D8037B85836A52CD601350A2"
+        },
+        {
+          "file": "accelerated-launch/service/ui/story.css",
+          "sha256": "ECDF3A3182857DFCB2E1163925575EC02E5914E2DA16A57CC76D0AB14771C0EA"
+        },
+        {
           "file": "accelerated-launch/service/ui/style.css",
           "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
         }
       ]
     }
   ],
-  "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
-  "total_file_count": 138
+  "manifest_digest": "DE359A619A602584970F6AE9BD1ECC1F22F25AAEECE32E9AB8B9E547DB3C3CC6",
+  "total_file_count": 143
 }

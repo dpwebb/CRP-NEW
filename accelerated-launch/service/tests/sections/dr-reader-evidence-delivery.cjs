@@ -198,7 +198,7 @@ async function run(t, check) {
     const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
     const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
     try {
-      const page = await browser.newPage(); page.setDefaultTimeout(20000); await page.goto(t.base + '/');
+      const page = await browser.newPage(); page.setDefaultTimeout(20000); await page.goto(t.base + '/index.html#signin');
       await page.locator('#email').fill('dr-evidence-owner@example.test');
       await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
