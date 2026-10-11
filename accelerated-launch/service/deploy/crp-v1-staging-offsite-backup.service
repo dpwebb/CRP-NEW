@@ -1,0 +1,13 @@
+[Unit]
+Description=CRP Version 1 staging encrypted offsite backup
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+UMask=0077
+ExecStart=/opt/crp-wizard-staging/offsite-backup.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

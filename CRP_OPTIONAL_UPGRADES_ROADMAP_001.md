@@ -10,6 +10,10 @@ They have no assigned implementation deadline and no launch-blocking status. Add
 
 The mandatory scope and boundaries are defined in CRP_FINAL_RELEASE_SCOPE_001.md.
 
+## Standalone candidates
+
+- **Three-level referral program:** The preview remains in `optional-addons/referrals/`; a staging-only workspace and authenticated API now live in `accelerated-launch/service/`. Verified first customer purchases generate 15%, 10%, and 5% rewards on the price before tax; all jurisdictions qualify. The candidate schedules Friday payouts after a 14-day hold and reserves 10% of each reward for 180 days. Recruitment alone earns nothing. It does not change Version 1 entitlements or prices and is not a launch blocker. Live payout operations and jurisdiction review remain separate.
+
 ## Version 2 — optional depth moved out of the Version 1 launch minimum (Batch 21)
 
 Recorded here so it is **not** treated as launch scope. Each item adds further issues of the same kinds already delivered, inside the same consumer path:

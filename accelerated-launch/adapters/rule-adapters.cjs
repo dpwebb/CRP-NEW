@@ -77,6 +77,7 @@ const REQUIRED_ADAPTER_FIELDS = ['adapter_id', 'legacy_rule_id', 'source_entry_i
  * are recorded in `service/issues.cjs`; no observation-only or unauthorized adapter is enabled.
  */
 const PACKET_ELIGIBLE_RULE_IDS = Object.freeze([
+  'CA-NS-CRA-S10-3-C-LIMB-1',
   'US-CA-CCRAA-1785-13-A-1-BANKRUPTCY-10Y',
   'US-CA-CCRAA-1785-13-A-4-TAX-LIEN-PAID-7Y',
   'US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y',

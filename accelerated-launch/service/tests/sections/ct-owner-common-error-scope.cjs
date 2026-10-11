@@ -15,8 +15,8 @@ function rec(index, kind, facts) {
 }
 
 async function run(t, check) {
-  check.equal(CHECKS.length, 19, 'the combined checklist has nineteen shared entries');
-  check.equal(new Set(CHECKS.map((x) => x.check_id)).size, 19, 'every entry has one stable id');
+  check.equal(CHECKS.length, 21, 'the expanded checklist has twenty-one shared entries');
+  check.equal(new Set(CHECKS.map((x) => x.check_id)).size, 21, 'every entry has one stable id');
   check.ok(CHECKS.every(item => !/\bSOL\b|\btradelines?\b|\banchor\b|\bre-aging\b/i.test(item.label)),
     'consumer checklist labels avoid unexplained reporting and legal shorthand');
   check.equal(catalogue.regions.length, 82, 'the declared jurisdiction population remains 82');
@@ -31,7 +31,7 @@ async function run(t, check) {
     const selected = evaluation.applicableAdapters(code);
     check.ok(selected.confirmed.concat(selected.unconfirmed).every((a) => activeAdapter(a.adapter_id)),
       `only checklist-related statutory adapters remain active for ${code}`);
-    check.equal(checklistFor({ common_errors: { performed: [] } }).length, 19,
+    check.equal(checklistFor({ common_errors: { performed: [] } }).length, 21,
       `the same checklist exists for ${code}`);
     const omitted = checklistFor({ common_errors: { performed: [{
       check_id: 'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
@@ -41,6 +41,11 @@ async function run(t, check) {
       .find((row) => row.check_id === 'COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING');
     check.equal(unreadable.state, 'NOT_PERFORMED', `${code}: a reader gap does not prove an omission`);
   }
+  const periodCheck = (value) => checklistFor(value)
+    .find((row) => row.check_id === 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED');
+  check.equal(periodCheck({}).state, 'NOT_PERFORMED', 'an unread period is not marked performed');
+  check.equal(periodCheck({ retention_dual_date: { performed: [{ rule: 'FCRA-605A-4-US-NATIONAL-7Y' }] } }).state,
+    'PERFORMED', 'a measured retention rule appears in the common-error checklist');
   const retired = adapters.ADAPTERS.filter((a) => !activeAdapter(a.adapter_id));
   check.ok(retired.length > 0, 'out-of-checklist statutory adapters are retired from runtime assessment');
   for (const [region, id] of [
@@ -110,7 +115,7 @@ async function run(t, check) {
       `${id} reaches a selectable factual verification issue`);
   }
 
-  return { checklist: 19, jurisdictions: 82, retired_adapters: retired.length,
+  return { checklist: 21, jurisdictions: 82, retired_adapters: retired.length,
     newly_connected_categories: 3 };
 }
 

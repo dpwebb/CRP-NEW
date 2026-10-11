@@ -58,7 +58,8 @@ async function run(t, check) {
     } })['overdue.originalListingDate'], undefined, 'missing, ambiguous or mismatched own sources cannot supply a rule date');
   }
   for (const [raw, expected] of [['0', 0], ['$1,234.50', 1234.5], ['-$273.00', -273], ['$-273.00', -273],
-    ['($273.00)', -273], ['unreadable0', null], ['$1,00', null], ['$100 garbage', null], ['++100', null]])
+    ['($273.00)', -273], ['$100 CAD', 100], ['$125 AUD', 125], ['£20 GBP', 20],
+    ['$100 XYZ', null], ['unreadable0', null], ['$1,00', null], ['$100 garbage', null], ['++100', null]])
     check.equal(amounts.printedAmount(raw), expected, 'only a complete signed monetary reading becomes a number');
   const paid = canadian('PAID IN FULL'), record = paid.extraction.records[0];
   const issue = paid.findings.find((item) => item.check_id === PAID);

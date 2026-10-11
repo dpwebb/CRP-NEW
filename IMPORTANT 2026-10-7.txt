@@ -1,2 +1,3 @@
-let me be clear and read this literally:
-CRP's job and promise to the consumer is to: surface a "violation" that is a breach of some rule, statute,  or requirement. We do not determine legal findings, whatsoever. We use statues as a guideline. in making violation determinations. Make this the top priority moving forward and fix all of the code that differentiate or requires a "legal Violation" requirement.
+Can we structure the pricing to display the price in the users native currency (determined by IP address or other geo-location service, free preferably. Once the currency is determened the price for that jurisdiction is auto populated and stripe charges the consumer in their native currency or as an exchange rate for the CAD equivalent. You will have to configure Stripe for this as well.
+
+See: https://docs.stripe.com/invoicing/multi-currency-customers and https://docs.stripe.com/products-prices/how-products-and-prices-work#multiple-currencies

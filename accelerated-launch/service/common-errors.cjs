@@ -490,6 +490,27 @@ function adverseAfterFirstReport() {
   return null;
 }
 
+/* An account cannot already have a reported date later than this report's own date. */
+function entryReportedAfterReportDate(records) {
+  const applicable = records.some((r) => sourceForField(r, 'reportedAccount.reportedDate') && reportReference(r));
+  if (!applicable) return null;
+  const matches = [];
+  for (const r of records) {
+    const printed = sourceForField(r, 'reportedAccount.reportedDate');
+    const report = reportReference(r);
+    if (!printed || !report) continue;
+    const entryDate = dateRange(printed.normalized_value, printed.precision);
+    const reportDate = dateRange(report.normalized_value, report.precision);
+    if (strictlyAfter(entryDate, reportDate)) matches.push(match(r, 'ENTRY_REPORTED_AFTER_REPORT_DATE', {
+      reported_date: printed.normalized_value, report_date: report.normalized_value
+    }));
+  }
+  return entry('COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE',
+    'an account reported after the report date', matches,
+    'No account reported after the report date was detected in the entries we could read.',
+    'This report prints an account reported date later than the report date. The printed dates conflict.');
+}
+
 /** The normalized fact fields the tracked selectable issue types require. A check is runnable on a
  *  presentation only when its records actually carry these fields — never by presentation NAME. Missing fields
  *  are a gap, never an inference. */
@@ -530,6 +551,9 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': { field_sets: [[
     'reportedAccount.dateOpened', 'reportedAccount.firstReported'
   ]] },
+  'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE': { field_sets: [[
+    'reportedAccount.reportedDate', 'report.referenceDate'
+  ]] },
   'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'tradeline.firstDelinquencyDate', 'report.referenceDate'
   ]], additional_evidence: 'OWNED_EARLIER_SAME_BUREAU_FIXED_OBLIGATION_UNIQUE_IDENTITY_FORWARD_ANCHOR_CHANGE_WITHOUT_RESET_EVIDENCE' },
@@ -553,6 +577,10 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   ['report.referenceDate', 'tradeline.lastPaymentDate'],
   ['report.referenceDate', 'tradeline.firstDelinquencyDate']],
   additional_evidence: 'OR_DATE_COMPARED_WITH_SOURCED_REPORT_REFERENCE_DATE' },
+  'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED': { field_sets: [[
+    'tradeline.lastPaymentDate', 'report.referenceDate'
+  ], ['tradeline.firstDelinquencyDate', 'report.referenceDate']],
+  additional_evidence: 'APPLICABLE_SOURCED_REPORTING_PERIOD_AND_ADVERSE_ENTRY' },
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'account.balance'
   ], ['account.masked_identifier', 'account.reported_identity', 'account.amount']],
@@ -828,8 +856,8 @@ function codeEvidence(entries) {
 /* 11. An entry the REPORT ITSELF presents as an adverse or collection debt, on which its own delinquency caption
    is printed with no value. The report states the bad-debt/collection status and, in the same entry, prints the
    `First Delinquency Date` caption without a date, so the entry carries no usable anchor for when the
-   delinquency began. This is a factual COMPLETENESS concern offered as a POTENTIAL verification item: no statute
-   is named, no omission is established, no date is invented, and an aged but satisfactory account never reaches
+   delinquency began. This is a source-linked checklist breach with POTENTIAL confidence: no date is invented,
+   no expired reporting period is inferred, and an aged but satisfactory account never reaches
    this check. */
 function adverseEntryWithoutADelinquencyAnchor(records) {
   const relevant = (r) => Boolean(r) && r.status === 'RESOLVED'
@@ -856,7 +884,7 @@ function adverseEntryWithoutADelinquencyAnchor(records) {
     'an entry the report presents as a bad debt or collection with no date for when the delinquency began',
     matches,
     'No entry that the report presents as a bad debt or collection with an empty delinquency date was detected in the records we could read.',
-    'This report presents at least one entry as a bad debt or collection debt and prints that entry delinquency caption without a date, so the entry shows no date for when the delinquency began. That is a completeness question about what the report prints, not a legal conclusion.');
+    'This report presents at least one entry as a bad debt or collection debt and prints that entry delinquency caption without a date, so the consumer cannot check when that delinquency began or any reporting period measured from it.');
 }
 
 /* 12. A write-off the report's OWN legend defines, printed on an entry whose charge-off caption carries no date.
@@ -934,6 +962,7 @@ function runCommonErrorChecks(context) {
     duplicateReporting(records),
     similarEntriesWorthReviewing(records),
     reportedDatesOutOfOrder(records),
+    entryReportedAfterReportDate(records),
     reaging.evaluate(extraction, context.prior_reports),
     identityDiscrepancy(identity),
     /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (real-report repair): three factual COMPLETENESS checks over the entry's

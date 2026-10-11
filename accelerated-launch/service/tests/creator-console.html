@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Report Creator · Private Test Console</title><link rel="stylesheet" href="/creator-console.css"></head>
+<body><header><div class="eyebrow">PRIVATE TEST ENVIRONMENT · LOCAL COMPUTER</div><h1>Credit Report Creator</h1>
+<p>Direct a synthetic report test, then inspect what CRP found and what still needs repair.</p></header>
+<main><section class="panel queue"><div class="section-heading"><h2>Test queue</h2><button id="refresh" type="button">Refresh</button></div>
+<p class="hint">A failed seed holds the queue until its detection gap is fixed. Seed details are revealed after CRP runs.</p>
+<div id="cases" class="case-list" aria-live="polite"></div></section>
+<section class="panel survey"><h2>Bureau format survey</h2><p class="hint">Older synthetic corpus: reader admission and record counts only. A format row is not a seeded violation pass.</p><div id="bureau-survey" aria-live="polite"></div></section>
+<section class="panel native-creator"><h2>Create from the Report Creator</h2><p class="hint">Choose a structured synthetic fixture and one bounded error. The Creator renders a new PDF in its own report form and seals the seed answer key until CRP runs.</p>
+<form id="creator-generate"><label>New case ID<input name="id" required placeholder="uk-experian-balance-001"></label>
+<label>Creator report form<select name="fixture_id"><option value="CA-TOR-0001">Equifax Canada · Ontario</option><option value="US-MD-0001">TransUnion US · Maryland</option><option value="UK-LDN-0001">Experian UK · England</option><option value="AU-SYD-0001">Equifax Australia · New South Wales</option></select></label>
+<label>Seeded common error<select name="recipe"><option value="PAST_DUE_EXCEEDS_BALANCE">Past due exceeds balance</option><option value="CLOSED_BEFORE_OPENED">Closed before opened</option><option value="AU_CLOSED_LIABILITY_OVER_2Y">Australia · closed liability over two years</option><option value="AU_CLOSED_LIABILITY_WITHIN_2Y">Australia · within two years guard</option><option value="US_COLLECTION_OVER_7Y_180D">US · collection over seven years plus 180 days</option><option value="US_COLLECTION_WITHIN_7Y_180D">US · collection within period guard</option></select></label>
+<button type="submit">Create report and sealed seed</button></form></section>
+<section class="panel variant"><h2>Make a one-field variant</h2><p class="hint">Use another marked synthetic PDF from the report factory. Replace one printed value on one page; the layout and other pages stay in place. Review the new PDF before running CRP.</p>
+<form id="generate"><label>New case ID<input name="id" required placeholder="ca-equifax-future-date-001"></label>
+<div class="two"><label>Country<select name="country"><option value="CA">Canada</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="AU">Australia</option></select></label><label>Region<input name="region" required placeholder="CA-NS"></label></div>
+<label>Synthetic template PDF path<input name="template" required placeholder="C:\Users\webbd\CREDIT REPORTS\CA\Problem Reports\equifax-ca_clean_seed-4100.pdf"></label>
+<div class="two"><label>Page<input name="page" type="number" min="1" value="1" required></label><label>Occurrence on page<input name="occurrence" type="number" min="1" value="1" required></label></div>
+<div class="two"><label>Printed value to replace<input name="old" required placeholder="2026/06/22"></label><label>New value<input name="replacement" placeholder="2026/07/22"></label></div>
+<label>Expected CRP check ID<input name="check_id" required placeholder="COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE"></label>
+<button type="submit">Create private report and sealed seed</button></form></section>
+<section class="panel register-panel"><h2>Add a synthetic report</h2><p class="hint">Register a PDF in CREDIT REPORTS and its private seed answer key. The Creator keeps the key separate while CRP assesses the PDF.</p>
+<form id="register"><label>Case ID<input name="id" required placeholder="ca-equifax-balance-001"></label>
+<div class="two"><label>Country<select name="country"><option value="CA">Canada</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="AU">Australia</option></select></label>
+<label>Region<input name="region" required placeholder="CA-NS"></label></div>
+<label>Absolute PDF path<input name="report" required placeholder="C:\Users\webbd\CREDIT REPORTS\..."></label>
+<label>Private oracle JSON path<input name="oracle" required placeholder="C:\Users\webbd\CREDIT REPORTS\CRP_CREATOR_VIOLATION_TESTS\oracles\..."></label>
+<button type="submit">Add to queue</button></form></section>
+<section class="panel detail"><div class="section-heading"><h2>Activity log</h2><span id="chosen">Select a report</span></div><div id="detail" aria-live="polite"></div></section>
+<section class="panel preview"><div class="section-heading"><h2>Report preview</h2><a id="pdf-link" target="_blank" rel="noopener">Open PDF</a></div><iframe id="pdf" title="Selected synthetic report"></iframe></section></main>
+<footer>Local synthetic test administration. Results are internal evidence, not consumer findings.</footer>
+<script src="/creator-console.js" defer></script></body></html>

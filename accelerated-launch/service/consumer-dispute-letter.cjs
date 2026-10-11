@@ -52,6 +52,10 @@ function requestFor(issue) {
   const checklistBasis = !issue.check_id ? (issue.supported_bases || []).find(basis => basis.check_id?.startsWith('COMMON-ERROR-')) : null;
   const checkId = issue.check_id || checklistBasis?.check_id;
   const e = issue.evidence || checklistBasis?.evidence || {};
+  const region = issue.rule_assessment?.jurisdiction || checklistBasis?.rule_assessment?.jurisdiction || '';
+  const bureau = issue.report_identity?.bureau || checklistBasis?.report_identity?.bureau || '';
+  const firstDelinquencyControlsReporting = region.startsWith('US-')
+    || region.startsWith('CA-') && /transunion/i.test(bureau);
   const readings = readingsFor(issue);
   const closure = readings.find(fact => fact.source_field === 'Notes');
   const historyReadings = e.first_code != null && e.second_code != null && e.first_meaning && e.second_meaning
@@ -69,7 +73,8 @@ function requestFor(issue) {
     'COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY': 'My report gives different details about who is responsible for the same account.',
     'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': e.period
       ? `My report shows two different payment-history entries for ${dateLabel(e.period)}.${historyReadings}${publishedOrder ? ` I used ${periodBasis ? 'the report\'s "' + periodBasis.source_field + '" date (' + dateLabel(periodBasis.normalized_value) + ') and ' : ''}the bureau's published order: the most recent month comes first, with one month for each entry.` : ''}` : 'My report shows conflicting payment-history entries for the same period.',
-    'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'The space for the first missed-payment date is blank on this entry.',
+    'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'The first delinquency date is blank on this adverse entry. I cannot check when the delinquency began'
+      + (firstDelinquencyControlsReporting ? ' or whether the adverse reporting period has ended.' : ' against the account history.'),
     'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'This debt is marked as a loss, but the space for that date is blank.',
     'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': closure
       ? `My report says "${closure.raw_value}". The space for the closing date is blank.`

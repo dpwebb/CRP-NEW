@@ -7,6 +7,7 @@ const PRINTED_LABEL = Object.freeze({
   'liability.openedDate': /open(?:ed|ing)?.*date|date.*open/i,
   'reportedAccount.dateOpened': /open(?:ed|ing)?.*date|date.*open/i,
   'reportedAccount.firstReported': /first.*report|report.*first/i,
+  'reportedAccount.reportedDate': /reported date|last reported|last updated|as of/i,
   'account.balance': /balance/i,
   'account.type': /account.*type|type.*account/i,
   'account.amount': /^(?:account\.amount|amount|balance)$/i,

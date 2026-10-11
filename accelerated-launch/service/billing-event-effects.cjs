@@ -128,6 +128,9 @@ async function recordVerifiedEvent(store, event, provider) {
         intent.verified_payment_id = event.invoice_reference || event.session_reference;
         intent.verified_payment_intent = event.payment_intent || null;
         intent.verified_paid_cents = event.amount_cents;
+        intent.verified_tax_cents = provider.provider_id === 'test-adapter-not-a-payment' ? 0 :
+          (Number.isSafeInteger(event.tax_cents) ? event.tax_cents : null);
+        intent.verified_paid_at = paidAt;
         if (event.subscription_reference) {
           live.provider_subscription_reference = event.subscription_reference;
           intent.provider_subscription_reference = event.subscription_reference;
@@ -166,6 +169,7 @@ async function recordVerifiedEvent(store, event, provider) {
     state.billing_events.push({ event_id: event.event_id, provider_id: provider.provider_id, fingerprint,
       received_at: at, outcome: 'APPLIED', effect, reason: null, entitlement_id: live?.entitlement_id || null,
       account_id: accountId, type: event.type, amount_cents: event.amount_cents, currency: event.currency,
+      session_reference: event.session_reference || null,
       invoice_reference: event.invoice_reference || null, payment_intent: event.payment_intent || null,
       refunded_cents: event.refunded_cents ?? null });
     return live?.entitlement_id || null;

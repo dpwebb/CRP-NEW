@@ -25,7 +25,7 @@ function startMock() {
       current_period_end: Math.floor(Date.now() / 1000) + 86400 * 30,
       metadata: { account_id: 'acc_1', plan_code: 'monthly', checkout_id: 'chk_1' } },
     invoice: { id: 'in_test_1', subscription: 'sub_1', status: 'paid', paid: true, livemode: false,
-      amount_paid: 200, amount_due: 200, currency: 'cad', payment_intent: 'pi_monthly_1',
+      amount_paid: 200, amount_due: 200, total_tax_amounts: [], currency: 'cad', payment_intent: 'pi_monthly_1',
       lines: { data: [{ price: { id: PRICE_IDS.monthly }, quantity: 1 }] } },
     sessions: {}, subscriptions: {}, invoices: {}, intents: {}, charges: {}, coupons: {},
     updateStatus: 200, updateGate: null, updateResponse: null
@@ -81,6 +81,7 @@ function startMock() {
           fixture.session.invoice = 'in_' + suffix;
           fixture.invoice = { id: fixture.session.invoice, subscription: fixture.session.subscription, status: 'paid', paid: true,
             livemode: false, currency: 'cad', amount_paid: fixture.session.amount_total, amount_due: fixture.session.amount_total,
+            total_tax_amounts: [],
             payment_intent: fixture.session.amount_total ? intentId : null, created: fixture.session.created,
             status_transitions: { paid_at: fixture.session.created },
             lines: { data: [{ price: { id: PRICE_IDS[plan] }, quantity: 1, period: { end: fixture.subscription.current_period_end } }] } };
@@ -198,6 +199,12 @@ async function main() {
   assert.equal(normalizedInvoice.event.invoice_reference, verified.event.invoice_reference, 'Checkout and invoice use one canonical receipt');
   assert.equal(normalizedInvoice.event.payment_intent, verified.event.payment_intent, 'both event types bind the same cash payment');
   assert.equal(normalizedInvoice.event.amount_cents, verified.event.amount_cents, 'both event types preserve the same actual net payment');
+  assert.equal(normalizedInvoice.event.tax_cents, 0, 'an explicit empty invoice tax list verifies zero tax');
+  assert.equal(verified.event.tax_cents, 0, 'subscription checkout uses the verified invoice tax');
+  mock.fixture.invoice.total_tax_amounts = [{ amount: 20 }];
+  const taxedInvoice = await adapter.verifyEvent({ rawBody: invoiceEvent.raw, headers: invoiceEvent.headers });
+  assert.equal(taxedInvoice.event.tax_cents, 20, 'itemized invoice tax is carried for tax-exclusive referral rewards');
+  mock.fixture.invoice.total_tax_amounts = [];
 
   // 2. A bad signature is refused.
   const bad = await adapter.verifyEvent({ rawBody: good.raw, headers: { 'stripe-signature': 't=0,v1=deadbeef' } });

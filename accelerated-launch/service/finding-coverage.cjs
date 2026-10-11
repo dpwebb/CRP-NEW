@@ -62,6 +62,7 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ['DUPLICATE-REPORTING', ['cy-common-error-predicate-repairs', 'ei-collection-duplicate'], ['ei-collection-duplicate', 'eb-account-packet-support'], 'NATIVE_UPLOAD_AND_CONTROLLED_PERSISTED_FACTS'],
   ['SIMILAR-ENTRIES-WORTH-REVIEWING', ['al-common-errors'], [], 'REVIEW_ONLY_CONTROLLED_FACTS'],
   ['REPORTED-DATES-OUT-OF-ORDER', ['cw-common-error-rule-assessment', 'df-us-common-error-reader'], ['de-tu-ca-common-error-sources'], 'NATIVE_READER_AND_DOWNSTREAM_FAMILY_CONTROL'],
+  ['ENTRY-REPORTED-AFTER-REPORT-DATE', ['z-general-intake'], ['z-general-intake'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
   ['POTENTIAL-RE-AGING-SIGNAL', ['dg-owned-reaging', 'cy-common-error-predicate-repairs'], ['dg-owned-reaging', 'du-column-reader-delivery', 'eh-packet-report-exhibits'], 'OWNED_EARLIER_CURRENT_NATIVE_UPLOADS'],
   ['IDENTITY-REVIEW', ['al-common-errors'], [], 'REPORT_INTERNAL_REVIEW_NOT_VIOLATION'],
   ['ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', ['ce-tu-ca-account-material', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],

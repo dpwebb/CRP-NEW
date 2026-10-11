@@ -362,7 +362,7 @@ async function draftBoundaryAndRelease(t, check, evidence) {
     check.equal(gbGeneralContract.validate(broken).passed, false, 'missing, partial, stale or differently scoped proof cannot close UK evidence');
   }
   const deploymentCheck = report.checks.find((row) => row.id === 'DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED');
-  check.deepEqual(deploymentCheck.affected_regions, ['CA', 'AU', 'US', 'GB'], 'and the deployment blocker names every market it holds back');
+  check.deepEqual(deploymentCheck.affected_regions, deploymentCheck.passed ? [] : ['CA', 'AU', 'US', 'GB'], 'the deployment gate names affected markets only while it is failing');
   check.ok(report.blockers_by_category.some((row) => row.category === 'PAYMENT' && row.launch_blocking_checks_failed.length),
     'the payment category is reported separately from format support');
 

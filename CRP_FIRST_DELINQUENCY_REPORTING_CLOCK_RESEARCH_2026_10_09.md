@@ -1,0 +1,18 @@
+# First-delinquency date and adverse reporting clocks — October 9, 2026
+
+## Decision for the active common-error checklist
+
+An adverse or collection entry that explicitly prints `First Delinquency Date` with no value supports the listed missing-date VIOLATION when its own adverse status and blank caption are source-linked. The consumer consequence must be specific: the missing value prevents checking the start of the reported delinquency and, where that date controls removal, the end of adverse reporting. It does not by itself establish that the bureau's internal file lacks a date or that an adverse entry has already exceeded a reporting period. An absent caption, unreadable value, ambiguous status or unsupported layout remains outside this predicate.
+
+## Governing clock by market
+
+| Market | Verified source and controlling date | Consumer effect of a blank first-delinquency caption |
+| --- | --- | --- |
+| TransUnion Canada disclosure, including CA-NS | TransUnion says adverse credit history, collections and defaulted accounts are automatically removed six years from the date the account first went delinquent: https://www.transunion.ca/credit-report | The consumer cannot check TransUnion's stated removal date from the disclosure. For Nova Scotia, Consumer Reporting Act s. 10(3)(c) separately bars reporting information regarding a debt more than six years after last payment or, if no payment was made, default: https://nslegislature.ca/sites/default/files/legc/statutes/consumer%20reporting.pdf . The supported last-payment determination remains active; first delinquency is not substituted for it. |
+| United States collection or charge-off | FCRA s. 605(c) ties the federal reporting period to the delinquency that immediately preceded collection, charge-off or similar action, plus 180 days; CFPB guidance explains the Date of First Delinquency role: https://files.consumerfinance.gov/f/documents/cfpb_guidance-compendium_2025-01.pdf | The consumer cannot check the preceding-delinquency anchor from the blank disclosure. A blank alone does not prove the furnisher failed to supply the date or that the entry expired. |
+| United Kingdom default | ICO guidance says a default is kept six years from the date of default, which is a distinct event: https://ico.org.uk/media/1282/credit-explained-dp-guidance.pdf | The blank first-delinquency field impedes checking the account history; it is not automatically a blank default date or proof of expiry. |
+| Australia default information | Privacy Act 1988 s. 20W item 4 sets five years from the day the credit reporting body collects the default information: https://www.legislation.gov.au/C2004A03712/2024-12-11/2024-12-11/text/1/epub/OEBPS/document_1/document_1.html | The blank first-delinquency field impedes checking the account history; it is not the statutory retention anchor. |
+
+Nova Scotia's court claim limitation is separate. Limitation of Actions Act s. 8 generally measures two years from discovery, subject to the Act's other rules, and does not establish a universal six-year court clock from first delinquency: https://nslegislature.ca/sites/default/files/legc/statutes/limitation%20of%20actions.pdf . No court limitation violation is inferred from a blank report caption.
+
+The shared checklist predicate remains available across the 82 supported region selections where an admitted reader actually supplies the source-linked adverse status and explicit blank. Only a market with a verified first-delinquency reporting rule receives that specific clock explanation. Local report-data determinations and any statutory retention determination keep distinct sources and starting dates.

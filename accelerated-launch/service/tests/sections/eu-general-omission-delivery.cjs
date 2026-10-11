@@ -15,7 +15,7 @@ async function downloadedLetter(bytes) {
 const regions = Object.keys(require('../../../adapters/applicability-records.json').region_applicability_index);
 const SPECS = [
   ['COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE', 'Closed', 'Closed Date', 'space for the closing date is blank'],
-  ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'In Collection', 'First Delinquency Date', 'space for the first missed-payment date is blank'],
+  ['COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR', 'In Collection', 'First Delinquency Date', 'first delinquency date is blank'],
   ['COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE', 'Charged Off', 'Charge Off Date', 'space for that date is blank'],
   ['COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE', null, null, 'original account and its collection both show money owed']
 ].map(([check_id, status, caption, plain_fact]) => ({ check_id, status, caption, plain_fact }));
@@ -69,6 +69,13 @@ async function run(t, check) {
       check.ok(displayed.explanation.includes('status (In Collection)')
         && !displayed.explanation.includes('null') && !displayed.explanation.includes('cancellation code'),
       'a literal collection status is described as printed, without an invented code');
+      const byRegion = (region) => issues.publicIssue(findings(positive.extraction, region, spec.check_id)[0]);
+      check.ok(/delinquency that preceded it/.test(byRegion('US-CA').explanation),
+        'the US card explains the preceding-delinquency reporting clock');
+      check.ok(/own default date/.test(byRegion('GB-ENG').explanation),
+        'the UK card does not substitute first delinquency for its default date');
+      check.ok(/credit reporting body collected/.test(byRegion('AU-NSW').explanation),
+        'the Australian card does not substitute first delinquency for collection of default information');
     }
     if (spec.check_id === 'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE') {
       const displayed = issues.publicIssue(firstIssue);
@@ -152,6 +159,10 @@ async function run(t, check) {
       check.ok(choice.status === 200 && approved.status === 200 && approved.json.view.packet.selected_count === 1,
         'consumer selection and approval bind precisely this issue');
       check.ok(matched, 'actual editable letter makes the selected factual request and excludes the unselected account');
+      if (spec.check_id === 'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR') {
+        check.equal(text.includes('whether the adverse reporting period has ended'), region === 'US-CA',
+          region + ': the letter names a first-delinquency reporting clock only where that clock is supported');
+      }
       check.ok(downloaded.status === 200 && comparableText(downloaded.text).includes('Fictional Unselected Bank'),
         'the relevant original report page remains intact, including other entries printed on that same page');
       if (downloaded.status === 200) {

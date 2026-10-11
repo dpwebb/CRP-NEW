@@ -28,6 +28,7 @@ const REPORT_RULES = Object.freeze({
   'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL': 'The first missed-payment date for the same account must not move forward unless the account history shows the old date was wrong or a new period of missed payments began.',
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': 'An account cannot close before it opened.',
   'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER': 'An account cannot first be reported before it opened.',
+  'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE': 'An account cannot be reported after the date of the report that lists it.',
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': 'An account cannot be both open and closed on the same report.',
   'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID': 'An account marked paid in full cannot also show money still owed.',
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': 'The past-due amount cannot be more than the current balance on the same account in the same report.',
@@ -37,7 +38,7 @@ const REPORT_RULES = Object.freeze({
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': 'A debt collection entry and its linked original account should not make one debt look like two amounts still owed.',
   'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first missed payment cannot happen before the account opened or after the report date.',
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': 'One report cannot give two conflicting payment statuses for the same account and period.',
-  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'A reported account problem needs a date so it can be checked.',
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'An adverse or collection entry that prints a First Delinquency Date field must not leave it blank; the missing date prevents the consumer from checking when the reported delinquency began and, where that date starts the reporting period, when adverse reporting must end.',
   'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'If a report says the lender wrote off an account as a loss, it needs the write-off date so this can be checked.',
   'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': 'If a report says an account is closed, it needs the closed date so this can be checked.'
 });
@@ -55,6 +56,11 @@ function decisiveFields(issue, record) {
     case 'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER':
       return e.opened === f['reportedAccount.dateOpened'] && e.first_reported === f['reportedAccount.firstReported']
         ? ['reportedAccount.dateOpened', 'reportedAccount.firstReported'] : null;
+    case 'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE':
+      return e.reported_date === f['reportedAccount.reportedDate']
+        && e.report_date === (reportReference(record) || {}).normalized_value
+        && e.reported_date > e.report_date
+        ? ['report.referenceDate', 'reportedAccount.reportedDate'] : null;
     case 'COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT':
       return e.balance === f['account.balance'] && e.credit_limit === f['account.creditLimit']
         && e.type === f['account.type']
@@ -309,6 +315,7 @@ function assess(issue, record, evaluation, extraction) {
   const classification = omission || ['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT',
     'COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL',
     'COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER',
+    'COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE',
     'COMMON-ERROR-DUPLICATE-REPORTING',
     'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE'].includes(issue.check_id)
     ? 'POTENTIAL_VIOLATION' : 'PROBABLE_VIOLATION';
