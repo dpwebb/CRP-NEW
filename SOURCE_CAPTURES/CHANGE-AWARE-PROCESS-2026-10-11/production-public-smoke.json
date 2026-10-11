@@ -1,0 +1,100 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "host": "https://creditregulatorpro.com",
+  "checked_at": "2026-10-11T19:31:28.266Z",
+  "health": {
+    "ok": true,
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "deployment": "production",
+    "billing_mode": "live",
+    "launch_ready": false
+  },
+  "checks": [
+    {
+      "file": "accelerated-launch/service/ui/app.js",
+      "passed": true,
+      "sha256": "28A4CB2C05A307A7E0A34B9496E5BFF19B14327B6A595C716970B540C6A2507E"
+    },
+    {
+      "file": "accelerated-launch/service/ui/favicon.svg",
+      "passed": true,
+      "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+    },
+    {
+      "file": "accelerated-launch/service/ui/index.html",
+      "passed": true,
+      "sha256": "4517B0FB3D12356FA4AA3848546F96BDFEB7F7F9904FC186975F80C7BA26DAEE"
+    },
+    {
+      "file": "accelerated-launch/service/ui/landing.css",
+      "passed": true,
+      "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+    },
+    {
+      "file": "accelerated-launch/service/ui/landing.html",
+      "passed": true,
+      "sha256": "104D1DF54B91A1F88E165CF9C8B65750EA1762A046C7E71CF92DC331774A6DA3"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/style.css",
+      "passed": true,
+      "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
+    }
+  ],
+  "passed": true,
+  "scope": "Public health and exact served assets; does not establish purchase or packet journey acceptance"
+}

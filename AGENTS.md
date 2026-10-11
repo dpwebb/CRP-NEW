@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 11 change-aware release process
+
+Read `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md` for update and release work. Use the tracked `accelerated-launch/service/deploy/release-workflow.cjs` to plan affected checks, record unchanged proof separately, package committed source, verify hosted bytes and perform guarded activation/rollback. Documentation and tooling changes do not automatically rerun product regression or provider purchases. Presentation changes use affected consumer/security/browser checks; shared runtime, rules, extraction, billing, security and unknown dependencies require full regression. Preserve all existing release safeguards and historical receipt scope. This owner-authorized amendment supersedes conflicting blanket verification-frequency requirements.
+
 ## October 11 controlling reporting-period directive
 
 Read `CRP_OWNER_REPORTING_PERIOD_DIRECTIVE_001.md` for reporting-period work. Preserve each applicable numerical period and remove favorable/adverse exclusions. Use first delinquency when determinable; otherwise identify the source-supported last payment date as the **determining fallback date**, not a separate CRP rule. Preserve the original fields, date evidence and packet safeguards. Implemented, committed and deployed as `crp-v1-930d965f09ad49a1` (source commit `1859962`). Full regression 14,612/0/0; exact-build staging and production acceptance passed, with 30 gates/123 criteria and the requested upload reassessed without replacing historical results. See `CRP_REPORTING_PERIOD_PRODUCTION_2026_10_11.md`. Earlier receipts retain their original scope.

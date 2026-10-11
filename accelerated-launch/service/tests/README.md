@@ -1,5 +1,7 @@
 # Verification structure
 
+October 11 process amendment: `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md` controls verification frequency. Use `deploy/release-workflow.cjs plan` and `check` for change-aware selection and separate continuity records. The older blanket finished-batch full-regression instruction below applies to shared/broad changes; bounded presentation or operations changes follow the amendment. Focused invocations may use `--receipt=ABSOLUTE_OR_RELATIVE_NEW_PATH` to preserve distinct attempt receipts. This option requires an explicit selection and refuses to overwrite an existing receipt.
+
 The default `node accelerated-launch/service/tests/run-tests.cjs` runs every current product section. It preserves all-82 applicability, infrastructure and actual upload-to-packet delivery, representative real-browser acceptance, source provenance, definite/probable/potential semantics, approval, ownership, privacy and billing controls.
 
 During development, pass affected section IDs or explicit lanes:

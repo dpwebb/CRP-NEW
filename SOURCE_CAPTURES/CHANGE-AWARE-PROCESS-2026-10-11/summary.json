@@ -1,0 +1,28 @@
+{
+  "recorded_at": "2026-10-11T19:36:35.809Z",
+  "production_build": "crp-v1-930d965f09ad49a1",
+  "product_runtime_changed": false,
+  "production_activation_performed": false,
+  "provider_transaction_repeated": false,
+  "operations_verification_duration_ms": 1501,
+  "focused_runner_contract": {
+    "passed": 115,
+    "failed": 0,
+    "skipped": 0
+  },
+  "focused_duration_ms": 951,
+  "staging_public_checks": 16,
+  "production_public_checks": 16,
+  "unchanged_full_receipt_sha256": "DA19BA2528C08BED55E018C0487BAB82D3FC700396602B277C9A7CBEDF127D3E",
+  "unchanged_dependency_count": 273,
+  "rejections": {
+    "unknown_selection": true,
+    "existing_receipt_overwrite": true,
+    "wrong_build_gate_receipt": true,
+    "incomplete_gate_receipt": true,
+    "source_drift": true,
+    "manifest_mismatch": true
+  },
+  "activation_and_rollback_validation": "Shell syntax and acceptance refusal tests; parameterized from historically accepted scripts. No new live cutover or rollback executed.",
+  "evidence_scope": "Operations-only adoption. 115 fresh focused assertions are not a full regression; inherited 14612-assertion proof retains its original date/build/scope."
+}

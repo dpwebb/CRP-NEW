@@ -367,7 +367,10 @@ async function main() {
      the full suite exactly as before. Arguments are section IDs (e.g. `bh-ns-judgment-content`); an unknown id
      fails loudly. A focused run writes its own focused-evidence.json and never overwrites the full release
      evidence (b2/b3/b4/clarify/common-errors) or marks unrun sections passed. */
-  const args = process.argv.slice(2).filter(Boolean);
+  const rawArgs = process.argv.slice(2).filter(Boolean);
+  const receiptArgs = rawArgs.filter(arg => arg.startsWith('--receipt='));
+  if (receiptArgs.length > 1) throw new Error('Only one focused receipt path is allowed');
+  const args = rawArgs.filter(arg => !arg.startsWith('--receipt='));
   const requested = [];
   for (const arg of args) {
     if (!arg.startsWith('--lane=')) { requested.push(arg); continue; }
@@ -380,6 +383,9 @@ async function main() {
     requested.push(...LANE_IDS[lane]);
   }
   const focused = requested.length > 0;
+  if (receiptArgs.length && !focused) throw new Error('--receipt requires an explicit focused selection');
+  const focusedReceipt = receiptArgs.length ? path.resolve(receiptArgs[0].slice('--receipt='.length)) : path.join(OUT_DIR, 'focused-evidence.json');
+  if (receiptArgs.length && fs.existsSync(focusedReceipt)) throw new Error('Focused receipt already exists; use a new path');
   let filesToRun = SECTION_FILES;
   if (focused) {
     const fileById = new Map([...SECTION_FILES, ...SOURCE_AUDIT_FILES].map((file) => {
@@ -442,13 +448,14 @@ async function main() {
      leaving the full release evidence files untouched. */
   if (focused) {
     fs.mkdirSync(OUT_DIR, { recursive: true });
-    fs.writeFileSync(path.join(OUT_DIR, 'focused-evidence.json'), `${JSON.stringify({
+    fs.mkdirSync(path.dirname(focusedReceipt), { recursive: true });
+    fs.writeFileSync(focusedReceipt, `${JSON.stringify({
       mode: 'FOCUSED',
       requested,
       execution,
       totals,
       sections: sectionReports.map((r) => ({ id: r.id, title: r.title, file: r.file, passed: r.passed, failed: r.failed, skipped: r.skipped.length, failures: r.failures, evidence: r.evidence }))
-    }, null, 2)}\n`, 'utf8');
+    }, null, 2)}\n`, { encoding: 'utf8', flag: receiptArgs.length ? 'wx' : 'w' });
     process.stdout.write(`\n${'-'.repeat(78)}\n`);
     for (const report of sectionReports) {
       const status = report.failed === 0 ? 'PASS' : 'FAIL';
@@ -456,7 +463,7 @@ async function main() {
     }
     process.stdout.write(`${'-'.repeat(78)}\n`);
     process.stdout.write(`FOCUSED: ${totals.passed} assertions passed, ${totals.failed} failed, ${totals.skipped} skipped in ${Date.now() - started}ms\n`);
-    process.stdout.write(`focused evidence written to ${path.relative(process.cwd(), path.join(OUT_DIR, 'focused-evidence.json'))} (full release evidence untouched)\n`);
+    process.stdout.write(`focused evidence written to ${path.relative(process.cwd(), focusedReceipt)} (full release evidence untouched)\n`);
     process.exitCode = totals.failed === 0 ? 0 : 1;
     return;
   }

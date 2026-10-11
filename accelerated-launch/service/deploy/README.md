@@ -1,5 +1,9 @@
 # Deployment configuration
 
+## October 11 change-aware update workflow
+
+Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) and `release-workflow.cjs` for affected-check planning, separate continuity records, committed-source packaging, public source verification and guarded activation/rollback. Verification frequency follows `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. Historical preparation instructions below retain their original scope.
+
 ## Current production authority — October 9, 2026
 
 The owner authorizes deployment to `https://creditregulatorpro.com` and required release repairs. The historical preparation notes below describe the original B4 batch, not current billing or deployment status. Current Stripe integration is implemented and verified in test mode; production must separately verify live CAD 595 one-time, 795/month and 7950/year prices and the dedicated `/api/billing/events` endpoint. Current upgrade credit uses every verified unused lower-plan cash payment and dynamic once-only coupons; a fixed 595-cent coupon is not required.
