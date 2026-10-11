@@ -282,6 +282,7 @@ async function run(service, check) {
   vm.runInContext('state.step = STEP.BILLING; render();', postCtx);
   await waitFor(() => /Plans and prices/.test(post.elementById('billingView').innerHTML));
   const billingBox = post.elementById('billingView').innerHTML;
+  check.ok(/label for="checkout-currency">Payment currency/.test(billingBox) && ['cad', 'usd', 'aud', 'gbp'].every(currency => billingBox.includes('option value="' + currency + '"')), 'Plans exposes the labelled four-currency checkout control');
   check.ok(/\$5\.95 CAD/.test(billingBox) && /renews monthly|renews annually/.test(billingBox), 'the billing view shows the recorded prices and how each purchase renews');
   check.ok(/Prices use your IP location/.test(billingBox) && /Choose CAD, USD, AUD or GBP before paying/.test(billingBox)
     && /Other or unknown locations see US prices/.test(billingBox)

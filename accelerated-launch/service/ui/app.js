@@ -951,7 +951,7 @@ async function wireResultSelector(panel, view) {
 function currencyChoice() {
   const locked = state.billing?.plan_catalog?.currency_locked || Boolean(ownedPendingCheckout());
   const currency = state.pricingCurrency;
-  return `<div class="checkout-currency"><label for="checkout-currency">Payment currency</label><select id="checkout-currency" style="min-height:44px;max-width:100%"${locked ? ' disabled' : ''}>${[['cad','Canada — CAD'],['usd','United States — USD'],['aud','Australia — AUD'],['gbp','United Kingdom — GBP']].map(([code,label]) => `<option value="${code}"${code === currency ? ' selected' : ''}>${label}</option>`).join('')}</select><p class="evidence">${locked ? 'Your subscription or open checkout keeps its selected currency.' : 'Prices use your IP location. Other or unknown locations see US prices. You can change currency before paying.'}</p><p id="currency-status" role="status" aria-live="polite"></p></div>`;
+  return `<div class="checkout-currency"><label for="checkout-currency">Payment currency</label><select id="checkout-currency" style="min-height:44px;max-width:100%"${locked ? ' disabled' : ''}>${[['cad','Canada — CAD'],['usd','United States — USD'],['aud','Australia — AUD'],['gbp','United Kingdom — GBP']].map(([code,label]) => `<option value="${code}"${code === currency ? ' selected' : ''}>${label}</option>`).join('')}</select><p class="evidence">${locked ? 'Your subscription or open checkout keeps its selected currency.' : 'Prices use your IP location. Other or unknown locations see US prices. You can change currency before paying. Upgrade credit applies to payments in the same currency.'}</p><p id="currency-status" role="status" aria-live="polite"></p></div>`;
 }
 function wireCurrencyChoice() {
   const choice = el('checkout-currency');
@@ -2277,7 +2277,7 @@ function renderBillingView(data) {
     ${!ownedPendingCheckout() && Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
     ${checkingPayment ? '' : upgradeConfirmationBlock()}
     ${subscriptionBenefits('Keep going with a subscription')}
-    ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>
+    ${checkingPayment ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p class="upgrade-credit-total">${creditLine}</p><p>Pay only the difference today. Credit never changes your regular renewal price.</p></div><h3>Plans and prices</h3>${currencyChoice()}
     <p class="evidence">Prices use your IP location. Choose CAD, USD, AUD or GBP before paying. Other or unknown locations see US prices. These are fixed prices, with no exchange-rate pricing.</p>
     <p class="evidence">A one-time purchase does not renew. Cancelling a subscription stops the next charge. Your access lasts until the date shown above.</p>
     <div class="purchase-plan-grid">${planCards}</div>`}
