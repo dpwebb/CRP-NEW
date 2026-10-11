@@ -471,13 +471,31 @@ function checkoutView(paid) {
 async function checkoutKeepsOwnOriginAndReport() {
   const h = harness(() => ({ checkout: { redirect_url: 'https://checkout.stripe.com/fictional' } }));
   h.account('A', 'Fictional A'); h.context.location.origin = 'https://app.example.test';
+  h.context.location.pathname = '/'; // staging's root is its public landing page
   h.context.location.search = '?redirect=https://foreign.example'; h.context.returnCaseId = returnCaseId;
   h.evaluate('state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
   await h.evaluate('startCheckout("monthly")');
   const post = h.calls.find(row => row.url === '/api/billing/checkout'), url = new URL(post.body.return_url);
-  assert.equal(url.origin, 'https://app.example.test'); assert.equal(url.pathname, '/');
+  assert.equal(url.origin, 'https://app.example.test'); assert.equal(url.pathname, '/index.html', 'payment returns to the wizard in staging and production');
   assert.equal(url.searchParams.get('report'), returnCaseId); assert.equal(url.searchParams.get('plan'), 'monthly');
   assert.ok(!url.href.includes('foreign.example'), 'an input redirect URL is never used for checkout return');
+}
+async function checkoutWithoutReportReturnsToWizard() {
+  const h = harness(() => ({ checkout: { redirect_url: 'https://checkout.stripe.com/fictional' } }));
+  h.account('A', 'Fictional A'); h.context.location.origin = 'https://app.example.test'; h.context.location.pathname = '/index.html';
+  await h.evaluate('startCheckout("monthly")');
+  const post = h.calls.find(row => row.url === '/api/billing/checkout');
+  assert.equal(post.body.return_url, 'https://app.example.test/index.html', 'subscription without a selected report also returns to the wizard');
+}
+async function resumedPaymentAllowsOnlyOwnedWizardReturn() {
+  const h = harness(() => ({ ok: true })); h.context.location.origin = 'https://app.example.test';
+  h.evaluate('redirectToPayment("https://app.example.test/index.html?checkout=return&report=case_aaaaaaaaaaaaaaaaaaaaaaaa&plan=monthly", null, true)');
+  assert.equal(h.navigations.length, 1, 'an open payment can resume at the canonical wizard URL');
+  h.evaluate('redirectToPayment("https://app.example.test/?checkout=return&report=case_aaaaaaaaaaaaaaaaaaaaaaaa&plan=monthly", null, true)');
+  assert.equal(h.navigations.length, 2, 'an older open checkout can still resume at its original root URL');
+  h.evaluate('redirectToPayment("https://foreign.example/index.html?checkout=return&report=case_aaaaaaaaaaaaaaaaaaaaaaaa&plan=monthly", null, true)');
+  h.evaluate('redirectToPayment("https://app.example.test/index.html.evil?checkout=return&report=case_aaaaaaaaaaaaaaaaaaaaaaaa&plan=monthly", null, true)');
+  assert.equal(h.navigations.length, 2, 'a resumed checkout cannot redirect to a foreign origin or a lookalike path');
 }
 async function checkoutPaidOwnedReturn() {
   const h = harness(request => request.url.startsWith('/api/cases/') ? { view: checkoutView(true) } : { entitlement: { entitled: true } });
@@ -651,7 +669,7 @@ const tests = { saveAccountRace, uploadListRace, uploadReadRace, packetContextRa
   createCaseAccountRace, createCaseListNavigationRace, createCaseViewNavigationRace, existingCaseAccountRace, caseRefreshAccountRace,
   createCaseNormalCompletion, existingCaseNormalCompletion, latestCaseChoiceWins, invalidIntakeNoCase, selectionKeepsFile,
   reportReadAccountRace, reportReadSelectionRace, partialRetryOnlyPending, evaluateAccountRace, completedCaseNormalCompletion,
-  savedReportErrorNavigationRace, assessmentNavigationReturn, checkoutKeepsOwnOriginAndReport, checkoutPaidOwnedReturn,
+  savedReportErrorNavigationRace, assessmentNavigationReturn, checkoutKeepsOwnOriginAndReport, checkoutWithoutReportReturnsToWizard, resumedPaymentAllowsOnlyOwnedWizardReturn, checkoutPaidOwnedReturn,
   checkoutPendingPaymentRefresh, checkoutForeignCaseRefusal, checkoutCancellationDoesNotGrantAccess, checkoutReturnAccountRace, packetLoadFailureRetry,
   reportCopyLabelsAndDefaults, explicitReportSelectionAndReview, removedIssueDropsExclusiveReport, changedReportChoiceStopsPendingSave, changedStoredReportRecovery };
 async function run(service, check) {

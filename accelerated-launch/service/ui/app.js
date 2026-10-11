@@ -1016,8 +1016,10 @@ function pendingPaymentBlock(forReport = false) {
 function redirectToPayment(redirect, expectedReturn = null, resuming = false) {
   if (/^https:\/\/(?:checkout|invoice)\.stripe\.com\//.test(redirect || '')) return location.assign(redirect);
   if (expectedReturn && redirect === expectedReturn) return location.assign(redirect);
-  const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
-  if (resuming && (redirect === base || String(redirect || '').startsWith(base + '?checkout=return&'))) return location.assign(redirect);
+  const origin = typeof location !== 'undefined' && location.origin ? location.origin : 'http://127.0.0.1';
+  // Older open checkouts may still have a root return; newly created checkouts use the wizard's explicit path.
+  const returnBases = [origin + '/index.html', origin + '/'];
+  if (resuming && returnBases.some(base => redirect === base || String(redirect || '').startsWith(base + '?checkout=return&'))) return location.assign(redirect);
 }
 function resumePendingCheckout(expectedCheckoutId, ensureOwner) {
   return run(async () => {
@@ -1118,7 +1120,7 @@ function startCheckout(planCode, confirmedUpgrade = false) {
         throw new Error('Your upgrade price changed. Review the updated price before confirming.');
       }
     }
-    const base = typeof location !== 'undefined' && location.origin ? location.origin + '/' : 'http://127.0.0.1/';
+    const base = (typeof location !== 'undefined' && location.origin ? location.origin : 'http://127.0.0.1') + '/index.html';
     const context = state.caseId && state.view?.case?.case_id === state.caseId
       ? `?checkout=return&report=${encodeURIComponent(state.caseId)}&plan=${encodeURIComponent(planCode)}` : '';
     const body = { plan_code: planCode, return_url: base + context };

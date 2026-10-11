@@ -400,7 +400,7 @@ async function run(service, check) {
   const submittedCheckout = (await checkoutRequest).postDataJSON();
   const returningUrl = new URL(submittedCheckout.return_url);
   check.equal(returningUrl.origin, new URL(freePage.url()).origin, 'checkout returns only to this application origin');
-  check.equal(returningUrl.pathname, '/', 'checkout returns to the existing application page');
+  check.equal(returningUrl.pathname, '/index.html', 'checkout returns to the wizard path, including when staging serves a landing page at root');
   check.equal(returningUrl.searchParams.get('report'), freeCase.case_id, 'checkout retains the selected report for the return');
   check.equal(returningUrl.searchParams.get('plan'), 'report_once', 'the return records the chosen one-report context, without granting access');
   check.equal(submittedCheckout.case_id, freeCase.case_id, 'checkout retains the selected assessed report');
@@ -447,7 +447,7 @@ async function run(service, check) {
   evidence.checkout_restored_screenshot = restoredShot;
   const foreignCase = await setupPaidCase(service, 'bw-return-foreign@example.test', 'CA', 'CA-NS');
   const foreignReply = freePage.waitForResponse(r => r.url().endsWith('/api/cases/' + foreignCase.caseId));
-  await freePage.goto(new URL(freePage.url()).origin + '/?checkout=return&report=' + foreignCase.caseId + '&plan=monthly&payment=paid');
+  await freePage.goto(new URL(freePage.url()).origin + '/index.html?checkout=return&report=' + foreignCase.caseId + '&plan=monthly&payment=paid');
   check.equal((await foreignReply).status(), 403, 'a forged checkout return cannot read another account’s report');
   await freePage.waitForSelector('#checkout-return-retry');
   check.ok(/could not open your saved report/.test(await freePage.locator('#panel').innerText()), 'a denied return gives a plain retry message');
