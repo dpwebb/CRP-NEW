@@ -3,12 +3,17 @@ const net=require('node:net');
 const plans=require('./plan-catalog.cjs');
 const {ServiceError}=require('./errors.cjs');
 // Only the local reverse proxy may supply forwarding information. Traefik
-// appends its observed client address; never use a browser-provided country.
+// appends its observed client address; nginx appends its own loopback hop.
+// Walk past only those trusted local hops, never a browser-provided country.
 function visitorIp(req){
   let ip=req.socket?.remoteAddress||'';
   if(['127.0.0.1','::1','::ffff:127.0.0.1'].includes(ip)){
     const forwarded=req.headers?.['x-forwarded-for'];
-    if(typeof forwarded==='string')ip=forwarded.split(',').at(-1).trim();
+    if(typeof forwarded==='string'){
+      const hops=forwarded.split(',').map(value=>value.trim());
+      while(hops.length&&['127.0.0.1','::1','::ffff:127.0.0.1'].includes(hops.at(-1)))hops.pop();
+      ip=hops.at(-1)||ip;
+    }
   }
   if(ip.startsWith('::ffff:'))ip=ip.slice(7);
   return net.isIP(ip)?ip:null;

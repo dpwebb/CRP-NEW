@@ -219,6 +219,7 @@ const STRIPE_ADAPTER = Object.freeze({
 
 /** Map a configured Price ID back to the plan it belongs to. */
 function planCodeFromPrice(env, priceId) {
+  if (typeof priceId !== 'string' || !priceId) return null;
   for (const currency of plans.CURRENCIES) for (const planCode of Object.keys(STRIPE_PRICE_NAMES)) {
     if (priceIdFor(env, planCode, currency) === priceId) return planCode;
   }
@@ -370,6 +371,7 @@ async function normalizeInvoiceEvent(env, secretKey, base, invoice, eventId, typ
   const resolved = subId ? await resolveFromSubscription(secretKey, base, subId) : null;
   if (!resolved || !resolved.accountRef || !resolved.planCode) return null;
   const lines = invoice.lines?.data || [];
+  if (lines.length !== 1 || !plans.isCurrency(invoice.currency)) return null;
   const priceId = lines.length === 1 ? (typeof lines[0].price === 'string' ? lines[0].price : lines[0].price?.id) : null;
   const invoicePlan = ['monthly', 'annual'].find(code => priceIdFor(env, code, invoice.currency) === priceId);
   if (!invoicePlan || lines[0].quantity !== 1 || !plans.isCurrency(invoice.currency)) return null;

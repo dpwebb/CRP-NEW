@@ -4,12 +4,16 @@ const plans = require('../../plan-catalog.cjs');
 const location = require('../../pricing-location.cjs');
 const credits = require('../../billing-credits.cjs');
 const crypto = require('node:crypto');
+const provider = require('../../payment-provider.cjs');
 const { createService } = require('../../app.cjs');
 const { StripeUpgradeFixture } = require('../stripe-upgrade-fixture.cjs');
 async function run(t, check) {
+  check.equal(provider.planCodeFromPrice({}, null), null, 'a missing price cannot resolve to a plan through an absent currency configuration');
   const expected = { cad: [595, 795, 7950], usd: [495, 595, 5950], aud: [595, 795, 7950], gbp: [315, 425, 4250] };
   const req = { url: '/api/pricing', socket: { remoteAddress: '127.0.0.1' }, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1' } };
   check.equal(location.visitorIp(req), '1.1.1.1', 'use proxy-observed final IP, not an injected first address');
+  check.equal(location.visitorIp({ ...req, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1, 127.0.0.1' } }), '1.1.1.1', 'actual Traefik/nginx chain skips the final local proxy hop');
+  check.equal(location.visitorIp({ ...req, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1, ::ffff:127.0.0.1, ::1' } }), '1.1.1.1', 'only trusted local hops are skipped, preserving the observed visitor over a forged prefix');
   check.equal(location.visitorIp({ ...req, socket: { remoteAddress: '9.9.9.9' } }), '9.9.9.9', 'untrusted remote forwarding header cannot replace peer IP');
   for (const [country, currency] of [['CA','cad'],['US','usd'],['AU','aud'],['GB','gbp'],['FR','usd'],[null,'usd']]) {
     const service = await new TestService('native-' + country, { geoLocate: async () => country }).listen();

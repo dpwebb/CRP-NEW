@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T22:12:13.262Z",
+  "generated_at": "2026-10-11T22:20:31.044Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 85,
-      "digest": "C360D5D931CF5A71F9A79622651F816E19F690D2D650C09A7C2091B3CD8F4745",
+      "digest": "33D3422933F75842145BD907624B6EED61DD1C6FB22CC45BCFDE8FF6F924652D",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -322,7 +322,7 @@
         },
         {
           "file": "accelerated-launch/service/payment-provider.cjs",
-          "sha256": "2CA1E3E0D4608DEBF421B4F908A4F1B85EBAD79E369C6FE2222176A8940032E7"
+          "sha256": "B9016E4287087E624C6BBE24C4F86719643E57E5FDA4A93AF2A745A06D4D8E05"
         },
         {
           "file": "accelerated-launch/service/plan-catalog.cjs",
@@ -330,7 +330,7 @@
         },
         {
           "file": "accelerated-launch/service/pricing-location.cjs",
-          "sha256": "357D0F6D3D66AA09F047AE97CF6A581ACA4C768D2A7AD07B38C547968630618A"
+          "sha256": "4E78759BDB0D47A0E862BA925FEAEE204BB5A3C3618C6AFB49941E9443BF55E3"
         },
         {
           "file": "accelerated-launch/service/privacy.cjs",
@@ -623,6 +623,6 @@
       ]
     }
   ],
-  "manifest_digest": "95232B7ABD4D286D75F108A859EA134E285126EEB7AE4A53993DB0B552496E8F",
+  "manifest_digest": "5FD451737D0B3963CB459AD5EF5F95D75D03F56DBD846A61389CB11D858B3739",
   "total_file_count": 144
 }
