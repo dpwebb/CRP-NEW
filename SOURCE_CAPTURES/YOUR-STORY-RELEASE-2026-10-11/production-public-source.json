@@ -1,0 +1,125 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "host": "https://creditregulatorpro.com",
+  "checked_at": "2026-10-11T21:00:45.451Z",
+  "health": {
+    "ok": true,
+    "build_id": "crp-v1-de359a619a602584",
+    "deployment": "production",
+    "billing_mode": "live",
+    "launch_ready": false
+  },
+  "checks": [
+    {
+      "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
+      "passed": true,
+      "sha256": "5894A3649B213CF5B2D673B6E7A871815FD1D120FA68A463592F27DB14EAE323"
+    },
+    {
+      "file": "accelerated-launch/service/ui/OpenSans-Regular.ttf",
+      "passed": true,
+      "sha256": "E64E508B2AA2880F907E470C4550980EC4C0694D103A43F36150AC3F93189BEE"
+    },
+    {
+      "file": "accelerated-launch/service/ui/Roboto-Bold.ttf",
+      "passed": true,
+      "sha256": "EF2AB0E402D5CB9DE893E263A2C44E57F57FEC3974B0D981BFE84DEC3DAE83A1"
+    },
+    {
+      "file": "accelerated-launch/service/ui/app.js",
+      "passed": true,
+      "sha256": "D97020591C189542D5290503DA4F954C2D7A70E829881DD6AA57B2523681D942"
+    },
+    {
+      "file": "accelerated-launch/service/ui/favicon.svg",
+      "passed": true,
+      "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
+    },
+    {
+      "file": "accelerated-launch/service/ui/index.html",
+      "passed": true,
+      "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
+    },
+    {
+      "file": "accelerated-launch/service/ui/landing.css",
+      "passed": true,
+      "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+    },
+    {
+      "file": "accelerated-launch/service/ui/landing.html",
+      "passed": true,
+      "sha256": "E0DBD840130BE84758390084A9DDB94F3474D939AC9C37B2139972F8B0ECE304"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.css",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.html",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.js",
+      "passed": true,
+      "status": 404,
+      "expected": "Optional previews disabled in production"
+    },
+    {
+      "file": "accelerated-launch/service/ui/story-font-license.txt",
+      "passed": true,
+      "sha256": "20F7835D86AF589F46E762FEB51AB57EC0DD60F7D8037B85836A52CD601350A2"
+    },
+    {
+      "file": "accelerated-launch/service/ui/story.css",
+      "passed": true,
+      "sha256": "ECDF3A3182857DFCB2E1163925575EC02E5914E2DA16A57CC76D0AB14771C0EA"
+    },
+    {
+      "file": "accelerated-launch/service/ui/style.css",
+      "passed": true,
+      "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
+    }
+  ],
+  "passed": true,
+  "scope": "Public health and exact served assets; does not establish purchase or packet journey acceptance"
+}

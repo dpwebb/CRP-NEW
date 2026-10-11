@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "checks": [
+    "All nine personal fields remain optional",
+    "No personal detail is required at signup",
+    "Signup enforces the existing 12-character minimum",
+    "Keyboard submission announces loading and marks the form busy",
+    "Repeated submissions are disabled while creating the account",
+    "Initial recovery key is displayed after email/password-only signup",
+    "The authenticated navigation retains seven journey stages and four tools",
+    "Authentication styling does not expose its header in the workspace",
+    "Recovery-key save-file control works",
+    "Existing signin hash opens the signin design",
+    "Invalid credentials produce an accessible error",
+    "Forgot password retains the existing recovery flow without a new route",
+    "Invalid saved key preserves generic failure handling",
+    "Successful recovery rotates the saved key",
+    "Successful recovery is announced",
+    "Back to log in returns to the signin screen",
+    "The new password signs into the original account",
+    "Fictional authentication account deleted after recovery verification",
+    "Signin Create account action opens signup",
+    "Browser back renders the matching signin hash",
+    "Keyboard focus follows persistent credential labels",
+    "Keyboard focus is visible",
+    "No JavaScript page errors occurred",
+    "Homepage primary action opens existing signup entry"
+  ],
+  "fixture": "isolated fictional account; no report or payment submitted",
+  "pageErrors": []
+}

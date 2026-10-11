@@ -1,0 +1,56 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "host": "https://creditregulatorpro.com",
+  "all_eight_inspected": true,
+  "recorded_at": "2026-10-11T21:04:06.665Z",
+  "screenshots": [
+    {
+      "file": "homepage-desktop.png",
+      "sha256": "f650cecb0b4eca0088de050d400119e54de020a31a55c863c4ec79e378267420",
+      "width": 1440,
+      "screen": "homepage"
+    },
+    {
+      "file": "homepage-mobile.png",
+      "sha256": "cda3b02755fb736373bb384d1e4440d652164272a9bb8ee365dbc12a224b31d1",
+      "width": 390,
+      "screen": "homepage"
+    },
+    {
+      "file": "signin-desktop.png",
+      "sha256": "43e0b9a374934432d8d7a550e800eb9c6ddc120d78664a5dcaa302bddf7c71f0",
+      "width": 1440,
+      "screen": "signin"
+    },
+    {
+      "file": "signin-mobile.png",
+      "sha256": "630c408dc0d3ec5cb4f31b9e65f0c80c95368fb3f12b58900e30207729b72899",
+      "width": 390,
+      "screen": "signin"
+    },
+    {
+      "file": "create-account-desktop.png",
+      "sha256": "0c3d2b76ef1fd21ef2aab2b66d5c1be1944d9b47904eac1c2803aaa23e35fa26",
+      "width": 1440,
+      "screen": "create-account"
+    },
+    {
+      "file": "create-account-mobile.png",
+      "sha256": "e532da45e2d3519279841d97706aeee7943e94642b3108e696c883bf5fc2ce8a",
+      "width": 390,
+      "screen": "create-account"
+    },
+    {
+      "file": "forgot-password-desktop.png",
+      "sha256": "31eb9e82793a5f7c80b63844b886b066ea9b46345b217a897394ea1694638b7f",
+      "width": 1440,
+      "screen": "forgot-password"
+    },
+    {
+      "file": "forgot-password-mobile.png",
+      "sha256": "7879d6154c548e1e865e06ebd78152940a4eff84984a1405900b40b016b656e5",
+      "width": 390,
+      "screen": "forgot-password"
+    }
+  ]
+}

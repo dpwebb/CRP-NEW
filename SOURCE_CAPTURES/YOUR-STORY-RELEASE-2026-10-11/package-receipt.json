@@ -1,0 +1,12 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "manifest_digest": "DE359A619A602584970F6AE9BD1ECC1F22F25AAEECE32E9AB8B9E547DB3C3CC6",
+  "git_head": "d9dc858538feb29bafa5e21102e2cf9fb3b3ff7d",
+  "files": 143,
+  "verification_sha256": "9C7221538A4CCB707708103122AC910053D73436B00F5211296F8FE4CFBAAADE",
+  "verification_mode": "FRESH_FULL",
+  "archive_sha256": "5725A0CFD1C17CDE0F06E33B8CA282E1D2EBEBE612A59C14225D8C1016F7BB0A",
+  "archive": "C:\\CRP-NEW\\accelerated-launch\\service\\out\\your-story-release-2026-10-11\\candidate\\candidate.tar.gz",
+  "created_at": "2026-10-11T20:47:28.121Z",
+  "production_ready": false
+}

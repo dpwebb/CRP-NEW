@@ -1,0 +1,73 @@
+{
+  "schema": "crp-paid-packet-comparison-continuity-v1",
+  "fixture_scope": "staging-your-story-release-20261011",
+  "identity": {
+    "build_id": "crp-v1-de359a619a602584",
+    "served_build_id": "crp-v1-de359a619a602584"
+  },
+  "build_id": "crp-v1-de359a619a602584",
+  "account_id": "acc_3c031dee50c1daaf5d8d7ccd",
+  "case_id": "case_b3fd1d3118bcc55b79f1b8ab",
+  "version": "eda2fe9f59b08b6b7c434a28ff83ee7f3358f660000e4c983fc48bff0b7e1af0",
+  "receipt_kind": "Derived from existing actual phase2 and browser packet observations",
+  "new_host_action_performed": false,
+  "derived_at": "2026-10-11T21:00:12.858Z",
+  "actual_measurement_at": "2026-10-11T20:58:11.618Z",
+  "approved": true,
+  "approval_survived_comparison": true,
+  "approved_packet_unchanged_after_comparison": true,
+  "pdf_sha256": "bcf6dd3ac0def2587b98eba76bfa6fedbbd563efbcd671f8c16054cf1e19d829",
+  "pdf_bytes": 322920,
+  "comparison_before_pdf_sha256": "bcf6dd3ac0def2587b98eba76bfa6fedbbd563efbcd671f8c16054cf1e19d829",
+  "comparison_after_pdf_sha256": "bcf6dd3ac0def2587b98eba76bfa6fedbbd563efbcd671f8c16054cf1e19d829",
+  "actual_browser_download": true,
+  "preview_download_print_byte_equal": true,
+  "visual_review": "PASS: root inspected every exact rendered page; readable letter, selected original report pages, identity copies and address copy; no clipped text or bureau forms",
+  "selected_source_pages": [
+    2,
+    3
+  ],
+  "documents": [
+    {
+      "filename": "fictional-passport.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 4,
+      "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-licence.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 5,
+      "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "document_type": "ADDRESS",
+      "packet_page": 6,
+      "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "exact_streams": true,
+      "exact_rendering": true
+    }
+  ],
+  "source_phase2_receipt_sha256": "9da7463d821d9d419c837f9d1a3b072efc9fb98843a34de7188b3dfd6ed7330d",
+  "evidence_refs": [
+    {
+      "file": "your-story-hosted-2026-10-11/phase2-receipt.json",
+      "sha256": "9da7463d821d9d419c837f9d1a3b072efc9fb98843a34de7188b3dfd6ed7330d"
+    },
+    {
+      "file": "your-story-hosted-2026-10-11/review-receipt.json",
+      "sha256": "15d1b3b539c326f5acfa0b650b6dce89e48d75eca0431d18bf93dcf3de81a393"
+    },
+    {
+      "file": "your-story-hosted-2026-10-11/download-receipt.json",
+      "sha256": "063534bd248d6ba18c2be465abdc3a4d59f3353ad889f2883d89df8c82bf9900"
+    }
+  ],
+  "release_continuity_claimed": false,
+  "passed": true
+}

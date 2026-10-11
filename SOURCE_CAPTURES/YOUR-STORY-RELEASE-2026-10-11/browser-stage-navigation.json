@@ -1,0 +1,26 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "account_id": "acc_3c031dee50c1daaf5d8d7ccd",
+  "case_id": "case_b3fd1d3118bcc55b79f1b8ab",
+  "steps": [
+    5,
+    6,
+    7
+  ],
+  "actions": [
+    "Continue to document preparation",
+    "Continue to packet review"
+  ],
+  "approved_controls_preserved": true,
+  "observed": [
+    "Step 7 of 7",
+    "Approve this version disabled",
+    "Download your PDF enabled"
+  ],
+  "measurement_origin": "Actual current Chrome browser interaction with the fresh fictional subscriber",
+  "pdf_hash_after_navigation_measured": false,
+  "version_hash_after_navigation_measured": false,
+  "scope": "Browser controls; packet byte continuity measured separately",
+  "recorded_at": "2026-10-11T20:57:35.679Z",
+  "passed": true
+}

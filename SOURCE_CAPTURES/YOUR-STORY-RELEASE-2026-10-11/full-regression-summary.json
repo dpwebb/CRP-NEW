@@ -1,0 +1,13 @@
+{
+  "mode": "FULL_CURRENT_PRODUCT",
+  "totals": {
+    "passed": 14622,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": 152,
+  "source_drift": [],
+  "unrun_sections": [],
+  "original_receipt_sha256": "dbe997bf3717e534baf6cb5ecaad3e400b59b5e84b7519f81f2df0ac86166063",
+  "original_receipt": "accelerated-launch/service/out/your-story-release-2026-10-11/checks-02/full-regression.json"
+}

@@ -1,0 +1,9 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "file": "measurements.json.gz",
+  "uncompressed_sha256": "7759a3cef5782d27a9e7d2df3bbc6685199634ca4f49996f1777ab07f6f24389",
+  "archive_sha256": "accc6a267b5a2faa1ada559cf06554b22567eb60a3ccfb354826a011ee36c798",
+  "uncompressed_bytes": 4706676,
+  "archive_bytes": 546048,
+  "scope": "Exact compressed current-build observations; uncompressed hash matches staging gate summary"
+}

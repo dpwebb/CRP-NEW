@@ -88,3 +88,7 @@ Candidate manifest: `DE359A619A602584970F6AE9BD1ECC1F22F25AAEECE32E9AB8B9E547DB3
 | Production readiness | Not established for this candidate; production unchanged. Deployment remains separately authorized. |
 
 Concrete remaining implementation defects: none found. Owner visual review remains pending. New-candidate staging/production verification is outside this source-only authorization; older hosted receipts do not establish readiness for this design.
+
+## Subsequent owner authorization and release
+
+The owner subsequently authorized both staging verification and live production deployment. The source was committed and pushed, and `crp-v1-de359a619a602584` was freshly verified and deployed on both hosts. The status table above remains the historical local-review outcome. Current release status, exact proof, final live screenshots and remaining boundaries are recorded in `CRP_YOUR_STORY_PRODUCTION_2026_10_11.md`.

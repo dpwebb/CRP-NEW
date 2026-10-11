@@ -1,0 +1,33 @@
+{
+  "build_id": "crp-v1-de359a619a602584",
+  "target": "https://creditregulatorpro.com",
+  "manifest_digest": "DE359A619A602584970F6AE9BD1ECC1F22F25AAEECE32E9AB8B9E547DB3C3CC6",
+  "checks": [
+    {
+      "route": "/",
+      "status": 200,
+      "served_asset": "landing.html",
+      "sha256": "E0DBD840130BE84758390084A9DDB94F3474D939AC9C37B2139972F8B0ECE304"
+    },
+    {
+      "route": "/index.html",
+      "status": 200,
+      "served_asset": "index.html",
+      "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
+    },
+    {
+      "route": "/?checkout=return",
+      "status": 200,
+      "served_asset": "index.html",
+      "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
+    },
+    {
+      "route": "/?checkout=cancel",
+      "status": 200,
+      "served_asset": "index.html",
+      "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
+    }
+  ],
+  "passed": true,
+  "recorded_at": "2026-10-11T21:01:16.096Z"
+}
