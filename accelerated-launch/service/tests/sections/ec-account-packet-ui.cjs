@@ -472,9 +472,10 @@ async function checkoutKeepsOwnOriginAndReport() {
   const h = harness(() => ({ checkout: { redirect_url: 'https://checkout.stripe.com/fictional' } }));
   h.account('A', 'Fictional A'); h.context.location.origin = 'https://app.example.test';
   h.context.location.search = '?redirect=https://foreign.example'; h.context.returnCaseId = returnCaseId;
-  h.evaluate('state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
+  h.evaluate('state.pricingCurrency = "gbp"; state.caseId = returnCaseId; state.view = { case: { case_id: returnCaseId } }; state.step = 3;');
   await h.evaluate('startCheckout("monthly")');
   const post = h.calls.find(row => row.url === '/api/billing/checkout'), url = new URL(post.body.return_url);
+  assert.equal(post.body.currency, 'gbp', 'checkout preserves the loaded consumer-selected currency');
   assert.equal(url.origin, 'https://app.example.test'); assert.equal(url.pathname, '/');
   assert.equal(url.searchParams.get('report'), returnCaseId); assert.equal(url.searchParams.get('plan'), 'monthly');
   assert.ok(!url.href.includes('foreign.example'), 'an input redirect URL is never used for checkout return');

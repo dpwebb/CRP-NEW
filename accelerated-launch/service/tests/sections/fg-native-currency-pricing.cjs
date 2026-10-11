@@ -9,6 +9,9 @@ const { createService } = require('../../app.cjs');
 const { StripeUpgradeFixture } = require('../stripe-upgrade-fixture.cjs');
 async function run(t, check) {
   check.equal(provider.planCodeFromPrice({}, null), null, 'a missing price cannot resolve to a plan through an absent currency configuration');
+  const legacyStatus = require('../../entitlement.cjs').statusFor({ state: () => ({ entitlements: [] }) }, 'fictional-legacy-owner');
+  check.equal(legacyStatus.currency, null, 'legacy stores without checkout history retain an empty currency instead of throwing');
+  check.equal(legacyStatus.entitled, false, 'missing legacy purchase history never grants access');
   const expected = { cad: [595, 795, 7950], usd: [495, 595, 5950], aud: [595, 795, 7950], gbp: [315, 425, 4250] };
   const req = { url: '/api/pricing', socket: { remoteAddress: '127.0.0.1' }, headers: { 'x-forwarded-for': '8.8.8.8, 1.1.1.1' } };
   check.equal(location.visitorIp(req), '1.1.1.1', 'use proxy-observed final IP, not an injected first address');

@@ -180,7 +180,7 @@ function statusFor(store, accountId, options) {
     can_read_historical: true,
     access_via: entitled ? (settled.access_via || ACCESS_VIA.NONE) : ACCESS_VIA.NONE,
     plan_code: settled ? settled.plan_code : null,
-    currency: settled?.currency || store.state().checkout_sessions.find(c => c.checkout_id === settled?.checkout_id)?.currency || null,
+    currency: settled?.currency || store.state().checkout_sessions?.find(c => c.checkout_id === settled?.checkout_id)?.currency || null,
     granted_at: settled ? settled.granted_at : null,
     expires_at: settled ? settled.expires_at : null,
     cancel_at_period_end: Boolean(settled && settled.cancel_at_period_end),
