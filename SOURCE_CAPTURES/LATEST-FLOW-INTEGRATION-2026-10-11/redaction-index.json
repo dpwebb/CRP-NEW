@@ -1,0 +1,57 @@
+{
+  "schema": "crp-published-test-evidence-redactions-v1",
+  "build_id": "crp-v1-201b92b0858e910b",
+  "reason": "Disposable local regression authentication tokens are unnecessary for public repository evidence; exact source receipts stay in ignored operational output",
+  "files": [
+    {
+      "file": "final/full-regression-before-landing-expectation-correction.json",
+      "original_sha256": "9b189c3bf9f1d4b6dedeca0097cb6c1d77bcafd9bd943446751e9f9410ba453f",
+      "published_sha256": "2bec96e3d96a311cb7d429330c452ae2bf40abfefa9b5a8f1d76170515f8951c",
+      "redacted_field_paths": [
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "final/full-regression.json",
+      "original_sha256": "bd83c7267f045329e87d8f6555a5e3705263b5891a3a91f7911bb96205173805",
+      "published_sha256": "2f9ca16b7666db38f5c2f9ac852ad2a4456a3402262d92b0213644b1d0824122",
+      "redacted_field_paths": [
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "final/measurements.json",
+      "original_sha256": "0b8bb8c89bc42cf97d439edf8b386ca1a3f14bae3bbcd6bb580b33077f79163e",
+      "published_sha256": "ec4c495d2b6266eb3eb4088104bac40b6045820905a520134a159384c46418c1",
+      "redacted_field_paths": [
+        "criteria.finding-coverage-evidence.json.promise_inventory.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.promise_inventory.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.check_mapping.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.check_mapping.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.executable_findings.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.executable_findings.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.material_questions.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.material_questions.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.behavioral_coverage.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.behavioral_coverage.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.end_to_end_journey.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.end_to_end_journey.measured.current_named_sections.1.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "full-regression.json",
+      "original_sha256": "bdf90b49f3a196c2f98141c12dbd1959607eeb912f59b9d9079fbe1a14c96188",
+      "published_sha256": "9b37ebc03a61ae5670a8919d901c587e76bc1306eb79e1ef8c0918b4a6772c75",
+      "redacted_field_paths": [
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    }
+  ]
+}

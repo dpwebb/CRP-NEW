@@ -1,0 +1,14 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "passed": true,
+  "origin": "https://creditregulatorpro.com",
+  "actual_browser_observations": {
+    "root": "Latest landing hero with Log in and Create account links",
+    "signin": "Log in to your account; dedicated email/password form; no workspace steps or repeated disclaimer",
+    "signup": "Create your account; optional personal details; no repeated disclaimer"
+  },
+  "live_test_account_created": false,
+  "live_charge_performed": false,
+  "autofill_cleared_before_published_capture": true,
+  "recorded_at": "2026-10-11T16:14:36.877Z"
+}

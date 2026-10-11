@@ -1,0 +1,30 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "passed": true,
+  "account_id": "acc_98f67375d601ce616e4d4e2d",
+  "actual_browser_created": true,
+  "browser_entered_stage_2_of_7": true,
+  "browser_sign_out_and_sign_in_succeeded": true,
+  "dedicated_signin_verified_in_prior_current_build_observation": "staging-signin.png",
+  "optional_profile_persisted": true,
+  "profile": {
+    "full_name": "Taylor Fictional",
+    "given_name": "",
+    "middle_name": "",
+    "family_name": "",
+    "suffix": "",
+    "street_number": "",
+    "street_name": "",
+    "date_of_birth": "",
+    "phone": "",
+    "contact_email": "latest-flow-browser-1791734947678@example.test",
+    "address_line1": "10 Sample Street",
+    "address_line2": "",
+    "city": "Halifax",
+    "region": "Nova Scotia",
+    "postal_code": "B3J1A1",
+    "country": "Canada",
+    "previous_address": ""
+  },
+  "recorded_at": "2026-10-11T16:11:22.340Z"
+}

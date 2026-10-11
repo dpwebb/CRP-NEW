@@ -1,0 +1,2170 @@
+{
+  "schema": "crp-production-criterion-map-v1",
+  "build_id": "crp-v1-201b92b0858e910b",
+  "canonical_evidence_written": false,
+  "gates": [
+    {
+      "id": "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+      "file": "fdt-mitigation-evidence.json",
+      "criteria": [
+        {
+          "key": "freeze_before_run",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "independent_held_out_set",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "zero_incorrect_decisive_facts",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "zero_cross_record_or_bureau_borrowing",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "zero_unsupported_violations",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "min_recovery_of_readable_assessment_required_facts",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "account_for_every_remaining_miss",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "withhold_unreadable_or_conflicting_decisive_facts",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "demonstrate_useful_recovery_on_deployed",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "demonstrate_bounded_unsuccessful_recovery_on_deployed",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        },
+        {
+          "key": "benchmark",
+          "current_named_sections": [
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "ROOT_STRICT_FDT_BUILDER_AND_REDERIVATION"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+      "file": "clarify-evidence.json",
+      "criteria": [
+        {
+          "key": "at_most_two_questions",
+          "current_named_sections": [
+            "ap-accept-010-consistency",
+            "bg-report-use",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "skip_and_dont_know",
+          "current_named_sections": [
+            "ap-accept-010-consistency",
+            "bg-report-use",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "separate_supplemental_storage",
+          "current_named_sections": [
+            "ap-accept-010-consistency",
+            "bg-report-use",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "no_escalation",
+          "current_named_sections": [
+            "ap-accept-010-consistency",
+            "bg-report-use",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions",
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "browser_journey",
+          "current_named_sections": [
+            "ap-accept-010-consistency",
+            "bg-report-use",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+      "file": "common-errors-evidence.json",
+      "criteria": [
+        {
+          "key": "checks_implemented",
+          "current_named_sections": [
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "cz-common-error-packet-repairs",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "no_false_finding",
+          "current_named_sections": [
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "cz-common-error-packet-repairs",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "bounded_unsuccessful",
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "cz-common-error-packet-repairs",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+      "file": "gap-ingest-001-evidence.json",
+      "criteria": [
+        {
+          "key": "upload_order_preserved",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "bb-gap-ingest-001"
+          ],
+          "actual_predicate_ids": [
+            "native_order",
+            "image_order"
+          ]
+        },
+        {
+          "key": "duplicate_handling",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "bb-gap-ingest-001"
+          ],
+          "actual_predicate_ids": [
+            "exact_duplicates"
+          ]
+        },
+        {
+          "key": "report_boundary",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "bb-gap-ingest-001"
+          ],
+          "actual_predicate_ids": [
+            "native_order",
+            "image_order",
+            "reference_dates"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "bb-gap-ingest-001"
+          ],
+          "actual_predicate_ids": [
+            "actual_phase1",
+            "native_order",
+            "image_order",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+      "file": "gap-ingest-002-evidence.json",
+      "criteria": [
+        {
+          "key": "multiline_boundaries",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "an-payment-history-grid",
+            "bc-gap-ingest-002"
+          ],
+          "actual_predicate_ids": [
+            "continuation"
+          ]
+        },
+        {
+          "key": "continuation_lines",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "an-payment-history-grid",
+            "bc-gap-ingest-002"
+          ],
+          "actual_predicate_ids": [
+            "continuation"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ah-multifile-assessment",
+            "an-payment-history-grid",
+            "bc-gap-ingest-002"
+          ],
+          "actual_predicate_ids": [
+            "continuation",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+      "file": "gap-ingest-003-evidence.json",
+      "criteria": [
+        {
+          "key": "ocr_confidence_preserved",
+          "current_named_sections": [
+            "aj-ingest-dates",
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "own_ocr_locations"
+          ]
+        },
+        {
+          "key": "coordinates_preserved",
+          "current_named_sections": [
+            "aj-ingest-dates",
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "own_ocr_locations"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "aj-ingest-dates",
+            "am-fdt-recovery"
+          ],
+          "actual_predicate_ids": [
+            "image_order",
+            "own_ocr_locations",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-004_DATE_FORMS",
+      "file": "gap-ingest-004-evidence.json",
+      "criteria": [
+        {
+          "key": "written_date_forms",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "bd-gap-ingest-004"
+          ],
+          "actual_predicate_ids": [
+            "written_dates"
+          ]
+        },
+        {
+          "key": "unambiguous_parse",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "bd-gap-ingest-004"
+          ],
+          "actual_predicate_ids": [
+            "written_dates",
+            "numeric_dates"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "bd-gap-ingest-004"
+          ],
+          "actual_predicate_ids": [
+            "written_dates",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+      "file": "gap-ingest-005-evidence.json",
+      "criteria": [
+        {
+          "key": "numeric_date_conventions",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "be-gap-ingest-005"
+          ],
+          "actual_predicate_ids": [
+            "numeric_dates"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "be-gap-ingest-005"
+          ],
+          "actual_predicate_ids": [
+            "numeric_dates",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+      "file": "gap-ingest-006-evidence.json",
+      "criteria": [
+        {
+          "key": "partial_date_precision",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "bf-gap-ingest-006"
+          ],
+          "actual_predicate_ids": [
+            "month_precision"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "z-general-intake",
+            "aj-ingest-dates",
+            "bf-gap-ingest-006"
+          ],
+          "actual_predicate_ids": [
+            "month_precision",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+      "file": "gap-ingest-007-evidence.json",
+      "criteria": [
+        {
+          "key": "reference_date_identified",
+          "current_named_sections": [
+            "aj-ingest-dates",
+            "dx-report-date-custody"
+          ],
+          "actual_predicate_ids": [
+            "reference_dates"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "aj-ingest-dates",
+            "dx-report-date-custody"
+          ],
+          "actual_predicate_ids": [
+            "reference_dates",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+      "file": "gap-ingest-008-evidence.json",
+      "criteria": [
+        {
+          "key": "partial_text_recovery",
+          "current_named_sections": [
+            "ak-ingest-008-009-010",
+            "am-fdt-recovery",
+            "ao-ingest-008-mixed-page"
+          ],
+          "actual_predicate_ids": [
+            "useful_recovery"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ak-ingest-008-009-010",
+            "am-fdt-recovery",
+            "ao-ingest-008-mixed-page"
+          ],
+          "actual_predicate_ids": [
+            "useful_recovery",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-009_BUREAU_SEGMENTATION",
+      "file": "gap-ingest-009-evidence.json",
+      "criteria": [
+        {
+          "key": "bureau_segmentation",
+          "current_named_sections": [
+            "ak-ingest-008-009-010"
+          ],
+          "actual_predicate_ids": [
+            "reference_dates"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ak-ingest-008-009-010"
+          ],
+          "actual_predicate_ids": [
+            "reference_dates",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+      "file": "gap-ingest-010-evidence.json",
+      "criteria": [
+        {
+          "key": "upload_limits",
+          "current_named_sections": [
+            "u-hardening",
+            "ak-ingest-008-009-010"
+          ],
+          "actual_predicate_ids": [
+            "upload_limits"
+          ]
+        },
+        {
+          "key": "container_handling",
+          "current_named_sections": [
+            "u-hardening",
+            "ak-ingest-008-009-010"
+          ],
+          "actual_predicate_ids": [
+            "upload_limits"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "u-hardening",
+            "ak-ingest-008-009-010"
+          ],
+          "actual_predicate_ids": [
+            "upload_limits",
+            "actual_phase1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-FINDING-001_EXCEPTION_EVALUATION",
+      "file": "gap-finding-001-evidence.json",
+      "criteria": [
+        {
+          "key": "rule_exceptions",
+          "current_named_sections": [
+            "bs-prime-directive-delivery",
+            "by-packet-reconciliation",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "numeric_dates",
+            "reference_dates",
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "bs-prime-directive-delivery",
+            "by-packet-reconciliation",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "paid_result",
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+      "file": "gap-finding-002-evidence.json",
+      "criteria": [
+        {
+          "key": "probable_violation_path",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "bs-prime-directive-delivery"
+          ],
+          "actual_predicate_ids": [
+            "actual_probable_breach",
+            "consumer_violation_labels"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "bs-prime-directive-delivery"
+          ],
+          "actual_predicate_ids": [
+            "actual_probable_breach",
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+      "file": "gap-finding-003-evidence.json",
+      "criteria": [
+        {
+          "key": "rule_identity",
+          "current_named_sections": [
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "ar-gap-finding-003",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "version_binding",
+          "current_named_sections": [
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "ar-gap-finding-003",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "immutable_served_source"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "ar-gap-finding-003",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "paid_result"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+      "file": "gap-finding-004-evidence.json",
+      "criteria": [
+        {
+          "key": "source_linked_facts",
+          "current_named_sections": [
+            "ex-inline-packet-journey",
+            "cw-common-error-rule-assessment"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "packet_exact_source_sequence"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "ex-inline-packet-journey",
+            "cw-common-error-rule-assessment"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-RESULTS-001",
+      "file": "consumer-results-evidence.json",
+      "criteria": [
+        {
+          "key": "prioritization",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "db-common-error-surface-repairs",
+            "av-consumer-results",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "serious_clear_unpaid_example",
+            "consumer_violation_labels"
+          ]
+        },
+        {
+          "key": "reasons",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "db-common-error-surface-repairs",
+            "av-consumer-results",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "plain_consumer_explanations",
+            "paid_result"
+          ]
+        },
+        {
+          "key": "uncertainty",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "db-common-error-surface-repairs",
+            "av-consumer-results",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "numeric_dates",
+            "bounded_unsuccessful"
+          ]
+        },
+        {
+          "key": "journey",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "db-common-error-surface-repairs",
+            "av-consumer-results",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "isolation",
+          "current_named_sections": [
+            "cw-common-error-rule-assessment",
+            "db-common-error-surface-repairs",
+            "av-consumer-results",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-EXPLANATIONS-001",
+      "file": "consumer-explanations-evidence.json",
+      "criteria": [
+        {
+          "key": "report_fact",
+          "current_named_sections": [
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "packet_exact_source_sequence"
+          ]
+        },
+        {
+          "key": "rule_basis",
+          "current_named_sections": [
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "uncertainty",
+          "current_named_sections": [
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "numeric_dates",
+            "bounded_unsuccessful"
+          ]
+        },
+        {
+          "key": "journey",
+          "current_named_sections": [
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "consistency",
+          "current_named_sections": [
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations",
+            "bw-browser-wizzard"
+          ],
+          "actual_predicate_ids": [
+            "consumer_violation_labels",
+            "plain_consumer_explanations",
+            "paid_result",
+            "packet_current_owner_version"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-BILLING-001",
+      "file": "consumer-billing-evidence.json",
+      "criteria": [
+        {
+          "key": "plan",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "current_plan_quotes",
+            "paid_plan_quotes",
+            "actual_paid_activation"
+          ]
+        },
+        {
+          "key": "renewal",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "genuine_unused_payment_upgrade",
+            "paid_plan_quotes"
+          ]
+        },
+        {
+          "key": "cancellation",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "actual_cleanup"
+          ]
+        },
+        {
+          "key": "upgrade_credit",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "genuine_unused_payment_upgrade",
+            "paid_plan_quotes"
+          ]
+        },
+        {
+          "key": "isolation",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "journey",
+          "current_named_sections": [
+            "t-entitlement",
+            "eo-cumulative-upgrade-credit",
+            "ep-provider-upgrades",
+            "eo-violation-preview-priority",
+            "ba-consumer-billing",
+            "cq-purchase-flow"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "actual_phase2",
+            "actual_cleanup",
+            "genuine_unused_payment_upgrade"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-PRIVACY-001",
+      "file": "consumer-privacy-evidence.json",
+      "criteria": [
+        {
+          "key": "inventory",
+          "current_named_sections": [
+            "ax-consumer-privacy",
+            "f-deletion",
+            "g-privacy",
+            "u-hardening"
+          ],
+          "actual_predicate_ids": [
+            "privacy_inventory"
+          ]
+        },
+        {
+          "key": "retention",
+          "current_named_sections": [
+            "ax-consumer-privacy",
+            "f-deletion",
+            "g-privacy",
+            "u-hardening"
+          ],
+          "actual_predicate_ids": [
+            "privacy_inventory",
+            "actual_cleanup"
+          ]
+        },
+        {
+          "key": "deletion",
+          "current_named_sections": [
+            "ax-consumer-privacy",
+            "f-deletion",
+            "g-privacy",
+            "u-hardening"
+          ],
+          "actual_predicate_ids": [
+            "actual_cleanup"
+          ]
+        },
+        {
+          "key": "isolation",
+          "current_named_sections": [
+            "ax-consumer-privacy",
+            "f-deletion",
+            "g-privacy",
+            "u-hardening"
+          ],
+          "actual_predicate_ids": [
+            "account_isolation",
+            "history_isolation",
+            "support_isolation"
+          ]
+        },
+        {
+          "key": "journey",
+          "current_named_sections": [
+            "ax-consumer-privacy",
+            "f-deletion",
+            "g-privacy",
+            "u-hardening"
+          ],
+          "actual_predicate_ids": [
+            "privacy_inventory",
+            "actual_cleanup"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-SUPPORT-001",
+      "file": "consumer-support-evidence.json",
+      "criteria": [
+        {
+          "key": "reference",
+          "current_named_sections": [
+            "ay-consumer-support"
+          ],
+          "actual_predicate_ids": [
+            "stable_support"
+          ]
+        },
+        {
+          "key": "redaction",
+          "current_named_sections": [
+            "ay-consumer-support"
+          ],
+          "actual_predicate_ids": [
+            "stable_support"
+          ]
+        },
+        {
+          "key": "access",
+          "current_named_sections": [
+            "ay-consumer-support"
+          ],
+          "actual_predicate_ids": [
+            "support_isolation"
+          ]
+        },
+        {
+          "key": "journey",
+          "current_named_sections": [
+            "ay-consumer-support"
+          ],
+          "actual_predicate_ids": [
+            "stable_support",
+            "support_isolation"
+          ]
+        },
+        {
+          "key": "usefulness",
+          "current_named_sections": [
+            "ay-consumer-support"
+          ],
+          "actual_predicate_ids": [
+            "stable_support"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-CONSUMER-LANGUAGE-001",
+      "file": "consumer-language-imperative-evidence.json",
+      "criteria": [
+        {
+          "key": "affirmative_scope",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "plain_consumer_explanations",
+            "paid_result",
+            "packet_editable_visual_review"
+          ]
+        },
+        {
+          "key": "no_legal_advice_disclaimers",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "plain_consumer_explanations",
+            "paid_result",
+            "packet_editable_visual_review"
+          ]
+        },
+        {
+          "key": "finding_labels",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "dc-consumer-violation-term",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "consumer_violation_labels"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+      "file": "consumer-incomplete-presentation-evidence.json",
+      "criteria": [
+        {
+          "key": "internal_diagnostics_retained",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "internal_reading_limit_retained"
+          ]
+        },
+        {
+          "key": "incomplete_checks_hidden",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "internal_reading_limit_retained",
+            "paid_result"
+          ]
+        },
+        {
+          "key": "no_false_compliance_claim",
+          "current_named_sections": [
+            "e-qualifications",
+            "k-ui-smoke",
+            "aw-consumer-explanations"
+          ],
+          "actual_predicate_ids": [
+            "bounded_unsuccessful",
+            "numeric_dates"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-CLARIFY-MATERIALITY-002",
+      "file": "clarification-materiality-evidence.json",
+      "criteria": [
+        {
+          "key": "no_context_only_questions",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "c-extraction",
+            "am-fdt-recovery",
+            "ap-accept-010-consistency"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "rule_materiality",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "c-extraction",
+            "am-fdt-recovery",
+            "ap-accept-010-consistency"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions",
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "mandatory_omission_not_cured_by_answer",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "c-extraction",
+            "am-fdt-recovery",
+            "ap-accept-010-consistency"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions",
+            "checklist_source_breach"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-FINDING-COVERAGE-001",
+      "file": "finding-coverage-evidence.json",
+      "criteria": [
+        {
+          "key": "promise_inventory",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "immutable_served_source"
+          ]
+        },
+        {
+          "key": "check_mapping",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "executable_findings",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "paid_result"
+          ]
+        },
+        {
+          "key": "material_questions",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "behavioral_coverage",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "final_full_freeze"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "a-isolation",
+            "l-au-format-family",
+            "o-all82-infrastructure",
+            "p-us-consumer-format",
+            "r-ca-factual-assessment",
+            "s-gb-consumer-format",
+            "w-ca-second-bureau-format",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "al-common-errors",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "cy-common-error-predicate-repairs",
+            "dc-consumer-violation-term",
+            "dg-owned-reaging",
+            "de-tu-ca-common-error-sources",
+            "df-us-common-error-reader",
+            "dm-au-role-packet-evidence",
+            "dl-general-caption-sources",
+            "dn-us-dated-history",
+            "dq-ca-printed-account-fields",
+            "dr-reader-evidence-delivery",
+            "du-column-reader-delivery",
+            "dt-rating-history-rows",
+            "dv-au-reference-delivery",
+            "dw-us-history-completion",
+            "dy-reader-date-delivery",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "el-collection-court-period",
+            "di-au-reader-completion",
+            "dj-gb-reader-completion",
+            "ap-accept-010-consistency",
+            "bp-prime-directive-batch2",
+            "bu-gb-tu-ca-fields",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "ce-tu-ca-account-material",
+            "co-canada-upload-delivery",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-ALL82-FACILITATION-001",
+      "file": "all82-facilitation-evidence.json",
+      "criteria": [
+        {
+          "key": "jurisdiction_inventory",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "immutable_served_source"
+          ]
+        },
+        {
+          "key": "usable_intake",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "native_order",
+            "image_order"
+          ]
+        },
+        {
+          "key": "applicable_assessment",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach"
+          ]
+        },
+        {
+          "key": "material_questions",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "no_irrelevant_context_questions"
+          ]
+        },
+        {
+          "key": "consumer_delivery",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "account_isolation",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "behavioral_coverage",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "final_full_freeze"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "n-applicability",
+            "o-all82-infrastructure",
+            "ct-owner-common-error-scope",
+            "cw-common-error-rule-assessment",
+            "cx-all82-required-report-data",
+            "dl-general-caption-sources",
+            "ap-accept-010-consistency",
+            "bx-all82-factual-verification",
+            "ct-assessment-clock"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-DISPUTE-PACKET-001",
+      "file": "dispute-packet-evidence.json",
+      "criteria": [
+        {
+          "key": "packet_scope",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation"
+          ]
+        },
+        {
+          "key": "finding_evidence",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "packet_exact_source_sequence"
+          ]
+        },
+        {
+          "key": "jurisdiction_content",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "packet_forms_retired",
+            "immutable_served_source"
+          ]
+        },
+        {
+          "key": "consumer_review",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "packet_editable_visual_review",
+            "packet_current_owner_version"
+          ]
+        },
+        {
+          "key": "usable_download",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "packet_browser_download_print"
+          ]
+        },
+        {
+          "key": "entitlement_isolation",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "account_isolation",
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "behavioral_coverage",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "final_full_freeze",
+            "current_approval_navigation"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "t-entitlement",
+            "er-bureau-forms-retired",
+            "es-filled-packet-business-letter",
+            "ew-inline-packet-composer",
+            "ex-inline-packet-journey",
+            "dc-consumer-violation-term",
+            "eb-account-packet-support",
+            "eh-packet-report-exhibits",
+            "ei-collection-duplicate",
+            "bo-prime-directive-interaction",
+            "bw-browser-wizzard",
+            "bx-all82-factual-verification",
+            "by-packet-reconciliation",
+            "cb-packet-correspondence",
+            "cs-limitation-and-payment-history"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+      "file": "report-data-to-issue-evidence.json",
+      "criteria": [
+        {
+          "key": "material_field_extraction",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "w-ca-second-bureau-format",
+            "cw-common-error-rule-assessment",
+            "da-common-error-reader-repairs",
+            "dg-owned-reaging",
+            "dn-us-dated-history",
+            "bu-gb-tu-ca-fields",
+            "ce-tu-ca-account-material"
+          ],
+          "actual_predicate_ids": [
+            "continuation",
+            "written_dates",
+            "numeric_dates",
+            "month_precision",
+            "reference_dates"
+          ]
+        },
+        {
+          "key": "issue_wiring",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "w-ca-second-bureau-format",
+            "cw-common-error-rule-assessment",
+            "da-common-error-reader-repairs",
+            "dg-owned-reaging",
+            "dn-us-dated-history",
+            "bu-gb-tu-ca-fields",
+            "ce-tu-ca-account-material"
+          ],
+          "actual_predicate_ids": [
+            "checklist_source_breach",
+            "paid_result"
+          ]
+        },
+        {
+          "key": "packet_delivery",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "w-ca-second-bureau-format",
+            "cw-common-error-rule-assessment",
+            "da-common-error-reader-repairs",
+            "dg-owned-reaging",
+            "dn-us-dated-history",
+            "bu-gb-tu-ca-fields",
+            "ce-tu-ca-account-material"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation"
+          ]
+        },
+        {
+          "key": "behavioral_coverage",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "w-ca-second-bureau-format",
+            "cw-common-error-rule-assessment",
+            "da-common-error-reader-repairs",
+            "dg-owned-reaging",
+            "dn-us-dated-history",
+            "bu-gb-tu-ca-fields",
+            "ce-tu-ca-account-material"
+          ],
+          "actual_predicate_ids": [
+            "final_full_freeze"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "eu-general-omission-delivery",
+            "w-ca-second-bureau-format",
+            "cw-common-error-rule-assessment",
+            "da-common-error-reader-repairs",
+            "dg-owned-reaging",
+            "dn-us-dated-history",
+            "bu-gb-tu-ca-fields",
+            "ce-tu-ca-account-material"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "packet_current_owner_version",
+            "packet_editable_visual_review",
+            "packet_exact_source_sequence",
+            "packet_inline_identity_address",
+            "packet_forms_retired",
+            "packet_browser_download_print",
+            "current_approval_navigation",
+            "paid_result",
+            "account_isolation",
+            "history_isolation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+      "file": "subscription-value-evidence.json",
+      "criteria": [
+        {
+          "key": "owned_history",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "owned_history"
+          ]
+        },
+        {
+          "key": "comparison_linkage",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "chronological_linkage"
+          ]
+        },
+        {
+          "key": "issue_changes",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "changed_issue"
+          ]
+        },
+        {
+          "key": "consumer_view",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "paid_result",
+            "owned_history"
+          ]
+        },
+        {
+          "key": "isolation",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "history_isolation"
+          ]
+        },
+        {
+          "key": "behavioral_coverage",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "final_full_freeze"
+          ]
+        },
+        {
+          "key": "end_to_end_journey",
+          "current_named_sections": [
+            "dg-owned-reaging",
+            "bw-browser-wizzard",
+            "bz-report-history"
+          ],
+          "actual_predicate_ids": [
+            "actual_paid_activation",
+            "owned_history",
+            "chronological_linkage",
+            "changed_issue",
+            "history_isolation",
+            "packet_comparison_continuity"
+          ]
+        }
+      ]
+    }
+  ]
+}

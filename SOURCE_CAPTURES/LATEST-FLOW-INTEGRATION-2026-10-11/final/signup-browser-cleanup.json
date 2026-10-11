@@ -1,0 +1,19 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "checks": [
+    {
+      "account_id": "acc_daf84c3ce1f52b52a652f053",
+      "fictional_email": "latest-flow-browser-1791731209880@example.test",
+      "deleted": true,
+      "sessions_revoked": true
+    },
+    {
+      "account_id": "acc_98f67375d601ce616e4d4e2d",
+      "fictional_email": "latest-flow-browser-1791734947678@example.test",
+      "deleted": true,
+      "sessions_revoked": true
+    }
+  ],
+  "passed": true,
+  "recorded_at": "2026-10-11T16:11:30.275Z"
+}

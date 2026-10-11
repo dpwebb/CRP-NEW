@@ -1,0 +1,189 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "passed": true,
+  "applied": [
+    {
+      "file": "fdt-mitigation-evidence.json",
+      "before_sha256": "e0f9d38ccf2c62ff9c6a920de738ab033d0d5a071af3f2ae043a9a4c757702d9",
+      "after_sha256": "cd1c83e58cd862f5d1c4a72df00075ce3760e282b1637dac5bd3916d1728ffe7",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/fdt-mitigation-evidence.json"
+    },
+    {
+      "file": "clarify-evidence.json",
+      "before_sha256": "ec7fce714e69a5784c8a3b7c0e2f66ba18384d55f4e4f68b89e9633dd28e8a06",
+      "after_sha256": "916500560126dd466ba387b70cf461c22ec5e432ffde93870a701df049063387",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/clarify-evidence.json"
+    },
+    {
+      "file": "common-errors-evidence.json",
+      "before_sha256": "a560a5c3fbb841804a0f403eca07528a68d4f05d4bdfdcad36f924d9b386b7d1",
+      "after_sha256": "e99309d714fdaecaaffa9cf72a11b873a97c454e3da7248de2a4b75dafadfd45",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/common-errors-evidence.json"
+    },
+    {
+      "file": "gap-ingest-001-evidence.json",
+      "before_sha256": "1e148fe3f79dd85c39fb508a75e555b45fad2856c0212b2e5bfdc1e7ad715a22",
+      "after_sha256": "f1c18c56f009bfaa3de1f7cd931a95bc9f438bf30e403ec6b3c00915e13237c5",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-001-evidence.json"
+    },
+    {
+      "file": "gap-ingest-002-evidence.json",
+      "before_sha256": "ee1b6f1b0dab250c3d240580ea042b6fb4e21bdb906697a73c5751773a3e9f55",
+      "after_sha256": "6176b220a2dbf53e8627fdf31bb55b745db68440cddbd6239a8ef8a2ac20e696",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-002-evidence.json"
+    },
+    {
+      "file": "gap-ingest-003-evidence.json",
+      "before_sha256": "89faa8842a69bc1d3fe41c11bcc974d809eef2397b4f8dc982b515436cf62c17",
+      "after_sha256": "3539576bf8a7dd74c1d404ac97cb6e8490299b3c81aa2be555975fa0ae67bfca",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-003-evidence.json"
+    },
+    {
+      "file": "gap-ingest-004-evidence.json",
+      "before_sha256": "aa2e8107701d6e5c75e1314ea0163a6d52d1c955673916bdbaccf3b71315ff3a",
+      "after_sha256": "183ff322c6f582b9ddc992f136ececc3d6bfd5dc76752f5575c08b2187950c1f",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-004-evidence.json"
+    },
+    {
+      "file": "gap-ingest-005-evidence.json",
+      "before_sha256": "208ed05aaeddfae1ed9bfa129aa1ca001c51b2afa76815c11ccb291341cb93d1",
+      "after_sha256": "50e46ec8dd3c5a659ef2fcf7b9bd2e55c0c1c126206883ece94c76781a8370f9",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-005-evidence.json"
+    },
+    {
+      "file": "gap-ingest-006-evidence.json",
+      "before_sha256": "1d2dcc26d114c8e7e2a523bcadf87baa6a3a3fd43b0724d890b199698db25858",
+      "after_sha256": "40a8bad517855d89a5ddffdae1f08e6f40a04d6e5c7055b31a76a3b4abbc2d17",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-006-evidence.json"
+    },
+    {
+      "file": "gap-ingest-007-evidence.json",
+      "before_sha256": "6ff75053665c456c556ff9fe737a5bc46f4364019c09e7b0e041278d1703378c",
+      "after_sha256": "993a4b7c0b6aec7c0e2aec1258d11963da659632648a73cdf38f48b8a58e30f0",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-007-evidence.json"
+    },
+    {
+      "file": "gap-ingest-008-evidence.json",
+      "before_sha256": "dd9614b39b250caaeb8438242fe2188dba9acb72e73d9f8603a3d1a3ed9d99ed",
+      "after_sha256": "de7fee3281337cce58400b73a72e23c692b07fb27f3afb379bff33e00c30ca5d",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-008-evidence.json"
+    },
+    {
+      "file": "gap-ingest-009-evidence.json",
+      "before_sha256": "fadc031b3b4e0fd3506c3c772b83a2e8fcf8e3df424bfcc10dcc045d7c8ad9a8",
+      "after_sha256": "d4fcead0d4749cb359865fae7c9f028960f05b94731d973786182d835a9960bc",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-009-evidence.json"
+    },
+    {
+      "file": "gap-ingest-010-evidence.json",
+      "before_sha256": "d5487a8c83b21e0ebe039bc75dccf590f0080e1ced8d2b5ef7915611a6b679dc",
+      "after_sha256": "ab3d35aa08ff1635f4ab75902da4495de1008b82956320e586b2d77c561bd574",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-ingest-010-evidence.json"
+    },
+    {
+      "file": "gap-finding-001-evidence.json",
+      "before_sha256": "682161a1a38f46f38a53248cacb41205e36fc7b4551e44bee0a04a403eb65d0c",
+      "after_sha256": "fe62d41781a2eaffa0e90ab61f12fb66cba134aff520c1c57e249825aaf07e21",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-finding-001-evidence.json"
+    },
+    {
+      "file": "gap-finding-002-evidence.json",
+      "before_sha256": "8f31e85ec38ccc9266f9da8061c831ee7ff776e149d07ac6239ffa9e405640b1",
+      "after_sha256": "58003b3b1ec85c1f6ee93654647642f086374752a882d6abd32902a7e8aa27ff",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-finding-002-evidence.json"
+    },
+    {
+      "file": "gap-finding-003-evidence.json",
+      "before_sha256": "ddbdd37da32e95a864a2c1a885b72f7c6624ef4d2f038f709f46420903adc9e3",
+      "after_sha256": "e15fde071f09cac961e1fe21a259086fba1d7d67b3c6c0a37a5b330632b201fd",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-finding-003-evidence.json"
+    },
+    {
+      "file": "gap-finding-004-evidence.json",
+      "before_sha256": "9ad7cdbf8a45c3d0234bacee5191a51f44fe47614747cd26d8010f2fb586b89d",
+      "after_sha256": "1ce1c3fbb1e5d614bc266cbffd0730e8463fceb9fbeba9e7cab9dbdb071209d4",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/gap-finding-004-evidence.json"
+    },
+    {
+      "file": "consumer-results-evidence.json",
+      "before_sha256": "4b77d613d5c00088b5f667fe2be0f25fca57e11bb9ef4e171d12d5b8a1874491",
+      "after_sha256": "cf2d98113b4aa1a975dd26b5dc55c9a9c0e59770bd849a52151bd2f411b9198b",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-results-evidence.json"
+    },
+    {
+      "file": "consumer-explanations-evidence.json",
+      "before_sha256": "71a67b3f301de4e132624d33234b66c9ec21818146f3ae161ca94b6141c1c824",
+      "after_sha256": "c63092f7f7ecdde50c854152841e8e2171259008000bf898bbf92b6dc6d7ecec",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-explanations-evidence.json"
+    },
+    {
+      "file": "consumer-billing-evidence.json",
+      "before_sha256": "7b529e2c233604c13451c41e7b89fc14e2284614072d5952be2e247938f1606e",
+      "after_sha256": "07d576cbc37fce08ae8f70292fe1640afef893bca2bcacfa8e30ca83e7376e4d",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-billing-evidence.json"
+    },
+    {
+      "file": "consumer-privacy-evidence.json",
+      "before_sha256": "8c65f87780f8aa9034a9f981ae01dd183ca6b19c69b5286cc503f2fca2cf6722",
+      "after_sha256": "dd2acd509fdf56e371b7f1dfa6bf8cc44eddc8a30070b21b442f925497e9b2fa",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-privacy-evidence.json"
+    },
+    {
+      "file": "consumer-support-evidence.json",
+      "before_sha256": "7a48b0333d0f42335b98e6e2ccb5538be448e55617c0c41c518cab0c07327173",
+      "after_sha256": "be6c9a8f0adf075b23d942096099a42dfc8c127b79145f7b435ca44f236e02e8",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-support-evidence.json"
+    },
+    {
+      "file": "consumer-language-imperative-evidence.json",
+      "before_sha256": "4c205ec85616d433f685fd5f0b71cbfed7986bba982ebd34e4764d7e0389f45d",
+      "after_sha256": "9de784a58d6f4610fd92e20aabc7651058306ad81cd6e41c972e8736d4c69e36",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-language-imperative-evidence.json"
+    },
+    {
+      "file": "consumer-incomplete-presentation-evidence.json",
+      "before_sha256": "3cd574dfdb3fc820849e1723c8580c8d8baa982fbc324ddfe12b25103e461ba9",
+      "after_sha256": "d24426abf8d7787e2597b75827c77d5db98b1472b86bcbc3c2ee255af78761a1",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/consumer-incomplete-presentation-evidence.json"
+    },
+    {
+      "file": "clarification-materiality-evidence.json",
+      "before_sha256": "9ca1df1e2d92083d1d4e5cf600abd058f55dec1a54872288b646bbbbcf890d26",
+      "after_sha256": "cfea88467c335d48622bfe7d6e90f5ec18663dfef01b5ecdeeaffe6739094363",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/clarification-materiality-evidence.json"
+    },
+    {
+      "file": "finding-coverage-evidence.json",
+      "before_sha256": "1a09f9adb17eb2b0d2630c2056562ad8819ff5fddb527f3b4983d00795569e74",
+      "after_sha256": "29495dccc3efe4555c195a476ece9fbed0feae8b1691e868f2eb82690e777cd3",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/finding-coverage-evidence.json"
+    },
+    {
+      "file": "all82-facilitation-evidence.json",
+      "before_sha256": "4dcd866132767f616d2912138adc280f81e72e8d6f4e50064caf9d84fb2e0f4d",
+      "after_sha256": "c5e3fb591b2c47f874e3e8e6cca4a892b2ee8c777a328c78d47eae56526f24a7",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/all82-facilitation-evidence.json"
+    },
+    {
+      "file": "dispute-packet-evidence.json",
+      "before_sha256": "e921d33b9a3de825ee0ef405eae86da03a20895e5337ec7483d6cb235aabd357",
+      "after_sha256": "96ddbd8772f7d0c667903978c4bc095f576650986cfa3c7197a49f1625f2dc30",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/dispute-packet-evidence.json"
+    },
+    {
+      "file": "report-data-to-issue-evidence.json",
+      "before_sha256": "de4596ea177fdd8afb52c3fd1fa5aa90cdc9f04377e88d0f5961cdd89c921203",
+      "after_sha256": "5e93a4aa6a048e59c7949ea13b459cd11e861da8650e261012c6d2208d12ece2",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/report-data-to-issue-evidence.json"
+    },
+    {
+      "file": "subscription-value-evidence.json",
+      "before_sha256": "8000ad5f83609a96f1d1b67e6dd928b817629f87ec468a25d8e1ec7472d1adea",
+      "after_sha256": "b42bff9c940d06fea46b7d5a3819daf2b254042550428b1a18ed0983b11ca086",
+      "archive": "latest-flow-final-2026-10-11/canonical-before-integration/subscription-value-evidence.json"
+    }
+  ],
+  "canonical_evidence_written": true,
+  "old_bytes_archived": true,
+  "recorded_at": "2026-10-11T16:10:36.901Z"
+}

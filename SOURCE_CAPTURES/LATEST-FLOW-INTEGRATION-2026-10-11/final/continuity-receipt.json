@@ -1,0 +1,73 @@
+{
+  "schema": "crp-paid-packet-comparison-continuity-v1",
+  "fixture_scope": "staging-latest-flow-final-20261011",
+  "identity": {
+    "build_id": "crp-v1-201b92b0858e910b",
+    "served_build_id": "crp-v1-201b92b0858e910b"
+  },
+  "build_id": "crp-v1-201b92b0858e910b",
+  "account_id": "acc_ab8f7dd9716bf8ce42c62bb2",
+  "case_id": "case_b73acba23c96dfdbf5cf4603",
+  "version": "47334d7d506a86a8697b0237826823a5755743905f943708715d7be8e6267c4d",
+  "receipt_kind": "Derived from existing actual phase2 and browser packet observations",
+  "new_host_action_performed": false,
+  "derived_at": "2026-10-11T16:06:19.807Z",
+  "actual_measurement_at": "2026-10-11T16:06:05.368Z",
+  "approved": true,
+  "approval_survived_comparison": true,
+  "approved_packet_unchanged_after_comparison": true,
+  "pdf_sha256": "03b4d68ac3a6b4eb3954053b3f153b12601544dd7e1fe8c7a8ee8a1efa63cce6",
+  "pdf_bytes": 322917,
+  "comparison_before_pdf_sha256": "03b4d68ac3a6b4eb3954053b3f153b12601544dd7e1fe8c7a8ee8a1efa63cce6",
+  "comparison_after_pdf_sha256": "03b4d68ac3a6b4eb3954053b3f153b12601544dd7e1fe8c7a8ee8a1efa63cce6",
+  "actual_browser_download": true,
+  "preview_download_print_byte_equal": true,
+  "visual_review": "PASS",
+  "selected_source_pages": [
+    2,
+    3
+  ],
+  "documents": [
+    {
+      "filename": "fictional-licence.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 4,
+      "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-passport.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 5,
+      "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "document_type": "ADDRESS",
+      "packet_page": 6,
+      "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "exact_streams": true,
+      "exact_rendering": true
+    }
+  ],
+  "source_phase2_receipt_sha256": "27229481c1e9eea7cab063284b058f506707dc5f0f0c456f03e842b7e0521dd6",
+  "evidence_refs": [
+    {
+      "file": "latest-flow-final-2026-10-11/phase2-receipt.json",
+      "sha256": "27229481c1e9eea7cab063284b058f506707dc5f0f0c456f03e842b7e0521dd6"
+    },
+    {
+      "file": "latest-flow-final-2026-10-11/review-receipt.json",
+      "sha256": "2b930ec79ea9c1e4896525a4a56edc779f2cf49357049268f0b0dad9f014ad10"
+    },
+    {
+      "file": "latest-flow-final-2026-10-11/download-receipt.json",
+      "sha256": "d46d61b38336ed9009237a2f6c0f8b608ba53d9808071ad4754f3462a6c99d49"
+    }
+  ],
+  "release_continuity_claimed": false,
+  "passed": true
+}

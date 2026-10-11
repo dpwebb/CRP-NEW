@@ -1,0 +1,9 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "account_id": "acc_ab8f7dd9716bf8ce42c62bb2",
+  "method": "Exact disposable fixture previous-address field cleared after browser autofill was found in the unapproved preview",
+  "unapproved": true,
+  "production_modified": false,
+  "passed": true,
+  "recorded_at": "2026-10-11T15:56:45.787Z"
+}

@@ -1,0 +1,26 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "account_id": "acc_ab8f7dd9716bf8ce42c62bb2",
+  "case_id": "case_b73acba23c96dfdbf5cf4603",
+  "steps": [
+    5,
+    6,
+    7
+  ],
+  "actions": [
+    "Continue to document preparation",
+    "Continue to packet review"
+  ],
+  "approved_controls_preserved": true,
+  "observed": [
+    "Step 7 of 7",
+    "Approve this version disabled",
+    "Download your PDF enabled"
+  ],
+  "measurement_origin": "Actual current Chrome accessibility observations after unchanged stage continuations on 2026-10-11",
+  "pdf_hash_after_navigation_measured": false,
+  "version_hash_after_navigation_measured": false,
+  "scope": "Browser approved controls plus separate current full behavioral version and byte invariance tests; no direct post-navigation byte measurement claimed",
+  "recorded_at": "2026-10-11T16:09:51.764Z",
+  "passed": true
+}

@@ -1480,7 +1480,7 @@
       "evidence": {
         "alice": {
           "email": "alice-isolation@example.test",
-          "token": "id8GCoo6qJT7VP_BzCuvrmTWsQ-SWPahAsgAZuM5qIw",
+          "token": "[REDACTED_DISPOSABLE_TEST_CREDENTIAL]",
           "account_id": "acc_7eb335e91ff1b5217f94971d",
           "payment": {
             "checkout_id": "chk_b2e661f77e4611818c17fff7",
@@ -1526,7 +1526,7 @@
         },
         "bob": {
           "email": "bob-isolation@example.test",
-          "token": "8_FNdkrfT1iJ647mBtQZ2AW8kiopL9RQks3UKBH3I6k",
+          "token": "[REDACTED_DISPOSABLE_TEST_CREDENTIAL]",
           "account_id": "acc_ccbe03ec7c157a70e963de35",
           "payment": {
             "checkout_id": "chk_bd820455f873ee61f7fdc3b4",

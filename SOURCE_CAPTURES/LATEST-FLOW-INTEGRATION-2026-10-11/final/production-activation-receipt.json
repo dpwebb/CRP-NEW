@@ -1,0 +1,23 @@
+{
+  "build_id": "crp-v1-201b92b0858e910b",
+  "manifest_digest": "201B92B0858E910B7351E1E95EDFF3E224F53F87F27346592FB8090F86AB21B9",
+  "git_head": "66d30916e178786ea17b738409a96ae5530bc38f",
+  "source_state": "Committed shipped files verified against frozen full regression; unrelated dirty work preserved",
+  "git_status": "?? branding/\n",
+  "files": 136,
+  "local_regression": {
+    "passed": 14551,
+    "failed": 0,
+    "skipped": 0
+  },
+  "deployment": "production",
+  "host": "creditregulatorpro.com",
+  "owner_authorization": "October 11 explicit owner request to integrate completed flow, check missing work, fully verify and deploy latest build",
+  "source_kind": "Exact frozen tested committed shipped files; unrelated dirty work preserved",
+  "archive_sha256": "57C039018DECEB16D9A0F9E6198C22C338F4100B34D6259306277E322139155E",
+  "release_directory": "/opt/crp-wizard-production/releases/crp-v1-201b92b0858e910b",
+  "previous_release": "/opt/crp-wizard-production/releases/crp-v1-fd23f242f3d158bf",
+  "backup": "/opt/crp-wizard-production/backups/before-crp-v1-201b92b0858e910b-1791735095",
+  "billing_mode": "live",
+  "activated_at": "2026-10-11T16:11:36.344Z"
+}

@@ -54,3 +54,8 @@ Evidence: SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/staging-package-rec
 
 Form-free packet implementation and hosted paid review/approval/download/navigation are VERIFIED on crp-v1-fd23f242f3d158bf. The exact 133-file candidate was promoted to live production at 2026-10-11T13:00:50.663Z. The 30-gate/123-criterion current evidence validates. Historical AC405 local-only and earlier form-inclusive records keep their recorded scope. See SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/.
 
+
+
+### Latest integrated production verification — October 11
+
+Form-free packet review, approval, actual browser download and preview/print byte equality passed on crp-v1-201b92b0858e910b, now deployed and accepted in production. Fresh staging navigation retained approved controls; immutable version and byte continuity are separately covered by the current full regression and paid comparison proof. All historical candidate records above retain their original scope. See SOURCE_CAPTURES/LATEST-FLOW-INTEGRATION-2026-10-11/final/.
