@@ -1,0 +1,928 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "mode": "FULL_CURRENT_PRODUCT",
+  "totals": {
+    "passed": 14612,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": [
+    {
+      "id": "ez-reporting-period-directive",
+      "passed": 58,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ev-native-account-summary",
+      "passed": 68,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "et-supported-coverage-evidence",
+      "passed": 49,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "eu-general-omission-delivery",
+      "passed": 515,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "a-isolation",
+      "passed": 19,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ax-consumer-privacy",
+      "passed": 25,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "b-refusals",
+      "passed": 224,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "c-extraction",
+      "passed": 36,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "d-records",
+      "passed": 22,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "e-qualifications",
+      "passed": 47,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "f-deletion",
+      "passed": 26,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "g-privacy",
+      "passed": 74,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "h-legacy-parity",
+      "passed": 11,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "i-shared-regressions",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "j-specimen-journey",
+      "passed": 42,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "k-ui-smoke",
+      "passed": 96,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "l-au-format-family",
+      "passed": 87,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "m-au-journey",
+      "passed": 102,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "n-applicability",
+      "passed": 1112,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "o-all82-infrastructure",
+      "passed": 88,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "p-us-consumer-format",
+      "passed": 78,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "q-record-applicability",
+      "passed": 49,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "r-ca-factual-assessment",
+      "passed": 317,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "s-gb-consumer-format",
+      "passed": 119,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "t-entitlement",
+      "passed": 246,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "u-hardening",
+      "passed": 108,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "v-presentation-and-release",
+      "passed": 128,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "w-ca-second-bureau-format",
+      "passed": 234,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "x-b4-pay-001",
+      "passed": 21,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "em-paid-assessment-pdf",
+      "passed": 42,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "en-purchase-presentation",
+      "passed": 90,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "eo-cumulative-upgrade-credit",
+      "passed": 77,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ep-provider-upgrades",
+      "passed": 301,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "er-bureau-forms-retired",
+      "passed": 163,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "es-filled-packet-business-letter",
+      "passed": 55,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ew-inline-packet-composer",
+      "passed": 84,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ex-inline-packet-journey",
+      "passed": 48,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ey-legacy-account-continuity",
+      "passed": 90,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "y-ingest-coverage-matrix",
+      "passed": 82,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "z-general-intake",
+      "passed": 160,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ab-acceptance-statutory",
+      "passed": 16,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ac-evidence-policy",
+      "passed": 46,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ad-legal-event-facts",
+      "passed": 14,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ae-accept-003",
+      "passed": 12,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "af-accept-004",
+      "passed": 40,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ag-accept-006",
+      "passed": 18,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "passed": 66,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "aj-ingest-dates",
+      "passed": 38,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ak-ingest-008-009-010",
+      "passed": 42,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "al-common-errors",
+      "passed": 66,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ct-owner-common-error-scope",
+      "passed": 357,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cw-common-error-rule-assessment",
+      "passed": 1142,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cx-all82-required-report-data",
+      "passed": 575,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "db-common-error-surface-repairs",
+      "passed": 17,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "da-common-error-reader-repairs",
+      "passed": 57,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cy-common-error-predicate-repairs",
+      "passed": 81,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cz-common-error-packet-repairs",
+      "passed": 59,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dc-consumer-violation-term",
+      "passed": 61,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dg-owned-reaging",
+      "passed": 321,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "de-tu-ca-common-error-sources",
+      "passed": 130,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "df-us-common-error-reader",
+      "passed": 153,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dm-au-role-packet-evidence",
+      "passed": 99,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dl-general-caption-sources",
+      "passed": 224,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dn-us-dated-history",
+      "passed": 131,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "do-gb-history-definitions",
+      "passed": 102,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dp-us-cell-recovery",
+      "passed": 51,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dq-ca-printed-account-fields",
+      "passed": 130,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dr-reader-evidence-delivery",
+      "passed": 64,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "du-column-reader-delivery",
+      "passed": 133,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ds-column-caption-fields",
+      "passed": 124,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dt-rating-history-rows",
+      "passed": 120,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dv-au-reference-delivery",
+      "passed": 127,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dw-us-history-completion",
+      "passed": 34,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dx-report-date-custody",
+      "passed": 206,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dy-reader-date-delivery",
+      "passed": 173,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ea-account-profile-documents",
+      "passed": 148,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "eb-account-packet-support",
+      "passed": 177,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ec-account-packet-ui",
+      "passed": 49,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "eh-packet-report-exhibits",
+      "passed": 152,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ei-collection-duplicate",
+      "passed": 104,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ej-collection-boundaries",
+      "passed": 114,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ek-pr01-collection-references",
+      "passed": 85,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "el-collection-court-period",
+      "passed": 24,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "em-collection-comparison",
+      "passed": 69,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "en-account-display",
+      "passed": 45,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "eo-violation-preview-priority",
+      "passed": 44,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ed-account-browser",
+      "passed": 37,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ef-account-recovery",
+      "passed": 123,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dh-ca-reader-completion",
+      "passed": 149,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "di-au-reader-completion",
+      "passed": 196,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dj-gb-reader-completion",
+      "passed": 175,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "dk-reader-completion-integration",
+      "passed": 88,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "am-fdt-recovery",
+      "passed": 71,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "an-payment-history-grid",
+      "passed": 20,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ao-ingest-008-mixed-page",
+      "passed": 33,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ap-accept-010-consistency",
+      "passed": 111,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "aq-gap-finding-001",
+      "passed": 10,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ar-gap-finding-003",
+      "passed": 11,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "as-gap-finding-004",
+      "passed": 6,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "at-gap-finding-002",
+      "passed": 8,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "au-closure-policy",
+      "passed": 13,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "av-consumer-results",
+      "passed": 20,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "aw-consumer-explanations",
+      "passed": 14,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ay-consumer-support",
+      "passed": 35,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "az-consumer-support-ui",
+      "passed": 23,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ba-consumer-billing",
+      "passed": 47,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bb-gap-ingest-001",
+      "passed": 39,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bc-gap-ingest-002",
+      "passed": 26,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bd-gap-ingest-004",
+      "passed": 34,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "be-gap-ingest-005",
+      "passed": 26,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bf-gap-ingest-006",
+      "passed": 25,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bg-report-use",
+      "passed": 74,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bh-ns-judgment-content",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bh-ns-dismissed-charge",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bi-us-ca-tax-lien",
+      "passed": 14,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bj-us-ca-collection",
+      "passed": 28,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bk-us-ca-adverse-rating",
+      "passed": 25,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bl-us-ca-correction-packet",
+      "passed": 52,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bm-prime-directive-batch1",
+      "passed": 39,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bn-prime-directive-ui",
+      "passed": 18,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bo-prime-directive-interaction",
+      "passed": 50,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bp-prime-directive-batch2",
+      "passed": 42,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bq-format-capability",
+      "passed": 53,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "br-qualified-assessment",
+      "passed": 18,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bs-prime-directive-delivery",
+      "passed": 37,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bt-ordinary-field-coverage",
+      "passed": 12,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bu-gb-tu-ca-fields",
+      "passed": 89,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bv-admission-and-upload",
+      "passed": 27,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bw-browser-wizzard",
+      "passed": 180,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bx-all82-factual-verification",
+      "passed": 9,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "by-packet-reconciliation",
+      "passed": 50,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "bz-report-history",
+      "passed": 53,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ca-au-ordinary-field",
+      "passed": 20,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cb-packet-correspondence",
+      "passed": 110,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cc-ca-on-ordinary-report",
+      "passed": 120,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cd-gb-uk-gdpr-accuracy",
+      "passed": 114,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ce-tu-ca-account-material",
+      "passed": 34,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cf-ca-nl-dismissed-charge",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ch-ca-ab-debt-six-year",
+      "passed": 63,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ci-ca-mb-judgment-content",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cj-ca-pe-judgment-content",
+      "passed": 7,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ck-ca-territories-pipeda-accuracy",
+      "passed": 63,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cl-bc-qc-nb-finish",
+      "passed": 28,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cn-au-us-ingestion",
+      "passed": 23,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "co-canada-upload-delivery",
+      "passed": 59,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cp-consumer-plain-text",
+      "passed": 29,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cq-purchase-flow",
+      "passed": 100,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cr-ca-ns-tu-real-report",
+      "passed": 72,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cs-limitation-and-payment-history",
+      "passed": 130,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "ct-assessment-clock",
+      "passed": 44,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cu-dual-date-retention",
+      "passed": 36,
+      "failed": 0,
+      "completed": true
+    },
+    {
+      "id": "cv-accrual-limitation-delivery",
+      "passed": 82,
+      "failed": 0,
+      "completed": true
+    }
+  ],
+  "section_count": 152,
+  "tested_source_hash_count": 292,
+  "source_drift": [],
+  "unrun_sections": [],
+  "original_receipt_sha256": "da19ba2528c08bed55e018c0487bab82d3fc700396602b277c9a7cbedf127d3e"
+}

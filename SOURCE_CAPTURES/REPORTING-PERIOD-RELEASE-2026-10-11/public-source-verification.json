@@ -1,0 +1,97 @@
+{
+  "target": "https://staging.creditregulatorpro.com",
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "source_commit": "18599624be42750b312d7b612f0f2322da497119",
+  "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+  "checks": [
+    {
+      "route": "/api/health",
+      "status": 200,
+      "build_id": "crp-v1-930d965f09ad49a1"
+    },
+    {
+      "route": "/app.js",
+      "status": 200,
+      "sha256": "28A4CB2C05A307A7E0A34B9496E5BFF19B14327B6A595C716970B540C6A2507E"
+    },
+    {
+      "route": "/favicon.svg",
+      "status": 200,
+      "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+    },
+    {
+      "route": "/index.html",
+      "status": 200,
+      "sha256": "4517B0FB3D12356FA4AA3848546F96BDFEB7F7F9904FC186975F80C7BA26DAEE"
+    },
+    {
+      "route": "/landing.css",
+      "status": 200,
+      "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+    },
+    {
+      "route": "/landing.html",
+      "status": 200,
+      "sha256": "104D1DF54B91A1F88E165CF9C8B65750EA1762A046C7E71CF92DC331774A6DA3"
+    },
+    {
+      "route": "/mailing-preview.css",
+      "status": 200,
+      "sha256": "8B58BD4D187FE3B24A870E697B3613264E545D6AB5993C7695115B574247735D"
+    },
+    {
+      "route": "/mailing-preview.html",
+      "status": 200,
+      "sha256": "F0067C74F0A93BB40AB08934A48F50880C86F9D653CC7C82E8EDAA423C06FAA1"
+    },
+    {
+      "route": "/mailing-preview.js",
+      "status": 200,
+      "sha256": "F7E28952B7791229181B01F4937D0AABB52CA9239C732A51D68B2FFE31328F0E"
+    },
+    {
+      "route": "/referrals.css",
+      "status": 200,
+      "sha256": "828D9E03EB324830AD421FE400A2394F9611B56A9BC1D0AFA7C9C972898AB9CE"
+    },
+    {
+      "route": "/referrals.html",
+      "status": 200,
+      "sha256": "5F4824A6516116491A7F8972E334F8618FD40E5DB77F6A0AB0A82624510F3490"
+    },
+    {
+      "route": "/referrals.js",
+      "status": 200,
+      "sha256": "8DB041FD3E2405468E697A91B2A5964D933788CFB7EC631A84C80C7CE1B22EFE"
+    },
+    {
+      "route": "/score-simulator.css",
+      "status": 200,
+      "sha256": "A007DF50C37C89B7D47ED9FECFF994D141F0B78B300B4E7B30703B3096D89174"
+    },
+    {
+      "route": "/score-simulator.html",
+      "status": 200,
+      "sha256": "349A27EF8799ABF2AA5DF76E0C9A5147780D8E25435F9E2DF4C372FF97CEE1A1"
+    },
+    {
+      "route": "/score-simulator.js",
+      "status": 200,
+      "sha256": "18C76736B2BDD2680E65A29C16FCB097DC68E9E85CDBB18BB236D3C73D902E68"
+    },
+    {
+      "route": "/style.css",
+      "status": 200,
+      "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
+    }
+  ],
+  "health": {
+    "ok": true,
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "deployment": "staging",
+    "billing_mode": "test",
+    "launch_ready": false
+  },
+  "passed": true,
+  "measured_at": "2026-10-11T19:06:34.050Z"
+}

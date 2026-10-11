@@ -1,0 +1,14 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+  "git_head": "18599624be42750b312d7b612f0f2322da497119",
+  "source_state": "Committed shipped files verified against frozen full regression; unrelated dirty work preserved",
+  "git_status": "?? branding/\n?? legal-drafts/\n",
+  "files": 138,
+  "local_regression": {
+    "passed": 14612,
+    "failed": 0,
+    "skipped": 0
+  },
+  "archive_sha256": "4AC61063AE72E3131405E4DC96029B8E359CAA02560D2DF7BD2379A744D3AB95"
+}

@@ -1,0 +1,14 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "passed": true,
+  "latest_result_selected": true,
+  "own_case_view_rendered": true,
+  "entitlement_boundary_preserved": true,
+  "period_reviews": 3,
+  "historical_potential_violations": 2,
+  "later_expiry_reviews": 1,
+  "service_healthy": true,
+  "production_store_modified": false,
+  "customer_contents_output": false,
+  "recorded_at": "2026-10-11T19:18:30.180Z"
+}

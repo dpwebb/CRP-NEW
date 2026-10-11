@@ -1,0 +1,19 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "method": "Fresh isolated copy of previously verified encrypted snapshot restoration; original snapshot identity preserved",
+  "snapshot": {
+    "snapshot_utc": "20261011T035238Z",
+    "service": "crp-wizard-production.service",
+    "initial_state": "active",
+    "release_directory": "/opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050",
+    "legacy_custody_included": true
+  },
+  "original_snapshot_state_sha256": "145cf595cc3876e099be3e0f8655c012dd0bcb220e4402eaa76386e579a51c65",
+  "copied_current_restored_state_sha256": "86b2d43c450482b804be8b70ae9e090584c4f35b40507800de2e97c1be6ab602",
+  "copied_files": 4,
+  "all_copy_hashes_matched": true,
+  "live_store_modified": false,
+  "provider_credentials_copied": false,
+  "passed": true,
+  "recorded_at": "2026-10-11T19:06:58.395Z"
+}

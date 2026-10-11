@@ -1,0 +1,191 @@
+{
+  "identity": {
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "served_build_id": "crp-v1-930d965f09ad49a1"
+  },
+  "fixture_scope": "staging-reporting-period-release-20261011",
+  "recorded_at": "2026-10-11T19:07:25.390Z",
+  "passed": true,
+  "fictional_only": true,
+  "payment_state_injected": false,
+  "source_proof": {
+    "passed": true,
+    "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+    "files": 138
+  },
+  "checks": [
+    {
+      "id": "NATIVE_ORDER_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "IMAGE_ORDER_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "CONTINUATION_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "PARTIAL_AND_AMBIGUOUS_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "COMBINED_BUREAU_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "CONFLICTING_HEADERS_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "USEFUL_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "UNSUCCESSFUL_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "COMPARISON_EARLIER_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "COMPARISON_CURRENT_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "SUMMARY_POSITIVE_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "SUMMARY_BENIGN_free_summary_only",
+      "passed": true
+    },
+    {
+      "id": "summary_native_own_rows",
+      "passed": true
+    },
+    {
+      "id": "summary_future_issue",
+      "passed": true
+    },
+    {
+      "id": "summary_benign_no_issue",
+      "passed": true
+    },
+    {
+      "id": "NATIVE_ORDER_duplicate_accounting",
+      "passed": true
+    },
+    {
+      "id": "NATIVE_ORDER_upload_order",
+      "passed": true
+    },
+    {
+      "id": "IMAGE_ORDER_duplicate_accounting",
+      "passed": true
+    },
+    {
+      "id": "IMAGE_ORDER_upload_order",
+      "passed": true
+    },
+    {
+      "id": "written_ordinal",
+      "passed": true
+    },
+    {
+      "id": "written_closed",
+      "passed": true
+    },
+    {
+      "id": "numeric_unambiguous",
+      "passed": true
+    },
+    {
+      "id": "month_precision_preserved",
+      "passed": true
+    },
+    {
+      "id": "ambiguous_date_withheld",
+      "passed": true
+    },
+    {
+      "id": "combined_bureau_dates",
+      "passed": true
+    },
+    {
+      "id": "conflicting_report_header_withheld",
+      "passed": true
+    },
+    {
+      "id": "own_continuation",
+      "passed": true
+    },
+    {
+      "id": "USEFUL_bounded_pass",
+      "passed": true
+    },
+    {
+      "id": "USEFUL_recovered_facts",
+      "passed": true
+    },
+    {
+      "id": "UNSUCCESSFUL_bounded_pass",
+      "passed": true
+    },
+    {
+      "id": "UNSUCCESSFUL_recovered_facts",
+      "passed": true
+    },
+    {
+      "id": "support_stable_reference",
+      "passed": true
+    },
+    {
+      "id": "support_safe_fields",
+      "passed": true
+    },
+    {
+      "id": "support_owner_lookup",
+      "passed": true
+    },
+    {
+      "id": "support_stranger_lookup_refused",
+      "passed": true
+    },
+    {
+      "id": "support_anonymous_refused",
+      "passed": true
+    },
+    {
+      "id": "support_anonymous_lookup_refused",
+      "passed": true
+    },
+    {
+      "id": "case_stranger_refused",
+      "passed": true
+    },
+    {
+      "id": "case_anonymous_refused",
+      "passed": true
+    },
+    {
+      "id": "privacy_dashboard",
+      "passed": true
+    },
+    {
+      "id": "published_upload_limits",
+      "passed": true
+    },
+    {
+      "id": "unsupported_container_refused",
+      "passed": true
+    },
+    {
+      "id": "owned_plan_quotes",
+      "passed": true
+    }
+  ],
+  "original_receipt_sha256": "25e5e2ca681f7d9c5d3ae6d3e8b7e4d7447455597eff2aecafa9def2629097f3"
+}

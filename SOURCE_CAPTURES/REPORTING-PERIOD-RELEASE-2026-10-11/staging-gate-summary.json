@@ -1,0 +1,857 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "passed": true,
+  "gates": 30,
+  "criteria": 123,
+  "measurement_receipt_sha256": "50c5dc7629bf1d7cd2c451e8cf614e21b8b20662e6d13f809fce2e7ada4f6e23",
+  "predicates": [
+    {
+      "id": "final_full_freeze",
+      "passed": true,
+      "refs": [
+        "current-regression-evidence.json"
+      ]
+    },
+    {
+      "id": "immutable_served_source",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json",
+        "reporting-period-current-2026-10-11/phase2-receipt.json",
+        "reporting-period-current-2026-10-11/input-manifest.json"
+      ]
+    },
+    {
+      "id": "actual_phase1",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_paid_activation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/provider-paid.json",
+        "reporting-period-current-2026-10-11/checkout-receipt.json",
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_phase2",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_cleanup",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/provider-cleanup.json",
+        "reporting-period-current-2026-10-11/cleanup-receipt.json"
+      ]
+    },
+    {
+      "id": "native_order",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "image_order",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "exact_duplicates",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "continuation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "written_dates",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "numeric_dates",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "month_precision",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "reference_dates",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "useful_recovery",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "bounded_unsuccessful",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "upload_limits",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "stable_support",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "support_isolation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "account_isolation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "privacy_inventory",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "current_plan_quotes",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "owned_history",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "chronological_linkage",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "changed_issue",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "history_isolation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_comparison_continuity",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_result",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_plan_quotes",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "own_ocr_locations",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "checklist_source_breach",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_probable_breach",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "no_irrelevant_context_questions",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "consumer_violation_labels",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "serious_clear_unpaid_example",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "plain_consumer_explanations",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "internal_reading_limit_retained",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_current_owner_version",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/review-receipt.json",
+        "reporting-period-current-2026-10-11/download-receipt.json",
+        "reporting-period-current-2026-10-11/continuity-receipt.json",
+        "reporting-period-current-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_editable_visual_review",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_exact_source_sequence",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_inline_identity_address",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_forms_retired",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_browser_download_print",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "current_approval_navigation",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/browser-stage-navigation.json",
+        "reporting-period-current-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "genuine_unused_payment_upgrade",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/upgrade-proof.json",
+        "reporting-period-current-2026-10-11/cancellation-proof.json"
+      ]
+    },
+    {
+      "id": "reporting_period_directive",
+      "passed": true,
+      "refs": [
+        "reporting-period-current-2026-10-11/hosted-published-packet-probe.json",
+        "current-regression-evidence.json"
+      ]
+    }
+  ],
+  "criteria_results": {
+    "clarify-evidence.json": {
+      "at_most_two_questions": {
+        "passed": true,
+        "expected": "Observe current meaningful assessments with no irrelevant context prompts; preserve local conditional report-use skip/materiality controls. No retired bankruptcy/court-case question is required."
+      },
+      "skip_and_dont_know": {
+        "passed": true,
+        "expected": "Observe current meaningful assessments with no irrelevant context prompts; preserve local conditional report-use skip/materiality controls. No retired bankruptcy/court-case question is required."
+      },
+      "separate_supplemental_storage": {
+        "passed": true,
+        "expected": "Observe current meaningful assessments with no irrelevant context prompts; preserve local conditional report-use skip/materiality controls. No retired bankruptcy/court-case question is required."
+      },
+      "no_escalation": {
+        "passed": true,
+        "expected": "Observe current meaningful assessments with no irrelevant context prompts; preserve local conditional report-use skip/materiality controls. No retired bankruptcy/court-case question is required."
+      },
+      "browser_journey": {
+        "passed": true,
+        "expected": "Observe current meaningful assessments with no irrelevant context prompts; preserve local conditional report-use skip/materiality controls. No retired bankruptcy/court-case question is required."
+      }
+    },
+    "common-errors-evidence.json": {
+      "checks_implemented": {
+        "passed": true,
+        "expected": "Actual source-linked chronology finding and current consumer VIOLATION example; AB paid selected/edit/review/approve/download packet bridge plus same-source final target proof."
+      },
+      "no_false_finding": {
+        "passed": true,
+        "expected": "Actual source-linked chronology finding and current consumer VIOLATION example; AB paid selected/edit/review/approve/download packet bridge plus same-source final target proof."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual source-linked chronology finding and current consumer VIOLATION example; AB paid selected/edit/review/approve/download packet bridge plus same-source final target proof."
+      }
+    },
+    "gap-ingest-001-evidence.json": {
+      "upload_order_preserved": {
+        "passed": true,
+        "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts."
+      },
+      "duplicate_handling": {
+        "passed": true,
+        "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts."
+      },
+      "report_boundary": {
+        "passed": true,
+        "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts."
+      }
+    },
+    "gap-ingest-002-evidence.json": {
+      "multiline_boundaries": {
+        "passed": true,
+        "expected": "Two-page owned account continuation retains its own opening/closing dates and page/line sources."
+      },
+      "continuation_lines": {
+        "passed": true,
+        "expected": "Two-page owned account continuation retains its own opening/closing dates and page/line sources."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Two-page owned account continuation retains its own opening/closing dates and page/line sources."
+      }
+    },
+    "gap-ingest-003-evidence.json": {
+      "ocr_confidence_preserved": {
+        "passed": true,
+        "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts."
+      },
+      "coordinates_preserved": {
+        "passed": true,
+        "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts."
+      }
+    },
+    "gap-ingest-004-evidence.json": {
+      "written_date_forms": {
+        "passed": true,
+        "expected": "Actual written ordinal/date words normalize without changing printed source."
+      },
+      "unambiguous_parse": {
+        "passed": true,
+        "expected": "Actual written ordinal/date words normalize without changing printed source."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual written ordinal/date words normalize without changing printed source."
+      }
+    },
+    "gap-ingest-005-evidence.json": {
+      "numeric_date_conventions": {
+        "passed": true,
+        "expected": "Actual 05/13/2021 resolves; own ambiguous 06/12/2021 remains unresolved."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual 05/13/2021 resolves; own ambiguous 06/12/2021 remains unresolved."
+      }
+    },
+    "gap-ingest-006-evidence.json": {
+      "partial_date_precision": {
+        "passed": true,
+        "expected": "Actual printed 02/2021 remains 2021-02/MONTH; adverse Jun 2015 retains month precision."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual printed 02/2021 remains 2021-02/MONTH; adverse Jun 2015 retains month precision."
+      }
+    },
+    "gap-ingest-007-evidence.json": {
+      "reference_date_identified": {
+        "passed": true,
+        "expected": "Actual section header date, contradictory headers and no neighbor borrowing."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual section header date, contradictory headers and no neighbor borrowing."
+      }
+    },
+    "gap-ingest-008-evidence.json": {
+      "partial_text_recovery": {
+        "passed": true,
+        "expected": "Actual USEFUL mixed page preserves native A facts and adds supported OCR B facts."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual USEFUL mixed page preserves native A facts and adds supported OCR B facts."
+      }
+    },
+    "gap-ingest-009-evidence.json": {
+      "bureau_segmentation": {
+        "passed": true,
+        "expected": "Actual combined Experian 2020 and Equifax 2026 sections keep each own reference date."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual combined Experian 2020 and Equifax 2026 sections keep each own reference date."
+      }
+    },
+    "gap-ingest-010-evidence.json": {
+      "upload_limits": {
+        "passed": true,
+        "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U."
+      },
+      "container_handling": {
+        "passed": true,
+        "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U."
+      }
+    },
+    "gap-finding-001-evidence.json": {
+      "rule_exceptions": {
+        "passed": true,
+        "expected": "Current active checklist period tri-state source-linked evaluation plus frozen active exceptions. AQ retirement controls are historical, not a required runtime bankruptcy positive."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Current active checklist period tri-state source-linked evaluation plus frozen active exceptions. AQ retirement controls are historical, not a required runtime bankruptcy positive."
+      }
+    },
+    "gap-finding-002-evidence.json": {
+      "probable_violation_path": {
+        "passed": true,
+        "expected": "Actual internal PROBABLE_VIOLATION chronology -> sole consumer VIOLATION -> selected original-form packet. Existing AB actual fixture summary and packet chain; no out-of-checklist positive."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual internal PROBABLE_VIOLATION chronology -> sole consumer VIOLATION -> selected original-form packet. Existing AB actual fixture summary and packet chain; no out-of-checklist positive."
+      }
+    },
+    "gap-finding-003-evidence.json": {
+      "rule_identity": {
+        "passed": true,
+        "expected": "Actual rule/check identity and version on the current owned result/source facts."
+      },
+      "version_binding": {
+        "passed": true,
+        "expected": "Actual rule/check identity and version on the current owned result/source facts."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual rule/check identity and version on the current owned result/source facts."
+      }
+    },
+    "gap-finding-004-evidence.json": {
+      "source_linked_facts": {
+        "passed": true,
+        "expected": "Actual owning file/page/line facts carried to professionally integrated letter and exact original selected report pages."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual owning file/page/line facts carried to professionally integrated letter and exact original selected report pages."
+      }
+    },
+    "consumer-results-evidence.json": {
+      "prioritization": {
+        "passed": true,
+        "expected": "Actual most serious VIOLATION free example and selected readable owned results; cross-account refusal."
+      },
+      "reasons": {
+        "passed": true,
+        "expected": "Actual most serious VIOLATION free example and selected readable owned results; cross-account refusal."
+      },
+      "uncertainty": {
+        "passed": true,
+        "expected": "Actual most serious VIOLATION free example and selected readable owned results; cross-account refusal."
+      },
+      "journey": {
+        "passed": true,
+        "expected": "Actual most serious VIOLATION free example and selected readable owned results; cross-account refusal."
+      },
+      "isolation": {
+        "passed": true,
+        "expected": "Actual most serious VIOLATION free example and selected readable owned results; cross-account refusal."
+      }
+    },
+    "consumer-explanations-evidence.json": {
+      "report_fact": {
+        "passed": true,
+        "expected": "Actual source dates, defined rule basis and plain correction request visible consistently in result/letter."
+      },
+      "rule_basis": {
+        "passed": true,
+        "expected": "Actual source dates, defined rule basis and plain correction request visible consistently in result/letter."
+      },
+      "uncertainty": {
+        "passed": true,
+        "expected": "Actual source dates, defined rule basis and plain correction request visible consistently in result/letter."
+      },
+      "journey": {
+        "passed": true,
+        "expected": "Actual source dates, defined rule basis and plain correction request visible consistently in result/letter."
+      },
+      "consistency": {
+        "passed": true,
+        "expected": "Actual source dates, defined rule basis and plain correction request visible consistently in result/letter."
+      }
+    },
+    "consumer-billing-evidence.json": {
+      "plan": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      },
+      "renewal": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      },
+      "cancellation": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      },
+      "upgrade_credit": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      },
+      "isolation": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      },
+      "journey": {
+        "passed": true,
+        "expected": "Current owner quotes and genuine Sandbox paid signed event; verified B70 eight-file identical billing bridge covers actual cumulative upgrade and cancellation. Production live configuration read-only proof separately required."
+      }
+    },
+    "consumer-privacy-evidence.json": {
+      "inventory": {
+        "passed": true,
+        "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge."
+      },
+      "retention": {
+        "passed": true,
+        "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge."
+      },
+      "deletion": {
+        "passed": true,
+        "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge."
+      },
+      "isolation": {
+        "passed": true,
+        "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge."
+      },
+      "journey": {
+        "passed": true,
+        "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge."
+      }
+    },
+    "consumer-support-evidence.json": {
+      "reference": {
+        "passed": true,
+        "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof."
+      },
+      "redaction": {
+        "passed": true,
+        "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof."
+      },
+      "access": {
+        "passed": true,
+        "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof."
+      },
+      "journey": {
+        "passed": true,
+        "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof."
+      },
+      "usefulness": {
+        "passed": true,
+        "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof."
+      }
+    },
+    "consumer-language-imperative-evidence.json": {
+      "affirmative_scope": {
+        "passed": true,
+        "expected": "Current screenshot/plain letter sole VIOLATION, affirmative guidance; only approved small main footer disclaimer. No duplicate public legal-advice disclaimer."
+      },
+      "no_legal_advice_disclaimers": {
+        "passed": true,
+        "expected": "Current screenshot/plain letter sole VIOLATION, affirmative guidance; only approved small main footer disclaimer. No duplicate public legal-advice disclaimer."
+      },
+      "finding_labels": {
+        "passed": true,
+        "expected": "Current screenshot/plain letter sole VIOLATION, affirmative guidance; only approved small main footer disclaimer. No duplicate public legal-advice disclaimer."
+      }
+    },
+    "consumer-incomplete-presentation-evidence.json": {
+      "internal_diagnostics_retained": {
+        "passed": true,
+        "expected": "UNSUCCESSFUL retains internal reading limitation and never concludes compliance/absence; consumer view hides incomplete diagnostic cards."
+      },
+      "incomplete_checks_hidden": {
+        "passed": true,
+        "expected": "UNSUCCESSFUL retains internal reading limitation and never concludes compliance/absence; consumer view hides incomplete diagnostic cards."
+      },
+      "no_false_compliance_claim": {
+        "passed": true,
+        "expected": "UNSUCCESSFUL retains internal reading limitation and never concludes compliance/absence; consumer view hides incomplete diagnostic cards."
+      }
+    },
+    "clarification-materiality-evidence.json": {
+      "no_context_only_questions": {
+        "passed": true,
+        "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path."
+      },
+      "rule_materiality": {
+        "passed": true,
+        "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path."
+      },
+      "mandatory_omission_not_cured_by_answer": {
+        "passed": true,
+        "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path."
+      }
+    },
+    "finding-coverage-evidence.json": {
+      "promise_inventory": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      },
+      "check_mapping": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      },
+      "executable_findings": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      },
+      "material_questions": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      },
+      "behavioral_coverage": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Full accepted supported-check/family/control/all82 loops + actual same-source representative paid original-form preview through approved single PDF. No every-bureau-layout claim."
+      }
+    },
+    "all82-facilitation-evidence.json": {
+      "jurisdiction_inventory": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "usable_intake": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "applicable_assessment": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "material_questions": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "consumer_delivery": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "account_isolation": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "behavioral_coverage": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Reuse current meaningful 82-region loops and distinct country families; actual representative paid mechanism, source bridge and target proof. No 82 actors or superficial selector evidence."
+      }
+    },
+    "dispute-packet-evidence.json": {
+      "packet_scope": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "finding_evidence": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "jurisdiction_content": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "consumer_review": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "usable_download": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "entitlement_isolation": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "behavioral_coverage": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "AB genuine paid twelve-page selected/edit/review/approve/download/print, exact source pages2/3, inline2ID+address, original bureau form. Current target buyer visual approval/download once."
+      }
+    },
+    "report-data-to-issue-evidence.json": {
+      "material_field_extraction": {
+        "passed": true,
+        "expected": "Current supported ordinary readers and selected own-source checklist issue to packet. Reuse CA TU account-table proof and newest native omissions/double reporting; AB actual packet chain."
+      },
+      "issue_wiring": {
+        "passed": true,
+        "expected": "Current supported ordinary readers and selected own-source checklist issue to packet. Reuse CA TU account-table proof and newest native omissions/double reporting; AB actual packet chain."
+      },
+      "packet_delivery": {
+        "passed": true,
+        "expected": "Current supported ordinary readers and selected own-source checklist issue to packet. Reuse CA TU account-table proof and newest native omissions/double reporting; AB actual packet chain."
+      },
+      "behavioral_coverage": {
+        "passed": true,
+        "expected": "Current supported ordinary readers and selected own-source checklist issue to packet. Reuse CA TU account-table proof and newest native omissions/double reporting; AB actual packet chain."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Current supported ordinary readers and selected own-source checklist issue to packet. Reuse CA TU account-table proof and newest native omissions/double reporting; AB actual packet chain."
+      }
+    },
+    "subscription-value-evidence.json": {
+      "owned_history": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "comparison_linkage": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "issue_changes": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "consumer_view": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "isolation": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "behavioral_coverage": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      },
+      "end_to_end_journey": {
+        "passed": true,
+        "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison."
+      }
+    }
+  },
+  "fdt_strict_status": {
+    "passed": true,
+    "implementation_status": "IMPLEMENTED_AND_TESTED",
+    "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+    "staging_status": "VERIFIED_ON_STAGING",
+    "detail": "evidence is complete, current-release and identity-bound"
+  }
+}

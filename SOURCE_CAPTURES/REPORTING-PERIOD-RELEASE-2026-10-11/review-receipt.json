@@ -1,0 +1,99 @@
+{
+  "fixture_scope": "staging-reporting-period-release-20261011",
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "account_id": "acc_90f4e5265cd863b578526c99",
+  "case_id": "case_f29788e144d7bf2c61d30950",
+  "recorded_at": "2026-10-11T19:09:07.190Z",
+  "version": "1bed16844a383b54bc3bbbe5fdab7fb482dac70269c371a9ecd80a4e7e26a5a5",
+  "selected_count": 2,
+  "pdf_sha256": "20bc2d4fd544eb3d7297b581bfb245613d8c44090d4706b5458eb4c473378b87",
+  "pdf_bytes": 322918,
+  "support_missing": [],
+  "anonymous_preview_status": 401,
+  "inspection": {
+    "total_pages": 6,
+    "letter_pages": 1,
+    "editable_letter_fields": [
+      "CRP_letter_page_1"
+    ],
+    "minimum_font_size": 10,
+    "editable_saved_and_printed": true,
+    "source_pages": [
+      {
+        "original_page": 2,
+        "packet_page": 2,
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "original_page": 3,
+        "packet_page": 3,
+        "exact_streams": true,
+        "exact_rendering": true
+      }
+    ],
+    "documents": [
+      {
+        "filename": "fictional-passport.pdf",
+        "document_type": "IDENTITY",
+        "packet_page": 4,
+        "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "filename": "fictional-licence.pdf",
+        "document_type": "IDENTITY",
+        "packet_page": 5,
+        "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "filename": "fictional-address.pdf",
+        "document_type": "ADDRESS",
+        "packet_page": 6,
+        "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+        "exact_streams": true,
+        "exact_rendering": true
+      }
+    ],
+    "bureau_forms_retired": true,
+    "retired_form_count": 0,
+    "page_renders": [
+      {
+        "page": 1,
+        "filename": "packet-page-01.png",
+        "sha256": "c3f538a01793bb3a502bc01c6ffb0b5663c2fb7bcf764929ee3fa7fa5dabe60d"
+      },
+      {
+        "page": 2,
+        "filename": "packet-page-02.png",
+        "sha256": "75be9a0f47e7d357c699e97d166af219129d3cf3bfd9671db7b331303079c7d7"
+      },
+      {
+        "page": 3,
+        "filename": "packet-page-03.png",
+        "sha256": "84fbde1d9fa09d4158a33d59546b11f7d785d0fb129bcc504ddd714d17526348"
+      },
+      {
+        "page": 4,
+        "filename": "packet-page-04.png",
+        "sha256": "9fe88703d9a7d8833fa15c3f161a74d8dd1cc98f667b762de652c3051d699063"
+      },
+      {
+        "page": 5,
+        "filename": "packet-page-05.png",
+        "sha256": "a67b3dbeb9b9ecd320fde2c4e191f795a4d614c914b2ac6b4b39726df8a44de8"
+      },
+      {
+        "page": 6,
+        "filename": "packet-page-06.png",
+        "sha256": "3afe7e907064dfeecb3f517aadaccd720f34955167df12a1eb032832cb840673"
+      }
+    ],
+    "visual_review": "PASS: root inspected every exact rendered page; readable letter, full recipient, source pages 2/3 and all three inline supporting copies, signature; no clipping, overlap or bureau form.",
+    "physical_print_performed": false,
+    "visual_reviewed_at": "2026-10-11T19:09:36.212327+00:00"
+  }
+}

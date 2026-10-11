@@ -1,0 +1,55 @@
+{
+  "identity": {
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "served_build_id": "crp-v1-930d965f09ad49a1"
+  },
+  "fixture_scope": "staging-reporting-period-release-20261011",
+  "recorded_at": "2026-10-11T19:12:45.990Z",
+  "passed": true,
+  "fictional_only": true,
+  "payment_state_injected": false,
+  "source_proof": {
+    "passed": true,
+    "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+    "files": 138
+  },
+  "checks": [
+    {
+      "id": "owned_history",
+      "passed": true
+    },
+    {
+      "id": "owned_chronological_comparison",
+      "passed": true
+    },
+    {
+      "id": "changed_issue",
+      "passed": true
+    },
+    {
+      "id": "reverse_selection_keeps_order",
+      "passed": true
+    },
+    {
+      "id": "unpaid_stranger_comparison_refused",
+      "passed": true
+    },
+    {
+      "id": "subscriber_foreign_result_refused",
+      "passed": true
+    },
+    {
+      "id": "approved_packet_unchanged_after_comparison",
+      "passed": true
+    },
+    {
+      "id": "paid_source_linked_result",
+      "passed": true
+    },
+    {
+      "id": "owned_paid_quotes",
+      "passed": true
+    }
+  ],
+  "original_receipt_sha256": "a3422dba4a108825c8110e517ef163fb2092d81b36d160f5b5ea248a84093783"
+}

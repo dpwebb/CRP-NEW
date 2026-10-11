@@ -1,0 +1,28 @@
+{
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "manifest_files": 138,
+  "source_hashes_verified": true,
+  "started_and_restarted": true,
+  "original_collections_preserved": true,
+  "loopback_port": 8798,
+  "health_before": {
+    "ok": true,
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "deployment": "staging",
+    "billing_mode": null,
+    "launch_ready": false
+  },
+  "health_after": {
+    "ok": true,
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "deployment": "staging",
+    "billing_mode": null,
+    "launch_ready": false
+  },
+  "isolated_service_stopped": true,
+  "live_store_modified": false,
+  "actual_consumer_recovery_claimed": false,
+  "method": "Current executable compatibility against fresh isolated copy of previously verified encrypted snapshot restoration",
+  "passed": true,
+  "recorded_at": "2026-10-11T19:07:07.445Z"
+}

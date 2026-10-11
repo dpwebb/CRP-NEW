@@ -1,0 +1,97 @@
+{
+  "target": "https://creditregulatorpro.com",
+  "build_id": "crp-v1-930d965f09ad49a1",
+  "source_commit": "18599624be42750b312d7b612f0f2322da497119",
+  "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+  "checks": [
+    {
+      "route": "/api/health",
+      "status": 200,
+      "build_id": "crp-v1-930d965f09ad49a1"
+    },
+    {
+      "route": "/app.js",
+      "status": 200,
+      "sha256": "28A4CB2C05A307A7E0A34B9496E5BFF19B14327B6A595C716970B540C6A2507E"
+    },
+    {
+      "route": "/favicon.svg",
+      "status": 200,
+      "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+    },
+    {
+      "route": "/index.html",
+      "status": 200,
+      "sha256": "4517B0FB3D12356FA4AA3848546F96BDFEB7F7F9904FC186975F80C7BA26DAEE"
+    },
+    {
+      "route": "/landing.css",
+      "status": 200,
+      "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+    },
+    {
+      "route": "/landing.html",
+      "status": 200,
+      "sha256": "104D1DF54B91A1F88E165CF9C8B65750EA1762A046C7E71CF92DC331774A6DA3"
+    },
+    {
+      "route": "/mailing-preview.css",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/mailing-preview.html",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/mailing-preview.js",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.css",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.html",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.js",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/score-simulator.css",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/score-simulator.html",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/score-simulator.js",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/style.css",
+      "status": 200,
+      "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
+    }
+  ],
+  "health": {
+    "ok": true,
+    "build_id": "crp-v1-930d965f09ad49a1",
+    "deployment": "production",
+    "billing_mode": "live",
+    "launch_ready": false
+  },
+  "passed": true,
+  "measured_at": "2026-10-11T19:16:40.113Z"
+}
