@@ -1,0 +1,47 @@
+{
+  "measured_at": "2026-10-11T12:25:14.659Z",
+  "ciphertext": "crp-v1-production-20261011T035238Z-6YeJqgO2.tar.gz.age",
+  "ciphertext_sha256": "21aa0a60c0cd291cf9959ca9731b553125480eb9b9d44bf7c38a7a0deba73f6b",
+  "local_identity_sent_to_host": false,
+  "plaintext_stored_locally": false,
+  "live_store_modified": false,
+  "restore": {
+    "snapshot": {
+      "snapshot_utc": "20261011T035238Z",
+      "service": "crp-wizard-production.service",
+      "initial_state": "active",
+      "release_directory": "/opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050",
+      "legacy_custody_included": true
+    },
+    "state_version": 3,
+    "current_release": {
+      "directory": "/opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050",
+      "manifest_digest": "6FFFBBB76B24A050442B93FC5CC27ABA2DDA09A6304FC727B3ED564557075146",
+      "file_count": 132,
+      "git_head": "25900f4f3b3d9bdbb1af33567bb967c10e19756c"
+    },
+    "snapshot_files_verified": 16,
+    "indexed_blobs_verified": 1,
+    "state_sha256": "145cf595cc3876e099be3e0f8655c012dd0bcb220e4402eaa76386e579a51c65",
+    "record_counts": {
+      "accounts": 3,
+      "sessions": 0,
+      "cases": 1,
+      "files": 1,
+      "results": 1,
+      "drafts": 0,
+      "packets": 0,
+      "entitlements": 1,
+      "billing_events": 0,
+      "checkout_sessions": 0,
+      "upgrade_credits": 0,
+      "purchased_downloads": 0
+    },
+    "status": "SNAPSHOT_AND_EXECUTABLES_VERIFIED",
+    "restore_directory": "/opt/crp-wizard-production/recovery-rehearsals/.restore.2rkwicg9",
+    "isolated_data_directory": "/opt/crp-wizard-production/recovery-rehearsals/.restore.2rkwicg9/data",
+    "service_started": false,
+    "live_store_modified": false,
+    "actual_consumer_recovery_proof": "PENDING"
+  }
+}

@@ -1,0 +1,1420 @@
+{
+  "schema": "CRP_CURRENT_BUILD_REPRESENTATIVE_GATE_JOURNEYS_V1",
+  "identity": {
+    "build_id": "crp-v1-4687a2df902ef280",
+    "served_build_id": "crp-v1-4687a2df902ef280",
+    "host": "staging.creditregulatorpro.com",
+    "deployment": "staging",
+    "billing_mode": "test",
+    "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+    "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+  },
+  "measurement_window_utc": [
+    "2026-10-11T05:02:46Z",
+    "2026-10-11T05:08:23.745Z"
+  ],
+  "input_designation": "FICTIONAL_REPORTS_AND_CLEARLY_MARKED_FICTIONAL_DOCUMENTS",
+  "evidence_refs": [
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/receipt.json",
+      "sha256": "1aadefbcaa674c68d49c0b3e2f87dfc83fc059b62eac96ab04ae31ccdef91264"
+    },
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/comparison-verified.png",
+      "sha256": "bf6df39e0de6e06afe6be2ec90a3998e99448acf8fcb1161cfbdd4c243af50af"
+    },
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/current-build-journeys/approved-packet.pdf",
+      "sha256": "1a57cb43f1cf7e65a93453d0bd45064dcbabd8cec31707f724e4c276d91c8dcd"
+    },
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/current-build-journeys/earlier.pdf",
+      "sha256": "39df3c3d03a3bf8cc6eeeeb4636a2f8abac51cb627c9e27cc7ffe8e36151f557"
+    },
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/current-build-journeys/health.json",
+      "sha256": "eac867a738445c192eaef86b779c2997e1ec7291146bc7c5cda2e1ad7ffc3eda"
+    },
+    {
+      "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/current-build-journeys/later.pdf",
+      "sha256": "55f1963f54bf056d53e41760abad685d53c0f5a84becc59c08193d6a18c0c6d9"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+      "status": "VERIFIED_ON_STAGING",
+      "expected": "Owned fictional upload identifies sourced date conflict; genuine test purchase activates subscription access.",
+      "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.",
+      "scope": "CA-NS, GENERAL-BUREAU-REPORT, one account date-conflict mechanism; monthly test subscription."
+    },
+    {
+      "id": "J2-CURRENT-SELECTED-PAID-PACKET",
+      "status": "VERIFIED_DOWNLOAD_WITH_FAILED_APPROVAL_PRESERVATION",
+      "expected": "Selection, review and approval bind the paid PDF; unchanged navigation preserves approval.",
+      "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+      "scope": "Equifax Canada account-dispute packet; initial download passed, navigation preservation failed."
+    },
+    {
+      "id": "J3-CURRENT-REPORT-COMPARISON",
+      "status": "VERIFIED_ON_STAGING",
+      "expected": "Owned newer same-account report shows the earlier issue no longer observed with qualified consumer wording.",
+      "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+      "scope": "Two owned fictional Equifax reports; date-conflict disappearance outcome. Other comparison outcomes and adversarial isolation not exercised on staging."
+    },
+    {
+      "id": "J4-CURRENT-TEST-CLEANUP",
+      "status": "VERIFIED_WITH_RETAINED_BOOKKEEPING",
+      "expected": "Cancel the exact test subscription and remove the disposable account and fictional active-service documents.",
+      "measured": "Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+      "scope": "Disposable account only; provider payment records and separate backups are not claimed erased."
+    }
+  ],
+  "payment_gate_observation": {
+    "gate_id": "MATCHED_TEST_CHECKOUT_EVIDENCE",
+    "status": "VERIFIED_REPRESENTATIVE_MONTHLY_TEST_PURCHASE",
+    "receipt": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/receipt.json",
+    "remaining": "This does not relabel the older matched-payment evidence or verify one-time, annual, upgrade or live payments."
+  },
+  "gates": [
+    {
+      "gate_id": "BLOCKER-RESULTS-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Multi-issue prioritization and cross-account refusal were not exercised on this served build."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE"
+      ],
+      "criteria": {
+        "prioritization": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deterministic evidence-backed ordering, no arbitrary ranking claim",
+          "measured": "Not established by these current-build journeys. Multi-issue prioritization and cross-account refusal were not exercised on this served build.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "reasons": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "plain-English reasons and evidence strength, distinguishing observations from findings",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "uncertainty": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "unresolved issues are qualified and not presented as proven",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deployed consumer results show the list",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "account isolation verified",
+          "measured": "Not established by these current-build journeys. Multi-issue prioritization and cross-account refusal were not exercised on this served build.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/consumer-results-evidence.json",
+        "sha256": "b18b876f3f733c32a0a62080f89cae8ed95f0be12b7e8b6e7939be397d8c10c2",
+        "original_file": "accelerated-launch/service/out/consumer-results-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Multi-issue prioritization and cross-account refusal were not exercised on this served build."
+    },
+    {
+      "gate_id": "BLOCKER-EXPLANATIONS-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "One sourced date-conflict explanation is demonstrated; other relevant mechanisms and conflicting-state controls remain outside this hosted sample."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "report_fact": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "exact raw printed values, normalization and owning source locations",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "rule_basis": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "applicable citation and source version; observations use an explicit factual basis",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "uncertainty": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "material unknowns and exceptions explained without presenting breach as established",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "cards visible and usable in the deployed wizard",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "consistency": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "explanation agrees with result classification and downloaded assessment",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/consumer-explanations-evidence.json",
+        "sha256": "ceb7ca62717bbd2dbef955b54ba8e4b2cb7698c3a9359ffeb6d60984d0cf932c",
+        "original_file": "accelerated-launch/service/out/consumer-explanations-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "One sourced date-conflict explanation is demonstrated; other relevant mechanisms and conflicting-state controls remain outside this hosted sample."
+    },
+    {
+      "gate_id": "BLOCKER-BILLING-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Monthly renewal disclosure passed; consumer cancellation UI, upgrade credit and cross-account billing refusal were not exercised. Provider cancellation is cleanup proof only."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J4-CURRENT-TEST-CLEANUP"
+      ],
+      "criteria": {
+        "plan": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "configured price, currency, purchase type and included access before checkout",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "renewal": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "one-time purchases do not imply recurring billing; recurring products show their actual renewal",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "cancellation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "working cancellation controls with a truthful effect on renewal and access",
+          "measured": "Not established by these current-build journeys. Monthly renewal disclosure passed; consumer cancellation UI, upgrade credit and cross-account billing refusal were not exercised. Provider cancellation is cleanup proof only.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "upgrade_credit": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the configured once-only upgrade credit with eligibility and expiry",
+          "measured": "Not established by these current-build journeys. Monthly renewal disclosure passed; consumer cancellation UI, upgrade credit and cross-account billing refusal were not exercised. Provider cancellation is cleanup proof only.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "other accounts cannot access billing data or actions",
+          "measured": "Not established by these current-build journeys. Monthly renewal disclosure passed; consumer cancellation UI, upgrade credit and cross-account billing refusal were not exercised. Provider cancellation is cleanup proof only.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deployed sandbox consumer journey including state transitions",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J4-CURRENT-TEST-CLEANUP",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/consumer-billing-evidence.json",
+        "sha256": "fcf6fc0730ca013f2b589501306ac1bd6cd91deed1953a3b0e4463d84e41d2c4",
+        "original_file": "accelerated-launch/service/out/consumer-billing-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Monthly renewal disclosure passed; consumer cancellation UI, upgrade credit and cross-account billing refusal were not exercised. Provider cancellation is cleanup proof only."
+    },
+    {
+      "gate_id": "BLOCKER-PRIVACY-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Active documents and account removed; upgrade-credit bookkeeping retained. Cross-account controls, backup erasure and full deletion completeness are not established."
+      },
+      "verified_journeys": [
+        "J4-CURRENT-TEST-CLEANUP"
+      ],
+      "criteria": {
+        "inventory": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "inventory",
+          "measured": "Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "retention": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "retention",
+          "measured": "Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "deletion": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deletion",
+          "measured": "Not established by these current-build journeys. Active documents and account removed; upgrade-credit bookkeeping retained. Cross-account controls, backup erasure and full deletion completeness are not established.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "isolation",
+          "measured": "Not established by these current-build journeys. Active documents and account removed; upgrade-credit bookkeeping retained. Cross-account controls, backup erasure and full deletion completeness are not established.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "journey",
+          "measured": "Stripe subscription canceled, cancellation event applied; account/session/cases/files/results/packet/entitlement absent; Not signed in. Upgrade-credit bookkeeping remains.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J4-CURRENT-TEST-CLEANUP",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/consumer-privacy-evidence.json",
+        "sha256": "8ea72cd31da4bd0ad9bf698f32ea0e20949fb80d4c55e3c526e57690ba25a643",
+        "original_file": "accelerated-launch/service/out/consumer-privacy-evidence.json"
+      },
+      "prior_identity": null,
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Active documents and account removed; upgrade-credit bookkeeping retained. Cross-account controls, backup erasure and full deletion completeness are not established."
+    },
+    {
+      "gate_id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "One positive date-conflict and one benign ordered-date report; this does not verify every checklist predicate or negative control on staging."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET",
+        "J3-CURRENT-REPORT-COMPARISON"
+      ],
+      "criteria": {
+        "checks_implemented": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "supported checklist mechanisms tested with positive and benign controls",
+          "measured": "Not established by these current-build journeys. One positive date-conflict and one benign ordered-date report; this does not verify every checklist predicate or negative control on staging.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "no_false_finding": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "source-linked checklist assessments remain separate from raw comparisons; no legal findings",
+          "measured": "Not established by these current-build journeys. One positive date-conflict and one benign ordered-date report; this does not verify every checklist predicate or negative control on staging.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "current served-release upload through selected approved packet",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J3-CURRENT-REPORT-COMPARISON",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/common-errors-evidence.json",
+        "sha256": "8dfd4ad294c99796cc3a50aab12a6b67b43d0762f83ff3f7039fc00aecf44832",
+        "original_file": "accelerated-launch/service/out/common-errors-evidence.json"
+      },
+      "prior_identity": {
+        "local_only": true,
+        "served_build_id": null
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "One positive date-conflict and one benign ordered-date report; this does not verify every checklist predicate or negative control on staging."
+    },
+    {
+      "gate_id": "GAP-INGEST-004_DATE_FORMS",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "June 12 and October 10 written reference dates only; full written-date boundary set not hosted here."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J3-CURRENT-REPORT-COMPARISON"
+      ],
+      "criteria": {
+        "written_date_forms": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "full and abbreviated month names with permitted punctuation, day-first and ordinal forms, and leap/invalid handling; failed forms explicitly unresolved",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "unambiguous_parse": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "unambiguous numeric and ISO forms resolve; ambiguous forms without an evidenced convention stay unresolved with both interpretations preserved",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deployed written-date journey with a completed finding traced to its source record",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J3-CURRENT-REPORT-COMPARISON",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/gap-ingest-004-evidence.json",
+        "sha256": "7e10543c2585a601a1618bef2e339bbc6743317329f418832a249f559876b0e5",
+        "original_file": "accelerated-launch/service/out/gap-ingest-004-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "June 12 and October 10 written reference dates only; full written-date boundary set not hosted here."
+    },
+    {
+      "gate_id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "January 1 dates do not exercise ambiguous numeric convention handling."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "numeric_date_conventions": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "an unambiguous numeric date resolves independently; an ambiguous numeric date is withheld with both interpretations preserved; one fieldâ€™s date order is never propagated to another field; a decisive ambiguous date is never resolved by unrelated evidence",
+          "measured": "Not established by these current-build journeys. January 1 dates do not exercise ambiguous numeric convention handling.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "deployed numeric-convention journey with a completed finding traced to its source record",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/gap-ingest-005-evidence.json",
+        "sha256": "b6e5328c6a929937b4eaf9632a6a31efb3a2b23b5a41c4976cd26cc58e287289",
+        "original_file": "accelerated-launch/service/out/gap-ingest-005-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "January 1 dates do not exercise ambiguous numeric convention handling."
+    },
+    {
+      "gate_id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Two explicit native-text report dates; missing/conflicting dates and other reader mechanisms not hosted here."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J3-CURRENT-REPORT-COMPARISON"
+      ],
+      "criteria": {
+        "reference_date_identified": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "Actual section header date, contradictory headers and no neighbor borrowing.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "end to end journey",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J3-CURRENT-REPORT-COMPARISON",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/gap-ingest-007-evidence.json",
+        "sha256": "97a49af4de65aa0b30f150bcec4231d9d8f60efa0d9e3453c7ff70fea4441c9f",
+        "original_file": "accelerated-launch/service/out/gap-ingest-007-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Two explicit native-text report dates; missing/conflicting dates and other reader mechanisms not hosted here."
+    },
+    {
+      "gate_id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Opened/closed facts and original report page preserved for this account; no hosted cross-record or cross-bureau adversarial controls."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "source_linked_facts": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "Actual owning file/page/line facts carried to professionally integrated letter and exact original selected report pages.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "end to end journey",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/gap-finding-004-evidence.json",
+        "sha256": "6b1e8002c856ac0152c055e5373587d382568e8eb295c1b663976d5273e6650c",
+        "original_file": "accelerated-launch/service/out/gap-finding-004-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Opened/closed facts and original report page preserved for this account; no hosted cross-record or cross-bureau adversarial controls."
+    },
+    {
+      "gate_id": "BLOCKER-FINDING-COVERAGE-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "One shared date-conflict mechanism does not establish all-check/reader coverage. All-82 automated implementation proof retains its original run identity."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "promise_inventory": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "all 82 selections, source-associated downloads and active checklist scope",
+          "measured": "Not established by these current-build journeys. One shared date-conflict mechanism does not establish all-check/reader coverage. All-82 automated implementation proof retains its original run identity.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "check_mapping": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "each listed item bound to inspected behavioral tests with its actual exercise class",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "executable_findings": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "source-proven positive and benign/refusal controls for the supported rule mechanisms",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "material_questions": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "questions cannot replace source facts or cure a report omission",
+          "measured": "Not established by these current-build journeys. One shared date-conflict mechanism does not establish all-check/reader coverage. All-82 automated implementation proof retains its original run identity.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "behavioral_coverage": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "meaningful supported family, regional, packet, ownership and approval behavior",
+          "measured": "Not established by these current-build journeys. One shared date-conflict mechanism does not establish all-check/reader coverage. All-82 automated implementation proof retains its original run identity.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "current served-release paid original-form preview through approved download",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/finding-coverage-evidence.json",
+        "sha256": "3c2c46017dac450b034910bd113380c2047e777b08e06bc7f3e827d7ed5ff0f7",
+        "original_file": "accelerated-launch/service/out/finding-coverage-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": null,
+        "served_build_id": null,
+        "local_only": true
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "One shared date-conflict mechanism does not establish all-check/reader coverage. All-82 automated implementation proof retains its original run identity."
+    },
+    {
+      "gate_id": "BLOCKER-ALL82-FACILITATION-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "jurisdiction_inventory": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+          "measured": "Not established by these current-build journeys. CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "usable_intake": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions. General intake accepts a plausible bureau report and refuses unrelated or unreadable documents without inventing facts. Jurisdiction and upload refusals are typed and enforced, including lookalike documents. The Australian family reader preserves its supported structural boundary. The TransUnion Canada reader preserves its measured family contract. The United States family reader yields source-associated records.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "applicable_assessment": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds. All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "material_questions": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "No context-only questions are generated; retired prompts stay hidden and supplemental answers cannot replace report evidence.",
+          "measured": "Not established by these current-build journeys. CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "consumer_delivery": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions. The actual browser completes consumer selection, review, approval and packet download through the local service. The supported Australian consumer journey reaches its issue and output.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "account_isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Another account cannot read or mutate owned case/file/result data.",
+          "measured": "Not established by these current-build journeys. CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "behavioral_coverage": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately. All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds. All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded. The actual browser completes consumer selection, review, approval and packet download through the local service.",
+          "measured": "Not established by these current-build journeys. CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "Measured current served-release consumer journey with legitimate entitlement.",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/all82-facilitation-evidence.json",
+        "sha256": "252efa0d8e2cf6a1c52f9436808ab8ab4c2cc19670c929c79f15c7b11d2f1f74",
+        "original_file": "accelerated-launch/service/out/all82-facilitation-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": null,
+        "served_build_id": null,
+        "local_only": true
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "CA-NS representative shared path only; all-82 automated loops remain local proof with their original identity. Hosted ownership controls and materially distinct mechanisms not exercised."
+    },
+    {
+      "gate_id": "BLOCKER-DISPUTE-PACKET-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Approval preservation FAILED on departure. Initial approved download passed. Other bureau packet mechanisms and cross-account refusal remain unverified on this build."
+      },
+      "verified_journeys": [
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "packet_scope": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured packet_scope packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "finding_evidence": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured finding_evidence packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "jurisdiction_content": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured jurisdiction_content packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "consumer_review": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured consumer_review packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "usable_download": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured usable_download packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "entitlement_isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured entitlement_isolation packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "Not established by these current-build journeys. Approval preservation FAILED on departure. Initial approved download passed. Other bureau packet mechanisms and cross-account refusal remain unverified on this build.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "behavioral_coverage": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "The configured behavioral_coverage packet behavior is demonstrated locally and then verified separately on the current served release.",
+          "measured": "Not established by these current-build journeys. Approval preservation FAILED on departure. Initial approved download passed. Other bureau packet mechanisms and cross-account refusal remain unverified on this build.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "Current served-release paid review, approval and matching packet download measured separately.",
+          "measured": "One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/dispute-packet-evidence.json",
+        "sha256": "c30d3ea0f059651f6bec42c89ce338a26dcb503ffe101e54ee48ec10c68f1598",
+        "original_file": "accelerated-launch/service/out/dispute-packet-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": null,
+        "served_build_id": null,
+        "local_execution_only": true
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Approval preservation FAILED on departure. Initial approved download passed. Other bureau packet mechanisms and cross-account refusal remain unverified on this build."
+    },
+    {
+      "gate_id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "The native date-conflict slice passed; material ordinary account fields and distinct layout/check mechanisms need their own representative proof. Approval navigation defect remains open."
+      },
+      "verified_journeys": [
+        "J1-CURRENT-SUBSCRIBER-PURCHASE",
+        "J2-CURRENT-SELECTED-PAID-PACKET"
+      ],
+      "criteria": {
+        "material_field_extraction": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "relevant printed account facts are extracted with correct account association, raw readings and source locations",
+          "measured": "Not established by these current-build journeys. The native date-conflict slice passed; material ordinary account fields and distinct layout/check mechanisms need their own representative proof. Approval navigation defect remains open.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "issue_wiring": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "extracted facts reach the relevant accepted checks and produce supported actual/probable/potential outcomes without forcing a finding",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "packet_delivery": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "a selected issue travels consumer selection -> review/approval -> entitled download",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "behavioral_coverage": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the promised slice is traced to meaningful passing tests and measured outcomes",
+          "measured": "Not established by these current-build journeys. The native date-conflict slice passed; material ordinary account fields and distinct layout/check mechanisms need their own representative proof. Approval navigation defect remains open.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "served-release upload, assessment, selection and purchased/entitled download",
+          "measured": "Earlier Equifax Canada report: one issue; CAD 795 cents Checkout complete/paid, invoice paid, PaymentIntent succeeded, real invoice.paid APPLIED/ACTIVATE, monthly Stripe entitlement ACTIVE.; One selected issue; source page and two fictional document copies; populated Equifax form; ten-page preview inspected; approved version and actual PDF download SHA-256 match. Leaving the screen cleared approval without intentional editing.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J1-CURRENT-SUBSCRIBER-PURCHASE",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-CURRENT-SELECTED-PAID-PACKET-INITIAL-DOWNLOAD",
+          "passed": true,
+          "expected": "Selected, reviewed and approved packet downloads with matching hash",
+          "measured": "Initial approved download passed; subsequent approval preservation is separately failed."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/report-data-to-issue-evidence.json",
+        "sha256": "f252f3012d49cb0c38ab94a5de7a3f46cf64e809402cd79071dbd6d5ba18fc3f",
+        "original_file": "accelerated-launch/service/out/report-data-to-issue-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": "crp-wizard-77c1605b03e2aa8d",
+        "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "The native date-conflict slice passed; material ordinary account fields and distinct layout/check mechanisms need their own representative proof. Approval navigation defect remains open."
+    },
+    {
+      "gate_id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+      "identity": {
+        "build_id": "crp-v1-4687a2df902ef280",
+        "served_build_id": "crp-v1-4687a2df902ef280",
+        "host": "staging.creditregulatorpro.com",
+        "deployment": "staging",
+        "billing_mode": "test",
+        "source_commit": "b538d88c83b690c5edf9918518897792c56b8249",
+        "package_manifest_sha256": "4687a2df902ef2805d9607a5d41ff70997cdb0f1e13b08e48cbe4cda018161e8"
+      },
+      "passed": false,
+      "scope": "SUPPLEMENTAL_REPRESENTATIVE_CURRENT_BUILD_EVIDENCE",
+      "staging_verification": {
+        "status": "PENDING",
+        "reason": "Only the no-longer-observed comparison outcome hosted here. Cross-account/unentitled refusal, other outcomes and approved packet preservation remain unresolved; approval cleared on departure before comparison."
+      },
+      "verified_journeys": [
+        "J3-CURRENT-REPORT-COMPARISON"
+      ],
+      "criteria": {
+        "owned_history": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the account owns a history of its persisted assessments with bureau and report date",
+          "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "comparison_linkage": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "two owned assessments are compared and linked, with the earlier/later order taken from the report dates",
+          "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "issue_changes": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "a previously identified issue is tracked as still observed, changed, no longer observed or not comparable",
+          "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "consumer_view": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the history and comparison are delivered in the Wizzard with readable evidence and uncertainty",
+          "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "isolation": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "account ownership and the paid gate are enforced on the history and comparison",
+          "measured": "Not established by these current-build journeys. Only the no-longer-observed comparison outcome hosted here. Cross-account/unentitled refusal, other outcomes and approved packet preservation remain unresolved; approval cleared on departure before comparison.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "behavioral_coverage": {
+          "passed": false,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the unchanged, changed, no-longer-observed, uncertain-match, different-bureau, missing-field and out-of-order-date cases are exercised",
+          "measured": "Not established by these current-build journeys. Only the no-longer-observed comparison outcome hosted here. Cross-account/unentitled refusal, other outcomes and approved packet preservation remain unresolved; approval cleared on departure before comparison.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        },
+        "end_to_end_journey": {
+          "passed": true,
+          "scope": "REPRESENTATIVE_PATH_ONLY",
+          "expected": "the consumer uploads a subsequent report, compares it, and can still select current issues for a reviewed packet",
+          "measured": "June 12 versus October 10 2026; CONFIDENT account match; still observed 0, changed 0, no longer observed 1, not comparable 0.",
+          "evidence_refs": [
+            "C:\\CRP-NEW\\SOURCE_CAPTURES\\STAGING-PAID-2026-10-11\\receipt.json"
+          ]
+        }
+      },
+      "tests": [
+        {
+          "id": "J3-CURRENT-REPORT-COMPARISON",
+          "passed": true,
+          "expected": "Measured portion of representative journey",
+          "measured": "See journey record; failed approval-preservation portion is separately retained."
+        },
+        {
+          "id": "J2-APPROVAL-PRESERVATION-ON-DEPARTURE",
+          "passed": false,
+          "expected": "Leaving the packet screen without edits preserves approval",
+          "measured": "Approved version and approval timestamp cleared at 2026-10-11T05:07:16.526Z; STAGING-PACKET-APPROVAL-NAVIGATION-20261011 remains open."
+        }
+      ],
+      "prior_evidence": {
+        "file": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof/subscription-value-evidence.json",
+        "sha256": "ea6598e2a156db3ca2bb0f2bfd10ce945d71207fd99e81193857e792ca28a13a",
+        "original_file": "accelerated-launch/service/out/subscription-value-evidence.json"
+      },
+      "prior_identity": {
+        "build_id": null,
+        "served_build_id": null
+      },
+      "prior_evidence_role": "UNCHANGED_IMPLEMENTATION_OR_HISTORICAL_PROOF_NOT_PROMOTED",
+      "remaining": "Only the no-longer-observed comparison outcome hosted here. Cross-account/unentitled refusal, other outcomes and approved packet preservation remain unresolved; approval cleared on departure before comparison."
+    }
+  ],
+  "open_defects": [
+    {
+      "id": "STAGING-PACKET-APPROVAL-NAVIGATION-20261011",
+      "observed": "Leaving the approved packet screen for Upload report cleared approved_version and approved_at without an intentional packet edit.",
+      "updated_at": "2026-10-11T05:07:16.526Z",
+      "source": "accelerated-launch/service/ui/app.js:1766",
+      "mechanism": "packetLeave always calls persistSelection; packet mutation endpoints clear approval."
+    }
+  ],
+  "production_status": "OPEN",
+  "preservation": "Prior identities, criteria and measured failures remain in their original evidence files. This supplementary capture does not overwrite the checker input files or promote local proof to hosted proof.",
+  "prior_proof_custody": {
+    "reason": "Preserve exact older proof before a new local implementation regression refreshes checker inputs.",
+    "archived_directory": "SOURCE_CAPTURES/STAGING-PAID-2026-10-11/prior-proof",
+    "original_identity_and_sha256_unchanged": true,
+    "original_file_locations_retained": true
+  }
+}

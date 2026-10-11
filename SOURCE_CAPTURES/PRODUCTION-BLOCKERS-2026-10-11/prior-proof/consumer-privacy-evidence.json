@@ -1,0 +1,135 @@
+{
+  "blocker_id": "BLOCKER-PRIVACY-001",
+  "measured_at": "2026-10-11T11:37:45.983Z",
+  "passed": false,
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ax-consumer-privacy",
+        "passed": true,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "25 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "k-ui-smoke",
+        "passed": true,
+        "criteria": [
+          "inventory",
+          "retention"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "82 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "f-deletion",
+        "passed": true,
+        "criteria": [
+          "deletion"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "26 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "g-privacy",
+        "passed": true,
+        "criteria": [
+          "isolation"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "68 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/privacy.cjs",
+        "sha256": "29727a6a68780d3b0ec7545c2ebead46914e8d531ed99415e3ff45f913fa81b8"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/cases.cjs",
+        "sha256": "8dcc7e48f19aca9368bd03ece0178a6d86c4b3c008c7201e6b80b5cb4808b393"
+      },
+      {
+        "file": "accelerated-launch/service/private-store.cjs",
+        "sha256": "7493c1d54269354c551ef613054bec19f9263a2308e8fba0b63be9d04e75898e"
+      },
+      {
+        "file": "accelerated-launch/service/retention.cjs",
+        "sha256": "f0bfb2441d14628236072af7f8703d5355685ac8c4f6817b5f2838fdbf2c298e"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ax-consumer-privacy.cjs",
+        "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+        "sha256": "ddae5233b326370de1fa15c105637eba269d058dadd885000cdbaf9bafaa4b29"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/f-signout-and-deletion.cjs",
+        "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/g-privacy.cjs",
+        "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+        "sha256": "2b08753dff0942b0deb2275140ed711c8c94b5306a8143e68614083efaef5475"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; these corrections have not been deployed or verified on staging."
+  },
+  "criteria": {
+    "inventory": {
+      "passed": false,
+      "expected": "inventory",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "retention": {
+      "passed": false,
+      "expected": "retention",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "deletion": {
+      "passed": false,
+      "expected": "deletion",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "isolation": {
+      "passed": false,
+      "expected": "isolation",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "journey": {
+      "passed": false,
+      "expected": "journey",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    }
+  }
+}

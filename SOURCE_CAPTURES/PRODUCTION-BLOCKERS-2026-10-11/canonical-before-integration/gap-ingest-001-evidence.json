@@ -1,0 +1,191 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T12:36:06.701Z",
+  "scope": "GAP-INGEST-001 image-set coherence. Every admitted page of the same report contributes to one coherent assessment in upload order; an exact duplicate is skipped rather than double-counted; distinct bureau reports and reference dates stay in separate groups with their own provenance; and no record borrows a fact from another file. Implementation is closed by ah-multifile-assessment + bb-gap-ingest-001; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "bb-gap-ingest-001",
+        "passed": true,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "two pages contribute one record each in upload order; a later-page fact is named in the generated report; reordering preserves the same evaluated facts/checks; a duplicate adds no record or finding; distinct bureaus and conflicting readings stay separate; the real endpoints upload, evaluate, view and isolate the assembled case",
+        "measured": "39/39 assertions pass: files_included 2, records [1,2], both printed dates reach the consumer result, later-page date 07/15/2026 named in the report, reordering keeps the same examined dates + record facts + checks_performed, duplicate adds no checks or examined facts, two bureau groups, conflicting readings stay two records, HTTP upload 201 + evaluate 201 + view 200 (two files, both facts) + cross-account 403"
+      },
+      {
+        "id": "ah-multifile-assessment",
+        "passed": true,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "the shared assembly foundation: both files examined, no fact borrowing, exact duplicate not double-counted, distinct bureaus and dates kept apart, missing pages flagged only when numbering is printed",
+        "measured": "66/66 assertions pass across the unit assembly cases (two files, duplicate, mixed bureaus, two dates, dedupe pages, missing pages, continuation merge) and an HTTP upload + evaluate journey with both assembled file_ids recorded"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/multi-file-assembly.cjs",
+        "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+      },
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+        "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+        "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence recorded for an admitted multi-file upload; implementation is closed by the behavioral tests, but the deployed journey and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "upload_order_preserved": {
+      "passed": false,
+      "expected": "every accepted page of the same report contributes to one assessment in upload order; reordering never silently discards a page or changes findings for equivalent content",
+      "measured": "implemented and tested (bb-gap-ingest-001, ah-multifile-assessment); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-001.cjs"
+      ]
+    },
+    "duplicate_handling": {
+      "passed": false,
+      "expected": "an exact duplicate page is skipped and never creates a duplicate record or finding",
+      "measured": "implemented and tested (bb-gap-ingest-001, ah-multifile-assessment); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-001.cjs"
+      ]
+    },
+    "report_boundary": {
+      "passed": false,
+      "expected": "separate reports and bureaus retain their own identity, report date and source location; no fact is borrowed across records, reports or bureaus",
+      "measured": "implemented and tested (bb-gap-ingest-001, ah-multifile-assessment); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-001.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "deployed multi-image journey with material facts on earlier and later pages, reordered/duplicate pages, multiple reports separated, incomplete sets identified, no silently skipped files",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "bb-gap-ingest-001",
+      "passed": true,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "39 assertions pass",
+      "measured": "39/39"
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "passed": true,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "66 assertions pass",
+      "measured": "66/66"
+    }
+  ],
+  "coverage": {
+    "later_page_facts_reach_evaluation_result_and_report": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "both printed dates reach the consumer result and the generated report names a later-page fact",
+      "measured": "bb-gap-ingest-001 asserts both dates in report_consistency_checks.examined and 07/15/2026 in the report body"
+    },
+    "reordering_preserves_evaluated_facts_and_findings": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "reordering keeps the same examined dates, record facts and checks_performed",
+      "measured": "datesOf/factsOf/checks_performed deep-equal between [a,b] and [b,a]"
+    },
+    "duplicate_pages_do_not_duplicate_records_or_findings": {
+      "tests": [
+        "bb-gap-ingest-001",
+        "ah-multifile-assessment"
+      ],
+      "expected": "an exact duplicate is skipped and adds no record, check or examined fact",
+      "measured": "duplicate_files_skipped 1, records still 2, checks_performed and examined dates unchanged"
+    },
+    "separate_reports_keep_own_dates_same_bureau": {
+      "tests": [
+        "ah-multifile-assessment"
+      ],
+      "expected": "two Equifax reports with different dates are two reports, each record tied to its own date",
+      "measured": "report_groups 2 with reference dates 2025-03-14 and 2026-06-12"
+    },
+    "separate_bureaus_and_unrelated_records_never_borrow": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "records never borrow a fact from another file or bureau",
+      "measured": "recA lacks 2019-02-02, recB lacks 2015-01-01; two bureau groups"
+    },
+    "conflicting_and_unreadable_pages_no_fabricated_facts": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "low-confidence/conflicting/unreadable pages stay unresolved, never resolved facts or findings",
+      "measured": "low-confidence date EXTRACTION_UNRESOLVED; conflicting identifiers stay two records"
+    },
+    "account_isolation_for_assembled_uploads_and_results": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "another account cannot read the assembled case or result view",
+      "measured": "GET case and result view return 403 for the intruder"
+    },
+    "http_upload_evaluate_view_path": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "the real endpoints assemble multiple files into one result and view",
+      "measured": "ah upload+evaluate records both file_ids; bb view returns 200 with two files and both facts"
+    }
+  }
+}

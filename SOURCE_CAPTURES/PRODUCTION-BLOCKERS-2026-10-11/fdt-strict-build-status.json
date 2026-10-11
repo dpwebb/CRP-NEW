@@ -1,0 +1,191 @@
+{
+  "identity": {
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "local_only": false
+  },
+  "status": {
+    "passed": true,
+    "implementation_status": "IMPLEMENTED_AND_TESTED",
+    "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+    "staging_status": "VERIFIED_ON_STAGING",
+    "detail": "evidence is complete, current-release and identity-bound"
+  },
+  "regression_file": "accelerated-launch/service/out/current-regression-evidence.json",
+  "regression_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1",
+  "totals": {
+    "passed": 14449,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": 151,
+  "source_hashes": 286,
+  "acceptance": {
+    "passed": false,
+    "implementation_passed": true,
+    "criteria": {
+      "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+      "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+      "zero_incorrect_decisive_facts": true,
+      "zero_cross_record_or_bureau_borrowing": true,
+      "zero_unsupported_violations": true,
+      "min_recovery_of_readable_assessment_required_facts": 0.95,
+      "account_for_every_remaining_miss": true,
+      "withhold_unreadable_or_conflicting_decisive_facts": true,
+      "demonstrate_useful_recovery_on_deployed": true,
+      "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+      "note": "small-sample success is not advertised as universal accuracy"
+    },
+    "freeze_digest": "0a641e3344ad1fd6b7fff33617f1c952d04678ddcae12d4172f0456530c047a3",
+    "freeze_unchanged": true,
+    "source_files": [
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+        "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+      },
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+        "sha256": "4a8f757057065845177c65b1db6ab64be85fecef9492783f522d5e4159f9c155"
+      },
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+        "sha256": "844e41cdec338e3cf9461021b8e8f5ffb972e0bc376f252bcd7df9372d1c10cf"
+      },
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+        "sha256": "12f18cabe0c1cf37f0c2054b48069abb3bf1b24fe0f33b5ecc4ef010d9a5bdd3"
+      }
+    ],
+    "source_unchanged": true,
+    "document_count": 6,
+    "page_count": 6,
+    "expected_decisive_fact_denominator": 12,
+    "recovered": 12,
+    "incorrect_decisive_facts": 0,
+    "cross_record_or_bureau_borrowing": 0,
+    "unsupported_violations": 0,
+    "record_collapse_errors": 0,
+    "withhold_errors": 0,
+    "missing_expected_violations": 0,
+    "recovery_rate": 1,
+    "every_miss_accounted": true,
+    "per_case": [
+      {
+        "id": "native-complete",
+        "decisive_expected": 2,
+        "recovered": 2,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 1,
+        "misses": [],
+        "findings": [],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      },
+      {
+        "id": "equivalent-label",
+        "decisive_expected": 2,
+        "recovered": 2,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 1,
+        "misses": [],
+        "findings": [],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      },
+      {
+        "id": "lookalike-two-debts",
+        "decisive_expected": 4,
+        "recovered": 4,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 2,
+        "misses": [],
+        "findings": [],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      },
+      {
+        "id": "ambiguous-date",
+        "decisive_expected": 0,
+        "recovered": 0,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 1,
+        "misses": [],
+        "findings": [],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      },
+      {
+        "id": "bureau-attribution",
+        "decisive_expected": 2,
+        "recovered": 2,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 2,
+        "misses": [],
+        "findings": [],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      },
+      {
+        "id": "contradictory-dates",
+        "decisive_expected": 2,
+        "recovered": 2,
+        "incorrect": 0,
+        "borrowed": 0,
+        "records": 1,
+        "misses": [],
+        "findings": [
+          {
+            "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+            "classification": "PROBABLE_VIOLATION",
+            "record_indices": [
+              1
+            ]
+          }
+        ],
+        "unsupported_findings": 0,
+        "missing_expected_violations": 0,
+        "record_collapse_error": 0,
+        "withheld_error": 0
+      }
+    ],
+    "historical_hosted": {
+      "build_id": "crp-wizard-bc095afed6459b15",
+      "purchased_download_status": 200,
+      "credited_as_current": false
+    }
+  },
+  "benchmark": {
+    "missed_fact_rate": 0,
+    "incorrect_reading_rate": 0,
+    "misattribution_rate": 0,
+    "recovery_rate": 1,
+    "uncertainty_withholding": "OK",
+    "recovery": {
+      "facts_added": 1,
+      "added_texts": [
+        "Closed 01/01/2022"
+      ],
+      "substitution_forbidden": true,
+      "recovery_attempts": 1,
+      "recovery_improvement_ok": true
+    },
+    "baseline": "held-out synthetic text layouts plus a real PDF processed through pdftotext, with independently recorded expected facts"
+  },
+  "canonical_written": false,
+  "root_must_reconcile_only_when_strict_passed": true
+}

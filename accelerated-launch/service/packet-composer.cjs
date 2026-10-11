@@ -37,6 +37,8 @@ function version() {
 }
 function composePacket(input) {
   if (!input || typeof input.letter_text !== 'string' || !input.letter_text.trim() || input.letter_text.length > 200000) throw new ServiceError('INVALID_REQUEST');
+  // OWNER-BUREAU-FORMS-RETIREMENT-001: reject retired packet components.
+  if (input.forms != null && (!Array.isArray(input.forms) || input.forms.length)) throw new ServiceError('INVALID_REQUEST');
   let total = 0;
   const encode = (entries, limit, isReport = false) => {
     if (!Array.isArray(entries) || entries.length > limit) throw new ServiceError('INVALID_REQUEST');
@@ -51,7 +53,7 @@ function composePacket(input) {
     });
   };
   const payload = { letter_text: input.letter_text, reports: encode(input.reports || [], 256, true),
-    documents: encode(input.documents || [], 32), forms: encode(input.forms || [], 20), version: version() };
+    documents: encode(input.documents || [], 32), version: version() };
   const serialized = JSON.stringify(payload), key = digest(serialized), now = Date.now();
   for (const [oldKey, row] of cache) if (row.expires <= now) forget(oldKey);
   const hit = cache.get(key);

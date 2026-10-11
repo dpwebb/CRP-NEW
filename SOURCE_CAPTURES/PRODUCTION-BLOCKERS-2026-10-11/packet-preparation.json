@@ -1,0 +1,20 @@
+{
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "case_id": "case_1db830376067908681f14d06",
+  "account_id": "acc_64a5eea7dbd629dc9c4be862",
+  "selected": [
+    "24ae89ec96e01afc",
+    "84f688d83e5ed31e"
+  ],
+  "version": "9fd0f4fe55a4e0a63df410cfc8a133922b94e09d3a8e79f8b24c9b2188e25ebe",
+  "approved": false,
+  "forms": 0,
+  "support_documents": 3,
+  "source_pages": [
+    2,
+    3
+  ],
+  "fictional_only": true,
+  "method": "Authenticated actual application API preparation; browser review/approval/download follows",
+  "passed": true
+}

@@ -1,0 +1,6 @@
+{
+  "observation": "Existing predeployment browser tab: initial approval and browser PDF download passed, but navigation invalidated approval. Tab retained older application document; fresh navigation to staging root initiated before repeating. No current-build browser closure claimed.",
+  "recorded_at": "2026-10-11T12:52:05.1747402Z",
+  "passed": false,
+  "build_id": "crp-v1-fd23f242f3d158bf"
+}

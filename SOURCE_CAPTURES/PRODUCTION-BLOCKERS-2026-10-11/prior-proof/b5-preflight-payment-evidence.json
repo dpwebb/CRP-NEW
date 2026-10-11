@@ -1,0 +1,77 @@
+{
+  "generated_by": "SOURCE_CAPTURES/B5-PREFLIGHT/verify-payments.cjs",
+  "mode": "test",
+  "account": {
+    "id": "acct_1RTRWOKCM3e4JIjW",
+    "country": "CA",
+    "charges_enabled": true,
+    "livemode": false
+  },
+  "prices": {
+    "report_once": {
+      "id": "price_1ULsBCKCM3e4JIjW67Vanlab",
+      "currency": "cad",
+      "unit_amount": 595,
+      "type": "one_time",
+      "recurring": null,
+      "active": true,
+      "livemode": false
+    },
+    "monthly": {
+      "id": "price_1ULsBDKCM3e4JIjW0AYbmBjq",
+      "currency": "cad",
+      "unit_amount": 795,
+      "type": "recurring",
+      "recurring": "month",
+      "active": true,
+      "livemode": false
+    },
+    "annual": {
+      "id": "price_1ULsBDKCM3e4JIjWlTl2xNrr",
+      "currency": "cad",
+      "unit_amount": 7950,
+      "type": "recurring",
+      "recurring": "year",
+      "active": true,
+      "livemode": false
+    }
+  },
+  "coupon": {
+    "id": "HG6NEm9l",
+    "amount_off": 595,
+    "currency": "cad",
+    "duration": "once",
+    "livemode": false
+  },
+  "one_time_payment": {
+    "flow": "PAYMENT_INTENT_API_NOT_CHECKOUT_SESSION",
+    "payment_intent_id": "pi_3ULsU2KCM3e4JIjW0pgjHW4J",
+    "status": "succeeded",
+    "amount_received": 595,
+    "currency": "cad",
+    "livemode": false,
+    "charge_id": "ch_3ULsU2KCM3e4JIjW0tvrPmo0",
+    "charge_status": "succeeded",
+    "charge_paid": true,
+    "receipt_url": "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xUlRSV09LQ00zZTRKSWpXKNu9-9UGMgY9j7BNWQQ6LBZH0BmKR6jYzf10s3wrRLZ4pmuJnO5YtjwQrji1OlgfIIhPfrxPYqPsQuqO"
+  },
+  "subscription_invoice": {
+    "flow": "SUBSCRIPTION_API_NOT_CHECKOUT_SESSION",
+    "subscription_id": "sub_1ULsU4KCM3e4JIjWWlzfsVS8",
+    "subscription_status": "active",
+    "invoice_id": "in_1ULsU5KCM3e4JIjWoJLHcBKf",
+    "invoice_status": "paid",
+    "amount_due": 795,
+    "amount_paid": 795,
+    "currency": "cad",
+    "livemode": false,
+    "period_start": 1790893788,
+    "period_end": 1793572188
+  },
+  "checkout_session_flow": {
+    "completed": false,
+    "reason": "A Checkout Session was created (B4-PAY-001) but cannot be completed via API: completion requires the hosted page or the Stripe CLI, neither of which is available here. The service Checkout-Session -> webhook path is therefore exercised by mocks only."
+  },
+  "verified_at": "2026-10-01T22:29:52.569Z",
+  "no_secret_written": true
+}

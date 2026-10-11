@@ -1,0 +1,68 @@
+{
+  "schema": "crp-production-private-runtime-provenance-v1",
+  "build_id": "crp-v1-34039d2b3b1f8896",
+  "manifest_digest": "34039D2B3B1F88963ECCE74698D2E5F4A71EFBC5CDEFF156BEB681D252E60171",
+  "git_head": "890721e05ce9f438912e5f884f18c3c745fadf9a",
+  "host": "creditregulatorpro.com",
+  "deployed_by": "root (authenticated SSH host operator; Codex owner execution)",
+  "owner_authorization": "October 9 explicit merge-commit-push-deploy to creditregulatorpro.com; protect other VPS domains",
+  "deployed_at": "2026-10-09T20:08:04.565453+00:00",
+  "scope": "Actual private production runtime activation; public routing and final production acceptance remain pending",
+  "production_accepted": false,
+  "public_routed": false,
+  "private_runtime_source_hashes_matched": true,
+  "actual_private_runtime": {
+    "build_id": "crp-v1-34039d2b3b1f8896",
+    "deployment": "production",
+    "billing_mode": "live"
+  },
+  "original_source_provenance": {
+    "file": "/opt/crp-wizard-production/releases/crp-v1-34039d2b3b1f8896/deployment-provenance.json",
+    "sha256": "3587eae75ec5d875b02e6a0df66419b4de0104b858cf147a6fa7dac8f8aaf232"
+  },
+  "original_private_activation": {
+    "file": "/opt/crp-wizard-production/candidate-activation.json",
+    "sha256": "2424789b60ad886e596cbc5fb9f3568f52335af6adae10582a04dea5c6cfe946"
+  },
+  "current_paid_test_acceptance_refs": [
+    {
+      "file": "production-acceptance-final-2026-10-09/phase1-receipt.json",
+      "sha256": "169038aa452b991684591e86a3cb9e071089a13c363dc1c5ad30890703a3f1fa"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/phase2-receipt.json",
+      "sha256": "31426ac4762df2c49a440a20e298985a282b2ce4bd45c3842e4e5e9901eb0d0f"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/provider-paid.json",
+      "sha256": "d76e5a188ffc64ca407da6b295e5f3428f7eab0dbc9d539930aa301d111cd225"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/download-receipt.json",
+      "sha256": "5c112b398e1cc1d4ac56e65829d88a40d53c4a65aa4c4fefffd286310d7c8c62"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/continuity-receipt.json",
+      "sha256": "8933e42881c6cbc6e587eacb64193ec0477f33d2236a84451226b8f708714736"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/provider-cancellation.json",
+      "sha256": "fe4c29ff5dbed31a8f4fe966dc1022763948eebc525a4076a2178e27eb6b4f7f"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/provider-cleanup.json",
+      "sha256": "36ba48c1a5f078f5301c15c5d1a30a8a526377b66e024dead6cbf8d6918b1803"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/cleanup-receipt.json",
+      "sha256": "32f7edce9d1e413159ee55cd51a8a9c9b2e9f23d36548c5168dfdf2bb208d36b"
+    },
+    {
+      "file": "production-acceptance-final-2026-10-09/review-receipt.json",
+      "sha256": "6cedb7dbbe191b085faaed8b7d59d921de76a5c2a41100c1770e1086b48fa760"
+    }
+  ],
+  "prepared_at": "2026-10-09T20:14:05.195Z",
+  "infrastructure_host": "hostinger-shared-vps (187.127.252.51)",
+  "provenance_kind": "Actual private production activation verified; public routing pending"
+}

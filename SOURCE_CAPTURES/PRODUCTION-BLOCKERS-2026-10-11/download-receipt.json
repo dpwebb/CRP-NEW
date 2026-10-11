@@ -1,0 +1,54 @@
+{
+  "fixture_scope": "staging-production-blockers-20261011",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "account_id": "acc_64a5eea7dbd629dc9c4be862",
+  "case_id": "case_1db830376067908681f14d06",
+  "recorded_at": "2026-10-11T12:53:39.587Z",
+  "version": "bc6f14807373078c5a1dfb37a7ae46e45234cc018ada1f990008ff00ed485933",
+  "approved": true,
+  "content_type": "application/pdf",
+  "pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+  "pdf_bytes": 322923,
+  "browser_pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+  "preview_pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+  "print_pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+  "actual_browser_download": true,
+  "preview_download_print_byte_equal": true,
+  "selected_source_pages": [
+    2,
+    3
+  ],
+  "documents": [
+    {
+      "filename": "fictional-passport.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 4,
+      "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-licence.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 5,
+      "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "document_type": "ADDRESS",
+      "packet_page": 6,
+      "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "exact_streams": true,
+      "exact_rendering": true
+    }
+  ],
+  "passed": true,
+  "navigation": {
+    "approval_preserved": true,
+    "version_preserved": true,
+    "pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+    "actual_browser_navigation": "Fresh root-loaded candidate; approved packet → Results → Help (FD23 build shown) → Print your packet; no edits"
+  }
+}

@@ -1,0 +1,907 @@
+{
+  "identity": {
+    "local_only": true,
+    "served_build_id": null
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T04:27:15.372Z",
+  "scope": "Active common-error checklist: supported report-data and scoped statutory-support paths tested locally. Source-linked report-data breaches may be platform violations; CRP does not determine legal findings. This record does not establish complete checklist coverage or hosted readiness.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "scope": "SUPPORTED_PATHS_ONLY",
+    "tests": [
+      {
+        "id": "al-common-errors",
+        "passed": true,
+        "assertions": 66,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "66 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "ct-owner-common-error-scope",
+        "passed": true,
+        "assertions": 357,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "357 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cw-common-error-rule-assessment",
+        "passed": true,
+        "assertions": 1142,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "1142 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cx-all82-required-report-data",
+        "passed": true,
+        "assertions": 575,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "575 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cy-common-error-predicate-repairs",
+        "passed": true,
+        "assertions": 81,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "81 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cz-common-error-packet-repairs",
+        "passed": true,
+        "assertions": 59,
+        "criteria": [
+          "supported_checklist_paths",
+          "checks_implemented",
+          "no_false_finding"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "59 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "da-common-error-reader-repairs",
+        "passed": true,
+        "assertions": 57,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "57 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "db-common-error-surface-repairs",
+        "passed": true,
+        "assertions": 17,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "17 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dc-consumer-violation-term",
+        "passed": true,
+        "assertions": 61,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "61 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "de-tu-ca-common-error-sources",
+        "passed": true,
+        "assertions": 130,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "130 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "df-us-common-error-reader",
+        "passed": true,
+        "assertions": 153,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "153 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dg-owned-reaging",
+        "passed": true,
+        "assertions": 321,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "321 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dh-ca-reader-completion",
+        "passed": true,
+        "assertions": 149,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "149 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "di-au-reader-completion",
+        "passed": true,
+        "assertions": 196,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "196 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dj-gb-reader-completion",
+        "passed": true,
+        "assertions": 175,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "175 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dk-reader-completion-integration",
+        "passed": true,
+        "assertions": 88,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "88 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dl-general-caption-sources",
+        "passed": true,
+        "assertions": 224,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "224 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dm-au-role-packet-evidence",
+        "passed": true,
+        "assertions": 99,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "99 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dn-us-dated-history",
+        "passed": true,
+        "assertions": 131,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "131 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "do-gb-history-definitions",
+        "passed": true,
+        "assertions": 102,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "102 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dp-us-cell-recovery",
+        "passed": true,
+        "assertions": 51,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "51 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dq-ca-printed-account-fields",
+        "passed": true,
+        "assertions": 130,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "130 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dr-reader-evidence-delivery",
+        "passed": true,
+        "assertions": 64,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "64 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "ds-column-caption-fields",
+        "passed": true,
+        "assertions": 124,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "124 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dt-rating-history-rows",
+        "passed": true,
+        "assertions": 120,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "120 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "du-column-reader-delivery",
+        "passed": true,
+        "assertions": 133,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "133 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dv-au-reference-delivery",
+        "passed": true,
+        "assertions": 127,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "127 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dw-us-history-completion",
+        "passed": true,
+        "assertions": 34,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "34 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dx-report-date-custody",
+        "passed": true,
+        "assertions": 206,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "206 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dy-reader-date-delivery",
+        "passed": true,
+        "assertions": 173,
+        "criteria": [
+          "supported_checklist_paths"
+        ],
+        "expected": "completed passing behavioral section",
+        "measured": "173 passed; 0 failed; 0 skipped"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/common-error-checklist.cjs",
+        "sha256": "2d89a50bf33b13ac8829032fce05feec377c497f5da34fc2cc8feb24a7940f19"
+      },
+      {
+        "file": "accelerated-launch/service/common-errors.cjs",
+        "sha256": "9e64e6cfb5ebe2601fb0ec22054d794581efc5492c8a089f9dc1a59c2a41b34d"
+      },
+      {
+        "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+        "sha256": "ddb415880e50e7940a515cecf4525c71bd3269d3362c0217b60070eb7ec95879"
+      },
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "accelerated-launch/service/issues.cjs",
+        "sha256": "67f447c84717c48d20535994ac8864adc3b82ff8fba06ab34e2a780ab2647141"
+      },
+      {
+        "file": "accelerated-launch/service/results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/packets.cjs",
+        "sha256": "8bf63f0028f8e156ca51d69d3c6d32b237666da461e9b39b6a78be5d25c65599"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "66d088738a1a235cbfa85f4924371dbe58eef2fd03bc35e3d4f6ee4f81ecc259"
+      },
+      {
+        "file": "accelerated-launch/service/reaging.cjs",
+        "sha256": "74a0891543d945b22031cf844dc1fe80b026bb4280086157b05945bf3696665f"
+      },
+      {
+        "file": "accelerated-launch/service/report-fact-sources.cjs",
+        "sha256": "16201a62ad8a71ad200b177924ef27a3e771768d87070bbaa0ab252f95d62778"
+      },
+      {
+        "file": "accelerated-launch/service/account-identity.cjs",
+        "sha256": "43aeb9e46a677d4107da839fb6dcbd400018707f21d56aef4b3d868bb8dd75a0"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
+        "sha256": "f0e1524f5a184842c3a0dd9fbf7975031d12bd4d5c18c37c6224d7a8671d5308"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+        "sha256": "f8b6f52bf2bf1f9f72c0d9457524e9081cc7ef7540d7695dbbeff58bd8fea640"
+      },
+      {
+        "file": "accelerated-launch/service/report-amount.cjs",
+        "sha256": "384b31822c1f3bed7e8f3e9e53f248a8682582bca5249881f84a27eb9729de33"
+      },
+      {
+        "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
+        "sha256": "3b884d809ac35603dbe388e9f572de3e1dbf4ffa92d28e3bff60c816059dde13"
+      },
+      {
+        "file": "accelerated-launch/service/report-code-definitions.cjs",
+        "sha256": "667f049067d609ea1eea332004b8ec869399b2e811bc551b737d22180cbacb67"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
+        "sha256": "736adf4be7ae33f212cb596809d2743e5b7091a9fdf13d92bc72f34d485e97ef"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+        "sha256": "5793ab635caaf57ea54d2e130dca16be554ee4c6c1f0c841ee1fbdbe28c5a028"
+      },
+      {
+        "file": "accelerated-launch/service/ocr/local-ocr.cjs",
+        "sha256": "0d86b3f237a3310464b13a6b0b2eafb24398db2ddcc521071d91da3223fea8f9"
+      },
+      {
+        "file": "accelerated-launch/service/payment-history-grid.cjs",
+        "sha256": "6d2da3430201347e50813c9eb4a0cc964ce1d08e2e4a6838745c2a13f243efef"
+      },
+      {
+        "file": "accelerated-launch/service/multi-file-assembly.cjs",
+        "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/out/current-regression-evidence.json",
+        "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+      },
+      {
+        "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-common-errors.cjs",
+        "sha256": "8b0c5a482bd2e3501bcb065eae4cb476afefb95abbc36fe5ac9239c73e7f85b6"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Current served-release common-error upload-to-selected-approved-packet evidence is pending."
+  },
+  "active_checklist": [
+    {
+      "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+      "label": "Account opened after it was closed"
+    },
+    {
+      "check_id": "COMMON-ERROR-STATUS-DATE-CONTRADICTION",
+      "label": "Account shown as open with a closing date"
+    },
+    {
+      "check_id": "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY",
+      "label": "Balances, overdue amounts or payments that do not match"
+    },
+    {
+      "check_id": "COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT",
+      "label": "Balance on a credit card or line of credit with a credit limit of $0"
+    },
+    {
+      "check_id": "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY",
+      "label": "Payment history that does not match other account details"
+    },
+    {
+      "check_id": "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY",
+      "label": "Conflicting details about who is responsible for an account"
+    },
+    {
+      "check_id": "COMMON-ERROR-DUPLICATE-REPORTING",
+      "label": "Duplicate account and collection entries"
+    },
+    {
+      "check_id": "COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING",
+      "label": "Similar accounts to review"
+    },
+    {
+      "check_id": "COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER",
+      "label": "Account first reported before it was opened"
+    },
+    {
+      "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+      "label": "Account reported after the report date"
+    },
+    {
+      "check_id": "COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL",
+      "label": "First missed-payment date moved to a later date"
+    },
+    {
+      "check_id": "COMMON-ERROR-IDENTITY-REVIEW",
+      "label": "Names, addresses and personal details to review"
+    },
+    {
+      "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+      "label": "Bad debt or collection without a first missed-payment date"
+    },
+    {
+      "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+      "label": "Write-off date missing for a debt marked as a loss"
+    },
+    {
+      "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+      "label": "Account marked closed or cancelled without a closing date"
+    },
+    {
+      "check_id": "COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING",
+      "label": "Required report details left blank"
+    },
+    {
+      "check_id": "COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID",
+      "label": "Paid or settled account still shown as unpaid"
+    },
+    {
+      "check_id": "COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE",
+      "label": "Last-payment or first missed-payment date errors"
+    },
+    {
+      "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+      "label": "Original debt and its collection both showing money owed"
+    },
+    {
+      "check_id": "COMMON-ERROR-REPORTING-PERIOD-EXCEEDED",
+      "label": "Entry appears after its applicable credit-reporting period"
+    },
+    {
+      "check_id": "LIMITATION-PERIOD-COURT-CLAIM",
+      "label": "Court deadlines and credit-report time limits",
+      "description": "A debt may stay on your report after the deadline to sue has passed. These are two separate time limits."
+    }
+  ],
+  "remaining": {
+    "re_aging": "Owned same-bureau fixed-obligation first-delinquency changes have a sourced verification mapping. Reader layouts without corroborated identity, sourced anchors or report dates remain gaps. Ordinary later delinquency does not establish re-aging or its absence.",
+    "reader_coverage": "These passing paths do not establish every field mapping or every checklist item for every report layout.",
+    "staging_journey": "Current served-release common-error upload-to-selected-approved-packet evidence is pending."
+  },
+  "coverage": {
+    "supported_checklist_paths": {
+      "passed": true,
+      "expected": "positive, benign and qualification controls on supported shared checklist paths",
+      "measured": "5345 assertions across 30 sections; full product run 14386 passed",
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/out/current-regression-evidence.json",
+          "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+        },
+        {
+          "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-common-errors.cjs",
+          "sha256": "8b0c5a482bd2e3501bcb065eae4cb476afefb95abbc36fe5ac9239c73e7f85b6"
+        }
+      ]
+    },
+    "complete_checklist_coverage": {
+      "passed": false,
+      "expected": "supported evidence mappings for all checklist items and relevant layouts",
+      "measured": "Owned same-bureau fixed-obligation first-delinquency changes have a sourced verification mapping. Reader layouts without corroborated identity, sourced anchors or report dates remain gaps. Ordinary later delinquency does not establish re-aging or its absence. These passing paths do not establish every field mapping or every checklist item for every report layout.",
+      "evidence_refs": []
+    }
+  },
+  "criteria": {
+    "checks_implemented": {
+      "passed": true,
+      "expected": "supported checklist mechanisms tested with positive and benign controls",
+      "measured": "5345 measured assertions; supported paths only; remaining mappings listed separately",
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/out/current-regression-evidence.json",
+          "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+        },
+        {
+          "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-common-errors.cjs",
+          "sha256": "8b0c5a482bd2e3501bcb065eae4cb476afefb95abbc36fe5ac9239c73e7f85b6"
+        }
+      ]
+    },
+    "no_false_finding": {
+      "passed": true,
+      "expected": "source-linked checklist assessments remain separate from raw comparisons; no legal findings",
+      "measured": "Passing common-rule, benign, retired-adapter, neutral-review and confidence-preservation controls",
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/out/current-regression-evidence.json",
+          "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+        },
+        {
+          "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-common-errors.cjs",
+          "sha256": "8b0c5a482bd2e3501bcb065eae4cb476afefb95abbc36fe5ac9239c73e7f85b6"
+        }
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "current served-release upload through selected approved packet",
+      "measured": "Current served-release common-error upload-to-selected-approved-packet evidence is pending.",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "al-common-errors",
+      "passed": true,
+      "assertions": 66,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "66 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "ct-owner-common-error-scope",
+      "passed": true,
+      "assertions": 357,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "357 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cw-common-error-rule-assessment",
+      "passed": true,
+      "assertions": 1142,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "1142 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cx-all82-required-report-data",
+      "passed": true,
+      "assertions": 575,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "575 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cy-common-error-predicate-repairs",
+      "passed": true,
+      "assertions": 81,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "81 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cz-common-error-packet-repairs",
+      "passed": true,
+      "assertions": 59,
+      "criteria": [
+        "supported_checklist_paths",
+        "checks_implemented",
+        "no_false_finding"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "59 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "da-common-error-reader-repairs",
+      "passed": true,
+      "assertions": 57,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "57 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "db-common-error-surface-repairs",
+      "passed": true,
+      "assertions": 17,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "17 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dc-consumer-violation-term",
+      "passed": true,
+      "assertions": 61,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "61 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "de-tu-ca-common-error-sources",
+      "passed": true,
+      "assertions": 130,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "130 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "df-us-common-error-reader",
+      "passed": true,
+      "assertions": 153,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "153 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dg-owned-reaging",
+      "passed": true,
+      "assertions": 321,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "321 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dh-ca-reader-completion",
+      "passed": true,
+      "assertions": 149,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "149 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "di-au-reader-completion",
+      "passed": true,
+      "assertions": 196,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "196 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dj-gb-reader-completion",
+      "passed": true,
+      "assertions": 175,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "175 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dk-reader-completion-integration",
+      "passed": true,
+      "assertions": 88,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "88 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dl-general-caption-sources",
+      "passed": true,
+      "assertions": 224,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "224 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dm-au-role-packet-evidence",
+      "passed": true,
+      "assertions": 99,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "99 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dn-us-dated-history",
+      "passed": true,
+      "assertions": 131,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "131 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "do-gb-history-definitions",
+      "passed": true,
+      "assertions": 102,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "102 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dp-us-cell-recovery",
+      "passed": true,
+      "assertions": 51,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "51 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dq-ca-printed-account-fields",
+      "passed": true,
+      "assertions": 130,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "130 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dr-reader-evidence-delivery",
+      "passed": true,
+      "assertions": 64,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "64 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "ds-column-caption-fields",
+      "passed": true,
+      "assertions": 124,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "124 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dt-rating-history-rows",
+      "passed": true,
+      "assertions": 120,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "120 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "du-column-reader-delivery",
+      "passed": true,
+      "assertions": 133,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "133 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dv-au-reference-delivery",
+      "passed": true,
+      "assertions": 127,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "127 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dw-us-history-completion",
+      "passed": true,
+      "assertions": 34,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "34 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dx-report-date-custody",
+      "passed": true,
+      "assertions": 206,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "206 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dy-reader-date-delivery",
+      "passed": true,
+      "assertions": 173,
+      "criteria": [
+        "supported_checklist_paths"
+      ],
+      "expected": "completed passing behavioral section",
+      "measured": "173 passed; 0 failed; 0 skipped"
+    }
+  ]
+}

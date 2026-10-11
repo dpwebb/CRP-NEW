@@ -1,8 +1,13 @@
 # BLOCKER-DISPUTE-PACKET-001 — consumer-ready dispute packets
 
+## October 11 controlling owner directive — bureau forms retired
+
+Read `CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md` first for dispute/correction packet work. All bureau-specific forms are retired from the approved packet scope across all bureaus and jurisdictions. Their generation, inclusion, separate preview links, form-only inputs and acceptance prerequisites are authorized for removal. This supersedes conflicting earlier form requirements. Preserve the consumer letter, selected evidence/supporting copies and review/approval, ownership, privacy and entitlement safeguards. Historical form-inclusive proof retains its original scope. Directive adoption and runtime removal are complete. Exact-build hosted form-free review/approval/download and unchanged-navigation verification passed on crp-v1-fd23f242f3d158bf, now deployed to live production. See SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/.
+
+
 Date: October 4, 2026 (America/Halifax). Authority: explicit owner instruction to include dispute-packet readiness as a production blocker.
 
-Implementation: OPEN. Staging: PENDING. Production: BLOCKED.
+Current status (October 11, FD23 exact candidate): Implementation CLOSED; staging VERIFIED; production DEPLOYED. Original blocker requirements below remain the governing acceptance criteria. Historical pending results retain their original scope.
 
 This is separate from finding coverage and all-82 facilitation. An assessment report, demonstration download, draft endpoint or generic letter alone does not prove a dispute packet is ready.
 

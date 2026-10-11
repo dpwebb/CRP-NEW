@@ -1,0 +1,11 @@
+{
+  "generated_by": "SOURCE_CAPTURES/B5-PREFLIGHT/prepare-matched-checkouts.cjs",
+  "matched": false,
+  "one_time_download": false,
+  "monthly_first_invoice_cents": null,
+  "annual_first_invoice_cents": null,
+  "provider_amounts": null,
+  "no_secret_written": true,
+  "verified_at": "2026-10-02T00:01:43.879Z",
+  "error": "TIMEOUT_WAITING_FOR_ELIGIBLE_CREDIT"
+}

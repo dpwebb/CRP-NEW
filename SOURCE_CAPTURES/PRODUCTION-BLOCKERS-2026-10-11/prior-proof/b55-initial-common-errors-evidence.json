@@ -1,0 +1,126 @@
+{
+  "passed": false,
+  "identity": {
+    "build_id": "crp-wizard-bc095afed6459b15",
+    "deployment": "staging"
+  },
+  "behavior": {
+    "implemented": [
+      "account-dates-contradictory",
+      "status-date-contradiction",
+      "balance-payment-inconsistency",
+      "payment-history-inconsistency (same-period contradiction only)",
+      "payment-history grid assembly (positioned headings/cells/legend, native + OCR)",
+      "responsibility-inconsistency (same-snapshot + corroborated only)",
+      "identity-review (report-internal name/address/alias/co-applicant, roles preserved, qualified review only)",
+      "duplicate-reporting (identity + additional compatible fact)",
+      "similar-entries-worth-reviewing",
+      "reported-dates-out-of-order",
+      "owned-same-bureau-fixed-obligation-first-delinquency-anchor-change",
+      "paid-or-settled-status-with-past-due",
+      "last-payment-or-first-delinquency-date-conflict",
+      "linked-original-and-collection-both-due",
+      "owner-list-of-19-across-82-jurisdictions-with-out-of-checklist-statutory-checks-retired"
+    ],
+    "distinct_amounts_extracted": [
+      "account.balance",
+      "account.pastDueAmount",
+      "account.paymentAmount",
+      "account.creditLimit",
+      "account.currency"
+    ],
+    "payment_history": "printed grid with periods, a code->meaning legend and raw cells; blank cells and unlisted codes are never guessed",
+    "responsibility": "printed individual/joint/authorized-user responsibility, preserved as distinct roles, never identity theft"
+  },
+  "remaining": {
+    "re_aging": "The owned same-bureau fixed-obligation first-delinquency mapping is supported. Readers without corroborated identity, sourced anchors or report dates remain explicit gaps. Ordinary later delinquency does not establish re-aging or its absence.",
+    "responsibility_image_or_ocr": "no deployed image/OCR demonstration of the responsibility check (payment-history grid is demonstrated via native and OCR positions)",
+    "real_browser_clarification": "no real-browser demonstration of the consumer clarification interface (node:vm only; endpoint responses are not browser usability evidence)"
+  },
+  "tests": [
+    {
+      "id": "al-common-errors",
+      "passed": true
+    },
+    {
+      "id": "ct-owner-common-error-scope",
+      "passed": true
+    },
+    {
+      "id": "cy-common-error-predicate-repairs",
+      "passed": true
+    },
+    {
+      "id": "cz-common-error-packet-repairs",
+      "passed": true
+    },
+    {
+      "id": "da-common-error-reader-repairs",
+      "passed": true
+    },
+    {
+      "id": "db-common-error-surface-repairs",
+      "passed": true
+    },
+    {
+      "id": "dc-consumer-violation-term",
+      "passed": true
+    },
+    {
+      "id": "de-tu-ca-common-error-sources",
+      "passed": true
+    },
+    {
+      "id": "df-us-common-error-reader",
+      "passed": true
+    },
+    {
+      "id": "dg-owned-reaging",
+      "passed": true
+    },
+    {
+      "id": "dh-ca-reader-completion",
+      "passed": true
+    },
+    {
+      "id": "di-au-reader-completion",
+      "passed": true
+    },
+    {
+      "id": "dj-gb-reader-completion",
+      "passed": true
+    },
+    {
+      "id": "dk-reader-completion-integration",
+      "passed": true
+    },
+    {
+      "id": "dl-general-caption-sources",
+      "passed": true
+    },
+    {
+      "id": "dm-au-role-packet-evidence",
+      "passed": true
+    },
+    {
+      "id": "dn-us-dated-history",
+      "passed": true
+    },
+    {
+      "id": "do-gb-history-definitions",
+      "passed": true
+    },
+    {
+      "id": "dp-us-cell-recovery",
+      "passed": true
+    },
+    {
+      "id": "dq-ca-printed-account-fields",
+      "passed": true
+    },
+    {
+      "id": "dr-reader-evidence-delivery",
+      "passed": true
+    }
+  ]
+}

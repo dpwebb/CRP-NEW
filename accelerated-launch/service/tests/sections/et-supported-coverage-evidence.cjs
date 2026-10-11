@@ -25,11 +25,6 @@ function fixture(root) {
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.copyFileSync(path.join(SOURCE_ROOT, relative), target);
   }
-  const catalog = require('../../bureau-forms/catalog.json');
-  for (const form of catalog.forms) {
-    const relative = 'accelerated-launch/service/bureau-forms/' + form.filename;
-    fs.copyFileSync(path.join(SOURCE_ROOT, relative), path.join(root, relative));
-  }
   // Before serial integration, the root-owned domain section may be absent in
   // this writer's worktree. Its placeholder exists only in this controlled temp
   // fixture, carries no domain proof and cannot be emitted as release evidence.
@@ -54,8 +49,8 @@ function fixture(root) {
   set('dg-owned-reaging', { jurisdictions: 82 });
   set('dl-general-caption-sources', { gb_field_contract: { approved_downloads: 4, source_isolation: true,
     regions: ['GB-ENG', 'GB-NIR', 'GB-SCT', 'GB-WLS'] } });
-  set('es-filled-packet-business-letter', { owned_actual_pdf_review: true, original_form_approval_digest: true,
-    name_parts_not_guessed: true, ordinary_business_letter: true });
+  set('es-filled-packet-business-letter', { owned_actual_pdf_review: true, form_free_approval_digest: true,
+    form_only_inputs_not_required: true, ordinary_business_letter: true });
   set('eh-packet-report-exhibits', { both_reaging_sources: true, review_and_approval_binding: true,
     selected_issue_sources_only: true, automatically_included_relevant_pages: true });
   set('by-packet-reconciliation', { emitted_findings_reconciled: [{ adapter_id: 'FCRA-605A-4-US-NATIONAL-7Y', eligible: true, issues: 1 }] });
@@ -90,7 +85,7 @@ async function run(t, check) {
     check.equal(validator.validateImplementationEvidence(accepted, { sourceRoot: root, requiredCriteria: CRITERIA }).passed, true,
       'derived criterion bindings and actual source/evidence hashes satisfy the shared local closure validator');
     check.equal(accepted.passed, false, 'local coverage never becomes a hosted release pass');
-    check.equal(accepted.criteria.end_to_end_journey.passed, false, 'latest paid hosted original-form packet remains pending');
+    check.equal(accepted.criteria.end_to_end_journey.passed, false, 'latest paid hosted form-free packet remains pending');
     check.equal(validator.validateCapabilityStatus(accepted, { sourceRoot: root, baseDir: root,
       targetBuildId: 'fictional-current-host', requiredCriteria: CRITERIA }).staging_status, 'PENDING_VERIFICATION',
       'local proof cannot satisfy served-build acceptance');
@@ -121,7 +116,7 @@ async function run(t, check) {
       ['duplicate region replacing a promised region', execution => { const rows = section(execution, 'o-all82-infrastructure').evidence.regions_exercised; rows[1] = rows[0]; }],
       ['mandatory statute gate', execution => { section(execution, 'cw-common-error-rule-assessment').evidence.statutory_gate = true; }],
       ['missing one UK approved packet', execution => { section(execution, 'dl-general-caption-sources').evidence.gb_field_contract.approved_downloads = 3; }],
-      ['unreviewed original form', execution => { section(execution, 'es-filled-packet-business-letter').evidence.original_form_approval_digest = false; }],
+      ['unreviewed original form', execution => { section(execution, 'es-filled-packet-business-letter').evidence.form_free_approval_digest = false; }],
       ['retired statutory candidate', execution => { section(execution, 'by-packet-reconciliation').evidence.emitted_findings_reconciled[0].adapter_id = 'CA-NS-CRA-S10-3-F-DISMISSED-CHARGE'; }],
       ['unavailable real Canadian family specimen', execution => { section(execution, 'w-ca-second-bureau-format').evidence.specimens_available.transunion_ca = false; }],
       ['unmeasured US sample reader', execution => { section(execution, 'p-us-consumer-format').evidence.real_evidence.accounts_read = 0; }],
@@ -158,10 +153,6 @@ async function run(t, check) {
     fs.appendFileSync(source, '\n// changed after the measured execution\n');
     check.equal(build(baseline).implementation.configured, false, 'actual current source changes invalidate frozen acceptance without editing proof flags');
     fs.writeFileSync(source, originalSource);
-    const template = path.join(root, 'accelerated-launch/service/bureau-forms/ca-transunion.pdf'), originalTemplate = fs.readFileSync(template);
-    fs.appendFileSync(template, '\nchanged-original');
-    check.equal(build(baseline).implementation.configured, false, 'changed original PDF bytes invalidate proof even when executable source hashes match');
-    fs.writeFileSync(template, originalTemplate);
     build(baseline);
     const altered = clone(baseline); altered.sections[0].evidence = { forged: true };
     check.equal(coverage.buildEvidence({ execution: altered, regressionFile, sourceRoot: root }).implementation.configured, false,
@@ -172,7 +163,7 @@ async function run(t, check) {
     check.equal(coverage.main({ sourceRoot: root, regressionFile, outputFile }).implementation.status, 'OPEN',
       'missing evidence produces explicit OPEN status instead of retaining a prior pass');
     return { scope: 'controlled temporary coverage-evidence fixtures only', release_proof_created: false,
-      refusals: 'incomplete, stale, failed, wrong-source, missing-positive and changed-original proof', hosted_status: 'PENDING' };
+      refusals: 'incomplete, stale, failed, wrong-source, missing-positive and changed-source proof', hosted_status: 'PENDING' };
   } finally {
     const resolved = path.resolve(root), temp = path.resolve(os.tmpdir());
     if (path.dirname(resolved) !== temp || !path.basename(resolved).startsWith('crp-supported-coverage-')) throw Error('Unsafe test fixture cleanup path');

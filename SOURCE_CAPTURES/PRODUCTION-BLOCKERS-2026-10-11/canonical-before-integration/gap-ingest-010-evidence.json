@@ -1,0 +1,637 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "tests": [
+    {
+      "id": "runtime_provenance",
+      "passed": true,
+      "measured": {
+        "local_files": 61,
+        "local_mismatches": 0,
+        "remote": {
+          "build": "crp-wizard-acca8b714f2f08ae",
+          "files": 61,
+          "mismatches": 0
+        },
+        "health": {
+          "ok": true,
+          "build_id": "crp-wizard-acca8b714f2f08ae",
+          "deployment": "staging",
+          "billing_mode": "test",
+          "launch_ready": false
+        }
+      }
+    },
+    {
+      "id": "native-100-pages.pdf",
+      "passed": true,
+      "measured": {
+        "pages": 100,
+        "input_bytes": 67740,
+        "status": 201,
+        "elapsed_ms": 3706,
+        "container": "PDF",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "scanned-12-pages.pdf",
+      "passed": true,
+      "measured": {
+        "pages": 12,
+        "input_bytes": 769108,
+        "status": 201,
+        "elapsed_ms": 14885,
+        "container": "PDF",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "scan_page_budget",
+      "passed": true,
+      "measured": {
+        "pages": 41,
+        "status": 201,
+        "elapsed_ms": 1825,
+        "container": "PDF",
+        "supported": false,
+        "extraction": {
+          "extraction_ran": false,
+          "presentation_evidence": false,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": false,
+          "accounts_read": 0,
+          "accounts_with_readable_date": 0,
+          "result_status": "UNSUPPORTED_PRESENTATION"
+        },
+        "refusal": "UNREADABLE_DOCUMENT",
+        "recovery": "Export HEIC/HEIF or TIFF images as PNG/JPEG, or combine pages into a PDF. ZIP archives are not accepted. Scanned PDFs are read up to 40 pages per file; split longer scans into parts of at most 40 pages. For files over 10 MB, export a smaller readable PDF or split at page boundaries into parts under 10 MB; keep every page in order and preserve the printed report header/reference date with each part. Combine screenshot pages into a PDF if more than 8 files are needed. Check the saved file list after an interrupted upload; retry pending files only. Delete an unneeded case to free account storage."
+      }
+    },
+    {
+      "id": "readable_screenshot_1",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1192,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_2",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1348,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_3",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1104,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_4",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1132,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_5",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1116,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_6",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1184,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_7",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1149,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_screenshot_8",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1167,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "eight_file_boundary",
+      "passed": true,
+      "measured": {
+        "accepted": 8,
+        "ninth": {
+          "status": 409,
+          "elapsed_ms": 192,
+          "code": "FILE_COUNT_LIMIT_REACHED"
+        },
+        "files_after": 8
+      }
+    },
+    {
+      "id": "forty_MiB_boundary",
+      "passed": true,
+      "measured": {
+        "existing_bytes": 5463,
+        "accepted_files": 4,
+        "accepted_bytes": 41937577,
+        "total_account_bytes": 41943040,
+        "extra": {
+          "status": 409,
+          "elapsed_ms": 433,
+          "code": "ACCOUNT_STORAGE_QUOTA_EXCEEDED"
+        },
+        "files_after": 4
+      }
+    },
+    {
+      "id": "lost_receipt_retry",
+      "passed": true,
+      "measured": {
+        "same_file_id": true,
+        "files_after": 1,
+        "status": 201,
+        "elapsed_ms": 360,
+        "container": "PDF",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "readable_jpeg",
+      "passed": true,
+      "measured": {
+        "status": 201,
+        "elapsed_ms": 1186,
+        "container": "IMAGE",
+        "supported": true,
+        "extraction": {
+          "extraction_ran": true,
+          "presentation_evidence": true,
+          "support": "ACTUAL_REPORT_EVIDENCE",
+          "reference_date_read": true,
+          "accounts_read": 1,
+          "accounts_with_readable_date": 1,
+          "result_status": "RESOLVED"
+        }
+      }
+    },
+    {
+      "id": "photo.heic",
+      "passed": true,
+      "measured": {
+        "status": 400,
+        "elapsed_ms": 137,
+        "code": "UNSUPPORTED_FILE_TYPE",
+        "guidance": "That file type is not supported. Upload PDF, PNG or JPEG. Convert HEIC or TIFF to PNG/JPEG or PDF first.",
+        "files_unchanged": true
+      }
+    },
+    {
+      "id": "photo.tiff",
+      "passed": true,
+      "measured": {
+        "status": 400,
+        "elapsed_ms": 143,
+        "code": "UNSUPPORTED_FILE_TYPE",
+        "guidance": "That file type is not supported. Upload PDF, PNG or JPEG. Convert HEIC or TIFF to PNG/JPEG or PDF first.",
+        "files_unchanged": true
+      }
+    },
+    {
+      "id": "report.zip",
+      "passed": true,
+      "measured": {
+        "status": 400,
+        "elapsed_ms": 132,
+        "code": "UNSUPPORTED_FILE_TYPE",
+        "guidance": "That file type is not supported. Upload PDF, PNG or JPEG. Convert HEIC or TIFF to PNG/JPEG or PDF first.",
+        "files_unchanged": true
+      }
+    },
+    {
+      "id": "oversize",
+      "passed": true,
+      "measured": {
+        "status": 400,
+        "elapsed_ms": 3448,
+        "code": "FILE_TOO_LARGE",
+        "guidance": "That file is larger than the 10MB limit. Export a smaller readable PDF or split at page boundaries into parts under 10MB; retain every page and its report context."
+      }
+    },
+    {
+      "id": "image_resource_cap",
+      "passed": true,
+      "measured": {
+        "status": 400,
+        "elapsed_ms": 165,
+        "code": "IMAGE_DIMENSIONS_TOO_LARGE"
+      }
+    },
+    {
+      "id": "purchased_journey",
+      "passed": true,
+      "measured": {
+        "fresh_upload": 201,
+        "report_pages": 100,
+        "evaluate": 201,
+        "view": 200,
+        "download": 200,
+        "download_bytes": 2900,
+        "existing_purchase": true
+      }
+    },
+    {
+      "id": "browser_partial_upload_retry",
+      "passed": true,
+      "expected": "First file remains saved; failed second file alone retries.",
+      "measured": {
+        "initial_saved": 1,
+        "initial_pending": 1,
+        "final_saved": 2,
+        "final_pending": 0,
+        "requests": 3,
+        "first_file_preserved": true
+      }
+    },
+    {
+      "id": "production-final-freeze:u-hardening",
+      "passed": true,
+      "assertions": 108,
+      "criteria": [
+        "upload_limits",
+        "container_handling"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "108 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:ak-ingest-008-009-010",
+      "passed": true,
+      "assertions": 42,
+      "criteria": [
+        "upload_limits",
+        "container_handling"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "42 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    }
+  ],
+  "criteria": {
+    "upload_limits": {
+      "passed": false,
+      "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U.",
+      "measured": "implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ak-ingest-008-009-010.cjs",
+        "accelerated-launch/service/tests/sections/u-hardening.cjs"
+      ]
+    },
+    "container_handling": {
+      "passed": false,
+      "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U.",
+      "measured": "implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ak-ingest-008-009-010.cjs",
+        "accelerated-launch/service/tests/sections/u-hardening.cjs"
+      ]
+    }
+  },
+  "scope": "Synthetic development examples; tests establish container, limits and recovery behavior, not universal extraction accuracy or authenticity. Existing legitimate sandbox purchase reused; no entitlement grant.",
+  "measured_at": "2026-10-11T12:36:07.054Z",
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; no deployed, current-release journey evidence exists for this gate, so staging verification and production readiness remain unresolved (OWNER-CLOSURE-001)."
+  },
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ak-ingest-008-009-010:upload_limits",
+        "passed": true,
+        "criteria": [
+          "upload_limits"
+        ],
+        "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U.",
+        "measured": "ak-ingest-008-009-010 (42 assertions), u-hardening (108 assertions) pass; implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded"
+      },
+      {
+        "id": "ak-ingest-008-009-010:container_handling",
+        "passed": true,
+        "criteria": [
+          "container_handling"
+        ],
+        "expected": "Actual published eight-file limits and ZIP refusal; boundary/container/flood tests from frozen AK/U.",
+        "measured": "ak-ingest-008-009-010 (42 assertions), u-hardening (108 assertions) pass; implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/uploads.cjs",
+        "sha256": "25904c79938706be6e1cb8ea340517f8a78a3e3ab1bfc5daea7a813463832405"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ak-ingest-008-009-010.cjs",
+        "sha256": "50bfeb4d06a30479a59b84d0da28136cb4d3ad5089d2a700567e175faa4a95f6"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/u-hardening.cjs",
+        "sha256": "31c1768e4b11fe0a544c707c6955addc478ac7ee8ab709e9e4d3c251324f86ac"
+      }
+    ]
+  },
+  "reconciliation": {
+    "note": "Translated from this gate own pre-closure evidence record already on disk plus its dedicated passing section. No coverage was invented, no source or permission was changed, and no hosted or served result is asserted.",
+    "scope": "realistic upload/image-set limits and container handling: page and file budgets, unsupported containers (HEIC/TIFF/ZIP) and oversize inputs are refused with a named reason rather than silently truncated",
+    "previously_recorded_passed": false,
+    "sections": [
+      {
+        "id": "ak-ingest-008-009-010",
+        "passed": 42
+      },
+      {
+        "id": "u-hardening",
+        "passed": 108
+      }
+    ]
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-34039d2b3b1f8896",
+    "original_canonical_sha256": "d6bb08b36298ad6e9e94c0c8594c315165d41238432006660d4b3af08dd40202",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "ak-ingest-008-009-010:upload_limits",
+          "passed": true,
+          "criteria": [
+            "upload_limits"
+          ],
+          "expected": "10 MiB/file, eight files/case, 40 MiB/account, image dimensions and 40-page scanned-PDF reading budget enforced; refused files do not change saved file counts; partial upload retries preserve earlier success.",
+          "measured": "ak-ingest-008-009-010 (42 assertions), u-hardening (108 assertions) pass; implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded"
+        },
+        {
+          "id": "ak-ingest-008-009-010:container_handling",
+          "passed": true,
+          "criteria": [
+            "container_handling"
+          ],
+          "expected": "100-page native report, 12-page readable scan, eight readable PNG pages and JPEG accepted; HEIC/TIFF/ZIP refused with conversion guidance; oversized scan remains unread rather than complete.",
+          "measured": "ak-ingest-008-009-010 (42 assertions), u-hardening (108 assertions) pass; implemented and tested locally (ak-ingest-008-009-010, u-hardening); served-release verification not recorded"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/uploads.cjs",
+          "sha256": "25904c79938706be6e1cb8ea340517f8a78a3e3ab1bfc5daea7a813463832405"
+        },
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "sha256": "ec8fd6e9757e30b3792749a79bf7d3ffe57b7ffd4adb0a0b920c9799bdbb6c7e"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/ak-ingest-008-009-010.cjs",
+          "sha256": "50bfeb4d06a30479a59b84d0da28136cb4d3ad5089d2a700567e175faa4a95f6"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/u-hardening.cjs",
+          "sha256": "31c1768e4b11fe0a544c707c6955addc478ac7ee8ab709e9e4d3c251324f86ac"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-acceptance-final-2026-10-09/phase1-receipt.json",
+        "sha256": "169038aa452b991684591e86a3cb9e071089a13c363dc1c5ad30890703a3f1fa",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-paid.json",
+        "sha256": "d76e5a188ffc64ca407da6b295e5f3428f7eab0dbc9d539930aa301d111cd225",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/review-receipt.json",
+        "sha256": "6cedb7dbbe191b085faaed8b7d59d921de76a5c2a41100c1770e1086b48fa760",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/download-receipt.json",
+        "sha256": "5c112b398e1cc1d4ac56e65829d88a40d53c4a65aa4c4fefffd286310d7c8c62",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/continuity-receipt.json",
+        "sha256": "8933e42881c6cbc6e587eacb64193ec0477f33d2236a84451226b8f708714736",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/phase2-receipt.json",
+        "sha256": "31426ac4762df2c49a440a20e298985a282b2ce4bd45c3842e4e5e9901eb0d0f",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-cleanup.json",
+        "sha256": "36ba48c1a5f078f5301c15c5d1a30a8a526377b66e024dead6cbf8d6918b1803",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/cleanup-receipt.json",
+        "sha256": "32f7edce9d1e413159ee55cd51a8a9c9b2e9f23d36548c5168dfdf2bb208d36b",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/checkout-receipt.json",
+        "sha256": "e884ed2ce987afb2ae3dc1ee1f9254e83c4e8c31b7d7285f53ff2cbdf7fabb35",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/input-manifest.json",
+        "sha256": "9f04da60111c6abaf35d9c92bf0819263ef98991026bff1daaa5de4fd90ca40e",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/download-receipt.json",
+        "sha256": "2edff72885986c28f2338b1ed6ff09a2abdd17ba00b0a789b296fdefd87d6783",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/review-receipt.json",
+        "sha256": "c879e896db8f619cdfc8f3f1f1a258ecd802a524e51a1a3d306ec732074ac5c3",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-purchase-2026-10-08/hosted-upgrade-verification.json",
+        "sha256": "be56dd356ace5cccdfc1343521b0d31cee75f2de0c1db8e59f8206c72f82ad69",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/cancellation_proof.json",
+        "sha256": "4cb8c90da7e51fcf143382ac47cf29cefb082ca08386445e9bf1d78a54a02ad5",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/provider_cleanup.json",
+        "sha256": "43951b4733a23bc5ec5cb8cffd2cb00d72a9f3457560dc5964c20f7067994c67",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "fdt-mitigation-evidence.json",
+        "sha256": "88bc5b51d5ef8f205e76fc72633f4a9b30be84d5fa29550ba92fd2d3deb4273a",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-reconcile-2026-10-09/measurements.json",
+    "prepared_at": "2026-10-09T20:19:45.147Z",
+    "canonical_evidence_written": false
+  }
+}

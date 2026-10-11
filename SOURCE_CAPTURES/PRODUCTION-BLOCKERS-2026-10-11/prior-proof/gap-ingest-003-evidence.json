@@ -1,0 +1,661 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.657Z",
+  "scope": "GAP-INGEST-003 revalidated on the current release after the GAP-FINDING-001 shared-runtime change. OCR/coordinate code is unchanged; fresh served-runtime OCR (with the service environment sourced) re-verified the field facts, and the seven-fixture HTTP journey re-ran upload/evaluate/view/download. Payment and entitlement re-verified. No identity replacement: every criterion was re-run.",
+  "criteria": {
+    "ocr_confidence_preserved": {
+      "passed": false,
+      "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts.",
+      "measured": "implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs"
+      ]
+    },
+    "coordinates_preserved": {
+      "passed": false,
+      "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts.",
+      "measured": "implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "decisive_date_and_independent_account",
+      "passed": true,
+      "measured": {
+        "location": {
+          "page": 1,
+          "line": 3,
+          "source": "LOCAL_OCR",
+          "confidence": 88.4,
+          "min_confidence": 40.111015,
+          "trusted": true,
+          "bbox": {
+            "x0": 83,
+            "y0": 218,
+            "x1": 593,
+            "y1": 246
+          }
+        },
+        "canonical_date_absent": true
+      }
+    },
+    {
+      "id": "decisive_amount_and_independent_date",
+      "passed": true,
+      "measured": {
+        "raw": "$1.24",
+        "location": {
+          "page": 1,
+          "line": 3,
+          "source": "LOCAL_OCR",
+          "confidence": 90.6,
+          "min_confidence": 63.756836,
+          "trusted": true,
+          "bbox": {
+            "x0": 83,
+            "y0": 218,
+            "x1": 587,
+            "y1": 245
+          }
+        }
+      }
+    },
+    {
+      "id": "bureau_and_conflicting_entries_preserved",
+      "passed": true,
+      "measured": {
+        "bureaus": [
+          "Equifax",
+          "Experian"
+        ],
+        "conflicting_dates": [
+          "2021-01-01",
+          "2022-02-02"
+        ]
+      }
+    },
+    {
+      "id": "applicable_statutory_comparison_suppressed_when_decisive_date_uncertain",
+      "passed": true,
+      "measured": {
+        "clear_rule": {
+          "record_index": 1,
+          "check": {
+            "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+            "citation": "FCRA § 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
+            "limb": "cases under title 11 or a similar provision, from the date of entry of the order for relief or the date of adjudication",
+            "output_ceiling": "violation",
+            "packet_eligible": false,
+            "source_entry_id": "CRP-LSRC-0004",
+            "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+          },
+          "machine": {
+            "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+            "legacy_rule_id": "us.bankruptcy.10y",
+            "source_entry_id": "CRP-LSRC-0004",
+            "requested_jurisdiction": {
+              "country": "US",
+              "region": "US-NY"
+            },
+            "applicability": {
+              "state": "CONFIRMED_FEDERAL_PROHIBITION_APPLIES",
+              "confirmed": true,
+              "confirmation_required": false,
+              "basis": "the recorded prohibition is addressed to \"any consumer reporting agency\" with no geographic limitation, and the recorded enforcement provision empowers enforcement against \"consumer reporting agencies and all other persons subject thereto ... irrespective of whether that person is engaged in commerce or meets any other jurisdictional tests under the Federal Trade Commission Act\"",
+              "relation_id": "US-FCRA-15-USC-1681C-COUNTRY-WIDE",
+              "relation_class": "STATE_OR_FEDERAL_DISTRICT",
+              "instrument": "Fair Credit Reporting Act, 15 U.S.C. 1681 et seq. (the recorded ss. 605(a)(1)-(a)(5) rows)",
+              "instrument_class": "FEDERAL_STATUTE",
+              "execution": "EXECUTABLE_ON_THE_ADMITTED_US_CONSUMER_DISCLOSURE_FAMILY",
+              "region_specific_report_retention_rule_recorded": "NOT_REVIEWED_HERE — this relation records the federal reach only; a region-specific instrument is a separate record, never a sub-clause of this one",
+              "no_recorded_source_row": false,
+              "unconfirmed_dependency": null
+            },
+            "output_ceiling": "violation",
+            "finding_emitted": false,
+            "packet_eligible": false,
+            "report": {
+              "bankruptcyDischargeDates": []
+            },
+            "state": "EVALUATED",
+            "fact_status": "RESOLVED",
+            "outcome": "PERIOD_EXCEEDED",
+            "anchor": {
+              "field": "publicRecord.bankruptcyOrderForReliefDate",
+              "iso": "2011-01-01",
+              "value_as_supplied": "2011-01-01",
+              "selection_rule": "FIRST_RESOLVED_FIELD_IN_DECLARED_PRIORITY",
+              "source": {
+                "raw_value": "01/01/2011",
+                "normalized_value": "2011-01-01",
+                "location": {
+                  "page": 1,
+                  "line": 3,
+                  "source": "LOCAL_OCR",
+                  "confidence": 96.6,
+                  "min_confidence": 95.907951,
+                  "trusted": true,
+                  "bbox": {
+                    "x0": 85,
+                    "y0": 221,
+                    "x1": 595,
+                    "y1": 241
+                  }
+                },
+                "normalization": {
+                  "from": "01/01/2011",
+                  "to": "2011-01-01"
+                },
+                "uncertainty": {
+                  "status": "RESOLVED",
+                  "reason": null,
+                  "precision": "DAY"
+                },
+                "source_field": "RELIEF",
+                "section_path": null,
+                "record_index": 1
+              }
+            },
+            "arithmetic": {
+              "outcome": "PERIOD_EXCEEDED",
+              "reason": null,
+              "anchor_date": "2011-01-01",
+              "reference_date": "2026-06-12",
+              "anniversary": "2021-01-01",
+              "intervening_days": 5641,
+              "period_span_in_days": 3653,
+              "boundary_case": null,
+              "period_years": 10,
+              "comparison": "intervening_days > period_span_in_days",
+              "period_basis": "CALENDAR_YEARS_FROM_THE_ANCHOR_DATE — the anniversary is computed and the day span is derived from the two dates; no day count is hard-coded",
+              "anniversary_boundary_convention": "the anniversary day is inside the period, so the period is exceeded only after it; whether \"more than N years after\" is inclusive or exclusive of that day is a legal question reserved to the rule record",
+              "leap_year_handling": "a 29 February start maps to 28 February in a non-leap target year (month-end clamp); a span containing two leap days is one day wider than one containing a single leap day",
+              "clock_independence": "the evaluation reads no clock, locale, time zone, host or session state"
+            },
+            "refusal_reason": null,
+            "evaluation": {
+              "selected_jurisdiction": {
+                "country": "US",
+                "region": "US-NY"
+              },
+              "rule_identity": {
+                "adapter_id": "FCRA-605A-1-US-NATIONAL-10Y",
+                "citation": "FCRA § 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
+                "source_entry_id": "CRP-LSRC-0004",
+                "legacy_rule_id": "us.bankruptcy.10y",
+                "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+                "source_artifact": "packages\\\\backend\\\\src\\\\services\\\\legalRules.ts",
+                "ledger_row_ids": [
+                  "CRP-LSRC-0004"
+                ]
+              },
+              "required_facts": [
+                {
+                  "field": "publicRecord.bankruptcyOrderForReliefDate",
+                  "role": "anchor",
+                  "resolved": true,
+                  "iso": "2011-01-01",
+                  "value_as_supplied": "2011-01-01",
+                  "selection_rule": "FIRST_RESOLVED_FIELD_IN_DECLARED_PRIORITY",
+                  "source": {
+                    "raw_value": "01/01/2011",
+                    "normalized_value": "2011-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 3,
+                      "source": "LOCAL_OCR",
+                      "confidence": 96.6,
+                      "min_confidence": 95.907951,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 85,
+                        "y0": 221,
+                        "x1": 595,
+                        "y1": 241
+                      }
+                    },
+                    "normalization": {
+                      "from": "01/01/2011",
+                      "to": "2011-01-01"
+                    },
+                    "uncertainty": {
+                      "status": "RESOLVED",
+                      "reason": null,
+                      "precision": "DAY"
+                    },
+                    "source_field": "RELIEF",
+                    "section_path": null,
+                    "record_index": 1
+                  }
+                }
+              ],
+              "reference_date": {
+                "resolved": true,
+                "iso": "2026-06-12"
+              },
+              "timing": {
+                "outcome": "PERIOD_EXCEEDED",
+                "reason": null,
+                "anchor_date": "2011-01-01",
+                "reference_date": "2026-06-12",
+                "anniversary": "2021-01-01",
+                "intervening_days": 5641,
+                "period_span_in_days": 3653,
+                "boundary_case": null,
+                "period_years": 10,
+                "comparison": "intervening_days > period_span_in_days",
+                "period_basis": "CALENDAR_YEARS_FROM_THE_ANCHOR_DATE — the anniversary is computed and the day span is derived from the two dates; no day count is hard-coded",
+                "anniversary_boundary_convention": "the anniversary day is inside the period, so the period is exceeded only after it; whether \"more than N years after\" is inclusive or exclusive of that day is a legal question reserved to the rule record",
+                "leap_year_handling": "a 29 February start maps to 28 February in a non-leap target year (month-end clamp); a span containing two leap days is one day wider than one containing a single leap day",
+                "clock_independence": "the evaluation reads no clock, locale, time zone, host or session state"
+              },
+              "conditions": [],
+              "exceptions": {
+                "evaluation_required": true,
+                "basis": "15 U.S.C. § 1681c(b): the § 1681c(a)(1)-(5) prohibitions do not apply to a consumer report to be used in connection with (1) a credit transaction involving, or expected to involve, $150,000 or more; (2) the underwriting of life insurance involving, or expected to involve, $150,000 or more; or (3) the employment of an individual at an annual salary of $75,000 or more",
+                "items": [
+                  {
+                    "id": "credit-transaction-150k",
+                    "text": "the report is used in connection with a credit transaction involving $150,000 or more",
+                    "report_observable": false,
+                    "applies": null,
+                    "resolved": false,
+                    "evaluation_basis": "recorded and off-report; not determinable from the report"
+                  },
+                  {
+                    "id": "life-insurance-150k",
+                    "text": "the report is used for the underwriting of life insurance involving $150,000 or more",
+                    "report_observable": false,
+                    "applies": null,
+                    "resolved": false,
+                    "evaluation_basis": "recorded and off-report; not determinable from the report"
+                  },
+                  {
+                    "id": "employment-75k",
+                    "text": "the report is used for the employment of an individual at an annual salary of $75,000 or more",
+                    "report_observable": false,
+                    "applies": null,
+                    "resolved": false,
+                    "evaluation_basis": "recorded and off-report; not determinable from the report"
+                  }
+                ],
+                "unresolved_exception_present": true
+              },
+              "breach_established": false,
+              "predicates_resolved": true,
+              "decisive_facts_unavailable": [],
+              "observation_incomplete": false,
+              "policy": {
+                "policy_id": "OWNER-EVIDENCE-001",
+                "version": "1.0",
+                "digest": "d48e463375a2b7fb1497a3fa2f51cd9683863a3f2b37a11cf38e455811e8cb47"
+              }
+            },
+            "finding": null
+          }
+        },
+        "blur_unresolved": [
+          {
+            "account_number_in_report": 1,
+            "bureau": "Experian",
+            "kind": "date",
+            "label": "RELIEF",
+            "raw_reading": "01/01/2011",
+            "accepted_as_fact": false,
+            "reason": "LOW_CONFIDENCE_OCR_READING_ON_DECISIVE_CHARACTERS",
+            "location": {
+              "page": 1,
+              "line": 3,
+              "source": "LOCAL_OCR",
+              "confidence": 84.8,
+              "min_confidence": 14.597778,
+              "trusted": true,
+              "bbox": {
+                "x0": 85,
+                "y0": 221,
+                "x1": 595,
+                "y1": 241
+              }
+            },
+            "plain": "We could not read this date confidently. Its OCR reading was not accepted as a fact.",
+            "affected_checks": [
+              "FCRA § 605(a)(1) — 15 U.S.C. § 1681c(a)(1)",
+              "FCRA § 605(a)(2) — 15 U.S.C. § 1681c(a)(2)",
+              "FCRA § 605(a)(3) — 15 U.S.C. § 1681c(a)(3)",
+              "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(ii)",
+              "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(iii)",
+              "Fair Credit Reporting Act (New York), Gen. Bus. Law § 380-j(f)(1)(i)"
+            ],
+            "qualification": "Any check requiring this unresolved value stays incomplete. Independently readable facts can still be checked."
+          }
+        ],
+        "unsupported_findings": 0
+      }
+    },
+    {
+      "id": "fresh_paid_http_statutory_extraction_and_comparison",
+      "passed": true,
+      "measured": {
+        "clear_date": "2011-01-01",
+        "degraded_canonical_date_absent": true,
+        "degraded_comparisons": 0
+      }
+    },
+    {
+      "id": "control",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 0
+      }
+    },
+    {
+      "id": "degraded-date",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 1
+      }
+    },
+    {
+      "id": "degraded-amount",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 1
+      }
+    },
+    {
+      "id": "multi-bureau",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 0
+      }
+    },
+    {
+      "id": "conflict",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 0
+      }
+    },
+    {
+      "id": "statutory-control",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 0
+      }
+    },
+    {
+      "id": "statutory-degraded",
+      "passed": true,
+      "expected": "Actual admitted HTTP upload, owned assessment/results and entitled download; uncertain decisive values withheld while independent facts remain.",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "unresolved_report_fields": 1
+      }
+    },
+    {
+      "id": "production-final-freeze:aj-ingest-dates",
+      "passed": true,
+      "assertions": 38,
+      "criteria": [
+        "ocr_confidence_preserved",
+        "coordinates_preserved"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "38 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:am-fdt-recovery",
+      "passed": true,
+      "assertions": 71,
+      "criteria": [
+        "ocr_confidence_preserved",
+        "coordinates_preserved"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "71 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    }
+  ],
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; no deployed, current-release journey evidence exists for this gate, so staging verification and production readiness remain unresolved (OWNER-CLOSURE-001)."
+  },
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "aj-ingest-dates:ocr_confidence_preserved",
+        "passed": true,
+        "criteria": [
+          "ocr_confidence_preserved"
+        ],
+        "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts.",
+        "measured": "aj-ingest-dates (38 assertions), am-fdt-recovery (71 assertions) pass; implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded"
+      },
+      {
+        "id": "aj-ingest-dates:coordinates_preserved",
+        "passed": true,
+        "criteria": [
+          "coordinates_preserved"
+        ],
+        "expected": "Actual OCR confidence and bounding-box locations in admitted raster and recovered own facts.",
+        "measured": "aj-ingest-dates (38 assertions), am-fdt-recovery (71 assertions) pass; implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs",
+        "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+      }
+    ]
+  },
+  "reconciliation": {
+    "note": "Translated from this gate own pre-closure evidence record already on disk plus its dedicated passing section. No coverage was invented, no source or permission was changed, and no hosted or served result is asserted.",
+    "scope": "OCR confidence and image coordinates: a decisive uncertain date or amount never enters canonical accepted facts, and its location, confidence and bounding box stay attributable",
+    "previously_recorded_passed": false,
+    "sections": [
+      {
+        "id": "aj-ingest-dates",
+        "passed": 38
+      },
+      {
+        "id": "am-fdt-recovery",
+        "passed": 71
+      }
+    ]
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-34039d2b3b1f8896",
+    "original_canonical_sha256": "2eb9901c270bd2f51f615d17574c4116b15d5ee7dd5c0b4113147827bf7f1c1b",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "aj-ingest-dates:ocr_confidence_preserved",
+          "passed": true,
+          "criteria": [
+            "ocr_confidence_preserved"
+          ],
+          "expected": "Decisive uncertain dates and amounts never enter canonical accepted facts; independent facts and conflicting readings stay attributable.",
+          "measured": "aj-ingest-dates (38 assertions), am-fdt-recovery (71 assertions) pass; implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded"
+        },
+        {
+          "id": "aj-ingest-dates:coordinates_preserved",
+          "passed": true,
+          "criteria": [
+            "coordinates_preserved"
+          ],
+          "expected": "Actual word/line confidence and source-relative boxes survive into unresolved field source locations.",
+          "measured": "aj-ingest-dates (38 assertions), am-fdt-recovery (71 assertions) pass; implemented and tested locally (aj-ingest-dates, am-fdt-recovery); served-release verification not recorded"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "sha256": "3eb117b3cc8c2223e9db9834f7781724907d97fe0f2e7d8b071f4a4cc9d57404"
+        },
+        {
+          "file": "accelerated-launch/service/formats.cjs",
+          "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+          "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs",
+          "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-acceptance-final-2026-10-09/phase1-receipt.json",
+        "sha256": "169038aa452b991684591e86a3cb9e071089a13c363dc1c5ad30890703a3f1fa",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-paid.json",
+        "sha256": "d76e5a188ffc64ca407da6b295e5f3428f7eab0dbc9d539930aa301d111cd225",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/review-receipt.json",
+        "sha256": "6cedb7dbbe191b085faaed8b7d59d921de76a5c2a41100c1770e1086b48fa760",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/download-receipt.json",
+        "sha256": "5c112b398e1cc1d4ac56e65829d88a40d53c4a65aa4c4fefffd286310d7c8c62",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/continuity-receipt.json",
+        "sha256": "8933e42881c6cbc6e587eacb64193ec0477f33d2236a84451226b8f708714736",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/phase2-receipt.json",
+        "sha256": "31426ac4762df2c49a440a20e298985a282b2ce4bd45c3842e4e5e9901eb0d0f",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-cleanup.json",
+        "sha256": "36ba48c1a5f078f5301c15c5d1a30a8a526377b66e024dead6cbf8d6918b1803",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/cleanup-receipt.json",
+        "sha256": "32f7edce9d1e413159ee55cd51a8a9c9b2e9f23d36548c5168dfdf2bb208d36b",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/checkout-receipt.json",
+        "sha256": "e884ed2ce987afb2ae3dc1ee1f9254e83c4e8c31b7d7285f53ff2cbdf7fabb35",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/input-manifest.json",
+        "sha256": "9f04da60111c6abaf35d9c92bf0819263ef98991026bff1daaa5de4fd90ca40e",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/download-receipt.json",
+        "sha256": "2edff72885986c28f2338b1ed6ff09a2abdd17ba00b0a789b296fdefd87d6783",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/review-receipt.json",
+        "sha256": "c879e896db8f619cdfc8f3f1f1a258ecd802a524e51a1a3d306ec732074ac5c3",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-purchase-2026-10-08/hosted-upgrade-verification.json",
+        "sha256": "be56dd356ace5cccdfc1343521b0d31cee75f2de0c1db8e59f8206c72f82ad69",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/cancellation_proof.json",
+        "sha256": "4cb8c90da7e51fcf143382ac47cf29cefb082ca08386445e9bf1d78a54a02ad5",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/provider_cleanup.json",
+        "sha256": "43951b4733a23bc5ec5cb8cffd2cb00d72a9f3457560dc5964c20f7067994c67",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "fdt-mitigation-evidence.json",
+        "sha256": "88bc5b51d5ef8f205e76fc72633f4a9b30be84d5fa29550ba92fd2d3deb4273a",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-reconcile-2026-10-09/measurements.json",
+    "prepared_at": "2026-10-09T20:19:44.922Z",
+    "canonical_evidence_written": false
+  }
+}

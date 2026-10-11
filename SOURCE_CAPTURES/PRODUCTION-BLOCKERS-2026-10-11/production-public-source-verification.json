@@ -1,0 +1,82 @@
+{
+  "target": "https://creditregulatorpro.com",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "source_commit": "62a26a33587b9ace0d5ec1c45ba475d3a4556400",
+  "manifest_digest": "FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB",
+  "checks": [
+    {
+      "route": "/api/health",
+      "status": 200,
+      "build_id": "crp-v1-fd23f242f3d158bf"
+    },
+    {
+      "route": "/app.js",
+      "status": 200,
+      "sha256": "B8D5BB298056B8AEA7EBE574C2E9BB1FE356601314DB37B3DFFD1C1E8D8AFAB1"
+    },
+    {
+      "route": "/favicon.svg",
+      "status": 200,
+      "sha256": "7D23FC5408CCC51D5D8C3D6E2EA1DE4A8A9E5A2F52293835E5AA004ABD573859"
+    },
+    {
+      "route": "/index.html",
+      "status": 200,
+      "sha256": "E18A7CED17FAC92EEBEA8FF9F60873203B7545391B94FF1A135F5CDA9D72DBE4"
+    },
+    {
+      "route": "/landing.css",
+      "status": 200,
+      "sha256": "752B85A3CB10875B9E7C6E0D822059626193FA5ACD851AF7BBAF397ECE6B7844"
+    },
+    {
+      "route": "/landing.html",
+      "status": 200,
+      "sha256": "FCA9A16E778D4BB41404A14CC020C3331BE4374B3CA7C32FBA66000D541481CB"
+    },
+    {
+      "route": "/mailing-preview.css",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/mailing-preview.html",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/mailing-preview.js",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.css",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.html",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/referrals.js",
+      "status": 404,
+      "expected": "Production optional previews disabled"
+    },
+    {
+      "route": "/style.css",
+      "status": 200,
+      "sha256": "051F15BDDCDF2DFDB41EC54D9A6E28FF7D0F0382B8787AE55E9B1456EB39402A"
+    }
+  ],
+  "health": {
+    "ok": true,
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "deployment": "production",
+    "billing_mode": "live",
+    "launch_ready": false
+  },
+  "passed": true,
+  "measured_at": "2026-10-11T13:01:24.961Z"
+}

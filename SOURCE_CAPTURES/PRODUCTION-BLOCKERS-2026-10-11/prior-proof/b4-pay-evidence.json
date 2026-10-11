@@ -1,0 +1,71 @@
+{
+  "schema": "crp-production-live-billing-config-evidence-v1",
+  "build_id": "crp-v1-34039d2b3b1f8896",
+  "key_mode": "live",
+  "live_config_verified": true,
+  "account_id": "acct_1RTRWOKCM3e4JIjW",
+  "charges_enabled": true,
+  "payouts_enabled": true,
+  "price_ids": {
+    "report_once": "price_1UOiyPKCM3e4JIjWtnrRElAc",
+    "monthly": "price_1UOiyPKCM3e4JIjWX2nNJV5J",
+    "annual": "price_1UOiyPKCM3e4JIjWv84sNgq2"
+  },
+  "prices": [
+    {
+      "plan": "report_once",
+      "price_id": "price_1UOiyPKCM3e4JIjWtnrRElAc",
+      "amount_cents": 595,
+      "currency": "cad",
+      "interval": null,
+      "verified": true
+    },
+    {
+      "plan": "monthly",
+      "price_id": "price_1UOiyPKCM3e4JIjWX2nNJV5J",
+      "amount_cents": 795,
+      "currency": "cad",
+      "interval": "month",
+      "verified": true
+    },
+    {
+      "plan": "annual",
+      "price_id": "price_1UOiyPKCM3e4JIjWv84sNgq2",
+      "amount_cents": 7950,
+      "currency": "cad",
+      "interval": "year",
+      "verified": true
+    }
+  ],
+  "webhook": {
+    "id": "we_1UOiyQKCM3e4JIjWW3xYIk6O",
+    "url": "https://creditregulatorpro.com/api/billing/events",
+    "api_version": "2024-06-20",
+    "events": [
+      "checkout.session.completed",
+      "checkout.session.async_payment_succeeded",
+      "invoice.paid",
+      "invoice.payment_failed",
+      "invoice.voided",
+      "customer.subscription.deleted",
+      "charge.refunded",
+      "charge.dispute.created"
+    ],
+    "enabled": true
+  },
+  "live_configuration_measured_at": "2026-10-09T18:56:54.355Z",
+  "live_configuration_original_receipt": {
+    "file": "/opt/crp-wizard-production/stripe-config-receipt.json",
+    "sha256": "5a8e8b1910986ed65dd571ab9c89fb8417a3e889c1820c4893d25def5adf026d"
+  },
+  "actual_host_environment_verified": true,
+  "actual_private_runtime": {
+    "build_id": "crp-v1-34039d2b3b1f8896",
+    "deployment": "production",
+    "billing_mode": "live"
+  },
+  "live_charge_performed": false,
+  "no_secret_written": true,
+  "prepared_at": "2026-10-09T20:14:05.195Z",
+  "verified": true
+}

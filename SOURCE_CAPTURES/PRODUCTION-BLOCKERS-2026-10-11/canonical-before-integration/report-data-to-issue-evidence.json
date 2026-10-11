@@ -1,0 +1,165 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T12:36:06.980Z",
+  "scope": "BLOCKER-REPORT-DATA-TO-ISSUE-001 — usable ordinary-report assessment: read the material fields a supported consumer report actually prints, apply the relevant accepted checks to those facts, and deliver selected issues through the existing consumer-selected packet. INTAKE (reading) -> ISSUES (relevant checks) -> PACKETS (selected dispute), with ALL82 factual journeys preserved. This record establishes what is DEMONSTRATED by passing behavioral coverage; served verification is PENDING and production readiness remains BLOCKED.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "status_note": "Three slices are implemented and tested end to end: TransUnion Canada ordinary accounts (material fields read, shared checks lit, selected issue downloaded), GB-Experian ordinary accounts (the fields this reader already read now reach the shared checks, with every status-history cell RETAINED-BUT-UNUSABLE and reported as such), and AU-Equifax consumer credit liability (credited provider, account type, credit limit and the printed repayment-history evidence recorded; the grid cells are vector graphics and no cell is read). The credited account name is presented in issue review, correspondence and the packet and is bound into the approval. Remaining breadth beyond these slices is tracked in the work register; it does not re-open what they demonstrate.",
+    "tests": [
+      {
+        "id": "ce-tu-ca-account-material",
+        "passed": true,
+        "criteria": [
+          "material_field_extraction",
+          "behavioral_coverage"
+        ],
+        "expected": "the TransUnion Canada account block yields its printed creditor identity, account type/responsibility, terms, payment-history counts and monthly amount/rating rows, each with raw reading and location, and the real benign specimen forces no issue",
+        "measured": "34 assertions pass (ce-tu-ca-account-material): 4 real account blocks map their printed material; the genuine report reports 0 potential issues"
+      },
+      {
+        "id": "bu-gb-tu-ca-fields-gb-material",
+        "passed": true,
+        "criteria": [
+          "material_field_extraction",
+          "behavioral_coverage"
+        ],
+        "expected": "the captured GB example yields its printed balance, current balance, credit limit, default amount, status history and JOINT ACCOUNT marker as shared facts, with every status-history cell uncertain (no printed legend) and no issue forced",
+        "measured": "89 assertions pass (bu-gb-tu-ca-fields)"
+      },
+      {
+        "id": "ce-tu-ca-account-material-issue-wiring",
+        "passed": true,
+        "criteria": [
+          "issue_wiring"
+        ],
+        "expected": "the extracted facts reach the existing shared checks and become a supported POTENTIAL issue with the printed readings as provenance, while a benign control produces none",
+        "measured": "34 assertions pass: a synthetic past-due-exceeds-balance block yields exactly one VERIFICATION issue (never a legal finding) and the benign controls yield none; bq-format-capability (53) confirms the field capability flips for account-dates, balance/past-due and payment-history"
+      },
+      {
+        "id": "bu-gb-tu-ca-fields-au-material",
+        "passed": true,
+        "criteria": [
+          "material_field_extraction",
+          "behavioral_coverage"
+        ],
+        "expected": "the captured AU example yields the credited provider, the printed Type Of Account and the printed Credit Limit as shared facts, and the repayment-history EVIDENCE it prints as TEXT is recorded while its vector-graphic cells are not read",
+        "measured": "89 assertions pass (bu-gb-tu-ca-fields); l-au-format-family (87) and m-au-journey (102) confirm the AU reader and journey are otherwise unchanged"
+      },
+      {
+        "id": "ce-tu-ca-account-material-packet",
+        "passed": true,
+        "criteria": [
+          "packet_delivery"
+        ],
+        "expected": "the selected issue reaches consumer selection, correspondence, approval and the entitled download in the existing packet flow, and the CREDITED ACCOUNT the issue concerns is presented in the review, the correspondence and the packet and is bound into the approval",
+        "measured": "34 and 89 assertions pass: the supported issue is offered for selection, the approved packet downloads (HTTP 200) with the factual verification request and the printed past-due reading; the credited account name appears in the issue review, in the correspondence preview and inside the downloaded packet with its printed page/line, and a material identity change after approval invalidates it (HTTP 409 PACKET_APPROVAL_STALE)"
+      },
+      {
+        "id": "w-ca-second-bureau-format-preserved",
+        "passed": true,
+        "criteria": [
+          "behavioral_coverage"
+        ],
+        "expected": "the TransUnion Canada measured structural contract, the Equifax exact-specimen admission and the Nova Scotia statutory binding are unchanged",
+        "measured": "234 assertions pass (w-ca-second-bureau-format); bu-gb-tu-ca-fields (89) still passes"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
+        "sha256": "f0e1524f5a184842c3a0dd9fbf7975031d12bd4d5c18c37c6224d7a8671d5308"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+        "sha256": "5793ab635caaf57ea54d2e130dca16be554ee4c6c1f0c841ee1fbdbe28c5a028"
+      },
+      {
+        "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
+        "sha256": "736adf4be7ae33f212cb596809d2743e5b7091a9fdf13d92bc72f34d485e97ef"
+      },
+      {
+        "file": "accelerated-launch/service/common-errors.cjs",
+        "sha256": "9e64e6cfb5ebe2601fb0ec22054d794581efc5492c8a089f9dc1a59c2a41b34d"
+      },
+      {
+        "file": "accelerated-launch/service/issues.cjs",
+        "sha256": "67f447c84717c48d20535994ac8864adc3b82ff8fba06ab34e2a780ab2647141"
+      },
+      {
+        "file": "accelerated-launch/service/packets.cjs",
+        "sha256": "5cd74ae34e2dda90b170b2f8c697fee4f2c375fe0c5fb0cf9ea45e7eff494691"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ce-tu-ca-account-material.cjs",
+        "sha256": "a8e3816c0c165370c112cfbad552c7415c96fb28948ee668520800cc7d423f3e"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bu-gb-tu-ca-fields.cjs",
+        "sha256": "d78da7d17482210a3821ded549d4de43d2a549b8101d5a4e1570f7eed205a0af"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ce-tu-ca-account-material.cjs",
+        "sha256": "a8e3816c0c165370c112cfbad552c7415c96fb28948ee668520800cc7d423f3e"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "No deployed, current-release upload -> assessment -> selected packet journey evidence is recorded, and production deployment is not authorized. Implementation closure above stands on the passing behavioral section."
+  },
+  "criteria": {
+    "material_field_extraction": {
+      "passed": true,
+      "expected": "relevant printed account facts are extracted with correct account association, raw readings and source locations",
+      "measured": "4/4 real TransUnion Canada account blocks map creditor identity, type/responsibility, terms, payment-history counts and monthly amount/rating rows; the 5 credit accounts of the captured GB example map their printed balance/current balance/credit limit/default amount/status history and JOINT ACCOUNT marker; the 3 AU liability items map the credited provider, account type and credit limit and record the repayment-history period captions and legend; every reading keeps raw text and page/line"
+    },
+    "issue_wiring": {
+      "passed": true,
+      "expected": "extracted facts reach the relevant accepted checks and produce supported actual/probable/potential outcomes without forcing a finding",
+      "measured": "shared balance/past-due, payment-history and account-dates checks run by FIELD capability; the benign real specimen forces zero issues"
+    },
+    "packet_delivery": {
+      "passed": true,
+      "expected": "a selected issue travels consumer selection -> review/approval -> entitled download",
+      "measured": "the supported issue is selectable, the approved packet downloads with the factual verification request, and the credited account name is presented in review/correspondence/packet with its provenance and bound into the approval (a changed identity returns HTTP 409 PACKET_APPROVAL_STALE)"
+    },
+    "behavioral_coverage": {
+      "passed": true,
+      "expected": "the promised slice is traced to meaningful passing tests and measured outcomes",
+      "measured": "ce-tu-ca-account-material (34), bu-gb-tu-ca-fields (89), w-ca-second-bureau-format (234), bq-format-capability (53), l-au-format-family (87), m-au-journey (102)"
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "served-release upload, assessment, selection and purchased/entitled download",
+      "measured": "not recorded; deployment is not authorized"
+    }
+  },
+  "tests": [
+    {
+      "id": "ce-tu-ca-account-material",
+      "passed": true,
+      "criteria": [
+        "material_field_extraction",
+        "behavioral_coverage"
+      ],
+      "expected": "34 assertions pass",
+      "measured": "34/34"
+    },
+    {
+      "id": "w-ca-second-bureau-format",
+      "passed": true,
+      "criteria": [
+        "behavioral_coverage"
+      ],
+      "expected": "234 assertions pass",
+      "measured": "234/234"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "crp-production-runtime-provenance-v1",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "manifest_digest": "FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB",
+  "git_head": "62a26a33587b9ace0d5ec1c45ba475d3a4556400",
+  "source_kind": "Exact frozen tested dirty working tree; base commit alone is not this release",
+  "host": "creditregulatorpro.com",
+  "deployed_by": "Codex under standing owner authorization, authenticated VPS operator",
+  "owner_authorization": "Earlier explicit owner deploy to live production; October 11 remaining blockers repaired and freshly verified",
+  "deployed_at": "2026-10-11T13:00:50.663Z",
+  "scope": "Actual public production exact tested dirty candidate promotion",
+  "production_accepted": true,
+  "public_routed": true,
+  "source_hashes_verified": 133,
+  "live_charge_performed": false,
+  "current_activation": {
+    "file": "production-blocker-repair-2026-10-11/production-activation-receipt.json",
+    "sha256": "46016125ea197597993a8d831e3dfd34f48fbde37eedf173d0224a97bee2838e"
+  },
+  "backup": "/opt/crp-wizard-production/backups/before-crp-v1-fd23f242f3d158bf-1791723649",
+  "previous_release": "/opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050"
+}

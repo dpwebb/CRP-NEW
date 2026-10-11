@@ -12,6 +12,7 @@ const ocr = require('./ocr/local-ocr.cjs');
 const { acceptFact, loadPolicy } = require('../reported-fact-policy.cjs');
 const fdt = require('./fdt-recovery.cjs');
 const paymentHistoryGrid = require('./payment-history-grid.cjs');
+const { summaryTableLines } = require('./account-summary-table.cjs');
 const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
 
@@ -619,7 +620,8 @@ function collectPages(model) {
   for (const p of native) {
     if (p.has_native_text) {
       const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
-      page.lines = columnCaptionLines(page);
+      const summary = summaryTableLines(page);
+      page.lines = summary === page.lines ? columnCaptionLines(page) : summary;
       pages.push(page);
     }
   }

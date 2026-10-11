@@ -105,8 +105,10 @@ async function run(t, check) {
   check.ok(reaging, 'own recovered identity and dates support the owned earlier/current anchor comparison');
   if (reaging) {
     const body = await approve(current, reaging);
+    // Check the actual PDF's words independently of printable line wrapping.
+    const readable = require('../packet-pdf-assertions.cjs').comparableText(body);
     check.ok(body.includes('2025-10-07') && body.includes('2026-10-07')
-      && body.includes('earlier report dated October 7, 2025') && body.includes('report dated October 7, 2026'),
+      && readable.includes('earlier report dated October 7, 2025') && readable.includes('report dated October 7, 2026'),
       'the approved changed-anchor packet carries both owned report dates');
     check.ok(body.includes('2018-01-01') && body.includes('2020-01-01'), 'both actual original-delinquency readings reach the packet');
     const record = current.stored.extraction.records.find((row) => row.facts?.['account.masked_identifier'] === 'MASK-5432');

@@ -1,0 +1,2719 @@
+{
+  "execution_ref": {
+    "file": "accelerated-launch\\service\\out\\current-regression-evidence.json",
+    "sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+  },
+  "blocker": "BLOCKER-SUBSCRIPTION-VALUE-001",
+  "generated_at": "2026-10-11T12:36:07.218Z",
+  "identity": {
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "local_only": false
+  },
+  "implementation": {
+    "configured": true,
+    "scope": "owned report history: one entry per persisted assessment, newest report first, showing bureau and report date; consumer-chosen comparison of two owned assessments, with the chronological order taken from the two report dates (no claim when it is uncertain); record matching by supported identity evidence only (report-masked account identifier AND printed creditor identity); index, balance, dates and a name alone never match, and a partial match stays qualified; four issue outcomes: still observed, changed, no longer observed in the later report, not comparable from available evidence; read-only reuse of persisted extractions, results and the unified issue descriptor; nothing is re-read and no earlier fact, result or packet is changed; cross-account refusal (403/404), the unentitled refusal, and the one-time purchaser preserved assessment and packet",
+    "tests": [
+      {
+        "id": "bz-report-history",
+        "passed": true,
+        "expected": "owned history, consumer-chosen comparison, four issue outcomes, cross-account refusal and packet preservation over the real endpoints",
+        "measured": "53 assertions passed, 0 failed",
+        "criteria": [
+          "owned_history",
+          "comparison_linkage",
+          "issue_changes",
+          "isolation",
+          "behavioral_coverage"
+        ]
+      },
+      {
+        "id": "bw-browser-wizzard",
+        "passed": true,
+        "expected": "the history and comparison rendered and driven in a real browser, with the actual packet-download control",
+        "measured": "174 assertions passed, 0 failed",
+        "criteria": [
+          "consumer_view",
+          "behavioral_coverage"
+        ]
+      },
+      {
+        "id": "production-final-freeze:dg-owned-reaging",
+        "passed": true,
+        "assertions": 321,
+        "criteria": [
+          "owned_history",
+          "comparison_linkage",
+          "issue_changes",
+          "consumer_view",
+          "isolation",
+          "behavioral_coverage"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "321 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      },
+      {
+        "id": "production-final-freeze:bw-browser-wizzard",
+        "passed": true,
+        "assertions": 174,
+        "criteria": [
+          "owned_history",
+          "comparison_linkage",
+          "issue_changes",
+          "consumer_view",
+          "isolation",
+          "behavioral_coverage"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "174 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      },
+      {
+        "id": "production-final-freeze:bz-report-history",
+        "passed": true,
+        "assertions": 53,
+        "criteria": [
+          "owned_history",
+          "comparison_linkage",
+          "issue_changes",
+          "consumer_view",
+          "isolation",
+          "behavioral_coverage"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "53 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/comparison.cjs",
+        "sha256": "fd79a54061f76551b0d261d6eee0aef842c401b9fe84697c77f690258969db6e"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/errors.cjs",
+        "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "b8d5bb298056b8aea7ebe574c2e9bb1fe356601314db37b3dffd1c1e8d8afab1"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "sha256": "887b545b0f1826a0dd491698fd08ffd6cd4765b25b1c43e19dec069de791ad30"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "sha256": "d4d46e8c714df7aa2b91dc64df585dca6d955c41bca3361029b3c8a57265cb1d"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "VERIFIED",
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "recorded_at": "2026-10-11T12:57:19.354Z",
+    "evidence_refs": [
+      "production-blocker-repair-2026-10-11/measurements.json"
+    ],
+    "method": "Actual source-matched isolated hosted candidate HTTP, genuine Sandbox provider event, consumer packet review/approval/download, own-history comparison and cleanup; exact regional behavioral loops reused"
+  },
+  "criteria": {
+    "owned_history": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "owned_history",
+            "expected": "Actual phase2 checks: owned_history",
+            "measured": [
+              {
+                "id": "owned_history",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "rows": {
+                    "ok": true,
+                    "assessments": [
+                      {
+                        "result_id": "res_78eeee2b45f2da783e76",
+                        "case_id": "case_1db830376067908681f14d06",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-10-09",
+                        "recorded_at": "2026-10-11T12:41:05.084Z",
+                        "issue_count": 3,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_2bc01c9c4b2cbaf75120",
+                        "case_id": "case_6c3b2bdcaa31d8e8b265ebbf",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:29.124Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_b763f67e4e49fc1dda75",
+                        "case_id": "case_92ba5954a9f5b701b4c3b7d2",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:27.034Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_5dd3eff28b3c8adf3fe9",
+                        "case_id": "case_098da06a9d45f63a3f94601f",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:21.253Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_fc7d19745a663f57707c",
+                        "case_id": "case_2daee5096b853ce7d5c2f5d7",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:18.934Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_cb4e99211e5dacd0459a",
+                        "case_id": "case_20ed8a604294f7ed495918ae",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:12.772Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_67e09418c48d8903dffa",
+                        "case_id": "case_ecb0403472da59e5ff562fa6",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:11.100Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_a079d71dbcf48cbaeeab",
+                        "case_id": "case_5fc0af15ef844480a9be7a80",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:09.282Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_893762092a496f63c18f",
+                        "case_id": "case_8fe0b5228139973c627b42fb",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:02.411Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_0823d358539aef5edf92",
+                        "case_id": "case_0f2e367deeda3c3f5e93f7f1",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-01",
+                        "recorded_at": "2026-10-11T12:37:25.088Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ed044711d69c0193a930",
+                        "case_id": "case_b1011bb736392f40633552f6",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2025-06-01",
+                        "recorded_at": "2026-10-11T12:37:23.174Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ef628af923e1c049369c",
+                        "case_id": "case_6430b1ebc50a2c60cb2ed54c",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:16.453Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_e57988bab71e70268d50",
+                        "case_id": "case_c0815228a3d212abd2f1ffa4",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:14.523Z",
+                        "issue_count": 2,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      }
+                    ],
+                    "total": 13
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "comparison_linkage": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "chronological_linkage",
+            "expected": "Actual phase2 checks: owned_chronological_comparison, reverse_selection_keeps_order",
+            "measured": [
+              {
+                "id": "owned_chronological_comparison",
+                "passed": true,
+                "measured": {
+                  "ok": true,
+                  "left": {
+                    "result_id": "res_ed044711d69c0193a930",
+                    "case_id": "case_b1011bb736392f40633552f6",
+                    "country": "CA",
+                    "region": "CA-NS",
+                    "jurisdiction": "CA-CA-NS",
+                    "bureau": "Equifax",
+                    "report_date": "2025-06-01",
+                    "recorded_at": "2026-10-11T12:37:23.174Z",
+                    "issue_count": 1,
+                    "information_count": 0,
+                    "is_a_finding_case": true
+                  },
+                  "right": {
+                    "result_id": "res_0823d358539aef5edf92",
+                    "case_id": "case_0f2e367deeda3c3f5e93f7f1",
+                    "country": "CA",
+                    "region": "CA-NS",
+                    "jurisdiction": "CA-CA-NS",
+                    "bureau": "Equifax",
+                    "report_date": "2026-06-01",
+                    "recorded_at": "2026-10-11T12:37:25.088Z",
+                    "issue_count": 1,
+                    "information_count": 0,
+                    "is_a_finding_case": true
+                  },
+                  "order": {
+                    "state": "DETERMINED",
+                    "earlier": "left",
+                    "later": "right",
+                    "direction_claimed": true,
+                    "note": "The order is taken from the report dates the two reports print."
+                  },
+                  "different_bureau": false,
+                  "direction_claimed": true,
+                  "outcomes": [
+                    {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "basis_type": "FACTUAL_CONSISTENCY",
+                      "eligible": true,
+                      "earlier": {
+                        "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "confidence": "PROBABLE",
+                        "request_type": "VERIFICATION",
+                        "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2020-01-01 after 2019-01-01).",
+                        "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                        "evidence": {
+                          "opened": "2020-01-01",
+                          "closed": "2019-01-01"
+                        },
+                        "source_facts": [
+                          {
+                            "source_field": "opened_date",
+                            "raw_value": "01/01/2020",
+                            "normalized_value": "2020-01-01"
+                          },
+                          {
+                            "source_field": "closed_date",
+                            "raw_value": "01/01/2019",
+                            "normalized_value": "2019-01-01"
+                          }
+                        ]
+                      },
+                      "outcome": "CHANGED",
+                      "match": {
+                        "state": "CONFIDENT",
+                        "reason": "MASK_AND_IDENTITY_MATCH",
+                        "cross_bureau": false,
+                        "evidence": {
+                          "earlier_masked_identifier": "MASK-2468",
+                          "later_masked_identifier": "MASK-2468",
+                          "earlier_identity": "SPRUCE FICTION BANK",
+                          "later_identity": "SPRUCE FICTION BANK"
+                        }
+                      },
+                      "later": {
+                        "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "confidence": "PROBABLE",
+                        "request_type": "VERIFICATION",
+                        "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                        "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                        "evidence": {
+                          "opened": "2021-01-01",
+                          "closed": "2020-01-01"
+                        },
+                        "source_facts": [
+                          {
+                            "source_field": "opened_date",
+                            "raw_value": "01/01/2021",
+                            "normalized_value": "2021-01-01"
+                          },
+                          {
+                            "source_field": "closed_date",
+                            "raw_value": "01/01/2020",
+                            "normalized_value": "2020-01-01"
+                          }
+                        ]
+                      },
+                      "later_record_facts": {
+                        "liability.openedDate": "2021-01-01",
+                        "liability.closedDate": "2020-01-01"
+                      },
+                      "uncertainty": "The later report still shows this issue on this same account, but the facts it prints differ from the earlier report."
+                    }
+                  ],
+                  "summary": {
+                    "total": 1,
+                    "still_observed": 0,
+                    "changed": 1,
+                    "no_longer_observed": 0,
+                    "not_comparable": 0
+                  },
+                  "note": "A difference here is what two reports print, not proof of anything: absence in a later report alone never proves a correction, deletion, a bureau action or compliance."
+                }
+              },
+              {
+                "id": "reverse_selection_keeps_order",
+                "passed": true,
+                "measured": {
+                  "state": "DETERMINED",
+                  "earlier": "right",
+                  "later": "left",
+                  "direction_claimed": true,
+                  "note": "The order is taken from the report dates the two reports print (the earlier report is compared with the later one)."
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "issue_changes": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "changed_issue",
+            "expected": "Actual phase2 checks: changed_issue",
+            "measured": [
+              {
+                "id": "changed_issue",
+                "passed": true,
+                "measured": [
+                  {
+                    "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                    "confidence": "PROBABLE",
+                    "basis_type": "FACTUAL_CONSISTENCY",
+                    "eligible": true,
+                    "earlier": {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "request_type": "VERIFICATION",
+                      "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2020-01-01 after 2019-01-01).",
+                      "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                      "evidence": {
+                        "opened": "2020-01-01",
+                        "closed": "2019-01-01"
+                      },
+                      "source_facts": [
+                        {
+                          "source_field": "opened_date",
+                          "raw_value": "01/01/2020",
+                          "normalized_value": "2020-01-01"
+                        },
+                        {
+                          "source_field": "closed_date",
+                          "raw_value": "01/01/2019",
+                          "normalized_value": "2019-01-01"
+                        }
+                      ]
+                    },
+                    "outcome": "CHANGED",
+                    "match": {
+                      "state": "CONFIDENT",
+                      "reason": "MASK_AND_IDENTITY_MATCH",
+                      "cross_bureau": false,
+                      "evidence": {
+                        "earlier_masked_identifier": "MASK-2468",
+                        "later_masked_identifier": "MASK-2468",
+                        "earlier_identity": "SPRUCE FICTION BANK",
+                        "later_identity": "SPRUCE FICTION BANK"
+                      }
+                    },
+                    "later": {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "request_type": "VERIFICATION",
+                      "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                      "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                      "evidence": {
+                        "opened": "2021-01-01",
+                        "closed": "2020-01-01"
+                      },
+                      "source_facts": [
+                        {
+                          "source_field": "opened_date",
+                          "raw_value": "01/01/2021",
+                          "normalized_value": "2021-01-01"
+                        },
+                        {
+                          "source_field": "closed_date",
+                          "raw_value": "01/01/2020",
+                          "normalized_value": "2020-01-01"
+                        }
+                      ]
+                    },
+                    "later_record_facts": {
+                      "liability.openedDate": "2021-01-01",
+                      "liability.closedDate": "2020-01-01"
+                    },
+                    "uncertainty": "The later report still shows this issue on this same account, but the facts it prints differ from the earlier report."
+                  }
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "consumer_view": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "paid_result",
+            "expected": "Actual phase2 checks: paid_source_linked_result",
+            "measured": [
+              {
+                "id": "paid_source_linked_result",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "view": {
+                    "ok": true,
+                    "result": {
+                      "support": "ACTUAL_REPORT_EVIDENCE",
+                      "presentation_evidence": true,
+                      "jurisdiction": {
+                        "country": "CA",
+                        "region": "CA-NS"
+                      },
+                      "policy": null,
+                      "checks_performed": 8,
+                      "observations": [
+                        {
+                          "account_number_in_report": 1,
+                          "check_name": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+                          "measures_from": null,
+                          "headline": "The date this check runs from could not be read, so the comparison was not made.",
+                          "detail": "A date that could not be read is not the same as a date that is absent from your report. Nothing was assumed in its place.",
+                          "evidence": {
+                            "page": 1,
+                            "line": 3
+                          },
+                          "output_level": "violation",
+                          "assessment_completed": false,
+                          "is_a_finding": false,
+                          "classification": null,
+                          "consumer_label": null,
+                          "decisive_fact_unavailable": null,
+                          "decisive_facts_unavailable": null,
+                          "rule_source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+                          "omitted_content": null,
+                          "included_content": null,
+                          "rule_source": null,
+                          "qualification": "This comes from your report. It is not a finding that a rule was broken."
+                        }
+                      ],
+                      "report_consistency_checks": [
+                        {
+                          "check_class": "REPORT_FACT_CONSISTENCY",
+                          "check_name": "A date printed on an entry, against the date your report gives for itself",
+                          "outcome": "EVERY_ENTRY_DATE_IS_NOT_LATER_THAN_THE_REPORT_DATE",
+                          "agreement": "NO_DIFFERENCE_FOUND",
+                          "headline": "Your report is dated June 1, 2026, and every entry date this build could read is not later than that.",
+                          "detail": "EVERY_ENTRY_DATE_PRINTED_IS_NOT_LATER_THAN_THE_REPORT_DATE",
+                          "evidence": {
+                            "report_date": "June 1, 2026",
+                            "dates_examined": 4,
+                            "dates_later_than_the_report_date": []
+                          },
+                          "examined": [
+                            {
+                              "record_index": 1,
+                              "label": "OPENED",
+                              "printed_value": "01/01/2021"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "opened_date",
+                              "printed_value": "01/01/2021"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "CLOSED",
+                              "printed_value": "01/01/2020"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "closed_date",
+                              "printed_value": "01/01/2020"
+                            }
+                          ],
+                          "not_examinable": [],
+                          "output_level": "observation",
+                          "is_a_finding": false,
+                          "qualification": "This compares two things your report prints. It is not a finding that a rule was broken."
+                        },
+                        {
+                          "check_class": "REPORT_FACT_CONSISTENCY",
+                          "check_name": "The order of two dates printed on the same entry",
+                          "outcome": "A_PRINTED_DATE_ORDER_IS_REVERSED_ON_THE_SAME_ENTRY",
+                          "agreement": "A_DIFFERENCE_WAS_FOUND",
+                          "headline": "On entry 1, your report prints Closed as 01/01/2020 and Opened as 01/01/2021, which is the reverse of the expected order. That is a difference between two things your report prints, reported for you to check, and no conclusion is drawn from it.",
+                          "detail": "A_DATE_PRINTED_AS_LATER_IS_EARLIER_THAN_A_DATE_PRINTED_AS_EARLIER_ON_THE_SAME_ENTRY",
+                          "evidence": {
+                            "pairs_examined": 1,
+                            "pairs_where_the_printed_order_is_reversed": [
+                              {
+                                "record_index": 1,
+                                "earlier": "Opened",
+                                "earlier_value": "01/01/2021",
+                                "later": "Closed",
+                                "later_value": "01/01/2020",
+                                "location": {
+                                  "page": 1,
+                                  "line": 7,
+                                  "source": "NATIVE_TEXT",
+                                  "confidence": null,
+                                  "min_confidence": null,
+                                  "trusted": true,
+                                  "bbox": {
+                                    "x0": 40,
+                                    "y0": 101.458,
+                                    "x1": 115.546,
+                                    "y1": 109.783
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "examined": [
+                            {
+                              "record_index": 1,
+                              "earlier": "Opened",
+                              "earlier_value": "01/01/2021",
+                              "later": "Closed",
+                              "later_value": "01/01/2020"
+                            }
+                          ],
+                          "not_examinable": [],
+                          "output_level": "observation",
+                          "is_a_finding": false,
+                          "qualification": "This compares two things your report prints. It is not a finding that a rule was broken."
+                        }
+                      ],
+                      "limitation_assessment": {
+                        "check_id": "LIMITATION-PERIOD-COURT-CLAIM",
+                        "check_class": "LIMITATION_ASSESSMENT",
+                        "jurisdiction": {
+                          "region_code": "CA-NS",
+                          "label": "Nova Scotia",
+                          "citation": "Limitation of Actions Act, S.N.S. 2014, c. 35, s. 8(1)",
+                          "basic_period_years": 2,
+                          "ultimate_period_years": 15,
+                          "source_capture": "SOURCE_CAPTURES/PHASE5-001G/NS-limitation-of-actions.pdf",
+                          "source_url": null,
+                          "operative_words": "a claim ... may not be brought after the earlier of (a) two years from the day on which the claim is discovered; and (b) fifteen years from the day on which the act or omission on which the claim is based occurred"
+                        },
+                        "assessment_clock": {
+                          "assessment_run_at": "2026-10-11T09:37:25-03:00",
+                          "assessment_date": "2026-10-11",
+                          "assessment_clock_basis": "America/Halifax",
+                          "clock_source": "SERVER_CLOCK",
+                          "report_reference_date": "2026-06-01"
+                        },
+                        "recorded_jurisdictions": [
+                          "AU-ACT",
+                          "AU-QLD",
+                          "CA-BC",
+                          "CA-MB",
+                          "CA-NS",
+                          "CA-NT",
+                          "CA-NU",
+                          "CA-ON",
+                          "GB-ENG",
+                          "GB-NIR",
+                          "GB-WLS"
+                        ],
+                        "performed": [],
+                        "withheld": [
+                          {
+                            "withheld": true,
+                            "reason": "NO_PRINTED_OUTSTANDING_CLAIM",
+                            "record_index": 1,
+                            "plain": "This entry does not print an outstanding amount, amount past due, collection, charge-off or default claim, so the court time limit was not applied to it.",
+                            "missing_prerequisite": "a printed indicator of an outstanding claim (an amount past due, a collection or charge-off action, or a default status)"
+                          }
+                        ],
+                        "summary": {
+                          "records": 1,
+                          "assessed": 0,
+                          "may_be_outside": 0,
+                          "within": 0,
+                          "withheld": 1,
+                          "rule_violations_emitted": 0,
+                          "report_date_used_for_the_comparison": false,
+                          "report_reference_date": "2026-06-01"
+                        }
+                      },
+                      "payment_history_analysis": {
+                        "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                        "performed": [
+                          {
+                            "check_id": "PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a month the report rates as a bad debt while the same month says the account was paid or closed without a derogatory rating",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "a status can change inside one month, so both statements may be partly true",
+                              "a code meaning is quoted exactly as the report prints it in its own legend, never decoded by this build"
+                            ],
+                            "source_records": [],
+                            "plain": "No month of any account read here has an adverse rating and a non-derogatory narrative at the same time."
+                          },
+                          {
+                            "check_id": "PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a payment amount and a no-payment description printed for the same month",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "a payment can be posted and later reversed, and a row may report the month a payment was applied rather than received",
+                              "a write-off is an accounting event and does not by itself stop a payment being recorded"
+                            ],
+                            "source_records": [],
+                            "plain": "No month of an account read here prints both a payment amount and an explicit no-payment description."
+                          },
+                          {
+                            "check_id": "PH-DELINQUENCY-ANCHOR-AFTER-THE-HISTORY-SHOWS-IT",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a first-delinquency date printed later than a month the same account already shows as late",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "an unknown rating (X) and a blank cell are never treated as a late month",
+                              "a rating of 1 or 0 is a paid-as-agreed month and is not late",
+                              "the anchor may describe the current delinquency rather than the first one, which the report does not say"
+                            ],
+                            "source_records": [],
+                            "plain": "No account read here prints a first-delinquency date later than a month its own history already shows as late."
+                          }
+                        ],
+                        "withheld_candidates": [
+                          {
+                            "candidate": "AN_EVENT_DATED_AFTER_A_PRINTED_CLOSURE",
+                            "reason": "A creditor can close an account and then write it off or place it for collection, and a closed account normally keeps reporting its final state. The printed closure date is therefore not evidence that a later event is wrong.",
+                            "missing_prerequisite": "a report statement tying the later event to a date before the closure"
+                          },
+                          {
+                            "candidate": "CLOSURE_WITH_A_NON_ZERO_BALANCE",
+                            "reason": "Closure does not require a zero balance: an account can be closed with a balance outstanding, so a closed account with a balance is ordinary.",
+                            "missing_prerequisite": "a printed statement that the balance was paid at closure"
+                          },
+                          {
+                            "candidate": "A_COLLECTION_OR_TRANSFER_AS_RE_AGING",
+                            "reason": "A collection placement or a transfer does not by itself refresh or change the delinquency the account already shows, and the report prints no re-aged anchor.",
+                            "missing_prerequisite": "two comparable printed delinquency anchors for the same account"
+                          },
+                          {
+                            "candidate": "CUMULATIVE_COUNTS_VERSUS_THE_VISIBLE_MONTHS",
+                            "reason": "The printed 30/60/90/#M figures are cumulative lifetime counts while the visible table is a short window; the two are not comparable, so no comparison is made and no conclusion is drawn from their difference.",
+                            "missing_prerequisite": "a printed statement of the period the counts cover"
+                          },
+                          {
+                            "candidate": "AN_UNKNOWN_RATING_TREATED_AS_A_MISSED_PAYMENT",
+                            "reason": "An unknown rating (X), a blank cell and an unprinted month are not missed payments and are never counted as one.",
+                            "missing_prerequisite": "a printed meaning for the unknown rating"
+                          },
+                          {
+                            "candidate": "PRODUCT_TYPE_OPEN_READ_AS_A_LIFECYCLE_STATUS",
+                            "reason": "The product type OPEN describes the kind of account, not whether it is still open, so it is never read as a lifecycle status.",
+                            "missing_prerequisite": "a printed closure date or a closure narrative"
+                          },
+                          {
+                            "candidate": "THE_ORIGINAL_DELINQUENCY_ANCHOR_CHANGED_BETWEEN_TWO_OWNED_REPORTS",
+                            "reason": "Comparable evidence for this candidate exists only when the consumer owns two reports of the same account. The owned report history and its comparison view supply that evidence; it is never inferred from one snapshot, and the snapshot association must be shown before the candidate is raised.",
+                            "missing_prerequisite": "two owned results for the same account whose printed debt identifiers match"
+                          }
+                        ],
+                        "summary": {
+                          "records": 1,
+                          "analyses": 3,
+                          "potential_issue": 0,
+                          "not_detected": 3,
+                          "withheld_candidates": 7,
+                          "rule_violations_emitted": 0
+                        }
+                      },
+                      "retention_dual_date": {
+                        "check_class": "RETENTION_DUAL_DATE",
+                        "summary": {
+                          "rows": 0,
+                          "already_outside_at_both_dates": 0,
+                          "inside_at_report_outside_at_assessment": 0,
+                          "inside_at_both_dates": 0,
+                          "report_date_missing_but_assessment_compared": 0,
+                          "not_comparable": 0,
+                          "current_review_warranted": 0,
+                          "rule_violations_emitted": 0
+                        },
+                        "performed": []
+                      },
+                      "assessments_performed": 3,
+                      "assessed_on": "2026-10-11",
+                      "assessment_run_at": "2026-10-11T09:37:25-03:00",
+                      "assessment_clock_basis": "America/Halifax",
+                      "detected_report_information": [
+                        {
+                          "check_name": "DETECTED-MEDICAL_INFORMATION",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "medical_information",
+                          "label": "medical information",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect medical information in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c(a)(6)",
+                              "proposition": "information excluded from consumer reports: the recorded restrictions on medical information and their exceptions, including the furnisher-identity/recipient restrictions",
+                              "condition": "the report's furnishing purpose and recipient",
+                              "off_report": true,
+                              "note": "the furnishing purpose and recipient are not printed on the report"
+                            },
+                            {
+                              "citation": "15 U.S.C. § 1681b(g)",
+                              "proposition": "a consumer reporting agency shall not furnish a report containing medical information to a third party for credit, insurance or employment except as the provision permits (including consent)",
+                              "condition": "the report's furnishing purpose and consent",
+                              "off_report": true,
+                              "note": "whether the report is furnished to a third party for those purposes, and whether consent exists, is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-FRAUD_ALERT",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "fraud_alert",
+                          "label": "a fraud alert",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a fraud alert in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c-1",
+                              "proposition": "a fraud alert a consumer placed must be included in the consumer report",
+                              "condition": "whether the consumer actually placed a fraud alert",
+                              "off_report": true,
+                              "note": "whether the consumer placed a fraud alert is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-SECURITY_FREEZE",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "security_freeze",
+                          "label": "a security freeze",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a security freeze in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c-1",
+                              "proposition": "a security freeze is a disclosure restriction the consumer places on the file",
+                              "condition": "whether the consumer actually placed a security freeze",
+                              "off_report": true,
+                              "note": "a security freeze is a disclosure restriction, not automatically a mandatory printed notation; whether the consumer placed one is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-DISPUTE",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "dispute",
+                          "label": "a consumer dispute notation",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a consumer dispute notation in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c(f)",
+                              "proposition": "a consumer reporting agency shall note in a subsequent report that a consumer notified the agency that information is disputed",
+                              "condition": "the consumer's actual notification of a dispute to the agency",
+                              "off_report": true,
+                              "note": "a dispute keyword on the report does not itself prove the notification required by § 1681c(f); whether the notification was made is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        }
+                      ],
+                      "common_errors": [
+                        {
+                          "check_name": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                          "check_class": "COMMON_ERROR",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "label": "an account with contradictory dates",
+                          "state": "POTENTIAL_ISSUE",
+                          "detail": "This report prints at least one account whose opened date is later than its closed date. The printed dates conflict.",
+                          "source_records": [
+                            {
+                              "record_index": 1,
+                              "kind": "CONSUMER_CREDIT_LIABILITY",
+                              "kind_label": "credit account",
+                              "location": {
+                                "page": 1,
+                                "line": 3,
+                                "source": "NATIVE_TEXT",
+                                "confidence": null,
+                                "min_confidence": null,
+                                "trusted": true,
+                                "bbox": {
+                                  "x0": 40,
+                                  "y0": 57.458,
+                                  "x1": 184.558,
+                                  "y1": 65.783
+                                },
+                                "file_id": "8be06ffb7895e560497defb8759cc86d"
+                              },
+                              "source_file_id": "8be06ffb7895e560497defb8759cc86d",
+                              "reason": "OPENED_DATE_AFTER_CLOSED_DATE",
+                              "evidence": {
+                                "opened": "2021-01-01",
+                                "closed": "2020-01-01"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "common_error_checklist": [
+                        {
+                          "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                          "label": "Account opened after it was closed",
+                          "state": "PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-STATUS-DATE-CONTRADICTION",
+                          "label": "Account shown as open with a closing date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY",
+                          "label": "Balances, overdue amounts or payments that do not match",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT",
+                          "label": "Balance on a credit card or line of credit with a credit limit of $0",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY",
+                          "label": "Payment history that does not match other account details",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY",
+                          "label": "Conflicting details about who is responsible for an account",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-DUPLICATE-REPORTING",
+                          "label": "Duplicate account and collection entries",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING",
+                          "label": "Similar accounts to review",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER",
+                          "label": "Account first reported before it was opened",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                          "label": "Account reported after the report date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL",
+                          "label": "First missed-payment date moved to a later date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-IDENTITY-REVIEW",
+                          "label": "Names, addresses and personal details to review",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+                          "label": "Bad debt or collection without a first missed-payment date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+                          "label": "Write-off date missing for a debt marked as a loss",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+                          "label": "Account marked closed or cancelled without a closing date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING",
+                          "label": "Required report details left blank",
+                          "state": "NOT_PERFORMED",
+                          "components": {
+                            "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR": false,
+                            "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE": false,
+                            "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE": false
+                          }
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID",
+                          "label": "Paid or settled account still shown as unpaid",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE",
+                          "label": "Last-payment or first missed-payment date errors",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+                          "label": "Original debt and its collection both showing money owed",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REPORTING-PERIOD-EXCEEDED",
+                          "label": "Entry appears after its applicable credit-reporting period",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "LIMITATION-PERIOD-COURT-CLAIM",
+                          "label": "Court deadlines and credit-report time limits",
+                          "description": "A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.",
+                          "state": "NOT_PERFORMED",
+                          "components": {
+                            "court_claim": false,
+                            "reporting_period": false
+                          }
+                        }
+                      ],
+                      "issues": [
+                        {
+                          "issue_id": "0a6e269358bd4012",
+                          "confidence": "PROBABLE",
+                          "basis_type": "FACTUAL_CONSISTENCY",
+                          "request_type": "VERIFICATION",
+                          "eligible": true,
+                          "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                          "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                          "account_number_in_report": 1,
+                          "record_kind": "credit account",
+                          "preview_category": "DATE_CONFLICT",
+                          "report_identity": {
+                            "bureau": "Equifax",
+                            "reference_date": "2026-06-01"
+                          },
+                          "account_identity": {
+                            "name": "SPRUCE FICTION BANK",
+                            "source_field": "Account Name",
+                            "raw_value": "Spruce Fiction Bank",
+                            "location": {
+                              "section": null,
+                              "page": 1,
+                              "line": 3
+                            }
+                          },
+                          "check_kind": "an account with contradictory dates",
+                          "citation": null,
+                          "rule_source_version": null,
+                          "rule_assessment": {
+                            "classification": "PROBABLE_VIOLATION",
+                            "requirement": "An account cannot close before it opened."
+                          },
+                          "evidence": {
+                            "opened": "2021-01-01",
+                            "closed": "2020-01-01"
+                          },
+                          "source_facts": [
+                            {
+                              "source_field": "opened_date",
+                              "raw_value": "01/01/2021",
+                              "normalized_value": "2021-01-01",
+                              "location": {
+                                "section": null,
+                                "page": 1,
+                                "line": 6
+                              }
+                            },
+                            {
+                              "source_field": "closed_date",
+                              "raw_value": "01/01/2020",
+                              "normalized_value": "2020-01-01",
+                              "location": {
+                                "section": null,
+                                "page": 1,
+                                "line": 7
+                              }
+                            }
+                          ],
+                          "source_location": {
+                            "section": null,
+                            "page": 1,
+                            "line": 3
+                          },
+                          "consumer_label": "VIOLATION"
+                        }
+                      ],
+                      "unresolved_report_fields": [],
+                      "checks_not_examinable": [],
+                      "checks_not_run": [],
+                      "checks_not_applicable": [],
+                      "checks_applicability_unresolved": [],
+                      "applicability_summary": {
+                        "APPLICABLE": 0,
+                        "NOT_APPLICABLE": 0,
+                        "APPLICABILITY_UNRESOLVED": 0,
+                        "NO_RULE_DECLARED": 0
+                      },
+                      "checks_unresolved": [],
+                      "eligibility": {
+                        "draft_eligible": false,
+                        "reason": "NO_ELIGIBLE_RESULT_IN_THIS_BATCH"
+                      },
+                      "assessment": {
+                        "kinds": [
+                          "STATUTORY_RULE_COMPARISON",
+                          "REPORT_FACT_CONSISTENCY",
+                          "DETECTED_REPORT_INFORMATION",
+                          "COMMON_ERROR"
+                        ],
+                        "performed_by_kind": {
+                          "STATUTORY_RULE_COMPARISON": 1,
+                          "REPORT_FACT_CONSISTENCY": 2,
+                          "PRINTED_POLICY_OBSERVATION": 0,
+                          "DETECTED_REPORT_INFORMATION": 4,
+                          "COMMON_ERROR": 1
+                        },
+                        "factual_summary": {
+                          "registered": 2,
+                          "performed": 2,
+                          "no_difference_found": 1,
+                          "a_difference_was_found": 1,
+                          "not_examinable": 0,
+                          "not_applicable": 0,
+                          "applicability_unresolved": 0,
+                          "statutory_checks_named": 0,
+                          "check_classes": [
+                            "REPORT_FACT_CONSISTENCY"
+                          ],
+                          "check_ids": [
+                            "GENERAL-FACT-ITEM-DATE-AFTER-REPORT-DATE",
+                            "GENERAL-FACT-DATE-ORDER-WITHIN-RECORD"
+                          ]
+                        },
+                        "common_error_summary": {
+                          "total": 1,
+                          "potential_issue": 1,
+                          "similar_entries_worth_reviewing": 0,
+                          "not_detected": 0
+                        },
+                        "statutory_checks_performed": 1,
+                        "factual_checks_performed": 2,
+                        "common_error_checks_performed": 1,
+                        "plain": "We reviewed your report against the common-error checklist using the report facts available for each applicable check."
+                      },
+                      "qualifications": [
+                        "These checks read your report. A violation is shown when report evidence supports a breach of a defined reporting rule or requirement.",
+                        "Only the checks named below were run against your report.",
+                        "No check of every possible legal issue was made, and none is implied.",
+                        "We have tested this service on five report layouts: one Equifax Canada consumer specimen admitted by digest, one TransUnion Canada consumer disclosure admitted by a measured structural contract, one Equifax Australia consumer credit file, one Experian United States consumer-disclosure format family, one Experian United Kingdom consumer format family evidenced by structure from a single captured consumer report example of a recorded vintage. The US and Australia examples are dated 2015 and 2016; the UK Experian example is dated 2007. These examples do not certify every current report layout. We also read recognizable bureau reports in a general way, including the supported UK TransUnion consumer fields. We then use the facts we can read. If a document is not a credit report, or we cannot read it, we say which of the two it is and what to do next.",
+                        "A check can also be reported as not applicable to your report, or as unresolved. Neither one ran, and neither one passed.",
+                        "A report-data rule can support a violation from source-linked report facts. An applicable statute may provide additional context.",
+                        "Each finding states the supporting report evidence and any specific uncertainty.",
+                        "A date comparison is arithmetic. On its own it does not show that anything was reported unlawfully."
+                      ],
+                      "read_but_no_usable_facts": null,
+                      "reading_limitations": {
+                        "limited": false,
+                        "incomplete": false,
+                        "affected_checks": [],
+                        "plain": null,
+                        "never_equates_unread_with_absence": true
+                      },
+                      "recovery": {
+                        "bounded": true,
+                        "substitution_forbidden": true,
+                        "recovery_attempts": 0,
+                        "facts_added": []
+                      },
+                      "comprehensive_legal_check": false,
+                      "disclaimer": "This assessment covers the checks listed in this report."
+                    }
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "owned_history",
+            "expected": "Actual phase2 checks: owned_history",
+            "measured": [
+              {
+                "id": "owned_history",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "rows": {
+                    "ok": true,
+                    "assessments": [
+                      {
+                        "result_id": "res_78eeee2b45f2da783e76",
+                        "case_id": "case_1db830376067908681f14d06",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-10-09",
+                        "recorded_at": "2026-10-11T12:41:05.084Z",
+                        "issue_count": 3,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_2bc01c9c4b2cbaf75120",
+                        "case_id": "case_6c3b2bdcaa31d8e8b265ebbf",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:29.124Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_b763f67e4e49fc1dda75",
+                        "case_id": "case_92ba5954a9f5b701b4c3b7d2",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:27.034Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_5dd3eff28b3c8adf3fe9",
+                        "case_id": "case_098da06a9d45f63a3f94601f",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:21.253Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_fc7d19745a663f57707c",
+                        "case_id": "case_2daee5096b853ce7d5c2f5d7",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:18.934Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_cb4e99211e5dacd0459a",
+                        "case_id": "case_20ed8a604294f7ed495918ae",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:12.772Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_67e09418c48d8903dffa",
+                        "case_id": "case_ecb0403472da59e5ff562fa6",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:11.100Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_a079d71dbcf48cbaeeab",
+                        "case_id": "case_5fc0af15ef844480a9be7a80",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:09.282Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_893762092a496f63c18f",
+                        "case_id": "case_8fe0b5228139973c627b42fb",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:02.411Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_0823d358539aef5edf92",
+                        "case_id": "case_0f2e367deeda3c3f5e93f7f1",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-01",
+                        "recorded_at": "2026-10-11T12:37:25.088Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ed044711d69c0193a930",
+                        "case_id": "case_b1011bb736392f40633552f6",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2025-06-01",
+                        "recorded_at": "2026-10-11T12:37:23.174Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ef628af923e1c049369c",
+                        "case_id": "case_6430b1ebc50a2c60cb2ed54c",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:16.453Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_e57988bab71e70268d50",
+                        "case_id": "case_c0815228a3d212abd2f1ffa4",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:14.523Z",
+                        "issue_count": 2,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      }
+                    ],
+                    "total": 13
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "isolation": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "history_isolation",
+            "expected": "Actual phase2 checks: unpaid_stranger_comparison_refused, subscriber_foreign_result_refused",
+            "measured": [
+              {
+                "id": "unpaid_stranger_comparison_refused",
+                "passed": true,
+                "measured": 402
+              },
+              {
+                "id": "subscriber_foreign_result_refused",
+                "passed": true,
+                "measured": 403
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "behavioral_coverage": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "final_full_freeze",
+            "expected": "Fresh complete FULL_CURRENT_PRODUCT, all selected named sections completed, no failures/skips/unrun/drift; every source digest matches the current checkout",
+            "measured": {
+              "mode": "FULL_CURRENT_PRODUCT",
+              "totals": {
+                "passed": 14449,
+                "failed": 0,
+                "skipped": 0
+              },
+              "section_count": 151,
+              "source_hashes": 286,
+              "source_drift": [],
+              "regression_mtime": "2026-10-11T12:36:05.477Z",
+              "freeze_after": "2026-10-09T19:52:00.000Z"
+            },
+            "passed": true,
+            "refs": [
+              "current-regression-evidence.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": true,
+      "expected": "Actual current paid owner dated same masked account/name history, changed issue, reverse-order selection, foreign-result refusal, byte-identical approved packet before/after comparison.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "actual_paid_activation",
+            "expected": "Actual Sandbox paid Checkout matches the owner, session, applied signed webhook and active entitlement; no injected payment",
+            "measured": {
+              "fixture_scope": "staging-production-blockers-20261011",
+              "build_id": "crp-v1-fd23f242f3d158bf",
+              "account_id": "acc_64a5eea7dbd629dc9c4be862",
+              "case_id": "case_b1011bb736392f40633552f6",
+              "packet_case_id": null,
+              "email": "staging-blockers-owner-865d32d11c264556@example.test",
+              "plan": "monthly",
+              "action": "verify",
+              "session_id": "cs_test_a12pfuDXAG7buuKbZU8pIYryXHBA80oiS4ae46wQcjSJKpfaBMwCfGiFl2",
+              "livemode": false,
+              "session_status": "complete",
+              "payment_status": "paid",
+              "amount_total": 795,
+              "currency": "cad",
+              "matching_owned_checkout": true,
+              "checkout_id": "chk_24a8b08316a383ce7c745b32",
+              "fixture_receipt_sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a",
+              "measured_at": "2026-10-11T12:40:57.944Z",
+              "canonical_paid_invoice": "in_1UPM2BKCM3e4JIjWXS8cGndi",
+              "subscription_id": "sub_1UPM2BKCM3e4JIjWByJUQL0I",
+              "matched_applied_signed_webhook": true,
+              "entitlement_state": "ACTIVE",
+              "applied_event_id": "evt_1UPM2FKCM3e4JIjWU39YtEFf",
+              "applied_event_type": "checkout.session.completed",
+              "passed": true
+            },
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/provider-paid.json",
+              "production-blocker-repair-2026-10-11/checkout-receipt.json",
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "owned_history",
+            "expected": "Actual phase2 checks: owned_history",
+            "measured": [
+              {
+                "id": "owned_history",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "rows": {
+                    "ok": true,
+                    "assessments": [
+                      {
+                        "result_id": "res_78eeee2b45f2da783e76",
+                        "case_id": "case_1db830376067908681f14d06",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-10-09",
+                        "recorded_at": "2026-10-11T12:41:05.084Z",
+                        "issue_count": 3,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_2bc01c9c4b2cbaf75120",
+                        "case_id": "case_6c3b2bdcaa31d8e8b265ebbf",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:29.124Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_b763f67e4e49fc1dda75",
+                        "case_id": "case_92ba5954a9f5b701b4c3b7d2",
+                        "country": "GB",
+                        "region": "GB-WLS",
+                        "jurisdiction": "GB-GB-WLS",
+                        "bureau": "Experian",
+                        "report_date": "2026-09-12",
+                        "recorded_at": "2026-10-11T12:37:27.034Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_5dd3eff28b3c8adf3fe9",
+                        "case_id": "case_098da06a9d45f63a3f94601f",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:21.253Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_fc7d19745a663f57707c",
+                        "case_id": "case_2daee5096b853ce7d5c2f5d7",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:18.934Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_cb4e99211e5dacd0459a",
+                        "case_id": "case_20ed8a604294f7ed495918ae",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:12.772Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_67e09418c48d8903dffa",
+                        "case_id": "case_ecb0403472da59e5ff562fa6",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:11.100Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_a079d71dbcf48cbaeeab",
+                        "case_id": "case_5fc0af15ef844480a9be7a80",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:09.282Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_893762092a496f63c18f",
+                        "case_id": "case_8fe0b5228139973c627b42fb",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-12",
+                        "recorded_at": "2026-10-11T12:37:02.411Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_0823d358539aef5edf92",
+                        "case_id": "case_0f2e367deeda3c3f5e93f7f1",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2026-06-01",
+                        "recorded_at": "2026-10-11T12:37:25.088Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ed044711d69c0193a930",
+                        "case_id": "case_b1011bb736392f40633552f6",
+                        "country": "CA",
+                        "region": "CA-NS",
+                        "jurisdiction": "CA-CA-NS",
+                        "bureau": "Equifax",
+                        "report_date": "2025-06-01",
+                        "recorded_at": "2026-10-11T12:37:23.174Z",
+                        "issue_count": 1,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      },
+                      {
+                        "result_id": "res_ef628af923e1c049369c",
+                        "case_id": "case_6430b1ebc50a2c60cb2ed54c",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:16.453Z",
+                        "issue_count": 0,
+                        "information_count": 0,
+                        "is_a_finding_case": false
+                      },
+                      {
+                        "result_id": "res_e57988bab71e70268d50",
+                        "case_id": "case_c0815228a3d212abd2f1ffa4",
+                        "country": "US",
+                        "region": "US-NY",
+                        "jurisdiction": "US-US-NY",
+                        "bureau": "Equifax",
+                        "report_date": null,
+                        "recorded_at": "2026-10-11T12:37:14.523Z",
+                        "issue_count": 2,
+                        "information_count": 0,
+                        "is_a_finding_case": true
+                      }
+                    ],
+                    "total": 13
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "chronological_linkage",
+            "expected": "Actual phase2 checks: owned_chronological_comparison, reverse_selection_keeps_order",
+            "measured": [
+              {
+                "id": "owned_chronological_comparison",
+                "passed": true,
+                "measured": {
+                  "ok": true,
+                  "left": {
+                    "result_id": "res_ed044711d69c0193a930",
+                    "case_id": "case_b1011bb736392f40633552f6",
+                    "country": "CA",
+                    "region": "CA-NS",
+                    "jurisdiction": "CA-CA-NS",
+                    "bureau": "Equifax",
+                    "report_date": "2025-06-01",
+                    "recorded_at": "2026-10-11T12:37:23.174Z",
+                    "issue_count": 1,
+                    "information_count": 0,
+                    "is_a_finding_case": true
+                  },
+                  "right": {
+                    "result_id": "res_0823d358539aef5edf92",
+                    "case_id": "case_0f2e367deeda3c3f5e93f7f1",
+                    "country": "CA",
+                    "region": "CA-NS",
+                    "jurisdiction": "CA-CA-NS",
+                    "bureau": "Equifax",
+                    "report_date": "2026-06-01",
+                    "recorded_at": "2026-10-11T12:37:25.088Z",
+                    "issue_count": 1,
+                    "information_count": 0,
+                    "is_a_finding_case": true
+                  },
+                  "order": {
+                    "state": "DETERMINED",
+                    "earlier": "left",
+                    "later": "right",
+                    "direction_claimed": true,
+                    "note": "The order is taken from the report dates the two reports print."
+                  },
+                  "different_bureau": false,
+                  "direction_claimed": true,
+                  "outcomes": [
+                    {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "basis_type": "FACTUAL_CONSISTENCY",
+                      "eligible": true,
+                      "earlier": {
+                        "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "confidence": "PROBABLE",
+                        "request_type": "VERIFICATION",
+                        "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2020-01-01 after 2019-01-01).",
+                        "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                        "evidence": {
+                          "opened": "2020-01-01",
+                          "closed": "2019-01-01"
+                        },
+                        "source_facts": [
+                          {
+                            "source_field": "opened_date",
+                            "raw_value": "01/01/2020",
+                            "normalized_value": "2020-01-01"
+                          },
+                          {
+                            "source_field": "closed_date",
+                            "raw_value": "01/01/2019",
+                            "normalized_value": "2019-01-01"
+                          }
+                        ]
+                      },
+                      "outcome": "CHANGED",
+                      "match": {
+                        "state": "CONFIDENT",
+                        "reason": "MASK_AND_IDENTITY_MATCH",
+                        "cross_bureau": false,
+                        "evidence": {
+                          "earlier_masked_identifier": "MASK-2468",
+                          "later_masked_identifier": "MASK-2468",
+                          "earlier_identity": "SPRUCE FICTION BANK",
+                          "later_identity": "SPRUCE FICTION BANK"
+                        }
+                      },
+                      "later": {
+                        "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "confidence": "PROBABLE",
+                        "request_type": "VERIFICATION",
+                        "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                        "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                        "evidence": {
+                          "opened": "2021-01-01",
+                          "closed": "2020-01-01"
+                        },
+                        "source_facts": [
+                          {
+                            "source_field": "opened_date",
+                            "raw_value": "01/01/2021",
+                            "normalized_value": "2021-01-01"
+                          },
+                          {
+                            "source_field": "closed_date",
+                            "raw_value": "01/01/2020",
+                            "normalized_value": "2020-01-01"
+                          }
+                        ]
+                      },
+                      "later_record_facts": {
+                        "liability.openedDate": "2021-01-01",
+                        "liability.closedDate": "2020-01-01"
+                      },
+                      "uncertainty": "The later report still shows this issue on this same account, but the facts it prints differ from the earlier report."
+                    }
+                  ],
+                  "summary": {
+                    "total": 1,
+                    "still_observed": 0,
+                    "changed": 1,
+                    "no_longer_observed": 0,
+                    "not_comparable": 0
+                  },
+                  "note": "A difference here is what two reports print, not proof of anything: absence in a later report alone never proves a correction, deletion, a bureau action or compliance."
+                }
+              },
+              {
+                "id": "reverse_selection_keeps_order",
+                "passed": true,
+                "measured": {
+                  "state": "DETERMINED",
+                  "earlier": "right",
+                  "later": "left",
+                  "direction_claimed": true,
+                  "note": "The order is taken from the report dates the two reports print (the earlier report is compared with the later one)."
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "changed_issue",
+            "expected": "Actual phase2 checks: changed_issue",
+            "measured": [
+              {
+                "id": "changed_issue",
+                "passed": true,
+                "measured": [
+                  {
+                    "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                    "confidence": "PROBABLE",
+                    "basis_type": "FACTUAL_CONSISTENCY",
+                    "eligible": true,
+                    "earlier": {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "request_type": "VERIFICATION",
+                      "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2020-01-01 after 2019-01-01).",
+                      "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                      "evidence": {
+                        "opened": "2020-01-01",
+                        "closed": "2019-01-01"
+                      },
+                      "source_facts": [
+                        {
+                          "source_field": "opened_date",
+                          "raw_value": "01/01/2020",
+                          "normalized_value": "2020-01-01"
+                        },
+                        {
+                          "source_field": "closed_date",
+                          "raw_value": "01/01/2019",
+                          "normalized_value": "2019-01-01"
+                        }
+                      ]
+                    },
+                    "outcome": "CHANGED",
+                    "match": {
+                      "state": "CONFIDENT",
+                      "reason": "MASK_AND_IDENTITY_MATCH",
+                      "cross_bureau": false,
+                      "evidence": {
+                        "earlier_masked_identifier": "MASK-2468",
+                        "later_masked_identifier": "MASK-2468",
+                        "earlier_identity": "SPRUCE FICTION BANK",
+                        "later_identity": "SPRUCE FICTION BANK"
+                      }
+                    },
+                    "later": {
+                      "category": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                      "confidence": "PROBABLE",
+                      "request_type": "VERIFICATION",
+                      "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                      "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                      "evidence": {
+                        "opened": "2021-01-01",
+                        "closed": "2020-01-01"
+                      },
+                      "source_facts": [
+                        {
+                          "source_field": "opened_date",
+                          "raw_value": "01/01/2021",
+                          "normalized_value": "2021-01-01"
+                        },
+                        {
+                          "source_field": "closed_date",
+                          "raw_value": "01/01/2020",
+                          "normalized_value": "2020-01-01"
+                        }
+                      ]
+                    },
+                    "later_record_facts": {
+                      "liability.openedDate": "2021-01-01",
+                      "liability.closedDate": "2020-01-01"
+                    },
+                    "uncertainty": "The later report still shows this issue on this same account, but the facts it prints differ from the earlier report."
+                  }
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "history_isolation",
+            "expected": "Actual phase2 checks: unpaid_stranger_comparison_refused, subscriber_foreign_result_refused",
+            "measured": [
+              {
+                "id": "unpaid_stranger_comparison_refused",
+                "passed": true,
+                "measured": 402
+              },
+              {
+                "id": "subscriber_foreign_result_refused",
+                "passed": true,
+                "measured": 403
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "packet_comparison_continuity",
+            "expected": "Actual phase2 checks: approved_packet_unchanged_after_comparison",
+            "measured": [
+              {
+                "id": "approved_packet_unchanged_after_comparison",
+                "passed": true,
+                "measured": {
+                  "before_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+                  "after_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+                  "bytes": 322923
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "dg-owned-reaging",
+            "assertions": 321,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "mapping": "owned chronological same-bureau fixed-anchor change",
+              "jurisdictions": 82,
+              "packet": "one source-linked verification request with frozen earlier/current evidence",
+              "deployment": "NOT_PERFORMED"
+            }
+          },
+          {
+            "id": "bw-browser-wizzard",
+            "assertions": 174,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "changed_preview_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-packet-changed-preview.png",
+              "purchase_plans_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-purchase-plans.png",
+              "unpaid_summary_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-unpaid-summary.png",
+              "checkout_pending_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-pending.png",
+              "checkout_restored_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-checkout-return-restored.png",
+              "limitation_browser": {
+                "reporting_issue_count": 0,
+                "court_information_only": true,
+                "packet_candidate": false
+              },
+              "dual_date_browser": {
+                "free_summary": "the teaser names an entry that may now be too old to report",
+                "packet": "CRP-dispute-packet-case_5777fb147bd2f15e04d10a3b.pdf"
+              },
+              "report_copy_review_screenshot": "C:\\Users\\webbd\\AppData\\Local\\Temp/crp-original-report-copy-review.png",
+              "original_report_copies": {
+                "available": 2,
+                "default_selected": 2,
+                "automatically_included": 2,
+                "relevant_pages_included": true,
+                "single_pdf": true,
+                "original_review_bytes_retained": true,
+                "whole_file_pages": 2,
+                "included_page": 1,
+                "unrelated_pages_omitted": true
+              },
+              "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          },
+          {
+            "id": "bz-report-history",
+            "assertions": 53,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "outcomes": {
+                "unchanged": "STILL_OBSERVED",
+                "changed": "CHANGED",
+                "no_longer_observed": "NO_LONGER_OBSERVED",
+                "not_comparable": "NOT_COMPARABLE"
+              },
+              "reused": "persisted extractions + results + the unified issue descriptor; nothing is re-read or overwritten",
+              "fixtures": "all reports are buildPdf fictional fixtures with fictional data; no real consumer identifier or private report"
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "production-final-freeze:dg-owned-reaging",
+      "passed": true,
+      "assertions": 321,
+      "criteria": [
+        "owned_history",
+        "comparison_linkage",
+        "issue_changes",
+        "consumer_view",
+        "isolation",
+        "behavioral_coverage"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "321 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    },
+    {
+      "id": "production-final-freeze:bw-browser-wizzard",
+      "passed": true,
+      "assertions": 174,
+      "criteria": [
+        "owned_history",
+        "comparison_linkage",
+        "issue_changes",
+        "consumer_view",
+        "isolation",
+        "behavioral_coverage"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "174 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    },
+    {
+      "id": "production-final-freeze:bz-report-history",
+      "passed": true,
+      "assertions": 53,
+      "criteria": [
+        "owned_history",
+        "comparison_linkage",
+        "issue_changes",
+        "consumer_view",
+        "isolation",
+        "behavioral_coverage"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "53 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    }
+  ],
+  "passed": true,
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-fd23f242f3d158bf",
+    "original_canonical_sha256": "8cb7795bd9e2854f09d0e540804d31ff592b630556f9311a36fb11fa741d0bd3",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "scope": "owned report history: one entry per persisted assessment, newest report first, showing bureau and report date; consumer-chosen comparison of two owned assessments, with the chronological order taken from the two report dates (no claim when it is uncertain); record matching by supported identity evidence only (report-masked account identifier AND printed creditor identity); index, balance, dates and a name alone never match, and a partial match stays qualified; four issue outcomes: still observed, changed, no longer observed in the later report, not comparable from available evidence; read-only reuse of persisted extractions, results and the unified issue descriptor; nothing is re-read and no earlier fact, result or packet is changed; cross-account refusal (403/404), the unentitled refusal, and the one-time purchaser preserved assessment and packet",
+      "tests": [
+        {
+          "id": "bz-report-history",
+          "passed": true,
+          "expected": "owned history, consumer-chosen comparison, four issue outcomes, cross-account refusal and packet preservation over the real endpoints",
+          "measured": "53 assertions passed, 0 failed",
+          "criteria": [
+            "owned_history",
+            "comparison_linkage",
+            "issue_changes",
+            "isolation",
+            "behavioral_coverage"
+          ]
+        },
+        {
+          "id": "bw-browser-wizzard",
+          "passed": true,
+          "expected": "the history and comparison rendered and driven in a real browser, with the actual packet-download control",
+          "measured": "174 assertions passed, 0 failed",
+          "criteria": [
+            "consumer_view",
+            "behavioral_coverage"
+          ]
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/comparison.cjs",
+          "sha256": "fd79a54061f76551b0d261d6eee0aef842c401b9fe84697c77f690258969db6e"
+        },
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+        },
+        {
+          "file": "accelerated-launch/service/errors.cjs",
+          "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "sha256": "b8d5bb298056b8aea7ebe574c2e9bb1fe356601314db37b3dffd1c1e8d8afab1"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+          "sha256": "887b545b0f1826a0dd491698fd08ffd6cd4765b25b1c43e19dec069de791ad30"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+          "sha256": "d4d46e8c714df7aa2b91dc64df585dca6d955c41bca3361029b3c8a57265cb1d"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-blocker-repair-2026-10-11/phase1-receipt.json",
+        "sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-paid.json",
+        "sha256": "eb25b013277263bb4520345e1d37e8d51f5d9d1d4176af9e6e668337b7b8bef7",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/review-receipt.json",
+        "sha256": "b4191ebc7075809b929f20a6b4effeb55595e3de2bd5fe51229e9327fcf63258",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/download-receipt.json",
+        "sha256": "abccb82f6cc41cb3472eac860c697608b2b9c5b1893171d9ce5fd5e5db6d8d1e",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/continuity-receipt.json",
+        "sha256": "a43b57f85a60ef6b3580a5b7a969f24c1a25dcaa414b8723229824ca56eb1473",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/phase2-receipt.json",
+        "sha256": "9045952a5c9501d0da0c6dad3f15bbc53e76c9cb7203da6a1a96f1d2b54b31fa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-cleanup.json",
+        "sha256": "4608434df677f468bc87bdfac24661497a3d847a750aff1371d11e1b2f1de273",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cleanup-receipt.json",
+        "sha256": "ef3cc2714e79d2a1f7b93f7b8e2b964471a0fa3676672dfb547380e176973c68",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/checkout-receipt.json",
+        "sha256": "98291ac6aa6efb511371fc3e1bf875b11326acd7d0c30660c7ba07067759ceeb",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/input-manifest.json",
+        "sha256": "96456ae171857dd3291121cf332da227e95f6e108a202d8bc968021d8fde01d8",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/upgrade-proof.json",
+        "sha256": "0c585c51163a0181dab0e4c3717481a05baf5dc88e954bfa566c1d2cbee7220b",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cancellation-proof.json",
+        "sha256": "d17ca32f8fe2709f5aa982b483ed8c7a15727f3d4ab99da741f9fac1b5721baa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/fdt-mitigation-candidate.json",
+        "sha256": "645fea80d73a2330e61f8d599a29222f65a581e2007521f40c97a85d7533d169",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-blocker-repair-2026-10-11/measurements.json",
+    "prepared_at": "2026-10-11T12:57:19.355Z",
+    "canonical_evidence_written": false
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "generated_by": "SOURCE_CAPTURES/B5-PREFLIGHT/webhook-verify.cjs",
+  "account": {
+    "account_id": "acc_7e9cf25f3c483aed367767b1"
+  },
+  "one_time": {
+    "session_id": "cs_test_a1pKM8xfLLDGrPGJkCo5UIVxfM1na9jtWzaEKvdrwBPs6bzWHE3aJhLYxT",
+    "checkout_status": 201,
+    "trigger_out": "Checking for new versions...",
+    "entitled": false,
+    "state": "PENDING",
+    "credit_eligible": false
+  },
+  "monthly": {
+    "session_id": "cs_test_a1876LYedXph7kXvRIJQWJFsB2ldgCpDU0ZLvC2P5l1GYw016n8N1W364U",
+    "credit_reserved": false,
+    "first_invoice_cents": 795,
+    "state": "PENDING",
+    "credit_eligible_after": false
+  },
+  "duplicate": {
+    "state_after_refire": "PENDING"
+  },
+  "generic": {
+    "log_outcomes": [
+      "{\"event\":\"REQUEST_REFUSED\",\"outcome\":\"BILLING_EVENT_SIGNATURE_INVALID\",\"reason_code\":\"BILLING_EVENT_SIGNATURE_INVALID\",\"http_status\":400}"
+    ]
+  },
+  "all_log_outcomes": [
+    "{\"event\":\"REQUEST_REFUSED\",\"outcome\":\"BILLING_EVENT_SIGNATURE_INVALID\",\"reason_code\":\"BILLING_EVENT_SIGNATURE_INVALID\",\"http_status\":400}"
+  ],
+  "verified_at": "2026-10-01T22:48:28.466Z",
+  "whsec_captured": true,
+  "secret_printed": false
+}

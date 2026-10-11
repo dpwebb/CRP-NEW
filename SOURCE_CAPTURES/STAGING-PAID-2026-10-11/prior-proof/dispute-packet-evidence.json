@@ -1,0 +1,2826 @@
+{
+  "identity": {
+    "build_id": null,
+    "served_build_id": null,
+    "local_execution_only": true
+  },
+  "blocker_id": "BLOCKER-DISPUTE-PACKET-001",
+  "passed": false,
+  "measured_at": "2026-10-11T04:27:15.994Z",
+  "scope": "Active common-error checklist selected disputes; source-linked report-data rules and applicable accepted reporting periods. Independent retired statutory findings and court-claim information are not packet candidates.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "status_note": "Complete current-product behavioral execution and tested-source/template hashes match. Local selected-issue packets, letters, actual filled originals, review/approval, download, attachment choices and isolation are demonstrated within the stated supported mechanisms. Hosted paid verification remains separate.",
+    "tests": [
+      {
+        "id": "o-all82-infrastructure",
+        "passed": true,
+        "criteria": [
+          "packet_scope"
+        ],
+        "exercise_class": "FICTIONAL_HTTP_INFRASTRUCTURE",
+        "expected": "The shared account and case infrastructure exercises the exact 82 canonical regions; this alone does not prove packets or report support.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 88,
+          "assertions_failed": 0,
+          "regions_exercised": [
+            "AU-ACT",
+            "AU-NSW",
+            "AU-NT",
+            "AU-QLD",
+            "AU-SA",
+            "AU-TAS",
+            "AU-VIC",
+            "AU-WA",
+            "CA-AB",
+            "CA-BC",
+            "CA-MB",
+            "CA-NB",
+            "CA-NL",
+            "CA-NS",
+            "CA-NT",
+            "CA-NU",
+            "CA-ON",
+            "CA-PE",
+            "CA-QC",
+            "CA-SK",
+            "CA-YT",
+            "GB-ENG",
+            "GB-NIR",
+            "GB-SCT",
+            "GB-WLS",
+            "US-AK",
+            "US-AL",
+            "US-AR",
+            "US-AS",
+            "US-AZ",
+            "US-CA",
+            "US-CO",
+            "US-CT",
+            "US-DC",
+            "US-DE",
+            "US-FL",
+            "US-GA",
+            "US-GU",
+            "US-HI",
+            "US-IA",
+            "US-ID",
+            "US-IL",
+            "US-IN",
+            "US-KS",
+            "US-KY",
+            "US-LA",
+            "US-MA",
+            "US-MD",
+            "US-ME",
+            "US-MI",
+            "US-MN",
+            "US-MO",
+            "US-MP",
+            "US-MS",
+            "US-MT",
+            "US-NC",
+            "US-ND",
+            "US-NE",
+            "US-NH",
+            "US-NJ",
+            "US-NM",
+            "US-NV",
+            "US-NY",
+            "US-OH",
+            "US-OK",
+            "US-OR",
+            "US-PA",
+            "US-PR",
+            "US-RI",
+            "US-SC",
+            "US-SD",
+            "US-TN",
+            "US-TX",
+            "US-UM",
+            "US-UT",
+            "US-VA",
+            "US-VI",
+            "US-VT",
+            "US-WA",
+            "US-WI",
+            "US-WV",
+            "US-WY"
+          ],
+          "boundary": "Infrastructure only; packet delivery is measured separately by bx."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs"
+        ]
+      },
+      {
+        "id": "bx-all82-factual-verification",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "jurisdiction_content",
+          "finding_evidence",
+          "usable_download",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "FICTIONAL_NATIVE_PDF_UPLOAD",
+        "expected": "82 distinct supported GENERAL uploads deliver selected, approved, entitled packets matching their own issue content and case/report identity; other accounts and cases cannot borrow approval.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 9,
+          "assertions_failed": 0,
+          "regions_tested": 82,
+          "download_content_matched": 82,
+          "case_association_matched": 82,
+          "presentations": [
+            "GENERAL-BUREAU-REPORT"
+          ],
+          "boundary": "One reusable supported GENERAL account-date journey per region, not every check in every bureau layout."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs"
+        ]
+      },
+      {
+        "id": "by-packet-reconciliation",
+        "passed": true,
+        "criteria": [
+          "finding_evidence",
+          "jurisdiction_content"
+        ],
+        "exercise_class": "CONTROLLED_ADAPTER_FACTS_AND_REPRESENTATIVE_NATIVE_UPLOADS",
+        "expected": "Exercised active checklist reporting-period findings remain selectable; native chronology and AU retention packets retain their own evidence and accepted rule. Retired content findings stay absent.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 50,
+          "assertions_failed": 0,
+          "emitted_active_period_results": [
+            {
+              "adapter_id": "FCRA-605A-4-US-NATIONAL-7Y",
+              "issues": 1,
+              "eligible": true
+            },
+            {
+              "adapter_id": "FCRA-605A-5-US-NATIONAL-7Y",
+              "issues": 1,
+              "eligible": true
+            },
+            {
+              "adapter_id": "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+              "issues": 1,
+              "eligible": true
+            },
+            {
+              "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+              "issues": 1,
+              "eligible": true
+            },
+            {
+              "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+              "issues": 1,
+              "eligible": true
+            }
+          ],
+          "retired_content_guard": "retired dismissed-charge content finding is absent from consumer issues",
+          "boundary": "Only these exercised active adapters are credited; historical packet_enabled_rules is not active scope."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs"
+        ]
+      },
+      {
+        "id": "bl-us-ca-correction-packet",
+        "passed": true,
+        "criteria": [
+          "finding_evidence",
+          "consumer_review",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "FICTIONAL_NATIVE_UPLOAD_AND_HTTP_PACKET",
+        "expected": "Supported checklist selection, approval and download work; unknown/empty selection, changed selection, re-evaluation, missing entitlement and cross-account access are refused.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 52,
+          "assertions_failed": 0,
+          "behavioral_result": "California common-error violation path and retired tax-lien/bankruptcy guards; packet approvals and refusals verified"
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs"
+        ]
+      },
+      {
+        "id": "bs-prime-directive-delivery",
+        "passed": true,
+        "criteria": [
+          "finding_evidence",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "FICTIONAL_NATIVE_UPLOAD_AND_HTTP_PACKET",
+        "expected": "A supported internally qualified checklist issue reaches selection and entitled verification download without inventing an absent exception; edited wording and foreign ownership are refused.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 37,
+          "assertions_failed": 0,
+          "qualified_upload": "unresolved-exception qualified path reaches selection + entitled verification-packet download from a fictional upload",
+          "wording": "affirmative concern leads; exception uncertainty is plain and never asserts an absent exception"
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs"
+        ]
+      },
+      {
+        "id": "cb-packet-correspondence",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "finding_evidence",
+          "consumer_review",
+          "usable_download"
+        ],
+        "exercise_class": "FICTIONAL_HTTP_DOWNLOAD_CONTENT",
+        "expected": "Correction and verification correspondence contain only selected requests and organized own-source evidence. Consumer wording stays separate from report facts and editing it invalidates approval.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 110,
+          "assertions_failed": 0,
+          "downloads": [
+            {
+              "variant": "definite_correction",
+              "downloaded_chars": 1602
+            },
+            {
+              "variant": "potential_verification",
+              "downloaded_chars": 13584
+            },
+            {
+              "variant": "probable_verification",
+              "downloaded_chars": 9557
+            }
+          ],
+          "consumer_input_separation": "the consumer-entered details live on the packet row and never in the report result, extraction or evaluation",
+          "sending": "consumer-controlled: the packet is prepared for the consumer to submit with the relevant bureau instructions; this service sends nothing",
+          "boundary": "Variant names record internal confidence; the consumer breach label is VIOLATION."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs"
+        ]
+      },
+      {
+        "id": "bo-prime-directive-interaction",
+        "passed": true,
+        "criteria": [
+          "consumer_review",
+          "behavioral_coverage"
+        ],
+        "exercise_class": "REAL_UI_HANDLERS_AND_LOOPBACK_HTTP_SERVICE",
+        "expected": "Real UI handlers save visible selection and wording, disable approval after editing, review the new preview, approve and download against the real local service.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 50,
+          "assertions_failed": 0,
+          "interaction": "select -> save full preview -> edit disables approval -> save and read new preview -> approve -> download against the real service"
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs"
+        ]
+      },
+      {
+        "id": "bw-browser-wizzard",
+        "passed": true,
+        "criteria": [
+          "consumer_review",
+          "usable_download",
+          "behavioral_coverage"
+        ],
+        "exercise_class": "REAL_BROWSER_AND_LOOPBACK_SERVICE_WITH_FICTIONAL_REPORTS",
+        "expected": "The representative browser reviews, edits, approves and downloads one complete PDF. Relevant report pages are included automatically; court-deadline information is not a packet candidate.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 161,
+          "assertions_failed": 0,
+          "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+          "court_information": {
+            "reporting_issue_count": 0,
+            "court_information_only": true,
+            "packet_candidate": false
+          },
+          "report_copy_selection": {
+            "available": 2,
+            "default_selected": 2,
+            "automatically_included": 2,
+            "relevant_pages_included": true,
+            "single_pdf": true,
+            "original_review_bytes_retained": true,
+            "whole_file_pages": 2,
+            "included_page": 1,
+            "unrelated_pages_omitted": true
+          },
+          "local_download": "CRP-dispute-packet-case_e9abc91e2db2d7e67fe438f4.pdf",
+          "boundary": "Loopback browser and test entitlement; not hosted payment, mailing or physical printing."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs"
+        ]
+      },
+      {
+        "id": "t-entitlement",
+        "passed": true,
+        "criteria": [
+          "entitlement_isolation"
+        ],
+        "exercise_class": "HTTP_SERVICE_TEST_ADAPTER_AND_LOOPBACK_STRIPE_MOCK",
+        "expected": "Server-side entitlement protects paid routes; client redirects, invalid provider events, expiry and revoked access cannot grant a packet.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 246,
+          "assertions_failed": 0,
+          "unpaid_routes_refused": 7,
+          "paid_routes_covered": 5,
+          "entitlement_refusal": {
+            "status_code": 402,
+            "code": "ENTITLEMENT_REQUIRED"
+          },
+          "activation": {
+            "checkout_id": "chk_53f093f7a2bec81e1e493ddb",
+            "entitled_after_event": true,
+            "duplicate_event_is_idempotent": true,
+            "client_confirmation_refused": true,
+            "redirect_grants_nothing": true
+          },
+          "failed_verification": {
+            "unsigned_refused": true,
+            "tampered_refused": true,
+            "stale_refused": true,
+            "unsupported_type_refused": true,
+            "unknown_account_ignored": true,
+            "unknown_checkout_ignored": true,
+            "plan_mismatch_ignored": true
+          },
+          "expiry_and_cancellation": {
+            "lapsed_period_is_expired_immediately": true,
+            "deletion_never_gated": true,
+            "grace_on_failed_payment": true,
+            "cancellation_at_period_end": true,
+            "refund_revokes_immediately": true,
+            "unpaid_checkout_cancels_at_once": true
+          },
+          "stripe_cancellation": {
+            "proof": "HTTP_SERVICE_AND_LOOPBACK_STRIPE_MOCK_NOT_HOSTED_PAYMENT",
+            "provider_confirmed": true,
+            "provider_failure_and_mismatch_preserve_local_state": true,
+            "repeats_and_concurrent_writes_idempotent": true,
+            "changed_account_and_entitlement_guarded": true,
+            "actual_subscription_deleted_event_mapped": true
+          },
+          "boundary": "Local provider fixtures never establish hosted paid access or production Stripe readiness."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/t-entitlement.cjs"
+        ]
+      },
+      {
+        "id": "eb-account-packet-support",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "jurisdiction_content",
+          "consumer_review",
+          "usable_download",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "FICTIONAL_HTTP_PROFILE_DOCUMENTS_AND_PACKET_DOWNLOAD",
+        "expected": "Owned contact details and selected document copies are approval-bound; the sourced bureau/purpose/postal channel chooses applicable materials and excludes unrelated documents.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 184,
+          "assertions_failed": 0,
+          "http_ownership": true,
+          "selected_documents_inline_pdf": true,
+          "contact_and_document_approval_binding": true,
+          "sourced_bureau_purpose_channel": true
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs"
+        ]
+      },
+      {
+        "id": "eh-packet-report-exhibits",
+        "passed": true,
+        "criteria": [
+          "finding_evidence",
+          "consumer_review",
+          "usable_download",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "OWNED_FICTIONAL_ORIGINAL_REPORTS_AND_HTTP_PACKET_DOWNLOAD",
+        "expected": "Only relevant original pages from selected own report evidence enter the approved complete PDF. Re-aging retains both sources; mutations, deletion and stale approvals refuse download.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 152,
+          "assertions_failed": 0,
+          "original_report_pages_preserved": true,
+          "both_reaging_sources": true,
+          "automatically_included_relevant_pages": true,
+          "selected_issue_sources_only": true,
+          "review_and_approval_binding": true,
+          "mutation_and_deletion_refused": true,
+          "multipage_and_image_originals": true
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs"
+        ]
+      },
+      {
+        "id": "ei-collection-duplicate",
+        "passed": true,
+        "criteria": [
+          "finding_evidence",
+          "usable_download",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "CONTROLLED_PERSISTED_SOURCE_FACTS_AND_ACTUAL_COMPLETE_PDF",
+        "expected": "The corroborated multi-agency collection pair retains its own member/account evidence and selected requests in the actual packet; ordinary matching and privacy remain enforced.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 104,
+          "assertions_failed": 0,
+          "scope": "shared collection source contract and complete editable packet PDF; reader admission covered separately",
+          "owner_member_account_criterion": true,
+          "ordinary_matching_preserved": true,
+          "original_report_pages": 2,
+          "physical_print_or_mail": false,
+          "boundary": "Shared source contract and real local packet output; reader admission is proved separately."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs"
+        ]
+      },
+      {
+        "id": "er-bureau-form-population",
+        "passed": true,
+        "criteria": [
+          "consumer_review",
+          "usable_download",
+          "behavioral_coverage"
+        ],
+        "exercise_class": "ACTUAL_HASH_VERIFIED_ORIGINAL_PDF_RENDERERS",
+        "expected": "Supported actual original templates retain artwork/native controls, explicit supplied data and every selected request; rendering is deterministic, overflow is retained, and signature/consent stay blank.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 132,
+          "assertions_failed": 0,
+          "proof": "Completed assertions in the source-matched original-form renderer section; template bytes are independently verified by execution custody."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs"
+        ]
+      },
+      {
+        "id": "es-filled-packet-business-letter",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "consumer_review",
+          "usable_download",
+          "entitlement_isolation"
+        ],
+        "exercise_class": "FICTIONAL_NATIVE_UPLOAD_ACTUAL_COMPLETE_REVIEW_PDF",
+        "expected": "The owned review shows one complete PDF with letter, report pages, documents and filled originals. Approval binds its exact digest/template versions and selected order; downloaded and printed bytes equal reviewed bytes. Missing name parts are not guessed, edits require reapproval, and one-off access does not grant subscriber packets.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 59,
+          "assertions_failed": 0,
+          "owned_actual_pdf_review": true,
+          "original_form_approval_digest": true,
+          "name_parts_not_guessed": true,
+          "ordinary_business_letter": true
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs"
+        ]
+      },
+      {
+        "id": "ew-inline-packet-composer",
+        "passed": true,
+        "criteria": [
+          "consumer_review",
+          "usable_download",
+          "behavioral_coverage"
+        ],
+        "exercise_class": "ACTUAL_COMPLETE_PDF_NATIVE_FIELDS_AND_INDEPENDENT_RENDERING",
+        "expected": "The final complete PDF preserves source-page artwork, inline images, editable letter fields and independently editable original native controls, with deterministic bytes and blank signature/consent.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 121,
+          "assertions_failed": 0,
+          "single_complete_pdf": true,
+          "original_native_controls": true,
+          "source_pages_only": true,
+          "editable_letter": true,
+          "deterministic_approval_bytes": true,
+          "independent_print_rendering": true
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs"
+        ]
+      },
+      {
+        "id": "ex-inline-packet-journey",
+        "passed": true,
+        "criteria": [
+          "consumer_review",
+          "usable_download",
+          "entitlement_isolation",
+          "end_to_end_journey"
+        ],
+        "exercise_class": "FICTIONAL_NATIVE_UPLOAD_OWNED_LETTER_EDIT_AND_COMPLETE_HTTP_PDF",
+        "expected": "An owned subscriber edits the whole letter, reviews and approves one complete PDF, and receives identical print/download bytes. Optional bureau number and separately chosen attachment pages are approval-bound; foreign and unpaid editing is refused.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 48,
+          "assertions_failed": 0,
+          "single_complete_pdf": true,
+          "letter_editor": true,
+          "exact_review_approval_download": true,
+          "relevant_report_pages": true,
+          "manual_attachment_page_bound": true,
+          "optional_bureau_reference": true,
+          "ownership_and_entitlement": true
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs"
+        ]
+      },
+      {
+        "id": "dc-consumer-violation-term",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "behavioral_coverage"
+        ],
+        "exercise_class": "REAL_CONSUMER_RENDERERS_AND_PACKET_SCOPE_CONTROLS",
+        "expected": "Supported checklist breaches use the consumer label VIOLATION; internal confidence stays intact, retired adapters do not surface, and court information does not become a dispute request.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 61,
+          "assertions_failed": 0,
+          "proof": "Completed assertions in the source-matched consumer terminology and active-scope section."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs"
+        ]
+      },
+      {
+        "id": "cs-limitation-and-payment-history",
+        "passed": true,
+        "criteria": [
+          "packet_scope",
+          "finding_evidence"
+        ],
+        "exercise_class": "CONTROLLED_SOURCE_FACTS_AND_HTTP_SELECTION_REFUSALS",
+        "expected": "Court-claim timing remains information only with no bureau request or packet eligibility, independently of an applicable credit-report reporting-period issue.",
+        "measured": {
+          "completed": true,
+          "assertions_passed": 130,
+          "assertions_failed": 0,
+          "limitation": {
+            "recorded": [
+              "AU-ACT",
+              "AU-QLD",
+              "CA-BC",
+              "CA-MB",
+              "CA-NS",
+              "CA-NT",
+              "CA-NU",
+              "CA-ON",
+              "GB-ENG",
+              "GB-NIR",
+              "GB-WLS"
+            ],
+            "assessed": 1,
+            "may_be_outside": 1,
+            "withheld": 1
+          },
+          "consumer_path": {
+            "information_present": true
+          },
+          "boundary": "Court information is excluded, not counted as a delivered violation packet."
+        },
+        "evidence_refs": [
+          "accelerated-launch/service/out/current-regression-evidence.json",
+          "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs"
+        ]
+      }
+    ],
+    "open_criteria": {
+      "local": [],
+      "hosted": [
+        "end_to_end_journey"
+      ],
+      "reasons": []
+    },
+    "source_files": [
+      {
+        "file": "accelerated-launch\\service\\account-display.cjs",
+        "sha256": "54f559fceee11b18efe13ff49f623ee72e6fcc0d6a66e94517880e4dc7bcac10"
+      },
+      {
+        "file": "accelerated-launch\\service\\account-documents.cjs",
+        "sha256": "d3d7be034c340b6099c91869dad2cbcc4f237cb58e244a677b6d11833d8a8023"
+      },
+      {
+        "file": "accelerated-launch\\service\\account-identity.cjs",
+        "sha256": "43aeb9e46a677d4107da839fb6dcbd400018707f21d56aef4b3d868bb8dd75a0"
+      },
+      {
+        "file": "accelerated-launch\\service\\account-profile.cjs",
+        "sha256": "e5d6105d1858a576718b0b2e88df7471156e4c9d535112af55708a1f50f9ff56"
+      },
+      {
+        "file": "accelerated-launch\\service\\accounts.cjs",
+        "sha256": "fde76500d70957bd00a8986704e5e32302409bd1e98a41c6214c4a41bbec7d3c"
+      },
+      {
+        "file": "accelerated-launch\\service\\app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch\\service\\applicability.cjs",
+        "sha256": "a401353a79c7d67aa63055b83683a99fcf9bf7e32f47cf04025c12398ad43033"
+      },
+      {
+        "file": "accelerated-launch\\service\\assessment-clock.cjs",
+        "sha256": "84958f0b2f13e93fd644914e2b05f1137ccb492d350db2c5fbcbcc098f3f56a5"
+      },
+      {
+        "file": "accelerated-launch\\service\\assessment-pdf.cjs",
+        "sha256": "45f9941070562cf58661a6eaae01f8e99f9ce898521332433934afe515b068a7"
+      },
+      {
+        "file": "accelerated-launch\\service\\billing-credits.cjs",
+        "sha256": "0c309403d472e3d1cb67f5e926038c3ee953acdb2a4ca88e86b62b43af0020e5"
+      },
+      {
+        "file": "accelerated-launch\\service\\billing-event-effects.cjs",
+        "sha256": "7a5df3c21bbd5e6ea8f2ebfa752088664f6d66e8d4d78e9648ceb8c0bf7f3b32"
+      },
+      {
+        "file": "accelerated-launch\\service\\billing-reconciliation.cjs",
+        "sha256": "f955ad633ccce48bd851fc62c8893873b1ba66227f1869dae0dd80261f320bd2"
+      },
+      {
+        "file": "accelerated-launch\\service\\build-subscription-value-evidence.cjs",
+        "sha256": "29fcaa615941018da0dc2b6b8b6a44a419e01539071acbe3b257c4b14a04b924"
+      },
+      {
+        "file": "accelerated-launch\\service\\bureau-dispute-requirements.cjs",
+        "sha256": "2bb8d42ea05279a3d4c3279e9146dd35797e95a9e7fb4ca841086f882c09f3f6"
+      },
+      {
+        "file": "accelerated-launch\\service\\bureau-form-mappings.cjs",
+        "sha256": "a5b935b480e751b683dda0ee14ef130ccc65739b6ad85f87d7f14f788ee7dfdd"
+      },
+      {
+        "file": "accelerated-launch\\service\\bureau-form-worker.cjs",
+        "sha256": "9bbe205d7e75b0221d6089beeb4dea4de058126ff97bb15f4008492555322aed"
+      },
+      {
+        "file": "accelerated-launch\\service\\bureau-forms\\catalog.json",
+        "sha256": "421623162a12ded5a21ff7cb293f6b868c4d29e5856939eafb35088149ad6c19"
+      },
+      {
+        "file": "accelerated-launch\\service\\bureau-forms.cjs",
+        "sha256": "548b17653b68ca5664aeee4f9d897a4258af8035f0173f4d12331249b0a8a26f"
+      },
+      {
+        "file": "accelerated-launch\\service\\ca-consumer-file-facts.cjs",
+        "sha256": "3b884d809ac35603dbe388e9f572de3e1dbf4ffa92d28e3bff60c816059dde13"
+      },
+      {
+        "file": "accelerated-launch\\service\\case-status.cjs",
+        "sha256": "6aaae21835bca96e4b5a56962fe15773537cf2fdb0d198b951a5e53c451bdf9d"
+      },
+      {
+        "file": "accelerated-launch\\service\\cases.cjs",
+        "sha256": "8dcc7e48f19aca9368bd03ece0178a6d86c4b3c008c7201e6b80b5cb4808b393"
+      },
+      {
+        "file": "accelerated-launch\\service\\checkout-purchase.cjs",
+        "sha256": "736e3371cbdb3b7e2149bfe84cc1fb1bfd518c7832f770f105776c78b279bd6f"
+      },
+      {
+        "file": "accelerated-launch\\service\\clarification.cjs",
+        "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+      },
+      {
+        "file": "accelerated-launch\\service\\common-error-checklist.cjs",
+        "sha256": "2d89a50bf33b13ac8829032fce05feec377c497f5da34fc2cc8feb24a7940f19"
+      },
+      {
+        "file": "accelerated-launch\\service\\common-error-rule-assessment.cjs",
+        "sha256": "ddb415880e50e7940a515cecf4525c71bd3269d3362c0217b60070eb7ec95879"
+      },
+      {
+        "file": "accelerated-launch\\service\\common-error-scope.cjs",
+        "sha256": "78490f15c051feaa7fbfdaf18a2264facc98c772bf11295f429233b10afb7195"
+      },
+      {
+        "file": "accelerated-launch\\service\\common-errors.cjs",
+        "sha256": "9e64e6cfb5ebe2601fb0ec22054d794581efc5492c8a089f9dc1a59c2a41b34d"
+      },
+      {
+        "file": "accelerated-launch\\service\\comparison.cjs",
+        "sha256": "fd79a54061f76551b0d261d6eee0aef842c401b9fe84697c77f690258969db6e"
+      },
+      {
+        "file": "accelerated-launch\\service\\consumer-dispute-letter.cjs",
+        "sha256": "a7b00a08706024b89dc1c8dbfc20161dd8ce6f9d12b16dcd97493ea052f5808f"
+      },
+      {
+        "file": "accelerated-launch\\service\\content-assessments.cjs",
+        "sha256": "659e1fa06b0052a12d2ec3e919d4157b8ff199d04941db814680a9099b84e4bc"
+      },
+      {
+        "file": "accelerated-launch\\service\\coverage-matrix.cjs",
+        "sha256": "4a49a30751d8aaef291ca0ffc5be133d597edf9ed0a5bcfcb904f3e70be94b77"
+      },
+      {
+        "file": "accelerated-launch\\service\\demo.cjs",
+        "sha256": "4df8523d56517c331360e1b45ce79bd7750d3a7cb7f2c8aff4c2602d6e3f126d"
+      },
+      {
+        "file": "accelerated-launch\\service\\deploy\\build-release-manifest.cjs",
+        "sha256": "79b1501f05650c7ecfe1a6c628c4a4abf3c207db3732f291877aec9bb80fa87a"
+      },
+      {
+        "file": "accelerated-launch\\service\\deploy\\configure-production-stripe.cjs",
+        "sha256": "cc530128e679d658d50cc5d3c586a7c870bdba9dba8fd3e8121eb953256fa825"
+      },
+      {
+        "file": "accelerated-launch\\service\\deploy\\import-legacy-production.cjs",
+        "sha256": "8a9704aedcc935561ab3572a0c87d94796914ec681f7256d633dc6e972f908bc"
+      },
+      {
+        "file": "accelerated-launch\\service\\deploy\\release-manifest.json",
+        "sha256": "4bcd4da8684a9c43a3836a1489ccc8aa9da33d7a54891476fbbbbf9a11e55e6c"
+      },
+      {
+        "file": "accelerated-launch\\service\\drafts.cjs",
+        "sha256": "8400dd521b36b99a1f5f4b33325aa6d0878b6b676c11c2aa4ee889050b8e8452"
+      },
+      {
+        "file": "accelerated-launch\\service\\duplicate-account-pair.cjs",
+        "sha256": "06993a8efc90e021b68e97ef129048f6219776d4c0184ca3d2d4f7adc96c8d8a"
+      },
+      {
+        "file": "accelerated-launch\\service\\entitlement.cjs",
+        "sha256": "2801cf405fff39b68ff7114c7af1690f7263af3c5b65ef807ad91d3366d3a11c"
+      },
+      {
+        "file": "accelerated-launch\\service\\errors.cjs",
+        "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+      },
+      {
+        "file": "accelerated-launch\\service\\evaluation.cjs",
+        "sha256": "8e72a94cca09b2b572442dab93ff53318aebf9bab6b34bc0df749b751f052fb4"
+      },
+      {
+        "file": "accelerated-launch\\service\\evidence-validator.cjs",
+        "sha256": "17e36449fef370196a4e8340b4f9dfeb358f34dda82a9c6ad41ead11ef223433"
+      },
+      {
+        "file": "accelerated-launch\\service\\factual-checks.cjs",
+        "sha256": "4a04a7c76f64a1ae81e8a7ece035200ce262300039ef12bb8e109cc2bdaa27e7"
+      },
+      {
+        "file": "accelerated-launch\\service\\fdt-acceptance.cjs",
+        "sha256": "52150a0c5f4e4ff91eb57961b3ff819ab0f645f426ef0e4246b3d6bb705db222"
+      },
+      {
+        "file": "accelerated-launch\\service\\fdt-benchmark.cjs",
+        "sha256": "7c5db5dab0479ff3466ce652c11435690017e7d5fd8fb8cf7590fe9fc7671606"
+      },
+      {
+        "file": "accelerated-launch\\service\\fdt-recovery.cjs",
+        "sha256": "06847142b367bab9f0c22fb53fcde59c6b78b6ceb05d6caeef9010c87d400d94"
+      },
+      {
+        "file": "accelerated-launch\\service\\finding-coverage.cjs",
+        "sha256": "48a85460ebdc321ddd0b08864238d41be92146b5c0187ba0cf4196a656a1728a"
+      },
+      {
+        "file": "accelerated-launch\\service\\format-families\\au-equifax-consumer.cjs",
+        "sha256": "736adf4be7ae33f212cb596809d2743e5b7091a9fdf13d92bc72f34d485e97ef"
+      },
+      {
+        "file": "accelerated-launch\\service\\format-families\\ca-consumer-format-scope.cjs",
+        "sha256": "a22a104956819a0e7b0b7276103193e87c79543a5b88a4abc4955a2261753b71"
+      },
+      {
+        "file": "accelerated-launch\\service\\format-families\\gb-experian-consumer.cjs",
+        "sha256": "5793ab635caaf57ea54d2e130dca16be554ee4c6c1f0c841ee1fbdbe28c5a028"
+      },
+      {
+        "file": "accelerated-launch\\service\\format-families\\tu-ca-consumer.cjs",
+        "sha256": "f0e1524f5a184842c3a0dd9fbf7975031d12bd4d5c18c37c6224d7a8671d5308"
+      },
+      {
+        "file": "accelerated-launch\\service\\format-families\\us-experian-consumer.cjs",
+        "sha256": "f8b6f52bf2bf1f9f72c0d9457524e9081cc7ef7540d7695dbbeff58bd8fea640"
+      },
+      {
+        "file": "accelerated-launch\\service\\formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "accelerated-launch\\service\\gb-general-field-contract.cjs",
+        "sha256": "bdd7c7da76ceb8523de23a767821400b330ff4c084eabcb6664052cc2b3b58d8"
+      },
+      {
+        "file": "accelerated-launch\\service\\general-intake.cjs",
+        "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+      },
+      {
+        "file": "accelerated-launch\\service\\issues.cjs",
+        "sha256": "67f447c84717c48d20535994ac8864adc3b82ff8fba06ab34e2a780ab2647141"
+      },
+      {
+        "file": "accelerated-launch\\service\\journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch\\service\\legacy-password.cjs",
+        "sha256": "61c87fc93ff2929adf093a1550c09fe2b04c7dda15deb75851f47600560917bf"
+      },
+      {
+        "file": "accelerated-launch\\service\\limitation-assessment.cjs",
+        "sha256": "59911e688b1c4af64b81f8a02de9ab6b69bf284387dfe0b69143e23a626bbd67"
+      },
+      {
+        "file": "accelerated-launch\\service\\logger.cjs",
+        "sha256": "c16e6d0f584f4a0fc5eeda0ce81014a86268ef7075915daf12f2dc84ccfc154f"
+      },
+      {
+        "file": "accelerated-launch\\service\\multi-file-assembly.cjs",
+        "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+      },
+      {
+        "file": "accelerated-launch\\service\\ocr\\local-ocr.cjs",
+        "sha256": "0d86b3f237a3310464b13a6b0b2eafb24398db2ddcc521071d91da3223fea8f9"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-archive.cjs",
+        "sha256": "dd5ad67c85c49ece7c11963fb5887c08ec567608fb29827669adc118348b0de2"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-composer-worker.cjs",
+        "sha256": "d1497b4efbfad27d165a50e44894e6f596bd7b8b5f62b4c89879d6f1ac7b7c40"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-composer.cjs",
+        "sha256": "343aa48e74ab938625586d8ae6f7e52d54c808f5ddeaace58432150c539c5469"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-pdf.cjs",
+        "sha256": "d610e35a46c10ba9a7de0bb6c99ba2a82d02535eb6ff57e7a58fb0b6b4beb90b"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-report-exhibits.cjs",
+        "sha256": "33f22f90c9ea11e19a6a93802f1f25b79cd9ab3c08515431b4b99b5e8f13bfa2"
+      },
+      {
+        "file": "accelerated-launch\\service\\packet-support.cjs",
+        "sha256": "90a2eee5099e2fcfb1a1bb5a87e54680bcc45424ddc1eae729601c5607720df4"
+      },
+      {
+        "file": "accelerated-launch\\service\\packets.cjs",
+        "sha256": "8bf63f0028f8e156ca51d69d3c6d32b237666da461e9b39b6a78be5d25c65599"
+      },
+      {
+        "file": "accelerated-launch\\service\\password-vendor\\bcryptjs-3.0.3.cjs",
+        "sha256": "ed01b52b436504d8bb7086d93fee4bd8edbb22d8ed88e1b456e0c604f30e79c4"
+      },
+      {
+        "file": "accelerated-launch\\service\\password-vendor\\provenance.json",
+        "sha256": "c06709cc5e3ed0acbc49dfe892d349ed5bff51e77a1e1dfe255ff847c5e0e3a7"
+      },
+      {
+        "file": "accelerated-launch\\service\\payment-history-analysis.cjs",
+        "sha256": "406073ab9c6c34265b0717012c76e066a28cbb718c96309d16c79470c36c4a8a"
+      },
+      {
+        "file": "accelerated-launch\\service\\payment-history-grid.cjs",
+        "sha256": "6d2da3430201347e50813c9eb4a0cc964ce1d08e2e4a6838745c2a13f243efef"
+      },
+      {
+        "file": "accelerated-launch\\service\\payment-provider.cjs",
+        "sha256": "8cae80729fbe533f631b281f5b6170485023b0ba2ddb2d056b734598b1a8f2ca"
+      },
+      {
+        "file": "accelerated-launch\\service\\pdf-vendor\\fontkit-1.1.1.min.js",
+        "sha256": "d8df561b9fba98e24f2e5130e40948809281bbbc55a20c412359f1a0a5eb35a6"
+      },
+      {
+        "file": "accelerated-launch\\service\\pdf-vendor\\pdf-lib-1.17.1.min.js",
+        "sha256": "0f9a5cad07941f0826586c94e089d89b918c46e5c17cf2d5a3c6f666e3bc694f"
+      },
+      {
+        "file": "accelerated-launch\\service\\pdf-vendor\\provenance.json",
+        "sha256": "b730acb9c554b5335bdf3c09b2ce0a37e98c382e5488251d7d7c74d3b91d97e0"
+      },
+      {
+        "file": "accelerated-launch\\service\\plan-catalog.cjs",
+        "sha256": "a10f4f4a0a5315d40403708ee461b03787d42dc4106285e1460aa9cdd85e03c8"
+      },
+      {
+        "file": "accelerated-launch\\service\\privacy.cjs",
+        "sha256": "29727a6a68780d3b0ec7545c2ebead46914e8d531ed99415e3ff45f913fa81b8"
+      },
+      {
+        "file": "accelerated-launch\\service\\private-store.cjs",
+        "sha256": "7493c1d54269354c551ef613054bec19f9263a2308e8fba0b63be9d04e75898e"
+      },
+      {
+        "file": "accelerated-launch\\service\\reaging.cjs",
+        "sha256": "74a0891543d945b22031cf844dc1fe80b026bb4280086157b05945bf3696665f"
+      },
+      {
+        "file": "accelerated-launch\\service\\referral-engine.cjs",
+        "sha256": "c32c592ff1968b2c6af2c6eb3dfbd8a762cd44df26c46b8e7cba578ae537a39b"
+      },
+      {
+        "file": "accelerated-launch\\service\\referral-staging.cjs",
+        "sha256": "36c6419655ce931b2b3619d534d79dcd9deae63f92ed2fdd4fae1fd0b3a29b92"
+      },
+      {
+        "file": "accelerated-launch\\service\\release-check.cjs",
+        "sha256": "316411861b4663044b2fbce9397a74bd8702ae686fa3858bb9f0d22bacd18274"
+      },
+      {
+        "file": "accelerated-launch\\service\\release-scope.json",
+        "sha256": "f149f8d94ffa3b0653d732714b7cffe6b37593fdb2e02fee8c60c1c937f21c30"
+      },
+      {
+        "file": "accelerated-launch\\service\\report-amount.cjs",
+        "sha256": "384b31822c1f3bed7e8f3e9e53f248a8682582bca5249881f84a27eb9729de33"
+      },
+      {
+        "file": "accelerated-launch\\service\\report-code-definitions.cjs",
+        "sha256": "667f049067d609ea1eea332004b8ec869399b2e811bc551b737d22180cbacb67"
+      },
+      {
+        "file": "accelerated-launch\\service\\report-fact-sources.cjs",
+        "sha256": "16201a62ad8a71ad200b177924ef27a3e771768d87070bbaa0ab252f95d62778"
+      },
+      {
+        "file": "accelerated-launch\\service\\report-use-policy.json",
+        "sha256": "9f219f763c5355240f7fe82780c0a34ef3d8fa658dfb57472877e38a3e493983"
+      },
+      {
+        "file": "accelerated-launch\\service\\results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch\\service\\retention.cjs",
+        "sha256": "f0bfb2441d14628236072af7f8703d5355685ac8c4f6817b5f2838fdbf2c298e"
+      },
+      {
+        "file": "accelerated-launch\\service\\server.cjs",
+        "sha256": "090041331b4ab7daf33d570a7a7a24a4ba3353d5891023c2900b55aeecfad41c"
+      },
+      {
+        "file": "accelerated-launch\\service\\store-diagnostic.cjs",
+        "sha256": "b9a63f7a90d9c24adf9c2ee0cfbef5d7cdda0f29b9ad4d721b4ce0a7599bf18d"
+      },
+      {
+        "file": "accelerated-launch\\service\\stripe.cjs",
+        "sha256": "9d9edc70cc8ed953125dcbf9c954c7deb4f31dfea2e372ccdf44b17ce22fc93a"
+      },
+      {
+        "file": "accelerated-launch\\service\\support.cjs",
+        "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-bureau-survey.cjs",
+        "sha256": "b49a7b2aa63001d93e33f3b6f89f7d2e9d16471d62330d73802bb3348fcdb755"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-console.cjs",
+        "sha256": "2435b3ac19763c80bdf01ce9d39cc05cda76dc6ceba11d60b1212590c7254397"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-console.css",
+        "sha256": "54e924c40d9296f872ff2307d228091141bec633116f79a4d7a809e67bb4c055"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-console.html",
+        "sha256": "4bdecf2764fd4badf4dbf9086e18754acd2e2eecd92151125e36fd4bc8379f2f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-console.js",
+        "sha256": "3708a4d474a3407f18c4a187ef481c68a5ba6bba1f8de3a4399887f138a61cbc"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-render-fixture.cjs",
+        "sha256": "6d11f10aa87ed5e11fc8d52b5c5a8a40341c020e2fa79e693eb0c0adda895b07"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\creator-violation-audit.cjs",
+        "sha256": "aa5a79271e40e9287e5e104e395b921c07bad964a9e1390f097b60dee3686f3f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\harness.cjs",
+        "sha256": "1673f95c4d2e866ab4a45f433f3d70f3f1b80ddf0ad11e463669c1b159720959"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\packet-pdf-assertions.cjs",
+        "sha256": "ca6725079d2e1448d37130369f778050a9b794ac11d2ecdc863604b0b42da0af"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\referral-staging.cjs",
+        "sha256": "7d6d543f39410b539d3c247eb14da772e36c84f51554cffe89cc4b4c51b95639"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\run-tests.cjs",
+        "sha256": "6885b1373039b4ed74139a75e2e81e32ce78d3ac223a6cb6dafa2186a8c2588c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\a-isolation.cjs",
+        "sha256": "8f6ed1ef223ec4a46519466cc6b79068f81e274b1023b8bb322f23b0350d368d"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ab-acceptance-statutory.cjs",
+        "sha256": "d0bc5cd2b7ab42ddd814af38a433b35a35e735c6fbc1ea35e85897646d800e5b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ac-evidence-policy.cjs",
+        "sha256": "d70b109fbce84aa8a6fbb2f86004e3dc56c8b3bb327267cf49cf3f5a9e5d2e17"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ad-legal-event-facts.cjs",
+        "sha256": "48974182083974b185aa2632487d9e0417f41cd8633f4ed5c1668ce01480cc46"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ae-accept-003.cjs",
+        "sha256": "c80499c11df952108f70e281bd1ad2fe0fd98b5a0001f3905916fd8e49b4524a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\af-accept-004.cjs",
+        "sha256": "44dc8ea0332975d18aaaae3897cbe86e55ec9db82344a7094033f86bee5ca053"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ag-accept-006.cjs",
+        "sha256": "08057c4773a5045d4ba4475e89598d336f7cd94578487b17123ec03218167876"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\aj-ingest-dates.cjs",
+        "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ak-ingest-008-009-010.cjs",
+        "sha256": "50bfeb4d06a30479a59b84d0da28136cb4d3ad5089d2a700567e175faa4a95f6"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\al-common-errors.cjs",
+        "sha256": "473ac54942b83226d1e296d48da5927d7d78c763cabad861d738436ac64003f4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\am-fdt-recovery.cjs",
+        "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\an-payment-history-grid.cjs",
+        "sha256": "b30bca5f29ac9f49c54b8b014b0e57aac0be48fc0ab2e03c6bd883d5a6e884b3"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ao-ingest-008-mixed-page.cjs",
+        "sha256": "0f0736c974e247a9a1be6ec64a8c82484be2a3992a8b512119bc1fa2e63ef80c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ap-accept-010-consistency.cjs",
+        "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\aq-gap-finding-001.cjs",
+        "sha256": "1051dccbe94ac024b9fcacf03a56d2348652bbda878cb1840aebae6d6cbc124c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ar-gap-finding-003.cjs",
+        "sha256": "7bda8c4307829ebb4cd76048d8571a0eececa0022ff121b9f75a7964d8201e6b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\as-gap-finding-004.cjs",
+        "sha256": "06e4b43f4550268d71b32a615d28f31ce637e40b4721ccee3d3630c681518832"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\at-gap-finding-002.cjs",
+        "sha256": "bd523a23dbabb9a0ee8196f1a864cc96f8d54cecd844a921b0814fec0f386631"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\au-closure-policy.cjs",
+        "sha256": "f6fe3e5fdbc17f0afe44882e24266f89680a492328f6eef2242ddcc560d2849b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\av-consumer-results.cjs",
+        "sha256": "648a3f20d7564968026b674232916526d252b36fb614b0b9ac5f2c06f17daace"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\aw-consumer-explanations.cjs",
+        "sha256": "af5e9e9eebd132d9bcf89057ac9caab8b565ce9d8f8a46907f88c8246c168bed"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ax-consumer-privacy.cjs",
+        "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ay-consumer-support.cjs",
+        "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\az-consumer-support-ui.cjs",
+        "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\b-jurisdiction-and-refusals.cjs",
+        "sha256": "2974973da6141fc3f05e1a093e6957af816f70f0d65438e7ed79ce1123fba9cd"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ba-consumer-billing.cjs",
+        "sha256": "c9a33e8471367cebfe60b0ce415256eedc38f4fc6581779958097880433120b4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bb-gap-ingest-001.cjs",
+        "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bc-gap-ingest-002.cjs",
+        "sha256": "982b0f400f7a82b1a4c101f8479a7240cbecc2db0195d1ce28f2454a3d034576"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bd-gap-ingest-004.cjs",
+        "sha256": "565e18437fa4fb9f17bde50de1757301f0ba4e241abef0b3d27c408572c53fb5"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\be-gap-ingest-005.cjs",
+        "sha256": "9f3b184b25dfc9e05af0681c9e5b3be2b1bb7b7d4c46fe3f2315099231f3b36f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bf-gap-ingest-006.cjs",
+        "sha256": "8efd99f60750ee4ff7c1346ddda6a1b5dd7a7534d36e43ac268fcb0f27ccf0ac"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bg-report-use.cjs",
+        "sha256": "3bb4b4c263c3a4e936ba0c6aa3f785353f1df48774cd7a9636a6e80d95260d5f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bh-ns-dismissed-charge.cjs",
+        "sha256": "f38e38e45a53fa9ccfad8fbf5c0475c8b62a8c93ceb48ee99357bd49877cab9b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bh-ns-judgment-content.cjs",
+        "sha256": "21d7b65ea358e81bbfe8e5abb5716152754a3a8358729701a0e21ec3a326c2d4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bi-us-ca-tax-lien.cjs",
+        "sha256": "0c76d7b63d3cd2121d9c519aeae6e3c228b74805aeec71383444d38325d65aa4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bj-us-ca-collection.cjs",
+        "sha256": "9febb782557cbfffb8ed65ac4d5c33eefa118263b81ea1290d2fed95401bbd14"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bk-us-ca-adverse-rating.cjs",
+        "sha256": "0b56adafda5df4b21f723e7ebe70e020b44a566522b36595ed742b37f957658e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bl-us-ca-correction-packet.cjs",
+        "sha256": "c058888b6c1379b768fc43ef25ce18ddb1da8c13551a029fc1698c904c332166"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bm-prime-directive-batch1.cjs",
+        "sha256": "d3598e5870c938dc315fd572fa6c5a36a80b1ea0d801435be86317347421130b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bn-prime-directive-ui.cjs",
+        "sha256": "2f2ee1a098b575cbb886484de9cc68e3086a0ea279e5ee9d4b1fc647f4e30584"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bo-prime-directive-interaction.cjs",
+        "sha256": "1098cb3434cfae1a954be6f93c71b1ed53f394b5de335a464179785d6857c6ba"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bp-prime-directive-batch2.cjs",
+        "sha256": "82289a47e57f361ab991d7f2bf2d48965ed809db586104d79524767a726efdac"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bq-format-capability.cjs",
+        "sha256": "f27e2ce565029758b023c294c521720445794d7bd6823b64f89185295fd3cd2a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\br-qualified-assessment.cjs",
+        "sha256": "67f3dde699fce0ef973cc734deaf1c4e2f37f6811409e7b54e44f18a08574455"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bs-prime-directive-delivery.cjs",
+        "sha256": "4c8b56691fd7abd07e35f4ecf48e31e06d2f34cd584e733595e7e904d40014ee"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bt-ordinary-field-coverage.cjs",
+        "sha256": "950577e9403ace479438f5f4c1c9909cae9ad0107a94fadf1f314358fc5e29e6"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bu-gb-tu-ca-fields.cjs",
+        "sha256": "d78da7d17482210a3821ded549d4de43d2a549b8101d5a4e1570f7eed205a0af"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bv-admission-and-upload.cjs",
+        "sha256": "bba6ea7f7b0a3bf7df78c619262c196eb91c125a09220368d3311a4da35ace30"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bw-browser-wizzard.cjs",
+        "sha256": "582dbf010a092a5a4eea6c28a2f7cdad016abe7ccf1430573061591beb49487f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bx-all82-factual-verification.cjs",
+        "sha256": "a14382719f673f4e54c064942188480453bea963e7075aa51bba98e8c3b7a426"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\by-packet-reconciliation.cjs",
+        "sha256": "ccfaa395c2a18e2b9d781f0444c0456da6d8e35158f0d461b31757f0d221f749"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\bz-report-history.cjs",
+        "sha256": "887b545b0f1826a0dd491698fd08ffd6cd4765b25b1c43e19dec069de791ad30"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\c-extraction-not-absence.cjs",
+        "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ca-au-ordinary-field.cjs",
+        "sha256": "4a626222648898c1820ebff5c211a6c4dd7a66c2dc180d6b920338a37c939153"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cb-packet-correspondence.cjs",
+        "sha256": "1ee6d66ce62849831e24e20fdc6d953e1f70aecd828942c563574d74aa4f4ee6"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cc-ca-on-ordinary-report.cjs",
+        "sha256": "ddfa74e82286a3b85f4167300055dbcbf300191ec0f9adce089eb065889facc6"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cd-gb-uk-gdpr-accuracy.cjs",
+        "sha256": "8aad070b021753bf7468c59f9286339beff43bd1d43bb1d25b5123bfbf8e7d71"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ce-tu-ca-account-material.cjs",
+        "sha256": "a8e3816c0c165370c112cfbad552c7415c96fb28948ee668520800cc7d423f3e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cf-ca-nl-dismissed-charge.cjs",
+        "sha256": "dcd5fe6d3f381bbd7623db22ec175be62747b09b47fcc7ca292d4f596d5c6ed0"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ch-ca-ab-debt-six-year.cjs",
+        "sha256": "9854c1c58eed99d1d0d66824db5fe3bfe38c3b93b5d774a2bb739331f5371067"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ci-ca-mb-judgment-content.cjs",
+        "sha256": "f10118ebf687218a18a27f4de3543bf8e920d91e6d9d0a22710cd4b1b1c0d833"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cj-ca-pe-judgment-content.cjs",
+        "sha256": "4db2ad63e70edfa02e4035e3a97774dc8cfa4dac256611dec86c040f950a1ab7"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ck-ca-territories-pipeda-accuracy.cjs",
+        "sha256": "d6910fc7ec1b83bfc1c6c1fb2892f166d4048dd3aadf97a76b126bff0d7fc885"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cl-bc-qc-nb-finish.cjs",
+        "sha256": "ef075a51cd115f8e33123241303c5f623415d0d44bbff61053cbb3bd8c878ff5"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cn-au-us-ingestion.cjs",
+        "sha256": "965d1a1e071b08f55ecce6209601877d00b58b8617db63b4b1234c72cb51e945"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\co-canada-upload-delivery.cjs",
+        "sha256": "2d050fd348de9cded292f143c382110b617e8634b5b57ffb8dc4ea59be42470c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cp-consumer-plain-text.cjs",
+        "sha256": "54b0476a66af6df70b6781df4f9b0ffe3c6d7e15a9e5b6fb41d87cf7088a8e12"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cq-purchase-flow.cjs",
+        "sha256": "aceca1b9ba4b43acd61f0ce2e6b82445075aaa51f4059c7e0cbf5721d7024d23"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cr-ca-ns-tu-real-report.cjs",
+        "sha256": "ac962a9f83f7349a0520c416537166d7e47c5e28a8b3781062ad66426071e65e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cs-limitation-and-payment-history.cjs",
+        "sha256": "ae59e6128cbc59a51448c0610bbe00353ff3984613293ecbb055c1542aaa5cd4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ct-assessment-clock.cjs",
+        "sha256": "ccd882f400ce11ea933fff4e545ce3ba99cbb0e5db5dc3f4ce045ca1ddf04097"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ct-owner-common-error-scope.cjs",
+        "sha256": "a9180c677d625c97c4d4b6027b8e5a8f33b04ac38e3c72980ad869a835b09ad8"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cu-dual-date-retention.cjs",
+        "sha256": "e665a77aaf7e9d63d3ca2457b16143f10c2607930e16c1f8230546bec52b4b9b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cv-accrual-limitation-delivery.cjs",
+        "sha256": "c26a94b1964239cd03cffe6e69871de29b6f1df9812f1060c461a05d0e5210ca"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cw-common-error-rule-assessment.cjs",
+        "sha256": "591403ff5bc2142752834a57dc8fcfa03825d16ec1ed39db3f38195e01d55147"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cx-all82-required-report-data.cjs",
+        "sha256": "5a42312b99377707c710854a76d1c493b1d4891e7fc2a8bc5c2b4bee86ca0f42"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cy-common-error-predicate-repairs.cjs",
+        "sha256": "71d7a4a59a921b7ddac47e07ca6c030974c9cfc6b2439e054fece5276d62d362"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\cz-common-error-packet-repairs.cjs",
+        "sha256": "1942a7fc44bc62da754d7aef202994938640202260460349e7c83e107a280528"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\d-record-independence.cjs",
+        "sha256": "05c752b98c1d36d4668ad2e2d56be7a096eb395f4f5ec6b34e421d9560f25f0a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\da-common-error-reader-repairs.cjs",
+        "sha256": "3be81ece3b16c4b4c479f86d2818d29a7862790877767a6e31b8bfe9f01f3305"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\db-common-error-surface-repairs.cjs",
+        "sha256": "5eac5decc2b3a8d14bb19cc4526f27107d646642e1eab3bf239320c17331737a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dc-consumer-violation-term.cjs",
+        "sha256": "0b31602ef313e3607e575d57a9622ce48db9ce5a48111ef1a5a102c8b1e5ac57"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\de-tu-ca-common-error-sources.cjs",
+        "sha256": "9827555f6684ff85e61eef3f3792cff597d682dda7752646b30a402804f45f79"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\df-us-common-error-reader.cjs",
+        "sha256": "0fffb7b44f941a5703ffe86a14dfc427df0a23c89b76974e9250080e7b79c93d"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dg-owned-reaging.cjs",
+        "sha256": "b432a54681fc712ff020ececd752eceb0c1405f90729ee549df79564b94503e7"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dh-ca-reader-completion.cjs",
+        "sha256": "68d237f7b8e8e50dcf94ea2d40dd769df86ced3db589cbc11ea71d1a880452bc"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\di-au-reader-completion.cjs",
+        "sha256": "0907193e36909f03a4196449a59ec492d9641095b33315825f35f315158b1834"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dj-gb-reader-completion.cjs",
+        "sha256": "46075b3994c6fa60a58c29135c2a8231924d5150e1649d4e27652b9b6d290e5b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dk-reader-completion-integration.cjs",
+        "sha256": "81f854c6a0ad508eae79eddf57451307af6cf7eff82fed49da98827682a661d5"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dl-general-caption-sources.cjs",
+        "sha256": "aeef3458d56548e0f6f311a6d7825e8697e81d07716669f46f66b8c651f573dc"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dm-au-role-packet-evidence.cjs",
+        "sha256": "713f490b4912da0f2fe248c00f163c45d9b4e02ebc4c1e3314815bd9bb7d8f40"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dn-us-dated-history.cjs",
+        "sha256": "3785cade3ae68a411a005153c1cf554fb80fd26b33e53831165138948852d666"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\do-gb-history-definitions.cjs",
+        "sha256": "b47b0129178224be9aed599d290751b9c74b4a0b67803f17b8bc6c5a02e8c887"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dp-us-cell-recovery.cjs",
+        "sha256": "553f6e20a5d2120250b5021bebfc6a92fd70e529413a4b2460db1deafc40a792"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dq-ca-printed-account-fields.cjs",
+        "sha256": "68b1800d9c650df695ff2e7592baaadf26fd451061a7faea26452ae96e3ae033"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dr-reader-evidence-delivery.cjs",
+        "sha256": "0376ed620ef4b93ec3775bbf99010ee508f39a63679b78964192fe1ff752f132"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ds-column-caption-fields.cjs",
+        "sha256": "169b0adb73e0e8fd44112b2f990d6974d8259845b13b829a93cfafda91c99bf2"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dt-rating-history-rows.cjs",
+        "sha256": "9fd889512690cdd26afe6eea09172ce3028c0a72aac8bffc9e4e84511ba12152"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\du-column-reader-delivery.cjs",
+        "sha256": "fc92a7b2d9a8e4aefe65f541874682cfadbd546f75106c01398d03d3da1332e0"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dv-au-reference-delivery.cjs",
+        "sha256": "f104b0b5a142dc7f07b87172166c5e95ea6004fb8f3f4b2cca046b8484f12e8b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dw-us-history-completion.cjs",
+        "sha256": "a133319aa04155c300893e60ecdf91756d5399f11cf8d431399b21884e6d31cf"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dx-report-date-custody.cjs",
+        "sha256": "fd14aefa104b55654b927fb1cc08fc9dadef112f62ace7183f6f8e9291d73205"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\dy-reader-date-delivery.cjs",
+        "sha256": "3f342bfa4810a686f06a3c327e113830d73c9254dae7821c8771eb30e3201ab2"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\e-qualifications.cjs",
+        "sha256": "3f51331662511568c25ad6b23e243d5aa57fd6227ed2d0fa301fa54c31a90184"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ea-account-profile-documents.cjs",
+        "sha256": "60279ccd129fbf60ea06ff6e727187b120992ff30476ed4aea10181145c7a9b7"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\eb-account-packet-support.cjs",
+        "sha256": "a28d605992bcc7d37295bb71a989c4b9252be206cc3caad487419dde561f0c2e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ec-account-packet-ui.cjs",
+        "sha256": "23b3cf93349f78526c4b38f410319b0f8112c778fb06302ab93642e2bc496418"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ed-account-browser.cjs",
+        "sha256": "b2535836a41a595c310d897269cfe1a48f7acf63a17e14e1befb1ad152a71954"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ef-account-recovery.cjs",
+        "sha256": "ef31068865582173b74a2ef3bf83921cdaa718328845a17c642d58845367a296"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\eh-packet-report-exhibits.cjs",
+        "sha256": "c4418cca488818301a357a9bbcf8069f255c41b8b6da16eb9e24df12bde0771d"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ei-collection-duplicate.cjs",
+        "sha256": "4ae83c94d1d2653518563d7a4e2a64fcd77272ad950cbed3ebcfa8af5dd98b70"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ej-collection-boundaries.cjs",
+        "sha256": "6610eecd97efcf6a002a0559f1c2a129ad16b2c9123d72379794f1dc16c2102a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ek-pr01-collection-references.cjs",
+        "sha256": "05d9b6dcf9e4d89eba38eff04c66d0f261f1142dbdacb8fe34963fc3c5d6a856"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\el-collection-court-period.cjs",
+        "sha256": "fffa9987b18dce4a9e7842da9af59f06f139088638d7beecfadeb46a1b76c6bd"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\em-collection-comparison.cjs",
+        "sha256": "b4c0df8e5eebfd488aa5ad48e8c2c047f9b05b9d6ca005669ebd33480a2bd9d4"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\em-paid-assessment-pdf.cjs",
+        "sha256": "e8e451394157350a034e3382d6cf31ccff131c3549431bca5ff06a9a8e6e4640"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\en-account-display.cjs",
+        "sha256": "c8e403af96b97328cb7cf6cb3cabe3b34583118522b06b43a0a8bc25257c30f7"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\en-purchase-presentation.cjs",
+        "sha256": "264f1e11177c4891d70181c4c5a099e664d3bfe29249808637ea146160077242"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\eo-cumulative-upgrade-credit.cjs",
+        "sha256": "887cbd81ec72aa0dc9726ad70c1589c0337b84864c5840759858eec371c7fedd"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\eo-violation-preview-priority.cjs",
+        "sha256": "9669d798fec82bd1f249f3d35c81f82cfd71f502436b9b2d13ee56f73b25e262"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ep-provider-upgrades.cjs",
+        "sha256": "5157d1acb7af38a5a6a1d3faba598d49d9283b843dd12b1797092e6ca2fa83de"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\er-bureau-form-population.cjs",
+        "sha256": "cf50bb15183e41b4aefcb384da080206f0519b9bbb5b0d83c72e05874c31993e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\es-filled-packet-business-letter.cjs",
+        "sha256": "adb8ee350a9866e49a0c43343f14acfe71367c062d420ccdc0e3511ab81e3375"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\et-supported-coverage-evidence.cjs",
+        "sha256": "83b941fd83586a3205b117b7c6d3aec6cc658df836b3143778a3278269fa5ace"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\eu-general-omission-delivery.cjs",
+        "sha256": "abf96199be16a0f95155c1b2f48c59bb95eb9f702bc631e1b1f7f43ad8820fc7"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ew-inline-packet-composer.cjs",
+        "sha256": "08170a1d349604ca1505e429dce7d5399554fe062735eba1322ef30c4322962b"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ex-inline-packet-journey.cjs",
+        "sha256": "b5f0b9c37ea816040f9fdb82c47779605dfb0b114614f53a39ac73dcf8592d78"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\ey-legacy-account-continuity.cjs",
+        "sha256": "e4a0cdee6214a99f95d266057d07bad096747cc4c3eb5ff417a161638134e9df"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\f-signout-and-deletion.cjs",
+        "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\g-privacy.cjs",
+        "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\h-legacy-parity.cjs",
+        "sha256": "0f52f5ae59a988a1f20496b064d5ed93cc1ccbddd63fa4df28831c5d0723ff55"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\historical-gb-source.cjs",
+        "sha256": "0d59e5a95e3331576d6c8225379313f979672bfaa3851024be046984d3a0b17a"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\historical-legacy-source.cjs",
+        "sha256": "7965079fb953dd0e063bcab13610dd7728e8a4924509d904260907245a67e218"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\i-shared-regressions.cjs",
+        "sha256": "58ca869aee18fc6057f23609e4288b42f69aba407bcfe94a92b0ac04c3e18c28"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\j-specimen-journey.cjs",
+        "sha256": "07c788686f8b7addb65ae802fca422600900cc0459b6b47490070bed6254afb1"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\k-ui-smoke.cjs",
+        "sha256": "ddae5233b326370de1fa15c105637eba269d058dadd885000cdbaf9bafaa4b29"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\l-au-format-family.cjs",
+        "sha256": "b6bb766722d10b8c419a296268b87a3e0170e60b7e8d9f8480d46debb24fa5ef"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\m-au-journey.cjs",
+        "sha256": "2cf769038230ecc69f59aa546801c6d4fbf1ab824c0be84b5e62a8592d263991"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\n-applicability-records.cjs",
+        "sha256": "70916aa3b0113598285f2da2e436731eba030f492174cd1cdcd5597ec2e72f14"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\o-all82-infrastructure.cjs",
+        "sha256": "d450160b2125cc5c2dc6bdc78af479cfd870def44e007257963950b28d87f3c1"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\p-us-consumer-format.cjs",
+        "sha256": "18271d49592d1105113b7a603f83842c28a892d9fcb21782086b12dc8ae5b893"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\q-record-applicability.cjs",
+        "sha256": "715f443794fd056b3ef0a7a3f2a1e13d1007d225cda4e19c07f919c48d86598c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\r-ca-factual-assessment.cjs",
+        "sha256": "b4be4e8b7ea7c2d00a966e592d4341a219106c02a243f30c3e4d35baf5f449eb"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\s-gb-consumer-format.cjs",
+        "sha256": "12e4685b66727c43dc05d3ca5e4841713d80f7c53316acf562c91a4224e37038"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\t-entitlement.cjs",
+        "sha256": "f0df0b185ae104f23112c008be8de1d0d685bed883b8ff937b916baae5037360"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\u-hardening.cjs",
+        "sha256": "31c1768e4b11fe0a544c707c6955addc478ac7ee8ab709e9e4d3c251324f86ac"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\v-presentation-and-release.cjs",
+        "sha256": "6b31eb4a4de15b2f515360a52a0c666e97b1fe86f6f28cd9e38ddc882f63575f"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\w-ca-second-bureau-format.cjs",
+        "sha256": "574ac58c5d3c5c916053c016c79124896ff3872b5d599402bc4f563981ef650e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\x-b4-pay-001.cjs",
+        "sha256": "47f300d675ff848a2ce63d0ce45bed42988534590f032edfb5a61d333b640038"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\y-ingest-coverage-matrix.cjs",
+        "sha256": "22364658e2117ecee8b72e8079d4e56ccd7207e92293ca313270a57d5c86e89c"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\sections\\z-general-intake.cjs",
+        "sha256": "784e8c9ca6bf9dd4358fe0dbfb8fff3ca4708b720391bd52f03d6c7e20dc7439"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\stripe-upgrade-fixture.cjs",
+        "sha256": "32db6ad886941f4287a6b29e672146cdfdc1fef4e3ea83d824d0cc223fbf43cc"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\test-matched-payment-evidence.cjs",
+        "sha256": "0b967aa0e85da5ef9cfed7b9cacbbb2cf750079a6492e3b290bca79ea8c20bad"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\test-store-diagnostic.cjs",
+        "sha256": "b905dc1285558e656477ba1ec16aa25173c44250ba15bf9ff0612bcfdba9951e"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\test-stripe-adapter.cjs",
+        "sha256": "9d3a96bed456448363e7c3985878f42267c9e046550a593dbfad80027b4f9131"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\test-upgrade-credit.cjs",
+        "sha256": "81fef80de6213da19d7eafb18a1812fec6a49b487fbb26a28b65dc6dab504588"
+      },
+      {
+        "file": "accelerated-launch\\service\\tests\\verification-lanes.cjs",
+        "sha256": "08cd20679c19e555057f210d463276d4d4f41b61f0a45254c4b91ac196397016"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\app.js",
+        "sha256": "66d088738a1a235cbfa85f4924371dbe58eef2fd03bc35e3d4f6ee4f81ecc259"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\index.html",
+        "sha256": "e18a7ced17fac92eebea8ff9f60873203b7545391b94ff1a135f5cda9d72dbe4"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\landing.css",
+        "sha256": "752b85a3cb10875b9e7c6e0d822059626193fa5acd851af7bbaf397ece6b7844"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\landing.html",
+        "sha256": "fca9a16e778d4bb41404a14cc020c3331be4374b3ca7c32fba66000d541481cb"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\mailing-preview.css",
+        "sha256": "8b58bd4d187fe3b24a870e697b3613264e545d6ab5993c7695115b574247735d"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\mailing-preview.html",
+        "sha256": "f0067c74f0a93bb40ab08934a48f50880c86f9d653cc7c82e8edaa423c06faa1"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\mailing-preview.js",
+        "sha256": "f7e28952b7791229181b01f4937d0aabb52ca9239c732a51d68b2ffe31328f0e"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\referrals.css",
+        "sha256": "828d9e03eb324830ad421fe400a2394f9611b56a9bc1d0afa7c9c972898ab9ce"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\referrals.html",
+        "sha256": "5f4824a6516116491a7f8972e334f8618fd40e5db77f6a0ab0a82624510f3490"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\referrals.js",
+        "sha256": "8db041fd3e2405468e697a91b2a5964d933788cfb7ec631a84c80c7ce1b22efe"
+      },
+      {
+        "file": "accelerated-launch\\service\\ui\\style.css",
+        "sha256": "051f15bddcdf2dfdb41ec54d9a6e28ff7d0f0382b8787ae55e9b1456eb39402a"
+      },
+      {
+        "file": "accelerated-launch\\service\\upgrade-credit.cjs",
+        "sha256": "6f28d815a98b62d5cab175399262442bfbd1657ccabbdcdebe9b3f51ed8b5922"
+      },
+      {
+        "file": "accelerated-launch\\service\\uploads.cjs",
+        "sha256": "25904c79938706be6e1cb8ea340517f8a78a3e3ab1bfc5daea7a813463832405"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\adapter-configs.json",
+        "sha256": "f12828cf9fcee4ed9a9b33dcb699022b56f9b9eb0949855922dbb5e288c8e281"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\applicability-records.json",
+        "sha256": "de53f2e9d92642dc0424a2139c8dd92ad0842c5858952487b73f6fbe2c10afbf"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\evaluation-primitives.cjs",
+        "sha256": "a943043c76150b523ab131507e04cad4219f433627f9a14e5325dac838cc5b95"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\report-use.cjs",
+        "sha256": "0797a7cbafc716e4e61fd10d0f77acbe6a8c74509fb7799ab22921336f333522"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\rule-adapter-catalog.json",
+        "sha256": "006aeed2006c7feaa35b6f725f605c2ac49f7414062f4f8532492922ab9899b1"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\rule-adapters.cjs",
+        "sha256": "5387a709109c6cb71d0a40694676159b1b234c886edf7dbc448c37fc16fd7d30"
+      },
+      {
+        "file": "accelerated-launch\\adapters\\test-adapters.cjs",
+        "sha256": "13a54a98285011ecc16bf745e3f313aa8347fca0c87005f7b1f47e67e0ea996d"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/ca-equifax-account.pdf",
+        "sha256": "c7b9e9742f94fef44cb3d6fcf066418f4127193a0c297a81f11b82c8312b4383"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/ca-equifax-public-record.pdf",
+        "sha256": "430bf36366c216aab02d864d3dacf23b962af182aee4d6ce9b89be6b29ab4a3f"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/ca-equifax-personal.pdf",
+        "sha256": "190342aa231c4911aa06864b4c252aa29c4fb837178cdc1d09c4ff14fb56de06"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/ca-transunion.pdf",
+        "sha256": "348355c40129c97b84ecfb31877ff6e3b4f31a222cc17cdb204f6ee0938cca5e"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/us-equifax.pdf",
+        "sha256": "5697e47d925b57ea0105d68f78f3d57ba0a4da807924ec1b28fb6c4f1be72576"
+      },
+      {
+        "file": "accelerated-launch/service/bureau-forms/us-experian.pdf",
+        "sha256": "077f61efe7cecf5ff86504bf5ea2edcfec167346ddb388f756c8491e7cc04243"
+      },
+      {
+        "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs",
+        "sha256": "2db5a96276b11871206a60b523751a68cc156cf5245f86a2ff9b4fc4d84963b0"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/out/current-regression-evidence.json",
+        "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "sha256": "d450160b2125cc5c2dc6bdc78af479cfd870def44e007257963950b28d87f3c1"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "sha256": "a14382719f673f4e54c064942188480453bea963e7075aa51bba98e8c3b7a426"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "sha256": "ccfaa395c2a18e2b9d781f0444c0456da6d8e35158f0d461b31757f0d221f749"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "sha256": "c058888b6c1379b768fc43ef25ce18ddb1da8c13551a029fc1698c904c332166"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "sha256": "4c8b56691fd7abd07e35f4ecf48e31e06d2f34cd584e733595e7e904d40014ee"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "sha256": "1ee6d66ce62849831e24e20fdc6d953e1f70aecd828942c563574d74aa4f4ee6"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "sha256": "1098cb3434cfae1a954be6f93c71b1ed53f394b5de335a464179785d6857c6ba"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "sha256": "582dbf010a092a5a4eea6c28a2f7cdad016abe7ccf1430573061591beb49487f"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "sha256": "f0df0b185ae104f23112c008be8de1d0d685bed883b8ff937b916baae5037360"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "sha256": "a28d605992bcc7d37295bb71a989c4b9252be206cc3caad487419dde561f0c2e"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "sha256": "c4418cca488818301a357a9bbcf8069f255c41b8b6da16eb9e24df12bde0771d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "sha256": "4ae83c94d1d2653518563d7a4e2a64fcd77272ad950cbed3ebcfa8af5dd98b70"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "sha256": "cf50bb15183e41b4aefcb384da080206f0519b9bbb5b0d83c72e05874c31993e"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "sha256": "adb8ee350a9866e49a0c43343f14acfe71367c062d420ccdc0e3511ab81e3375"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "sha256": "08170a1d349604ca1505e429dce7d5399554fe062735eba1322ef30c4322962b"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "sha256": "b5f0b9c37ea816040f9fdb82c47779605dfb0b114614f53a39ac73dcf8592d78"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "sha256": "0b31602ef313e3607e575d57a9622ce48db9ce5a48111ef1a5a102c8b1e5ac57"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "sha256": "ae59e6128cbc59a51448c0610bbe00353ff3984613293ecbb055c1542aaa5cd4"
+      },
+      {
+        "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs",
+        "sha256": "2db5a96276b11871206a60b523751a68cc156cf5245f86a2ff9b4fc4d84963b0"
+      }
+    ],
+    "execution": {
+      "file": "accelerated-launch/service/out/current-regression-evidence.json",
+      "mode": "FULL_CURRENT_PRODUCT",
+      "totals": {
+        "passed": 14386,
+        "failed": 0,
+        "skipped": 0
+      },
+      "completed_sections": 150,
+      "source_inventory_matched": true,
+      "problems": []
+    }
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Current served-build paid review of the letter and populated original forms, approval and matching download is not established by this local suite. No hosted payment, served identity or staging pass is fabricated."
+  },
+  "production_readiness": {
+    "status": "NOT_ESTABLISHED",
+    "note": "Independent production controls and release authorization remain separate."
+  },
+  "packet_scope_by_jurisdiction": {
+    "scope": "Active common-error checklist selected disputes; source-linked report-data rules and applicable accepted reporting periods. Independent retired statutory findings and court-claim information are not packet candidates.",
+    "canonical_regions": [
+      "CA-AB",
+      "CA-BC",
+      "CA-MB",
+      "CA-NB",
+      "CA-NL",
+      "CA-NS",
+      "CA-NT",
+      "CA-NU",
+      "CA-ON",
+      "CA-PE",
+      "CA-QC",
+      "CA-SK",
+      "CA-YT",
+      "US-AK",
+      "US-AL",
+      "US-AR",
+      "US-AS",
+      "US-AZ",
+      "US-CA",
+      "US-CO",
+      "US-CT",
+      "US-DC",
+      "US-DE",
+      "US-FL",
+      "US-GA",
+      "US-GU",
+      "US-HI",
+      "US-IA",
+      "US-ID",
+      "US-IL",
+      "US-IN",
+      "US-KS",
+      "US-KY",
+      "US-LA",
+      "US-MA",
+      "US-MD",
+      "US-ME",
+      "US-MI",
+      "US-MN",
+      "US-MO",
+      "US-MP",
+      "US-MS",
+      "US-MT",
+      "US-NC",
+      "US-ND",
+      "US-NE",
+      "US-NH",
+      "US-NJ",
+      "US-NM",
+      "US-NV",
+      "US-NY",
+      "US-OH",
+      "US-OK",
+      "US-OR",
+      "US-PA",
+      "US-PR",
+      "US-RI",
+      "US-SC",
+      "US-SD",
+      "US-TN",
+      "US-TX",
+      "US-UM",
+      "US-UT",
+      "US-VA",
+      "US-VI",
+      "US-VT",
+      "US-WA",
+      "US-WI",
+      "US-WV",
+      "US-WY",
+      "GB-ENG",
+      "GB-NIR",
+      "GB-SCT",
+      "GB-WLS",
+      "AU-ACT",
+      "AU-NSW",
+      "AU-NT",
+      "AU-QLD",
+      "AU-SA",
+      "AU-TAS",
+      "AU-VIC",
+      "AU-WA"
+    ],
+    "measured_general_packet_regions": 82,
+    "packet_contents": [
+      "selected eligible requests with the consumer breach label VIOLATION",
+      "own tradeline or collection name, printed facts, source locations and relevant report identity",
+      "the breached checklist rule and accepted statutory support where applicable",
+      "consumer-supplied contact details and separate permitted wording",
+      "the ordinary consumer letter and applicable populated original bureau form",
+      "only selected supporting document/report copies, including both selected re-aging sources",
+      "the exact reviewed version and original/output digests bound to approval"
+    ],
+    "eligibility": "A supported eligible issue from the owned case must be selected; unknown, empty, changed or stale selections and information-only court claims cannot enter an approved download.",
+    "recipient": "The selected bureau and purpose use sourced postal instructions and applicable forms. The consumer reviews, signs where required, prints and mails the packet; the service does not submit, sign or mail it.",
+    "boundary": "82 shared supported GENERAL issue-to-packet journeys plus distinct representative packet mechanisms. This is not every check in every dedicated bureau layout, uniform statutory coverage, hosted payment or a physical print/mail test."
+  },
+  "criteria": {
+    "packet_scope": {
+      "passed": false,
+      "expected": "The configured packet_scope packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "finding_evidence": {
+      "passed": false,
+      "expected": "The configured finding_evidence packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "jurisdiction_content": {
+      "passed": false,
+      "expected": "The configured jurisdiction_content packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "consumer_review": {
+      "passed": false,
+      "expected": "The configured consumer_review packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "usable_download": {
+      "passed": false,
+      "expected": "The configured usable_download packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "entitlement_isolation": {
+      "passed": false,
+      "expected": "The configured entitlement_isolation packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "behavioral_coverage": {
+      "passed": false,
+      "expected": "The configured behavioral_coverage packet behavior is demonstrated locally and then verified separately on the current served release.",
+      "measured": "IMPLEMENTED_AND_TESTED locally; current hosted verification is PENDING.",
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs",
+        "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "Current served-release paid review, approval and matching packet download measured separately.",
+      "measured": "PENDING: no current hosted paid packet proof in this local record.",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "o-all82-infrastructure",
+      "passed": true,
+      "criteria": [
+        "packet_scope"
+      ],
+      "exercise_class": "FICTIONAL_HTTP_INFRASTRUCTURE",
+      "expected": "The shared account and case infrastructure exercises the exact 82 canonical regions; this alone does not prove packets or report support.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 88,
+        "assertions_failed": 0,
+        "regions_exercised": [
+          "AU-ACT",
+          "AU-NSW",
+          "AU-NT",
+          "AU-QLD",
+          "AU-SA",
+          "AU-TAS",
+          "AU-VIC",
+          "AU-WA",
+          "CA-AB",
+          "CA-BC",
+          "CA-MB",
+          "CA-NB",
+          "CA-NL",
+          "CA-NS",
+          "CA-NT",
+          "CA-NU",
+          "CA-ON",
+          "CA-PE",
+          "CA-QC",
+          "CA-SK",
+          "CA-YT",
+          "GB-ENG",
+          "GB-NIR",
+          "GB-SCT",
+          "GB-WLS",
+          "US-AK",
+          "US-AL",
+          "US-AR",
+          "US-AS",
+          "US-AZ",
+          "US-CA",
+          "US-CO",
+          "US-CT",
+          "US-DC",
+          "US-DE",
+          "US-FL",
+          "US-GA",
+          "US-GU",
+          "US-HI",
+          "US-IA",
+          "US-ID",
+          "US-IL",
+          "US-IN",
+          "US-KS",
+          "US-KY",
+          "US-LA",
+          "US-MA",
+          "US-MD",
+          "US-ME",
+          "US-MI",
+          "US-MN",
+          "US-MO",
+          "US-MP",
+          "US-MS",
+          "US-MT",
+          "US-NC",
+          "US-ND",
+          "US-NE",
+          "US-NH",
+          "US-NJ",
+          "US-NM",
+          "US-NV",
+          "US-NY",
+          "US-OH",
+          "US-OK",
+          "US-OR",
+          "US-PA",
+          "US-PR",
+          "US-RI",
+          "US-SC",
+          "US-SD",
+          "US-TN",
+          "US-TX",
+          "US-UM",
+          "US-UT",
+          "US-VA",
+          "US-VI",
+          "US-VT",
+          "US-WA",
+          "US-WI",
+          "US-WV",
+          "US-WY"
+        ],
+        "boundary": "Infrastructure only; packet delivery is measured separately by bx."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs"
+      ]
+    },
+    {
+      "id": "bx-all82-factual-verification",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "jurisdiction_content",
+        "finding_evidence",
+        "usable_download",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "FICTIONAL_NATIVE_PDF_UPLOAD",
+      "expected": "82 distinct supported GENERAL uploads deliver selected, approved, entitled packets matching their own issue content and case/report identity; other accounts and cases cannot borrow approval.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 9,
+        "assertions_failed": 0,
+        "regions_tested": 82,
+        "download_content_matched": 82,
+        "case_association_matched": 82,
+        "presentations": [
+          "GENERAL-BUREAU-REPORT"
+        ],
+        "boundary": "One reusable supported GENERAL account-date journey per region, not every check in every bureau layout."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs"
+      ]
+    },
+    {
+      "id": "by-packet-reconciliation",
+      "passed": true,
+      "criteria": [
+        "finding_evidence",
+        "jurisdiction_content"
+      ],
+      "exercise_class": "CONTROLLED_ADAPTER_FACTS_AND_REPRESENTATIVE_NATIVE_UPLOADS",
+      "expected": "Exercised active checklist reporting-period findings remain selectable; native chronology and AU retention packets retain their own evidence and accepted rule. Retired content findings stay absent.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 50,
+        "assertions_failed": 0,
+        "emitted_active_period_results": [
+          {
+            "adapter_id": "FCRA-605A-4-US-NATIONAL-7Y",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "FCRA-605A-5-US-NATIONAL-7Y",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "US-CA-CCRAA-1785-13-A-5-COLLECTION-7Y",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM4-DEFAULT-5Y",
+            "issues": 1,
+            "eligible": true
+          },
+          {
+            "adapter_id": "AU-PRIVACY-ACT-1988-S20W-ITEM1-LIABILITY-2Y",
+            "issues": 1,
+            "eligible": true
+          }
+        ],
+        "retired_content_guard": "retired dismissed-charge content finding is absent from consumer issues",
+        "boundary": "Only these exercised active adapters are credited; historical packet_enabled_rules is not active scope."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/by-packet-reconciliation.cjs"
+      ]
+    },
+    {
+      "id": "bl-us-ca-correction-packet",
+      "passed": true,
+      "criteria": [
+        "finding_evidence",
+        "consumer_review",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "FICTIONAL_NATIVE_UPLOAD_AND_HTTP_PACKET",
+      "expected": "Supported checklist selection, approval and download work; unknown/empty selection, changed selection, re-evaluation, missing entitlement and cross-account access are refused.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 52,
+        "assertions_failed": 0,
+        "behavioral_result": "California common-error violation path and retired tax-lien/bankruptcy guards; packet approvals and refusals verified"
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/bl-us-ca-correction-packet.cjs"
+      ]
+    },
+    {
+      "id": "bs-prime-directive-delivery",
+      "passed": true,
+      "criteria": [
+        "finding_evidence",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "FICTIONAL_NATIVE_UPLOAD_AND_HTTP_PACKET",
+      "expected": "A supported internally qualified checklist issue reaches selection and entitled verification download without inventing an absent exception; edited wording and foreign ownership are refused.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 37,
+        "assertions_failed": 0,
+        "qualified_upload": "unresolved-exception qualified path reaches selection + entitled verification-packet download from a fictional upload",
+        "wording": "affirmative concern leads; exception uncertainty is plain and never asserts an absent exception"
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/bs-prime-directive-delivery.cjs"
+      ]
+    },
+    {
+      "id": "cb-packet-correspondence",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "finding_evidence",
+        "consumer_review",
+        "usable_download"
+      ],
+      "exercise_class": "FICTIONAL_HTTP_DOWNLOAD_CONTENT",
+      "expected": "Correction and verification correspondence contain only selected requests and organized own-source evidence. Consumer wording stays separate from report facts and editing it invalidates approval.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 110,
+        "assertions_failed": 0,
+        "downloads": [
+          {
+            "variant": "definite_correction",
+            "downloaded_chars": 1602
+          },
+          {
+            "variant": "potential_verification",
+            "downloaded_chars": 13584
+          },
+          {
+            "variant": "probable_verification",
+            "downloaded_chars": 9557
+          }
+        ],
+        "consumer_input_separation": "the consumer-entered details live on the packet row and never in the report result, extraction or evaluation",
+        "sending": "consumer-controlled: the packet is prepared for the consumer to submit with the relevant bureau instructions; this service sends nothing",
+        "boundary": "Variant names record internal confidence; the consumer breach label is VIOLATION."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/cb-packet-correspondence.cjs"
+      ]
+    },
+    {
+      "id": "bo-prime-directive-interaction",
+      "passed": true,
+      "criteria": [
+        "consumer_review",
+        "behavioral_coverage"
+      ],
+      "exercise_class": "REAL_UI_HANDLERS_AND_LOOPBACK_HTTP_SERVICE",
+      "expected": "Real UI handlers save visible selection and wording, disable approval after editing, review the new preview, approve and download against the real local service.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 50,
+        "assertions_failed": 0,
+        "interaction": "select -> save full preview -> edit disables approval -> save and read new preview -> approve -> download against the real service"
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/bo-prime-directive-interaction.cjs"
+      ]
+    },
+    {
+      "id": "bw-browser-wizzard",
+      "passed": true,
+      "criteria": [
+        "consumer_review",
+        "usable_download",
+        "behavioral_coverage"
+      ],
+      "exercise_class": "REAL_BROWSER_AND_LOOPBACK_SERVICE_WITH_FICTIONAL_REPORTS",
+      "expected": "The representative browser reviews, edits, approves and downloads one complete PDF. Relevant report pages are included automatically; court-deadline information is not a packet candidate.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 161,
+        "assertions_failed": 0,
+        "browser": "real-browser Wizzard acceptance: potential + probable + partial selection + edit-after-approval + benign, all via Playwright + local Chrome against the loopback service",
+        "court_information": {
+          "reporting_issue_count": 0,
+          "court_information_only": true,
+          "packet_candidate": false
+        },
+        "report_copy_selection": {
+          "available": 2,
+          "default_selected": 2,
+          "automatically_included": 2,
+          "relevant_pages_included": true,
+          "single_pdf": true,
+          "original_review_bytes_retained": true,
+          "whole_file_pages": 2,
+          "included_page": 1,
+          "unrelated_pages_omitted": true
+        },
+        "local_download": "CRP-dispute-packet-case_e9abc91e2db2d7e67fe438f4.pdf",
+        "boundary": "Loopback browser and test entitlement; not hosted payment, mailing or physical printing."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs"
+      ]
+    },
+    {
+      "id": "t-entitlement",
+      "passed": true,
+      "criteria": [
+        "entitlement_isolation"
+      ],
+      "exercise_class": "HTTP_SERVICE_TEST_ADAPTER_AND_LOOPBACK_STRIPE_MOCK",
+      "expected": "Server-side entitlement protects paid routes; client redirects, invalid provider events, expiry and revoked access cannot grant a packet.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 246,
+        "assertions_failed": 0,
+        "unpaid_routes_refused": 7,
+        "paid_routes_covered": 5,
+        "entitlement_refusal": {
+          "status_code": 402,
+          "code": "ENTITLEMENT_REQUIRED"
+        },
+        "activation": {
+          "checkout_id": "chk_53f093f7a2bec81e1e493ddb",
+          "entitled_after_event": true,
+          "duplicate_event_is_idempotent": true,
+          "client_confirmation_refused": true,
+          "redirect_grants_nothing": true
+        },
+        "failed_verification": {
+          "unsigned_refused": true,
+          "tampered_refused": true,
+          "stale_refused": true,
+          "unsupported_type_refused": true,
+          "unknown_account_ignored": true,
+          "unknown_checkout_ignored": true,
+          "plan_mismatch_ignored": true
+        },
+        "expiry_and_cancellation": {
+          "lapsed_period_is_expired_immediately": true,
+          "deletion_never_gated": true,
+          "grace_on_failed_payment": true,
+          "cancellation_at_period_end": true,
+          "refund_revokes_immediately": true,
+          "unpaid_checkout_cancels_at_once": true
+        },
+        "stripe_cancellation": {
+          "proof": "HTTP_SERVICE_AND_LOOPBACK_STRIPE_MOCK_NOT_HOSTED_PAYMENT",
+          "provider_confirmed": true,
+          "provider_failure_and_mismatch_preserve_local_state": true,
+          "repeats_and_concurrent_writes_idempotent": true,
+          "changed_account_and_entitlement_guarded": true,
+          "actual_subscription_deleted_event_mapped": true
+        },
+        "boundary": "Local provider fixtures never establish hosted paid access or production Stripe readiness."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/t-entitlement.cjs"
+      ]
+    },
+    {
+      "id": "eb-account-packet-support",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "jurisdiction_content",
+        "consumer_review",
+        "usable_download",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "FICTIONAL_HTTP_PROFILE_DOCUMENTS_AND_PACKET_DOWNLOAD",
+      "expected": "Owned contact details and selected document copies are approval-bound; the sourced bureau/purpose/postal channel chooses applicable materials and excludes unrelated documents.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 184,
+        "assertions_failed": 0,
+        "http_ownership": true,
+        "selected_documents_inline_pdf": true,
+        "contact_and_document_approval_binding": true,
+        "sourced_bureau_purpose_channel": true
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs"
+      ]
+    },
+    {
+      "id": "eh-packet-report-exhibits",
+      "passed": true,
+      "criteria": [
+        "finding_evidence",
+        "consumer_review",
+        "usable_download",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "OWNED_FICTIONAL_ORIGINAL_REPORTS_AND_HTTP_PACKET_DOWNLOAD",
+      "expected": "Only relevant original pages from selected own report evidence enter the approved complete PDF. Re-aging retains both sources; mutations, deletion and stale approvals refuse download.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 152,
+        "assertions_failed": 0,
+        "original_report_pages_preserved": true,
+        "both_reaging_sources": true,
+        "automatically_included_relevant_pages": true,
+        "selected_issue_sources_only": true,
+        "review_and_approval_binding": true,
+        "mutation_and_deletion_refused": true,
+        "multipage_and_image_originals": true
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/eh-packet-report-exhibits.cjs"
+      ]
+    },
+    {
+      "id": "ei-collection-duplicate",
+      "passed": true,
+      "criteria": [
+        "finding_evidence",
+        "usable_download",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "CONTROLLED_PERSISTED_SOURCE_FACTS_AND_ACTUAL_COMPLETE_PDF",
+      "expected": "The corroborated multi-agency collection pair retains its own member/account evidence and selected requests in the actual packet; ordinary matching and privacy remain enforced.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 104,
+        "assertions_failed": 0,
+        "scope": "shared collection source contract and complete editable packet PDF; reader admission covered separately",
+        "owner_member_account_criterion": true,
+        "ordinary_matching_preserved": true,
+        "original_report_pages": 2,
+        "physical_print_or_mail": false,
+        "boundary": "Shared source contract and real local packet output; reader admission is proved separately."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/ei-collection-duplicate.cjs"
+      ]
+    },
+    {
+      "id": "er-bureau-form-population",
+      "passed": true,
+      "criteria": [
+        "consumer_review",
+        "usable_download",
+        "behavioral_coverage"
+      ],
+      "exercise_class": "ACTUAL_HASH_VERIFIED_ORIGINAL_PDF_RENDERERS",
+      "expected": "Supported actual original templates retain artwork/native controls, explicit supplied data and every selected request; rendering is deterministic, overflow is retained, and signature/consent stay blank.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 132,
+        "assertions_failed": 0,
+        "proof": "Completed assertions in the source-matched original-form renderer section; template bytes are independently verified by execution custody."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs"
+      ]
+    },
+    {
+      "id": "es-filled-packet-business-letter",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "consumer_review",
+        "usable_download",
+        "entitlement_isolation"
+      ],
+      "exercise_class": "FICTIONAL_NATIVE_UPLOAD_ACTUAL_COMPLETE_REVIEW_PDF",
+      "expected": "The owned review shows one complete PDF with letter, report pages, documents and filled originals. Approval binds its exact digest/template versions and selected order; downloaded and printed bytes equal reviewed bytes. Missing name parts are not guessed, edits require reapproval, and one-off access does not grant subscriber packets.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 59,
+        "assertions_failed": 0,
+        "owned_actual_pdf_review": true,
+        "original_form_approval_digest": true,
+        "name_parts_not_guessed": true,
+        "ordinary_business_letter": true
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs"
+      ]
+    },
+    {
+      "id": "ew-inline-packet-composer",
+      "passed": true,
+      "criteria": [
+        "consumer_review",
+        "usable_download",
+        "behavioral_coverage"
+      ],
+      "exercise_class": "ACTUAL_COMPLETE_PDF_NATIVE_FIELDS_AND_INDEPENDENT_RENDERING",
+      "expected": "The final complete PDF preserves source-page artwork, inline images, editable letter fields and independently editable original native controls, with deterministic bytes and blank signature/consent.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 121,
+        "assertions_failed": 0,
+        "single_complete_pdf": true,
+        "original_native_controls": true,
+        "source_pages_only": true,
+        "editable_letter": true,
+        "deterministic_approval_bytes": true,
+        "independent_print_rendering": true
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs"
+      ]
+    },
+    {
+      "id": "ex-inline-packet-journey",
+      "passed": true,
+      "criteria": [
+        "consumer_review",
+        "usable_download",
+        "entitlement_isolation",
+        "end_to_end_journey"
+      ],
+      "exercise_class": "FICTIONAL_NATIVE_UPLOAD_OWNED_LETTER_EDIT_AND_COMPLETE_HTTP_PDF",
+      "expected": "An owned subscriber edits the whole letter, reviews and approves one complete PDF, and receives identical print/download bytes. Optional bureau number and separately chosen attachment pages are approval-bound; foreign and unpaid editing is refused.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 48,
+        "assertions_failed": 0,
+        "single_complete_pdf": true,
+        "letter_editor": true,
+        "exact_review_approval_download": true,
+        "relevant_report_pages": true,
+        "manual_attachment_page_bound": true,
+        "optional_bureau_reference": true,
+        "ownership_and_entitlement": true
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs"
+      ]
+    },
+    {
+      "id": "dc-consumer-violation-term",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "behavioral_coverage"
+      ],
+      "exercise_class": "REAL_CONSUMER_RENDERERS_AND_PACKET_SCOPE_CONTROLS",
+      "expected": "Supported checklist breaches use the consumer label VIOLATION; internal confidence stays intact, retired adapters do not surface, and court information does not become a dispute request.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 61,
+        "assertions_failed": 0,
+        "proof": "Completed assertions in the source-matched consumer terminology and active-scope section."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/dc-consumer-violation-term.cjs"
+      ]
+    },
+    {
+      "id": "cs-limitation-and-payment-history",
+      "passed": true,
+      "criteria": [
+        "packet_scope",
+        "finding_evidence"
+      ],
+      "exercise_class": "CONTROLLED_SOURCE_FACTS_AND_HTTP_SELECTION_REFUSALS",
+      "expected": "Court-claim timing remains information only with no bureau request or packet eligibility, independently of an applicable credit-report reporting-period issue.",
+      "measured": {
+        "completed": true,
+        "assertions_passed": 130,
+        "assertions_failed": 0,
+        "limitation": {
+          "recorded": [
+            "AU-ACT",
+            "AU-QLD",
+            "CA-BC",
+            "CA-MB",
+            "CA-NS",
+            "CA-NT",
+            "CA-NU",
+            "CA-ON",
+            "GB-ENG",
+            "GB-NIR",
+            "GB-WLS"
+          ],
+          "assessed": 1,
+          "may_be_outside": 1,
+          "withheld": 1
+        },
+        "consumer_path": {
+          "information_present": true
+        },
+        "boundary": "Court information is excluded, not counted as a delivered violation packet."
+      },
+      "evidence_refs": [
+        "accelerated-launch/service/out/current-regression-evidence.json",
+        "accelerated-launch/service/tests/sections/cs-limitation-and-payment-history.cjs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "measured_at": "2026-10-11T12:25:37.921Z",
+  "candidate_build_id": "crp-v1-fd23f242f3d158bf",
+  "current_production_build": "crp-v1-6fffbbb76b24a050",
+  "scope": "Five storage/auth/profile/document/upload entry modules only; this is not a new consumer sign-in restoration journey",
+  "rows": [
+    {
+      "file": "accelerated-launch/service/private-store.cjs",
+      "sha256": "003FDA7F9CBE2481F5075253654B302E6BAC4DB99297C641003DEC56116CE5C6",
+      "unchanged": false
+    },
+    {
+      "file": "accelerated-launch/service/accounts.cjs",
+      "sha256": "FDE76500D70957BD00A8986704E5E32302409BD1E98A41C6214C4A41BBEC7D3C",
+      "unchanged": true
+    },
+    {
+      "file": "accelerated-launch/service/account-profile.cjs",
+      "sha256": "E5D6105D1858A576718B0B2E88DF7471156E4C9D535112AF55708A1F50F9FF56",
+      "unchanged": true
+    },
+    {
+      "file": "accelerated-launch/service/account-documents.cjs",
+      "sha256": "D3D7BE034C340B6099C91869DAD2CBCC4F237CB58E244A677B6D11833D8A8023",
+      "unchanged": true
+    },
+    {
+      "file": "accelerated-launch/service/uploads.cjs",
+      "sha256": "25904C79938706BE6E1CB8EA340517F8A78A3E3AB1BFC5DAEA7A813463832405",
+      "unchanged": true
+    }
+  ],
+  "passed": false
+}

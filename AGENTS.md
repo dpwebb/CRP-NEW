@@ -1,5 +1,10 @@
 # Owner imperatives
 
+## October 11 controlling owner directive — bureau forms retired
+
+Read `CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md` first for dispute/correction packet work. All bureau-specific forms are retired from the approved packet scope across all bureaus and jurisdictions. Their generation, inclusion, separate preview links, form-only inputs and acceptance prerequisites are authorized for removal. This supersedes conflicting earlier form requirements. Preserve the consumer letter, selected evidence/supporting copies and review/approval, ownership, privacy and entitlement safeguards. Historical form-inclusive proof retains its original scope. Directive adoption and runtime removal are complete. Exact-build hosted form-free review/approval/download and unchanged-navigation verification passed on crp-v1-fd23f242f3d158bf, now deployed to live production. See SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/.
+
+
 ## Parallel agent coordination
 
 Codex may run up to three subagents concurrently. Multiple implementation writers are permitted under the October 7 amendment in `CRP_OWNER_VERSION_1_SEVEN_DAY_EXECUTION_001.md` only when each uses a separate Git worktree and a bounded, nonoverlapping assignment from the single remaining-work register. The coordinator owns the current dirty checkout and register, assigns file ownership, reviews and integrates completed changes one at a time, runs affected checks, and reports status. Agents must not share a mutable implementation checkout, edit the same files concurrently, merge or deploy independently, or message other chats. Read-only research and review agents may run alongside writers. Preserve the existing dirty working tree.

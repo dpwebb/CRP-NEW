@@ -1,0 +1,616 @@
+{
+  "schema": "crp-production-gate-candidates-v1",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "manifest_digest": "FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB",
+  "gates": 30,
+  "criteria": 123,
+  "canonical_evidence_written": false,
+  "measurements_sha256": "59a8854c6e47c979369ead619074bc008f57005941ed8bea6e32c1e327850ba2",
+  "regression_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1",
+  "prepared": [
+    {
+      "id": "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+      "file": "fdt-mitigation-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/fdt-mitigation-evidence.json",
+      "candidate_sha256": "645fea80d73a2330e61f8d599a29222f65a581e2007521f40c97a85d7533d169",
+      "canonical_before_sha256": "f00c83f856eb858e45ccea13d9bf0f948686c8c3062980c77bdf799691451b04",
+      "criteria": [
+        "freeze_before_run",
+        "independent_held_out_set",
+        "zero_incorrect_decisive_facts",
+        "zero_cross_record_or_bureau_borrowing",
+        "zero_unsupported_violations",
+        "min_recovery_of_readable_assessment_required_facts",
+        "account_for_every_remaining_miss",
+        "withhold_unreadable_or_conflicting_decisive_facts",
+        "demonstrate_useful_recovery_on_deployed",
+        "demonstrate_bounded_unsuccessful_recovery_on_deployed",
+        "benchmark"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "current-release behavioral acceptance also establishes implementation closure",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+      "file": "clarify-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/clarify-evidence.json",
+      "candidate_sha256": "bd66ecbb32017762585145e99c622199e35a6132fa8cffeb29d941915b49ba41",
+      "canonical_before_sha256": "bc434ae263f1cb2f44e149e0c4709074e9c9fbae37d9d5641d2d74e9db5c66b4",
+      "criteria": [
+        "at_most_two_questions",
+        "skip_and_dont_know",
+        "separate_supplemental_storage",
+        "no_escalation",
+        "browser_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+      "file": "common-errors-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/common-errors-evidence.json",
+      "candidate_sha256": "45c27880aefd3b9e6fde9ccd0a6e2dfb16c0e927813eeb5c9183e9888e33e0f2",
+      "canonical_before_sha256": "e5775fbc1fea485109ed092c0f796de042e921128421b5ad17da5ff05f586cfd",
+      "criteria": [
+        "checks_implemented",
+        "no_false_finding",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+      "file": "gap-ingest-001-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-001-evidence.json",
+      "candidate_sha256": "7a4f04af6c74eb0d90a585f1827545a59ab6682d702a6d72acbc2e861f77cc7f",
+      "canonical_before_sha256": "404212c5ccbdf631e57c683de8f034704e05e0e908d2376b80309951362bd4a0",
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+      "file": "gap-ingest-002-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-002-evidence.json",
+      "candidate_sha256": "9922f1151e84c59a34e3bbf1de6b22d57d7d614fcf1c4493045337b114454b28",
+      "canonical_before_sha256": "9c291786d302283189247eb380edf5910c1e8c72a70b671ffa079a0fbf8bad1b",
+      "criteria": [
+        "multiline_boundaries",
+        "continuation_lines",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+      "file": "gap-ingest-003-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-003-evidence.json",
+      "candidate_sha256": "be6e3f07b98d1ab4df2415097c3bcc6906bbb5ddd30e5d45abd262114450b342",
+      "canonical_before_sha256": "8b14ebfb6f727a3a19a55556b86159d6e1d73cb8c69aeaac646d1eba386cbe2a",
+      "criteria": [
+        "ocr_confidence_preserved",
+        "coordinates_preserved",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-004_DATE_FORMS",
+      "file": "gap-ingest-004-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-004-evidence.json",
+      "candidate_sha256": "de44486e0ae4b63e9043096c41ed5e26f62356c9db776657635ba1a789fb5d69",
+      "canonical_before_sha256": "1fc67558fbae7da1410b333ed63acd0ea4f438c0da6d59a7847f9f5a2e25e4e4",
+      "criteria": [
+        "written_date_forms",
+        "unambiguous_parse",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+      "file": "gap-ingest-005-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-005-evidence.json",
+      "candidate_sha256": "eff66a36ac6719cc003c7ca954797b0aa1d3bd8761e7f8ea49ae83ceb5d2d4aa",
+      "canonical_before_sha256": "ab53b9e56bee2c5c92473a185d994cca0179553ea6964bb2f7a4aa5581afe765",
+      "criteria": [
+        "numeric_date_conventions",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+      "file": "gap-ingest-006-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-006-evidence.json",
+      "candidate_sha256": "3916815721ff4961aa685214f26661df2e464bc18e4f4964b4f51a600d1e72ea",
+      "canonical_before_sha256": "0207df80ad27e61540e2a842b77a9666b27f88de4fa7f13a4bcf8eab8ab59648",
+      "criteria": [
+        "partial_date_precision",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+      "file": "gap-ingest-007-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-007-evidence.json",
+      "candidate_sha256": "fa66e123c2eed279c38dddfba892611e69ba91b3b362e821f7f335755ddf0114",
+      "canonical_before_sha256": "ab0345295f1a3391ab2c7616f60fa236740f18edb4e18413ce86209bf0bc45b9",
+      "criteria": [
+        "reference_date_identified",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+      "file": "gap-ingest-008-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-008-evidence.json",
+      "candidate_sha256": "75fa0acb146ea21e5fd873352b6c932e90633dcad0666444b1c52bfd1d2846d1",
+      "canonical_before_sha256": "896025fae585064cc79910dbf9bd1dff98f3d9bdb10cd736ade24e344b066046",
+      "criteria": [
+        "partial_text_recovery",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-009_BUREAU_SEGMENTATION",
+      "file": "gap-ingest-009-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-009-evidence.json",
+      "candidate_sha256": "f3316d73cadfb24d33ad80569be4c1ae9b9fee4d81548bfa7cc5953ccecc12e8",
+      "canonical_before_sha256": "38643e6df22a775878ac971720af4cac0681930b848419964763b4179e16cef4",
+      "criteria": [
+        "bureau_segmentation",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+      "file": "gap-ingest-010-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-ingest-010-evidence.json",
+      "candidate_sha256": "fc103bafd2b10070b6f2430e7076d52fc47b8ac7a1beb10c540ab0d02548d2eb",
+      "canonical_before_sha256": "c70025637502184d04b7eb792beef00b282c177554ba6b7cca9fd09ad2ea72ff",
+      "criteria": [
+        "upload_limits",
+        "container_handling",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-FINDING-001_EXCEPTION_EVALUATION",
+      "file": "gap-finding-001-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-finding-001-evidence.json",
+      "candidate_sha256": "859ce7c38757605e464b593fa9823b99eec153c10d399c5d62696ad7bef0ecdf",
+      "canonical_before_sha256": "c1a4f60736f4c881d67b030f4539c3b4d0533d0817cb5fb1ca71f2cc6bb40368",
+      "criteria": [
+        "rule_exceptions",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+      "file": "gap-finding-002-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-finding-002-evidence.json",
+      "candidate_sha256": "17b46a20f9b620cd8183296168af995f54f144c334d677918bd4a8c8ef5c78f2",
+      "canonical_before_sha256": "cceabf1347deab0cf4c07cab02fd68b4939d7d18d7dfcbab3f99c50e7286fc5f",
+      "criteria": [
+        "probable_violation_path",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+      "file": "gap-finding-003-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-finding-003-evidence.json",
+      "candidate_sha256": "459f70ae5b9ac0dc6458bc281cfdb5eff059ed4ea68ccdbcdcedef088bb6c053",
+      "canonical_before_sha256": "354ed094012afddd3f3a7931ca09800e9c1805c6178b6235eb36573dbc97a1ae",
+      "criteria": [
+        "rule_identity",
+        "version_binding",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+      "file": "gap-finding-004-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/gap-finding-004-evidence.json",
+      "candidate_sha256": "2656a1b197e20495fd6131267047ef11921060bfd27f3428390b58417e930fe2",
+      "canonical_before_sha256": "8361fa6842f337041e7834bcd4faffb520191c6c03ca2faafc554704db88b4ce",
+      "criteria": [
+        "source_linked_facts",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-RESULTS-001",
+      "file": "consumer-results-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-results-evidence.json",
+      "candidate_sha256": "af886dcdadbe8dfe373c0e289d6f2209cd00965672b74cfb357d7f39bc0e20e6",
+      "canonical_before_sha256": "9bd0b3d9dd3ce86ee1436a9f2ebacbe40fd1330cd40dd769ea343ac52e29b7f0",
+      "criteria": [
+        "prioritization",
+        "reasons",
+        "uncertainty",
+        "journey",
+        "isolation"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-EXPLANATIONS-001",
+      "file": "consumer-explanations-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-explanations-evidence.json",
+      "candidate_sha256": "ffe068db09bffd0bc646d30ca3fcce90846e5f14b8cb2abac382bceb718f8bcd",
+      "canonical_before_sha256": "c59ffdbe3d7493f9c14597199ca2b0555a8ba67915051c4712df3cf0dffe3b02",
+      "criteria": [
+        "report_fact",
+        "rule_basis",
+        "uncertainty",
+        "journey",
+        "consistency"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-BILLING-001",
+      "file": "consumer-billing-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-billing-evidence.json",
+      "candidate_sha256": "6bbb695077d5eb0e7b1ca4829e1f343d5043340bc55a325fe132ea34b9c23799",
+      "canonical_before_sha256": "107e0bcdecd870bb82590294c8cc65c1c1724afc7aadf8e9d2a57fc80623912e",
+      "criteria": [
+        "plan",
+        "renewal",
+        "cancellation",
+        "upgrade_credit",
+        "isolation",
+        "journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-PRIVACY-001",
+      "file": "consumer-privacy-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-privacy-evidence.json",
+      "candidate_sha256": "8f823a702d2dc302ae3d3aa40eeb3e828cd864140da7976fd25761c31065bad6",
+      "canonical_before_sha256": "206235eddd9860a4ee158db8edf3f1e101f0b16d554b6c760aa769ce4536a03b",
+      "criteria": [
+        "inventory",
+        "retention",
+        "deletion",
+        "isolation",
+        "journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-SUPPORT-001",
+      "file": "consumer-support-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-support-evidence.json",
+      "candidate_sha256": "5091f47200f9bba6bd7227a9af9308c070aacde029c5f16c4d05a668749746bf",
+      "canonical_before_sha256": "4bd9a3046f2109e1d970672458f2fd34636f40e4454c9d72b414c25136d731b0",
+      "criteria": [
+        "reference",
+        "redaction",
+        "access",
+        "journey",
+        "usefulness"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-CONSUMER-LANGUAGE-001",
+      "file": "consumer-language-imperative-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-language-imperative-evidence.json",
+      "candidate_sha256": "022eb1f55d2ca2fd378f10e02ebff6befa65270bd2d88a8f1ba46304b6953def",
+      "canonical_before_sha256": "e24b7e20ea6c5873d7327118a0460bb3e8af8b080d20c4cd6684cdc2188dbeb8",
+      "criteria": [
+        "affirmative_scope",
+        "no_legal_advice_disclaimers",
+        "finding_labels"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+      "file": "consumer-incomplete-presentation-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/consumer-incomplete-presentation-evidence.json",
+      "candidate_sha256": "01c1faae4bb66c3487058399da8c0f2b2a33635d44e9be50cb615cc781087979",
+      "canonical_before_sha256": "12f91516b84b8137889ea772c4a6ee1060cd6d3c8348b2e75d433f68fe9cdce5",
+      "criteria": [
+        "internal_diagnostics_retained",
+        "incomplete_checks_hidden",
+        "no_false_compliance_claim"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-CLARIFY-MATERIALITY-002",
+      "file": "clarification-materiality-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/clarification-materiality-evidence.json",
+      "candidate_sha256": "d11d9ea54b35080206436753ed1c30bc9e22a90426a8df9a098ad66e077b9895",
+      "canonical_before_sha256": "7d7f47f18051786be912a12678757a5f9046fa87377bb88029b2ec19547e9e0a",
+      "criteria": [
+        "no_context_only_questions",
+        "rule_materiality",
+        "mandatory_omission_not_cured_by_answer"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-FINDING-COVERAGE-001",
+      "file": "finding-coverage-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/finding-coverage-evidence.json",
+      "candidate_sha256": "b5172fb93645cb4bb042ed23bb9814bfe166d0821634cc50de97f9e224957788",
+      "canonical_before_sha256": "caafe5ea4b50d62bdd22dd30bd72e60ad3c0a42bec8b3e8c036e97577f9f8d6b",
+      "criteria": [
+        "promise_inventory",
+        "check_mapping",
+        "executable_findings",
+        "material_questions",
+        "behavioral_coverage",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-ALL82-FACILITATION-001",
+      "file": "all82-facilitation-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/all82-facilitation-evidence.json",
+      "candidate_sha256": "339e90ca52e4326b9f90497629cd85b0177673a59890aecb22253b4fe895baed",
+      "canonical_before_sha256": "0e18ab3d26812d4c6c1e1c130305875069378c924ff5ffdda5ec96d94abf85bd",
+      "criteria": [
+        "jurisdiction_inventory",
+        "usable_intake",
+        "applicable_assessment",
+        "material_questions",
+        "consumer_delivery",
+        "account_isolation",
+        "behavioral_coverage",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-DISPUTE-PACKET-001",
+      "file": "dispute-packet-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/dispute-packet-evidence.json",
+      "candidate_sha256": "4329201a1e2625a6f3df19b327321848bc4f7cfd1047c582a0230bd1614317bc",
+      "canonical_before_sha256": "e2f66f036d681e7e886500f57f5b0206f5a0f9020a90d301edc08c419b61ed9d",
+      "criteria": [
+        "packet_scope",
+        "finding_evidence",
+        "jurisdiction_content",
+        "consumer_review",
+        "usable_download",
+        "entitlement_isolation",
+        "behavioral_coverage",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+      "file": "report-data-to-issue-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/report-data-to-issue-evidence.json",
+      "candidate_sha256": "5da7c3b5805710b33073b5b588174120ceedeccf1f58897529c24285c7e91567",
+      "canonical_before_sha256": "eafec0ef644cbb308288cc64fe6f4c9a9b314bfef7707aa79083d147805b93be",
+      "criteria": [
+        "material_field_extraction",
+        "issue_wiring",
+        "packet_delivery",
+        "behavioral_coverage",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    },
+    {
+      "id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+      "file": "subscription-value-evidence.json",
+      "candidate_file": "production-blocker-repair-2026-10-11/candidates/subscription-value-evidence.json",
+      "candidate_sha256": "a70d7a55dadb66160e3653655184f39117587919ebec52672d6b33d3ab584cb9",
+      "canonical_before_sha256": "8cb7795bd9e2854f09d0e540804d31ff592b630556f9311a36fb11fa741d0bd3",
+      "criteria": [
+        "owned_history",
+        "comparison_linkage",
+        "issue_changes",
+        "consumer_view",
+        "isolation",
+        "behavioral_coverage",
+        "end_to_end_journey"
+      ],
+      "validation": {
+        "passed": true,
+        "detail": "evidence is complete, current-release and identity-bound",
+        "implementation_status": "IMPLEMENTED_AND_TESTED",
+        "implementation_detail": "implemented and behaviorally tested; staging verification is tracked separately",
+        "staging_status": "VERIFIED_ON_STAGING"
+      }
+    }
+  ],
+  "passed": true
+}

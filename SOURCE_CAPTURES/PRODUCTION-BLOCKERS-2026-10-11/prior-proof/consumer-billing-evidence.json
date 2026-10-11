@@ -1,0 +1,163 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:45.854Z",
+  "scope": "BLOCKER-BILLING-001. The billing consumer interface and server enforcement: configured prices/purchase types, recorded access state, renewal behavior, at-period-end cancellation (access continues, no refund/termination claimed), the once-only upgrade credit, and account isolation. Implementation is closed by ba-consumer-billing; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ba-consumer-billing-plan",
+        "passed": true,
+        "criteria": [
+          "plan"
+        ],
+        "expected": "configured price, currency and purchase type are returned and shown before checkout",
+        "measured": "report_once CAD 5.95 one_time, monthly CAD 7.95 month, annual CAD 79.50 year; the Billing step renders each plan price/currency and purchase type"
+      },
+      {
+        "id": "ba-consumer-billing-renewal",
+        "passed": true,
+        "criteria": [
+          "renewal"
+        ],
+        "expected": "one-time purchases do not imply recurring billing; recurring products show their actual renewal",
+        "measured": "a one-time plan is labelled \"one-time purchase\"; a subscription shows \"renews automatically\" with its plan"
+      },
+      {
+        "id": "ba-consumer-billing-cancellation",
+        "passed": true,
+        "criteria": [
+          "cancellation"
+        ],
+        "expected": "cancellation works at period end without implying a refund or immediate termination",
+        "measured": "POST /api/entitlement/cancel sets cancel_at_period_end and entitled stays true; the UI shows \"Cancel renewal\" only for a subscription"
+      },
+      {
+        "id": "ba-consumer-billing-upgrade-credit",
+        "passed": true,
+        "criteria": [
+          "upgrade_credit"
+        ],
+        "expected": "the configured once-only CAD 5.95 upgrade credit is shown and enforced",
+        "measured": "a verified one-time payment earns an ELIGIBLE 595-cent credit; the UI shows \"CAD 5.95\" only when eligible"
+      },
+      {
+        "id": "ba-consumer-billing-isolation",
+        "passed": true,
+        "criteria": [
+          "isolation"
+        ],
+        "expected": "billing views and actions are authenticated and account-scoped",
+        "measured": "unauthenticated -> 401; a different account sees only its own entitlement; a no-purchase account cannot cancel"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/entitlement.cjs",
+        "sha256": "2801cf405fff39b68ff7114c7af1690f7263af3c5b65ef807ad91d3366d3a11c"
+      },
+      {
+        "file": "accelerated-launch/service/plan-catalog.cjs",
+        "sha256": "a10f4f4a0a5315d40403708ee461b03787d42dc4106285e1460aa9cdd85e03c8"
+      },
+      {
+        "file": "accelerated-launch/service/billing-credits.cjs",
+        "sha256": "0c309403d472e3d1cb67f5e926038c3ee953acdb2a4ca88e86b62b43af0020e5"
+      },
+      {
+        "file": "accelerated-launch/service/payment-provider.cjs",
+        "sha256": "8cae80729fbe533f631b281f5b6170485023b0ba2ddb2d056b734598b1a8f2ca"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ba-consumer-billing.cjs",
+        "sha256": "c9a33e8471367cebfe60b0ce415256eedc38f4fc6581779958097880433120b4"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ba-consumer-billing.cjs",
+        "sha256": "c9a33e8471367cebfe60b0ce415256eedc38f4fc6581779958097880433120b4"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence written for the billing interface; implementation is closed by the behavioral test, but the production check remains unresolved until deployed, current-release evidence is recorded."
+  },
+  "criteria": {
+    "plan": {
+      "passed": false,
+      "expected": "configured price, currency, purchase type and included access before checkout",
+      "measured": "implemented and tested (ba-consumer-billing); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-billing.cjs"
+      ]
+    },
+    "renewal": {
+      "passed": false,
+      "expected": "one-time purchases do not imply recurring billing; recurring products show their actual renewal",
+      "measured": "implemented and tested (ba-consumer-billing); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-billing.cjs"
+      ]
+    },
+    "cancellation": {
+      "passed": false,
+      "expected": "working cancellation controls with a truthful effect on renewal and access",
+      "measured": "implemented and tested (ba-consumer-billing); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-billing.cjs"
+      ]
+    },
+    "upgrade_credit": {
+      "passed": false,
+      "expected": "the configured once-only upgrade credit with eligibility and expiry",
+      "measured": "implemented and tested (ba-consumer-billing); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-billing.cjs"
+      ]
+    },
+    "isolation": {
+      "passed": false,
+      "expected": "other accounts cannot access billing data or actions",
+      "measured": "implemented and tested (ba-consumer-billing); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-billing.cjs"
+      ]
+    },
+    "journey": {
+      "passed": false,
+      "expected": "deployed sandbox consumer journey including state transitions",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "ba-consumer-billing",
+      "passed": true,
+      "criteria": [
+        "plan",
+        "renewal",
+        "cancellation",
+        "upgrade_credit",
+        "isolation"
+      ],
+      "expected": "40 assertions pass (including failed-checkout and failed-cancellation refusal handling and sign-out stale-state clearing)",
+      "measured": "40/40"
+    }
+  ]
+}

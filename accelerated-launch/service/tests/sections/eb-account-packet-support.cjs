@@ -57,51 +57,41 @@ async function run(t, check) {
   const support = { ...options([identity, address, passport]), document_dates: { [address]: new Date().toISOString().slice(0, 10) } };
   check.equal((await t.request('POST', base + '/packet/support', auth({ support }))).status, 200, 'bureau-specific supporting selection saved');
   const ready = (await t.request('GET', base + '/packet', { token: actor.token })).json.view;
-  const form = await t.request('GET', ready.packet.form_previews[0].review_url, { token: actor.token });
-  check.equal(form.status, 200, 'the consumer reviews the populated original bureau form before approval');
+  check.deepEqual(ready.packet.form_previews, [], 'no retired form preview is generated');
   const completePreview = await t.request('GET', ready.packet.letter_preview_url, { token: actor.token });
   check.equal(completePreview.status, 200, 'the inline preview contains the complete packet before approval');
   check.match(ready.packet.correspondence_preview, /^\s*1\. .+$/m,
     'the complete bureau mail packet names the selected account in a numbered request');
   check.ok(!/\bopened_date\b|\bclosed_date\b/.test(ready.packet.correspondence_preview),
-    'saved details and bureau forms do not reintroduce internal date keys into the review');
+    'saved details do not reintroduce internal date keys into the review');
   check.equal(ready.packet.correspondence.consumer_name, PROFILE.full_name, 'saved name used for correspondence');
   check.ok(ready.packet.correspondence_preview.includes(PROFILE.address_line1), 'saved postal address appears in actual review');
   check.ok(ready.packet.correspondence_preview.includes('Box 190') && ready.packet.correspondence_preview.includes('Signature:'), 'review includes sourced destination and unsigned signature line');
-  check.equal(ready.support.requirements.identity_count, 2, 'ordinary account uses the account form’s two-ID requirement');
+  check.equal(ready.support.requirements.identity_count, 2, 'ordinary account uses the sourced account two-ID evidence requirement');
   check.equal(ready.support.missing.length, 0, 'two complete IDs and recent address proof fulfill the account checklist');
   check.equal((await t.request('POST', base + '/packet/approve', auth({ reviewed_version: 'stale-preview' }))).json.error.code, 'PACKET_APPROVAL_STALE', 'HTTP approval binds to the displayed current preview');
   check.equal((await t.request('POST', base + '/packet/approve', auth({}))).status, 200, 'complete selected content approved');
   let download = await fetch(t.base + base + '/packet-download', { headers: { Authorization: 'Bearer ' + actor.token } });
-  check.equal(download.headers.get('content-type'), 'application/pdf', 'packet with selected documents and the bureau form is one complete PDF');
+  check.equal(download.headers.get('content-type'), 'application/pdf', 'packet with selected selected documents is one complete PDF');
   const bytes = Buffer.from(await download.arrayBuffer()), pages = pdfPages(bytes);
   check.deepEqual(bytes, completePreview.bytes, 'approval preserves the complete packet PDF shown inline to the consumer');
   check.equal(comparableText(pages[0]), comparableText(ready.packet.correspondence_preview), 'the first PDF page is the complete reviewed one-issue letter');
-  check.equal(ready.packet.required_form_manifest[0].template_sha256, 'c7b9e9742f94fef44cb3d6fcf066418f4127193a0c297a81f11b82c8312b4383', 'filled form identifies its exact original bureau template');
-  check.ok(pdfText(form.bytes).includes(PROFILE.family_name) && pdfText(form.bytes).includes(PROFILE.given_name), 'original form blanks are automatically populated with the saved consumer name');
+  check.deepEqual(ready.packet.required_form_manifest, [], 'no original bureau template is required');
   const printed = await t.request('GET', base + '/packet-print', { token: actor.token });
-  check.ok(printed.bytes.equals(bytes), 'print endpoint serves the same approved complete PDF including the source pages, documents and form');
+  check.ok(printed.bytes.equals(bytes), 'print endpoint serves the same approved complete PDF including the source pages and selected documents');
   const identityPage = matchingPage(bytes, pdfPages(identityBytes)[0]), addressPage = matchingPage(bytes, pdfPages(addressBytes)[0]),
-    passportPage = matchingPage(bytes, pdfPages(passportBytes)[0]), formPage = matchingPage(bytes, pdfPages(form.bytes)[0]);
+    passportPage = matchingPage(bytes, pdfPages(passportBytes)[0]);
   const source = t.service.store.state().files.find(file => file.case_id === id && !file.account_document);
   const reportBytes = t.service.store.readBlob(source.file_id), reportPage = matchingPage(bytes, pdfPages(reportBytes)[0]);
   check.ok(reportPage > 1 && identityPage > reportPage && passportPage > reportPage && addressPage > identityPage
-    && addressPage > passportPage && formPage > addressPage, 'packet order is letter, relevant report pages, all identification, address proof, then completed bureau form');
-  check.equal(pages.length, 1 + 1 + 3 + pdfPages(form.bytes).length, 'complete packet includes exactly one letter, relevant report page, three selected documents and original form pages');
+    && addressPage > passportPage, 'packet order is letter, relevant report pages, all identification, address proof, without bureau forms');
+  check.equal(pages.length, 1 + 1 + 3, 'complete packet includes exactly one letter, relevant report page, three selected documents and no extra form pages');
   for (const [document, page, label] of [[identityBytes, identityPage, 'identification'], [passportBytes, passportPage, 'second identification'], [addressBytes, addressPage, 'address proof']]) {
     sameRenderedPage(check, t.dataDir, document, 1, bytes, page, label);
   }
-  for (let page = 1; page <= pdfPages(form.bytes).length; page++) {
-    sameRenderedPage(check, t.dataDir, form.bytes, page, bytes, formPage + page - 1, 'original bureau form page ' + page);
-  }
-  const complete = await PDFDocument.load(bytes), originalForm = await PDFDocument.load(form.bytes), fullFields = complete.getForm().getFields();
+  const complete = await PDFDocument.load(bytes), fullFields = complete.getForm().getFields();
   check.ok(fullFields.some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()), 'the consumer can edit the letter in the complete PDF');
-  for (const field of originalForm.getForm().getFields()) {
-    const copied = fullFields.find(item => item.getName() === field.getName() || item.getName().endsWith('.' + field.getName()));
-    check.ok(copied && copied.constructor === field.constructor && copied.isReadOnly() === field.isReadOnly(),
-      'the complete PDF preserves the bureau field type and editability for ' + field.getName());
-    if (typeof field.getOptions === 'function') check.deepEqual(copied.getOptions(), field.getOptions(), 'bureau dropdown choices are unchanged');
-  }
+  check.ok(fullFields.every(field => /^CRP_letter_page_/.test(field.getName())), 'the complete packet has only letter editing fields, no bureau controls');
   check.equal((await t.request('GET', base + '/packet-print', { token: stranger.token })).status, 403, 'stranger cannot print another consumer packet');
   t.service.store.update(state => { state.packets.find(packet => packet.case_id === id).support.channel = 'ONLINE'; });
   check.equal((await t.request('POST', base + '/packet/approve', auth({}))).json.error.code, 'PACKET_SUPPORT_REQUIRED', 'persisted old online settings must be resaved for mail');
@@ -191,17 +181,15 @@ async function mixedForms(t, check) {
     && /duplicate/i.test(issue.check_kind) && issue.consumer_label === 'VIOLATION'),
     'mixed report has a supported collection duplicate violation');
   check.ok(view.eligible_issues.every(issue => !issue.limitation_concern && issue.basis_type !== 'LIMITATION_ASSESSMENT'),
-    'mixed forms use reporting violations and never court time-limit information');
+    'mixed packets use reporting violations and never court time-limit information');
   await t.request('POST', base + '/packet/select', { token: actor.token, body: { issue_ids: view.eligible_issues.map(issue => issue.issue_id) } });
   const ready = await t.preparePostalPacket(actor, id);
-  check.deepEqual(ready.packet.required_form_manifest.map(form => form.filename).sort(), ['ca-equifax-account.pdf', 'ca-equifax-public-record.pdf'], 'mixed selected kinds require both relevant official Equifax forms');
-  check.equal((await t.request('POST', base + '/packet/approve', { token: actor.token, body: { reviewed_version: ready.packet.preview_version } })).status, 200, 'mixed mail packet approves its reviewed complete form set');
+  check.deepEqual(ready.packet.required_form_manifest.map(form => form.filename).sort(), [], 'mixed selected kinds do not require retired bureau forms');
+  check.equal((await t.request('POST', base + '/packet/approve', { token: actor.token, body: { reviewed_version: ready.packet.preview_version } })).status, 200, 'mixed mail packet approves its reviewed complete contents');
   const download = await t.request('GET', base + '/packet-download', { token: actor.token });
   check.equal(download.headers.get('content-type'), 'application/pdf', 'mixed account/collection packet remains one PDF');
-  for (const preview of ready.packet.form_previews) {
-    const form = await t.request('GET', preview.review_url, { token: actor.token });
-    check.ok(matchingPage(download.bytes, pdfPages(form.bytes)[0]) > 1, 'the complete mixed packet contains the filled original ' + preview.filename);
-  }
+  const kinds = require('../../packets.cjs').packetPrint(t.service.store, actor, id).sections.map(section => section.kind);
+  check.equal(kinds.includes('form'), false, 'mixed account and public-record download contains no form sections');
 }
 async function mixedBureau(t, check) {
   const actor = await t.account('mixed-packet@example.test'), auth = body => ({ token: actor.token, body });

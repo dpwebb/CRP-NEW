@@ -1,0 +1,8 @@
+{
+  "measured_at": "2026-10-11T05:11:23.044397+00:00",
+  "ok": true,
+  "build_id": "crp-v1-4687a2df902ef280",
+  "deployment": "staging",
+  "billing_mode": "test",
+  "launch_ready": false
+}

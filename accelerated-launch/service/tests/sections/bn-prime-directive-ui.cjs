@@ -126,7 +126,7 @@ async function run(t, check) {
   check.ok(/Approve this version/.test(packetBlock.innerHTML), 'with an explicit approve action');
   check.ok(/Download your PDF/.test(packetBlock.innerHTML), 'and one PDF download action');
   check.ok(/Open PDF to print/.test(packetBlock.innerHTML), 'and a print action for the same approved PDF');
-  check.ok(/letter, report pages, document copies and bureau forms in one PDF/.test(packetBlock.innerHTML), 'the complete packet is explained in one simple sentence');
+  check.ok(/letter, report pages and document copies in one PDF/.test(packetBlock.innerHTML), 'the complete packet is explained in one simple sentence');
   check.ok(/id="packet-bureau-reference"/.test(packetBlock.innerHTML), 'the bureau file number is separate from the consumer own reference');
   check.ok(!/packet-channel|Bureau online service/.test(packetBlock.innerHTML), 'the packet follows mail-in submission without an online-method selector');
   check.ok(dom.calls.includes('GET /api/cases/case_stub/packet'), 'the packet state is fetched from the service');

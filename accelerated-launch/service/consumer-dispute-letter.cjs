@@ -1,6 +1,6 @@
 'use strict';
 
-// One consumer-approved set of facts supplies the letter and the original bureau forms.
+// One consumer-approved set of facts supplies the consumer letter.
 // These are requests to check report information, never invented personal experiences.
 const { sourceForField } = require('./report-fact-sources.cjs');
 const accountDisplay = require('./account-display.cjs');

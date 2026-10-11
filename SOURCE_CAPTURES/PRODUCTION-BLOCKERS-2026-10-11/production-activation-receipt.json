@@ -1,0 +1,23 @@
+{
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "manifest_digest": "FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB",
+  "git_head": "62a26a33587b9ace0d5ec1c45ba475d3a4556400",
+  "source_state": "owner-authorized frozen tested dirty working tree",
+  "git_status": " M .gitignore\n M AGENTS.md\n M CRP_FINAL_ACCEPTANCE_REGISTER_PLAIN_ENGLISH.md\n M CRP_FINAL_RELEASE_SCOPE_001.md\n M CRP_OWNER_DISPUTE_PACKET_READINESS_BLOCKER_001.md\n M CRP_STAGING_VERIFICATION_2026_10_11.md\n M CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md\n M SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-all82-facilitation.cjs\n M SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs\n M accelerated-launch/service/bureau-dispute-requirements.cjs\n M accelerated-launch/service/consumer-dispute-letter.cjs\n M accelerated-launch/service/deploy/build-release-manifest.cjs\n M accelerated-launch/service/deploy/release-manifest.json\n M accelerated-launch/service/finding-coverage.cjs\n M accelerated-launch/service/general-intake.cjs\n M accelerated-launch/service/packet-composer-worker.cjs\n M accelerated-launch/service/packet-composer.cjs\n M accelerated-launch/service/packet-support.cjs\n M accelerated-launch/service/packets.cjs\n M accelerated-launch/service/tests/run-tests.cjs\n M accelerated-launch/service/tests/sections/bn-prime-directive-ui.cjs\n M accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs\n M accelerated-launch/service/tests/sections/du-column-reader-delivery.cjs\n M accelerated-launch/service/tests/sections/eb-account-packet-support.cjs\n D accelerated-launch/service/tests/sections/er-bureau-form-population.cjs\n M accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs\n M accelerated-launch/service/tests/sections/et-supported-coverage-evidence.cjs\n M accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs\n M accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs\n M accelerated-launch/service/ui/app.js\n?? CRP_FORMAT_AND_DETECTION_GAP_RESOLUTION_2026_10_11.md\n?? CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md\n?? SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/\n?? SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/\n?? SOURCE_CAPTURES/STAGING-PAID-2026-10-11/\n?? accelerated-launch/service/account-summary-table.cjs\n?? accelerated-launch/service/tests/sections/er-bureau-forms-retired.cjs\n?? accelerated-launch/service/tests/sections/ev-native-account-summary.cjs\n?? branding/\n",
+  "files": 133,
+  "local_regression": {
+    "passed": 14449,
+    "failed": 0,
+    "skipped": 0
+  },
+  "deployment": "production",
+  "host": "creditregulatorpro.com",
+  "owner_authorization": "Earlier explicit owner deploy to live production; October 11 remaining blockers repaired and freshly verified",
+  "source_kind": "Exact frozen tested dirty working tree; base commit alone is not this release",
+  "archive_sha256": "24B8DE9F5AB33CC87999722D94F90ED90BC886140EA1467CCD60820F3687CAA7",
+  "release_directory": "/opt/crp-wizard-production/releases/crp-v1-fd23f242f3d158bf",
+  "previous_release": "/opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050",
+  "backup": "/opt/crp-wizard-production/backups/before-crp-v1-fd23f242f3d158bf-1791723649",
+  "billing_mode": "live",
+  "activated_at": "2026-10-11T13:00:50.663Z"
+}

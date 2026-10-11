@@ -1,0 +1,10 @@
+{
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "fictional_only": true,
+  "account_id": "acc_64a5eea7dbd629dc9c4be862",
+  "case_id": "case_b1011bb736392f40633552f6",
+  "provider_reference": "cs_test_a12pfuDXAG7buuKbZU8pIYryXHBA80oiS4ae46wQcjSJKpfaBMwCfGiFl2",
+  "redirect_url": "https://checkout.stripe.com/c/pay/cs_test_a12pfuDXAG7buuKbZU8pIYryXHBA80oiS4ae46wQcjSJKpfaBMwCfGiFl2#fidnandhYHdWcXxpYCc%2FJ2FgY2RwaXEnKSdicyc%2FNSknZHVsTmB8Jz8ndW5acWB2cVowNFdRV1JKTkZINmAxT0xvUkpzUFdkU39UQG5UUzJtVnxjPVdoQlFtNDRvdE58X29KTm5pb1xJZFdoV0RETWBUR3M2M2k0XUFVMjNVQ1dGUXNJbnwwYkN8UDU1YF9SbnAya0QnKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl",
+  "phase1_receipt_sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a",
+  "signed_provider_verification": "ROOT MUST VERIFY ACTUAL PROVIDER OBJECT AND MATCHING APPLIED SIGNED WEBHOOK; no synthetic activation permitted"
+}

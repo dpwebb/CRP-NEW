@@ -35,7 +35,7 @@ const specs = [
   ['dl-general-caption-sources', ['usable_intake', 'consumer_delivery'],
     'The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions.'],
   ['ct-owner-common-error-scope', ['jurisdiction_inventory', 'applicable_assessment', 'behavioral_coverage'],
-    'The same 19-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.'],
+    'The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.'],
   ['z-general-intake', ['usable_intake'],
     'General intake accepts a plausible bureau report and refuses unrelated or unreadable documents without inventing facts.'],
   ['b-refusals', ['usable_intake'],
@@ -64,7 +64,7 @@ const inventory = sections.get('o-all82-infrastructure').evidence;
 if (journey.regions_tested !== 82 || journey.download_content_matched !== 82
   || journey.case_association_matched !== 82 || common.ordinary_report_regions !== 82
   || common.ordinary_report_checks_per_region !== 6 || common.statutory_gate !== false
-  || checklist.checklist !== 19 || checklist.jurisdictions !== 82
+  || checklist.checklist !== 21 || checklist.jurisdictions !== 82
   || inventory.regions_exercised.length !== 82) throw Error('Measured all-82 checklist journey is incomplete');
 const sourceFiles = ['app.cjs', 'cases.cjs', 'journey.cjs', 'formats.cjs', 'general-intake.cjs',
   'entitlement.cjs', 'applicability.cjs', 'issues.cjs', 'results.cjs', 'packets.cjs',

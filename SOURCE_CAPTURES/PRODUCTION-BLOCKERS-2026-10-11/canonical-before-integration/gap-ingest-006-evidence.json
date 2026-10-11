@@ -1,0 +1,229 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T12:36:06.922Z",
+  "scope": "GAP-INGEST-006 partial-date precision. A month/year form keeps MONTH precision and is compared as a whole-month range (never a substituted day); complete dates keep DAY precision; invalid or malformed dates stay unresolved rather than becoming apparently-valid partial dates; a contradictory or untrusted partial date never manufactures a resolved decisive fact; a finding never implies more precision than its source. Implementation is closed by bf-gap-ingest-006 + aj-ingest-dates + z-general-intake; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "bf-gap-ingest-006",
+        "passed": true,
+        "criteria": [
+          "partial_date_precision"
+        ],
+        "expected": "a single month-only date reaches its field with MONTH precision and raw value; a contradiction is persistent and preserves every raw reading and owning location (A->B->A, A->B->C); a month plus a day never merges into a resolved anchor; invalid months stay unresolved; leap/non-leap February boundaries are correct; a month-only adverse anchor keeps raw month + MONTH precision into the result and the report never presents a range endpoint",
+        "measured": "25/25 assertions pass"
+      },
+      {
+        "id": "aj-ingest-dates",
+        "passed": true,
+        "criteria": [
+          "partial_date_precision"
+        ],
+        "expected": "a month-only anchor is a range: straddling withholds, wholly-before exceeds, wholly-inside does not; no first-day substitution",
+        "measured": "37/37 assertions pass"
+      },
+      {
+        "id": "z-general-intake",
+        "passed": true,
+        "criteria": [
+          "partial_date_precision"
+        ],
+        "expected": "month/year forms normalize to MONTH precision",
+        "measured": "75/75 assertions pass"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+      },
+      {
+        "file": "accelerated-launch/adapters/evaluation-primitives.cjs",
+        "sha256": "a943043c76150b523ab131507e04cad4219f433627f9a14e5325dac838cc5b95"
+      },
+      {
+        "file": "accelerated-launch/adapters/rule-adapters.cjs",
+        "sha256": "5387a709109c6cb71d0a40694676159b1b234c886edf7dbc448c37fc16fd7d30"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bf-gap-ingest-006.cjs",
+        "sha256": "8efd99f60750ee4ff7c1346ddda6a1b5dd7a7534d36e43ac268fcb0f27ccf0ac"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bf-gap-ingest-006.cjs",
+        "sha256": "8efd99f60750ee4ff7c1346ddda6a1b5dd7a7534d36e43ac268fcb0f27ccf0ac"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/z-general-intake.cjs",
+        "sha256": "784e8c9ca6bf9dd4358fe0dbfb8fff3ca4708b720391bd52f03d6c7e20dc7439"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence recorded for a partial-date upload; implementation is closed by the behavioral tests, but the deployed journey and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "partial_date_precision": {
+      "passed": false,
+      "expected": "month-only/partial dates keep their actual precision; no invented day/month/current date; conservative interval evaluation where authorized; a straddling or conflicting/untrusted partial date is withheld, never a finding",
+      "measured": "implemented and tested (bf-gap-ingest-006, aj-ingest-dates, z-general-intake); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-006.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "deployed partial-date journey with a completed finding traced to its source record",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "bf-gap-ingest-006",
+      "passed": true,
+      "criteria": [
+        "partial_date_precision"
+      ],
+      "expected": "25 assertions pass",
+      "measured": "25/25"
+    },
+    {
+      "id": "aj-ingest-dates",
+      "passed": true,
+      "criteria": [
+        "partial_date_precision"
+      ],
+      "expected": "37 assertions pass",
+      "measured": "37/37"
+    },
+    {
+      "id": "z-general-intake",
+      "passed": true,
+      "criteria": [
+        "partial_date_precision"
+      ],
+      "expected": "75 assertions pass",
+      "measured": "75/75"
+    }
+  ],
+  "coverage": {
+    "month_year_forms_keep_precision": {
+      "tests": [
+        "z-general-intake",
+        "bf-gap-ingest-006"
+      ],
+      "expected": "written and numeric month/year forms keep MONTH precision and raw value",
+      "measured": "Jun 2026/02/2021/2021/02 -> MONTH (z-general-intake); raw 02/2021 preserved on the field (bf)"
+    },
+    "complete_dates_keep_day": {
+      "tests": [
+        "aj-ingest-dates",
+        "z-general-intake"
+      ],
+      "expected": "complete dates keep DAY precision",
+      "measured": "February 5th, 2021 -> DAY; 13/05/2021 -> 2021-05-13"
+    },
+    "invalid_dates_not_partial": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "invalid months stay unresolved, never a partial date",
+      "measured": "13/2021, 2021/13, 00/2021 all null"
+    },
+    "partial_date_field_association": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "a partial date stays on its correct field, record and report",
+      "measured": "Closed 02/2021 -> liability.closedDate 2021-02 + MONTH precision + raw 02/2021"
+    },
+    "authorized_interval_evaluation": {
+      "tests": [
+        "bf-gap-ingest-006",
+        "aj-ingest-dates"
+      ],
+      "expected": "the authorized conservative interval resolves wholly-before/inside and withholds a straddle",
+      "measured": "PERIOD_EXCEEDED / PERIOD_NOT_EXCEEDED / MONTH_PRECISION_STRADDLES_THE_PERIOD_BOUNDARY"
+    },
+    "boundary_missing_day_changes_outcome": {
+      "tests": [
+        "bf-gap-ingest-006",
+        "aj-ingest-dates"
+      ],
+      "expected": "a straddling month is withheld, not a finding",
+      "measured": "UNRESOLVED with named range start/end"
+    },
+    "finding_preserves_precision": {
+      "tests": [
+        "bf-gap-ingest-006",
+        "aj-ingest-dates"
+      ],
+      "expected": "a finding records the month, never an invented day",
+      "measured": "anchor_month 2015-02 (bf) and 2015-06 (aj)"
+    },
+    "equivalent_partial_forms": {
+      "tests": [
+        "z-general-intake"
+      ],
+      "expected": "equivalent partial month/year forms normalize identically",
+      "measured": "02/2021 and 2021/02 both -> 2021-02"
+    },
+    "low_confidence_and_conflicting": {
+      "tests": [
+        "aj-ingest-dates",
+        "bf-gap-ingest-006"
+      ],
+      "expected": "an untrusted or conflicting date never manufactures a resolved fact",
+      "measured": "low-confidence date -> EXTRACTION_UNRESOLVED (aj); conflicting months -> closedDate withheld (bf)"
+    },
+    "persistent_contradiction": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "a contradiction is persistent — later readings never restore a resolved fact, and every raw reading and owning location is preserved",
+      "measured": "A->B->A and A->B->C stay withheld; three printed occurrences with lines 3, 4, 5 are preserved"
+    },
+    "compatible_vs_conflicting_precision": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "a month plus a day-within-month is not merged; a day-outside-month never anchors",
+      "measured": "both stay withheld"
+    },
+    "calendar_boundaries": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "leap and non-leap February anniversaries are correct",
+      "measured": "straddle UNRESOLVED; wholly-before PERIOD_EXCEEDED"
+    },
+    "consumer_precision": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "raw month, MONTH precision, location and range survive into the result; the report never presents a range endpoint",
+      "measured": "raw Feb 2015, precision MONTH, anchor_month 2015-02; no 2015-02-01/2015-02-28 in the report"
+    },
+    "http_upload_evaluate_view": {
+      "tests": [
+        "bf-gap-ingest-006"
+      ],
+      "expected": "a month-only report reaches the real endpoints",
+      "measured": "upload 201, evaluate 201, view 200"
+    }
+  }
+}

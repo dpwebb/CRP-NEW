@@ -89,7 +89,7 @@ async function run(t, check) {
   const approved = t.service.store.state().packets.find(row => row.case_id === id);
   check.equal(approved.approved_pdf_sha256, digest(download.bytes), 'approval records the whole generated PDF digest');
   const recipe = packets.packetPrint(t.service.store, owner, id);
-  check.deepEqual(recipe.sections.map(section => section.kind), ['letter','report','document','document','document','form'], 'actual PDF follows letter, relevant report, identity/address and bureau form order');
+  check.deepEqual(recipe.sections.map(section => section.kind), ['letter','report','document','document','document'], 'actual PDF follows letter, relevant report, identity/address order');
   const out = path.join(__dirname, '../../out/inline-packet-review');
   fs.mkdirSync(out, {recursive:true});
   fs.writeFileSync(path.join(out, 'complete-approved-packet.pdf'), download.bytes);

@@ -1,0 +1,20 @@
+{
+  "original_build": "crp-v1-ac4051d4bbb7097d",
+  "original_full_sha256": "c05b20d8894ccd2b2e25fe4e1f44bd4454fa8c917d13e09475d5a965fc7ace8c",
+  "records": [
+    {
+      "original_file": "accelerated-launch/service/ui/app.js",
+      "archived_file": "prior-proof/app-ac4051d4.js",
+      "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed",
+      "matched_original_tested_source": true
+    },
+    {
+      "original_file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+      "archived_file": "prior-proof/bw-ac4051d4.cjs",
+      "sha256": "4a83d234ead766b6245ca9b0cf21b1ab5eeab0b9b3f8f53c8b8fdfefcddb3893",
+      "matched_original_tested_source": true
+    }
+  ],
+  "manifest_sha256": "be4cd4bd18fb72e47b9aaf2497375f3d7b1d4902cfe454cab3fd281ab3bc3446",
+  "historical_proof_relabelled": false
+}

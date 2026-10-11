@@ -98,7 +98,7 @@ const FAMILY_PROOF = Object.freeze([
 const REQUIRED_SECTIONS = Object.freeze([...new Set([
   ...Object.values(CHECK_PROOF).flatMap(row => row.assessment.concat(row.packet)),
   ...FAMILY_PROOF.flatMap(row => row.sections), 'a-isolation', 'o-all82-infrastructure',
-  'ap-accept-010-consistency', 'dc-consumer-violation-term', 'er-bureau-form-population',
+  'ap-accept-010-consistency', 'dc-consumer-violation-term', 'er-bureau-forms-retired',
   'es-filled-packet-business-letter', 'bw-browser-wizzard', 'dy-reader-date-delivery'
 ])]);
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -133,16 +133,6 @@ function executionCustody(execution, regressionFile, sourceRoot) {
       if (!file.startsWith(path.resolve(sourceRoot) + path.sep) || !/^[a-f0-9]{64}$/i.test(source.sha256)
         || sha(fs.readFileSync(file)) !== source.sha256.toLowerCase()) reject('Tested source changed or unsafe: ' + source.file);
     }
-    // PDF originals are not in the executable inventory. Verify their actual bytes,
-    // not just the catalog file hash, before retaining original-form proof.
-    const catalogFile = path.join(sourceRoot, 'accelerated-launch/service/bureau-forms/catalog.json');
-    const catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf8'));
-    for (const form of catalog.forms) {
-      const relative = 'accelerated-launch/service/bureau-forms/' + form.filename;
-      const file = path.resolve(sourceRoot, relative);
-      if (path.basename(form.filename) !== form.filename || sha(fs.readFileSync(file)) !== form.sha256) reject('Original bureau template changed: ' + form.id);
-      sources = sources.concat([{ file: relative, sha256: form.sha256 }]);
-    }
     if (JSON.stringify(JSON.parse(fs.readFileSync(regressionFile, 'utf8'))) !== JSON.stringify(execution)) reject('Frozen execution file differs from supplied proof.');
   } catch (error) { reject('Execution custody unavailable: ' + error.message); }
   return { passed: problems.length === 0, problems, sources };
@@ -166,9 +156,9 @@ function measuredScope(sections) {
   need(gb?.approved_downloads === 4 && gb.source_isolation === true
     && sameSet(gb.regions, ['GB-ENG', 'GB-NIR', 'GB-SCT', 'GB-WLS']), 'Four source-isolated UK GENERAL approved downloads.');
   const original = value('es-filled-packet-business-letter');
-  need(original?.owned_actual_pdf_review === true && original.original_form_approval_digest === true
-    && original.name_parts_not_guessed === true && original.ordinary_business_letter === true,
-    'Actual original-form/letter PDF review and approved bytes.');
+  need(original?.owned_actual_pdf_review === true && original.form_free_approval_digest === true
+    && original.form_only_inputs_not_required === true && original.ordinary_business_letter === true,
+    'Actual form-free packet PDF review and approved bytes.');
   const paired = value('eh-packet-report-exhibits');
   need(paired?.both_reaging_sources === true && paired.review_and_approval_binding === true
     && paired.selected_issue_sources_only === true && paired.automatically_included_relevant_pages === true,
@@ -265,7 +255,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
   tests.push({ id: 'material-questions', passed: measured, criteria: ['material_questions'],
     expected: 'No consumer answer replaces a decisive source or cures a printed omission.',
     measured: measured ? 'Source-bound ap-accept-010-consistency and native omission refusal controls completed.' : 'Current materiality proof unavailable.' });
-  const hostedReason = 'Latest paid hosted original-form preview, approval and packet download remain pending. Local coverage acceptance does not establish hosted entitlement or production readiness.';
+  const hostedReason = 'Latest paid hosted complete packet preview, approval and packet download remain pending. Local coverage acceptance does not establish hosted entitlement or production readiness.';
   const localCriterion = (passed, expected, measuredText) => ({ passed, expected, measured: measuredText, evidence_refs: refs });
   const evidence = {
     passed: false,
@@ -312,7 +302,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
       executable_findings: localCriterion(configured, 'source-proven positive and benign/refusal controls for the supported rule mechanisms', openRows.length ? 'Unproved rows: ' + openRows.join(', ') : 'Named current positive/control and packet sections passed; reviews and grouping remain distinct.'),
       material_questions: localCriterion(measured, 'questions cannot replace source facts or cure a report omission', measured ? 'Current materiality and omission controls passed.' : 'Current measured evidence unavailable.'),
       behavioral_coverage: localCriterion(configured, 'meaningful supported family, regional, packet, ownership and approval behavior', configured ? 'Supported per-check/family paths accepted; no every-layout claim.' : 'Incomplete supported-scope acceptance.'),
-      end_to_end_journey: { passed: false, expected: 'current served-release paid original-form preview through approved download', measured: hostedReason, evidence_refs: [] }
+      end_to_end_journey: { passed: false, expected: 'current served-release paid complete packet preview through approved download', measured: hostedReason, evidence_refs: [] }
     }
   };
   return evidence;

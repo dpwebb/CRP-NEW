@@ -1,0 +1,46 @@
+{
+  "schema": "crp-fictional-packet-proof-inputs-v1",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "fictional_only": true,
+  "prepared_at": "2026-10-09T19:53:15.403Z",
+  "current_input_manifest_sha256": "9f04da60111c6abaf35d9c92bf0819263ef98991026bff1daaa5de4fd90ca40e",
+  "selected_account_names": [
+    "FICTIONAL CEDAR BANK",
+    "FICTIONAL MAPLE CARD"
+  ],
+  "selected_report_pages": [
+    2,
+    3
+  ],
+  "files": [
+    {
+      "filename": "fictional-equifax-report.pdf",
+      "sha256": "c4bfe02eab2603da298cc2365a0d265a4c50fa8e051d871ef625413b0179c540",
+      "bytes": 2333,
+      "source": "Previously frozen fictional four-page report",
+      "expected_pages": 4
+    },
+    {
+      "filename": "fictional-passport.pdf",
+      "sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "bytes": 899,
+      "source": "Current pre-upload frozen fictional support input",
+      "expected_pages": 1
+    },
+    {
+      "filename": "fictional-licence.pdf",
+      "sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "bytes": 906,
+      "source": "Current pre-upload frozen fictional support input",
+      "expected_pages": 1
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "bytes": 903,
+      "source": "Current pre-upload frozen fictional support input",
+      "expected_pages": 1
+    }
+  ],
+  "note": "Existing fictional report frozen for earlier accepted proof; support inputs frozen before current upload. No actual consumer report or documents used."
+}

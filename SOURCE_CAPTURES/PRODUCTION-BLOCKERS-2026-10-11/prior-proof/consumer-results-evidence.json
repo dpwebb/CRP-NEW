@@ -1,0 +1,137 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.041Z",
+  "scope": "BLOCKER-RESULTS-001. The prioritized action list: deterministic evidence-backed ordering, plain-English reasons that distinguish observations from findings, qualified unresolved issues (never presented as proven), and account isolation (internal machine identifiers never reach the consumer-visible result). Implementation is closed by the av-consumer-results behavioral test; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "av-consumer-results-prioritization",
+        "passed": true,
+        "criteria": [
+          "prioritization"
+        ],
+        "expected": "the consumer action list orders deterministically (same report -> same order) and claims no arbitrary rank or score",
+        "measured": "two identical renders yield identical check_name order; no observation carries a rank or score field"
+      },
+      {
+        "id": "av-consumer-results-reasons",
+        "passed": true,
+        "criteria": [
+          "reasons"
+        ],
+        "expected": "every observation has a plain-English headline/detail/qualification and findings (is_a_finding) are distinguished from observations",
+        "measured": "a VIOLATION finding carries an explicit classification plus headline, detail and qualification; findings and observations are marked separately"
+      },
+      {
+        "id": "av-consumer-results-uncertainty",
+        "passed": true,
+        "criteria": [
+          "uncertainty"
+        ],
+        "expected": "unresolved issues are qualified and never presented as proven",
+        "measured": "conflicting order-for-relief dates withhold the finding (0 findings); the unresolved printed field is reported; never_equates_unread_with_absence=true"
+      },
+      {
+        "id": "av-consumer-results-isolation",
+        "passed": true,
+        "criteria": [
+          "isolation"
+        ],
+        "expected": "internal machine identifiers never reach the consumer-visible result, and the surface claims no comprehensive legal check",
+        "measured": "no adapter_id/presentation_id/source_entry_id in consumer-visible fields; comprehensive_legal_check=false; disclaimer present"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch/service/evaluation.cjs",
+        "sha256": "8e72a94cca09b2b572442dab93ff53318aebf9bab6b34bc0df749b751f052fb4"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+        "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/av-consumer-results.cjs",
+        "sha256": "648a3f20d7564968026b674232916526d252b36fb614b0b9ac5f2c06f17daace"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/av-consumer-results.cjs",
+        "sha256": "648a3f20d7564968026b674232916526d252b36fb614b0b9ac5f2c06f17daace"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence written for consumer results; implementation is closed by the behavioral test, but the production check remains unresolved until deployed, current-release evidence is recorded."
+  },
+  "criteria": {
+    "prioritization": {
+      "passed": false,
+      "expected": "deterministic evidence-backed ordering, no arbitrary ranking claim",
+      "measured": "implemented and tested (av-consumer-results); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-results.cjs"
+      ]
+    },
+    "reasons": {
+      "passed": false,
+      "expected": "plain-English reasons and evidence strength, distinguishing observations from findings",
+      "measured": "implemented and tested (av-consumer-results); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-results.cjs"
+      ]
+    },
+    "uncertainty": {
+      "passed": false,
+      "expected": "unresolved issues are qualified and not presented as proven",
+      "measured": "implemented and tested (av-consumer-results); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-results.cjs"
+      ]
+    },
+    "journey": {
+      "passed": false,
+      "expected": "deployed consumer results show the list",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    },
+    "isolation": {
+      "passed": false,
+      "expected": "account isolation verified",
+      "measured": "implemented and tested (av-consumer-results); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-results.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "av-consumer-results",
+      "passed": true,
+      "criteria": [
+        "prioritization",
+        "reasons",
+        "uncertainty",
+        "isolation"
+      ],
+      "expected": "all behavioral assertions pass",
+      "measured": "20/20"
+    }
+  ]
+}

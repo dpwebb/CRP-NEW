@@ -1,0 +1,617 @@
+{
+  "schema": "CRP_SOURCE_SUPPORTED_FORMAT_GAP_BATCH_V1",
+  "created_at": "2026-10-11T05:21:02.691Z",
+  "base_checkout_commit": "62a26a33587b9ace0d5ec1c45ba475d3a4556400",
+  "candidate_manifest": {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/release-manifest.json",
+    "sha256": "5b61ae5b0c65f8ad8b3a459e095158c4bea70bfda3b4012a50edef8164f161f3",
+    "original_file": "accelerated-launch/service/deploy/release-manifest.json"
+  },
+  "candidate_build": "crp-v1-b1dbbf3bbac1bdea",
+  "runtime_changes": [
+    "accelerated-launch/service/account-summary-table.cjs",
+    "accelerated-launch/service/general-intake.cjs"
+  ],
+  "check": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+  "rule_basis": "The same account cannot have a reported date later than the report reference date; existing checklist predicate and confidence remain unchanged.",
+  "cells": [
+    {
+      "cell": "US_EFX_CA",
+      "country": "US",
+      "region": "US-CA",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\US_EFX_CA_B0.pdf",
+        "sha256": "810595eadfaba0779ff2f579d68c153cd83d836de15272281939ebc3285c580f"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\US\\summary-20261011-us_efx_ca.pdf",
+        "sha256": "76cb37b460055bd31265bed6c72b1a10e99288b0b9c79a7f36d7a9b6b83aef2d"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-us_efx_ca.pdf.json",
+        "sha256": "0a3fe9e9c259267fe9d47eb1b41d79d8c4a0bfaf88b796a2542823cb72d60062"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\US_EFX_CA_B0.pdf.json",
+        "sha256": "674ab83f3034b3017723124b3895449cf8252770c4026e5acf056eb552fe299e"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:15.959Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-us_efx_ca",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "US_EXP_NY",
+      "country": "US",
+      "region": "US-NY",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\US_EXP_NY_B0.pdf",
+        "sha256": "7f7e6aaaec8f68f9bebad14000b382df35a8fcd7ca175d9baec592a3104fbadc"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\US\\summary-20261011-us_exp_ny.pdf",
+        "sha256": "77bef520ea6f371ce72b0700b87e631488f90e0c91733d64ec2a4762d11e3caf"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-us_exp_ny.pdf.json",
+        "sha256": "11c76993a3e75efd87d0318ac1405f4c8aa2954866def983d22a304d2787ea7d"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\US_EXP_NY_B0.pdf.json",
+        "sha256": "f28d251fd5c60218d8dee10244ec81530d183b40dcc9a240a7a77e59d6beeabf"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:16.318Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-us_exp_ny",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "US_TU_TX",
+      "country": "US",
+      "region": "US-TX",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\US_TU_TX_B0.pdf",
+        "sha256": "b2350cb49cd0cc32db75c0f7699b32ce95bec2666af589dbde072e92c85485dd"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\US\\summary-20261011-us_tu_tx.pdf",
+        "sha256": "4713c64aff9d241d4ed2c6d36b8d85df624bf5f0566a4fa64d33903ac681451b"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-us_tu_tx.pdf.json",
+        "sha256": "133d695bdcaaf093fc48c172b0e9a5d70b9b66030d31f6f214444ae462026a54"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\US_TU_TX_B0.pdf.json",
+        "sha256": "458c5e35a371887d796169fc78dc576c2202a414e9fb7e7551d8df978402be6e"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:16.67Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-us_tu_tx",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "UK_EFX_ENG",
+      "country": "GB",
+      "region": "GB-ENG",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\UK_EFX_ENG_B0.pdf",
+        "sha256": "ab84ecc567d0ce77d0e6e4e1bc583fae4c452980beb7ad08273cc01916fd862a"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\UK\\summary-20261011-uk_efx_eng.pdf",
+        "sha256": "4b86140209d86a7df463393fc12ce660f8629b669a06c3345e161eae12471f6c"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-uk_efx_eng.pdf.json",
+        "sha256": "6dca4f62c3d9c264aa1728b30786a205b18f76eb696bd83e894d1c00ac28b4e4"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\UK_EFX_ENG_B0.pdf.json",
+        "sha256": "6910e460810d4150d90fdb9f31a986775572d2f40b86f56307d92145824333e5"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:17.065Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-uk_efx_eng",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "UK_EXP_WLS",
+      "country": "GB",
+      "region": "GB-WLS",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\UK_EXP_WLS_B0.pdf",
+        "sha256": "65aef0b200d6219ea41fb86f2350faffcc37841e0e021a2ece0eb292d64ad5ea"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\UK\\summary-20261011-uk_exp_wls.pdf",
+        "sha256": "b01d559667748e8d75511ef162de040c1915c2cdc91dec06bbeaa5319bfa8d3d"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-uk_exp_wls.pdf.json",
+        "sha256": "0b056668eeeec43a7cf5df4c52af9f98a44e22c601852a56c5030fc432017e9d"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\UK_EXP_WLS_B0.pdf.json",
+        "sha256": "8c101c35c87bd397ed40ffc36aa149790ca2dbd621bd1b92a3db615f1b052628"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:17.448Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-uk_exp_wls",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "UK_TU_SCT",
+      "country": "GB",
+      "region": "GB-SCT",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\UK_TU_SCT_B0.pdf",
+        "sha256": "d392ab29c66b901382f11e3e58b27e187f80fe96f86fdb97bda95a5fccf215d3"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\UK\\summary-20261011-uk_tu_sct.pdf",
+        "sha256": "26ee676c4ca56c57efb3866ad9e650d2b0875171d4884dfd78fadce1b227e0d6"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-uk_tu_sct.pdf.json",
+        "sha256": "9f1ef69da29a526aa517e5aba2829535f425a93b6442f1ece4f234ddb9b2e970"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\UK_TU_SCT_B0.pdf.json",
+        "sha256": "7779d2ab6a7c5d9015edef625fde008f152ef1085ccdab70cbe5710b2b99b7a3"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:17.82Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-uk_tu_sct",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "AU_EFX_NSW",
+      "country": "AU",
+      "region": "AU-NSW",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\AU_EFX_NSW_B0.pdf",
+        "sha256": "cfa56621d52da88e348fb253342a243f97efcd89fcef0ca43c8f6cd2765ded09"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\AU\\summary-20261011-au_efx_nsw.pdf",
+        "sha256": "2c066e24f50e913293abe66c7c8e0eb43bf26a2db3988f29f52f1f9f5f63b76f"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-au_efx_nsw.pdf.json",
+        "sha256": "bde6d5ae7f9cdcc6d86fcf01fb14c9a11a591962fea84a4544fa738dc9d3a7e0"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\AU_EFX_NSW_B0.pdf.json",
+        "sha256": "cdc68e4ec491a94bf0aa832051165ea985ca3c61e7e551efb1616a321d6e14fa"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:18.171Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-au_efx_nsw",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    },
+    {
+      "cell": "AU_EXP_VIC",
+      "country": "AU",
+      "region": "AU-VIC",
+      "evidence_class": "SYNTHETIC_FORMAT_INSPIRED_SHARED_TABLE_BEHAVIOR",
+      "source": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_SYNTHETIC_CREDIT_REPORT_CORPUS_V2\\reports\\pdf\\AU_EXP_VIC_B0.pdf",
+        "sha256": "b74a5d057337c532b514c482566cf8ee6ce0a9f7616a92f663bec7d4b905c4b0"
+      },
+      "seeded_report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\AU\\summary-20261011-au_exp_vic.pdf",
+        "sha256": "245d7ec379d7985068ef91fcadfeb5d5871f46e4a49201e21b17d17200266a54"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-20261011-au_exp_vic.pdf.json",
+        "sha256": "8c6b16627fc28a853d9f500071dd753ca9aaffca36b994a2e64fbb7a8da6ca2a"
+      },
+      "private_benign_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\summary-benign-20261011\\AU_EXP_VIC_B0.pdf.json",
+        "sha256": "b02d29cf753c374834a573511a0609ff7a74ebeabb0b4a2b31d5485a188003e8"
+      },
+      "baseline_reader_replay": {
+        "created_at": "2026-10-11T05:18:18.53Z",
+        "seeds": [
+          {
+            "seed_id": "summary-20261011-au_exp_vic",
+            "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+            "record_index": null,
+            "expectation": "DETECT",
+            "outcome": "FAIL_MISSED",
+            "matched_count": 0,
+            "matched_detections": [],
+            "adjudication": "First source account row prints Reported 2027-09-12 after Prepared 12 Sep 2026; date and table headers printed by fictional source; no statutory predicate added.",
+            "first_blocking_layer": null,
+            "fix": null,
+            "repair_history": null
+          }
+        ],
+        "additional_detections": [],
+        "detected_count": 0,
+        "measured_reader": {
+          "scope": "HEAD_EXTRACTOR_DIAGNOSTIC_REPLAY",
+          "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+        }
+      },
+      "current_outcome": "PASS",
+      "current_matched_count": 1,
+      "guard_outcome": "PASS",
+      "guard_additional_detections": 0
+    }
+  ],
+  "focused": {
+    "file": "SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/focused-68.json",
+    "sha256": "c8b9298c2c3f033f940c3f0f18196341281a0679ab6f0a8248115eb1a93b4ace"
+  },
+  "full_regression": {
+    "status": "PASS",
+    "file": "SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/full-regression.json",
+    "sha256": "724b3462ad72e8348c0b8aab28a4ce29052d2a80be3e2ee3b9e43884fdb30327",
+    "passed": 14454,
+    "failed": 0,
+    "skipped": 0,
+    "sections": 151,
+    "source_hashes": 286,
+    "duration_ms": 1812448,
+    "source_drift": 0,
+    "unrun_sections": 0
+  },
+  "staging": "NOT_PERFORMED_FOR_NEW_READER",
+  "production": "OPEN",
+  "excluded_claims": [
+    "Universal/current bureau-layout certification",
+    "UK retention from account opening, closing or payment dates without a supported rule and its own anchor",
+    "Identity-free older Equifax Canada specimen admission",
+    "Dense supplemental Canadian table certification or valid temporal scoring without source-owned reference date"
+  ],
+  "older_evidence": "Original staging identities and bytes remain preserved. Baseline reader replay is local diagnostic evidence, not a staged build verification.",
+  "source_audit": {
+    "file": "SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/source-audit-23.json",
+    "sha256": "c81ea421be7504b127a323d68761d08b44c82713c0e8563ee31b618508af596a"
+  },
+  "factory_cases": [
+    {
+      "id": "gap-20261011-ca-tor-0001-past_due_exceeds_balance",
+      "fixture": "CA-TOR-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\CA\\gap-20261011-ca-tor-0001-past_due_exceeds_balance.pdf",
+        "sha256": "ba3e60380a9d14ec06d1f10091f99148d5165d8984bc0bbe11bcd7b4b316140b"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-ca-tor-0001-past_due_exceeds_balance.pdf.json",
+        "sha256": "90c518000bdc3d1fcde44eea1f5d74b9bc1406a867fae5eaf2c669c1e775cf2c"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-ca-tor-0001-closed_before_opened",
+      "fixture": "CA-TOR-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\CA\\gap-20261011-ca-tor-0001-closed_before_opened.pdf",
+        "sha256": "6d35cab5c4c331d40d61a750d6b0fa584c041756e30aceaebb0b3d921682c2f3"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-ca-tor-0001-closed_before_opened.pdf.json",
+        "sha256": "1e3836215830ca994843d9887b346b603ce7957aa6c0e02c12c59f719f82c7a4"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-us-md-0001-past_due_exceeds_balance",
+      "fixture": "US-MD-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\US\\gap-20261011-us-md-0001-past_due_exceeds_balance.pdf",
+        "sha256": "c5633bd8b310e6b2d8376c28032a9f21e955e277e1ee78aef06a92eb43374f1d"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-us-md-0001-past_due_exceeds_balance.pdf.json",
+        "sha256": "f5186b5a28548ca117bcad0df29528987f69e8d03ed53f33388ffa748c25d1dc"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-us-md-0001-closed_before_opened",
+      "fixture": "US-MD-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\US\\gap-20261011-us-md-0001-closed_before_opened.pdf",
+        "sha256": "32bb0be7f9aac80b4de7c3d5b25c865dee5e8fa32e40d927455c2b66461b7233"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-us-md-0001-closed_before_opened.pdf.json",
+        "sha256": "786e86b3627ec104a38738482be4e6057d7f32d7f84637074be3be11702cd08a"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-uk-ldn-0001-past_due_exceeds_balance",
+      "fixture": "UK-LDN-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\UK\\gap-20261011-uk-ldn-0001-past_due_exceeds_balance.pdf",
+        "sha256": "247be764d03155de362e3bc8f058df4f83ea41a50dd5346f9ba6a59b0a152964"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-uk-ldn-0001-past_due_exceeds_balance.pdf.json",
+        "sha256": "e964a65d52e6853b696909953ab544d4be2d75b95449db1c2f73e130d3572878"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-uk-ldn-0001-closed_before_opened",
+      "fixture": "UK-LDN-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\UK\\gap-20261011-uk-ldn-0001-closed_before_opened.pdf",
+        "sha256": "8d4af1a59bdfe29f0125236342031813ed095dc15c2202f8e5fc78a3ebe9e9c8"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-uk-ldn-0001-closed_before_opened.pdf.json",
+        "sha256": "c90c3eb59e1a6dbc4ba535642329acc63ae3d89592658c059032d2705799fc6e"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-au-syd-0001-past_due_exceeds_balance",
+      "fixture": "AU-SYD-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\AU\\gap-20261011-au-syd-0001-past_due_exceeds_balance.pdf",
+        "sha256": "1f7af1b2085e29f11cd234c4a6b33300aed429affc4f0e9d2de238846716e28e"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-au-syd-0001-past_due_exceeds_balance.pdf.json",
+        "sha256": "c227c9251cb7a25b8bd3110164309789bc5207ad8d0b352ea448ab01e1d6beb3"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    },
+    {
+      "id": "gap-20261011-au-syd-0001-closed_before_opened",
+      "fixture": "AU-SYD-0001",
+      "evidence_class": "CURRENT_SYNTHETIC_FACTORY_FORM",
+      "report": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\reports\\AU\\gap-20261011-au-syd-0001-closed_before_opened.pdf",
+        "sha256": "ddf07610eb5308224a1e1558538a6cec02edd3bf0eb90ec77f8d42bb46b193ab"
+      },
+      "private_log": {
+        "file": "C:\\Users\\webbd\\CREDIT REPORTS\\CRP_CREATOR_VIOLATION_TESTS\\activity-logs\\gap-20261011-au-syd-0001-closed_before_opened.pdf.json",
+        "sha256": "77fb9a7c4f3db20baec25dc51775df6899ee03872e97641f87b97883f8d51002"
+      },
+      "outcome": "PASS",
+      "matched_count": 1
+    }
+  ],
+  "working_source_pins": [
+    {
+      "file": "accelerated-launch/service/account-summary-table.cjs",
+      "sha256": "31e4005f5390b4f39f73593b36bc6fd6ca8a70c8f4c926ef10aa4013ccab30ed"
+    },
+    {
+      "file": "accelerated-launch/service/general-intake.cjs",
+      "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+    },
+    {
+      "file": "accelerated-launch/service/tests/sections/ev-native-account-summary.cjs",
+      "sha256": "d0bef341291cfb8e74d253742b62f04ad4679b3cb05c545c13cbcef3643e8e6e"
+    },
+    {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/run-tests.cjs",
+      "sha256": "65b4ac3dd5d261bc75b6ae2e1df2d56d69b88863922104c8f27401453553cc37",
+      "original_file": "accelerated-launch/service/tests/run-tests.cjs"
+    }
+  ],
+  "focused_development": {
+    "duration_ms": 49553,
+    "passed": 843,
+    "failed": 0,
+    "skipped": 0,
+    "recording_source": "Measured focused runner output; final new-section evidence and final full execution are pinned separately.",
+    "sections": {
+      "ev-native-account-summary": 57,
+      "z-general-intake": 105,
+      "dl-general-caption-sources": 224,
+      "dr-reader-evidence-delivery": 64,
+      "ct-owner-common-error-scope": 357,
+      "cu-dual-date-retention": 36
+    }
+  },
+  "pre_correction_evidence": {
+    "file": "SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/pre-caption-fix/receipt.json",
+    "sha256": "547a45e435ae8b2a9b4bea8b7753764e20f05e3eb2fdac8d68ae9c8f68ec1d5d"
+  },
+  "source_caption_correction": {
+    "defect": "Printed Reported header was labelled Last Reported without source support.",
+    "fix": "Reported Date normalized field; exact Reported caption retained in physical source location.",
+    "prior_full_attempt": "Interrupted before completion; not passing evidence."
+  },
+  "bounded_implementation_status": "CLOSED_TESTED_SHARED_NATIVE_SUMMARY_REPAIR",
+  "new_reader_staging_status": "NOT_PERFORMED",
+  "later_batch_custody": "Bureau-form retirement changes the current runtime. Archived manifest and reconstructed runner verified byte-for-byte against original pins; original gap run identity and scope retained."
+}

@@ -1,0 +1,104 @@
+[
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/packets.cjs",
+    "sha256": "8bf63f0028f8e156ca51d69d3c6d32b237666da461e9b39b6a78be5d25c65599",
+    "original_file": "accelerated-launch/service/packets.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/packet-support.cjs",
+    "sha256": "90a2eee5099e2fcfb1a1bb5a87e54680bcc45424ddc1eae729601c5607720df4",
+    "original_file": "accelerated-launch/service/packet-support.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/packet-composer.cjs",
+    "sha256": "343aa48e74ab938625586d8ae6f7e52d54c808f5ddeaace58432150c539c5469",
+    "original_file": "accelerated-launch/service/packet-composer.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/packet-composer-worker.cjs",
+    "sha256": "d1497b4efbfad27d165a50e44894e6f596bd7b8b5f62b4c89879d6f1ac7b7c40",
+    "original_file": "accelerated-launch/service/packet-composer-worker.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/consumer-dispute-letter.cjs",
+    "sha256": "a7b00a08706024b89dc1c8dbfc20161dd8ce6f9d12b16dcd97493ea052f5808f",
+    "original_file": "accelerated-launch/service/consumer-dispute-letter.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/bureau-dispute-requirements.cjs",
+    "sha256": "2bb8d42ea05279a3d4c3279e9146dd35797e95a9e7fb4ca841086f882c09f3f6",
+    "original_file": "accelerated-launch/service/bureau-dispute-requirements.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/finding-coverage.cjs",
+    "sha256": "48a85460ebdc321ddd0b08864238d41be92146b5c0187ba0cf4196a656a1728a",
+    "original_file": "accelerated-launch/service/finding-coverage.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/deploy/build-release-manifest.cjs",
+    "sha256": "79b1501f05650c7ecfe1a6c628c4a4abf3c207db3732f291877aec9bb80fa87a",
+    "original_file": "accelerated-launch/service/deploy/build-release-manifest.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/ui/app.js",
+    "sha256": "66d088738a1a235cbfa85f4924371dbe58eef2fd03bc35e3d4f6ee4f81ecc259",
+    "original_file": "accelerated-launch/service/ui/app.js",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/bn-prime-directive-ui.cjs",
+    "sha256": "2f2ee1a098b575cbb886484de9cc68e3086a0ea279e5ee9d4b1fc647f4e30584",
+    "original_file": "accelerated-launch/service/tests/sections/bn-prime-directive-ui.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+    "sha256": "582dbf010a092a5a4eea6c28a2f7cdad016abe7ccf1430573061591beb49487f",
+    "original_file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+    "sha256": "a28d605992bcc7d37295bb71a989c4b9252be206cc3caad487419dde561f0c2e",
+    "original_file": "accelerated-launch/service/tests/sections/eb-account-packet-support.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+    "sha256": "adb8ee350a9866e49a0c43343f14acfe71367c062d420ccdc0e3511ab81e3375",
+    "original_file": "accelerated-launch/service/tests/sections/es-filled-packet-business-letter.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/et-supported-coverage-evidence.cjs",
+    "sha256": "83b941fd83586a3205b117b7c6d3aec6cc658df836b3143778a3278269fa5ace",
+    "original_file": "accelerated-launch/service/tests/sections/et-supported-coverage-evidence.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+    "sha256": "08170a1d349604ca1505e429dce7d5399554fe062735eba1322ef30c4322962b",
+    "original_file": "accelerated-launch/service/tests/sections/ew-inline-packet-composer.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+    "sha256": "b5f0b9c37ea816040f9fdb82c47779605dfb0b114614f53a39ac73dcf8592d78",
+    "original_file": "accelerated-launch/service/tests/sections/ex-inline-packet-journey.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  },
+  {
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/baseline-sources/accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+    "sha256": "cf50bb15183e41b4aefcb384da080206f0519b9bbb5b0d83c72e05874c31993e",
+    "original_file": "accelerated-launch/service/tests/sections/er-bureau-form-population.cjs",
+    "role": "EXACT_PREVIOUS_RUN_SOURCE"
+  }
+]

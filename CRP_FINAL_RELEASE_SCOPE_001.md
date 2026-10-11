@@ -1,5 +1,10 @@
 # OWNER-FINAL-RELEASE-SCOPE-001 — one-time and subscriber minimum
 
+## October 11 controlling owner directive — bureau forms retired
+
+Read `CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md` first for dispute/correction packet work. All bureau-specific forms are retired from the approved packet scope across all bureaus and jurisdictions. Their generation, inclusion, separate preview links, form-only inputs and acceptance prerequisites are authorized for removal. This supersedes conflicting earlier form requirements. Preserve the consumer letter, selected evidence/supporting copies and review/approval, ownership, privacy and entitlement safeguards. Historical form-inclusive proof retains its original scope. Directive adoption and local runtime removal are complete and verified; hosted verification of the new build is pending.
+
+
 Latest owner sequencing clarification: CRP_OWNER_BUILD_FIRST_VERIFICATION_001.md governs execution. Robust passing technical tests can establish the basis for consumer outcomes. First build the complete reconciled platform; review live staging with fictional artifacts afterward and fix discovered errors. Hosted proof is not an implementation prerequisite.
 
 Date: October 4, 2026 (America/Halifax). Authority: explicit owner instruction to limit final build requirements and production blockers to the approved customer offering; other additions are optional future upgrades.

@@ -1721,3 +1721,68 @@ observations, and the aggregate moved with it. The fictional-fixture journey is 
 performance, so no real-evidence figure was inflated, and the ledgers keep implementation, staging and production
 statuses separate.
 
+
+## October 11 current-build representative staging journeys
+
+Supplemental evidence is recorded for `crp-v1-4687a2df902ef280` (source `b538d88c83b690c5edf9918518897792c56b8249`) at `staging.creditregulatorpro.com`, with test billing. See [journey-to-gate mapping](SOURCE_CAPTURES/STAGING-PAID-2026-10-11/gate-journeys.md) and its hashed [machine-readable record](SOURCE_CAPTURES/STAGING-PAID-2026-10-11/gate-journeys.json).
+
+Four journeys cover a genuine monthly test purchase, selected/reviewed/approved packet download, same-account report comparison, and test cleanup. Fourteen affected gates receive bounded current-build observations. The monthly payment observation is linked separately. This sample does not establish all 21 checks, all 82 jurisdictions, every packet mechanism, or all billing/ownership controls on staging.
+
+Initial approved packet download passed with matching SHA-256. Approval preservation FAILED when leaving the packet screen without intentional edits (`STAGING-PACKET-APPROVAL-NAVIGATION-20261011`). Comparison correctly showed one issue no longer observed. Active test account/files were deleted and the test subscription canceled; upgrade-credit bookkeeping remains. Complete affected staging gates remain PENDING; production readiness is not established.
+
+Older proof retains its original build identity and recorded status. Its source files are unchanged and hash-pinned by the supplemental record; these observations neither replace nor relabel older implementation or staging proof. No runtime or deployment change is made by this addendum.
+
+## October 11 source-supported format-gap candidate
+
+The six-column native account-summary mechanism is repaired and has bounded source-case proof: eight valid supplemental layout seeds now detected, eight unchanged benign sources produce no additional eligible detections, and eight current four-country factory amount/date cases pass. These are synthetic behavior cases, not new genuine/current bureau-layout certifications. Focused controls include selected/reviewed/approved packet delivery. Exact scope, pinned records and unresolved source bounds are in `CRP_FORMAT_AND_DETECTION_GAP_RESOLUTION_2026_10_11.md`. Final full regression is pending completion; the current staging proof retains build 4687 and its open approval-navigation failure. No production readiness or deployment follows from this candidate.
+
+## Final corrected-candidate regression — October 11
+
+Candidate crp-v1-b1dbbf3bbac1bdea: FULL_CURRENT_PRODUCT passed 14,454 assertions, zero failed/skipped across 151 completed sections in 1,812,448 ms. All 286 tested source hashes match the current files; no source drift or unrun sections. The immutable full run is pinned in SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/receipt.json. Implementation closure applies only to the bounded shared native-summary repair. New-reader staging verification is NOT PERFORMED. Remaining promised-format/scored-detection gaps and production blockers remain OPEN; no deployment occurred. Earlier interrupted and hosted evidence retains its original scope.
+
+
+## October 11 — OWNER-BUREAU-FORMS-RETIREMENT-001
+
+Owner directive adopted in `CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md`. All bureau-specific dispute/correction forms are removed from approved packet scope; conflicting older form requirements and form-specific closure criteria are superseded. The owner's rationale is no sufficient packet benefit for the extra nonmandatory paperwork and delivery cost. This is a scope decision, not a new independently verified universal legal claim.
+
+Remaining-work assignment: remove form population/assembly/preview links and form-only inputs or gates from the consumer path; update affected tests and release/closure validators. Preserve sourced letter, selected report evidence, relevant supporting documents, consumer review/approval, privacy, entitlement and all82 applicability. Require a new material packet format/version so existing approvals cannot silently authorize changed bytes. Verify actual form-free preview/approval/download and affected browser flow, followed by the final full regression. Preserve historical captures and form-inclusive proof without relabeling.
+
+Status: directive adoption COMPLETE; executable removal AUTHORIZED/PENDING; new-format implementation verification PENDING; staging PENDING; production OPEN. Current runtime still includes bureau forms. No application source, deployment or historical proof changed in this directive-only update.
+
+## October 11 — bureau-form runtime retirement batch
+
+Executable removal implemented under OWNER-BUREAU-FORMS-RETIREMENT-001. Packet assembly and composer no longer include/populate bureau forms; direct retired-component composition is refused. Consumer form-only fields and review links are removed, print instructions refer to the letter, and packet-format version 2 requires fresh approval of changed packets. Bureau templates and renderers are excluded from the shipped candidate; historical source files remain preserved. Current closure/coverage producers use form-free packet criteria.
+
+Focused final repairs: 296/0/0 (composer, evidence validator and ten country/bureau retirement journeys). Earlier affected letter/support/journey checks passed; real-browser Wizzard 166/0/0 and packet-correspondence 110/0/0 passed. Superseded form-specific tests are archived and not counted as current acceptance. Rendered fictional sample checked across all five pages: one letter, one relevant report page, three supporting copies, no forms.
+
+Final candidate crp-v1-ac4051d4bbb7097d, manifest AC4051D4BBB7097D5B25BC5D02F3B6B7A7FA20A91029D69C050B2332BAC3565F, 133 shipped files. Final full regression RUNNING; implementation verification not yet closed. Staging for this new packet format PENDING; production OPEN. No commit, push or deployment performed.
+
+## October 11 — bureau-form retirement final verification
+
+Local implementation CLOSED for candidate crp-v1-ac4051d4bbb7097d. Final FULL_CURRENT_PRODUCT regression: **14,441 passed, 0 failed, 0 skipped**, 151 completed sections, 286 unchanged tested-source hashes, no unrun sections/source drift; recorded duration 1,078,133 ms. All 17/17 implementation evidence records re-derived successfully, including the updated form-free packet record. Source audit 23/0/0. Ten fictional country/bureau packet variants, 82/82 shared GENERAL owned-content/case-associated downloads, real-browser Wizzard 166/0/0, ownership, entitlement, review/approval and selected report/supporting copies are verified locally. This is shared mechanism and representative behavior proof, not universal dedicated-bureau-format certification.
+
+The initial full attempt was interrupted after a PDF line-wrap-sensitive assertion. Actual bytes contained both report dates; normalization of layout whitespace preserves both source-date and human-date assertions. The repaired section passed 133/0/0 and the complete fresh run passed. No runtime date/evidence rule was changed to satisfy that assertion.
+
+Current packet contents are the consumer letter, relevant owned report pages and selected supporting copies. Bureau templates/renderers are excluded from all 133 shipped manifest files. No populated or blank bureau forms, separate form links, form-only name/street inputs or form-based acceptance requirements remain in this workflow. Prior approvals require fresh review under packet format 2. Historical form-inclusive proof and the preceding format-gap run keep their original identities; changed manifest/runner references were archived and verified against original pins.
+
+Evidence: `SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/receipt.json` and its immutable full regression, current packet implementation record and five-page fictional PDF sample. **Staging for this candidate PENDING; production readiness NOT ESTABLISHED/OPEN.** No commit, push or deployment performed. Other promised-format, scored-detection and production blockers remain separately governed.
+
+## October 11 — remaining blockers closed and exact candidate promoted
+
+Current authoritative result: **crp-v1-fd23f242f3d158bf** is IMPLEMENTED_AND_TESTED, VERIFIED_ON_STAGING and promoted to live production at **2026-10-11T13:00:50.663Z** (10:00:50 AM America/Halifax). Manifest **FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB**, 133 shipped files. This is the frozen tested dirty source candidate based on 62a26a33587b9ace0d5ec1c45ba475d3a4556400; the base commit alone is not the deployed source.
+
+The approval-navigation defect is fixed. Final full regression: **14,449/0/0**, 151 completed sections, 286 unchanged tested-source hashes; source audit 23/0/0. Fresh hosted phase 1 passed 43/43 and phase 2 passed 9/9. A genuine monthly Sandbox payment activated access; the actual browser reviewed/approved/downloaded the form-free six-page packet. Letter, selected original pages 2 and 3, and three supporting copies passed native edit/save/print, exact streams/rendering and visual inspection. Browser/preview/download/print bytes match. Unchanged Results → Help → packet navigation preserved approval, exact version and bytes on a freshly loaded candidate page. The inherited predeployment tab's failed navigation attempt is preserved separately; it was not counted as current-build success.
+
+The same test subscription upgraded to annual with 795-cent credit, 7,155-cent paid invoice and 7,950-cent regular annual price; the applied signed invoice webhook, provider/application cancellation and final test-subscription termination were verified. Both fictional accounts were deleted through the API and their sessions revoked. Provider test records and internal retained billing bookkeeping are not represented as erased.
+
+All **30 capability gates / 123 required criteria** validate for this exact candidate. Canonical current records were integrated with hash guards and their prior bytes archived. Strict FDT derivation passed against the fresh hosted useful/unsuccessful paid recovery receipts and current full source freeze. Regional automated loops and representative distinct hosted journeys support the approved scope; this does not certify every dedicated bureau layout or introduce unsupported scored effects.
+
+Release readiness combines current source/capability validation with two actual-host production-environment checks (persistent support secret and live billing) using this candidate's checker. Secrets stayed on the VPS. The fresh read-only live provider observation confirms active CAD 595/795-month/7950-year prices and required webhook events; no real production charge was performed. This is explicitly distinguished from a local checker without production credentials.
+
+Production activation verified the identical archive SHA256 24B8DE9F5AB33CC87999722D94F90ED90BC886140EA1467CCD60820F3687CAA7 and all 133 deployed hashes. Files are root-owned and nonwritable. A stopped-service snapshot matched all four active private files; every original state collection was preserved, with only an empty referral_snapshots collection added. Production health reports the new build and live billing; 13 public health/asset checks passed, including expected 404 refusal for disabled optional mailing/referral previews. Anonymous cases remain 401; test-payment route remains 404. The health launch_ready=false field is the static runtime/matrix declaration, not the independently computed acceptance verdict.
+
+Rollback: previous release /opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050 and restricted backup /opt/crp-wizard-production/backups/before-crp-v1-fd23f242f3d158bf-1791723649 are retained. Activation changed only the CRP production service/current link/build environment line. The latest encrypted production backup was independently restored with current-store normalization/start/restart checks before promotion; that rehearsal does not assert consumer credential login restoration.
+
+Evidence custody: **SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/**. Historical proofs retain their original identities and scope. No live test charge or consumer submission/mailing was performed. Unrelated branding work remains untouched.
+
+Post-promotion current-build live provider verification also passed (SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/live-current-provider.json). The final production acceptance record reports launch_ready=true with zero failed core gates. Published test-evidence snapshots redact disposable local regression authentication tokens; original hashes and redaction paths are recorded, and exact canonical receipts remain in ignored operational output.

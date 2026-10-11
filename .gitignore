@@ -62,3 +62,21 @@ bundle/
 /SOURCE_CAPTURES/PHASE5-001N/retrieved/R01-CA-FCA-credit-report-information.html
 
 .playwright-cli/
+
+# Exact-build fictional staging evidence and bounded gate records
+!/SOURCE_CAPTURES/STAGING-PAID-2026-10-11/
+!/SOURCE_CAPTURES/STAGING-PAID-2026-10-11/comparison-verified.png
+!/SOURCE_CAPTURES/STAGING-PAID-2026-10-11/current-build-journeys/*.pdf
+
+# Bounded source-supported format-gap verification records
+!/SOURCE_CAPTURES/FORMAT-GAPS-2026-10-11/
+
+# Bounded bureau-form retirement evidence
+!/SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/
+!/SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/current-packet.pdf
+!/SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/current-packet-page-1.png
+
+# Exact tested candidate blocker closure and production receipts
+!/SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/
+!/SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/live-production-browser.png
+!/SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/cancelled-renewal-browser.png

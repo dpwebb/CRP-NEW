@@ -70,7 +70,7 @@ function requirements(country, bureau, settings = {}) {
       req.items.push(purpose === 'PUBLIC_RECORD' ? 'Include one government ID and one document confirming your name and current address.' : 'Include two valid government IDs. Upload each complete ID, including front and back where applicable, as one file. If neither shows your current address, add a utility bill or financial statement less than 90 days old.');
       req.items.push('Black out card security codes and unnecessary transaction details.');
       req.fields.push('phone'); if (purpose === 'ACCOUNT') req.fields.push('contact_email');
-      if (purpose === 'ACCOUNT') req.items.push('For account updates, include the creditor’s confirmation where requested by the form.');
+      if (purpose === 'ACCOUNT') req.items.push('For account updates, include the creditor’s confirmation when requested.');
       if (purpose === 'PERSONAL') req.items.push('For a SIN correction, include the requested SIN evidence.');
       if (channel === 'ONLINE') { req.max_documents = 3; req.items.push('Use Equifax’s electronic submission instructions and form. Submit at most three files; combine copies in a PDF where needed.'); }
     }

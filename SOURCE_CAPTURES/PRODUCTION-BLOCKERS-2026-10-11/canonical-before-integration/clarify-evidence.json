@@ -1,0 +1,241 @@
+{
+  "passed": false,
+  "max_questions": 2,
+  "questions": [
+    {
+      "id": "account-purpose",
+      "plain": "Which account is this report about, in your own words? For example: \"my 2019 auto loan\", or \"I do not recognise this account\".",
+      "benefit": "This helps separate accounts you recognise from accounts you do not, without changing anything the report itself says.",
+      "answer_kind": "free_text",
+      "has_dont_know": true,
+      "has_skip": true
+    },
+    {
+      "id": "account-responsibility",
+      "plain": "On this account, are you individually responsible, jointly responsible with someone else, or only an authorised user?",
+      "benefit": "This helps us distinguish your own accounts from accounts where another person was responsible, again without changing anything the report says.",
+      "answer_kind": "choice",
+      "choices": [
+        "individual",
+        "joint",
+        "authorized_user"
+      ],
+      "has_dont_know": true,
+      "has_skip": true
+    }
+  ],
+  "report_use_question": {
+    "id": "report-use",
+    "plain": "This assessment is about the credit report you uploaded. What was this report used for?",
+    "benefit": "Answer about how this report was furnished to a user (for example a lender, insurer or employer), not why you obtained a copy to review. This determines whether a use exception to a retention rule applies, without changing anything the report itself says.",
+    "answer_kind": "report_use_purpose",
+    "choices": [
+      "credit_transaction",
+      "life_insurance_underwriting",
+      "employment"
+    ],
+    "purpose_labels": {
+      "credit_transaction": "A credit transaction (a loan or credit application)",
+      "life_insurance_underwriting": "Life insurance underwriting",
+      "employment": "Employment (a job application or employment decision)"
+    },
+    "amount_basis_labels": {
+      "credit_transaction": "the principal amount",
+      "life_insurance_underwriting": "the face amount",
+      "employment": "the annual salary"
+    },
+    "amount_bands": {
+      "credit_transaction": [
+        {
+          "code": "below_50k",
+          "label": "Less than $50,000"
+        },
+        {
+          "code": "at_least_50k_below_150k",
+          "label": "$50,000 to $149,999"
+        },
+        {
+          "code": "at_least_150k",
+          "label": "$150,000 or more"
+        }
+      ],
+      "life_insurance_underwriting": [
+        {
+          "code": "below_50k",
+          "label": "Less than $50,000"
+        },
+        {
+          "code": "at_least_50k_below_150k",
+          "label": "$50,000 to $149,999"
+        },
+        {
+          "code": "at_least_150k",
+          "label": "$150,000 or more"
+        }
+      ],
+      "employment": [
+        {
+          "code": "below_25k",
+          "label": "Less than $25,000"
+        },
+        {
+          "code": "at_least_25k_below_75k",
+          "label": "$25,000 to $74,999"
+        },
+        {
+          "code": "at_least_75k",
+          "label": "$75,000 or more"
+        }
+      ]
+    },
+    "report_identity": {
+      "bureau": null,
+      "reference_date": null
+    },
+    "has_dont_know": true,
+    "has_skip": true
+  },
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "behavior": {
+    "at_most_two_questions": true,
+    "has_dont_know": true,
+    "has_skip": true,
+    "stored_separately": "answers persist on the result row with source CONSUMER_STATEMENT, never merged into report facts",
+    "skip_does_not_interrupt": "the clarify HTTP journey test verifies a skipped answer leaves the independent checks intact",
+    "no_escalation": "no finding is escalated solely because an answer was supplied",
+    "report_use_material": "the governed report-use question names the assessed report and negates an exempted use; it does not unlock a violation; unknown/skip/contradictory/multiple-use/mismatched stay unresolved"
+  },
+  "tests": [
+    {
+      "id": "am-fdt-recovery",
+      "passed": true
+    },
+    {
+      "id": "bg-report-use",
+      "passed": true
+    }
+  ],
+  "measured_at": "2026-10-11T12:36:07.041Z",
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; no deployed, current-release journey evidence exists for this gate, so staging verification and production readiness remain unresolved (OWNER-CLOSURE-001)."
+  },
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ap-accept-010-consistency:at_most_two_questions",
+        "passed": true,
+        "criteria": [
+          "at_most_two_questions"
+        ],
+        "expected": "the gate records this criterion as demonstrated: at_most_two_questions",
+        "measured": "ap-accept-010-consistency (111 assertions), k-ui-smoke (82 assertions) pass; at_most_two_questions; has_dont_know; has_skip; stored_separately; skip_does_not_interrupt; no_escalation; report_use_material"
+      },
+      {
+        "id": "ap-accept-010-consistency:skip_and_dont_know",
+        "passed": true,
+        "criteria": [
+          "skip_and_dont_know"
+        ],
+        "expected": "the gate records this criterion as demonstrated: skip_and_dont_know",
+        "measured": "ap-accept-010-consistency (111 assertions), k-ui-smoke (82 assertions) pass; at_most_two_questions; has_dont_know; has_skip; stored_separately; skip_does_not_interrupt; no_escalation; report_use_material"
+      },
+      {
+        "id": "ap-accept-010-consistency:separate_supplemental_storage",
+        "passed": true,
+        "criteria": [
+          "separate_supplemental_storage"
+        ],
+        "expected": "the gate records this criterion as demonstrated: separate_supplemental_storage",
+        "measured": "ap-accept-010-consistency (111 assertions), k-ui-smoke (82 assertions) pass; at_most_two_questions; has_dont_know; has_skip; stored_separately; skip_does_not_interrupt; no_escalation; report_use_material"
+      },
+      {
+        "id": "ap-accept-010-consistency:no_escalation",
+        "passed": true,
+        "criteria": [
+          "no_escalation"
+        ],
+        "expected": "the gate records this criterion as demonstrated: no_escalation",
+        "measured": "ap-accept-010-consistency (111 assertions), k-ui-smoke (82 assertions) pass; at_most_two_questions; has_dont_know; has_skip; stored_separately; skip_does_not_interrupt; no_escalation; report_use_material"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/clarification.cjs",
+        "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+        "sha256": "ddae5233b326370de1fa15c105637eba269d058dadd885000cdbaf9bafaa4b29"
+      }
+    ]
+  },
+  "criteria": {
+    "at_most_two_questions": {
+      "passed": false,
+      "expected": "the gate records this criterion as demonstrated: at_most_two_questions",
+      "measured": "implemented and tested locally (ap-accept-010-consistency, k-ui-smoke); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "accelerated-launch/service/tests/sections/k-ui-smoke.cjs"
+      ]
+    },
+    "skip_and_dont_know": {
+      "passed": false,
+      "expected": "the gate records this criterion as demonstrated: skip_and_dont_know",
+      "measured": "implemented and tested locally (ap-accept-010-consistency, k-ui-smoke); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "accelerated-launch/service/tests/sections/k-ui-smoke.cjs"
+      ]
+    },
+    "separate_supplemental_storage": {
+      "passed": false,
+      "expected": "the gate records this criterion as demonstrated: separate_supplemental_storage",
+      "measured": "implemented and tested locally (ap-accept-010-consistency, k-ui-smoke); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "accelerated-launch/service/tests/sections/k-ui-smoke.cjs"
+      ]
+    },
+    "no_escalation": {
+      "passed": false,
+      "expected": "the gate records this criterion as demonstrated: no_escalation",
+      "measured": "implemented and tested locally (ap-accept-010-consistency, k-ui-smoke); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "accelerated-launch/service/tests/sections/k-ui-smoke.cjs"
+      ]
+    }
+  },
+  "reconciliation": {
+    "note": "Translated from this gate own pre-closure evidence record already on disk plus its dedicated passing section. No coverage was invented, no source or permission was changed, and no hosted or served result is asserted.",
+    "scope": "the conditional quick-clarification workflow: at most two simple consequential questions with skip and I-do-not-know, and separately stored supplemental answers",
+    "previously_recorded_passed": true,
+    "sections": [
+      {
+        "id": "ap-accept-010-consistency",
+        "passed": 111
+      },
+      {
+        "id": "k-ui-smoke",
+        "passed": 82
+      }
+    ]
+  }
+}

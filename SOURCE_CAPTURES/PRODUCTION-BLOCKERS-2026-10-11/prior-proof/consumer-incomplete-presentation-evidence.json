@@ -1,0 +1,95 @@
+{
+  "blocker_id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+  "measured_at": "2026-10-11T11:37:45.979Z",
+  "passed": false,
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "aw-consumer-explanations",
+        "passed": true,
+        "criteria": [
+          "incomplete_checks_hidden",
+          "no_false_compliance_claim"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "14 passing assertions; Internal check diagnostics remain available; sentinel incomplete readings and unfinished comparisons are hidden. Empty presentation says No findings available without asserting compliance."
+      },
+      {
+        "id": "e-qualifications",
+        "passed": true,
+        "criteria": [
+          "internal_diagnostics_retained"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "47 passing assertions; Internal check diagnostics remain available; sentinel incomplete readings and unfinished comparisons are hidden. Empty presentation says No findings available without asserting compliance."
+      },
+      {
+        "id": "k-ui-smoke",
+        "passed": true,
+        "criteria": [
+          "incomplete_checks_hidden"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "82 passing assertions; Internal check diagnostics remain available; sentinel incomplete readings and unfinished comparisons are hidden. Empty presentation says No findings available without asserting compliance."
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/aw-consumer-explanations.cjs",
+        "sha256": "af5e9e9eebd132d9bcf89057ac9caab8b565ce9d8f8a46907f88c8246c168bed"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/e-qualifications.cjs",
+        "sha256": "3f51331662511568c25ad6b23e243d5aa57fd6227ed2d0fa301fa54c31a90184"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+        "sha256": "ddae5233b326370de1fa15c105637eba269d058dadd885000cdbaf9bafaa4b29"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+        "sha256": "2b08753dff0942b0deb2275140ed711c8c94b5306a8143e68614083efaef5475"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; these corrections have not been deployed or verified on staging."
+  },
+  "criteria": {
+    "internal_diagnostics_retained": {
+      "passed": false,
+      "expected": "internal_diagnostics_retained",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "incomplete_checks_hidden": {
+      "passed": false,
+      "expected": "incomplete_checks_hidden",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "no_false_compliance_claim": {
+      "passed": false,
+      "expected": "no_false_compliance_claim",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    }
+  }
+}

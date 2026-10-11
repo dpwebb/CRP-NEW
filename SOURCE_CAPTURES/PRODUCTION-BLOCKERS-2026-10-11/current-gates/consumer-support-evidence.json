@@ -1,0 +1,642 @@
+{
+  "identity": {
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "local_only": false
+  },
+  "passed": true,
+  "measured_at": "2026-10-11T12:36:06.476Z",
+  "scope": "BLOCKER-SUPPORT-001. Privacy-safe account-owned diagnostic reference: an opaque reference token plus operational support information (build id, lifecycle category, jurisdiction, counts) with no report content, document names, credentials, payment tokens or legal-source identifiers. Lookup is authenticated and ownership-scoped. No external transmission. Implementation is closed by ay-consumer-support; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ay-consumer-support-reference",
+        "passed": true,
+        "criteria": [
+          "reference"
+        ],
+        "expected": "the account receives a stable, opaque, usable diagnostic reference",
+        "measured": "reference matches /^crp-ref-[0-9a-f]{24}$/ and is stable across two requests"
+      },
+      {
+        "id": "ay-consumer-support-redaction",
+        "passed": true,
+        "criteria": [
+          "redaction"
+        ],
+        "expected": "no report content, document names, credentials, payment tokens or legal-source identifiers appear in the support output",
+        "measured": "support view carries only the safe operational field set; \"john-smith\" filename, session token, checkout reference and adapter_id/source_entry_id are absent"
+      },
+      {
+        "id": "ay-consumer-support-access",
+        "passed": true,
+        "criteria": [
+          "access"
+        ],
+        "expected": "support lookup is authenticated and ownership-scoped",
+        "measured": "unauthenticated -> 401; another account's reference -> 404; unknown reference -> 404; owner lookup -> 200"
+      },
+      {
+        "id": "ay-consumer-support-usefulness",
+        "passed": true,
+        "criteria": [
+          "usefulness"
+        ],
+        "expected": "support can identify the build and the lifecycle category without private content",
+        "measured": "build_id and category present; a fresh account reports NO_CASE; a result-bearing account reports RESULT_PRESENT with jurisdiction"
+      },
+      {
+        "id": "production-final-freeze:ay-consumer-support",
+        "passed": true,
+        "assertions": 35,
+        "criteria": [
+          "reference",
+          "redaction",
+          "access",
+          "usefulness"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "35 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/support.cjs",
+        "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "b8d5bb298056b8aea7ebe574c2e9bb1fe356601314db37b3dffd1c1e8d8afab1"
+      },
+      {
+        "file": "accelerated-launch/service/errors.cjs",
+        "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+        "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+        "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+        "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+        "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "VERIFIED",
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "recorded_at": "2026-10-11T12:57:18.483Z",
+    "evidence_refs": [
+      "production-blocker-repair-2026-10-11/measurements.json"
+    ],
+    "method": "Actual source-matched isolated hosted candidate HTTP, genuine Sandbox provider event, consumer packet review/approval/download, own-history comparison and cleanup; exact regional behavioral loops reused"
+  },
+  "criteria": {
+    "reference": {
+      "passed": true,
+      "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "stable_support",
+            "expected": "Actual phase1 checks: support_stable_reference, support_safe_fields, support_owner_lookup",
+            "measured": [
+              {
+                "id": "support_stable_reference",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "reference": "crp-ref-a7c378783ddf5d2beee87337",
+                  "category": "RESULT_PRESENT"
+                }
+              },
+              {
+                "id": "support_safe_fields",
+                "passed": true,
+                "measured": [
+                  "ok",
+                  "reference",
+                  "build_id",
+                  "category",
+                  "jurisdiction",
+                  "case_count",
+                  "file_count",
+                  "result_count",
+                  "generated_at",
+                  "plain"
+                ]
+              },
+              {
+                "id": "support_owner_lookup",
+                "passed": true,
+                "measured": 200
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ay-consumer-support",
+            "assertions": 35,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "reference": true,
+              "redaction": true,
+              "access": true,
+              "usefulness": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "redaction": {
+      "passed": true,
+      "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "stable_support",
+            "expected": "Actual phase1 checks: support_stable_reference, support_safe_fields, support_owner_lookup",
+            "measured": [
+              {
+                "id": "support_stable_reference",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "reference": "crp-ref-a7c378783ddf5d2beee87337",
+                  "category": "RESULT_PRESENT"
+                }
+              },
+              {
+                "id": "support_safe_fields",
+                "passed": true,
+                "measured": [
+                  "ok",
+                  "reference",
+                  "build_id",
+                  "category",
+                  "jurisdiction",
+                  "case_count",
+                  "file_count",
+                  "result_count",
+                  "generated_at",
+                  "plain"
+                ]
+              },
+              {
+                "id": "support_owner_lookup",
+                "passed": true,
+                "measured": 200
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ay-consumer-support",
+            "assertions": 35,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "reference": true,
+              "redaction": true,
+              "access": true,
+              "usefulness": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "access": {
+      "passed": true,
+      "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "support_isolation",
+            "expected": "Actual phase1 checks: support_stranger_lookup_refused, support_anonymous_refused, support_anonymous_lookup_refused",
+            "measured": [
+              {
+                "id": "support_stranger_lookup_refused",
+                "passed": true,
+                "measured": 404
+              },
+              {
+                "id": "support_anonymous_refused",
+                "passed": true,
+                "measured": 401
+              },
+              {
+                "id": "support_anonymous_lookup_refused",
+                "passed": true,
+                "measured": 401
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ay-consumer-support",
+            "assertions": 35,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "reference": true,
+              "redaction": true,
+              "access": true,
+              "usefulness": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "journey": {
+      "passed": true,
+      "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "stable_support",
+            "expected": "Actual phase1 checks: support_stable_reference, support_safe_fields, support_owner_lookup",
+            "measured": [
+              {
+                "id": "support_stable_reference",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "reference": "crp-ref-a7c378783ddf5d2beee87337",
+                  "category": "RESULT_PRESENT"
+                }
+              },
+              {
+                "id": "support_safe_fields",
+                "passed": true,
+                "measured": [
+                  "ok",
+                  "reference",
+                  "build_id",
+                  "category",
+                  "jurisdiction",
+                  "case_count",
+                  "file_count",
+                  "result_count",
+                  "generated_at",
+                  "plain"
+                ]
+              },
+              {
+                "id": "support_owner_lookup",
+                "passed": true,
+                "measured": 200
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "support_isolation",
+            "expected": "Actual phase1 checks: support_stranger_lookup_refused, support_anonymous_refused, support_anonymous_lookup_refused",
+            "measured": [
+              {
+                "id": "support_stranger_lookup_refused",
+                "passed": true,
+                "measured": 404
+              },
+              {
+                "id": "support_anonymous_refused",
+                "passed": true,
+                "measured": 401
+              },
+              {
+                "id": "support_anonymous_lookup_refused",
+                "passed": true,
+                "measured": 401
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ay-consumer-support",
+            "assertions": 35,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "reference": true,
+              "redaction": true,
+              "access": true,
+              "usefulness": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "usefulness": {
+      "passed": true,
+      "expected": "Actual stable opaque ref twice, safe field inventory, owner lookup200, stranger404, anon401; current permanent support secret operational configuration proof.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "stable_support",
+            "expected": "Actual phase1 checks: support_stable_reference, support_safe_fields, support_owner_lookup",
+            "measured": [
+              {
+                "id": "support_stable_reference",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "reference": "crp-ref-a7c378783ddf5d2beee87337",
+                  "category": "RESULT_PRESENT"
+                }
+              },
+              {
+                "id": "support_safe_fields",
+                "passed": true,
+                "measured": [
+                  "ok",
+                  "reference",
+                  "build_id",
+                  "category",
+                  "jurisdiction",
+                  "case_count",
+                  "file_count",
+                  "result_count",
+                  "generated_at",
+                  "plain"
+                ]
+              },
+              {
+                "id": "support_owner_lookup",
+                "passed": true,
+                "measured": 200
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ay-consumer-support",
+            "assertions": 35,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "reference": true,
+              "redaction": true,
+              "access": true,
+              "usefulness": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "ay-consumer-support",
+      "passed": true,
+      "criteria": [
+        "reference",
+        "redaction",
+        "access",
+        "usefulness"
+      ],
+      "expected": "35 assertions pass",
+      "measured": "35/35"
+    },
+    {
+      "id": "az-consumer-support-ui",
+      "passed": true,
+      "criteria": [
+        "reference",
+        "usefulness"
+      ],
+      "expected": "23 assertions pass",
+      "measured": "23/23"
+    },
+    {
+      "id": "production-final-freeze:ay-consumer-support",
+      "passed": true,
+      "assertions": 35,
+      "criteria": [
+        "reference",
+        "redaction",
+        "access",
+        "usefulness"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "35 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    }
+  ],
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-fd23f242f3d158bf",
+    "original_canonical_sha256": "4bd9a3046f2109e1d970672458f2fd34636f40e4454c9d72b414c25136d731b0",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "ay-consumer-support-reference",
+          "passed": true,
+          "criteria": [
+            "reference"
+          ],
+          "expected": "the account receives a stable, opaque, usable diagnostic reference",
+          "measured": "reference matches /^crp-ref-[0-9a-f]{24}$/ and is stable across two requests"
+        },
+        {
+          "id": "ay-consumer-support-redaction",
+          "passed": true,
+          "criteria": [
+            "redaction"
+          ],
+          "expected": "no report content, document names, credentials, payment tokens or legal-source identifiers appear in the support output",
+          "measured": "support view carries only the safe operational field set; \"john-smith\" filename, session token, checkout reference and adapter_id/source_entry_id are absent"
+        },
+        {
+          "id": "ay-consumer-support-access",
+          "passed": true,
+          "criteria": [
+            "access"
+          ],
+          "expected": "support lookup is authenticated and ownership-scoped",
+          "measured": "unauthenticated -> 401; another account's reference -> 404; unknown reference -> 404; owner lookup -> 200"
+        },
+        {
+          "id": "ay-consumer-support-usefulness",
+          "passed": true,
+          "criteria": [
+            "usefulness"
+          ],
+          "expected": "support can identify the build and the lifecycle category without private content",
+          "measured": "build_id and category present; a fresh account reports NO_CASE; a result-bearing account reports RESULT_PRESENT with jurisdiction"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/support.cjs",
+          "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+        },
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "sha256": "b8d5bb298056b8aea7ebe574c2e9bb1fe356601314db37b3dffd1c1e8d8afab1"
+        },
+        {
+          "file": "accelerated-launch/service/errors.cjs",
+          "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+          "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+          "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+          "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+          "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-blocker-repair-2026-10-11/phase1-receipt.json",
+        "sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-paid.json",
+        "sha256": "eb25b013277263bb4520345e1d37e8d51f5d9d1d4176af9e6e668337b7b8bef7",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/review-receipt.json",
+        "sha256": "b4191ebc7075809b929f20a6b4effeb55595e3de2bd5fe51229e9327fcf63258",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/download-receipt.json",
+        "sha256": "abccb82f6cc41cb3472eac860c697608b2b9c5b1893171d9ce5fd5e5db6d8d1e",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/continuity-receipt.json",
+        "sha256": "a43b57f85a60ef6b3580a5b7a969f24c1a25dcaa414b8723229824ca56eb1473",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/phase2-receipt.json",
+        "sha256": "9045952a5c9501d0da0c6dad3f15bbc53e76c9cb7203da6a1a96f1d2b54b31fa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-cleanup.json",
+        "sha256": "4608434df677f468bc87bdfac24661497a3d847a750aff1371d11e1b2f1de273",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cleanup-receipt.json",
+        "sha256": "ef3cc2714e79d2a1f7b93f7b8e2b964471a0fa3676672dfb547380e176973c68",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/checkout-receipt.json",
+        "sha256": "98291ac6aa6efb511371fc3e1bf875b11326acd7d0c30660c7ba07067759ceeb",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/input-manifest.json",
+        "sha256": "96456ae171857dd3291121cf332da227e95f6e108a202d8bc968021d8fde01d8",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/upgrade-proof.json",
+        "sha256": "0c585c51163a0181dab0e4c3717481a05baf5dc88e954bfa566c1d2cbee7220b",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cancellation-proof.json",
+        "sha256": "d17ca32f8fe2709f5aa982b483ed8c7a15727f3d4ab99da741f9fac1b5721baa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/fdt-mitigation-candidate.json",
+        "sha256": "645fea80d73a2330e61f8d599a29222f65a581e2007521f40c97a85d7533d169",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-blocker-repair-2026-10-11/measurements.json",
+    "prepared_at": "2026-10-11T12:57:18.484Z",
+    "canonical_evidence_written": false
+  }
+}

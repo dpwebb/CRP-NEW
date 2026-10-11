@@ -1,0 +1,155 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.093Z",
+  "scope": "BLOCKER-SUPPORT-001. Privacy-safe account-owned diagnostic reference: an opaque reference token plus operational support information (build id, lifecycle category, jurisdiction, counts) with no report content, document names, credentials, payment tokens or legal-source identifiers. Lookup is authenticated and ownership-scoped. No external transmission. Implementation is closed by ay-consumer-support; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ay-consumer-support-reference",
+        "passed": true,
+        "criteria": [
+          "reference"
+        ],
+        "expected": "the account receives a stable, opaque, usable diagnostic reference",
+        "measured": "reference matches /^crp-ref-[0-9a-f]{24}$/ and is stable across two requests"
+      },
+      {
+        "id": "ay-consumer-support-redaction",
+        "passed": true,
+        "criteria": [
+          "redaction"
+        ],
+        "expected": "no report content, document names, credentials, payment tokens or legal-source identifiers appear in the support output",
+        "measured": "support view carries only the safe operational field set; \"john-smith\" filename, session token, checkout reference and adapter_id/source_entry_id are absent"
+      },
+      {
+        "id": "ay-consumer-support-access",
+        "passed": true,
+        "criteria": [
+          "access"
+        ],
+        "expected": "support lookup is authenticated and ownership-scoped",
+        "measured": "unauthenticated -> 401; another account's reference -> 404; unknown reference -> 404; owner lookup -> 200"
+      },
+      {
+        "id": "ay-consumer-support-usefulness",
+        "passed": true,
+        "criteria": [
+          "usefulness"
+        ],
+        "expected": "support can identify the build and the lifecycle category without private content",
+        "measured": "build_id and category present; a fresh account reports NO_CASE; a result-bearing account reports RESULT_PRESENT with jurisdiction"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/support.cjs",
+        "sha256": "3b4692f345087f8277aa84f1942101eba3e8bdf50b7b480b8acf61154e51710c"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+      },
+      {
+        "file": "accelerated-launch/service/errors.cjs",
+        "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+        "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+        "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ay-consumer-support.cjs",
+        "sha256": "6ccb8e5b677dd599a6c661553a478dd2d9741c7a864e12eb0d7f9c7f2dc5b03b"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/az-consumer-support-ui.cjs",
+        "sha256": "44a691483bfe3476639bc0748860ce09595d705233041a9b8b71b977ace8dc40"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence written for the support reference; implementation is closed by the behavioral test, but the production check remains unresolved until deployed, current-release evidence is recorded."
+  },
+  "criteria": {
+    "reference": {
+      "passed": false,
+      "expected": "consumer receives a usable diagnostic reference",
+      "measured": "implemented and tested (ay-consumer-support); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-support.cjs"
+      ]
+    },
+    "redaction": {
+      "passed": false,
+      "expected": "no report contents, names/addresses, credentials, tokens or payment details in the reference/support output",
+      "measured": "implemented and tested (ay-consumer-support); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-support.cjs"
+      ]
+    },
+    "access": {
+      "passed": false,
+      "expected": "protected diagnostic lookup, scoped authorization and retention",
+      "measured": "implemented and tested (ay-consumer-support); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-support.cjs"
+      ]
+    },
+    "journey": {
+      "passed": false,
+      "expected": "consumer can report a problem with this reference without attaching a report",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    },
+    "usefulness": {
+      "passed": false,
+      "expected": "authorized support can identify a reproducible failure category/build without private report content",
+      "measured": "implemented and tested (ay-consumer-support); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-support.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "ay-consumer-support",
+      "passed": true,
+      "criteria": [
+        "reference",
+        "redaction",
+        "access",
+        "usefulness"
+      ],
+      "expected": "35 assertions pass",
+      "measured": "35/35"
+    },
+    {
+      "id": "az-consumer-support-ui",
+      "passed": true,
+      "criteria": [
+        "reference",
+        "usefulness"
+      ],
+      "expected": "23 assertions pass",
+      "measured": "23/23"
+    }
+  ]
+}

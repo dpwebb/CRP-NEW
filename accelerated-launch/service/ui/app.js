@@ -375,11 +375,6 @@ const ACCOUNT_CONTACT_FIELDS = [
   ['postal_code', 'Postal or ZIP code', 'text', 'postal-code'], ['country', 'Country', 'text', 'country-name'],
   ['previous_address', 'Previous address, if needed', 'text', 'off']
 ];
-const ACCOUNT_FORM_FIELDS = [
-  ['given_name', 'First name', 'text', 'given-name'], ['middle_name', 'Middle name (optional)', 'text', 'additional-name'],
-  ['family_name', 'Last name', 'text', 'family-name'], ['suffix', 'Suffix, such as Jr. (optional)', 'text', 'honorific-suffix'],
-  ['street_number', 'Street number (optional)', 'text', 'off'], ['street_name', 'Street name (optional)', 'text', 'off']
-];
 const ACCOUNT_CONTACT_LIMITS = { full_name: 200, given_name: 100, middle_name: 100, family_name: 100, suffix: 20, street_number: 30, street_name: 250,
   date_of_birth: 10, phone: 50, contact_email: 254, address_line1: 250, address_line2: 250, city: 120, region: 120, postal_code: 32, country: 80, previous_address: 500 };
 const DOCUMENT_KIND_LABELS = {
@@ -423,10 +418,6 @@ function renderAccountDetails(panel) {
     <p><strong>Sign-in email:</strong> ${esc(state.account.email)}</p>
     <h2>Contact details</h2><p class="evidence">Add the details you want to use in your letter. You can review them before sending.</p>
     <div class="row">${ACCOUNT_CONTACT_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
-    <details ${state.packetReturn ? 'open' : ''}><summary>Details for bureau forms</summary>
-      <p class="evidence">Enter your name as shown on your ID. If your form has separate street boxes, you can add your street number and name here.</p>
-      <div class="row">${ACCOUNT_FORM_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
-    </details>
     <button class="primary" id="account-save">Save contact details</button>
     <h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
     <div class="row"><div><label for="account-document-type">Purpose</label><select id="account-document-type"><option value="IDENTITY">Identification</option><option value="ADDRESS">Proof of address</option><option value="SUPPORTING">Other supporting document</option></select></div>
@@ -444,7 +435,7 @@ function renderAccountDetails(panel) {
     const data = await api('POST', '/api/account/recovery-key', { password: el('security-password').value }); ensureAccount();
     state.recoveryKey = data.recovery_key; state.accountSecurity = { recovery_key_available: true };
   });
-  for (const [field] of [...ACCOUNT_CONTACT_FIELDS, ...ACCOUNT_FORM_FIELDS]) el('account-' + field).oninput = () => { accountOperationSequence++; state.accountProfile[field] = el('account-' + field).value; };
+  for (const [field] of ACCOUNT_CONTACT_FIELDS) el('account-' + field).oninput = () => { accountOperationSequence++; state.accountProfile[field] = el('account-' + field).value; };
   el('account-save').onclick = () => run(async () => {
     const ensureAccount = accountContext(), operation = ++accountOperationSequence, profile = { ...state.accountProfile };
     const saved = await api('PUT', '/api/account/profile', { profile });
@@ -1553,13 +1544,6 @@ function packetReportCopies(packet) {
         ${report.review_url === copyUrl ? `<a href="${esc(copyUrl)}" target="_blank" rel="noopener noreferrer">Check the original report</a>` : ''}</div>`;
     }).join('')}</section>`;
 }
-function packetFormPreviews(packet, ready) {
-  if (!packet.form_previews?.length) return '';
-  return `<section id="packet-forms"><h3>Your bureau forms</h3>
-    <p class="evidence">We fill these forms with your saved details and chosen disputes. Check them before you approve your packet. Sign where the original form asks.</p>
-    ${ready ? `<ul class="plain">${packet.form_previews.map(form => `<li><a href="${esc(form.review_url)}" target="_blank" rel="noopener noreferrer">Open filled ${esc(form.label)}</a></li>`).join('')}</ul>`
-      : '<p class="evidence">Save your details and the mail checklist to open your filled forms.</p>'}</section>`;
-}
 function renderPacketBlock(pv) {
   const issues = (pv.eligible_issues || []).filter((i) => i.eligible);
   const packet = pv.packet || {};
@@ -1584,7 +1568,7 @@ function renderPacketBlock(pv) {
     <h2>Your dispute packet</h2>
     <p class="evidence">Choose the issues you want the bureau to check or correct.</p>
     ${rows}
-    <p class="evidence">We put your letter, report pages, document copies and bureau forms in one PDF.</p>
+    <p class="evidence">We put your letter, report pages and document copies in one PDF.</p>
     ${packetSupportingDocuments(pv)}
     ${packetReportCopies(packet)}
     <div class="row">
@@ -1764,7 +1748,8 @@ async function wirePacket(panel) {
   }
   const accountDetails = el('packet-account-details');
   packetLeave = step => run(async () => {
-    const ensureCurrent = await persistSelection(); ensureCurrent();
+    ensureOrigin();
+    if (edits) { const ensureCurrent = await persistSelection(); ensureCurrent(); }
     if (step === STEP.ACCOUNT) {
       state.packetReturn = { accountId: state.account.account_id, epoch: accountEpoch, caseId, resultId: pv.packet.result_id || state.view.result_id };
       state.accountProfile = null;

@@ -1,0 +1,666 @@
+{
+  "identity": {
+    "build_id": null,
+    "served_build_id": null,
+    "local_only": true
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T05:00:52.271Z",
+  "scope": "Supported common-error consumer facilitation across all 82 selections, with source-linked assessment, consumer-controlled packet delivery and account isolation. This is local implementation evidence, not every check on every layout or hosted acceptance.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "scope": "SUPPORTED_PATHS_ONLY",
+    "tests": [
+      {
+        "id": "n-applicability",
+        "passed": true,
+        "criteria": [
+          "jurisdiction_inventory",
+          "behavioral_coverage"
+        ],
+        "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately.",
+        "measured": "1112 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "o-all82-infrastructure",
+        "passed": true,
+        "criteria": [
+          "usable_intake",
+          "account_isolation",
+          "behavioral_coverage"
+        ],
+        "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths.",
+        "measured": "88 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "bx-all82-factual-verification",
+        "passed": true,
+        "criteria": [
+          "applicable_assessment",
+          "consumer_delivery",
+          "usable_intake",
+          "account_isolation",
+          "behavioral_coverage"
+        ],
+        "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association.",
+        "measured": "9 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cw-common-error-rule-assessment",
+        "passed": true,
+        "criteria": [
+          "applicable_assessment",
+          "behavioral_coverage"
+        ],
+        "expected": "Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds.",
+        "measured": "1142 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "cx-all82-required-report-data",
+        "passed": true,
+        "criteria": [
+          "applicable_assessment",
+          "behavioral_coverage"
+        ],
+        "expected": "All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence.",
+        "measured": "575 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "eu-general-omission-delivery",
+        "passed": true,
+        "criteria": [
+          "applicable_assessment",
+          "consumer_delivery",
+          "behavioral_coverage"
+        ],
+        "expected": "Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check.",
+        "measured": "515 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "dl-general-caption-sources",
+        "passed": true,
+        "criteria": [
+          "usable_intake",
+          "consumer_delivery"
+        ],
+        "expected": "The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions.",
+        "measured": "224 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "ct-owner-common-error-scope",
+        "passed": true,
+        "criteria": [
+          "jurisdiction_inventory",
+          "applicable_assessment",
+          "behavioral_coverage"
+        ],
+        "expected": "The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+        "measured": "357 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "z-general-intake",
+        "passed": true,
+        "criteria": [
+          "usable_intake"
+        ],
+        "expected": "General intake accepts a plausible bureau report and refuses unrelated or unreadable documents without inventing facts.",
+        "measured": "105 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "b-refusals",
+        "passed": true,
+        "criteria": [
+          "usable_intake"
+        ],
+        "expected": "Jurisdiction and upload refusals are typed and enforced, including lookalike documents.",
+        "measured": "224 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "l-au-format-family",
+        "passed": true,
+        "criteria": [
+          "usable_intake"
+        ],
+        "expected": "The Australian family reader preserves its supported structural boundary.",
+        "measured": "87 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "w-ca-second-bureau-format",
+        "passed": true,
+        "criteria": [
+          "usable_intake"
+        ],
+        "expected": "The TransUnion Canada reader preserves its measured family contract.",
+        "measured": "234 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "p-us-consumer-format",
+        "passed": true,
+        "criteria": [
+          "usable_intake"
+        ],
+        "expected": "The United States family reader yields source-associated records.",
+        "measured": "78 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "ap-accept-010-consistency",
+        "passed": true,
+        "criteria": [
+          "material_questions"
+        ],
+        "expected": "No context-only questions are generated; retired prompts stay hidden and supplemental answers cannot replace report evidence.",
+        "measured": "111 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "a-isolation",
+        "passed": true,
+        "criteria": [
+          "account_isolation"
+        ],
+        "expected": "Another account cannot read or mutate owned case/file/result data.",
+        "measured": "19 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "bw-browser-wizzard",
+        "passed": true,
+        "criteria": [
+          "consumer_delivery",
+          "behavioral_coverage"
+        ],
+        "expected": "The actual browser completes consumer selection, review, approval and packet download through the local service.",
+        "measured": "161 passed; 0 failed; 0 skipped"
+      },
+      {
+        "id": "m-au-journey",
+        "passed": true,
+        "criteria": [
+          "consumer_delivery"
+        ],
+        "expected": "The supported Australian consumer journey reaches its issue and output.",
+        "measured": "102 passed; 0 failed; 0 skipped"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/cases.cjs",
+        "sha256": "8dcc7e48f19aca9368bd03ece0178a6d86c4b3c008c7201e6b80b5cb4808b393"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+      },
+      {
+        "file": "accelerated-launch/service/entitlement.cjs",
+        "sha256": "2801cf405fff39b68ff7114c7af1690f7263af3c5b65ef807ad91d3366d3a11c"
+      },
+      {
+        "file": "accelerated-launch/service/applicability.cjs",
+        "sha256": "a401353a79c7d67aa63055b83683a99fcf9bf7e32f47cf04025c12398ad43033"
+      },
+      {
+        "file": "accelerated-launch/service/issues.cjs",
+        "sha256": "67f447c84717c48d20535994ac8864adc3b82ff8fba06ab34e2a780ab2647141"
+      },
+      {
+        "file": "accelerated-launch/service/results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch/service/packets.cjs",
+        "sha256": "8bf63f0028f8e156ca51d69d3c6d32b237666da461e9b39b6a78be5d25c65599"
+      },
+      {
+        "file": "accelerated-launch/service/common-error-checklist.cjs",
+        "sha256": "2d89a50bf33b13ac8829032fce05feec377c497f5da34fc2cc8feb24a7940f19"
+      },
+      {
+        "file": "accelerated-launch/service/common-errors.cjs",
+        "sha256": "9e64e6cfb5ebe2601fb0ec22054d794581efc5492c8a089f9dc1a59c2a41b34d"
+      },
+      {
+        "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+        "sha256": "ddb415880e50e7940a515cecf4525c71bd3269d3362c0217b60070eb7ec95879"
+      },
+      {
+        "file": "accelerated-launch/service/common-error-scope.cjs",
+        "sha256": "78490f15c051feaa7fbfdaf18a2264facc98c772bf11295f429233b10afb7195"
+      },
+      {
+        "file": "accelerated-launch/service/clarification.cjs",
+        "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "66d088738a1a235cbfa85f4924371dbe58eef2fd03bc35e3d4f6ee4f81ecc259"
+      },
+      {
+        "file": "accelerated-launch/adapters/rule-adapters.cjs",
+        "sha256": "5387a709109c6cb71d0a40694676159b1b234c886edf7dbc448c37fc16fd7d30"
+      },
+      {
+        "file": "accelerated-launch/adapters/adapter-configs.json",
+        "sha256": "f12828cf9fcee4ed9a9b33dcb699022b56f9b9eb0949855922dbb5e288c8e281"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/out/current-regression-evidence.json",
+        "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+      },
+      {
+        "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-all82-facilitation.cjs",
+        "sha256": "5b5bdcd64457df1aecc353b0251d794fa334414b7e631fbf31e0d5936a16cdc3"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/n-applicability-records.cjs",
+        "sha256": "70916aa3b0113598285f2da2e436731eba030f492174cd1cdcd5597ec2e72f14"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/o-all82-infrastructure.cjs",
+        "sha256": "d450160b2125cc5c2dc6bdc78af479cfd870def44e007257963950b28d87f3c1"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bx-all82-factual-verification.cjs",
+        "sha256": "a14382719f673f4e54c064942188480453bea963e7075aa51bba98e8c3b7a426"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/cw-common-error-rule-assessment.cjs",
+        "sha256": "591403ff5bc2142752834a57dc8fcfa03825d16ec1ed39db3f38195e01d55147"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/cx-all82-required-report-data.cjs",
+        "sha256": "5a42312b99377707c710854a76d1c493b1d4891e7fc2a8bc5c2b4bee86ca0f42"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/eu-general-omission-delivery.cjs",
+        "sha256": "abf96199be16a0f95155c1b2f48c59bb95eb9f702bc631e1b1f7f43ad8820fc7"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/dl-general-caption-sources.cjs",
+        "sha256": "aeef3458d56548e0f6f311a6d7825e8697e81d07716669f46f66b8c651f573dc"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ct-owner-common-error-scope.cjs",
+        "sha256": "a9180c677d625c97c4d4b6027b8e5a8f33b04ac38e3c72980ad869a835b09ad8"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/z-general-intake.cjs",
+        "sha256": "784e8c9ca6bf9dd4358fe0dbfb8fff3ca4708b720391bd52f03d6c7e20dc7439"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/b-jurisdiction-and-refusals.cjs",
+        "sha256": "2974973da6141fc3f05e1a093e6957af816f70f0d65438e7ed79ce1123fba9cd"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/l-au-format-family.cjs",
+        "sha256": "b6bb766722d10b8c419a296268b87a3e0170e60b7e8d9f8480d46debb24fa5ef"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/w-ca-second-bureau-format.cjs",
+        "sha256": "574ac58c5d3c5c916053c016c79124896ff3872b5d599402bc4f563981ef650e"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/p-us-consumer-format.cjs",
+        "sha256": "18271d49592d1105113b7a603f83842c28a892d9fcb21782086b12dc8ae5b893"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/a-isolation.cjs",
+        "sha256": "8f6ed1ef223ec4a46519466cc6b79068f81e274b1023b8bb322f23b0350d368d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "sha256": "582dbf010a092a5a4eea6c28a2f7cdad016abe7ccf1430573061591beb49487f"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/m-au-journey.cjs",
+        "sha256": "2cf769038230ecc69f59aa546801c6d4fbf1ab824c0be84b5e62a8592d263991"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Current served-release upload through selected, reviewed, approved and legitimately entitled packet download has not been recorded. Local all-82 implementation proof does not establish hosted paid acceptance or production readiness."
+  },
+  "facilitation_by_jurisdiction": {
+    "total_rows": 82,
+    "journey_exercised": 82,
+    "download_content_matched": 82,
+    "case_association_matched": 82,
+    "shared_checklist_items": 21,
+    "ordinary_report_checks_per_region": 6,
+    "statutory_support_is_mandatory": false,
+    "regions_exercised": [
+      "AU-ACT",
+      "AU-NSW",
+      "AU-NT",
+      "AU-QLD",
+      "AU-SA",
+      "AU-TAS",
+      "AU-VIC",
+      "AU-WA",
+      "CA-AB",
+      "CA-BC",
+      "CA-MB",
+      "CA-NB",
+      "CA-NL",
+      "CA-NS",
+      "CA-NT",
+      "CA-NU",
+      "CA-ON",
+      "CA-PE",
+      "CA-QC",
+      "CA-SK",
+      "CA-YT",
+      "GB-ENG",
+      "GB-NIR",
+      "GB-SCT",
+      "GB-WLS",
+      "US-AK",
+      "US-AL",
+      "US-AR",
+      "US-AS",
+      "US-AZ",
+      "US-CA",
+      "US-CO",
+      "US-CT",
+      "US-DC",
+      "US-DE",
+      "US-FL",
+      "US-GA",
+      "US-GU",
+      "US-HI",
+      "US-IA",
+      "US-ID",
+      "US-IL",
+      "US-IN",
+      "US-KS",
+      "US-KY",
+      "US-LA",
+      "US-MA",
+      "US-MD",
+      "US-ME",
+      "US-MI",
+      "US-MN",
+      "US-MO",
+      "US-MP",
+      "US-MS",
+      "US-MT",
+      "US-NC",
+      "US-ND",
+      "US-NE",
+      "US-NH",
+      "US-NJ",
+      "US-NM",
+      "US-NV",
+      "US-NY",
+      "US-OH",
+      "US-OK",
+      "US-OR",
+      "US-PA",
+      "US-PR",
+      "US-RI",
+      "US-SC",
+      "US-SD",
+      "US-TN",
+      "US-TX",
+      "US-UM",
+      "US-UT",
+      "US-VA",
+      "US-VI",
+      "US-VT",
+      "US-WA",
+      "US-WI",
+      "US-WV",
+      "US-WY"
+    ],
+    "countries": {
+      "CA": 13,
+      "US": 57,
+      "GB": 4,
+      "AU": 8
+    }
+  },
+  "remaining": {
+    "reader_coverage": "These supported shared paths do not establish every field mapping or every checklist item for every report layout.",
+    "current_gb_format": "The current bounded UK GENERAL consumer field contract is supported separately. The dedicated Experian example remains historical; whole present-day bureau layout certification is not claimed or required for these supported journeys.",
+    "hosted_paid_journey": "Current served-release upload through selected, reviewed, approved and legitimately entitled packet download has not been recorded. Local all-82 implementation proof does not establish hosted paid acceptance or production readiness.",
+    "production_readiness": "OPEN; production configuration, release controls and owner authorization are separate."
+  },
+  "criteria": {
+    "jurisdiction_inventory": {
+      "passed": false,
+      "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "usable_intake": {
+      "passed": false,
+      "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions. General intake accepts a plausible bureau report and refuses unrelated or unreadable documents without inventing facts. Jurisdiction and upload refusals are typed and enforced, including lookalike documents. The Australian family reader preserves its supported structural boundary. The TransUnion Canada reader preserves its measured family contract. The United States family reader yields source-associated records.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "applicable_assessment": {
+      "passed": false,
+      "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds. All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "material_questions": {
+      "passed": false,
+      "expected": "No context-only questions are generated; retired prompts stay hidden and supplemental answers cannot replace report evidence.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "consumer_delivery": {
+      "passed": false,
+      "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions. The actual browser completes consumer selection, review, approval and packet download through the local service. The supported Australian consumer journey reaches its issue and output.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "account_isolation": {
+      "passed": false,
+      "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Another account cannot read or mutate owned case/file/result data.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "behavioral_coverage": {
+      "passed": false,
+      "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately. All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths. All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association. Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds. All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence. Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check. The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded. The actual browser completes consumer selection, review, approval and packet download through the local service.",
+      "measured": "Implemented and tested locally; served-release acceptance remains pending.",
+      "evidence_refs": []
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "Measured current served-release consumer journey with legitimate entitlement.",
+      "measured": "Current served-release upload through selected, reviewed, approved and legitimately entitled packet download has not been recorded. Local all-82 implementation proof does not establish hosted paid acceptance or production readiness.",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "n-applicability",
+      "passed": true,
+      "criteria": [
+        "jurisdiction_inventory",
+        "behavioral_coverage"
+      ],
+      "expected": "All 82 selected regions expose the shared common-error checklist; optional statutory support is reported separately.",
+      "measured": "1112 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "o-all82-infrastructure",
+      "passed": true,
+      "criteria": [
+        "usable_intake",
+        "account_isolation",
+        "behavioral_coverage"
+      ],
+      "expected": "All 82 regions enforce owned account/case/upload/evaluation/status/deletion paths.",
+      "measured": "88 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "bx-all82-factual-verification",
+      "passed": true,
+      "criteria": [
+        "applicable_assessment",
+        "consumer_delivery",
+        "usable_intake",
+        "account_isolation",
+        "behavioral_coverage"
+      ],
+      "expected": "All 82 regions deliver a sourced checklist violation through selection, approval and entitled download with exact case/report association.",
+      "measured": "9 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cw-common-error-rule-assessment",
+      "passed": true,
+      "criteria": [
+        "applicable_assessment",
+        "behavioral_coverage"
+      ],
+      "expected": "Six sourced shared checks run under every region without a mandatory statute gate; benign and missing-source controls preserve evidence thresholds.",
+      "measured": "1142 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "cx-all82-required-report-data",
+      "passed": true,
+      "criteria": [
+        "applicable_assessment",
+        "behavioral_coverage"
+      ],
+      "expected": "All 82 regions distinguish a source-proven omission from unreadable or absent reader evidence.",
+      "measured": "575 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "eu-general-omission-delivery",
+      "passed": true,
+      "criteria": [
+        "applicable_assessment",
+        "consumer_delivery",
+        "behavioral_coverage"
+      ],
+      "expected": "Native own-account omitted dates and corroborated original/collection balances run across all 82, with four representative selected approved downloads for each check.",
+      "measured": "515 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "dl-general-caption-sources",
+      "passed": true,
+      "criteria": [
+        "usable_intake",
+        "consumer_delivery"
+      ],
+      "expected": "The bounded current UK GENERAL field contract reaches an owned selected packet in each of the four UK regions.",
+      "measured": "224 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "ct-owner-common-error-scope",
+      "passed": true,
+      "criteria": [
+        "jurisdiction_inventory",
+        "applicable_assessment",
+        "behavioral_coverage"
+      ],
+      "expected": "The same 21-item checklist is available in all 82 regions; retired independent statutory checks stay excluded.",
+      "measured": "357 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "z-general-intake",
+      "passed": true,
+      "criteria": [
+        "usable_intake"
+      ],
+      "expected": "General intake accepts a plausible bureau report and refuses unrelated or unreadable documents without inventing facts.",
+      "measured": "105 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "b-refusals",
+      "passed": true,
+      "criteria": [
+        "usable_intake"
+      ],
+      "expected": "Jurisdiction and upload refusals are typed and enforced, including lookalike documents.",
+      "measured": "224 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "l-au-format-family",
+      "passed": true,
+      "criteria": [
+        "usable_intake"
+      ],
+      "expected": "The Australian family reader preserves its supported structural boundary.",
+      "measured": "87 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "w-ca-second-bureau-format",
+      "passed": true,
+      "criteria": [
+        "usable_intake"
+      ],
+      "expected": "The TransUnion Canada reader preserves its measured family contract.",
+      "measured": "234 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "p-us-consumer-format",
+      "passed": true,
+      "criteria": [
+        "usable_intake"
+      ],
+      "expected": "The United States family reader yields source-associated records.",
+      "measured": "78 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "ap-accept-010-consistency",
+      "passed": true,
+      "criteria": [
+        "material_questions"
+      ],
+      "expected": "No context-only questions are generated; retired prompts stay hidden and supplemental answers cannot replace report evidence.",
+      "measured": "111 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "a-isolation",
+      "passed": true,
+      "criteria": [
+        "account_isolation"
+      ],
+      "expected": "Another account cannot read or mutate owned case/file/result data.",
+      "measured": "19 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "bw-browser-wizzard",
+      "passed": true,
+      "criteria": [
+        "consumer_delivery",
+        "behavioral_coverage"
+      ],
+      "expected": "The actual browser completes consumer selection, review, approval and packet download through the local service.",
+      "measured": "161 passed; 0 failed; 0 skipped"
+    },
+    {
+      "id": "m-au-journey",
+      "passed": true,
+      "criteria": [
+        "consumer_delivery"
+      ],
+      "expected": "The supported Australian consumer journey reaches its issue and output.",
+      "measured": "102 passed; 0 failed; 0 skipped"
+    }
+  ]
+}

@@ -142,23 +142,21 @@ const PROOFS = Object.freeze([
         ordinary_matching_preserved: e?.ordinary_matching_preserved, original_report_pages: e?.original_report_pages,
         physical_print_or_mail: e?.physical_print_or_mail,
         boundary: 'Shared source contract and real local packet output; reader admission is proved separately.' } }) },
-  { id: 'er-bureau-form-population', criteria: ['consumer_review', 'usable_download', 'behavioral_coverage'],
-    exercise_class: 'ACTUAL_HASH_VERIFIED_ORIGINAL_PDF_RENDERERS',
-    expected: 'Supported actual original templates retain artwork/native controls, explicit supplied data and every selected request; rendering is deterministic, overflow is retained, and signature/consent stay blank.',
-    // This section returns no metadata. Credit its completed, source-pinned
-    // behavioral assertions, not a fabricated renderer-success field or count.
-    measure: () => ({ passed: true, measured: { proof: 'Completed assertions in the source-matched original-form renderer section; template bytes are independently verified by execution custody.' } }) },
+  { id: 'er-bureau-forms-retired', criteria: ['consumer_review', 'usable_download', 'behavioral_coverage'],
+    exercise_class: 'FICTIONAL_NATIVE_UPLOAD_ACTUAL_FORM_FREE_PDFS',
+    expected: 'Country and bureau variants produce no retired forms or form-only gates; exact review and download bytes remain approval-bound.',
+    measure: e => ({ passed: allTrue(e, ['forms_retired', 'form_only_inputs_not_required', 'approved_bytes_match', 'old_approval_refused']), measured: e }) },
   { id: 'es-filled-packet-business-letter', criteria: ['packet_scope', 'consumer_review', 'usable_download', 'entitlement_isolation'],
     exercise_class: 'FICTIONAL_NATIVE_UPLOAD_ACTUAL_COMPLETE_REVIEW_PDF',
-    expected: 'The owned review shows one complete PDF with letter, report pages, documents and filled originals. Approval binds its exact digest/template versions and selected order; downloaded and printed bytes equal reviewed bytes. Missing name parts are not guessed, edits require reapproval, and one-off access does not grant subscriber packets.',
-    measure: e => ({ passed: allTrue(e, ['owned_actual_pdf_review', 'original_form_approval_digest',
-      'name_parts_not_guessed', 'ordinary_business_letter']), measured: { owned_actual_pdf_review: e?.owned_actual_pdf_review,
-      original_form_approval_digest: e?.original_form_approval_digest, name_parts_not_guessed: e?.name_parts_not_guessed,
+    expected: 'The owned review shows one complete PDF with letter, report pages and selected document copies. Approval binds its exact digest and packet version and selected order; downloaded and printed bytes equal reviewed bytes. Form-only name parts are not required, edits require reapproval, and one-off access does not grant subscriber packets.',
+    measure: e => ({ passed: allTrue(e, ['owned_actual_pdf_review', 'form_free_approval_digest',
+      'form_only_inputs_not_required', 'ordinary_business_letter']), measured: { owned_actual_pdf_review: e?.owned_actual_pdf_review,
+      form_free_approval_digest: e?.form_free_approval_digest, form_only_inputs_not_required: e?.form_only_inputs_not_required,
       ordinary_business_letter: e?.ordinary_business_letter } }) },
   { id: 'ew-inline-packet-composer', criteria: ['consumer_review', 'usable_download', 'behavioral_coverage'],
     exercise_class: 'ACTUAL_COMPLETE_PDF_NATIVE_FIELDS_AND_INDEPENDENT_RENDERING',
-    expected: 'The final complete PDF preserves source-page artwork, inline images, editable letter fields and independently editable original native controls, with deterministic bytes and blank signature/consent.',
-    measure: e => ({passed:allTrue(e,['single_complete_pdf','original_native_controls','source_pages_only','editable_letter','deterministic_approval_bytes','independent_print_rendering']),measured:e}) },
+    expected: 'The final complete PDF preserves source-page artwork, inline images, editable letter fields without bureau form components, with deterministic approved bytes.',
+    measure: e => ({passed:allTrue(e,['single_complete_pdf','no_bureau_form_components','source_pages_only','editable_letter','deterministic_approval_bytes','independent_print_rendering']),measured:e}) },
   { id: 'ex-inline-packet-journey', criteria: ['consumer_review', 'usable_download', 'entitlement_isolation', 'end_to_end_journey'],
     exercise_class: 'FICTIONAL_NATIVE_UPLOAD_OWNED_LETTER_EDIT_AND_COMPLETE_HTTP_PDF',
     expected: 'An owned subscriber edits the whole letter, reviews and approves one complete PDF, and receives identical print/download bytes. Optional bureau number and separately chosen attachment pages are approval-bound; foreign and unpaid editing is refused.',
@@ -224,7 +222,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
     implementation: {
       configured, status: configured ? 'IMPLEMENTED_AND_TESTED' : 'OPEN',
       status_note: configured
-        ? 'Complete current-product behavioral execution and tested-source/template hashes match. Local selected-issue packets, letters, actual filled originals, review/approval, download, attachment choices and isolation are demonstrated within the stated supported mechanisms. Hosted paid verification remains separate.'
+        ? 'Complete current-product behavioral execution and tested-source hashes match. Local selected-issue packets, letters, selected report evidence and supporting document copies, review/approval, download, attachment choices and isolation are demonstrated within the stated supported mechanisms. Hosted paid verification remains separate.'
         : 'Local packet closure is refused until complete passing current behavioral execution, matching tested sources and measured packet outcomes are available.',
       tests, open_criteria: {
         local: REQUIRED_CRITERIA.filter(key => key !== 'end_to_end_journey'
@@ -238,7 +236,7 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
         source_inventory_matched: custody.passed, problems: custody.problems }
     },
     staging_verification: { status: 'PENDING',
-      reason: 'Current served-build paid review of the letter and populated original forms, approval and matching download is not established by this local suite. No hosted payment, served identity or staging pass is fabricated.' },
+      reason: 'Current served-build paid review of the form-free letter/evidence packet, approval and matching download is not established by this local suite. No hosted payment, served identity or staging pass is fabricated.' },
     production_readiness: { status: 'NOT_ESTABLISHED', note: 'Independent production controls and release authorization remain separate.' },
     packet_scope_by_jurisdiction: {
       scope: localScope, canonical_regions: allRegions(),
@@ -247,11 +245,11 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
         'own tradeline or collection name, printed facts, source locations and relevant report identity',
         'the breached checklist rule and accepted statutory support where applicable',
         'consumer-supplied contact details and separate permitted wording',
-        'the ordinary consumer letter and applicable populated original bureau form',
+        'the ordinary consumer correction or verification letter; no bureau-specific forms',
         'only selected supporting document/report copies, including both selected re-aging sources',
-        'the exact reviewed version and original/output digests bound to approval'],
+        'the exact reviewed version and selected evidence/output digests bound to approval'],
       eligibility: 'A supported eligible issue from the owned case must be selected; unknown, empty, changed or stale selections and information-only court claims cannot enter an approved download.',
-      recipient: 'The selected bureau and purpose use sourced postal instructions and applicable forms. The consumer reviews, signs where required, prints and mails the packet; the service does not submit, sign or mail it.',
+      recipient: 'The selected bureau and purpose use sourced postal instructions and relevant supporting evidence. The consumer reviews, signs the letter, prints and mails the packet; the service does not submit, sign or mail it.',
       boundary: '82 shared supported GENERAL issue-to-packet journeys plus distinct representative packet mechanisms. This is not every check in every dedicated bureau layout, uniform statutory coverage, hosted payment or a physical print/mail test.'
     },
     criteria: Object.fromEntries(REQUIRED_CRITERIA.map(key => [key, {

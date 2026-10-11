@@ -1,0 +1,91 @@
+{
+  "blocker_id": "BLOCKER-CLARIFY-MATERIALITY-002",
+  "measured_at": "2026-10-11T12:36:06.358Z",
+  "passed": false,
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ap-accept-010-consistency",
+        "passed": true,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "111 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      },
+      {
+        "id": "am-fdt-recovery",
+        "passed": true,
+        "criteria": [
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "71 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      },
+      {
+        "id": "c-extraction",
+        "passed": true,
+        "criteria": [
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "36 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/clarification.cjs",
+        "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs",
+        "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/c-extraction-not-absence.cjs",
+        "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+        "sha256": "44d438fb35c56103e00742d22d300d26c8bf7a28e293c3b2c0667b73d01b97f4"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; these corrections have not been deployed or verified on staging."
+  },
+  "criteria": {
+    "no_context_only_questions": {
+      "passed": false,
+      "expected": "no_context_only_questions",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "rule_materiality": {
+      "passed": false,
+      "expected": "rule_materiality",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    },
+    "mandatory_omission_not_cured_by_answer": {
+      "passed": false,
+      "expected": "mandatory_omission_not_cured_by_answer",
+      "measured": "Staging verification pending",
+      "evidence_refs": []
+    }
+  }
+}

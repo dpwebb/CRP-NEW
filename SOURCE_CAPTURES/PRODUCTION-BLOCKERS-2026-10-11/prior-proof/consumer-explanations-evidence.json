@@ -1,0 +1,145 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:45.912Z",
+  "scope": "BLOCKER-EXPLANATIONS-001. Why-this-was-flagged cards: exact raw printed fact + normalization + owning source location, applicable citation + admitted source version, and (for probable findings) the named unavailable decisive fact without presenting breach as established; the downloaded report agrees with the on-screen result. Implementation is closed by aw-consumer-explanations; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "aw-consumer-explanations-report-fact",
+        "passed": true,
+        "criteria": [
+          "report_fact"
+        ],
+        "expected": "the exact raw printed value, its normalization and its owning source location are surfaced",
+        "measured": "rule_source.raw_value=\"January 1, 2011\"; normalization {from:\"January 1, 2011\",to:\"2011-01-01\"}; location page 1 line 4"
+      },
+      {
+        "id": "aw-consumer-explanations-rule-basis",
+        "passed": true,
+        "criteria": [
+          "rule_basis"
+        ],
+        "expected": "the applicable rule citation and the admitted source-version digest are surfaced",
+        "measured": "check_name contains \"1785.13\"; rule_source_version matches /^[0-9A-F]{64}$/"
+      },
+      {
+        "id": "aw-consumer-explanations-uncertainty",
+        "passed": true,
+        "criteria": [
+          "uncertainty"
+        ],
+        "expected": "a probable finding names its unavailable decisive fact and never presents breach as established",
+        "measured": "decisive_facts_unavailable[0].identity=publicRecord.bankruptcyOrderForReliefDate.historical_correspondence; qualification says \"probable violation\", not \"established violation\""
+      },
+      {
+        "id": "aw-consumer-explanations-consistency",
+        "passed": true,
+        "criteria": [
+          "consistency"
+        ],
+        "expected": "the downloaded report agrees with the on-screen result; missing/conflicting evidence never misleads",
+        "measured": "assessmentReportBody carries the same citation, source version, raw fact, normalization and classification wording; conflicting dates withhold the finding"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/results.cjs",
+        "sha256": "f1816099dc7a0e3c07bd39398ff566cd4c3c9a54ffc4978d681004adb614df85"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+      },
+      {
+        "file": "accelerated-launch/service/evaluation.cjs",
+        "sha256": "8e72a94cca09b2b572442dab93ff53318aebf9bab6b34bc0df749b751f052fb4"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+        "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/aw-consumer-explanations.cjs",
+        "sha256": "af5e9e9eebd132d9bcf89057ac9caab8b565ce9d8f8a46907f88c8246c168bed"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/aw-consumer-explanations.cjs",
+        "sha256": "af5e9e9eebd132d9bcf89057ac9caab8b565ce9d8f8a46907f88c8246c168bed"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence written for consumer explanations; implementation is closed by the behavioral test, but the production check remains unresolved until deployed, current-release evidence is recorded."
+  },
+  "criteria": {
+    "report_fact": {
+      "passed": false,
+      "expected": "exact raw printed values, normalization and owning source locations",
+      "measured": "implemented and tested (aw-consumer-explanations); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-explanations.cjs"
+      ]
+    },
+    "rule_basis": {
+      "passed": false,
+      "expected": "applicable citation and source version; observations use an explicit factual basis",
+      "measured": "implemented and tested (aw-consumer-explanations); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-explanations.cjs"
+      ]
+    },
+    "uncertainty": {
+      "passed": false,
+      "expected": "material unknowns and exceptions explained without presenting breach as established",
+      "measured": "implemented and tested (aw-consumer-explanations); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-explanations.cjs"
+      ]
+    },
+    "journey": {
+      "passed": false,
+      "expected": "cards visible and usable in the deployed wizard",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    },
+    "consistency": {
+      "passed": false,
+      "expected": "explanation agrees with result classification and downloaded assessment",
+      "measured": "implemented and tested (aw-consumer-explanations); staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-consumer-explanations.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "aw-consumer-explanations",
+      "passed": true,
+      "criteria": [
+        "report_fact",
+        "rule_basis",
+        "uncertainty",
+        "consistency"
+      ],
+      "expected": "all behavioral assertions pass",
+      "measured": "14/14"
+    }
+  ]
+}

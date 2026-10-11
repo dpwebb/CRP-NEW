@@ -1,0 +1,138 @@
+{
+  "execution_ref": {
+    "file": "accelerated-launch\\service\\out\\current-regression-evidence.json",
+    "sha256": "6d787369dcd525c7dae9cbacd35ac9f358a9c6070774cb29fc1a704839cff468"
+  },
+  "blocker": "BLOCKER-SUBSCRIPTION-VALUE-001",
+  "generated_at": "2026-10-11T04:27:16.740Z",
+  "identity": {
+    "build_id": null,
+    "served_build_id": null
+  },
+  "implementation": {
+    "configured": true,
+    "scope": "owned report history: one entry per persisted assessment, newest report first, showing bureau and report date; consumer-chosen comparison of two owned assessments, with the chronological order taken from the two report dates (no claim when it is uncertain); record matching by supported identity evidence only (report-masked account identifier AND printed creditor identity); index, balance, dates and a name alone never match, and a partial match stays qualified; four issue outcomes: still observed, changed, no longer observed in the later report, not comparable from available evidence; read-only reuse of persisted extractions, results and the unified issue descriptor; nothing is re-read and no earlier fact, result or packet is changed; cross-account refusal (403/404), the unentitled refusal, and the one-time purchaser preserved assessment and packet",
+    "tests": [
+      {
+        "id": "bz-report-history",
+        "passed": true,
+        "expected": "owned history, consumer-chosen comparison, four issue outcomes, cross-account refusal and packet preservation over the real endpoints",
+        "measured": "53 assertions passed, 0 failed",
+        "criteria": [
+          "owned_history",
+          "comparison_linkage",
+          "issue_changes",
+          "isolation",
+          "behavioral_coverage"
+        ]
+      },
+      {
+        "id": "bw-browser-wizzard",
+        "passed": true,
+        "expected": "the history and comparison rendered and driven in a real browser, with the actual packet-download control",
+        "measured": "161 assertions passed, 0 failed",
+        "criteria": [
+          "consumer_view",
+          "behavioral_coverage"
+        ]
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/comparison.cjs",
+        "sha256": "fd79a54061f76551b0d261d6eee0aef842c401b9fe84697c77f690258969db6e"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "9adab1136a973d1ab6cf1f2f72118ac70132ae4d07aa0492a0d5307e256ddda1"
+      },
+      {
+        "file": "accelerated-launch/service/errors.cjs",
+        "sha256": "82fe04b51115cb72bcbf8395c9d6f43072c00ccf5cf06f3232eddf0e9bb64c04"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "66d088738a1a235cbfa85f4924371dbe58eef2fd03bc35e3d4f6ee4f81ecc259"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "sha256": "887b545b0f1826a0dd491698fd08ffd6cd4765b25b1c43e19dec069de791ad30"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "sha256": "582dbf010a092a5a4eea6c28a2f7cdad016abe7ccf1430573061591beb49487f"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "No deployed, current-release history/comparison journey evidence exists; the implementation is closed by the behavioral tests, and staging verification and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "owned_history": {
+      "passed": true,
+      "expected": "the account owns a history of its persisted assessments with bureau and report date",
+      "measured": "the history endpoint lists each owned assessment with bureau, report date, jurisdiction and issue count (bz-report-history)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "comparison_linkage": {
+      "passed": true,
+      "expected": "two owned assessments are compared and linked, with the earlier/later order taken from the report dates",
+      "measured": "the comparison links two owned assessments; an out-of-order selection is reordered and two same-date reports claim no direction (bz-report-history)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "issue_changes": {
+      "passed": true,
+      "expected": "a previously identified issue is tracked as still observed, changed, no longer observed or not comparable",
+      "measured": "all four outcomes are produced with before/after facts; a missing field and an uncertain match are not comparable (bz-report-history)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "consumer_view": {
+      "passed": true,
+      "expected": "the history and comparison are delivered in the Wizzard with readable evidence and uncertainty",
+      "measured": "the real browser renders the history list and the comparison cards with before/after facts, match state and the absence note (bw-browser-wizzard)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bw-browser-wizzard.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "isolation": {
+      "passed": true,
+      "expected": "account ownership and the paid gate are enforced on the history and comparison",
+      "measured": "another account is refused (403) and sees an empty history; an unknown result id is 404; reading your own history needs no purchase (bz-report-history)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "behavioral_coverage": {
+      "passed": true,
+      "expected": "the unchanged, changed, no-longer-observed, uncertain-match, different-bureau, missing-field and out-of-order-date cases are exercised",
+      "measured": "each case is driven through the real endpoints and, representatively, the real browser (bz-report-history, bw-browser-wizzard)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": true,
+      "expected": "the consumer uploads a subsequent report, compares it, and can still select current issues for a reviewed packet",
+      "measured": "the full local journey is exercised; the approved historical packet is unchanged and still downloads after a comparison (bz-report-history, bw-browser-wizzard)",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/bz-report-history.cjs",
+        "accelerated-launch\\service\\out\\current-regression-evidence.json"
+      ]
+    }
+  }
+}

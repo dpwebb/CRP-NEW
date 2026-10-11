@@ -1,0 +1,3092 @@
+{
+  "blocker_id": "BLOCKER-CLARIFY-MATERIALITY-002",
+  "measured_at": "2026-10-11T12:36:06.358Z",
+  "passed": true,
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ap-accept-010-consistency",
+        "passed": true,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "111 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      },
+      {
+        "id": "am-fdt-recovery",
+        "passed": true,
+        "criteria": [
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "71 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      },
+      {
+        "id": "c-extraction",
+        "passed": true,
+        "criteria": [
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "36 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+      },
+      {
+        "id": "production-final-freeze:eu-general-omission-delivery",
+        "passed": true,
+        "assertions": 515,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality",
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "515 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      },
+      {
+        "id": "production-final-freeze:c-extraction",
+        "passed": true,
+        "assertions": 36,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality",
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "36 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      },
+      {
+        "id": "production-final-freeze:am-fdt-recovery",
+        "passed": true,
+        "assertions": 71,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality",
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "71 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      },
+      {
+        "id": "production-final-freeze:ap-accept-010-consistency",
+        "passed": true,
+        "assertions": 111,
+        "criteria": [
+          "no_context_only_questions",
+          "rule_materiality",
+          "mandatory_omission_not_cured_by_answer"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "111 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/clarification.cjs",
+        "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+        "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs",
+        "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/c-extraction-not-absence.cjs",
+        "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+        "sha256": "44d438fb35c56103e00742d22d300d26c8bf7a28e293c3b2c0667b73d01b97f4"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "VERIFIED",
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "recorded_at": "2026-10-11T12:57:18.645Z",
+    "evidence_refs": [
+      "production-blocker-repair-2026-10-11/measurements.json"
+    ],
+    "method": "Actual source-matched isolated hosted candidate HTTP, genuine Sandbox provider event, consumer packet review/approval/download, own-history comparison and cleanup; exact regional behavioral loops reused"
+  },
+  "criteria": {
+    "no_context_only_questions": {
+      "passed": true,
+      "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "no_irrelevant_context_questions",
+            "expected": "Current supported observations offer no retired bankruptcy/court-case context questions",
+            "measured": [],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "eu-general-omission-delivery",
+            "assertions": 515,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "exercise_class": "FICTIONAL_NATIVE_PDF_UPLOAD",
+              "checks": [
+                {
+                  "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                }
+              ],
+              "boundary": "Native general-caption and same-report linked-pair mechanisms; no admission or dedicated-layout currency expansion."
+            }
+          },
+          {
+            "id": "c-extraction",
+            "assertions": 36,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scenarios": [
+                "DATE_LABEL_WITHOUT_VALUE",
+                "DATE_LABEL_ABSENT_FROM_ACCOUNT",
+                "NO_COLLECTION_ACCOUNTS",
+                "DATE_OUTSIDE_ANY_ACCOUNT",
+                "TWO_ACCOUNTS"
+              ]
+            }
+          },
+          {
+            "id": "am-fdt-recovery",
+            "assertions": 71,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "detection": {
+                "unreadable_pages": [
+                  2
+                ],
+                "contradictory": 1
+              },
+              "recovery": {
+                "facts_added": 1,
+                "substitution_forbidden": true
+              },
+              "limitations": {
+                "incomplete": true,
+                "affected": [
+                  "STATUTORY_RULE_COMPARISON",
+                  "REPORT_FACT_CONSISTENCY",
+                  "COMMON_ERROR"
+                ]
+              },
+              "duplicate": {
+                "similar_state": "SIMILAR_ENTRIES_WORTH_REVIEWING",
+                "duplicate_state": "POTENTIAL_ISSUE"
+              },
+              "benchmark": {
+                "passed": true,
+                "missed": 0
+              },
+              "benchmark_full": {
+                "passed": true,
+                "acceptance": {
+                  "max_missed_fact_rate": 0.05,
+                  "max_incorrect_fact_rate": 0,
+                  "max_misattribution_rate": 0,
+                  "require_uncertainty_withholding": true,
+                  "require_recovery_improvement": true,
+                  "require_never_unread_as_absent": true
+                },
+                "threshold_authority": "ALIGNED with the Owner-approved PROSPECTIVE criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported violations",
+                "prospective_criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "document_count": 5,
+                "page_count": 5,
+                "expected_fact_count": 10,
+                "real_pdf": {
+                  "ok": true,
+                  "page_count": 1,
+                  "read_errors": [],
+                  "opened_extracted": true,
+                  "closed_extracted": true,
+                  "records": 1
+                },
+                "metrics": {
+                  "missed_fact_rate": 0,
+                  "incorrect_reading_rate": 0,
+                  "misattribution_rate": 0,
+                  "recovery_rate": 1,
+                  "uncertainty_withholding": "OK",
+                  "recovery": {
+                    "facts_added": 1,
+                    "added_texts": [
+                      "Closed 01/01/2022"
+                    ],
+                    "substitution_forbidden": true,
+                    "recovery_attempts": 1,
+                    "recovery_improvement_ok": true
+                  }
+                },
+                "cases": [
+                  {
+                    "id": "FDT-HELDOUT-COMPLETE-NATIVE",
+                    "description": "a complete native-text account with a report header, an opened and a closed date",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-EQUIVALENT-LABEL",
+                    "description": "an equivalent label (Date Opened / Date Closed) must map to the same facts",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-LEGITIMATE-LOOKALIKE",
+                    "description": "two legitimate debts sharing the SAME dates but different account identities are not one duplicate",
+                    "required": 4,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-AMBIGUOUS-DATE",
+                    "description": "an ambiguous numeric date with no convention must be withheld, never guessed",
+                    "required": 0,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 1,
+                    "withholding": "withheld"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-BUREAU-ATTRIBUTION",
+                    "description": "a combined report must attribute each fact to the bureau section that printed it",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  }
+                ],
+                "baseline": "held-out synthetic text layouts plus a real PDF processed through pdftotext, with independently recorded expected facts"
+              },
+              "acceptance": {
+                "passed": false,
+                "implementation_passed": true,
+                "criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "freeze_digest": "0a641e3344ad1fd6b7fff33617f1c952d04678ddcae12d4172f0456530c047a3",
+                "freeze_unchanged": true,
+                "source_files": [
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+                    "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+                    "sha256": "4a8f757057065845177c65b1db6ab64be85fecef9492783f522d5e4159f9c155"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+                    "sha256": "844e41cdec338e3cf9461021b8e8f5ffb972e0bc376f252bcd7df9372d1c10cf"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+                    "sha256": "12f18cabe0c1cf37f0c2054b48069abb3bf1b24fe0f33b5ecc4ef010d9a5bdd3"
+                  }
+                ],
+                "source_unchanged": true,
+                "document_count": 6,
+                "page_count": 6,
+                "expected_decisive_fact_denominator": 12,
+                "recovered": 12,
+                "incorrect_decisive_facts": 0,
+                "cross_record_or_bureau_borrowing": 0,
+                "unsupported_violations": 0,
+                "record_collapse_errors": 0,
+                "withhold_errors": 0,
+                "missing_expected_violations": 0,
+                "recovery_rate": 1,
+                "every_miss_accounted": true,
+                "per_case": [
+                  {
+                    "id": "native-complete",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "equivalent-label",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "lookalike-two-debts",
+                    "decisive_expected": 4,
+                    "recovered": 4,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "ambiguous-date",
+                    "decisive_expected": 0,
+                    "recovered": 0,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "bureau-attribution",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "contradictory-dates",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [
+                      {
+                        "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "classification": "PROBABLE_VIOLATION",
+                        "record_indices": [
+                          1
+                        ]
+                      }
+                    ],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  }
+                ],
+                "historical_hosted": {
+                  "build_id": "crp-wizard-bc095afed6459b15",
+                  "purchased_download_status": 200,
+                  "credited_as_current": false
+                }
+              },
+              "local_recovery": {
+                "useful_facts": 1,
+                "useful_attempts": 1,
+                "unsuccessful_facts": 0,
+                "unsuccessful_attempts": 1,
+                "pass_limit": 1
+              }
+            }
+          },
+          {
+            "id": "ap-accept-010-consistency",
+            "assertions": 111,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "c1_validator": true,
+              "c2_unique_cells": true,
+              "c3_confidence": true,
+              "c4_boundary": true,
+              "c5_clarification": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "rule_materiality": {
+      "passed": true,
+      "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "no_irrelevant_context_questions",
+            "expected": "Current supported observations offer no retired bankruptcy/court-case context questions",
+            "measured": [],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "checklist_source_breach",
+            "expected": "Actual assessment has checklist-scoped rule requirement and at least two decisive source-located facts on an internal probable or potential breach",
+            "measured": [
+              {
+                "scenario": "NATIVE_ORDER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "21st December 2021",
+                        "normalized_value": "2021-12-21",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 79.458,
+                            "x1": 158.062,
+                            "y1": 87.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 5th, 2021",
+                        "normalized_value": "2021-01-05",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 142.555,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "21st December 2021",
+                    "normalized_value": "2021-12-21",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 79.458,
+                        "x1": 158.062,
+                        "y1": 87.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 5th, 2021",
+                    "normalized_value": "2021-01-05",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 142.555,
+                        "y1": 98.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "IMAGE_ORDER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "21st December 2021",
+                        "normalized_value": "2021-12-21",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "LOCAL_OCR",
+                          "confidence": 96.2,
+                          "min_confidence": 95.913841,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 101,
+                            "y0": 198,
+                            "x1": 391,
+                            "y1": 219
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 5th, 2021",
+                        "normalized_value": "2021-01-05",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "LOCAL_OCR",
+                          "confidence": 96.4,
+                          "min_confidence": 96.015228,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 101,
+                            "y0": 226,
+                            "x1": 352,
+                            "y1": 247
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "21st December 2021",
+                    "normalized_value": "2021-12-21",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "LOCAL_OCR",
+                      "confidence": 96.2,
+                      "min_confidence": 95.913841,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 101,
+                        "y0": 198,
+                        "x1": 391,
+                        "y1": 219
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 5th, 2021",
+                    "normalized_value": "2021-01-05",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "LOCAL_OCR",
+                      "confidence": 96.4,
+                      "min_confidence": 96.015228,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 101,
+                        "y0": 226,
+                        "x1": 352,
+                        "y1": 247
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "CONTINUATION",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "January 1, 2022",
+                        "normalized_value": "2022-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 79.458,
+                            "x1": 139.063,
+                            "y1": 87.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 1, 2021",
+                        "normalized_value": "2021-01-01",
+                        "location": {
+                          "page": 2,
+                          "line": 3,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 57.458,
+                            "x1": 135.049,
+                            "y1": 65.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "January 1, 2022",
+                    "normalized_value": "2022-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 79.458,
+                        "x1": 139.063,
+                        "y1": 87.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 1, 2021",
+                    "normalized_value": "2021-01-01",
+                    "location": {
+                      "page": 2,
+                      "line": 3,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 57.458,
+                        "x1": 135.049,
+                        "y1": 65.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "COMPARISON_EARLIER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "CA-NS",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "01/01/2020",
+                        "normalized_value": "2020-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 119.56,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "01/01/2019",
+                        "normalized_value": "2019-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 7,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 101.458,
+                            "x1": 115.546,
+                            "y1": 109.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "01/01/2020",
+                    "normalized_value": "2020-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 119.56,
+                        "y1": 98.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "01/01/2019",
+                    "normalized_value": "2019-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 7,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 101.458,
+                        "x1": 115.546,
+                        "y1": 109.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "COMPARISON_CURRENT",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "CA-NS",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "01/01/2021",
+                        "normalized_value": "2021-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 119.56,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "01/01/2020",
+                        "normalized_value": "2020-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 7,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 101.458,
+                            "x1": 115.546,
+                            "y1": 109.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "01/01/2021",
+                    "normalized_value": "2021-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 119.56,
+                        "y1": 98.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "01/01/2020",
+                    "normalized_value": "2020-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 7,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 101.458,
+                        "x1": 115.546,
+                        "y1": 109.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "SUMMARY_POSITIVE",
+                "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                "classification": "POTENTIAL_VIOLATION",
+                "rule_assessment": {
+                  "classification": "POTENTIAL_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                  "requirement": "An account cannot be reported after the date of the report that lists it.",
+                  "supporting_statutes": [
+                    {
+                      "rule_id": "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY",
+                      "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+                      "source_entry_id": "CRP-LSRC-0407",
+                      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+                    }
+                  ],
+                  "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+                  "source_entry_id": "CRP-LSRC-0407",
+                  "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+                  "jurisdiction": "GB-WLS",
+                  "required_facts": [
+                    {
+                      "field": "report.referenceDate",
+                      "source": {
+                        "raw_value": "September 12, 2026",
+                        "normalized_value": "2026-09-12",
+                        "location": {
+                          "page": 1,
+                          "line": 2,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 35,
+                            "y0": 47.538,
+                            "x1": 170.072,
+                            "y1": 55.863
+                          },
+                          "file_id": "75e0ab2d481045cea2e223008d761764"
+                        },
+                        "source_field": "Report date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "reportedAccount.reportedDate",
+                      "source": {
+                        "raw_value": "2027-09-12",
+                        "normalized_value": "2027-09-12",
+                        "location": {
+                          "page": 1,
+                          "line": 4,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 535,
+                            "y0": 114.538,
+                            "x1": 581.026,
+                            "y1": 122.863
+                          },
+                          "caption_location": {
+                            "page": 1,
+                            "line": 3,
+                            "source": "NATIVE_TEXT",
+                            "trusted": true,
+                            "bbox": {
+                              "x0": 535,
+                              "y0": 92.538,
+                              "x1": 572.017,
+                              "y1": 100.863
+                            },
+                            "printed_caption": "Reported"
+                          }
+                        },
+                        "source_field": "Reported Date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "report.referenceDate",
+                    "source_field": "Report date",
+                    "raw_value": "September 12, 2026",
+                    "normalized_value": "2026-09-12",
+                    "location": {
+                      "page": 1,
+                      "line": 2,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 35,
+                        "y0": 47.538,
+                        "x1": 170.072,
+                        "y1": 55.863
+                      },
+                      "file_id": "75e0ab2d481045cea2e223008d761764"
+                    }
+                  },
+                  {
+                    "field": "reportedAccount.reportedDate",
+                    "source_field": "Reported Date",
+                    "raw_value": "2027-09-12",
+                    "normalized_value": "2027-09-12",
+                    "location": {
+                      "page": 1,
+                      "line": 4,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 535,
+                        "y0": 114.538,
+                        "x1": 581.026,
+                        "y1": 122.863
+                      },
+                      "caption_location": {
+                        "page": 1,
+                        "line": 3,
+                        "source": "NATIVE_TEXT",
+                        "trusted": true,
+                        "bbox": {
+                          "x0": 535,
+                          "y0": 92.538,
+                          "x1": 572.017,
+                          "y1": 100.863
+                        },
+                        "printed_caption": "Reported"
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "eu-general-omission-delivery",
+            "assertions": 515,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "exercise_class": "FICTIONAL_NATIVE_PDF_UPLOAD",
+              "checks": [
+                {
+                  "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                }
+              ],
+              "boundary": "Native general-caption and same-report linked-pair mechanisms; no admission or dedicated-layout currency expansion."
+            }
+          },
+          {
+            "id": "c-extraction",
+            "assertions": 36,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scenarios": [
+                "DATE_LABEL_WITHOUT_VALUE",
+                "DATE_LABEL_ABSENT_FROM_ACCOUNT",
+                "NO_COLLECTION_ACCOUNTS",
+                "DATE_OUTSIDE_ANY_ACCOUNT",
+                "TWO_ACCOUNTS"
+              ]
+            }
+          },
+          {
+            "id": "am-fdt-recovery",
+            "assertions": 71,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "detection": {
+                "unreadable_pages": [
+                  2
+                ],
+                "contradictory": 1
+              },
+              "recovery": {
+                "facts_added": 1,
+                "substitution_forbidden": true
+              },
+              "limitations": {
+                "incomplete": true,
+                "affected": [
+                  "STATUTORY_RULE_COMPARISON",
+                  "REPORT_FACT_CONSISTENCY",
+                  "COMMON_ERROR"
+                ]
+              },
+              "duplicate": {
+                "similar_state": "SIMILAR_ENTRIES_WORTH_REVIEWING",
+                "duplicate_state": "POTENTIAL_ISSUE"
+              },
+              "benchmark": {
+                "passed": true,
+                "missed": 0
+              },
+              "benchmark_full": {
+                "passed": true,
+                "acceptance": {
+                  "max_missed_fact_rate": 0.05,
+                  "max_incorrect_fact_rate": 0,
+                  "max_misattribution_rate": 0,
+                  "require_uncertainty_withholding": true,
+                  "require_recovery_improvement": true,
+                  "require_never_unread_as_absent": true
+                },
+                "threshold_authority": "ALIGNED with the Owner-approved PROSPECTIVE criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported violations",
+                "prospective_criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "document_count": 5,
+                "page_count": 5,
+                "expected_fact_count": 10,
+                "real_pdf": {
+                  "ok": true,
+                  "page_count": 1,
+                  "read_errors": [],
+                  "opened_extracted": true,
+                  "closed_extracted": true,
+                  "records": 1
+                },
+                "metrics": {
+                  "missed_fact_rate": 0,
+                  "incorrect_reading_rate": 0,
+                  "misattribution_rate": 0,
+                  "recovery_rate": 1,
+                  "uncertainty_withholding": "OK",
+                  "recovery": {
+                    "facts_added": 1,
+                    "added_texts": [
+                      "Closed 01/01/2022"
+                    ],
+                    "substitution_forbidden": true,
+                    "recovery_attempts": 1,
+                    "recovery_improvement_ok": true
+                  }
+                },
+                "cases": [
+                  {
+                    "id": "FDT-HELDOUT-COMPLETE-NATIVE",
+                    "description": "a complete native-text account with a report header, an opened and a closed date",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-EQUIVALENT-LABEL",
+                    "description": "an equivalent label (Date Opened / Date Closed) must map to the same facts",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-LEGITIMATE-LOOKALIKE",
+                    "description": "two legitimate debts sharing the SAME dates but different account identities are not one duplicate",
+                    "required": 4,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-AMBIGUOUS-DATE",
+                    "description": "an ambiguous numeric date with no convention must be withheld, never guessed",
+                    "required": 0,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 1,
+                    "withholding": "withheld"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-BUREAU-ATTRIBUTION",
+                    "description": "a combined report must attribute each fact to the bureau section that printed it",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  }
+                ],
+                "baseline": "held-out synthetic text layouts plus a real PDF processed through pdftotext, with independently recorded expected facts"
+              },
+              "acceptance": {
+                "passed": false,
+                "implementation_passed": true,
+                "criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "freeze_digest": "0a641e3344ad1fd6b7fff33617f1c952d04678ddcae12d4172f0456530c047a3",
+                "freeze_unchanged": true,
+                "source_files": [
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+                    "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+                    "sha256": "4a8f757057065845177c65b1db6ab64be85fecef9492783f522d5e4159f9c155"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+                    "sha256": "844e41cdec338e3cf9461021b8e8f5ffb972e0bc376f252bcd7df9372d1c10cf"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+                    "sha256": "12f18cabe0c1cf37f0c2054b48069abb3bf1b24fe0f33b5ecc4ef010d9a5bdd3"
+                  }
+                ],
+                "source_unchanged": true,
+                "document_count": 6,
+                "page_count": 6,
+                "expected_decisive_fact_denominator": 12,
+                "recovered": 12,
+                "incorrect_decisive_facts": 0,
+                "cross_record_or_bureau_borrowing": 0,
+                "unsupported_violations": 0,
+                "record_collapse_errors": 0,
+                "withhold_errors": 0,
+                "missing_expected_violations": 0,
+                "recovery_rate": 1,
+                "every_miss_accounted": true,
+                "per_case": [
+                  {
+                    "id": "native-complete",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "equivalent-label",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "lookalike-two-debts",
+                    "decisive_expected": 4,
+                    "recovered": 4,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "ambiguous-date",
+                    "decisive_expected": 0,
+                    "recovered": 0,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "bureau-attribution",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "contradictory-dates",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [
+                      {
+                        "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "classification": "PROBABLE_VIOLATION",
+                        "record_indices": [
+                          1
+                        ]
+                      }
+                    ],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  }
+                ],
+                "historical_hosted": {
+                  "build_id": "crp-wizard-bc095afed6459b15",
+                  "purchased_download_status": 200,
+                  "credited_as_current": false
+                }
+              },
+              "local_recovery": {
+                "useful_facts": 1,
+                "useful_attempts": 1,
+                "unsuccessful_facts": 0,
+                "unsuccessful_attempts": 1,
+                "pass_limit": 1
+              }
+            }
+          },
+          {
+            "id": "ap-accept-010-consistency",
+            "assertions": 111,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "c1_validator": true,
+              "c2_unique_cells": true,
+              "c3_confidence": true,
+              "c4_boundary": true,
+              "c5_clarification": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    },
+    "mandatory_omission_not_cured_by_answer": {
+      "passed": true,
+      "expected": "Current no-context prompts, no substitute fact and missing-date omissions still source-owned; frozen materiality behavior. Do not manufacture retired clarification path.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "no_irrelevant_context_questions",
+            "expected": "Current supported observations offer no retired bankruptcy/court-case context questions",
+            "measured": [],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "checklist_source_breach",
+            "expected": "Actual assessment has checklist-scoped rule requirement and at least two decisive source-located facts on an internal probable or potential breach",
+            "measured": [
+              {
+                "scenario": "NATIVE_ORDER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "21st December 2021",
+                        "normalized_value": "2021-12-21",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 79.458,
+                            "x1": 158.062,
+                            "y1": 87.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 5th, 2021",
+                        "normalized_value": "2021-01-05",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 142.555,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "21st December 2021",
+                    "normalized_value": "2021-12-21",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 79.458,
+                        "x1": 158.062,
+                        "y1": 87.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 5th, 2021",
+                    "normalized_value": "2021-01-05",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 142.555,
+                        "y1": 98.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "IMAGE_ORDER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "21st December 2021",
+                        "normalized_value": "2021-12-21",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "LOCAL_OCR",
+                          "confidence": 96.2,
+                          "min_confidence": 95.913841,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 101,
+                            "y0": 198,
+                            "x1": 391,
+                            "y1": 219
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 5th, 2021",
+                        "normalized_value": "2021-01-05",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "LOCAL_OCR",
+                          "confidence": 96.4,
+                          "min_confidence": 96.015228,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 101,
+                            "y0": 226,
+                            "x1": 352,
+                            "y1": 247
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "21st December 2021",
+                    "normalized_value": "2021-12-21",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "LOCAL_OCR",
+                      "confidence": 96.2,
+                      "min_confidence": 95.913841,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 101,
+                        "y0": 198,
+                        "x1": 391,
+                        "y1": 219
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 5th, 2021",
+                    "normalized_value": "2021-01-05",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "LOCAL_OCR",
+                      "confidence": 96.4,
+                      "min_confidence": 96.015228,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 101,
+                        "y0": 226,
+                        "x1": 352,
+                        "y1": 247
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "CONTINUATION",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "US-NY",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "January 1, 2022",
+                        "normalized_value": "2022-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 5,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 79.458,
+                            "x1": 139.063,
+                            "y1": 87.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "January 1, 2021",
+                        "normalized_value": "2021-01-01",
+                        "location": {
+                          "page": 2,
+                          "line": 3,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 57.458,
+                            "x1": 135.049,
+                            "y1": 65.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "January 1, 2022",
+                    "normalized_value": "2022-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 5,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 79.458,
+                        "x1": 139.063,
+                        "y1": 87.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "January 1, 2021",
+                    "normalized_value": "2021-01-01",
+                    "location": {
+                      "page": 2,
+                      "line": 3,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 57.458,
+                        "x1": 135.049,
+                        "y1": 65.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "COMPARISON_EARLIER",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "CA-NS",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "01/01/2020",
+                        "normalized_value": "2020-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 119.56,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "01/01/2019",
+                        "normalized_value": "2019-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 7,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 101.458,
+                            "x1": 115.546,
+                            "y1": 109.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "01/01/2020",
+                    "normalized_value": "2020-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 119.56,
+                        "y1": 98.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "01/01/2019",
+                    "normalized_value": "2019-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 7,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 101.458,
+                        "x1": 115.546,
+                        "y1": 109.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "COMPARISON_CURRENT",
+                "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                "classification": "PROBABLE_VIOLATION",
+                "rule_assessment": {
+                  "classification": "PROBABLE_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                  "requirement": "An account cannot close before it opened.",
+                  "supporting_statutes": [],
+                  "citation": null,
+                  "source_entry_id": null,
+                  "source_version": null,
+                  "jurisdiction": "CA-NS",
+                  "required_facts": [
+                    {
+                      "field": "liability.openedDate",
+                      "source": {
+                        "raw_value": "01/01/2021",
+                        "normalized_value": "2021-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 6,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 90.458,
+                            "x1": 119.56,
+                            "y1": 98.783
+                          }
+                        },
+                        "source_field": "opened_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "liability.closedDate",
+                      "source": {
+                        "raw_value": "01/01/2020",
+                        "normalized_value": "2020-01-01",
+                        "location": {
+                          "page": 1,
+                          "line": 7,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 40,
+                            "y0": 101.458,
+                            "x1": 115.546,
+                            "y1": 109.783
+                          }
+                        },
+                        "source_field": "closed_date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "liability.openedDate",
+                    "source_field": "opened_date",
+                    "raw_value": "01/01/2021",
+                    "normalized_value": "2021-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 6,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 90.458,
+                        "x1": 119.56,
+                        "y1": 98.783
+                      }
+                    }
+                  },
+                  {
+                    "field": "liability.closedDate",
+                    "source_field": "closed_date",
+                    "raw_value": "01/01/2020",
+                    "normalized_value": "2020-01-01",
+                    "location": {
+                      "page": 1,
+                      "line": 7,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 40,
+                        "y0": 101.458,
+                        "x1": 115.546,
+                        "y1": 109.783
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              },
+              {
+                "scenario": "SUMMARY_POSITIVE",
+                "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                "classification": "POTENTIAL_VIOLATION",
+                "rule_assessment": {
+                  "classification": "POTENTIAL_VIOLATION",
+                  "rule_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                  "requirement": "An account cannot be reported after the date of the report that lists it.",
+                  "supporting_statutes": [
+                    {
+                      "rule_id": "GB-UK-GDPR-ART5-1-D-ART16-ACCURACY",
+                      "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+                      "source_entry_id": "CRP-LSRC-0407",
+                      "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6"
+                    }
+                  ],
+                  "citation": "UK GDPR — Regulation (EU) 2016/679 as it forms part of the law of the United Kingdom, Articles 5(1)(d) and 16",
+                  "source_entry_id": "CRP-LSRC-0407",
+                  "source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+                  "jurisdiction": "GB-WLS",
+                  "required_facts": [
+                    {
+                      "field": "report.referenceDate",
+                      "source": {
+                        "raw_value": "September 12, 2026",
+                        "normalized_value": "2026-09-12",
+                        "location": {
+                          "page": 1,
+                          "line": 2,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 35,
+                            "y0": 47.538,
+                            "x1": 170.072,
+                            "y1": 55.863
+                          },
+                          "file_id": "75e0ab2d481045cea2e223008d761764"
+                        },
+                        "source_field": "Report date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    },
+                    {
+                      "field": "reportedAccount.reportedDate",
+                      "source": {
+                        "raw_value": "2027-09-12",
+                        "normalized_value": "2027-09-12",
+                        "location": {
+                          "page": 1,
+                          "line": 4,
+                          "source": "NATIVE_TEXT",
+                          "confidence": null,
+                          "min_confidence": null,
+                          "trusted": true,
+                          "bbox": {
+                            "x0": 535,
+                            "y0": 114.538,
+                            "x1": 581.026,
+                            "y1": 122.863
+                          },
+                          "caption_location": {
+                            "page": 1,
+                            "line": 3,
+                            "source": "NATIVE_TEXT",
+                            "trusted": true,
+                            "bbox": {
+                              "x0": 535,
+                              "y0": 92.538,
+                              "x1": 572.017,
+                              "y1": 100.863
+                            },
+                            "printed_caption": "Reported"
+                          }
+                        },
+                        "source_field": "Reported Date",
+                        "record_index": 1,
+                        "precision": "DAY"
+                      }
+                    }
+                  ],
+                  "unresolved": "The report does not show which value is wrong or how the information was checked."
+                },
+                "source_facts": [
+                  {
+                    "field": "report.referenceDate",
+                    "source_field": "Report date",
+                    "raw_value": "September 12, 2026",
+                    "normalized_value": "2026-09-12",
+                    "location": {
+                      "page": 1,
+                      "line": 2,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 35,
+                        "y0": 47.538,
+                        "x1": 170.072,
+                        "y1": 55.863
+                      },
+                      "file_id": "75e0ab2d481045cea2e223008d761764"
+                    }
+                  },
+                  {
+                    "field": "reportedAccount.reportedDate",
+                    "source_field": "Reported Date",
+                    "raw_value": "2027-09-12",
+                    "normalized_value": "2027-09-12",
+                    "location": {
+                      "page": 1,
+                      "line": 4,
+                      "source": "NATIVE_TEXT",
+                      "confidence": null,
+                      "min_confidence": null,
+                      "trusted": true,
+                      "bbox": {
+                        "x0": 535,
+                        "y0": 114.538,
+                        "x1": 581.026,
+                        "y1": 122.863
+                      },
+                      "caption_location": {
+                        "page": 1,
+                        "line": 3,
+                        "source": "NATIVE_TEXT",
+                        "trusted": true,
+                        "bbox": {
+                          "x0": 535,
+                          "y0": 92.538,
+                          "x1": 572.017,
+                          "y1": 100.863
+                        },
+                        "printed_caption": "Reported"
+                      }
+                    }
+                  }
+                ],
+                "measurement_origin": "Current unchanged issue projection of actual persisted hosted evaluation/extraction; public projection compared byte-for-byte with stored rendered issues"
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "production-blocker-repair-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "eu-general-omission-delivery",
+            "assertions": 515,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "exercise_class": "FICTIONAL_NATIVE_PDF_UPLOAD",
+              "checks": [
+                {
+                  "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                },
+                {
+                  "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+                  "regions_tested": 82,
+                  "positive": {
+                    "classification": "POTENTIAL_VIOLATION",
+                    "consumer_label": "VIOLATION",
+                    "selected": true,
+                    "approved": true,
+                    "downloaded": true,
+                    "source_linked": true
+                  },
+                  "benign": {
+                    "issues": 0
+                  },
+                  "missing_source": {
+                    "issues": 0
+                  },
+                  "packet": {
+                    "approved_downloads": 4,
+                    "selected_content_matched": true,
+                    "unselected_content_absent": true,
+                    "unselected_content_scope": "generated letter; original relevant report pages remain unchanged"
+                  }
+                }
+              ],
+              "boundary": "Native general-caption and same-report linked-pair mechanisms; no admission or dedicated-layout currency expansion."
+            }
+          },
+          {
+            "id": "c-extraction",
+            "assertions": 36,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scenarios": [
+                "DATE_LABEL_WITHOUT_VALUE",
+                "DATE_LABEL_ABSENT_FROM_ACCOUNT",
+                "NO_COLLECTION_ACCOUNTS",
+                "DATE_OUTSIDE_ANY_ACCOUNT",
+                "TWO_ACCOUNTS"
+              ]
+            }
+          },
+          {
+            "id": "am-fdt-recovery",
+            "assertions": 71,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "detection": {
+                "unreadable_pages": [
+                  2
+                ],
+                "contradictory": 1
+              },
+              "recovery": {
+                "facts_added": 1,
+                "substitution_forbidden": true
+              },
+              "limitations": {
+                "incomplete": true,
+                "affected": [
+                  "STATUTORY_RULE_COMPARISON",
+                  "REPORT_FACT_CONSISTENCY",
+                  "COMMON_ERROR"
+                ]
+              },
+              "duplicate": {
+                "similar_state": "SIMILAR_ENTRIES_WORTH_REVIEWING",
+                "duplicate_state": "POTENTIAL_ISSUE"
+              },
+              "benchmark": {
+                "passed": true,
+                "missed": 0
+              },
+              "benchmark_full": {
+                "passed": true,
+                "acceptance": {
+                  "max_missed_fact_rate": 0.05,
+                  "max_incorrect_fact_rate": 0,
+                  "max_misattribution_rate": 0,
+                  "require_uncertainty_withholding": true,
+                  "require_recovery_improvement": true,
+                  "require_never_unread_as_absent": true
+                },
+                "threshold_authority": "ALIGNED with the Owner-approved PROSPECTIVE criteria (OWNER-ACCEPT-009): >=95% recovery of readable required facts, zero incorrect decisive facts, zero cross-record/bureau borrowing, zero unsupported violations",
+                "prospective_criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "document_count": 5,
+                "page_count": 5,
+                "expected_fact_count": 10,
+                "real_pdf": {
+                  "ok": true,
+                  "page_count": 1,
+                  "read_errors": [],
+                  "opened_extracted": true,
+                  "closed_extracted": true,
+                  "records": 1
+                },
+                "metrics": {
+                  "missed_fact_rate": 0,
+                  "incorrect_reading_rate": 0,
+                  "misattribution_rate": 0,
+                  "recovery_rate": 1,
+                  "uncertainty_withholding": "OK",
+                  "recovery": {
+                    "facts_added": 1,
+                    "added_texts": [
+                      "Closed 01/01/2022"
+                    ],
+                    "substitution_forbidden": true,
+                    "recovery_attempts": 1,
+                    "recovery_improvement_ok": true
+                  }
+                },
+                "cases": [
+                  {
+                    "id": "FDT-HELDOUT-COMPLETE-NATIVE",
+                    "description": "a complete native-text account with a report header, an opened and a closed date",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-EQUIVALENT-LABEL",
+                    "description": "an equivalent label (Date Opened / Date Closed) must map to the same facts",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-LEGITIMATE-LOOKALIKE",
+                    "description": "two legitimate debts sharing the SAME dates but different account identities are not one duplicate",
+                    "required": 4,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-AMBIGUOUS-DATE",
+                    "description": "an ambiguous numeric date with no convention must be withheld, never guessed",
+                    "required": 0,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 1,
+                    "withholding": "withheld"
+                  },
+                  {
+                    "id": "FDT-HELDOUT-BUREAU-ATTRIBUTION",
+                    "description": "a combined report must attribute each fact to the bureau section that printed it",
+                    "required": 2,
+                    "missed": 0,
+                    "incorrect": 0,
+                    "misattributed": 0,
+                    "withheld": 0,
+                    "withholding": "n/a"
+                  }
+                ],
+                "baseline": "held-out synthetic text layouts plus a real PDF processed through pdftotext, with independently recorded expected facts"
+              },
+              "acceptance": {
+                "passed": false,
+                "implementation_passed": true,
+                "criteria": {
+                  "freeze_before_run": "expected facts and document selection are frozen before the acceptance run",
+                  "independent_held_out_set": "an independent held-out set covers every required recovery scenario",
+                  "zero_incorrect_decisive_facts": true,
+                  "zero_cross_record_or_bureau_borrowing": true,
+                  "zero_unsupported_violations": true,
+                  "min_recovery_of_readable_assessment_required_facts": 0.95,
+                  "account_for_every_remaining_miss": true,
+                  "withhold_unreadable_or_conflicting_decisive_facts": true,
+                  "demonstrate_useful_recovery_on_deployed": true,
+                  "demonstrate_bounded_unsuccessful_recovery_on_deployed": true,
+                  "note": "small-sample success is not advertised as universal accuracy"
+                },
+                "freeze_digest": "0a641e3344ad1fd6b7fff33617f1c952d04678ddcae12d4172f0456530c047a3",
+                "freeze_unchanged": true,
+                "source_files": [
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+                    "sha256": "6f19174d9e3333788f0bd1127264017998a8ffcb9f8a01c6f3efbd00ce716853"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+                    "sha256": "4a8f757057065845177c65b1db6ab64be85fecef9492783f522d5e4159f9c155"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+                    "sha256": "844e41cdec338e3cf9461021b8e8f5ffb972e0bc376f252bcd7df9372d1c10cf"
+                  },
+                  {
+                    "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+                    "sha256": "12f18cabe0c1cf37f0c2054b48069abb3bf1b24fe0f33b5ecc4ef010d9a5bdd3"
+                  }
+                ],
+                "source_unchanged": true,
+                "document_count": 6,
+                "page_count": 6,
+                "expected_decisive_fact_denominator": 12,
+                "recovered": 12,
+                "incorrect_decisive_facts": 0,
+                "cross_record_or_bureau_borrowing": 0,
+                "unsupported_violations": 0,
+                "record_collapse_errors": 0,
+                "withhold_errors": 0,
+                "missing_expected_violations": 0,
+                "recovery_rate": 1,
+                "every_miss_accounted": true,
+                "per_case": [
+                  {
+                    "id": "native-complete",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "equivalent-label",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "lookalike-two-debts",
+                    "decisive_expected": 4,
+                    "recovered": 4,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "ambiguous-date",
+                    "decisive_expected": 0,
+                    "recovered": 0,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "bureau-attribution",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 2,
+                    "misses": [],
+                    "findings": [],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  },
+                  {
+                    "id": "contradictory-dates",
+                    "decisive_expected": 2,
+                    "recovered": 2,
+                    "incorrect": 0,
+                    "borrowed": 0,
+                    "records": 1,
+                    "misses": [],
+                    "findings": [
+                      {
+                        "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                        "classification": "PROBABLE_VIOLATION",
+                        "record_indices": [
+                          1
+                        ]
+                      }
+                    ],
+                    "unsupported_findings": 0,
+                    "missing_expected_violations": 0,
+                    "record_collapse_error": 0,
+                    "withheld_error": 0
+                  }
+                ],
+                "historical_hosted": {
+                  "build_id": "crp-wizard-bc095afed6459b15",
+                  "purchased_download_status": 200,
+                  "credited_as_current": false
+                }
+              },
+              "local_recovery": {
+                "useful_facts": 1,
+                "useful_attempts": 1,
+                "unsuccessful_facts": 0,
+                "unsuccessful_attempts": 1,
+                "pass_limit": 1
+              }
+            }
+          },
+          {
+            "id": "ap-accept-010-consistency",
+            "assertions": 111,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "c1_validator": true,
+              "c2_unique_cells": true,
+              "c3_confidence": true,
+              "c4_boundary": true,
+              "c5_clarification": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "production-blocker-repair-2026-10-11/measurements.json"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "production-final-freeze:eu-general-omission-delivery",
+      "passed": true,
+      "assertions": 515,
+      "criteria": [
+        "no_context_only_questions",
+        "rule_materiality",
+        "mandatory_omission_not_cured_by_answer"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "515 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    },
+    {
+      "id": "production-final-freeze:c-extraction",
+      "passed": true,
+      "assertions": 36,
+      "criteria": [
+        "no_context_only_questions",
+        "rule_materiality",
+        "mandatory_omission_not_cured_by_answer"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "36 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    },
+    {
+      "id": "production-final-freeze:am-fdt-recovery",
+      "passed": true,
+      "assertions": 71,
+      "criteria": [
+        "no_context_only_questions",
+        "rule_materiality",
+        "mandatory_omission_not_cured_by_answer"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "71 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    },
+    {
+      "id": "production-final-freeze:ap-accept-010-consistency",
+      "passed": true,
+      "assertions": 111,
+      "criteria": [
+        "no_context_only_questions",
+        "rule_materiality",
+        "mandatory_omission_not_cured_by_answer"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "111 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1"
+    }
+  ],
+  "identity": {
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf",
+    "local_only": false
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-fd23f242f3d158bf",
+    "original_canonical_sha256": "7d7f47f18051786be912a12678757a5f9046fa87377bb88029b2ec19547e9e0a",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "ap-accept-010-consistency",
+          "passed": true,
+          "criteria": [
+            "no_context_only_questions",
+            "rule_materiality"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "111 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+        },
+        {
+          "id": "am-fdt-recovery",
+          "passed": true,
+          "criteria": [
+            "mandatory_omission_not_cured_by_answer"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "71 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+        },
+        {
+          "id": "c-extraction",
+          "passed": true,
+          "criteria": [
+            "mandatory_omission_not_cured_by_answer"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "36 passing assertions; Missing responsibility on one or multiple accounts generates zero questions; retired stored prompts are suppressed. No governed material question is currently admitted. Historical answers remain separate consumer statements and do not escalate findings or replace report evidence."
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/clarification.cjs",
+          "sha256": "d0f5a64ba45cfec211b6c121d0fd43b90e08162cc3cd4dda91f0dca3086167b8"
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ap-accept-010-consistency.cjs",
+          "sha256": "32b325a3a289609f9f11e3e55d1421e2b0b5da33376b8463fc4ea90d6fddb098"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/am-fdt-recovery.cjs",
+          "sha256": "fb716e459f6a58bc94d15c9d7189d1c44b7f817e7cbdc9def83975edc2f9f696"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/c-extraction-not-absence.cjs",
+          "sha256": "4b781b63a910f94c3194ef66384c6bd0af3e014edbef46a471f81b6a2558f996"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+          "sha256": "44d438fb35c56103e00742d22d300d26c8bf7a28e293c3b2c0667b73d01b97f4"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-blocker-repair-2026-10-11/phase1-receipt.json",
+        "sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-paid.json",
+        "sha256": "eb25b013277263bb4520345e1d37e8d51f5d9d1d4176af9e6e668337b7b8bef7",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/review-receipt.json",
+        "sha256": "b4191ebc7075809b929f20a6b4effeb55595e3de2bd5fe51229e9327fcf63258",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/download-receipt.json",
+        "sha256": "abccb82f6cc41cb3472eac860c697608b2b9c5b1893171d9ce5fd5e5db6d8d1e",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/continuity-receipt.json",
+        "sha256": "a43b57f85a60ef6b3580a5b7a969f24c1a25dcaa414b8723229824ca56eb1473",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/phase2-receipt.json",
+        "sha256": "9045952a5c9501d0da0c6dad3f15bbc53e76c9cb7203da6a1a96f1d2b54b31fa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/provider-cleanup.json",
+        "sha256": "4608434df677f468bc87bdfac24661497a3d847a750aff1371d11e1b2f1de273",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cleanup-receipt.json",
+        "sha256": "ef3cc2714e79d2a1f7b93f7b8e2b964471a0fa3676672dfb547380e176973c68",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/checkout-receipt.json",
+        "sha256": "98291ac6aa6efb511371fc3e1bf875b11326acd7d0c30660c7ba07067759ceeb",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/input-manifest.json",
+        "sha256": "96456ae171857dd3291121cf332da227e95f6e108a202d8bc968021d8fde01d8",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/upgrade-proof.json",
+        "sha256": "0c585c51163a0181dab0e4c3717481a05baf5dc88e954bfa566c1d2cbee7220b",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/cancellation-proof.json",
+        "sha256": "d17ca32f8fe2709f5aa982b483ed8c7a15727f3d4ab99da741f9fac1b5721baa",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      },
+      {
+        "file": "production-blocker-repair-2026-10-11/fdt-mitigation-candidate.json",
+        "sha256": "645fea80d73a2330e61f8d599a29222f65a581e2007521f40c97a85d7533d169",
+        "identity_build_id": "crp-v1-fd23f242f3d158bf"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-blocker-repair-2026-10-11/measurements.json",
+    "prepared_at": "2026-10-11T12:57:18.645Z",
+    "canonical_evidence_written": false
+  }
+}

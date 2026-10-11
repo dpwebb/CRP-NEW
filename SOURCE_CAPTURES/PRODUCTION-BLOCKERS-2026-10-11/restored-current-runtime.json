@@ -1,0 +1,38 @@
+{
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "actual_latest_production_restore": true,
+  "actual_current_code_start_and_restart": true,
+  "before": {
+    "health": {
+      "ok": true,
+      "build_id": "crp-v1-fd23f242f3d158bf",
+      "deployment": "staging",
+      "billing_mode": null,
+      "launch_ready": false
+    },
+    "anonymous_status": 401,
+    "original_snapshot_reference_sha256_verified": true,
+    "all_original_collection_values_preserved": true,
+    "new_empty_collection_only": true,
+    "measured_at": "2026-10-11T12:39:42.177Z"
+  },
+  "after": {
+    "health": {
+      "ok": true,
+      "build_id": "crp-v1-fd23f242f3d158bf",
+      "deployment": "staging",
+      "billing_mode": null,
+      "launch_ready": false
+    },
+    "anonymous_status": 401,
+    "original_snapshot_reference_sha256_verified": true,
+    "all_original_collection_values_preserved": true,
+    "new_empty_collection_only": true,
+    "measured_at": "2026-10-11T12:39:44.155Z"
+  },
+  "isolated_runtime_stopped": true,
+  "live_store_modified": false,
+  "original_consumer_sign_in_performed": false,
+  "passed": true,
+  "boundary": "Initial serialized-byte guard refused the expected addition of an empty referral_snapshots collection. This proof requires exact original collection values instead; no runtime source was changed."
+}

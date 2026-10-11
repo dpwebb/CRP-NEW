@@ -1,0 +1,176 @@
+{
+  "schema": "CRP_BUREAU_FORMS_RETIREMENT_V1",
+  "authority": "CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md",
+  "created_at": "2026-10-11T11:10:01.0128439Z",
+  "candidate_build": "crp-v1-ac4051d4bbb7097d",
+  "manifest_digest": "AC4051D4BBB7097D5B25BC5D02F3B6B7A7FA20A91029D69C050B2332BAC3565F",
+  "manifest": {
+    "file": "accelerated-launch/service/deploy/release-manifest.json",
+    "sha256": "be4cd4bd18fb72e47b9aaf2497375f3d7b1d4902cfe454cab3fd281ab3bc3446"
+  },
+  "shipped_file_count": 133,
+  "shipped_bureau_form_assets": 0,
+  "source_pins": [
+    {
+      "file": "accelerated-launch/service/packets.cjs",
+      "sha256": "5cd74ae34e2dda90b170b2f8c697fee4f2c375fe0c5fb0cf9ea45e7eff494691"
+    },
+    {
+      "file": "accelerated-launch/service/packet-support.cjs",
+      "sha256": "cfac7710f104570f21bfa50251e53a5aeebdf09a04881a0770a9eea4fcb366b4"
+    },
+    {
+      "file": "accelerated-launch/service/packet-composer.cjs",
+      "sha256": "c6c6b5bdd396af577b1360124f12e27c90f5134e879cb46588d948711becc110"
+    },
+    {
+      "file": "accelerated-launch/service/packet-composer-worker.cjs",
+      "sha256": "3188ae4b1c7dd32ac1c4b3dec06c5297794073069eb2951d234feae983971500"
+    },
+    {
+      "file": "accelerated-launch/service/ui/app.js",
+      "sha256": "51e10c49ae79bc564733ba63634591bfa3345bf03741f4d57752d2542d0940ed"
+    },
+    {
+      "file": "accelerated-launch/service/finding-coverage.cjs",
+      "sha256": "572129e9fa3a959e685fa41c36cd34faba75cd45cc20840ef6fb4f0da1a9c02e"
+    },
+    {
+      "file": "accelerated-launch/service/deploy/build-release-manifest.cjs",
+      "sha256": "e4dc168d5b4236d0e29ac13116a0471e46d422e4de2a4a4dbcb4f4ebba196a54"
+    },
+    {
+      "file": "accelerated-launch/service/tests/run-tests.cjs",
+      "sha256": "c9bd2f971d973d1f60b001a3e8178336a2c91f911b6ef8c50d94617b12d19757"
+    },
+    {
+      "file": "accelerated-launch/service/tests/sections/er-bureau-forms-retired.cjs",
+      "sha256": "3ca4112d93b985f5527db05ecb293e8d59b23c4ac12d881e372ce8fcc498b845"
+    },
+    {
+      "file": "SOURCE_CAPTURES/CLOSURE-POLICY-001/closure-dispute-packet.cjs",
+      "sha256": "c1de7dcc350beee47d554e1de196c3117974d0d3f510ed3050da55d6543eb972"
+    },
+    {
+      "sha256": "1d1225f1348f6f4200d413d3149144581bab51d7c929a6cf78edef498d3d7894",
+      "file": "accelerated-launch/service/tests/sections/du-column-reader-delivery.cjs"
+    }
+  ],
+  "focused": {
+    "scope": "Composer, evidence validator and ten fictional country/bureau actual PDF journeys; focused development only",
+    "totals": {
+      "passed": 296,
+      "failed": 0,
+      "skipped": 0
+    },
+    "record": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/focused-final.json",
+      "sha256": "25123f3b33a4d3e969331541c238c2a2a8a02ff22a10b2df24abfd04b7b9202e"
+    }
+  },
+  "source_audit": {
+    "totals": {
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0
+    },
+    "record": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/source-audit.json",
+      "sha256": "6cf50ad007b871d0fb8f307c36a146cbce548aab9eb1874492c8790eb463ed9e"
+    }
+  },
+  "rendered_sample": {
+    "contents": "One consumer letter, one own relevant report page, three selected supporting copies; no forms",
+    "page1": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/current-packet-page-1.png",
+      "sha256": "7aa9f52814a25a159efeb86ad68365b8822636dc072b907c6f7c6e22975b5cc3"
+    },
+    "pdf": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/current-packet.pdf",
+      "sha256": "b099144bee5944ba5b5dcc01877831bdd3853b416540efb9e6b40fbfd6abee9e"
+    },
+    "visual_review": "All five pages rendered and inspected locally; original evidence/document pages retained",
+    "pages": 5,
+    "scope": "Fictional actual PDF generated during the final source-matched full run; all five pages rendered and inspected after completion. Not hosted evidence."
+  },
+  "historical": {
+    "role": "Former form-inclusive specification; not current acceptance",
+    "manifest": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/release-manifest.json",
+      "sha256": "5b61ae5b0c65f8ad8b3a459e095158c4bea70bfda3b4012a50edef8164f161f3"
+    },
+    "full_regression": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/full-regression.json",
+      "sha256": "724b3462ad72e8348c0b8aab28a4ce29052d2a80be3e2ee3b9e43884fdb30327"
+    },
+    "source_custody": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/source-custody.json",
+      "sha256": "cf3b27a9cea7c652dcad2e04fb849ea6f4f8ea71a1513f708ba8d605274128e9"
+    },
+    "retired_section": {
+      "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/prior-proof/er-bureau-form-population.cjs",
+      "sha256": "cf50bb15183e41b4aefcb384da080206f0519b9bbb5b0d83c72e05874c31993e"
+    }
+  },
+  "full_regression": {
+    "unrun_sections": 0,
+    "status": "PASS",
+    "completed_sections": 151,
+    "source_drift": 0,
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/full-regression.json",
+    "sha256": "c05b20d8894ccd2b2e25fe4e1f44bd4454fa8c917d13e09475d5a965fc7ace8c",
+    "duration_ms": 1078133,
+    "source_hashes": 286,
+    "totals": {
+      "passed": 14441,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "implementation": "CLOSED_IMPLEMENTED_AND_TESTED",
+  "staging": "NOT_PERFORMED_FOR_FORM_FREE_CANDIDATE",
+  "production": "NOT_ESTABLISHED",
+  "deployment_performed": false,
+  "scope_boundary": "Retire all bureau-specific forms; preserve all82 and active checklist, sourced correspondence/evidence, supporting documents, privacy, owned approval and entitlement. Historical renderer source remains preserved but excluded from manifest and current acceptance.",
+  "interrupted_full_attempt": {
+    "diagnostic": {
+      "unbroken_human_phrases": [
+        false,
+        true
+      ],
+      "whitespace_normalized_human_phrases": [
+        true,
+        true
+      ],
+      "scope": "FICTIONAL_LOCAL_PDF_DIAGNOSTIC",
+      "fix": "Normalize only layout whitespace; retain both own source dates and both readable date statements. No runtime content change.",
+      "raw_report_dates_present": [
+        true,
+        true
+      ]
+    },
+    "status": "INTERRUPTED_NOT_PASSING_EVIDENCE",
+    "reason": "DU assertion expected an unbroken phrase across a real PDF line wrap; stopped the owned regression process after the failed check.",
+    "candidate": "crp-v1-ac4051d4bbb7097d"
+  },
+  "focused_date_wrap_repair": {
+    "totals": {
+      "passed": 133,
+      "failed": 0,
+      "skipped": 0
+    },
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/focused-date-wrap-repair.json",
+    "sha256": "7cb54667e3ffb7bc124285656937c1ef0ec654bba56da0ddaf706316d719de84"
+  },
+  "implementation_records_restored": {
+    "measurement": "Completed full runner terminal output",
+    "applied": 17,
+    "total": 17
+  },
+  "packet_implementation_record": {
+    "hosted_status": "PENDING",
+    "file": "SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/packet-implementation-evidence.json",
+    "sha256": "3ee26d88ebe88444e2aef68d17bd33a4cbbadba8e3fd8b04cd6c297561f5b46e",
+    "status": "IMPLEMENTED_AND_TESTED"
+  }
+}

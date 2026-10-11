@@ -1,0 +1,79 @@
+{
+  "measured_at": "2026-10-11T12:20:06.086Z",
+  "host": "creditregulatorpro.com",
+  "build_id": "crp-v1-6fffbbb76b24a050",
+  "read_only": true,
+  "live_charge_performed": false,
+  "secrets_disclosed": false,
+  "account_id": "acct_1RTRWOKCM3e4JIjW",
+  "charges_enabled": true,
+  "payouts_enabled": true,
+  "support_secret_configured": true,
+  "prices": [
+    {
+      "plan": "report_once",
+      "price_id": "price_1UOiyPKCM3e4JIjWtnrRElAc",
+      "amount_cents": 595,
+      "currency": "cad",
+      "interval": null,
+      "passed": true
+    },
+    {
+      "plan": "monthly",
+      "price_id": "price_1UOiyPKCM3e4JIjWX2nNJV5J",
+      "amount_cents": 795,
+      "currency": "cad",
+      "interval": "month",
+      "passed": true
+    },
+    {
+      "plan": "annual",
+      "price_id": "price_1UOiyPKCM3e4JIjWv84sNgq2",
+      "amount_cents": 7950,
+      "currency": "cad",
+      "interval": "year",
+      "passed": true
+    }
+  ],
+  "webhook": {
+    "id": "we_1UOiyQKCM3e4JIjWW3xYIk6O",
+    "url": "https://creditregulatorpro.com/api/billing/events",
+    "enabled": true,
+    "livemode": true,
+    "events": [
+      {
+        "event": "checkout.session.completed",
+        "present": true
+      },
+      {
+        "event": "checkout.session.async_payment_succeeded",
+        "present": true
+      },
+      {
+        "event": "invoice.paid",
+        "present": true
+      },
+      {
+        "event": "invoice.payment_failed",
+        "present": true
+      },
+      {
+        "event": "invoice.voided",
+        "present": true
+      },
+      {
+        "event": "customer.subscription.deleted",
+        "present": true
+      },
+      {
+        "event": "charge.refunded",
+        "present": true
+      },
+      {
+        "event": "charge.dispute.created",
+        "present": true
+      }
+    ]
+  },
+  "passed": true
+}

@@ -1,0 +1,95 @@
+{
+  "measured_at": "2026-10-11T05:08:22.896Z",
+  "build_id": "crp-v1-4687a2df902ef280",
+  "checkout": {
+    "id": "cs_test_a1QtjXcjiTCy7DEXSv8xcaPD2aoshhuOFdof4o9crzDJ4SMawAr8Yfzi2V",
+    "livemode": false,
+    "status": "complete",
+    "payment_status": "paid",
+    "amount_total": 795,
+    "currency": "cad",
+    "subscription": "sub_1UPEw0KCM3e4JIjWktX8SHjk"
+  },
+  "webhook": {
+    "event_id": "evt_1UPEw3KCM3e4JIjWJ59wxyeK",
+    "type": "invoice.paid",
+    "outcome": "APPLIED",
+    "effect": "ACTIVATE",
+    "invoice": "in_1UPEw0KCM3e4JIjWFmQsJiZM",
+    "payment_intent": "pi_3UPEw1KCM3e4JIjW0tR0YhEY"
+  },
+  "entitlement": {
+    "state": "ACTIVE",
+    "source": "stripe",
+    "plan_code": "monthly"
+  },
+  "packet": {
+    "case_id": "case_252936bf20ae15e0d869a0a5",
+    "result_id": "res_60eaf89dceda858d3688",
+    "approved_version": null,
+    "approved_at": null,
+    "approved_pdf_sha256": "1a57cb43f1cf7e65a93453d0bd45064dcbabd8cec31707f724e4c276d91c8dcd",
+    "selected_issue_ids": [
+      "24ae89ec96e01afc"
+    ],
+    "report_file_ids": [
+      "2e83b61225923c8fd94186883ca2d5dc"
+    ],
+    "document_ids": [
+      "ccf98d17fec618143258a5636e447f4f",
+      "ea6073d5781ba35163db84d7890f2d22"
+    ],
+    "approval_verified_before_download": {
+      "approved_version": "26d5c4f674c0516e5ede88ac651925abf890f1609d87573f264f492151c147d3",
+      "approved_at": "2026-10-11T05:06:48.992Z"
+    },
+    "download_sha256": "1a57cb43f1cf7e65a93453d0bd45064dcbabd8cec31707f724e4c276d91c8dcd",
+    "download_matches_approved_pdf": true,
+    "pages": 10
+  },
+  "results": [
+    {
+      "result_id": "res_60eaf89dceda858d3688",
+      "case_id": "case_252936bf20ae15e0d869a0a5"
+    },
+    {
+      "result_id": "res_4458e20c2d3129c23b6c",
+      "case_id": "case_135eb820f26416e2ec36997a"
+    }
+  ],
+  "comparison": {
+    "browser_verified": true,
+    "match": "CONFIDENT",
+    "still_observed": 0,
+    "changed": 0,
+    "no_longer_observed": 1,
+    "not_comparable": 0
+  },
+  "cleanup": {
+    "subscription_status": "canceled",
+    "livemode": false,
+    "account_deleted": true,
+    "active_accounts": 0,
+    "active_sessions": 0,
+    "cases": 0,
+    "files": 0,
+    "results": 0,
+    "packets": 0,
+    "entitlements": 0,
+    "upgrade_credit_bookkeeping_retained": true
+  },
+  "remaining_defect": {
+    "id": "STAGING-PACKET-APPROVAL-NAVIGATION-20261011",
+    "observed": "Leaving the approved packet screen for Upload report cleared approved_version and approved_at without an intentional packet edit.",
+    "updated_at": "2026-10-11T05:07:16.526Z",
+    "source": "accelerated-launch/service/ui/app.js:1766",
+    "mechanism": "packetLeave always calls persistSelection; packet mutation endpoints clear approval."
+  },
+  "status": {
+    "test_purchase": "VERIFIED",
+    "approved_paid_packet_download": "VERIFIED",
+    "report_comparison": "VERIFIED",
+    "full_staging_acceptance": "PENDING_APPROVAL_NAVIGATION_FIX",
+    "production": "OPEN"
+  }
+}

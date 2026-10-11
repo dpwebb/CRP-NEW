@@ -1,0 +1,308 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T12:36:07.057Z",
+  "scope": "Staging, test billing only. Every adapter now records source_version (the SHA-256 digest of its admitted source artifact) and source_artifact, pulled from the digest-bound legal-source catalogue. The evaluation record and finding carry the version; an absent or inconsistent version blocks the finding. The internal source-entry id stays in the audit record (machine) and never reaches the consumer surface; the 64-hex version is retained in the result and purchased report. Paid HTTP journey reuses the purchased statutory-control fixture through its stable upload key.",
+  "criteria": {
+    "rule_identity": {
+      "passed": false,
+      "expected": "Actual rule/check identity and version on the current owned result/source facts.",
+      "measured": "implemented and tested locally (ar-gap-finding-003); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ar-gap-finding-003.cjs"
+      ]
+    },
+    "version_binding": {
+      "passed": false,
+      "expected": "Actual rule/check identity and version on the current owned result/source facts.",
+      "measured": "implemented and tested locally (ar-gap-finding-003); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/ar-gap-finding-003.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "source_version retained",
+      "expected": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "measured": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "passed": true
+    },
+    {
+      "id": "source_entry_id retained",
+      "expected": "CRP-LSRC-0171",
+      "measured": "CRP-LSRC-0171",
+      "passed": true
+    },
+    {
+      "id": "finding retains version",
+      "expected": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "measured": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+      "passed": true
+    },
+    {
+      "id": "absent version blocks",
+      "expected": null,
+      "measured": null,
+      "passed": true
+    },
+    {
+      "id": "inconsistent version blocks",
+      "expected": null,
+      "measured": null,
+      "passed": true
+    },
+    {
+      "id": "deterministic 64-hex digest",
+      "expected": true,
+      "measured": true,
+      "passed": true
+    },
+    {
+      "id": "federal-bankruptcy-version-binding",
+      "passed": true,
+      "expected": "Consumer result and purchased report retain the admitted FCRA § 605(a)(1) source version (SHA-256 digest of the admitted source artifact).",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "rule_source_version": "FE5C1BA63AE85923E378D4278C3D6E85461E8DF648847F43FE02FB4185BD41F6",
+        "result_id": "res_01d4659c6f04f4264e69",
+        "download_bytes": 4969
+      }
+    },
+    {
+      "id": "production-final-freeze:ct-owner-common-error-scope",
+      "passed": true,
+      "assertions": 355,
+      "criteria": [
+        "rule_identity",
+        "version_binding"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "355 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:cw-common-error-rule-assessment",
+      "passed": true,
+      "assertions": 1142,
+      "criteria": [
+        "rule_identity",
+        "version_binding"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "1142 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:ar-gap-finding-003",
+      "passed": true,
+      "assertions": 11,
+      "criteria": [
+        "rule_identity",
+        "version_binding"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "11 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:ct-assessment-clock",
+      "passed": true,
+      "assertions": 44,
+      "criteria": [
+        "rule_identity",
+        "version_binding"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "44 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    }
+  ],
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; no deployed, current-release journey evidence exists for this gate, so staging verification and production readiness remain unresolved (OWNER-CLOSURE-001)."
+  },
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ar-gap-finding-003:rule_identity",
+        "passed": true,
+        "criteria": [
+          "rule_identity"
+        ],
+        "expected": "Actual rule/check identity and version on the current owned result/source facts.",
+        "measured": "ar-gap-finding-003 (11 assertions) pass; implemented and tested locally (ar-gap-finding-003); served-release verification not recorded"
+      },
+      {
+        "id": "ar-gap-finding-003:version_binding",
+        "passed": true,
+        "criteria": [
+          "version_binding"
+        ],
+        "expected": "Actual rule/check identity and version on the current owned result/source facts.",
+        "measured": "ar-gap-finding-003 (11 assertions) pass; implemented and tested locally (ar-gap-finding-003); served-release verification not recorded"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/adapters/rule-adapters.cjs",
+        "sha256": "5387a709109c6cb71d0a40694676159b1b234c886edf7dbc448c37fc16fd7d30"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/ar-gap-finding-003.cjs",
+        "sha256": "7bda8c4307829ebb4cd76048d8571a0eececa0022ff121b9f75a7964d8201e6b"
+      }
+    ]
+  },
+  "reconciliation": {
+    "note": "Translated from this gate own pre-closure evidence record already on disk plus its dedicated passing section. No coverage was invented, no source or permission was changed, and no hosted or served result is asserted.",
+    "scope": "rule identity/version binding: every finding retains its admitted source entry id and source version, and an absent or inconsistent version blocks the finding",
+    "previously_recorded_passed": false,
+    "sections": [
+      {
+        "id": "ar-gap-finding-003",
+        "passed": 11
+      }
+    ]
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-34039d2b3b1f8896",
+    "original_canonical_sha256": "e654b3529f51e7a29b6b0b5d442b25cddf9a6982911fa60d2787e16fb066decc",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "ar-gap-finding-003:rule_identity",
+          "passed": true,
+          "criteria": [
+            "rule_identity"
+          ],
+          "expected": "The evaluation record and finding bind to the actual governed/admitted rule identity (adapter_id, source_entry_id, source_version, ledger_row_ids), not just a citation or legacy id.",
+          "measured": "ar-gap-finding-003 (11 assertions) pass; implemented and tested locally (ar-gap-finding-003); served-release verification not recorded"
+        },
+        {
+          "id": "ar-gap-finding-003:version_binding",
+          "passed": true,
+          "criteria": [
+            "version_binding"
+          ],
+          "expected": "The correct admitted-source version is retained; an absent or inconsistent version blocks the finding; the version is deterministic (a 64-hex SHA-256 digest).",
+          "measured": "ar-gap-finding-003 (11 assertions) pass; implemented and tested locally (ar-gap-finding-003); served-release verification not recorded"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/adapters/rule-adapters.cjs",
+          "sha256": "122621e0c12682c9e4d6c069025b86449d558c879f180b89911a304e579a2815"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/ar-gap-finding-003.cjs",
+          "sha256": "7bda8c4307829ebb4cd76048d8571a0eececa0022ff121b9f75a7964d8201e6b"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-acceptance-final-2026-10-09/phase1-receipt.json",
+        "sha256": "169038aa452b991684591e86a3cb9e071089a13c363dc1c5ad30890703a3f1fa",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-paid.json",
+        "sha256": "d76e5a188ffc64ca407da6b295e5f3428f7eab0dbc9d539930aa301d111cd225",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/review-receipt.json",
+        "sha256": "6cedb7dbbe191b085faaed8b7d59d921de76a5c2a41100c1770e1086b48fa760",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/download-receipt.json",
+        "sha256": "5c112b398e1cc1d4ac56e65829d88a40d53c4a65aa4c4fefffd286310d7c8c62",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/continuity-receipt.json",
+        "sha256": "8933e42881c6cbc6e587eacb64193ec0477f33d2236a84451226b8f708714736",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/phase2-receipt.json",
+        "sha256": "31426ac4762df2c49a440a20e298985a282b2ce4bd45c3842e4e5e9901eb0d0f",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-cleanup.json",
+        "sha256": "36ba48c1a5f078f5301c15c5d1a30a8a526377b66e024dead6cbf8d6918b1803",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/cleanup-receipt.json",
+        "sha256": "32f7edce9d1e413159ee55cd51a8a9c9b2e9f23d36548c5168dfdf2bb208d36b",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/checkout-receipt.json",
+        "sha256": "e884ed2ce987afb2ae3dc1ee1f9254e83c4e8c31b7d7285f53ff2cbdf7fabb35",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/input-manifest.json",
+        "sha256": "9f04da60111c6abaf35d9c92bf0819263ef98991026bff1daaa5de4fd90ca40e",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/download-receipt.json",
+        "sha256": "2edff72885986c28f2338b1ed6ff09a2abdd17ba00b0a789b296fdefd87d6783",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/review-receipt.json",
+        "sha256": "c879e896db8f619cdfc8f3f1f1a258ecd802a524e51a1a3d306ec732074ac5c3",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-purchase-2026-10-08/hosted-upgrade-verification.json",
+        "sha256": "be56dd356ace5cccdfc1343521b0d31cee75f2de0c1db8e59f8206c72f82ad69",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/cancellation_proof.json",
+        "sha256": "4cb8c90da7e51fcf143382ac47cf29cefb082ca08386445e9bf1d78a54a02ad5",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/provider_cleanup.json",
+        "sha256": "43951b4733a23bc5ec5cb8cffd2cb00d72a9f3457560dc5964c20f7067994c67",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "fdt-mitigation-evidence.json",
+        "sha256": "88bc5b51d5ef8f205e76fc72633f4a9b30be84d5fa29550ba92fd2d3deb4273a",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-reconcile-2026-10-09/measurements.json",
+    "prepared_at": "2026-10-09T20:19:45.249Z",
+    "canonical_evidence_written": false
+  }
+}

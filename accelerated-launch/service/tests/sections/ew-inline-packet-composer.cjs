@@ -7,7 +7,6 @@ const crypto = require('node:crypto');
 const lib = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const fontkit = require('../../pdf-vendor/fontkit-1.1.1.min.js');
 const { composePacket, VERSION } = require('../../packet-composer.cjs');
-const bureauForms = require('../../bureau-forms.cjs');
 const { pdfText, comparableText } = require('../packet-pdf-assertions.cjs');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const n = value => lib.PDFName.of(value);
@@ -85,18 +84,15 @@ function isolatedWorker(exec) {
 }
 async function encryptedEvidenceChecks(check, form) {
   const allowed = Buffer.from(ENCRYPTED_FIXTURES.allowed, 'base64'), originalHash = hash(allowed);
-  const recipe = { letter_text: LETTER, reports: [{ bytes: allowed, content_type: 'application/pdf', relevant_pages: [2], label: 'Fictional encrypted report' }], forms: [{ bytes: form, filename: 'original-bureau.pdf' }] };
+  const recipe = { letter_text: LETTER, reports: [{ bytes: allowed, content_type: 'application/pdf', relevant_pages: [2], label: 'Fictional encrypted report' }] };
   const packet = composePacket(recipe), doc = await lib.PDFDocument.load(packet.bytes);
-  check.deepEqual(packet.sections.map(section => section.kind), ['letter', 'report', 'form'], 'permitted encrypted source keeps the same complete-packet order');
+  check.deepEqual(packet.sections.map(section => section.kind), ['letter', 'report'], 'permitted encrypted source keeps the same complete-packet order');
   check.deepEqual(packet.sections.find(section => section.kind === 'report').source_pages, [2], 'permitted encrypted report preserves the original selected one-based source page');
   check.ok(pdfText(packet.bytes).includes('FICTIONAL ENCRYPTED PAGE 2 SELECTED EVIDENCE') && !pdfText(packet.bytes).includes('FICTIONAL ENCRYPTED PAGE 1 NOT SELECTED'), 'only the relevant encrypted source page prints, never the whole report');
   check.equal(hash(allowed), originalHash, 'local permitted copying leaves the original uploaded encrypted bytes unchanged');
-  check.ok(!doc.isEncrypted && doc.getPageCount() === 3, 'permitted evidence produces a readable complete PDF with no omitted pages');
+  check.ok(!doc.isEncrypted && doc.getPageCount() === 2, 'permitted evidence produces a readable complete PDF with no omitted pages');
   check.deepEqual(doc.getPage(1).getSize(), { width: 612, height: 792 }, 'permitted encrypted evidence retains source page dimensions');
   check.ok(!doc.getForm().getTextField('CRP_letter_page_1').isReadOnly(), 'letter remains genuinely editable alongside permitted encrypted evidence');
-  check.deepEqual(doc.getForm().getDropdown('Province').getOptions(), ['NS', 'QC', 'ON'], 'permitted-copy path preserves the original bureau dropdown controls');
-  check.ok(!doc.getForm().getCheckBox('Consent').isChecked() && !doc.getForm().getSignature('Signature').acroField.dict.has(n('V')), 'native bureau consent and signature stay blank with encrypted evidence');
-  check.ok(render(form, 1).equals(render(packet.bytes, 3)), 'permitted-copy path leaves bureau form artwork and saved fields visually identical');
   const support = composePacket({ letter_text: LETTER, documents: [{ bytes: allowed, content_type: 'application/pdf', label: 'Fictional supporting copy' }] });
   check.equal(support.page_count, 3, 'print/copy permitted encrypted support includes every original support page');
   check.deepEqual(support.sections[1].source_pages, [1, 2], 'support copy page order is preserved');
@@ -121,9 +117,9 @@ async function encryptedEvidenceChecks(check, form) {
     refuses(check, { letter_text: LETTER, reports: [{ bytes, content_type: 'application/pdf', relevant_pages: [2] }] }, 'encrypted report refuses ' + variant + ' instead of bypassing protection', 'PACKET_ATTACHMENT_UNREADABLE');
     refuses(check, { letter_text: LETTER, documents: [{ bytes, content_type: 'application/pdf' }] }, 'encrypted support copy refuses ' + variant + ' instead of being silently omitted', 'PACKET_ATTACHMENT_UNREADABLE');
   }
-  refuses(check, { letter_text: LETTER, forms: [{ bytes: allowed, filename: 'encrypted-original.pdf' }] }, 'even print/copy permitted bureau originals remain strict and are never converted', 'SERVICE_STATE_UNAVAILABLE');
+  refuses(check, { letter_text: LETTER, forms: [{ bytes: allowed, filename: 'encrypted-original.pdf' }] }, 'all retired form components are rejected before rendering', 'INVALID_REQUEST');
   refuses(check, { letter_text: LETTER, reports: [{ bytes: allowed, content_type: 'application/pdf', relevant_pages: [3] }] }, 'permitted encryption cannot relax exact in-range source-page requirements');
-  const coldInput = { letter_text: LETTER, reports: [{ ...recipe.reports[0], bytes: allowed.toString('base64') }], forms: [{ bytes: form.toString('base64'), filename: 'original-bureau.pdf' }], version: VERSION };
+  const coldInput = { letter_text: LETTER, reports: [{ ...recipe.reports[0], bytes: allowed.toString('base64') }], version: VERSION };
   const first = coldWorker(coldInput); await new Promise(resolve => setTimeout(resolve, 1200)); const second = coldWorker(coldInput);
   check.equal(first.bytes, second.bytes, 'separate uncached copies more than one second apart normalize converter dates/IDs and produce identical final approval bytes');
   check.equal(first.sha256, hash(packet.bytes), 'cold permitted-copy output exactly matches preview/download output and approval digest');
@@ -161,10 +157,9 @@ async function run(t, check) {
   const address = await document(['FICTIONAL PROOF OF ADDRESS']);
   // A valid local PNG fixture is deliberately reused as both an image report and an identification copy.
   const png = render(await document(['FICTIONAL PHOTO IDENTIFICATION']), 1);
-  const form = await document(['ORIGINAL BUREAU ARTWORK'], true);
+  const form = await document(['FICTIONAL INTERACTIVE SOURCE DOCUMENT'], true);
   const input = { letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: [4, 2, 2], label: 'Relevant report pages' }],
-    documents: [{ bytes: png, content_type: 'image/png', label: 'Identification' }, { bytes: address, content_type: 'application/pdf', label: 'Proof of address' }],
-    forms: [{ bytes: form, filename: 'bureau-one.pdf' }, { bytes: form, filename: 'bureau-two.pdf' }] };
+    documents: [{ bytes: png, content_type: 'image/png', label: 'Identification' }, { bytes: address, content_type: 'application/pdf', label: 'Proof of address' }] };
   const packet = composePacket(input), repeat = composePacket(input), loaded = await lib.PDFDocument.load(packet.bytes);
   check.equal(packet.version, VERSION, 'actual output is bound to the wrapper, worker, fonts and local PDF library version');
   check.equal(packet.sha256, hash(packet.bytes), 'approval digest describes the actual single complete PDF');
@@ -173,8 +168,8 @@ async function run(t, check) {
   const protectedRepeat = composePacket(input);
   check.ok(protectedRepeat.bytes.equals(packet.bytes) && protectedRepeat.sections[0].label === 'My dispute letter', 'caller mutation cannot corrupt cached approved bytes or metadata');
   check.notEqual(composePacket({ ...input, letter_text: LETTER.replace('Please correct the duplicate.', 'Please remove the duplicate.') }).sha256, packet.sha256, 'an edited letter gets a new output rather than a cached earlier approval');
-  check.equal(packet.page_count, 7, 'single packet contains one letter, two relevant pages, two copies and two original forms');
-  check.deepEqual(packet.sections.map(section => [section.kind, section.start_page, section.page_count]), [['letter', 1, 1], ['report', 2, 2], ['document', 4, 1], ['document', 5, 1], ['form', 6, 1], ['form', 7, 1]], 'single PDF follows letter, source evidence, identification/address and bureau form order');
+  check.equal(packet.page_count, 5, 'single packet contains one letter, two relevant pages and two selected document copies');
+  check.deepEqual(packet.sections.map(section => [section.kind, section.start_page, section.page_count]), [['letter', 1, 1], ['report', 2, 2], ['document', 4, 1], ['document', 5, 1]], 'single PDF follows letter, source evidence, identification/address order');
   check.deepEqual(packet.sections[1].source_pages, [2, 4], 'relevant pages are unique and retain their original report order');
   const text = pdfText(packet.bytes);
   check.ok(text.includes('REPORT PAGE 2') && text.includes('REPORT PAGE 4') && !text.includes('REPORT PAGE 1') && !text.includes('REPORT PAGE 3'), 'irrelevant source report pages are absent from the actual printable packet');
@@ -182,42 +177,17 @@ async function run(t, check) {
   check.ok(!text.includes('Print and mail') && !text.includes('Evidence References'), 'composer adds no mailing instructions or separate technical evidence-reference sheet');
   check.equal(comparableText(loaded.getForm().getTextField('CRP_letter_page_1').getText()), comparableText(LETTER), 'ordinary complete letter is a genuine editable PDF text field');
   check.ok(packet.editable_fields.find(field => field.section === 'letter').font_size >= 10, 'letter text remains at least 10 points');
-  const original = await lib.PDFDocument.load(form);
-  for (const page of [5, 6]) {
-    const originalStreams = streams(original, original.getPage(0)), finalStreams = streams(loaded, loaded.getPage(page));
-    check.ok(originalStreams.every(source => finalStreams.some(copy => copy.equals(source))), 'native bureau page artwork streams remain unchanged: ' + (page + 1));
-    check.ok(render(form, 1).equals(render(packet.bytes, page + 1)), 'independent printed rendering of native bureau artwork and saved controls is unchanged: ' + (page + 1));
-  }
-  for (const prefix of ['', 'bureau_form_2.']) {
-    const finalForm = loaded.getForm();
-    check.equal(finalForm.getTextField(prefix + 'Name').getText(), 'Original consumer', 'each same-name native text value survives merging: ' + prefix);
-    check.equal(finalForm.getTextField(prefix + 'Name').getMaxLength(), 80, 'native field constraints survive: ' + prefix);
-    check.deepEqual(finalForm.getDropdown(prefix + 'Province').getOptions(), ['NS', 'QC', 'ON'], 'native dropdown options survive: ' + prefix);
-    check.deepEqual(finalForm.getDropdown(prefix + 'Province').getSelected(), ['NS'], 'native selected dropdown survives: ' + prefix);
-    check.deepEqual(finalForm.getRadioGroup(prefix + 'Delivery').getOptions(), ['Mail', 'Email'], 'native radio export options survive: ' + prefix);
-    check.equal(finalForm.getRadioGroup(prefix + 'Delivery').getSelected(), 'Mail', 'native radio selection survives: ' + prefix);
-    check.deepEqual(finalForm.getOptionList(prefix + 'Reasons').getSelected(), ['Duplicate'], 'native option-list selection survives: ' + prefix);
-    check.equal(finalForm.getCheckBox(prefix + 'Consent').isChecked(), false, 'blank consumer consent remains blank: ' + prefix);
-    check.ok(finalForm.getSignature(prefix + 'Signature') instanceof lib.PDFSignature && !finalForm.getSignature(prefix + 'Signature').acroField.dict.has(n('V')), 'native signature field remains blank and available: ' + prefix);
-  }
+  refuses(check, { ...input, forms: [{ bytes: form, filename: 'retired.pdf' }] }, 'composer rejects a retired form component rather than silently adding it');
   check.ok(!loaded.catalog.has(n('OpenAction')) && loaded.getForm().getFields().every(field => !field.acroField.dict.has(n('AA'))), 'untrusted imported executable actions are removed');
   const finalForm = loaded.getForm();
   finalForm.getTextField('CRP_letter_page_1').setText('Morgan Fiction\n\nPlease correct the duplicate collection.\n\nThank you,\nMorgan Fiction');
-  finalForm.getTextField('Name').setText('Changed first form'); finalForm.getTextField('bureau_form_2.Name').setText('Changed second form');
-  finalForm.getDropdown('Province').select('QC'); finalForm.getDropdown('bureau_form_2.Province').select('ON');
-  finalForm.getRadioGroup('bureau_form_2.Delivery').select('Email');
   loaded.registerFontkit(fontkit);
   const editFont = await loaded.embedFont(fs.readFileSync(path.join(__dirname, '../../packet-fonts/NotoSans-Regular.ttf')), { subset: false });
   finalForm.getTextField('CRP_letter_page_1').updateAppearances(editFont);
   const saved = Buffer.from(await loaded.save({ useObjectStreams: false })), reloaded = (await lib.PDFDocument.load(saved)).getForm();
-  check.equal(reloaded.getTextField('Name').getText(), 'Changed first form', 'saved first form edit remains independent');
-  check.equal(reloaded.getTextField('bureau_form_2.Name').getText(), 'Changed second form', 'saved second form edit remains independent');
-  check.deepEqual(reloaded.getDropdown('Province').getSelected(), ['QC'], 'consumer can change native dropdown and save');
-  check.deepEqual(reloaded.getDropdown('bureau_form_2.Province').getSelected(), ['ON'], 'same-name second native dropdown remains independently editable');
-  check.equal(reloaded.getRadioGroup('bureau_form_2.Delivery').getSelected(), 'Email', 'consumer can change native radio and save');
   check.ok(pdfText(saved).includes('Please correct the duplicate collection.') && !pdfText(saved).includes('both entries on page 2'), 'saved letter edit changes the actual printable appearance');
   check.ok(!render(packet.bytes, 1).equals(render(saved, 1)), 'independent renderer prints the saved edited letter');
-  check.ok(render(packet.bytes, 2).equals(render(saved, 2)), 'letter and form edits leave the source evidence page unchanged');
+  check.ok(render(packet.bytes, 2).equals(render(saved, 2)), 'letter edits leave the source evidence page unchanged');
   const longLetter = 'Morgan Fiction\n\n' + Array.from({ length: 180 }, (_, index) => `Item ${index + 1}: Please check the two collection entries and correct the duplicate account. The same masked number is printed on both entries.`).join('\n\n') + '\n\nThank you,\nMorgan Fiction';
   const long = composePacket({ letter_text: longLetter }), longDoc = await lib.PDFDocument.load(long.bytes);
   check.ok(long.page_count > 1, 'a long letter has clean continuation pages instead of clipping or smaller type');
@@ -238,24 +208,10 @@ async function run(t, check) {
   for (const pages of [undefined, [], [0], [-1], [1.5], [5]]) refuses(check, { letter_text: LETTER, reports: [{ bytes: report, content_type: 'application/pdf', relevant_pages: pages }] }, 'missing or invalid relevant source pages cannot silently include the whole report: ' + JSON.stringify(pages));
   refuses(check, { letter_text: LETTER, reports: [{ bytes: png, content_type: 'image/png', relevant_pages: [2] }] }, 'image source refuses an invented page number');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: Buffer.from('%PDF-1.7\ninvalid'), content_type: 'application/pdf' }] }, 'damaged support PDF cannot silently disappear from the complete packet', 'PACKET_ATTACHMENT_UNREADABLE');
-  refuses(check, { letter_text: LETTER, forms: [{ bytes: Buffer.from('%PDF-1.7\ninvalid') }] }, 'damaged bureau PDF cannot produce a partial packet', 'SERVICE_STATE_UNAVAILABLE');
+  refuses(check, { letter_text: LETTER, forms: [{ bytes: Buffer.from('%PDF-1.7\ninvalid') }] }, 'damaged retired form input is rejected before rendering', 'INVALID_REQUEST');
   refuses(check, { letter_text: LETTER, documents: [{ bytes: png, content_type: 'image/gif' }] }, 'unsupported document type is refused rather than omitted');
-  const tu = bureauForms.materialForms('CA', 'TRANSUNION', 'ACCOUNT')[0], native = bureauForms.populateForm(tu, { profile: { given_name: 'Morgan', family_name: 'Fiction', region: 'NS' }, items: [{ name: 'Cedar Agency', account_reference: '****1234', request: 'Please correct the duplicate entry.' }], settings: {} });
-  const nativePacket = composePacket({ letter_text: LETTER, forms: [{ bytes: native.bytes, filename: tu.filename }] }), nativeForm = (await lib.PDFDocument.load(nativePacket.bytes)).getForm();
-  check.deepEqual(nativeForm.getDropdown('Prov1').getOptions(), (await lib.PDFDocument.load(native.bytes)).getForm().getDropdown('Prov1').getOptions(), 'actual completed original TransUnion dropdown options survive final packet creation');
-  check.equal(nativeForm.getRadioGroup('request that it be incorporated into').getSelected(), undefined, 'actual original bureau consent stays unselected in final packet');
-  check.equal(nativeForm.getTextField('Signature').getText(), undefined, 'actual original bureau consumer signature stays blank in final packet');
-  check.ok(render(native.bytes, 1).equals(render(nativePacket.bytes, 2)), 'actual completed bureau form page remains visually identical in the single packet');
-  const nativePair = composePacket({ letter_text: LETTER, forms: [{ bytes: native.bytes, filename: tu.filename }, { bytes: native.bytes, filename: tu.filename }] });
-  const pairForm = (await lib.PDFDocument.load(nativePair.bytes)).getForm();
-  check.equal(pairForm.getTextField('bureau_form_2.Account1').getText(), '****1234', 'a second actual original bureau form retains its independently editable account value');
-  check.deepEqual(pairForm.getDropdown('bureau_form_2.Prov1').getOptions(), nativeForm.getDropdown('Prov1').getOptions(), 'second actual original bureau dropdown retains its complete original option set');
-  check.ok(render(native.bytes, 1).equals(render(nativePair.bytes, native.page_count + 2)), 'second actual bureau form preserves original artwork and filled appearances after resource grafting');
-  const originalFonts = (await lib.PDFDocument.load(native.bytes)).getForm().acroForm.dict.lookup(n('DR'), lib.PDFDict).lookup(n('Font'), lib.PDFDict).keys().map(key => key.decodeText());
-  const finalFonts = pairForm.acroForm.dict.lookup(n('DR'), lib.PDFDict).lookup(n('Font'), lib.PDFDict).keys().map(key => key.decodeText());
-  check.ok(originalFonts.every(key => finalFonts.includes(key)) && finalFonts.includes('CRPLetterFont'), 'editable letter font has a separate resource name and leaves original bureau fonts available');
   await encryptedEvidenceChecks(check, form);
-  if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes], ['inline-original-tu.pdf', nativePacket.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
-  return { single_complete_pdf: true, original_native_controls: true, source_pages_only: true, editable_letter: true, deterministic_approval_bytes: true, independent_print_rendering: true };
+  if (t?.dataDir) for (const [filename, bytes] of [['inline-editable-packet.pdf', packet.bytes], ['inline-edited-packet.pdf', saved], ['inline-long-letter.pdf', long.bytes]]) fs.writeFileSync(path.join(t.dataDir, filename), bytes);
+  return { single_complete_pdf: true, no_bureau_form_components: true, source_pages_only: true, editable_letter: true, deterministic_approval_bytes: true, independent_print_rendering: true };
 }
-module.exports = { run, id: 'ew-inline-packet-composer', title: 'One editable letter and original forms with exact inline evidence/document copies' };
+module.exports = { run, id: 'ew-inline-packet-composer', title: 'Editable letter and PDF composition controls with exact inline evidence/document copies' };

@@ -90,65 +90,10 @@ async function load(bytes, allowPermittedEvidenceCopy = false, budget) {
   sanitize(doc);
   return doc;
 }
-function fieldType(field) {
-  return field instanceof PDFTextField ? 'TEXT' : field instanceof PDFDropdown ? 'DROPDOWN' : field instanceof PDFOptionList ? 'OPTIONS' : field instanceof PDFCheckBox ? 'CHECKBOX' : field instanceof PDFRadioGroup ? 'RADIO' : field instanceof PDFSignature ? 'SIGNATURE' : 'OTHER';
-}
 function defaultResources(form, doc) {
   let dr = form.acroForm.dict.lookupMaybe(name('DR'), PDFDict);
   if (!dr) { dr = doc.context.obj({}); form.acroForm.dict.set(name('DR'), dr); }
   return dr;
-}
-function graftForm(target, source, formNumber) {
-  // The same copier MUST copy pages and AcroForm roots; separate copyPages loses their shared widget graph.
-  const copier = PDFObjectCopier.for(source.context, target.context), sourceForm = source.getForm(), targetForm = target.getForm();
-  const sourceRoot = sourceForm.acroForm.dict, targetRoot = targetForm.acroForm.dict;
-  const sourceDR = sourceRoot.lookupMaybe(name('DR'), PDFDict), targetDR = defaultResources(targetForm, target), fonts = new Map();
-  if (sourceDR) for (const [category, rawResources] of sourceDR.entries()) {
-    const resources = source.context.lookup(rawResources);
-    if (!(resources instanceof PDFDict)) continue;
-    let merged = targetDR.lookupMaybe(category, PDFDict);
-    if (!merged) { merged = target.context.obj({}); targetDR.set(category, merged); }
-    for (const [resourceName, resourceValue] of resources.entries()) {
-      let mapped = resourceName;
-      if (merged.has(mapped)) mapped = name(`CRPForm${formNumber}_${resourceName.decodeText()}`);
-      while (merged.has(mapped)) mapped = name(`${mapped.decodeText()}_`);
-      merged.set(mapped, copier.copy(resourceValue));
-      if (category.toString() === '/Font') fonts.set(resourceName.toString(), mapped.toString());
-    }
-  }
-  const remapDA = value => {
-    if (!(value instanceof PDFString || value instanceof PDFHexString)) return value;
-    const tokens = value.decodeText().split(/(\s+)/).map(token => fonts.get(token) || token);
-    return PDFString.of(tokens.join(''));
-  };
-  const sourceDA = sourceRoot.get(name('DA'));
-  let prefix = `bureau_form_${formNumber}`;
-  while (targetForm.getFields().some(field => field.getName() === prefix || field.getName().startsWith(prefix + '.'))) prefix += '_';
-  const wrapper = target.context.obj({ T: PDFHexString.fromText(prefix), Kids: [] });
-  const wrapperRef = target.context.register(wrapper), children = wrapper.lookup(name('Kids'), PDFArray);
-  function adjust(dict, seen = new Set()) {
-    if (!(dict instanceof PDFDict) || seen.has(dict)) return;
-    seen.add(dict);
-    const da = dict.get(name('DA')); if (da) dict.set(name('DA'), remapDA(da));
-    const kids = dict.lookupMaybe(name('Kids'), PDFArray);
-    if (kids) for (const ref of kids.asArray()) adjust(target.context.lookup(ref), seen);
-  }
-  if (sourceDA) wrapper.set(name('DA'), remapDA(sourceDA));
-  const sourceQ = sourceRoot.get(name('Q')); if (sourceQ) wrapper.set(name('Q'), copier.copy(sourceQ));
-  const sourceFields = sourceRoot.lookupMaybe(name('Fields'), PDFArray);
-  if (sourceFields) for (const rootRef of sourceFields.asArray()) {
-    const copiedRef = copier.copy(rootRef), dict = target.context.lookup(copiedRef);
-    dict.set(name('Parent'), wrapperRef); adjust(dict); children.push(copiedRef);
-  }
-  if (children.size()) targetForm.acroForm.addField(wrapperRef);
-  for (const page of source.getPages()) {
-    const copiedRef = copier.copy(page.ref), copiedNode = target.context.lookup(copiedRef);
-    target.addPage(PDFPage.of(copiedNode, copiedRef, target));
-  }
-  // Preserve calculation order/signature flags as data; executable calculations were removed above.
-  const sig = sourceRoot.get(name('SigFlags'));
-  if (sig && !targetRoot.has(name('SigFlags'))) targetRoot.set(name('SigFlags'), copier.copy(sig));
-  return prefix;
 }
 function wrapped(text, font, size, width) {
   const lines = [];
@@ -242,28 +187,17 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
 }
 async function compose(input) {
   const copyBudget = { bytes: 0, pages: 0 };
-  const forms = input.forms || [], sourceForms = [];
-  if (forms.length > 20 || (input.reports || []).length > 256 || (input.documents || []).length > 32) throw coded('INVALID_REQUEST');
-  for (const entry of forms) { try { sourceForms.push(await load(entry.bytes)); } catch { throw coded('SERVICE_STATE_UNAVAILABLE'); } }
-  const doc = sourceForms[0] || await PDFDocument.create({ updateMetadata: false });
-  if (!sourceForms.length) { doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z')); }
-  const formRanges = forms.map((entry, index) => ({ kind: 'form', label: label(entry.filename || entry.label), page_count: sourceForms[index].getPageCount(), form_number: index + 1 }));
-  for (let at = 1; at < sourceForms.length; at++) graftForm(doc, sourceForms[at], at + 1);
+  if (input.forms != null && (!Array.isArray(input.forms) || input.forms.length)) throw coded('INVALID_REQUEST');
+  if ((input.reports || []).length > 256 || (input.documents || []).length > 32) throw coded('INVALID_REQUEST');
+  const doc = await PDFDocument.create({ updateMetadata: false });
+  doc.setCreationDate(new Date('2000-01-01T00:00:00Z')); doc.setModificationDate(new Date('2000-01-01T00:00:00Z'));
   const fields = await letterPages(doc, input.letter_text), sections = [{ kind: 'letter', label: 'My dispute letter', start_page: 1, page_count: fields.length }];
   let position = fields.length;
   for (const [kind, entries] of [['report', input.reports || []], ['document', input.documents || []]]) for (const entry of entries) {
     const pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget);
     sections.push({ kind, label: label(entry.label), start_page: position + 1, page_count: pages.length, source_pages: pages }); position += pages.length;
   }
-  for (const range of formRanges) { sections.push({ ...range, start_page: position + 1 }); position += range.page_count; }
   if (doc.getPageCount() > 400) throw coded('INVALID_REQUEST');
-  const pages = doc.getPages();
-  for (const field of doc.getForm().getFields()) if (!fields.some(entry => entry.name === field.getName())) {
-    const pageRefs = new Set(field.acroField.getWidgets().map(widget => widget.P()?.toString()).filter(Boolean));
-    const foundPages = pages.map((page, index) => pageRefs.has(page.ref.toString()) ? index + 1 : null).filter(Boolean);
-    fields.push({ name: field.getName(), type: fieldType(field), section: 'form', page: foundPages[0] || null, pages: foundPages, read_only: field.isReadOnly(),
-      ...(typeof field.getOptions === 'function' ? { options: field.getOptions() } : {}) });
-  }
   const bytes = Buffer.from(await doc.save({ useObjectStreams: false, addDefaultPage: false, updateFieldAppearances: false }));
   return { bytes: bytes.toString('base64'), sha256: digest(bytes), page_count: doc.getPageCount(), sections, editable_fields: fields, version: input.version };
 }

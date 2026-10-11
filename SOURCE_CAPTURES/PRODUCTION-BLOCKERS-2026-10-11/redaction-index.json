@@ -1,0 +1,125 @@
+{
+  "schema": "crp-published-test-evidence-redactions-v1",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "reason": "Disposable local regression authentication tokens are unnecessary for public repository evidence; exact source receipts stay in ignored operational output",
+  "files": [
+    {
+      "file": "current-gates/finding-coverage-evidence.json",
+      "original_sha256": "b5172fb93645cb4bb042ed23bb9814bfe166d0821634cc50de97f9e224957788",
+      "published_sha256": "02443f0dd5072ec5ce9883ccec5633e74720c175ded8226d43eafabbe2e3f741",
+      "redacted_field_paths": [
+        "criteria.promise_inventory.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.promise_inventory.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.check_mapping.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.check_mapping.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.executable_findings.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.executable_findings.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.material_questions.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.material_questions.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.behavioral_coverage.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.behavioral_coverage.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.end_to_end_journey.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.end_to_end_journey.measured.current_named_sections.1.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "full-regression.json",
+      "original_sha256": "5728f4b665bfbfb12aca11242f98151e442f7dd2d5447e77bdfd77fa8a9672a1",
+      "published_sha256": "c0d73bca4ea16acf180c98a505251bcb16d4950e0636e9ab553f217af8a2b331",
+      "redacted_field_paths": [
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "measurements.json",
+      "original_sha256": "59a8854c6e47c979369ead619074bc008f57005941ed8bea6e32c1e327850ba2",
+      "published_sha256": "07068f6c93bf028ba0986396991efa4a71fc0d7dd1d717d92e7706e3df177532",
+      "redacted_field_paths": [
+        "criteria.finding-coverage-evidence.json.promise_inventory.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.promise_inventory.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.check_mapping.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.check_mapping.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.executable_findings.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.executable_findings.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.material_questions.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.material_questions.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.behavioral_coverage.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.behavioral_coverage.measured.current_named_sections.1.evidence.bob.token",
+        "criteria.finding-coverage-evidence.json.end_to_end_journey.measured.current_named_sections.1.evidence.alice.token",
+        "criteria.finding-coverage-evidence.json.end_to_end_journey.measured.current_named_sections.1.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/b2-evidence.json",
+      "original_sha256": "d7e447b5d0cec06c89b201940df9c4ed95b501ed986c5440d42bc66523823869",
+      "published_sha256": "7d731d51d0a042db6d48e12a43cc5683e844ba6aa67165290b9cc55fe5469741",
+      "redacted_field_paths": [
+        "execution.sections.3.evidence.alice.token",
+        "execution.sections.3.evidence.bob.token",
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/b3-evidence.json",
+      "original_sha256": "552fd1d0512c68ecdc1e12e768504c80ad653c792009ac1d476238543590e3f2",
+      "published_sha256": "e8e07b7bc92b2bb991a29e121b5a995fd187ebbbc09fc2038086bd705bb515b2",
+      "redacted_field_paths": [
+        "execution.sections.3.evidence.alice.token",
+        "execution.sections.3.evidence.bob.token",
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/b4-evidence.json",
+      "original_sha256": "5252248e4c2c9bfe35a05cefed298c2f3ee1a635644b152e6206f89cb4f6a8e2",
+      "published_sha256": "97ad6ecc04cd5747ea19f251d082e38d82ce2e0d584647c28094db446e00cde9",
+      "redacted_field_paths": [
+        "execution.sections.3.evidence.alice.token",
+        "execution.sections.3.evidence.bob.token",
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/b55-initial-failed-b2-evidence.json",
+      "original_sha256": "8be65a399c6e69108846eced7597031b597abb57a0ed7ba885b3822f10e28743",
+      "published_sha256": "d79b018e40fb17f4371f23409b7dc9a6a59d864944fbc5d1ea5a662ee6180da2",
+      "redacted_field_paths": [
+        "execution.sections.0.evidence.alice.token",
+        "execution.sections.0.evidence.bob.token",
+        "sections.0.evidence.alice.token",
+        "sections.0.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/b56-first-full-regression-evidence.json",
+      "original_sha256": "3032608ba578b877a6dc5361b420811f4e300051ce40bf203396e3c6070c9a31",
+      "published_sha256": "dd918a5f5582db72b183ada5df5b32cd1e19c0d7a83bff85f036f3d529ad7e85",
+      "redacted_field_paths": [
+        "sections.0.evidence.alice.token",
+        "sections.0.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    },
+    {
+      "file": "prior-proof/current-regression-evidence.json",
+      "original_sha256": "c05b20d8894ccd2b2e25fe4e1f44bd4454fa8c917d13e09475d5a965fc7ace8c",
+      "published_sha256": "91b02c16518286bffee15469a3061d03c79f7f05ab2c2d93b196a08cbfabd47e",
+      "redacted_field_paths": [
+        "sections.3.evidence.alice.token",
+        "sections.3.evidence.bob.token"
+      ],
+      "original_exact_bytes_retained_in_ignored_operational_output": true
+    }
+  ]
+}

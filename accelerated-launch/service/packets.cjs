@@ -25,7 +25,6 @@ const accountDisplay = require('./account-display.cjs');
 const CHECKLIST_LABELS = new Map(require('./common-error-checklist.cjs').CHECKS.map(check => [check.check_id, check.label]));
 const { reportDateValue, reportReference } = require('./report-fact-sources.cjs');
 const bureauRules = require('./bureau-dispute-requirements.cjs');
-const bureauForms = require('./bureau-forms.cjs');
 const consumerLetter = require('./consumer-dispute-letter.cjs');
 
 function selectedBureaus(country, row, selected) {
@@ -60,10 +59,6 @@ function enrichedCurrentPacket(store, actor, country, caseId) {
     selectionCurrent ? packet.report_file_ids : [], selectionCurrent ? packet.report_page_choices : {});
   if (enriched?.support_snapshot) {
     enriched.support_snapshot.missing.push(...enriched.report_snapshot.missing);
-    enriched.support_snapshot.form_payload = consumerLetter.payloadFor(enriched, row, selected);
-    for (const form of enriched.support_snapshot.form_assets || []) {
-      enriched.support_snapshot.missing.push(...bureauForms.missingFormFields(form, enriched.support_snapshot.form_payload));
-    }
     enriched.support_snapshot.missing = [...new Set(enriched.support_snapshot.missing)];
   }
   return enriched;
@@ -181,10 +176,10 @@ function issueContent(issue) {
 
 function canonicalVersion(packetRow, resultRow, selectedIssues) {
   const identity = reportIdentity(resultRow) || {};
-  // Display order is material: native forms refer to the numbered letter items.
+  // Display order is material to the numbered letter requests.
   const ordered = selectedIssues;
   const parts = [
-    'packet-format:complete-editable-pdf-1',
+    'packet-format:consumer-letter-evidence-pdf-2',
     `composer:${COMPOSER_VERSION}`,
     `result:${packetRow.result_id || ''}`,
     `selection:${ordered.map((i) => i.issue_id).join(',')}`,
@@ -269,10 +264,7 @@ function packetView(store, actor, caseId) {
       required_form_manifest: requiredFormManifest(packet),
       letter_preview_url: packet && row && selectedIssues.length && selectionCurrent
         ? `/api/cases/${caseId}/packet/preview?version=${canonicalVersion(packet, row, selectedIssues)}` : null,
-      form_previews: (selectedIssues.length && selectionCurrent ? packet?.support_snapshot?.form_assets || [] : []).map(form => ({
-        filename: form.filename, label: form.label, source_url: form.source_url,
-        review_url: `/api/cases/${caseId}/packet/forms/${form.filename}?version=${canonicalVersion(packet, row, selectedIssues)}`
-      })),
+      form_previews: [],
       print_instructions: printingInstructions(packet),
       print_available: Boolean(packet && packet.approved_version && !approvalStale),
       download_available: Boolean(packet && packet.approved_version && !approvalStale)
@@ -516,13 +508,12 @@ function approvePacket(store, actor, caseId, expectedVersion, requirePostal) {
   if (requirePostal && (packet.support?.channel !== 'POSTAL' || !packet.support_snapshot?.requirements?.postal)) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (packet.support_snapshot?.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   if (expectedVersion != null && canonicalVersion(packet, row, selected) !== expectedVersion) throw new ServiceError('PACKET_APPROVAL_STALE');
-  const populated = populatedForms(packet);
-  const composed = completePdf(store, actor, packet, row, selected, populated);
+  const composed = completePdf(store, actor, packet, row, selected);
   return store.update((state) => {
     const live = state.packets.find((p) => p.case_id === caseId);
     live.approved_version = canonicalVersion(packet, row, selected);
     live.approved_at = nowIso();
-    live.approved_form_digests = populated.map(formDigest);
+    delete live.approved_form_digests;
     live.approved_pdf_sha256 = composed.sha256;
     live.updated_at = nowIso();
     return live;
@@ -725,25 +716,11 @@ function reportAttachmentManifest(packet) {
 function printingInstructions(packet) {
   return [
     'Download your packet PDF. Check it and print every page.',
-    'Sign and date the letter and any bureau form that asks for it.',
+    'Sign and date your letter.',
     'Mail it to the bureau address in your letter. Keep a copy.'
   ];
 }
-function requiredFormManifest(packet) {
-  return (packet?.support_snapshot?.form_assets || []).map(form => ({
-    filename: form.filename, label: form.label, source_url: form.source_url, sha256: form.sha256,
-    template_sha256: form.sha256, mapping_version: form.mapping_version, instructions: form.instructions,
-    population_supported: true
-  }));
-}
-function populatedForms(packet) {
-  return (packet?.support_snapshot?.form_assets || []).map(form => ({ ...form,
-    ...bureauForms.populateForm(form, packet.support_snapshot.form_payload) }));
-}
-function formDigest(form) {
-  return { filename: form.filename, sha256: form.sha256, template_sha256: form.template_sha256,
-    mapping_version: form.mapping_version };
-}
+function requiredFormManifest() { return []; }
 /** Draft PDF access stays owned and version-bound; it grants no approval or mailing authority. */
 function resolvePreview(store, actor, caseId, expectedVersion) {
   const { row, eligible } = requireResultAndEligible(store, actor, caseId);
@@ -766,36 +743,28 @@ function packetPreview(store, actor, caseId, expectedVersion) {
   return { body: pdf.bytes, content_type: 'application/pdf', filename: 'dispute-packet-review.pdf', approved_version: version,
     page_count: pdf.page_count };
 }
-function packetForm(store, actor, caseId, filename, expectedVersion) {
-  const { packet, version } = resolvePreview(store, actor, caseId, expectedVersion);
-  requireCorrespondence(packet);
-  if (!packet.support_snapshot || packet.support_snapshot.missing.length) throw new ServiceError('PACKET_SUPPORT_REQUIRED');
-  const template = packet.support_snapshot.form_assets.find(form => form.filename === filename);
-  if (!template) throw new ServiceError('NOT_FOUND');
-  const form = bureauForms.populateForm(template, packet.support_snapshot.form_payload);
-  return { body: form.bytes, content_type: 'application/pdf', filename: template.filename, approved_version: version };
+function packetForm(store, actor, caseId) {
+  cases.requireOwnedCase(store, actor, caseId);
+  throw new ServiceError('NOT_FOUND');
 }
 function documentText(packet, row, selected) {
   return String(packet.letter_text || correspondenceLines(packet, row, selected).join('\n'))
     .replace(/\r\n?/g, '\n').replace(/\t/g, '    ');
 }
 
-function completePdf(store, actor, packet, row, selected, forms = populatedForms(packet)) {
+function completePdf(store, actor, packet, row, selected) {
   const documents = (packet.support?.document_ids || []).map(id => {
     const file = accountDocuments.getDocument(store, actor, id);
     return { bytes: file.bytes, content_type: file.document.content_type, label: file.document.document_type };
   }).sort((a,b) => (/^IDENTITY|^IDENTIFICATION/.test(a.label) ? 0 : 1) - (/^IDENTITY|^IDENTIFICATION/.test(b.label) ? 0 : 1));
   return composePacket({ letter_text: documentText(packet, row, selected),
-    reports: packet.report_snapshot?.copies || [], documents,
-    forms: forms.map(form => ({ bytes: form.bytes, filename: form.filename })) });
+    reports: packet.report_snapshot?.copies || [], documents });
 }
 
 /** The same approved PDF is opened for printing and included in the download. */
 function packetPrint(store, actor, caseId) {
   const { packet, row, selected } = resolveSelected(store, actor, caseId);
-  const forms = populatedForms(packet);
-  if (JSON.stringify(forms.map(formDigest)) !== JSON.stringify(packet.approved_form_digests || [])) throw new ServiceError('PACKET_APPROVAL_STALE');
-  const pdf = completePdf(store, actor, packet, row, selected, forms);
+  const pdf = completePdf(store, actor, packet, row, selected);
   if (pdf.sha256 !== packet.approved_pdf_sha256) throw new ServiceError('PACKET_APPROVAL_STALE');
   return { filename: `CRP-dispute-packet-${caseId}.pdf`, content_type: 'application/pdf',
     body: pdf.bytes, approved_version: packet.approved_version, page_count: pdf.page_count, sections: pdf.sections,

@@ -1,0 +1,285 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.666Z",
+  "scope": "Staging, test billing only. The CA-NS second-bankruptcy exception is recorded off-report: a \"second bankruptcy\" requires a DISTINCT bankruptcy event identity (a separate case/court), and the report extraction produces only discharge dates. Two listings of the SAME bankruptcy across bureaus can print different discharge dates, so distinct dates alone do not establish distinct events. The exception therefore stays unresolved in every case, like the FCRA § 1681c(b) use exceptions. No unrelated account balance, purpose, bureau or filename is used, and unknown is never defaulted to false. The served release is byte-identical to the local runtime (61 files, 0 hash mismatches).",
+  "criteria": {
+    "rule_exceptions": {
+      "passed": false,
+      "expected": "Current active checklist period tri-state source-linked evaluation plus frozen active exceptions. AQ retirement controls are historical, not a required runtime bankruptcy positive.",
+      "measured": "implemented and tested locally (aq-gap-finding-001); served-release verification not recorded",
+      "evidence_refs": [
+        "accelerated-launch/service/tests/sections/aq-gap-finding-001.cjs"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "second-bankruptcy is off-report",
+      "expected": false,
+      "measured": false,
+      "passed": true
+    },
+    {
+      "id": "same-bankruptcy cross-bureau different dates yield two distinct dates",
+      "expected": [
+        "2020-01-01",
+        "2020-02-15"
+      ],
+      "measured": [
+        "2020-01-01",
+        "2020-02-15"
+      ],
+      "passed": true
+    },
+    {
+      "id": "second-bankruptcy stays unresolved",
+      "expected": {
+        "applies": null,
+        "resolved": false
+      },
+      "measured": {
+        "applies": null,
+        "resolved": false
+      },
+      "passed": true
+    },
+    {
+      "id": "fcra-1681c-b-off-report-unresolved",
+      "expected": {
+        "applies": null,
+        "resolved": false,
+        "count": 3
+      },
+      "measured": {
+        "applies": null,
+        "resolved": false,
+        "count": 3
+      },
+      "passed": true
+    },
+    {
+      "id": "federal-bankruptcy-off-report-exception",
+      "passed": true,
+      "expected": "FCRA § 605(a)(1) period exceeded; § 1681c(b) off-report exception unresolved; no finding in view or download",
+      "measured": {
+        "upload_status": 201,
+        "evaluate_status": 201,
+        "view_status": 200,
+        "download_status": 200,
+        "file_id": "028a18eb31e0226ed70cd90b5845c953",
+        "result_id": "res_441e7b0d63ea8fa51a10",
+        "headline": "More than 10 years have passed since the date this rule measures from on public record 1.",
+        "is_a_finding": false,
+        "classification": null,
+        "download_bytes": 4969
+      }
+    },
+    {
+      "id": "production-final-freeze:bs-prime-directive-delivery",
+      "passed": true,
+      "assertions": 37,
+      "criteria": [
+        "rule_exceptions"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "37 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:by-packet-reconciliation",
+      "passed": true,
+      "assertions": 50,
+      "criteria": [
+        "rule_exceptions"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "50 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    },
+    {
+      "id": "production-final-freeze:cs-limitation-and-payment-history",
+      "passed": true,
+      "assertions": 130,
+      "criteria": [
+        "rule_exceptions"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "130 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "8e7adc35c23274d62eaa4e4d77d22df0ca8985032966dcaf7bdcfae7e39eca2e"
+    }
+  ],
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "Local implementation tests passed; no deployed, current-release journey evidence exists for this gate, so staging verification and production readiness remain unresolved (OWNER-CLOSURE-001)."
+  },
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "aq-gap-finding-001:rule_exceptions",
+        "passed": true,
+        "criteria": [
+          "rule_exceptions"
+        ],
+        "expected": "Current active checklist period tri-state source-linked evaluation plus frozen active exceptions. AQ retirement controls are historical, not a required runtime bankruptcy positive.",
+        "measured": "aq-gap-finding-001 (10 assertions) pass; implemented and tested locally (aq-gap-finding-001); served-release verification not recorded"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/adapters/rule-adapters.cjs",
+        "sha256": "5387a709109c6cb71d0a40694676159b1b234c886edf7dbc448c37fc16fd7d30"
+      },
+      {
+        "file": "accelerated-launch/service/evaluation.cjs",
+        "sha256": "8e72a94cca09b2b572442dab93ff53318aebf9bab6b34bc0df749b751f052fb4"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/aq-gap-finding-001.cjs",
+        "sha256": "1051dccbe94ac024b9fcacf03a56d2348652bbda878cb1840aebae6d6cbc124c"
+      }
+    ]
+  },
+  "reconciliation": {
+    "note": "Translated from this gate own pre-closure evidence record already on disk plus its dedicated passing section. No coverage was invented, no source or permission was changed, and no hosted or served result is asserted.",
+    "scope": "tri-state rule-specific exception evaluation: applies / does-not-apply / unresolved, where an unresolved exception never becomes a finding",
+    "previously_recorded_passed": false,
+    "sections": [
+      {
+        "id": "aq-gap-finding-001",
+        "passed": 10
+      }
+    ]
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-34039d2b3b1f8896",
+    "original_canonical_sha256": "33393c491d2b3b1649c45868278efe08fe9b8bc25a28acac87e704c81850c754",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "aq-gap-finding-001:rule_exceptions",
+          "passed": true,
+          "criteria": [
+            "rule_exceptions"
+          ],
+          "expected": "Exceptions stay unresolved where the report cannot establish event identity or completeness; the cross-bureau same-bankruptcy defect is demonstrated; the classifier never defaults unknown to false.",
+          "measured": "aq-gap-finding-001 (10 assertions) pass; implemented and tested locally (aq-gap-finding-001); served-release verification not recorded"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/adapters/rule-adapters.cjs",
+          "sha256": "122621e0c12682c9e4d6c069025b86449d558c879f180b89911a304e579a2815"
+        },
+        {
+          "file": "accelerated-launch/service/evaluation.cjs",
+          "sha256": "8e72a94cca09b2b572442dab93ff53318aebf9bab6b34bc0df749b751f052fb4"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/aq-gap-finding-001.cjs",
+          "sha256": "1051dccbe94ac024b9fcacf03a56d2348652bbda878cb1840aebae6d6cbc124c"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "production-acceptance-final-2026-10-09/phase1-receipt.json",
+        "sha256": "169038aa452b991684591e86a3cb9e071089a13c363dc1c5ad30890703a3f1fa",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-paid.json",
+        "sha256": "d76e5a188ffc64ca407da6b295e5f3428f7eab0dbc9d539930aa301d111cd225",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/review-receipt.json",
+        "sha256": "6cedb7dbbe191b085faaed8b7d59d921de76a5c2a41100c1770e1086b48fa760",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/download-receipt.json",
+        "sha256": "5c112b398e1cc1d4ac56e65829d88a40d53c4a65aa4c4fefffd286310d7c8c62",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/continuity-receipt.json",
+        "sha256": "8933e42881c6cbc6e587eacb64193ec0477f33d2236a84451226b8f708714736",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/phase2-receipt.json",
+        "sha256": "31426ac4762df2c49a440a20e298985a282b2ce4bd45c3842e4e5e9901eb0d0f",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/provider-cleanup.json",
+        "sha256": "36ba48c1a5f078f5301c15c5d1a30a8a526377b66e024dead6cbf8d6918b1803",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/cleanup-receipt.json",
+        "sha256": "32f7edce9d1e413159ee55cd51a8a9c9b2e9f23d36548c5168dfdf2bb208d36b",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/checkout-receipt.json",
+        "sha256": "e884ed2ce987afb2ae3dc1ee1f9254e83c4e8c31b7d7285f53ff2cbdf7fabb35",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "production-acceptance-final-2026-10-09/input-manifest.json",
+        "sha256": "9f04da60111c6abaf35d9c92bf0819263ef98991026bff1daaa5de4fd90ca40e",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/download-receipt.json",
+        "sha256": "2edff72885986c28f2338b1ed6ff09a2abdd17ba00b0a789b296fdefd87d6783",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-inline-packet-copy-2026-10-09/review-receipt.json",
+        "sha256": "c879e896db8f619cdfc8f3f1f1a258ecd802a524e51a1a3d306ec732074ac5c3",
+        "identity_build_id": "crp-v1-ab7d1eda31f7b106"
+      },
+      {
+        "file": "staging-purchase-2026-10-08/hosted-upgrade-verification.json",
+        "sha256": "be56dd356ace5cccdfc1343521b0d31cee75f2de0c1db8e59f8206c72f82ad69",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/cancellation_proof.json",
+        "sha256": "4cb8c90da7e51fcf143382ac47cf29cefb082ca08386445e9bf1d78a54a02ad5",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "staging-purchase-webhook-2026-10-08/provider_cleanup.json",
+        "sha256": "43951b4733a23bc5ec5cb8cffd2cb00d72a9f3457560dc5964c20f7067994c67",
+        "identity_build_id": "crp-v1-6671d7a0dd3c9d27"
+      },
+      {
+        "file": "fdt-mitigation-evidence.json",
+        "sha256": "88bc5b51d5ef8f205e76fc72633f4a9b30be84d5fa29550ba92fd2d3deb4273a",
+        "identity_build_id": "crp-v1-34039d2b3b1f8896"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "production-reconcile-2026-10-09/measurements.json",
+    "prepared_at": "2026-10-09T20:19:45.188Z",
+    "canonical_evidence_written": false
+  }
+}

@@ -1,0 +1,212 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.479Z",
+  "scope": "GAP-INGEST-005 numeric date conventions. An unambiguous numeric date (day or month above 12) resolves independently, and an ambiguous numeric date stays unresolved with both interpretations preserved; one field’s date order is never propagated to another field, and no explicit date-format label mechanism exists in accepted policy, so a decisive ambiguous date is always withheld rather than resolved by unrelated evidence. Implementation is closed by be-gap-ingest-005 + aj-ingest-dates + z-general-intake; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "be-gap-ingest-005",
+        "passed": true,
+        "criteria": [
+          "numeric_date_conventions"
+        ],
+        "expected": "unambiguous forms resolve independently; ambiguous forms stay unresolved with both interpretations; an unambiguous date never supplies another field’s convention; a decisive ambiguous date never becomes a finding; HTTP preserves the behavior",
+        "measured": "25/25 assertions pass"
+      },
+      {
+        "id": "aj-ingest-dates",
+        "passed": true,
+        "criteria": [
+          "numeric_date_conventions"
+        ],
+        "expected": "ambiguous interpretations are preserved and the comparison needs agreement; no unsupported finding from an ambiguous date",
+        "measured": "37/37 assertions pass"
+      },
+      {
+        "id": "z-general-intake",
+        "passed": true,
+        "criteria": [
+          "numeric_date_conventions"
+        ],
+        "expected": "unambiguous above-12 numeric forms resolve; an ambiguous numeric without a convention resolves nothing with both interpretations preserved",
+        "measured": "75/75 assertions pass"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/be-gap-ingest-005.cjs",
+        "sha256": "9f3b184b25dfc9e05af0681c9e5b3be2b1bb7b7d4c46fe3f2315099231f3b36f"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/be-gap-ingest-005.cjs",
+        "sha256": "9f3b184b25dfc9e05af0681c9e5b3be2b1bb7b7d4c46fe3f2315099231f3b36f"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/z-general-intake.cjs",
+        "sha256": "784e8c9ca6bf9dd4358fe0dbfb8fff3ca4708b720391bd52f03d6c7e20dc7439"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence recorded for a convention-resolved numeric date; implementation is closed by the behavioral tests, but the deployed journey and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "numeric_date_conventions": {
+      "passed": false,
+      "expected": "an unambiguous numeric date resolves independently; an ambiguous numeric date is withheld with both interpretations preserved; one field’s date order is never propagated to another field; a decisive ambiguous date is never resolved by unrelated evidence",
+      "measured": "implemented and tested (be-gap-ingest-005, aj-ingest-dates, z-general-intake); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-005.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "deployed numeric-convention journey with a completed finding traced to its source record",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "be-gap-ingest-005",
+      "passed": true,
+      "criteria": [
+        "numeric_date_conventions"
+      ],
+      "expected": "25 assertions pass",
+      "measured": "25/25"
+    },
+    {
+      "id": "aj-ingest-dates",
+      "passed": true,
+      "criteria": [
+        "numeric_date_conventions"
+      ],
+      "expected": "37 assertions pass",
+      "measured": "37/37"
+    },
+    {
+      "id": "z-general-intake",
+      "passed": true,
+      "criteria": [
+        "numeric_date_conventions"
+      ],
+      "expected": "75 assertions pass",
+      "measured": "75/75"
+    }
+  ],
+  "coverage": {
+    "unambiguous_forms_resolve_independently": {
+      "tests": [
+        "be-gap-ingest-005",
+        "z-general-intake"
+      ],
+      "expected": "day or month above 12 resolves independently",
+      "measured": "13/05/2021 -> 2021-05-13; 05/13/2021 -> 2021-05-13"
+    },
+    "ambiguous_without_convention_unresolved": {
+      "tests": [
+        "be-gap-ingest-005",
+        "z-general-intake"
+      ],
+      "expected": "an ambiguous date stays unresolved with both interpretations",
+      "measured": "06/12/2026 null + interpretations"
+    },
+    "no_cross_field_propagation": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "an unambiguous date never supplies another field’s convention",
+      "measured": "an unambiguous report date resolves itself but an ambiguous account date stays withheld"
+    },
+    "unambiguous_account_ambiguous_report": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "an unambiguous account date resolves beside an ambiguous report date",
+      "measured": "report date EXTRACTION_UNRESOLVED; account Closed 2025-05-13"
+    },
+    "per_account_independence": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "an unambiguous date on one account does not resolve an ambiguous date on another",
+      "measured": "account A Opened 2021-05-13; account B Closed withheld"
+    },
+    "low_confidence_no_resolution": {
+      "tests": [
+        "be-gap-ingest-005",
+        "aj-ingest-dates"
+      ],
+      "expected": "an untrusted date does not resolve a trusted ambiguous target",
+      "measured": "trusted ambiguous date stays unresolved"
+    },
+    "reorder_identical_decisions": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "reordered lines yield identical interpretation decisions",
+      "measured": "ambiguous date unresolved either order"
+    },
+    "decisive_ambiguous_withheld": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "a decisive ambiguous date is withheld, never a finding",
+      "measured": "no finding emitted for an ambiguous order-for-relief date"
+    },
+    "invalid_dates_unresolved": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "invalid dates stay unresolved under an explicit convention",
+      "measured": "31/04/2021 DDMM null; 04/31/2021 US null"
+    },
+    "raw_alternative_provenance_retained": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "raw value, alternative interpretation and decision convention retained internally",
+      "measured": "06/12/2026 US -> 2026-06-12, ambiguous true, alternative 2026-12-06, convention MM/DD/YYYY"
+    },
+    "equivalent_outcomes": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "equivalent resolved dates produce the same evaluation outcome",
+      "measured": "13/05/2011 and 05/13/2011 both -> VIOLATION"
+    },
+    "http_upload_evaluate_view": {
+      "tests": [
+        "be-gap-ingest-005"
+      ],
+      "expected": "a numeric-date report reaches the real endpoints",
+      "measured": "upload 201, evaluate 201, view 200"
+    }
+  }
+}

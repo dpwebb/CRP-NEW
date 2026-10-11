@@ -1,0 +1,115 @@
+{
+  "fixture_scope": "staging-production-blockers-20261011",
+  "build_id": "crp-v1-fd23f242f3d158bf",
+  "account_id": "acc_64a5eea7dbd629dc9c4be862",
+  "case_id": "case_1db830376067908681f14d06",
+  "recorded_at": "2026-10-11T12:52:49.260Z",
+  "version": "bc6f14807373078c5a1dfb37a7ae46e45234cc018ada1f990008ff00ed485933",
+  "selected_count": 2,
+  "pdf_sha256": "0ca055f1ec2b9536af6be766e0c2bfd8657c4259d6cf399858dc0f8dda5fb67a",
+  "pdf_bytes": 322923,
+  "support_missing": [],
+  "anonymous_preview_status": 401,
+  "inspection": {
+    "total_pages": 6,
+    "letter_pages": 1,
+    "editable_letter_fields": [
+      "CRP_letter_page_1"
+    ],
+    "minimum_font_size": 10,
+    "editable_saved_and_printed": true,
+    "source_pages": [
+      {
+        "original_page": 2,
+        "packet_page": 2,
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "original_page": 3,
+        "packet_page": 3,
+        "exact_streams": true,
+        "exact_rendering": true
+      }
+    ],
+    "documents": [
+      {
+        "filename": "fictional-passport.pdf",
+        "document_type": "IDENTITY",
+        "packet_page": 4,
+        "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "filename": "fictional-licence.pdf",
+        "document_type": "IDENTITY",
+        "packet_page": 5,
+        "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+        "exact_streams": true,
+        "exact_rendering": true
+      },
+      {
+        "filename": "fictional-address.pdf",
+        "document_type": "ADDRESS",
+        "packet_page": 6,
+        "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+        "exact_streams": true,
+        "exact_rendering": true
+      }
+    ],
+    "bureau_forms_retired": true,
+    "retired_form_count": 0,
+    "page_renders": [
+      {
+        "page": 1,
+        "filename": "packet-page-01.png",
+        "sha256": "eb3ce6472053d93e99ec524ffda827fd45b9068d5246f6a32a7e3d36af421eba"
+      },
+      {
+        "page": 2,
+        "filename": "packet-page-02.png",
+        "sha256": "75be9a0f47e7d357c699e97d166af219129d3cf3bfd9671db7b331303079c7d7"
+      },
+      {
+        "page": 3,
+        "filename": "packet-page-03.png",
+        "sha256": "84fbde1d9fa09d4158a33d59546b11f7d785d0fb129bcc504ddd714d17526348"
+      },
+      {
+        "page": 4,
+        "filename": "packet-page-04.png",
+        "sha256": "9fe88703d9a7d8833fa15c3f161a74d8dd1cc98f667b762de652c3051d699063"
+      },
+      {
+        "page": 5,
+        "filename": "packet-page-05.png",
+        "sha256": "a67b3dbeb9b9ecd320fde2c4e191f795a4d614c914b2ac6b4b39726df8a44de8"
+      },
+      {
+        "page": 6,
+        "filename": "packet-page-06.png",
+        "sha256": "3afe7e907064dfeecb3f517aadaccd720f34955167df12a1eb032832cb840673"
+      }
+    ],
+    "visual_review": "PASS",
+    "physical_print_performed": false,
+    "visual_review_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "visual_review_observation": "All six pages previously visually inspected in this run; identical actual PDF SHA256 on fresh version verified.",
+    "visually_reviewed_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ]
+  }
+}

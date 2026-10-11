@@ -1,0 +1,208 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T11:37:46.369Z",
+  "scope": "GAP-INGEST-002 multi-line record boundaries. A wrapped account name, a field-label continuation (Opened/Closed/status/identifier) and a continued page attach to their OWNING account, never to a new or unrelated account; adjacent accounts (including repeated/similar creditor names) stay separate; conflicting readings are withheld rather than silently overwritten; source file/page/line locations stay accurate; and a completed finding traces to its source record. Implementation is closed by bc-gap-ingest-002 + ah-multifile-assessment + an-payment-history-grid; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "bc-gap-ingest-002",
+        "passed": true,
+        "criteria": [
+          "multiline_boundaries",
+          "continuation_lines"
+        ],
+        "expected": "a wrapped account name stays one record; a status/identifier continuation reaches its owning record without overwriting the identity; repeated and similar creditor names stay separate; continuation dates and source lines stay accurate; conflicting order-for-relief dates are withheld; a completed finding traces to its source record; the real endpoints preserve the association and refuse cross-account access",
+        "measured": "24/24 assertions pass"
+      },
+      {
+        "id": "ah-multifile-assessment",
+        "passed": true,
+        "criteria": [
+          "multiline_boundaries",
+          "continuation_lines"
+        ],
+        "expected": "a field line continues the preceding account; two accounts stay separate; a reordered or conflicting continuation is never merged",
+        "measured": "66/66 assertions pass"
+      },
+      {
+        "id": "an-payment-history-grid",
+        "passed": true,
+        "criteria": [
+          "multiline_boundaries"
+        ],
+        "expected": "a positioned multi-column table assembles into one account without borrowing a preceding page when no continuation marker is printed",
+        "measured": "20/20 assertions pass"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "beab00ef06ab1aae014ca2f161a13d0656cd0e22eeb17301233251de8c49fa28"
+      },
+      {
+        "file": "accelerated-launch/service/multi-file-assembly.cjs",
+        "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+      },
+      {
+        "file": "accelerated-launch/service/payment-history-grid.cjs",
+        "sha256": "6d2da3430201347e50813c9eb4a0cc964ce1d08e2e4a6838745c2a13f243efef"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bc-gap-ingest-002.cjs",
+        "sha256": "982b0f400f7a82b1a4c101f8479a7240cbecc2db0195d1ce28f2454a3d034576"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bc-gap-ingest-002.cjs",
+        "sha256": "982b0f400f7a82b1a4c101f8479a7240cbecc2db0195d1ce28f2454a3d034576"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/an-payment-history-grid.cjs",
+        "sha256": "b30bca5f29ac9f49c54b8b014b0e57aac0be48fc0ab2e03c6bd883d5a6e884b3"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence recorded for an admitted multi-line upload; implementation is closed by the behavioral tests, but the deployed journey and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "multiline_boundaries": {
+      "passed": false,
+      "expected": "an account/collection/public-record boundary is built from multi-line structure and tables, never one-line-one-record; adjacent accounts stay separate including repeated/similar creditor names",
+      "measured": "implemented and tested (bc-gap-ingest-002, ah-multifile-assessment, an-payment-history-grid); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-002.cjs"
+      ]
+    },
+    "continuation_lines": {
+      "passed": false,
+      "expected": "dates, balances, statuses and identifiers on continuation lines reach their owning record; page breaks preserve a record only with sufficient linkage; conflicting readings are withheld",
+      "measured": "implemented and tested (bc-gap-ingest-002, ah-multifile-assessment); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-002.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "deployed multi-line journey with a completed finding traced to its source record",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "bc-gap-ingest-002",
+      "passed": true,
+      "criteria": [
+        "multiline_boundaries",
+        "continuation_lines"
+      ],
+      "expected": "24 assertions pass",
+      "measured": "24/24"
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "passed": true,
+      "criteria": [
+        "multiline_boundaries",
+        "continuation_lines"
+      ],
+      "expected": "66 assertions pass",
+      "measured": "66/66"
+    },
+    {
+      "id": "an-payment-history-grid",
+      "passed": true,
+      "criteria": [
+        "multiline_boundaries"
+      ],
+      "expected": "20 assertions pass",
+      "measured": "20/20"
+    }
+  ],
+  "coverage": {
+    "wrapped_names_and_continuations_stay_with_owner": {
+      "tests": [
+        "bc-gap-ingest-002"
+      ],
+      "expected": "a wrapped name and field-label continuations stay one owning record",
+      "measured": "bc asserts 1 record with balance + opened date; status/identifier/Opened continuations on one record"
+    },
+    "dates_balances_statuses_identifiers_reach_correct_record": {
+      "tests": [
+        "bc-gap-ingest-002"
+      ],
+      "expected": "each continuation fact reaches its owning record, not a new account",
+      "measured": "status CHARGED OFF, masked_identifier MASK-1234, opened/closed dates all on the same record; identity not overwritten"
+    },
+    "adjacent_accounts_separate_repeated_similar_names": {
+      "tests": [
+        "bc-gap-ingest-002"
+      ],
+      "expected": "repeated or similar creditor names stay separate accounts",
+      "measured": "same creditor name 2 records; similar creditor names 2 records"
+    },
+    "page_breaks_preserve_only_with_linkage": {
+      "tests": [
+        "ah-multifile-assessment",
+        "an-payment-history-grid"
+      ],
+      "expected": "a continuation attaches only on adjacency + field-line + open target; no marker means no borrow",
+      "measured": "ah reordered/conflicting continuations not merged; an grid no-marker page does not borrow"
+    },
+    "bureau_report_boundaries_prevent_borrowing": {
+      "tests": [
+        "ah-multifile-assessment"
+      ],
+      "expected": "a dateless page separated by another bureau is retained unresolved",
+      "measured": "ah 3 report groups with the dateless page retaining no borrowed date"
+    },
+    "conflicting_readings_preserved_or_withheld": {
+      "tests": [
+        "bc-gap-ingest-002",
+        "ah-multifile-assessment"
+      ],
+      "expected": "conflicting readings are withheld, never silently overwritten",
+      "measured": "bc conflicting order-for-relief withheld; ah conflicting identifier not borrowed"
+    },
+    "source_locations_accurate": {
+      "tests": [
+        "bc-gap-ingest-002",
+        "ah-multifile-assessment"
+      ],
+      "expected": "record and continuation facts name their file/page/line",
+      "measured": "bc record file/page + Opened line 4; ah location.file_id + location.source"
+    },
+    "http_path_and_finding_trace": {
+      "tests": [
+        "bc-gap-ingest-002",
+        "ah-multifile-assessment"
+      ],
+      "expected": "the real endpoints preserve the association and a finding traces to its source record",
+      "measured": "bc HTTP upload 201 + view accounts_read 1 + report Source fact (page 1, line 4)"
+    },
+    "cross_account_refused": {
+      "tests": [
+        "bc-gap-ingest-002"
+      ],
+      "expected": "another account cannot read the assembled case or result",
+      "measured": "GET case + result view return 403"
+    }
+  }
+}

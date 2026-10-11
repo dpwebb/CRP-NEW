@@ -51,11 +51,15 @@ const SERVICE_NON_SHIPPED = [
   'accelerated-launch/service/tests/',
   'accelerated-launch/service/deploy/',
   'accelerated-launch/service/ui/',
-  'accelerated-launch/service/password-vendor/'
+  'accelerated-launch/service/password-vendor/',
+  'accelerated-launch/service/bureau-forms/',
+  'accelerated-launch/service/bureau-forms.cjs',
+  'accelerated-launch/service/bureau-form-worker.cjs',
+  'accelerated-launch/service/bureau-form-mappings.cjs'
 ];
 
 const GROUPS = [
-  { id: 'RUNTIME_ASSETS', dirs: ['accelerated-launch/service/packet-fonts', 'accelerated-launch/service/bureau-forms', 'accelerated-launch/service/pdf-vendor', 'accelerated-launch/service/password-vendor'], filter: () => true },
+  { id: 'RUNTIME_ASSETS', dirs: ['accelerated-launch/service/packet-fonts', 'accelerated-launch/service/pdf-vendor', 'accelerated-launch/service/password-vendor'], filter: () => true },
   { id: 'RUNTIME', dirs: ['accelerated-launch/service'], filter: (n) => n.endsWith('.cjs'), exclude: SERVICE_NON_SHIPPED },
   { id: 'READER_SUPPORT', dirs: ['internal-validation/ca-ns-last-payment-six-year', 'consumer-wizard/dist'], filter: (n) => n.endsWith('.cjs') || n === 'jurisdiction-data.js', exclude: ['internal-validation/ca-ns-last-payment-six-year/tests/'] },
   { id: 'RULE_CONFIGURATION', dirs: ['accelerated-launch/adapters'], filter: (n) => /\.(json|cjs)$/.test(n) },

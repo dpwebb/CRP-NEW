@@ -3,7 +3,6 @@ const { ServiceError } = require('./errors.cjs');
 const profiles = require('./account-profile.cjs');
 const documents = require('./account-documents.cjs');
 const bureaus = require('./bureau-dispute-requirements.cjs');
-const forms = require('./bureau-forms.cjs');
 const FIELDS = new Set(['bureau', 'channel', 'purpose', 'document_ids', 'use_account_profile', 'identity_reference', 'no_ssn_issued', 'identity_shows_address', 'verification_requested', 'copies_confirmed', 'document_dates', 'other_identity_details']);
 function normalize(input, country) {
   if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).some(key => !FIELDS.has(key))) throw new ServiceError('INVALID_REQUEST');
@@ -29,11 +28,7 @@ function snapshot(store, actor, country, settings, mixed) {
   const missing = settings.use_account_profile ? bureaus.missing(requirements, profile, selected, settings) : ['Choose your saved account details for this bureau packet.'];
   if (settings.channel !== 'POSTAL') missing.push('Save the mail checklist before you approve this packet.');
   if (unavailable) missing.push('A selected document was changed or removed. Choose its current copy.');
-  const form_assets = forms.materialForms(country, settings.bureau, settings.purpose);
-  if (mixed && country === 'CA' && settings.bureau === 'EQUIFAX' && settings.purpose === 'ACCOUNT') {
-    form_assets.push(...forms.materialForms(country, settings.bureau, 'PUBLIC_RECORD'));
-  }
-  return { settings, profile, documents: selected, requirements, form_assets, unavailable, missing };
+  return { settings, profile, documents: selected, requirements, unavailable, missing };
 }
 function address(profile) {
   return ['address_line1', 'address_line2', 'city', 'region', 'postal_code', 'country'].map(field => profile[field]).filter(Boolean).join(', ');
@@ -69,18 +64,13 @@ function lines(packet) {
   out.push('', 'DOCUMENTS INCLUDED');
   selected.forEach(doc => out.push(doc.original_filename + ' — ' + doc.document_type.replace(/_/g, ' ') + (settings.document_dates?.[doc.file_id] ? ' (dated ' + settings.document_dates[doc.file_id] + ')' : '')));
   if (!selected.length) out.push('No additional documents selected.');
-  if (support.form_assets?.length) out.push('', 'COMPLETED BUREAU FORMS', ...support.form_assets.map(form => `${form.label}: ${form.instructions}`));
   out.push('', 'BEFORE YOU MAIL', ...requirements.items.map(item => '- ' + item));
   if (settings.channel === 'POSTAL') out.push('', 'Signature: ________________________', 'Date: ________________________');
   return out.filter(value => value != null);
-}
-function requiredForms(packet) {
-  const snapshot = packet?.support_snapshot;
-  return (snapshot?.form_assets || []).map(form => forms.populateForm(form, snapshot.form_payload).bytes);
 }
 function requirePostalPacket(view) {
   if (view?.support?.settings?.channel !== 'POSTAL' || !view?.support?.requirements?.postal) {
     throw new ServiceError('PACKET_SUPPORT_REQUIRED');
   }
 }
-module.exports = { normalize, snapshot, address, enrich, publicView, lines, requiredForms, requirePostalPacket };
+module.exports = { normalize, snapshot, address, enrich, publicView, lines, requirePostalPacket };

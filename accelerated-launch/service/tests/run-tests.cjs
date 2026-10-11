@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'ev-native-account-summary.cjs',
   'et-supported-coverage-evidence.cjs',
   'eu-general-omission-delivery.cjs',
   'a-isolation.cjs',
@@ -54,7 +55,7 @@ const SECTION_FILES = [
   'en-purchase-presentation.cjs',
   'eo-cumulative-upgrade-credit.cjs',
   'ep-provider-upgrades.cjs',
-  'er-bureau-form-population.cjs',
+  'er-bureau-forms-retired.cjs',
   'es-filled-packet-business-letter.cjs',
   'ew-inline-packet-composer.cjs',
   'ex-inline-packet-journey.cjs',

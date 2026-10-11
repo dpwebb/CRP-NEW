@@ -1,0 +1,215 @@
+{
+  "identity": {
+    "build_id": "crp-wizard-77c1605b03e2aa8d",
+    "served_build_id": "crp-wizard-77c1605b03e2aa8d"
+  },
+  "passed": false,
+  "measured_at": "2026-10-11T04:27:16.219Z",
+  "scope": "GAP-INGEST-004 unambiguous written date forms. Full and abbreviated month names with permitted punctuation, day-first and ordinal forms resolve; equivalent spellings normalize identically and drive the same evaluation outcome; invalid calendar dates stay unresolved (never rolled); unsupported/ambiguous forms stay unresolved; partial dates keep MONTH precision; raw value, normalization and source location survive into a completed finding and its report; OCR-confidence gates apply to written dates; multiple written dates stay on the correct field. Implementation is closed by bd-gap-ingest-004 + aj-ingest-dates + z-general-intake; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "bd-gap-ingest-004",
+        "passed": true,
+        "criteria": [
+          "written_date_forms",
+          "unambiguous_parse"
+        ],
+        "expected": "equivalent written spellings normalize to the same day and the same bankruptcy classification; all twelve months resolve in full and abbreviated form; invalid dates and ambiguous forms stay unresolved; raw/normalized/source survive into a completed finding; OCR gates apply to written dates; HTTP preserves a written date",
+        "measured": "34/34 assertions pass"
+      },
+      {
+        "id": "aj-ingest-dates",
+        "passed": true,
+        "criteria": [
+          "written_date_forms",
+          "unambiguous_parse"
+        ],
+        "expected": "written, numeric and partial dates keep raw text, precision and source; ambiguous interpretations are preserved; OCR-uncertainty is enforced through the assessment",
+        "measured": "37/37 assertions pass"
+      },
+      {
+        "id": "z-general-intake",
+        "passed": true,
+        "criteria": [
+          "written_date_forms",
+          "unambiguous_parse"
+        ],
+        "expected": "ISO, YYYY/MM/DD, full month names, and unambiguous above-12 numeric forms resolve; ambiguous numeric without a convention resolves nothing; partial month/year is MONTH precision",
+        "measured": "75/75 assertions pass"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "edd8a5330afffdd3536509a6897704aaeb085579e915654d8348fc17829d1e70"
+      },
+      {
+        "file": "accelerated-launch/service/formats.cjs",
+        "sha256": "6d717fd2eb1de448e87552ac10fb6bcc81d17a4d12d0c7b3dfd9d35615523d0f"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bd-gap-ingest-004.cjs",
+        "sha256": "565e18437fa4fb9f17bde50de1757301f0ba4e241abef0b3d27c408572c53fb5"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bd-gap-ingest-004.cjs",
+        "sha256": "565e18437fa4fb9f17bde50de1757301f0ba4e241abef0b3d27c408572c53fb5"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/aj-ingest-dates.cjs",
+        "sha256": "cbe2dc9a8e4a3cc46c3d70314929d7ffe83e0af16aa7de04e33abe2c2e41de1d"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/z-general-intake.cjs",
+        "sha256": "784e8c9ca6bf9dd4358fe0dbfb8fff3ca4708b720391bd52f03d6c7e20dc7439"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "PENDING",
+    "reason": "no current-release HTTP journey evidence recorded for a written-date form; implementation is closed by the behavioral tests, but the deployed journey and production readiness remain unresolved until a current-release, served build is measured."
+  },
+  "criteria": {
+    "written_date_forms": {
+      "passed": false,
+      "expected": "full and abbreviated month names with permitted punctuation, day-first and ordinal forms, and leap/invalid handling; failed forms explicitly unresolved",
+      "measured": "implemented and tested (bd-gap-ingest-004, aj-ingest-dates, z-general-intake); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-004.cjs"
+      ]
+    },
+    "unambiguous_parse": {
+      "passed": false,
+      "expected": "unambiguous numeric and ISO forms resolve; ambiguous forms without an evidenced convention stay unresolved with both interpretations preserved",
+      "measured": "implemented and tested (bd-gap-ingest-004, z-general-intake); served staging journey evidence not yet recorded",
+      "evidence_refs": [
+        "C:\\CRP-NEW\\SOURCE_CAPTURES\\CLOSURE-POLICY-001\\closure-gap-ingest-004.cjs"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": false,
+      "expected": "deployed written-date journey with a completed finding traced to its source record",
+      "measured": "not recorded yet",
+      "evidence_refs": []
+    }
+  },
+  "tests": [
+    {
+      "id": "bd-gap-ingest-004",
+      "passed": true,
+      "criteria": [
+        "written_date_forms",
+        "unambiguous_parse"
+      ],
+      "expected": "34 assertions pass",
+      "measured": "34/34"
+    },
+    {
+      "id": "aj-ingest-dates",
+      "passed": true,
+      "criteria": [
+        "written_date_forms",
+        "unambiguous_parse"
+      ],
+      "expected": "37 assertions pass",
+      "measured": "37/37"
+    },
+    {
+      "id": "z-general-intake",
+      "passed": true,
+      "criteria": [
+        "written_date_forms",
+        "unambiguous_parse"
+      ],
+      "expected": "75 assertions pass",
+      "measured": "75/75"
+    }
+  ],
+  "coverage": {
+    "written_month_names_abbreviations_punctuation": {
+      "tests": [
+        "bd-gap-ingest-004",
+        "z-general-intake"
+      ],
+      "expected": "full and abbreviated month names with periods/commas resolve",
+      "measured": "all twelve months full+abbreviated; Jan./Jan 5, 2021/5th January 2021 all resolve"
+    },
+    "numeric_and_iso_forms": {
+      "tests": [
+        "bd-gap-ingest-004",
+        "z-general-intake"
+      ],
+      "expected": "ISO, YYYY/MM/DD, and above-12 unambiguous numeric forms resolve",
+      "measured": "2026-06-12, 2026/06/12, 13/05/2021, 05/13/2021 resolve"
+    },
+    "equivalent_spellings_same_outcome": {
+      "tests": [
+        "bd-gap-ingest-004"
+      ],
+      "expected": "equivalent spellings normalize identically and drive the same finding",
+      "measured": "January/Jan/1 January/January 1st all -> 2011-01-01 -> VIOLATION"
+    },
+    "invalid_dates_unresolved": {
+      "tests": [
+        "bd-gap-ingest-004"
+      ],
+      "expected": "invalid calendar dates stay unresolved, never rolled",
+      "measured": "February 30 / February 29 2021 / April 31 all null; February 29 2020 resolves"
+    },
+    "unsupported_ambiguous_unresolved": {
+      "tests": [
+        "bd-gap-ingest-004",
+        "z-general-intake"
+      ],
+      "expected": "unsupported or ambiguous forms stay unresolved with interpretations preserved",
+      "measured": "06/12/2026 null with both interpretations; not a date null"
+    },
+    "partial_dates_keep_precision": {
+      "tests": [
+        "bd-gap-ingest-004",
+        "z-general-intake",
+        "aj-ingest-dates"
+      ],
+      "expected": "partial dates keep MONTH precision, no invented day",
+      "measured": "Jun 2026 -> 2026-06 MONTH; 02/2021 MONTH"
+    },
+    "raw_normalization_location_into_findings": {
+      "tests": [
+        "bd-gap-ingest-004"
+      ],
+      "expected": "raw value, normalization and source line survive into a completed finding and its report",
+      "measured": "raw January 1, 2011, normalized 2011-01-01, source line 4, report Source fact page 1 line 4"
+    },
+    "ocr_gates_for_written_dates": {
+      "tests": [
+        "bd-gap-ingest-004",
+        "aj-ingest-dates"
+      ],
+      "expected": "a written date with an untrusted month word stays unresolved",
+      "measured": "low-confidence January -> EXTRACTION_UNRESOLVED, date UNRESOLVED"
+    },
+    "multiple_dates_correct_fields": {
+      "tests": [
+        "bd-gap-ingest-004"
+      ],
+      "expected": "multiple written dates stay on the correct fields of the correct record",
+      "measured": "Opened January 5, 2015 and Closed February 5, 2021 both on one record"
+    },
+    "http_upload_evaluate_view": {
+      "tests": [
+        "bd-gap-ingest-004"
+      ],
+      "expected": "a written date reaches the real HTTP upload -> evaluate -> view path",
+      "measured": "upload 201, evaluate 201, view 200"
+    }
+  }
+}

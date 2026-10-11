@@ -1,0 +1,101 @@
+{
+  "schema": "crp-current-paid-http-fdt-proof-v1",
+  "identity": {
+    "build_id": "crp-v1-fd23f242f3d158bf",
+    "served_build_id": "crp-v1-fd23f242f3d158bf"
+  },
+  "fictional_only": true,
+  "payment_state_injected": false,
+  "new_host_action_performed": false,
+  "receipt_kind": "Strict derivation of existing actual host observations",
+  "assembled_at": "2026-10-11T12:55:05.356Z",
+  "account_id": "acc_64a5eea7dbd629dc9c4be862",
+  "provider_session_id": "cs_test_a12pfuDXAG7buuKbZU8pIYryXHBA80oiS4ae46wQcjSJKpfaBMwCfGiFl2",
+  "matched_applied_signed_webhook": true,
+  "input_manifest_sha256": "96456ae171857dd3291121cf332da227e95f6e108a202d8bc968021d8fde01d8",
+  "manifest_digest": "FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB",
+  "manifest_files": 133,
+  "actual_host_source_hashes_matched": true,
+  "paid_http_response_bytes_reproduced": true,
+  "evidence_refs": [
+    {
+      "file": "production-blocker-repair-2026-10-11/phase1-receipt.json",
+      "sha256": "12c54f8cede45e19b5f7c8cc54a8847490fd89a97cd2594149365c68acdc7d9a"
+    },
+    {
+      "file": "production-blocker-repair-2026-10-11/phase2-receipt.json",
+      "sha256": "9045952a5c9501d0da0c6dad3f15bbc53e76c9cb7203da6a1a96f1d2b54b31fa"
+    },
+    {
+      "file": "production-blocker-repair-2026-10-11/provider-paid.json",
+      "sha256": "eb25b013277263bb4520345e1d37e8d51f5d9d1d4176af9e6e668337b7b8bef7"
+    },
+    {
+      "file": "production-blocker-repair-2026-10-11/input-manifest.json",
+      "sha256": "96456ae171857dd3291121cf332da227e95f6e108a202d8bc968021d8fde01d8"
+    }
+  ],
+  "recovery_cases": [
+    {
+      "scenario": "USEFUL",
+      "case_id": "case_2daee5096b853ce7d5c2f5d7",
+      "result_id": "res_fc7d19745a663f57707c",
+      "upload_status": 201,
+      "result_status": 200,
+      "input_sha256": "6285f0e69bfd607e0d4875ae550321370a242a99bf55b7824cd05832d1bc967a",
+      "input_page_count": 1,
+      "recovery": {
+        "bounded": true,
+        "substitution_forbidden": true,
+        "recovery_attempts": 1,
+        "facts_added": [
+          {
+            "page": 1,
+            "line": 5,
+            "source": "LOCAL_OCR"
+          }
+        ]
+      },
+      "reading_limitations": {
+        "limited": false,
+        "incomplete": false,
+        "affected_checks": [],
+        "plain": null,
+        "never_equates_unread_with_absence": true
+      },
+      "actual_paid_result_route": "/api/cases/case_2daee5096b853ce7d5c2f5d7/results/res_fc7d19745a663f57707c",
+      "actual_paid_response_sha256": "eaeca2536209d51e6a2df77fb9657ab25688149f0e2df709e047713387bfc508",
+      "measurement_origin": "Actual paid HTTP200 result read; exact response hash, owning case/result and original HTTP201 upload/input hash bound to separately retained phase receipts."
+    },
+    {
+      "scenario": "UNSUCCESSFUL",
+      "case_id": "case_098da06a9d45f63a3f94601f",
+      "result_id": "res_5dd3eff28b3c8adf3fe9",
+      "upload_status": 201,
+      "result_status": 200,
+      "input_sha256": "a965e2ca1f1ead729d7a7468b5b41363e83b494da11d1cb7285aefeebc60927b",
+      "input_page_count": 1,
+      "recovery": {
+        "bounded": true,
+        "substitution_forbidden": true,
+        "recovery_attempts": 1,
+        "facts_added": []
+      },
+      "reading_limitations": {
+        "limited": true,
+        "incomplete": true,
+        "affected_checks": [
+          "STATUTORY_RULE_COMPARISON",
+          "REPORT_FACT_CONSISTENCY",
+          "COMMON_ERROR"
+        ],
+        "plain": "Some of your report could not be read completely, so the checks named below could not examine every part of it. A value that could not be read is not the same as a value that is absent, and nothing here treats unread content as \"no issues\" or as proof of compliance.",
+        "never_equates_unread_with_absence": true
+      },
+      "actual_paid_result_route": "/api/cases/case_098da06a9d45f63a3f94601f/results/res_5dd3eff28b3c8adf3fe9",
+      "actual_paid_response_sha256": "11877486db07a0b72566e23782461552d6a98dfde72af598a66e371e704c0ddf",
+      "measurement_origin": "Actual paid HTTP200 result read; exact response hash, owning case/result and original HTTP201 upload/input hash bound to separately retained phase receipts."
+    }
+  ],
+  "passed": true
+}

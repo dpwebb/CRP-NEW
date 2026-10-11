@@ -126,11 +126,7 @@ async function run(service, check) {
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
     for (const [field, value] of Object.entries({ full_name: name, contact_email: email, date_of_birth: '1980-04-12', phone: '555-0100', address_line1: '10 Fictional Street', city: 'Example City', region: 'NS', postal_code: 'B3J 0A1' })) await page.locator('#account-' + field).fill(value);
-    const formDetails = page.locator('details').filter({ has: page.locator('#account-given_name') });
-    if (!await formDetails.evaluate(node => node.open)) await formDetails.locator('summary').click();
-    // Explicit fictional name components; the application never splits a consumer's full name.
-    await page.locator('#account-given_name').fill(name.split(/\s+/)[0]);
-    await page.locator('#account-family_name').fill(name.split(/\s+/).slice(1).join(' ') || 'Fiction');
+    check.equal(await page.locator('#account-given_name, #account-family_name').count(), 0, 'retired form-only name boxes are absent from the consumer account');
     await page.locator('#account-save').click();
     await page.waitForFunction(() => document.body.innerText.includes('Contact details saved.'));
     if (withDocuments && !(await page.locator('a[href^="/api/account/documents/"]').count())) for (const [type, kind] of [['IDENTITY', usEquifax ? 'SOCIAL_SECURITY' : 'PASSPORT'], ['IDENTITY', 'DRIVING_LICENCE'], ['ADDRESS', 'UTILITY_BILL']]) {
@@ -182,7 +178,7 @@ async function run(service, check) {
   const reviewedForm = await page.context().request.get(service.base + await fullReview.getAttribute('src'));
   check.equal(reviewedForm.status(), 200, 'browser session cookie opens the owned complete packet PDF');
   const initialPacketText = require('../packet-pdf-assertions.cjs').pdfText(await reviewedForm.body());
-  check.ok(initialPacketText.includes('Whitfield') && initialPacketText.includes('DISPUTE REQUEST FORM'), 'actual complete PDF review retains the bureau form artwork and saved consumer name');
+  check.ok(initialPacketText.includes('Whitfield') && !initialPacketText.includes('DISPUTE REQUEST FORM'), 'actual complete PDF review keeps the consumer name without retired bureau artwork');
   check.ok(/Your packet is approved/.test(await page.locator('#packet-block').innerText()) && await page.locator('#packet-ready-status').isVisible(), 'approved and ready messages describe the current approved preview');
   await page.locator('#packet-wording').fill('CHANGED WORDS AFTER APPROVAL');
   await page.waitForTimeout(300);
@@ -581,7 +577,7 @@ async function run(service, check) {
   const currentCase = (await service.request('POST', '/api/cases', { token: copyActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   const copies = await openCasePage('bw-report-copies@example.test', 'a-long-enough-password', currentCase.case_id, copyLines('2026', '2020'), [extraCopyPage]);
   const copyPage = copies.page;
-  check.ok(/letter, report pages, document copies and bureau forms in one PDF/.test(await copyPage.locator('#packet-block').innerText()), 'the first review states the complete one-file packet simply');
+  check.ok(/letter, report pages and document copies in one PDF/.test(await copyPage.locator('#packet-block').innerText()), 'the first review states the complete one-file packet simply');
   await accountContact(copyPage, 'Fictional Copy Consumer', 'copy-consumer@example.test');
   await copyPage.locator('[data-check-issue]').first().check();
   const firstCopyPreview = copyPage.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
@@ -616,6 +612,26 @@ async function run(service, check) {
   check.ok(!withCopies.text.includes('FICTIONAL UNRELATED REPORT NOTES'), 'the unrelated second page of each report is omitted');
   const copyPreviewResponse = await copyPage.request.get(new URL(includedView.packet.letter_preview_url, copyPage.url()).href);
   check.ok(withCopies.bytes.equals(await copyPreviewResponse.body()), 'the complete two-report download equals the reviewed inline PDF');
+  const mutations = [];
+  const observeMutation = request => { if (request.method() === 'POST' && /\/packet\//.test(request.url())) mutations.push(request.url()); };
+  copyPage.on('request', observeMutation);
+  await copyPage.locator('#steps button[data-step="3"]').click();
+  await copyPage.waitForSelector('#result-select');
+  await copyPage.locator('#steps button[data-step="4"]').click();
+  await copyPage.waitForSelector('#packet-download');
+  const returnedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
+  check.equal(mutations.length, 0, 'unchanged navigation sends no mutating packet requests');
+  check.equal(returnedView.packet.approved, true, 'approval survives unchanged navigation');
+  check.equal(returnedView.packet.preview_version, includedView.packet.preview_version, 'unchanged navigation retains reviewed version');
+  check.ok((await downloadText(copyPage)).bytes.equals(withCopies.bytes), 'returning retains exact approved PDF bytes');
+  await copyPage.locator('#packet-wording').fill('Please verify these entries against the enclosed report copies.');
+  await copyPage.locator('#steps button[data-step="3"]').click();
+  await copyPage.waitForSelector('#result-select');
+  const editedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
+  check.ok(mutations.length > 0, 'intentional changes are saved when leaving review');
+  check.equal(editedView.packet.approved, false, 'material edits still invalidate approval');
+  check.equal((await copyPage.request.get(new URL('/api/cases/' + currentCase.case_id + '/packet-download', copyPage.url()).href)).status(), 409, 'changed packet requires fresh review before download');
+  copyPage.off('request', observeMutation);
   const reportChoiceShot = `${process.env.TEMP || '.'}/crp-original-report-copy-review.png`;
   await copyPage.screenshot({ path: reportChoiceShot, fullPage: true }); evidence.report_copy_review_screenshot = reportChoiceShot;
   await copyPage.close();

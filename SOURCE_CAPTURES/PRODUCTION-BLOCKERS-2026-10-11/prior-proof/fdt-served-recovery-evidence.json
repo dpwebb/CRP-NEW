@@ -1,0 +1,124 @@
+{
+  "target": "https://staging.creditregulatorpro.com",
+  "identity": {
+    "build_id": "crp-v1-21a7a7dc0d0d2741",
+    "served_build_id": "crp-v1-21a7a7dc0d0d2741"
+  },
+  "source_commit": "52a6ce9c2396391147351c2b08f2c48b79070734",
+  "payment_accepted_on_build": "crp-v1-ca33814fa82bca5b",
+  "new_payment_claimed": false,
+  "fictional_inputs_only": true,
+  "live_charge": false,
+  "recovery_cases": [
+    {
+      "scenario": "USEFUL",
+      "case_id": "case_61453d7990baff8940e7b8eb",
+      "result_id": "res_83a2d83390b1cf7f4f5d",
+      "upload_status": 201,
+      "result_status": 201,
+      "case_view_status": 200,
+      "input_sha256": "6285f0e69bfd607e0d4875ae550321370a242a99bf55b7824cd05832d1bc967a",
+      "input_page_count": 1,
+      "recovery": {
+        "bounded": true,
+        "substitution_forbidden": true,
+        "recovery_attempts": 1,
+        "facts_added": [
+          {
+            "page": 1,
+            "line": 5,
+            "source": "LOCAL_OCR"
+          }
+        ]
+      },
+      "reading_limitations": {
+        "limited": false,
+        "incomplete": false,
+        "affected_checks": [],
+        "plain": null,
+        "never_equates_unread_with_absence": true
+      },
+      "accounts_read": 3,
+      "account_statuses": [
+        {
+          "account_number_in_report": 1,
+          "status": "RESOLVED",
+          "reason": null
+        },
+        {
+          "account_number_in_report": 2,
+          "status": "RESOLVED",
+          "reason": null
+        },
+        {
+          "account_number_in_report": 3,
+          "status": "EXTRACTION_UNRESOLVED",
+          "reason": "NO_RESOLVED_DATE_OR_AMOUNT_ON_THIS_ENTRY"
+        }
+      ],
+      "recovered_entries": [
+        {
+          "record_index": 2,
+          "label": "OPENED",
+          "printed_value": "03/03/2019"
+        },
+        {
+          "record_index": 2,
+          "label": "opened_date",
+          "printed_value": "03/03/2019"
+        }
+      ]
+    },
+    {
+      "scenario": "UNSUCCESSFUL",
+      "case_id": "case_40fdbc97b9a2260ee8ab2e61",
+      "result_id": "res_7706b0627105fb607247",
+      "upload_status": 201,
+      "result_status": 201,
+      "case_view_status": 200,
+      "input_sha256": "a965e2ca1f1ead729d7a7468b5b41363e83b494da11d1cb7285aefeebc60927b",
+      "input_page_count": 1,
+      "recovery": {
+        "bounded": true,
+        "substitution_forbidden": true,
+        "recovery_attempts": 1,
+        "facts_added": []
+      },
+      "reading_limitations": {
+        "limited": true,
+        "incomplete": true,
+        "affected_checks": [
+          "STATUTORY_RULE_COMPARISON",
+          "REPORT_FACT_CONSISTENCY",
+          "COMMON_ERROR"
+        ],
+        "plain": "Some of your report could not be read completely, so the checks named below could not examine every part of it. A value that could not be read is not the same as a value that is absent, and nothing here treats unread content as \"no issues\" or as proof of compliance.",
+        "never_equates_unread_with_absence": true
+      },
+      "accounts_read": 1,
+      "account_statuses": [
+        {
+          "account_number_in_report": 1,
+          "status": "RESOLVED",
+          "reason": null
+        }
+      ]
+    }
+  ],
+  "checks": [
+    "exact current staging/test identity",
+    "owned fictional subscriber with legitimate matching paid webhook",
+    "USEFUL upload is admitted",
+    "USEFUL records one actual bounded recovery pass",
+    "useful recovery reads both own dated accounts without mistaking the unresolved history entry for another resolved account",
+    "useful recovery exposes the source-linked printed opening date",
+    "useful recovery adds only real OCR fact locations",
+    "UNSUCCESSFUL upload is admitted",
+    "UNSUCCESSFUL records one actual bounded recovery pass",
+    "unsuccessful recovery retains the readable native account",
+    "unsuccessful recovery creates no fact",
+    "unread image remains incomplete without becoming absence"
+  ],
+  "measured_at": "2026-10-08T13:36:19.259Z",
+  "passed": true
+}

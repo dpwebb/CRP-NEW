@@ -11,3 +11,56 @@ Public staging HTTPS health reports the exact build, `deployment=staging` and `b
 The exact unpaid Checkout was confirmed **expired** at Stripe with no subscription. The fictional account and all four stored files were deleted; its revoked session returned **401**. No private consumer report or live charge was used. Production remained on `crp-v1-6fffbbb76b24a050` with live billing throughout.
 
 **Status:** implementation regression PASSED; exact-build staging source, free upload/results and unpaid access VERIFIED; hosted paid purchase, selected/reviewed/approved packet, report comparison and full staging acceptance PENDING the usable provider test-card form. Production promotion of this candidate remains OPEN. The 142-file staging package includes staging-only preview assets; repository-only optional add-ons and the score-simulator prototype are not part of the service package.
+
+## Legitimate paid staging verification — October 11 continuation
+
+The same served build `crp-v1-4687a2df902ef280` was verified before purchase, after paid packet download and after cleanup. A fresh disposable fictional account completed the real hosted Stripe test Checkout for **CAD 7.95 monthly**. Stripe confirmed `livemode=false`, Checkout `complete` and `paid`, invoice `paid`, and PaymentIntent `succeeded` for 795 cents. The actual `invoice.paid` event was applied by staging and activated a Stripe-sourced monthly entitlement. No manual entitlement grant or fabricated provider event was used. Exact nonsecret references and results are in `SOURCE_CAPTURES/STAGING-PAID-2026-10-11/receipt.json`.
+
+The browser selected the sourced account-date conflict, saved fictional sender details and two clearly marked fictional document fixtures, reviewed the complete ten-page PDF, approved its version and downloaded the paid packet. It contains the letter, original report page, two document copies, populated Equifax Canada form and additional information page. Rendered pages were inspected. Download SHA-256 `1a57cb43f1cf7e65a93453d0bd45064dcbabd8cec31707f724e4c276d91c8dcd` exactly matches the server's approved PDF hash.
+
+A second fictional Equifax report, dated October 10 rather than June 12, reached the same subscription's report history. Actual browser comparison confidently matched the account and returned **still observed 0; changed 0; no longer observed 1; not comparable 0**, with the qualified statement that this does not prove a bureau correction. Screenshot: `SOURCE_CAPTURES/STAGING-PAID-2026-10-11/comparison-verified.png`.
+
+**New observed defect:** leaving the approved packet screen for Upload report resaved the unchanged packet and cleared its approval at `2026-10-11T05:07:16.526Z`. The downloaded file remains matched to the earlier approved hash. `ui/app.js` packetLeave unconditionally calls persistSelection, whose mutation endpoints clear approval. Purchase, paid download and comparison are VERIFIED; **full staging acceptance remains PENDING** this approval-preservation fix and exact-build reverification. No runtime change or deployment occurred during this verification.
+
+The exact test subscription was canceled at Stripe and its cancellation event applied. The disposable account, session, two cases, four stored files, results, packet and entitlement were removed from active service state; the browser returned to Not signed in. Upgrade-credit bookkeeping remains in state and is not represented as erased. Provider test payment records remain at Stripe. Production promotion remains OPEN.
+
+## October 11 current-build representative staging journeys
+
+Supplemental evidence is recorded for `crp-v1-4687a2df902ef280` (source `b538d88c83b690c5edf9918518897792c56b8249`) at `staging.creditregulatorpro.com`, with test billing. See [journey-to-gate mapping](SOURCE_CAPTURES/STAGING-PAID-2026-10-11/gate-journeys.md) and its hashed [machine-readable record](SOURCE_CAPTURES/STAGING-PAID-2026-10-11/gate-journeys.json).
+
+Four journeys cover a genuine monthly test purchase, selected/reviewed/approved packet download, same-account report comparison, and test cleanup. Fourteen affected gates receive bounded current-build observations. The monthly payment observation is linked separately. This sample does not establish all 21 checks, all 82 jurisdictions, every packet mechanism, or all billing/ownership controls on staging.
+
+Initial approved packet download passed with matching SHA-256. Approval preservation FAILED when leaving the packet screen without intentional edits (`STAGING-PACKET-APPROVAL-NAVIGATION-20261011`). Comparison correctly showed one issue no longer observed. Active test account/files were deleted and the test subscription canceled; upgrade-credit bookkeeping remains. Complete affected staging gates remain PENDING; production readiness is not established.
+
+Older proof retains its original build identity and recorded status. Its source files are unchanged and hash-pinned by the supplemental record; these observations neither replace nor relabel older implementation or staging proof. No runtime or deployment change is made by this addendum.
+
+
+## October 11 — form-free candidate staging deployment
+
+Owner authorization: “Deploy” following the local form-retirement verification. Staging activated at 2026-10-11T12:11:28.291Z: **crp-v1-ac4051d4bbb7097d**, manifest **AC4051D4BBB7097D5B25BC5D02F3B6B7A7FA20A91029D69C050B2332BAC3565F**. Packaging verified all 286 frozen regression source hashes and all 133 shipped files; the host verified the archive and every manifest file. The source is the preserved uncommitted working candidate based on 62a26a33587b9ace0d5ec1c45ba475d3a4556400, not that commit alone.
+
+HTTPS staging health and 12 served asset hashes passed (13 checks). Health reports staging, test billing and launch_ready=false. Release files use root ownership, directories 755 and files 644. The stopped-service private snapshot matched all 76 files. Previous release crp-v1-4687a2df902ef280 and restricted backup /opt/crp-wizard-staging/backups/before-crp-v1-ac4051d4bbb7097d-1791720686 are retained; activation had automatic rollback.
+
+Deployment/source verification: VERIFIED. Hosted form-free paid review/approval/download journey: PENDING. Existing approval-navigation defect and other production blockers remain OPEN. Prior form-inclusive journeys retain their historical scope. Production readiness NOT ESTABLISHED; production was not deployed.
+
+Evidence: SOURCE_CAPTURES/BUREAU-FORMS-RETIREMENT-2026-10-11/staging-package-receipt.json, staging-activation-receipt.json and staging-public-source-verification.json.
+
+## October 11 — remaining blockers closed and exact candidate promoted
+
+Current authoritative result: **crp-v1-fd23f242f3d158bf** is IMPLEMENTED_AND_TESTED, VERIFIED_ON_STAGING and promoted to live production at **2026-10-11T13:00:50.663Z** (10:00:50 AM America/Halifax). Manifest **FD23F242F3D158BF34083754D0B0E5D8937E0B04C3A347F9F9C9587AA469E7AB**, 133 shipped files. This is the frozen tested dirty source candidate based on 62a26a33587b9ace0d5ec1c45ba475d3a4556400; the base commit alone is not the deployed source.
+
+The approval-navigation defect is fixed. Final full regression: **14,449/0/0**, 151 completed sections, 286 unchanged tested-source hashes; source audit 23/0/0. Fresh hosted phase 1 passed 43/43 and phase 2 passed 9/9. A genuine monthly Sandbox payment activated access; the actual browser reviewed/approved/downloaded the form-free six-page packet. Letter, selected original pages 2 and 3, and three supporting copies passed native edit/save/print, exact streams/rendering and visual inspection. Browser/preview/download/print bytes match. Unchanged Results → Help → packet navigation preserved approval, exact version and bytes on a freshly loaded candidate page. The inherited predeployment tab's failed navigation attempt is preserved separately; it was not counted as current-build success.
+
+The same test subscription upgraded to annual with 795-cent credit, 7,155-cent paid invoice and 7,950-cent regular annual price; the applied signed invoice webhook, provider/application cancellation and final test-subscription termination were verified. Both fictional accounts were deleted through the API and their sessions revoked. Provider test records and internal retained billing bookkeeping are not represented as erased.
+
+All **30 capability gates / 123 required criteria** validate for this exact candidate. Canonical current records were integrated with hash guards and their prior bytes archived. Strict FDT derivation passed against the fresh hosted useful/unsuccessful paid recovery receipts and current full source freeze. Regional automated loops and representative distinct hosted journeys support the approved scope; this does not certify every dedicated bureau layout or introduce unsupported scored effects.
+
+Release readiness combines current source/capability validation with two actual-host production-environment checks (persistent support secret and live billing) using this candidate's checker. Secrets stayed on the VPS. The fresh read-only live provider observation confirms active CAD 595/795-month/7950-year prices and required webhook events; no real production charge was performed. This is explicitly distinguished from a local checker without production credentials.
+
+Production activation verified the identical archive SHA256 24B8DE9F5AB33CC87999722D94F90ED90BC886140EA1467CCD60820F3687CAA7 and all 133 deployed hashes. Files are root-owned and nonwritable. A stopped-service snapshot matched all four active private files; every original state collection was preserved, with only an empty referral_snapshots collection added. Production health reports the new build and live billing; 13 public health/asset checks passed, including expected 404 refusal for disabled optional mailing/referral previews. Anonymous cases remain 401; test-payment route remains 404. The health launch_ready=false field is the static runtime/matrix declaration, not the independently computed acceptance verdict.
+
+Rollback: previous release /opt/crp-wizard-production/releases/crp-v1-6fffbbb76b24a050 and restricted backup /opt/crp-wizard-production/backups/before-crp-v1-fd23f242f3d158bf-1791723649 are retained. Activation changed only the CRP production service/current link/build environment line. The latest encrypted production backup was independently restored with current-store normalization/start/restart checks before promotion; that rehearsal does not assert consumer credential login restoration.
+
+Evidence custody: **SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/**. Historical proofs retain their original identities and scope. No live test charge or consumer submission/mailing was performed. Unrelated branding work remains untouched.
+
+Post-promotion current-build live provider verification also passed (SOURCE_CAPTURES/PRODUCTION-BLOCKERS-2026-10-11/live-current-provider.json). The final production acceptance record reports launch_ready=true with zero failed core gates. Published test-evidence snapshots redact disposable local regression authentication tokens; original hashes and redaction paths are recorded, and exact canonical receipts remain in ignored operational output.
