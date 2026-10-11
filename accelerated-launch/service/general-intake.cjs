@@ -618,7 +618,9 @@ function collectPages(model) {
   const pages = [];
   for (const p of native) {
     if (p.has_native_text) {
-      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
+      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p),
+        words: p.word_boxes || [], native_words: p.word_boxes || [],
+        native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
       page.lines = columnCaptionLines(page);
       pages.push(page);
     }
@@ -1302,7 +1304,7 @@ function explicitAccountIdentity(text) {
 
 /* An overdue amount does not identify a collection. Only a printed collection entry/section or an
    explicit collector caption opens this block. Original-creditor captions are not collector identity. */
-const COLLECTION_SECTION_RE = /^\s*(?:COLLECTIONS|COLLECTION ACCOUNTS|ACCOUNTS IN COLLECTION|COLLECTION ENTRIES|COLLECTION INFORMATION)\s*:?\s*$/i;
+const COLLECTION_SECTION_RE = /^\s*(?:COLLECTIONS|COLLECTION ACCOUNTS|ACCOUNTS IN COLLECTION|COLLECTION ENTRIES|COLLECTION INFORMATION)(?:\s*\(\d+\))?\s*:?\s*$/i;
 const COLLECTION_ENTRY_RE = /^\s*COLLECTION(?:\s+(?:ACCOUNT|ENTRY))?(?:\s+\d+)?\s*:\s*(.*?)\s*$/i;
 const NUMBERED_COLLECTION_ENTRY_RE = /^\s*ACCOUNT\s+\d+\s+COLLECTION\b/i;
 const COLLECTION_NAME_RE = /^\s*(COLLECTOR|COLLECTION AGENCY|COLLECTION CREDITOR|MEMBER NAME)(?:\s*:\s*|\s+)(.*?)\s*$/i;
@@ -1546,6 +1548,17 @@ function reportSegments(pages) {
       if (!p || p.page !== page.page) { p = Object.assign({}, page, { lines: [] }); current.pages.push(p); }
       p.lines.push(line);
     }
+  }
+  // Segment copies share physical-page word arrays. When two named report sections
+  // occupy one page, an untrusted line cannot claim the other section's word row.
+  const namedSegmentsByPage = new Map();
+  for (const segment of segments) if (segment.bureau) for (const page of segment.pages) {
+    namedSegmentsByPage.set(page.page, (namedSegmentsByPage.get(page.page) || 0) + 1);
+  }
+  const sharedBureauPage = (page) => (namedSegmentsByPage.get(page.page) || 0) > 1;
+  for (const page of pages) if (sharedBureauPage(page)) page.multi_bureau_same_page = true;
+  for (const segment of segments) for (const page of segment.pages) {
+    if (sharedBureauPage(page)) page.multi_bureau_same_page = true;
   }
   // Repeated headers with the same date (or a dateless continuation) remain one report.
   const merged = [];
@@ -1799,6 +1812,53 @@ function buildRecords(pages, convention) {
     // A physical card's missing heading cannot borrow the preceding page's record.
     if (page.lines.some((line) => line.column_boundary || line.column_reset)) current = null;
     const pairedLines = pairedCaptionLines(page.lines);
+    // In some native two-column collection cards, a watermark prevents the text row
+    // from matching measured words. Recover the card only when its own measured
+    // section, agency, DOFD caption and date form one unambiguous geometric group.
+    if (page.source === 'NATIVE_TEXT' && page.multi_bureau_same_page !== true
+      && (page.native_words || []).length &&
+      !pairedLines.some(line => line.trusted !== false && /\bDOFD\s*:\s*\d/i.test(line.text))) {
+      const words = page.native_words.filter(word => word.trusted !== false);
+      const sections = words.filter(word => /^COLLECTIONS$/i.test(word.text));
+      const dofds = words.filter(word => /^\(?DOFD\)?$/i.test(word.text));
+      if (sections.length === 1 && dofds.length === 1 && dofds[0].y0 > sections[0].y0) {
+        const section = sections[0], dofd = dofds[0];
+        const statusWord = words.find(word => /^COLLECTION$/i.test(word.text) && word.x0 > 400
+          && word.y0 > section.y0 && word.y0 < dofd.y0);
+        const headingWords = statusWord ? words.filter(word => word.y0 > section.y0 && word.y0 < dofd.y0
+          && word.x0 < 260 && Math.abs(word.y0 - statusWord.y0) < 2)
+          .sort((a, b) => a.x0 - b.x0) : [];
+        const dateWords = words.filter(word => /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(word.text)
+          && Math.abs(word.x0 - dofd.x0) < 6 && word.y0 > dofd.y0 && word.y0 < dofd.y0 + 17);
+        const omittedHeadingWords = statusWord ? words.filter(word => word.x0 >= 260 && word.x0 < statusWord.x0
+          && Math.abs(word.y0 - statusWord.y0) < 2 && !/^IN$/i.test(word.text)
+          && /^[A-Z][A-Z0-9&'.-]+$/i.test(word.text)) : [];
+        const agency = headingWords.map(word => word.text).join(' ');
+        if (headingWords.length >= 2 && omittedHeadingWords.length === 0 && dateWords.length === 1
+          && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateWords[0].text)) {
+          const group = (items) => ({ x0: Math.min(...items.map(w => w.x0)), y0: Math.min(...items.map(w => w.y0)),
+            x1: Math.max(...items.map(w => w.x1)), y1: Math.max(...items.map(w => w.y1)) });
+          const headingText = `Collection: ${agency}`;
+          const dateText = `Collection DOFD: ${dateWords[0].text}`;
+          const headingLines = page.lines.filter(line => line.text.includes(agency));
+          const dateLines = page.lines.filter(line => line.text.includes(dateWords[0].text));
+          const insertAt = pairedLines.findIndex(line => /\bCOLLECTIONS\s*\(\d+\)/i.test(line.text));
+          // A repeated value on another record cannot supply this card's line provenance.
+          if (headingLines.length === 1 && dateLines.length === 1 && insertAt >= 0
+            && headingLines[0].line > pairedLines[insertAt].line
+            && dateLines[0].line > headingLines[0].line) pairedLines.splice(insertAt + 1, 0,
+            { text: headingText, page: page.page, line: headingLines[0].line, source: 'NATIVE_TEXT', trusted: true,
+              measured_words: true, bbox: group(headingWords), words: headingWords.map((w, i) => ({ ...w,
+                start: 12 + headingWords.slice(0, i).reduce((n, item) => n + item.text.length + 1, 0),
+                end: 12 + headingWords.slice(0, i).reduce((n, item) => n + item.text.length + 1, 0) + w.text.length })) },
+            { text: dateText, page: page.page, line: dateLines[0].line, source: 'NATIVE_TEXT', trusted: true,
+              measured_words: true, bbox: group([dofd, dateWords[0]]), words: [
+                { ...dofd, start: 11, end: 15 },
+                { ...dateWords[0], start: 17, end: dateText.length }
+              ] });
+        }
+      }
+    }
     for (let lineIndex = 0; lineIndex < pairedLines.length; lineIndex += 1) {
       const originalLine = pairedLines[lineIndex];
       const originalText = String(originalLine.text || '').trim();
@@ -1809,12 +1869,21 @@ function buildRecords(pages, convention) {
         nonAccountSection = false;
         continue;
       }
-      const nextText = String(pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim())?.text || '').trim();
+      const nextLine = pairedLines.slice(lineIndex + 1).find((candidate) => String(candidate.text || '').trim());
+      const nextText = String(nextLine?.text || '').trim();
       const headingIdentity = accountSection && originalLine.trusted !== false
         && /^[A-Z][A-Z0-9 &'.-]{3,80}$/i.test(originalText)
         && /^(?:ACCOUNT|ACCOUNT NUMBER|ACCT)$/i.test(nextText)
         && !/^(?:BALANCE|STATUS|PAYMENT|CREDIT|PAST DUE|ACCOUNT|SUMMARY)$/i.test(originalText);
-      const line = headingIdentity ? { ...originalLine, heading_identity: true } : originalLine;
+      const collectionHeadingIdentity = collectionSection && originalLine.trusted !== false
+        && originalLine.measured_words === true && (originalLine.words || []).length >= 2
+        && nextLine?.trusted !== false
+        && /^[A-Z][A-Z0-9 &'.-]{3,80}$/i.test(originalText)
+        && !COLUMN_BOUNDARY_CAPTIONS[captionName(originalText)]
+        && !/^(?:SUMMARY|ACCOUNT SUMMARY|PERSONAL INFORMATION|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|ORIGINAL CREDITOR|DATE OF FIRST DELINQUENCY|DOFD|REPORTABLE UNTIL)$/i.test(originalText)
+        && /^IN COLLECTION$/i.test(nextText);
+      const line = headingIdentity ? { ...originalLine, heading_identity: true }
+        : collectionHeadingIdentity ? { ...originalLine, text: `Collection: ${originalText}` } : originalLine;
       if (line.column_reset) { current = null; continue; }
       const text = String(line.text || '').trim();
       if (COLLECTION_SECTION_RE.test(text)) {
@@ -2312,7 +2381,30 @@ function findReferenceDate(pages, convention) {
   for (const page of pages) {
     for (const line of page.lines) {
       /* GAP-INGEST-003: a report date read from a low-confidence OCR line is not a resolved report date. */
-      if (line.trusted === false) continue;
+      if (line.trusted === false) {
+        // Some native PDFs right-align a report-date header so its text row does not match the
+        // page's measured word row. Recover only an exact report-date caption and date token
+        // from trusted native words on that same measured row; OCR remains withheld.
+        if (page.source === 'NATIVE_TEXT' && page.multi_bureau_same_page !== true
+          && /\bREPORT DATE\s*:/i.test(line.text)) {
+          const raw = (line.text.match(DATE_TOKEN) || [])[0];
+          const date = raw && normalizePrintedDate(raw, convention);
+          const words = page.native_words || [];
+          const value = date?.normalized && words.find(w => w.text === raw && w.trusted !== false);
+          if (value) {
+            const sameRow = words.filter(w => Math.abs(w.y0 - value.y0) <= 1.5 && w.trusted !== false);
+            const caption = sameRow.filter(w => w.x1 < value.x0).sort((a, b) => a.x0 - b.x0).slice(-2);
+            if (caption.length === 2 && /^REPORT$/i.test(caption[0].text) && /^DATE:?$/i.test(caption[1].text)) {
+              candidates.push({ d: { raw, normalized: date.normalized, precision: date.precision,
+                ambiguous: date.ambiguous }, strong: true,
+              location: { page: page.page, line: line.line, source: 'NATIVE_TEXT', trusted: true,
+                bbox: { x0: caption[0].x0, y0: Math.min(...caption.map(w => w.y0), value.y0),
+                  x1: value.x1, y1: Math.max(...caption.map(w => w.y1), value.y1) } } });
+            }
+          }
+        }
+        continue;
+      }
       if (classifyLineContext(line.text) === 'boilerplate') continue;
       const up = line.text.toUpperCase();
       if (!REFERENCE_DATE_HINTS.some((h) => up.includes(h))) continue;
@@ -2429,8 +2521,16 @@ function extract(model, opts) {
      numeric date (day or month above 12) resolves independently; an ambiguous date stays unresolved with both
      interpretations preserved. The consumer's selected jurisdiction is never used, and one field's format never
      supplies another field's convention. */
-  const reference_date = findReferenceDate(pages, null);
   const segments = reportSegments(pages);
+  const reference_date = findReferenceDate(pages, null);
+  // A single-bureau PDF may print its report date immediately before its bureau title on
+  // the same page. Keep the measured header date with that bureau's following records.
+  if (segments.length === 2 && !segments[0].bureau && !segments[0].ambiguous &&
+    segments[1].bureau && segments[0].reference_date?.status === 'RESOLVED' &&
+    segments[1].reference_date?.reason === 'NO_REPORT_DATE_FOUND' &&
+    segments[0].pages.at(-1)?.page === segments[1].pages[0]?.page) {
+    segments[1].reference_date = segments[0].reference_date;
+  }
   if (segments.length === 1 && !segments[0].ambiguous && !segments[0].bureau) segments[0].bureau = bureau;
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
