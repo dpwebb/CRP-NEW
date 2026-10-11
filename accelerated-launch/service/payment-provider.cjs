@@ -537,6 +537,7 @@ function makeStripeAdapter(env) {
     const params = {
       mode,
       'adaptive_pricing[enabled]': true,
+      'custom_text[submit][message]': "Credit Regulator Pro offers local-currency payment through Stripe. If you choose conversion, the rate shown includes Stripe's conversion fee. Your card issuer may charge other fees.",
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': 1,
       success_url: req.return_url,

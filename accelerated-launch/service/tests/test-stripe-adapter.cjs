@@ -324,6 +324,7 @@ async function main() {
       customer_email: 'native+location_GB@example.test', credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' });
     const sent = new URLSearchParams(mock.calls.filter(call => call.path === '/v1/checkout/sessions').at(-1).body);
     assert.equal(sent.get('adaptive_pricing[enabled]'), 'true', plan + ': enable native-currency checkout');
+    assert.match(sent.get('custom_text[submit][message]'), /conversion fee.*card issuer/, plan + ': every checkout entry discloses conversion and issuer fees');
     assert.equal(sent.get('customer_email'), 'native+location_GB@example.test');
     assert.equal(sent.get('line_items[0][price]'), PRICE_IDS[plan]);
     assert.equal(sent.has('currency'), false, 'Stripe IP detection is not overridden by a guessed currency');
