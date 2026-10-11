@@ -153,7 +153,7 @@ function realEvaluation(check) {
   const extraction = formats.extractWithSharedAdapter(model, { mode: 'REPORT', country: 'US' });
   check.equal(extraction.presentation_evidence, true, 'the captured artifact is admitted as report evidence');
   const evaluation = evaluateCase({ country: 'US', region: 'US-CA', extraction });
-  check.equal(evaluation.results.length, 1, 'and exactly one comparison is performed against it');
+  check.equal(evaluation.results.length, 3, 'all three accounts reach the national period check without adverse-status exclusions');
   check.equal(evaluation.results[0].check.adapter_id, 'FCRA-605A-5-US-NATIONAL-7Y');
   check.equal(evaluation.results[0].machine.state, 'EVALUATED');
   check.equal(evaluation.results[0].machine.outcome, 'PERIOD_NOT_EXCEEDED');
@@ -165,8 +165,8 @@ function realEvaluation(check) {
   check.equal(evaluation.results[0].machine.packet_eligible, false);
   check.equal(evaluation.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 2,
     'the two active collection limbs find no collection entry and are reported unavailable');
-  check.equal(evaluation.unresolved_applicability.length, 5,
-    'and the three adverse accounts are left unresolved under the fail-closed California rule (plus the two unreadable ones under the federal rule)');
+  check.equal(evaluation.unresolved_applicability.length, 3,
+    'the three accounts retain unresolved California event/action timing; missing national date anchors are comparison uncertainty');
   check.equal(evaluation.not_applicable_checks.length + evaluation.results.length
     + evaluation.unresolved_applicability.length + evaluation.unavailable_checks.length, 8,
     'so all eight active United States limb resolutions are accounted for');

@@ -29,6 +29,7 @@ const limitationAssessment = require('./limitation-assessment.cjs');
 const paymentHistoryAnalysis = require('./payment-history-analysis.cjs');
 const { activeAdapter } = require('./common-error-scope.cjs');
 const { reportReference } = require('./report-fact-sources.cjs');
+const { governsAccountPeriod } = require('../adapters/reporting-period-anchor.cjs');
 
 const CASE_LEVEL_ANCHOR_MODES = Object.freeze(['NOT_REPORT_EVIDENCED']);
 const REGISTERED_PRESENTATIONS = new Set(EXTRACTION_ADAPTERS.map((a) => a.presentation_id).concat(['GENERAL-BUREAU-REPORT']));
@@ -98,6 +99,8 @@ function runOne(adapterId, context, facts, factSources) {
     region: context.region,
     facts: facts || {},
     fact_sources: factSources || null,
+    record_index: context.record_index,
+    source_file_id: context.source_file_id,
     referenceDate: context.referenceDate,
     /* OWNER dual-date retention (Batch 33): the ONE server assessment date of this run, so the same limb can be
        measured against the report date (historical) and the assessment date (current). */
@@ -295,10 +298,16 @@ function evaluateCase(context) {
     /* An adapter that declares the kinds of record it is written for runs ONLY on those records. A record of
        another kind restricts that check and leaves the checks written for it untouched. */
     const kinds = Array.isArray(config.record_kinds) ? config.record_kinds : null;
-    // PR-01 ordinary tables are admitted for the common-error checklist only. The existing
-    // statutory adapter contract remains unchanged, including its TransUnion support.
-    const statutoryRecords = extraction.records.filter((r) => r.kind !== 'CA_EQUIFAX_ORDINARY_ACCOUNT');
-    const candidates = kinds ? statutoryRecords.filter((r) => kinds.includes(r.kind)) : statutoryRecords;
+    // The owner reporting-period directive includes date-bearing ordinary accounts.
+    // This does not broaden the reader's presentation-admission contract.
+    const accountPeriod = governsAccountPeriod(config);
+    const fields = [config.anchor_field, ...(config.anchor_fields || [])].flat().filter(Boolean);
+    const ordinaryPeriod = accountPeriod && fields.some(field => field.startsWith('tradeline.') || field.startsWith('reportedAccount.'));
+    const statutoryRecords = extraction.records.filter((r) => r.kind !== 'CA_EQUIFAX_ORDINARY_ACCOUNT'
+      || accountPeriod && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null));
+    const candidates = kinds ? statutoryRecords.filter((r) => kinds.includes(r.kind)
+      || ordinaryPeriod && !/COLLECTION|PUBLIC_RECORD|INQUIRY|EMPLOY|ADDRESS|IDENTITY/.test(r.kind || '')
+        && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null)) : statutoryRecords;
     if (!candidates.length) {
       base.unavailable_checks.push(Object.assign({
         adapter_id: entry.adapter_id,
@@ -327,10 +336,14 @@ function evaluateCase(context) {
         });
         continue;
       }
-      const recordContext = record.report_segment_id || Object.hasOwn(record, 'report_reference_date') ? Object.assign({}, ctx, {
-        referenceDate: (reportReference(record) || {}).normalized_value || null
-      }) : ctx;
-      const machine = runOne(entry.adapter_id, recordContext, factsForRecord(record), factSourcesForRecord(record));
+      const recordContext = Object.assign({}, ctx, {
+        record_index: record.record_index,
+        source_file_id: record.source_file_id,
+        ...(record.report_segment_id || Object.hasOwn(record, 'report_reference_date') ? {
+          referenceDate: (reportReference(record) || {}).normalized_value || null
+        } : {})
+      });
+      const machine = runOne(entry.adapter_id, recordContext, factsForRecord(record, { reporting_period: accountPeriod }), factSourcesForRecord(record));
       if (machine.state === RESULT_STATE.REFUSED) {
         base.unavailable_checks.push(refusedCheckEntry(entry, config, descriptor, machine));
         continue;
@@ -343,6 +356,7 @@ function evaluateCase(context) {
      bucket. It is never counted as a statutory check, so `checks_performed` and every existing count keep their
      meaning, and the historical finding above is untouched. */
   base.retention_dual_date = collectRetentionDates(base.results);
+  base.published_reporting_periods = require('./published-reporting-periods.cjs').compare(context);
 
   /* B3 continuation — the third check class. It runs only on an admitted presentation whose own reader
      produced a factual view, and only for the country that registered those checks. A refused file, a

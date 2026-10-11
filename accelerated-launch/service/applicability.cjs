@@ -478,6 +478,13 @@ const APPLICABILITY_RULES = Object.freeze({
  */
 function resolveApplicability(adapterConfig, extraction, record) {
   const ruleId = adapterConfig && adapterConfig.applicability_rule;
+  // October 11 owner directive: account-period checks do not require a positive/negative classification.
+  if (record && require('../adapters/reporting-period-anchor.cjs').governsAccountPeriod(adapterConfig)
+    && ['ADVERSE_PAYMENT_RATING_ITEM_PRESENT', 'ADVERSE_DEBT_EVIDENCE_ON_THIS_RECORD'].includes(ruleId)) {
+    return state(APPLICABILITY_STATE.APPLICABLE, ruleId, 'REPORTING_PERIOD_WITHOUT_STATUS_EXCLUSION',
+      'The reporting period is assessed without a favorable or unfavorable classification.',
+      { record_kind: record.kind, status_classification_used: false });
+  }
   if (!ruleId) return null;
   const rule = APPLICABILITY_RULES[ruleId];
   if (!rule) {

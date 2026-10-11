@@ -1,5 +1,9 @@
 # Controlling owner rule: violation determination
 
+## October 11 reporting-period amendment
+
+The owner's explicit reporting-period directive is recorded in `CRP_OWNER_REPORTING_PERIOD_DIRECTIVE_001.md`. Reporting-period assessment must not exclude tradelines or collections based on favorable/adverse classification. Retain applicable numerical periods. First delinquency is the determining date when available; otherwise last payment is the determining fallback date, with its own source evidence and original field identity. This is a date-selection instruction, not a separate CRP rule or a claim that a statute prescribes that fallback. Implementation and release statuses must remain distinct.
+
 ## October 10, 2026 owner scope amendment
 
 The owner expressly authorizes expanding CRP's violation detection to cover existing and newly identified common errors. Every new supported error must be added to the shared common-error checklist and carried through extraction, bounded determination, the consumer issue and selected packet. Each added violation must name a supported reporting requirement, use source-linked report evidence, preserve honest confidence and the existing consumer selection and packet safeguards, and pass positive and benign regression tests. The former list remains a priority and regression baseline, not a fixed numerical ceiling. Seeded temporal errors, including exceeded credit-reporting periods, belong in this test program when their dates and applicable rule are specified. Do not infer a violation from a missing field unless the requirement and the report's own facts support that conclusion. This amendment authorizes private build and testing; it does not authorize public release or deployment. The October 7 provisions below continue to govern matters this amendment does not change.

@@ -34,6 +34,7 @@ const PREVIEW_ORDER = Object.freeze([
   'STATUS_AMOUNT_CONFLICT', 'MISSING_DATE', 'RESPONSIBILITY_IDENTITY', 'RE_AGING'
 ]);
 const PREVIEW_CATEGORY_BY_CHECK = Object.freeze(Object.fromEntries([
+  ['REPORTING_TIME_LIMIT', ['REPORTING-PERIOD-EXCEEDED']],
   ['DUPLICATE_REPORTING', ['DUPLICATE-REPORTING', 'COLLECTION-ORIGINAL-BOTH-DUE']],
   ['DATE_CONFLICT', ['ACCOUNT-DATES-CONTRADICTORY', 'REPORTED-DATES-OUT-OF-ORDER',
     'ENTRY-REPORTED-AFTER-REPORT-DATE', 'LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE']],
@@ -69,8 +70,9 @@ function checklistFor(evaluation) {
       components: { court_claim: courtClaim, reporting_period: reportingPeriod } };
     }
     if (item.check_id === 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED') {
-      const performed = Boolean(evaluation && evaluation.retention_dual_date
-        && evaluation.retention_dual_date.performed && evaluation.retention_dual_date.performed.length);
+      const performed = Boolean(evaluation && ((evaluation.retention_dual_date
+        && evaluation.retention_dual_date.performed && evaluation.retention_dual_date.performed.length)
+        || evaluation.published_reporting_periods?.length));
       return { ...item, state: performed ? 'PERFORMED' : 'NOT_PERFORMED' };
     }
     const performed = byId.has(item.check_id);

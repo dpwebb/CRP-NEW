@@ -244,6 +244,24 @@ function runAdapter(adapterId, request) {
   if (!adapter) throw new Error(`UNKNOWN_ADAPTER: ${adapterId}`);
 
   const req = request && typeof request === 'object' ? request : {};
+  const periodPolicy = require('./reporting-period-anchor.cjs');
+  const accountPeriod = periodPolicy.governsAccountPeriod(adapter);
+  const preferredField = [adapter.anchor_field, ...(adapter.anchor_fields || [])].flat()
+    .find(field => ['tradeline.firstDelinquencyDate', 'collection.delinquencyDate'].includes(field));
+  const dateSources = req.fact_sources && Object.keys(req.fact_sources).length ? req.fact_sources : null;
+  const determiningDate = accountPeriod ? periodPolicy.determiningAnchor(req.facts, dateSources, preferredField, req) : null;
+  const declaredFields = [adapter.anchor_field, ...(adapter.anchor_fields || [])].flat().filter(Boolean);
+  const boundedInterpretations = declaredFields.some(field => {
+    const source = req.fact_sources?.[field];
+    return Array.isArray(req.facts?.[`${field}Interpretations`]) && req.facts[`${field}Interpretations`].length > 1
+      && source?.trusted !== false && source?.location?.trusted !== false
+      && (source?.caption_count == null || source.caption_count === 1)
+      && !(req.record_index != null && source?.record_index != null && req.record_index !== source.record_index)
+      && !(req.source_file_id && source?.location?.file_id && req.source_file_id !== source.location.file_id);
+  });
+  const determiningPolicyRequired = accountPeriod && (determiningDate
+    || declaredFields.some(field => ['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate',
+      'collection.delinquencyDate', 'collection.lastPaymentDate'].includes(field)) && !boundedInterpretations);
   const country = typeof req.country === 'string' ? req.country.trim() : '';
   const region = typeof req.region === 'string' ? req.region.trim() : '';
   if (!country || !region) {
@@ -307,7 +325,7 @@ function runAdapter(adapterId, request) {
        CURRENT question, because the anchor and the period are the reports' own printed values. The historical
        position is explicitly NOT established, and the concern is recorded as such — the report date is never
        invented to fill the gap. */
-    const fallbackAnchor = adapter.anchor_mode === 'SINGLE_FIELD' && adapter.anchor_field
+    const fallbackAnchor = determiningPolicyRequired ? determiningDate : adapter.anchor_mode === 'SINGLE_FIELD' && adapter.anchor_field
       ? primitives.resolvePriorityAnchor(req.facts, [adapter.anchor_field])
       : primitives.resolvePriorityAnchor(req.facts, adapter.anchor_fields || adapter.anchor_field);
     const assessmentDate = primitives.normalizeFactDate(req.assessmentDate) || null;
@@ -335,7 +353,9 @@ function runAdapter(adapterId, request) {
   }
 
   let anchor = null;
-  if (adapter.anchor_mode === 'SINGLE_FIELD') {
+  if (determiningPolicyRequired) {
+    anchor = determiningDate;
+  } else if (adapter.anchor_mode === 'SINGLE_FIELD') {
     const raw = (req.facts || {})[adapter.anchor_field];
     const precision = (req.facts || {})[adapter.anchor_field + 'Precision'] || null;
     const iso = primitives.normalizeFactDate(raw);
@@ -548,6 +568,9 @@ function retentionDates(input) {
     citation: adapter.citation || null,
     region: adapter.region || null,
     anchor_field: Array.isArray(anchor.field) ? anchor.field[0] : (anchor.field || null),
+    anchor_selection_rule: anchor.selection_rule || null,
+    determining_fallback_date: anchor.determining_fallback_date === true,
+    anchor_date_label: anchor.date_label || null,
     anchor_printed_date: anchor.value_as_supplied || anchor.iso || null,
     anchor_iso: anchor.iso || null,
     anchor_precision: monthPrecision ? 'MONTH_LEVEL' : 'DAY_LEVEL',

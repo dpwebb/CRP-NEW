@@ -164,9 +164,9 @@ async function run(service, check) {
   /* The gate itself, through the shared contract: it must decide from THIS account's own printed values. */
   const abConfig = require('../../../adapters/adapter-configs.json').adapters.find((a) => a.adapter_id === AB);
   const gate = applicability.resolveApplicability(abConfig, old, oldRecord);
-  check.equal(gate.applicability, 'APPLICABLE', 'the limb is applicable only when this account prints adverse-debt evidence of its own');
-  check.match(JSON.stringify(gate.evidence), /printed_past_due/, 'deciding from the account printed past-due amount');
-  check.match(JSON.stringify(gate.evidence), /does_not_establish/, 'and stating that it establishes nothing about any other account');
+  check.equal(gate.applicability, 'APPLICABLE', 'the owner directive removes the adverse-status exclusion');
+  check.equal(gate.evidence.status_classification_used, false, 'the period gate assigns no favorable/adverse classification');
+  check.equal(gate.reason, 'REPORTING_PERIOD_WITHOUT_STATUS_EXCLUSION', 'date comparison proceeds without a status-based exclusion');
 
   evidence.binding = { kind: oldRecord.kind, anchor_fact: 'tradeline.lastPaymentDate', printed_value: printedEntry.normalized, printed_location: printedEntry.location, reference_date: REFERENCE_DATE };
   evidence.positive = { outcome: posResults[0].machine.arithmetic.outcome, classification: posFinding.classification, unresolved_decisive_facts: (evalRecord.decisive_facts_unavailable || []).map((e) => e.identity) };
@@ -185,26 +185,26 @@ async function run(service, check) {
     'and no shared fact is written for a value that was not read');
 
   const benign = evaluateFor(extractionFor([tuBlock(BENIGN_OLD)]));
-  check.equal(abResults(benign).length, 0, 'an OLD last payment on a satisfactory account does not run the limb at all');
-  check.equal(abFindings(benign).length, 0, 'so it raises no Alberta issue merely because its payment is old');
-  check.ok((benign.unresolved_applicability || []).some((r) => r.adapter_id === AB),
-    'and zero printed counts leave the rule condition unresolved without classifying the account');
+  check.equal(abResults(benign).length, 1, 'an old own payment is assessed regardless of the printed rating');
+  check.equal(abFindings(benign).length, 1, 'the expired comparison supports a qualified period issue');
+  check.equal(abFindings(benign)[0].classification, 'PROBABLE_VIOLATION',
+    'the unavailable debt-incurred event keeps the outcome qualified');
 
   const unreadable = evaluateFor(extractionFor([tuBlock(UNREADABLE_RATING)]));
-  check.equal(abResults(unreadable).length, 0, 'a rating this build cannot read as a value raises no Alberta issue');
-  check.equal(abFindings(unreadable).length, 0, 'and no adverse meaning is inferred from an unrecognized rating');
-  check.ok((unreadable.unresolved_applicability || []).some((r) => r.adapter_id === AB),
-    'the record is filed as unresolved instead, because a count that could not be read is not a zero');
+  check.equal(abResults(unreadable).length, 1, 'an unreadable rating does not suppress an independently sourced date comparison');
+  check.equal(abFindings(unreadable).length, 1, 'the qualified period concern needs no inferred rating');
+  check.equal(abResults(unreadable)[0].machine.anchor.iso, '2015-03-01',
+    'the determining date comes from the own payment source, not the unreadable rating');
 
   const notBorrowed = extractionFor([tuBlock(BENIGN_OLD), tuBlock(RECENT)]);
   const notBorrowedEval = evaluateFor(notBorrowed);
   const notBorrowedFindings = abResults(notBorrowedEval).map((r) => r.machine && r.machine.finding).filter(Boolean);
-  check.equal(notBorrowedFindings.length, 0,
-    'adverse information printed on ANOTHER account is not borrowed by the account that prints none');
+  check.equal(notBorrowedFindings.length, 1,
+    'only the account with its own expired date supports a finding');
   check.ok(abResults(notBorrowedEval).length >= 1,
     'while the account that does print adverse information still runs its own comparison');
-  check.ok((notBorrowedEval.unresolved_applicability || []).filter((r) => r.adapter_id === AB).length >= 1,
-    'and the account with no printed indicator stays unresolved rather than borrowing its neighbour evidence');
+  check.equal(abResults(notBorrowedEval).find(row => row.machine.finding).machine.anchor.source.record_index, 1,
+    'the older account uses its own date source rather than its neighbour evidence');
 
   const revolving = evaluateFor(extractionFor([tuBlock(REVOLVING)]));
   const revolvingFinding = abFindings(revolving)[0];
@@ -245,7 +245,7 @@ async function run(service, check) {
   check.equal(issue.eligible, true, 'and it is selectable');
   check.equal(issue.request_type, 'VERIFICATION', 'as a verification request, never a correction demand');
   check.match(String(issue.uncertainty), /debt was incurred/, 'with the timing uncertainty stated in the consumer wording');
-  check.match(String(issue.uncertainty), /whether a recorded exception applies cannot be established/i, 'and the material exception is stated plainly');
+  check.match(String(issue.uncertainty), /whether an exception applies cannot be determined.*date the debt was incurred/i, 'the specific material exception remains stated plainly');
   check.equal(JSON.stringify(issue.supported_bases || []).includes(AB), false, 'with no internal adapter id leaked to the consumer');
 
   check.equal((await service.request('POST', `/api/cases/${c.case_id}/packet/select`, { token: stranger.token, body: { issue_ids: [issue.issue_id] } })).status, 403,

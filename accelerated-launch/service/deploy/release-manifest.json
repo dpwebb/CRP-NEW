@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T15:08:02.271Z",
+  "generated_at": "2026-10-11T18:47:17.052Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 83,
-      "digest": "1ABF5CF36527EA5406AE435B249E94DAE7F4A45269066A30386AF7E38B9AEE15",
+      "file_count": 84,
+      "digest": "84F529A3DEE6CCD93313BA6C12AD9BD8F081431A882A8474AB33E42460B22865",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -94,7 +94,7 @@
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
-          "sha256": "A401353A79C7D67AA63055B83683A99FCF9BF7E32F47CF04025C12398AD43033"
+          "sha256": "A009120E0061523FA55A669B551B8868D4ADD5D06CBEAE5902D03404725EDD3D"
         },
         {
           "file": "accelerated-launch/service/assessment-clock.cjs",
@@ -146,11 +146,11 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "2D89A50BF33B13AC8829032FCE05FEEC377C497F5DA34FC2CC8FEB24A7940F19"
+          "sha256": "1CFD7C2B1D1D4B9A4BD7D867BFAE8E4EA26B3DA9CF000582BFE8F25A7717E63F"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
-          "sha256": "DDB415880E50E7940A515CECF4525C71BD3269D3362C0217B60070EB7EC95879"
+          "sha256": "7DB8238A5491E9FF79A76C9327B3514C4F587A4554AD2981A2B45CBFC3BD6A56"
         },
         {
           "file": "accelerated-launch/service/common-error-scope.cjs",
@@ -158,7 +158,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "9E64E6CFB5EBE2601FB0EC22054D794581EFC5492C8A089F9DC1A59C2A41B34D"
+          "sha256": "ABE8C3193E699EFA3C841BE20CD77B065C00E06C30F56184E9263AA831C0AF93"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -198,7 +198,7 @@
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
-          "sha256": "8E72A94CCA09B2B572442DAB93FF53318AEBF9BAB6B34BC0DF749B751F052FB4"
+          "sha256": "C8127D3CB82EADAD2CFB089A657DFE79AFC8CA66018977DA17E77793B6DBA3AF"
         },
         {
           "file": "accelerated-launch/service/evidence-validator.cjs",
@@ -246,7 +246,7 @@
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
-          "sha256": "6D717FD2EB1DE448E87552AC10FB6BCC81D17A4D12D0C7B3DFD9D35615523D0F"
+          "sha256": "A042E7A042009D0635FF85EFA18A948C455B4BC130D9480C6CEE4B8B5A725236"
         },
         {
           "file": "accelerated-launch/service/gb-general-field-contract.cjs",
@@ -258,7 +258,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "67F447C84717C48D20535994AC8864ADC3B82FF8FBA06AB34E2A780AB2647141"
+          "sha256": "01735A658032AC2DFB7CE74682FE21FDCD4284AAE89AFE398D9BD974B4E2FEF6"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -337,6 +337,10 @@
           "sha256": "7493C1D54269354C551EF613054BEC19F9263A2308E8FBA0B63BE9D04E75898E"
         },
         {
+          "file": "accelerated-launch/service/published-reporting-periods.cjs",
+          "sha256": "F1145071DD99FF9831809156173DF757FD864C58BBE04A8AE86E5F430AFAA616"
+        },
+        {
           "file": "accelerated-launch/service/reaging.cjs",
           "sha256": "74A0891543D945B22031CF844DC1FE80B026BB4280086157B05945BF3696665F"
         },
@@ -366,7 +370,7 @@
         },
         {
           "file": "accelerated-launch/service/results.cjs",
-          "sha256": "F1816099DC7A0E3C07BD39398FF566CD4C3C9A54FFC4978D681004ADB614DF85"
+          "sha256": "B312D2F70FC53E46A185701924F2F5428F0821A9867DC4CD63F182FAB5FDBBAC"
         },
         {
           "file": "accelerated-launch/service/retention.cjs",
@@ -447,8 +451,8 @@
     },
     {
       "id": "RULE_CONFIGURATION",
-      "file_count": 7,
-      "digest": "AA687014D47BC99EF4B0C23B7F73164685BE9B4A9A1E8EC9676EC5B029603CB1",
+      "file_count": 8,
+      "digest": "EC63D77F76D76548B3B25D1AB901AEC82221DB026F62ED7F10BA74418B090F18",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
@@ -467,12 +471,16 @@
           "sha256": "0797A7CBAFC716E4E61FD10D0F77ACBE6A8C74509FB7799AB22921336F333522"
         },
         {
+          "file": "accelerated-launch/adapters/reporting-period-anchor.cjs",
+          "sha256": "7B126486F08A1955369C931D5867A29979562B4A279475EE78D00BBAF9F44F4D"
+        },
+        {
           "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
           "sha256": "006AEED2006C7FEAA35B6F725F605C2AC49F7414062F4F8532492922AB9899B1"
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
-          "sha256": "5387A709109C6CB71D0A40694676159B1B234C886EDF7DBC448C37FC16FD7D30"
+          "sha256": "EADD4755EF900B671BDA324A264B680E75DFE628EA2464FC66A7BCFDFC451CF3"
         },
         {
           "file": "accelerated-launch/adapters/test-adapters.cjs",
@@ -591,6 +599,6 @@
       ]
     }
   ],
-  "manifest_digest": "201B92B0858E910B7351E1E95EDFF3E224F53F87F27346592FB8090F86AB21B9",
-  "total_file_count": 136
+  "manifest_digest": "930D965F09AD49A11ACAD45AFB1817640C1AED40FCE8A1EBDC4F5BEC65127B8B",
+  "total_file_count": 138
 }

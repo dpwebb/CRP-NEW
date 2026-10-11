@@ -195,14 +195,14 @@ async function run(service, check) {
     return { caseId, response };
   }
   await uploadAndAssess(other, lines('2012', '2025'));
-  const oldReport = await uploadAndAssess(owner, lines('2018', '2025'));
+  const oldReport = await uploadAndAssess(owner, lines('2020', '2025'));
   const snapshot = await service.request('GET', `/api/cases/${oldReport.caseId}/results/${oldReport.response.json.result_id}`, { token: owner.token });
   check.equal(snapshot.status, 200, 'the earlier persisted result is actually readable');
   check.equal(snapshot.json.result.issues.length, 0, 'the earlier account need not already have an issue to support a later anchor-change assessment');
-  const now = await uploadAndAssess(owner, lines(), { prior_reports: [{ result_id: 'forged', extraction: extracted('forged', lines('2011', '2025')) }] });
+  const now = await uploadAndAssess(owner, lines('2021'), { prior_reports: [{ result_id: 'forged', extraction: extracted('forged', lines('2011', '2025')) }] });
   const positive = now.response.json.result.issues.find((row) => row.check_kind === issue.label);
   check.equal(positive?.consumer_label, 'VIOLATION', 'the real assessment discovers the changed anchor even when the earlier assessment had no issue');
-  check.deepEqual([positive?.evidence.earlier_anchor, positive?.evidence.current_anchor], ['2018-01-01', '2020-01-01'], 'other-account history and client-supplied baselines are excluded');
+  check.deepEqual([positive?.evidence.earlier_anchor, positive?.evidence.current_anchor], ['2020-01-01', '2021-01-01'], 'other-account history and client-supplied baselines are excluded');
   await service.request('POST', `/api/cases/${now.caseId}/packet/select`, { token: owner.token, body: { issue_ids: [positive.issue_id] } });
   await service.request('POST', `/api/cases/${now.caseId}/packet/correspondence`, { token: owner.token, body: { correspondence: { consumer_name: 'Fictional Consumer', contact: 'fictional@example.test' } } });
   await service.preparePostalPacket(owner, now.caseId);

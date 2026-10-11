@@ -1,0 +1,17 @@
+# October 11, 2026 owner reporting-period directive
+
+This directive records the owner's express platform-wide instruction and supersedes conflicting favorable/adverse applicability and date-selection requirements for reporting-period assessment.
+
+1. Do not determine or differentiate favorable/positive and unfavorable/negative information to exclude a tradeline or collection from reporting-period assessment. An entry beyond its applicable reporting period is a violation, regardless of that classification.
+2. Use the date of first delinquency when it can be determined from the same entry's report evidence. When it cannot be determined, use that entry's source-supported date of last payment as the **determining fallback date**. Do not describe the fallback as a separate CRP rule. Preserve the original extracted fields; never replace a first-delinquency fact with a payment fact.
+3. Show the date actually used and its source in findings and selected dispute packets. Preserve the relevant reporting-period duration, jurisdiction, bureau, report date, assessment date, and arithmetic. Do not invent dates, borrow dates from another account, or describe a date-selection convention as language prescribed by a statute when the statute does not say it.
+
+When neither determining date is available, retain an independently supported, explicitly applicable event-based comparison (for example, a separately defined rating-event or closure-based information period). Never relabel that event as first delinquency or last payment. An entry without any usable applicable anchor remains unresolved.
+Explicit closure, original-listing and separately defined action clocks remain independent comparisons with their sourced starting event and numerical period. The determining-date hierarchy governs delinquency-based account-age calculations; a payment date is never substituted for a resolved closure or listing event. This preserves source-supported applicability and prevents unsupported expired-period assertions.
+4. Preserve selection, approval, entitlement, ownership, privacy and packet safeguards. Bureau-specific forms remain retired.
+
+## Implementation and release record
+
+Authority adopted October 11, 2026. Shared date selection and status-exclusion removal are implemented locally. The TransUnion Canada reader now supports qualified published-period comparisons, preserving six and twenty years without inventing a Northwest Territories statute or assigning a favorable/adverse category. Clock-preserving focused regression: 367 assertions passed, zero failures/skips, including 58 directive-specific assertions and the Canadian, United States and Australian source-clock checks. The earlier failed/aborted full runs retain their original scope; no passing full result is claimed for them. Final frozen full regression passed 14,612/0/0 across all 152 sections with zero source drift or unrun sections for `crp-v1-930d965f09ad49a1` (138 shipped files). Exact-build staging verification and production deployment remain pending. Historical release receipts retain their original build identity.
+
+The owner confirmed: **Keep each applicable numerical period; remove status-based exclusions.** This does not authorize replacing a twenty-year period with six years, inventing a blanket Northwest Territories statutory period, or selecting a different jurisdiction. Preserve applicable numerical periods and their supported scope.

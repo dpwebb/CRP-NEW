@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 11 controlling reporting-period directive
+
+Read `CRP_OWNER_REPORTING_PERIOD_DIRECTIVE_001.md` for reporting-period work. Preserve each applicable numerical period and remove favorable/adverse exclusions. Use first delinquency when determinable; otherwise identify the source-supported last payment date as the **determining fallback date**, not a separate CRP rule. Preserve the original fields, date evidence and packet safeguards. Runtime integration is in progress; earlier production acceptance receipts do not verify this change.
+
 ## October 11 controlling owner directive — bureau forms retired
 
 Read `CRP_OWNER_BUREAU_FORMS_RETIREMENT_001.md` first for dispute/correction packet work. All bureau-specific forms are retired from the approved packet scope across all bureaus and jurisdictions. Their generation, inclusion, separate preview links, form-only inputs and acceptance prerequisites are authorized for removal. This supersedes conflicting earlier form requirements. Preserve the consumer letter, selected evidence/supporting copies and review/approval, ownership, privacy and entitlement safeguards. Historical form-inclusive proof retains its original scope. Directive adoption and runtime removal are complete. Exact-build hosted form-free review/approval/download and unchanged-navigation verification passed on crp-v1-fd23f242f3d158bf, historically verified. Latest integrated build crp-v1-201b92b0858e910b is now deployed and accepted; fresh form-free browser approval/download and current navigation controls were verified, with immutable version/byte continuity separately covered by current regression and paid comparison proof. See SOURCE_CAPTURES/LATEST-FLOW-INTEGRATION-2026-10-11/final/.

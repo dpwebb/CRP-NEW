@@ -580,7 +580,7 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED': { field_sets: [[
     'tradeline.lastPaymentDate', 'report.referenceDate'
   ], ['tradeline.firstDelinquencyDate', 'report.referenceDate']],
-  additional_evidence: 'APPLICABLE_SOURCED_REPORTING_PERIOD_AND_ADVERSE_ENTRY' },
+  additional_evidence: 'APPLICABLE_SOURCED_REPORTING_PERIOD_AND_DETERMINING_DATE' },
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': { field_sets: [[
     'account.masked_identifier', 'account.reported_identity', 'account.balance'
   ], ['account.masked_identifier', 'account.reported_identity', 'account.amount']],

@@ -38,7 +38,7 @@ const REPORT_RULES = Object.freeze({
   'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE': 'A debt collection entry and its linked original account should not make one debt look like two amounts still owed.',
   'COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE': 'A payment or first missed payment cannot happen before the account opened or after the report date.',
   'COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY': 'One report cannot give two conflicting payment statuses for the same account and period.',
-  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'An adverse or collection entry that prints a First Delinquency Date field must not leave it blank; the missing date prevents the consumer from checking when the reported delinquency began and, where that date starts the reporting period, when adverse reporting must end.',
+  'COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR': 'An entry that prints a First Delinquency Date field must not leave it blank; that date identifies when the reported delinquency began. When first delinquency cannot be determined, last payment is the determining fallback date for the reporting-period calculation.',
   'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE': 'If a report says the lender wrote off an account as a loss, it needs the write-off date so this can be checked.',
   'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE': 'If a report says an account is closed, it needs the closed date so this can be checked.'
 });

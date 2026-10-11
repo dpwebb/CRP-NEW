@@ -55,7 +55,8 @@ async function run(t, check) {
     { 'collection.delinquencyDate': '2018-01-01' }, '2026-10-01', 'US-CA',
     { 'collection.delinquencyDate': { raw_value: '2018-01-01', normalized_value: '2023-01-01', location: { page: 1, line: 1 } } }
   );
-  check.equal(mismatched.finding, null, 'a mismatched source value is not a finding');
+  check.equal(mismatched.state, 'UNRESOLVED', 'a mismatched source value stops the date comparison');
+  check.ok(!mismatched.finding, 'a mismatched source value is not a finding');
 
   /* 4. Extraction guards: collection-placement / opened dates are never the delinquency anchor. */
   const placedOnly = extract(['Experian  Consumer Credit Report', 'Report Date: 12 June 2026', 'Collection  Date Placed 01/01/2018']);

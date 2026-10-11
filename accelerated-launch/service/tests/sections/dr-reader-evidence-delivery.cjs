@@ -142,8 +142,8 @@ async function run(t, check) {
     check.equal(stored.extraction.records.filter((r) => r.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT'
       && r.facts?.['tradeline.lastPaymentDate']).length, 2,
       'actual recovered ordinary last-payment dates reach the shared result');
-    check.deepEqual(stored.evaluation.results.map((result) => result.record_index), [1, 2],
-      'actual ordinary dates do not expand the accepted collection statutory comparison scope');
+    check.deepEqual(stored.evaluation.results.map((result) => result.record_index), [1, 2, 3, 4],
+      'actual own ordinary dates reach period comparisons under the owner directive');
     const ordinary = stored.extraction.records.find((record) => record.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT');
     check.deepEqual(formats.factsForRecord(ordinary), {},
       'statutory fact access cannot consume ordinary checklist-only facts');

@@ -229,12 +229,12 @@ function everyCaRegion(check, extraction) {
       + common.length + evaluated.detected_report_information.performed.length,
       `${region}: the performed count is exactly what ran`);
     if (region === 'CA-NS') {
-      check.equal(statutory.length, 2, 'CA-NS: its last-payment limb still runs once per accepted collection entry');
+      check.equal(statutory.length, 4, 'CA-NS: the period comparison includes own date-bearing ordinary accounts and collections');
       check.deepEqual([...new Set(statutory.map((r) => r.check.adapter_id))].sort(),
         ['CA-NS-CRA-S10-3-C-LIMB-1'],
         'CA-NS: and it is the collection last-payment adapter within the active common-error scope');
-      check.deepEqual([...new Set(statutory.map((r) => r.record_index))], [1, 2],
-        'CA-NS: each collection entry carries its own comparison');
+      check.deepEqual([...new Set(statutory.map((r) => r.record_index))], [1, 2, 3, 4],
+        'CA-NS: each date-bearing entry carries its own comparison');
       check.ok(!evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
         'CA-NS: the out-of-checklist bankruptcy adapter is absent from active assessment, including unavailable checks');
       check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
@@ -448,8 +448,8 @@ async function run(t, check) {
 
   const ns = await journeyFor(t, check, owner, specimen, 'CA-NS');
   assertFactualSurface(check, ns.result, 'CA-NS', true);
-  check.equal(ns.result.observations.length, 2,
-    'CA-NS: its last-payment limb produces one comparison per accepted collection entry; ordinary tables do not expand statutory admission');
+  check.equal(ns.result.observations.length, 4,
+    'CA-NS: the owner directive includes date-bearing ordinary accounts without changing presentation admission');
   check.match(ns.result.assessment.plain, /common-error checklist using the report facts/, 'CA-NS: the assessment describes one checklist for the supported checks');
 
   const perRegion = everyCaRegion(check, on.stored);

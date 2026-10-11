@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'ez-reporting-period-directive.cjs',
   'ev-native-account-summary.cjs',
   'et-supported-coverage-evidence.cjs',
   'eu-general-omission-delivery.cjs',

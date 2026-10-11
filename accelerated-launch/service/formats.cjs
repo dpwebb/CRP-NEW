@@ -414,7 +414,16 @@ function carriesReportEvidence(record) {
 }
 
 /** The per-record fact object a rule adapter reads. It contains ONLY this record's own values. */
-function factsForRecord(record) {
+function factsForRecord(record, options) {
+  // October 11 owner directive: period comparisons use all of this entry's sourced
+  // determining dates, including the shared PR-01 first-delinquency reading.
+  if (options?.reporting_period && record?.status === FACT_STATUS.RESOLVED && record.facts) {
+    const facts = { ...record.facts };
+    for (const field of Object.keys(record.fact_sources || {})) {
+      if (Object.hasOwn(facts, field) && !sourceForField(record, field)) delete facts[field];
+    }
+    return facts;
+  }
   // Ordinary PR-01 tables extend checklist facts, not the accepted statutory anchor contract.
   if (record && record.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT') return {};
   /* PR-01's new shared checklist fields do not enlarge the historical statutory

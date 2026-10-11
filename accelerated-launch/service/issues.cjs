@@ -702,6 +702,19 @@ function describeWording(issue) {
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION) {
     const years = issue.period_years;
     const where = recordLabel(issue);
+    if (issue.anchor_selection_rule) {
+      const fallback = issue.determining_fallback_date;
+      const label = fallback ? 'last payment date, used as the determining fallback date because the date of first delinquency could not be determined' : 'date of first delinquency';
+      const exceptions = (issue.unresolved_exceptions || []).join('; ');
+      const qualification = exceptions ? ` Whether an exception applies cannot be determined from this report: ${exceptions}.`
+        : issue.decisive_fact_unavailable ? ' The underlying event date needs verification.' : '';
+      return {
+        explanation: `For this ${years}-year reporting-period calculation, the determining date for ${where} is its ${label}: ${issue.source?.raw_value || issue.arithmetic?.anchor_date}. This puts the entry beyond the credit-report time limit at the report date.`,
+        uncertainty: (fallback ? 'The last payment date is the determining fallback date. Please verify the first delinquency date and the reporting-period calculation.' : 'The determining date comes from this entry. Verify the reporting-period calculation and any applicable exception.') + qualification,
+        request_type: fallback || issue.confidence !== CONFIDENCE.DEFINITE ? REQUEST_TYPE.VERIFICATION : REQUEST_TYPE.CORRECTION,
+        request_wording: fallback ? 'please verify the reporting period using the last payment date as the determining fallback date because the date of first delinquency could not be determined, and correct or remove this entry if its reporting period has ended' : 'please verify this entry and correct or remove it because its reporting period has ended'
+      };
+    }
     if (issue.adapter_id === 'CA-NS-CRA-S10-3-C-LIMB-1' && issue.confidence === CONFIDENCE.DEFINITE) {
       const printed = issue.source?.raw_value || issue.arithmetic?.anchor_date;
       const issued = issue.arithmetic?.reference_date;
@@ -873,6 +886,8 @@ function statutoryIssues(extraction, results) {
         ? finding.evaluation.exceptions.unresolved_items.map((u) => u.text || u.evaluation_basis).filter(Boolean)
         : [],
       anchor_field: isContentFinding ? null : (anchorFact ? anchorFact.field : null),
+      anchor_selection_rule: m.anchor?.selection_rule === 'FIRST_DELINQUENCY_DATE' || m.anchor?.selection_rule === 'DETERMINING_FALLBACK_DATE' ? m.anchor.selection_rule : null,
+      determining_fallback_date: m.anchor?.determining_fallback_date === true,
       source: isContentFinding ? null : (anchorFact ? anchorFact.source : null),
       record: recordRefFor(record),
       report_identity: reportIdentityFor(record),
@@ -1188,6 +1203,42 @@ function limitationIssues(extraction, limitation) {
   return issues;
 }
 
+function publishedPeriodIssues(extraction, comparisons, statutory) {
+  return (comparisons || []).filter(row => row.review_warranted
+    && !statutory.some(issue => issue.record_index === row.record_index && issue.eligible)).map(row => {
+    const record = recordFor(extraction, row.record_index);
+    const period = row.periods.find(value => value.outside_at_assessment);
+    const label = row.anchor.date_label;
+    const endLabel = value => value.ends_from ? `between ${value.ends_from} and ${value.ends_on}` : value.ends_on;
+    const ranges = row.periods.map(value => `${value.years} years: ${endLabel(value)}`).join('; ');
+    const uncertainty = 'TransUnion publishes different periods for different account circumstances. Please verify which period and starting event apply to this entry.'
+      + (row.current_presence_requires_verification ? ' This upload is an earlier report; it does not establish whether this entry is still on your current file.' : '');
+    const classification = period.outside_at_report ? 'POTENTIAL_VIOLATION' : null;
+    const issue = {
+      issue_id: issueId(`published-period:${row.record_index}:${JSON.stringify(row)}`),
+      basis_type: BASIS_TYPE.FACTUAL_CONSISTENCY, confidence: CONFIDENCE.POTENTIAL,
+      classification, check_id: 'COMMON-ERROR-REPORTING-PERIOD-EXCEEDED',
+      record_index: row.record_index, label: 'Reporting period needs verification',
+      citation: row.source.url, source_version: row.source.verified_on,
+      record: recordRefFor(record), report_identity: reportIdentityFor(record), account_identity: accountIdentityFor(record),
+      location: row.anchor.source.location,
+      source_facts: sourceFactsFor(record, [row.anchor.field, 'report.referenceDate']),
+      evidence: { determining_date: row.anchor.iso, determining_date_label: label,
+        determining_fallback_date: row.anchor.determining_fallback_date, report_date: row.report_date,
+        assessed_on: row.assessed_on, period_comparisons: row.periods, publication: row.source,
+        status_classification_used: false },
+      rule_assessment: classification ? { classification,
+        requirement: 'An entry must not remain beyond its applicable reporting period; verify the applicable published period and starting event.' } : null,
+      explanation: `Using the ${label.toLowerCase()} printed for this entry (${row.anchor.value_as_supplied}), the ${period.years}-year comparison ends ${period.ends_from ? '' : 'on '}${endLabel(period)}. It ${period.outside_at_report ? 'had ended by' : 'ended after'} the report date (${row.report_date}). Using this date, the published periods end at ${ranges}.`,
+      uncertainty, request_type: REQUEST_TYPE.VERIFICATION,
+      request_wording: `please verify ${row.current_presence_requires_verification ? 'whether this entry remains on my current file, and ' : ''}the applicable reporting period and starting event for this entry. The determining date used is ${row.anchor.value_as_supplied} (${label.toLowerCase()}). The published-period comparisons end at ${ranges}. Please correct or remove this entry if its applicable reporting period has ended`,
+      machine: { published_reporting_period: row }
+    };
+    issue.eligible = isEligible(issue);
+    return issue;
+  });
+}
+
 function issuesFor(ctx) {
   const evaluation = ctx && ctx.evaluation;
   const extraction = ctx && ctx.extraction;
@@ -1203,7 +1254,8 @@ function issuesFor(ctx) {
   } : null;
   const retentionReview = retentionCurrentReviewIssues(extraction, scopedRetention, statutory);
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation)
+  const published = publishedPeriodIssues(extraction, evaluation.published_reporting_periods, statutory.concat(retentionReview));
+  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation, published)
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
       if (!record) return issue;
@@ -1255,7 +1307,7 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
     if (group.materials.some((material) => [material.adapter_id, material.rule, material.citation]
       .filter(Boolean).some((identity) => alreadyCovered.has(`${entry.record_index}|${identity}`)))) continue;
     const record = recordFor(extraction, entry.record_index);
-    const label = consumerFieldLabel(entry.anchor_field);
+    const label = entry.determining_fallback_date ? 'Last payment date — determining fallback date' : consumerFieldLabel(entry.anchor_field);
     const sourceFacts = sourceFactFor(entry, label, record);
     /* The consumer-safe evidence only: dates, states and the source the reader recorded. The raw machine entry
        stays internal, under `machine`, exactly as the other issue producers keep their audit payload. */
@@ -1274,6 +1326,7 @@ function retentionCurrentReviewIssues(extraction, dualDate, statutoryIssuesAlrea
         citations: group.citations.slice(),
         region: entry.region || null,
         anchor_label: label,
+        determining_fallback_date: entry.determining_fallback_date === true,
         anchor_printed_date: entry.anchor_printed_date || null,
         anchor_iso: entry.anchor_iso || null,
         anchor_precision: entry.anchor_precision || null,
@@ -1427,6 +1480,7 @@ function publicIssue(issue) {
       citations: r.citations || [r.citation].filter(Boolean),
       /* The consumer-facing name of the printed field, and the printed value it read. */
       anchor_label: r.anchor_label || null,
+      determining_fallback_date: r.determining_fallback_date === true,
       anchor_printed_date: r.anchor_printed_date || null,
       anchor_precision: r.anchor_precision || null,
       period_years: r.period_years === undefined ? null : r.period_years,
@@ -1473,6 +1527,13 @@ function publicIssue(issue) {
   }
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION) {
     out.citation = issue.citation || null;
+    if (issue.anchor_selection_rule) out.determining_date = {
+      label: issue.determining_fallback_date ? 'Last payment date — determining fallback date' : 'Date of first delinquency',
+      fallback: issue.determining_fallback_date === true,
+      printed_value: src?.raw_value || null,
+      normalized_value: src?.normalized_value || null,
+      location: src?.location || null
+    };
     out.rule_source_version = issue.source_version || null;
     out.period_years = issue.period_years || null;
     out.printed_value = src ? src.raw_value : null;

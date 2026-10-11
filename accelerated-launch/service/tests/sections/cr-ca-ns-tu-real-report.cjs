@@ -197,8 +197,8 @@ async function runRealReport(service, check, evidence) {
     'the missing reporting anchor is never presented as a six-year court limitation');
   const reportingPeriod = publicIssues.filter((i) => i.basis_type === 'STATUTORY_RETENTION');
   check.equal(reportingPeriod.length, 2, 'the two older closed debt entries receive sourced reporting-period violations');
-  check.ok(reportingPeriod.every((i) => i.confidence === 'DEFINITE' && i.consumer_label === 'VIOLATION' && i.request_type === 'CORRECTION'),
-    'the six-year rule is classified and presented as a correction-ready violation');
+  check.ok(reportingPeriod.every((i) => i.confidence === 'DEFINITE' && i.consumer_label === 'VIOLATION' && i.request_type === 'VERIFICATION'),
+    'the six-year breach retains its class while the determining fallback supports a qualified verification request');
   check.ok(reportingPeriod.every((i) => i.source_facts[0]?.location?.page && i.source_facts[0]?.location?.line && i.account_identity.name),
     'both concerns preserve the account association and recorded report location');
   check.ok(reportingPeriod.every((i) => i.explanation.includes(i.account_identity.name)),
@@ -255,8 +255,8 @@ async function runNovaScotiaLimb(service, check, evidence, real) {
   check.equal(obs.length, 4, 'the Nova Scotia limb completes one comparison per account block of this report');
   check.ok(rows.every((o) => o.assessment_completed === true || /could not be read/.test(o.headline)),
     'and every other row it produced on this report is an unread record, never a comparison');
-  check.ok(obs.every((o) => o.measures_from === 'Last Payment Date'),
-    'and every completed run measures from the last payment date the report prints');
+  check.ok(obs.every((o) => /first delinquency|last payment date.*determining fallback date/i.test(o.measures_from)),
+    'every completed run identifies the actual determining date and any fallback');
   check.ok(obs.every((o) => o.evidence && /^[A-Z][a-z]{2} \d{2}, \d{4}$/.test(String(o.evidence.printed_value))),
     'with the printed value of that date beside it');
   const exceeded = obs.filter((o) => /More than 6 years/.test(o.headline));
@@ -306,9 +306,9 @@ async function runSubscriberPacket(service, check, evidence, real) {
   check.equal(approved.status, 200, 'and approve the packet it built');
   const download = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: sub.token });
   check.equal(download.status, 200, 'and download the approved packet');
-  check.ok(/Please remove this debt information because the printed Last Payment Date shows that its six-year reporting period had ended/i.test(comparableText(download.text)), 'the approved correspondence states the sourced last-payment and six-year correction request');
+  check.ok(/6-year.*last payment date.*determining fallback date/i.test(comparableText(download.text)), 'the approved correspondence states the sourced period and determining fallback date');
   check.ok(comparableText(download.text).includes(chosen.account_identity.name), 'the downloaded packet names the selected tradeline');
-  check.ok(/remove this debt information/i.test(comparableText(download.text)), 'the packet asks to remove the aged debt information');
+  check.ok(/correct or remove this entry if its reporting period has ended/i.test(comparableText(download.text)), 'the packet asks for correction or removal conditional on the applicable period');
   check.ok(!/positive account|negative account|adverse debt/i.test(comparableText(download.text)), 'the packet assigns no positive or negative account value');
   evidence.real_report.packet = { selected_issue: chosen.issue_id, account: chosen.account_identity.name };
   void real;

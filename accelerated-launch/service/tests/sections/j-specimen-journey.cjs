@@ -51,7 +51,8 @@ async function evaluateAndInspect(t, check, owner, caseId) {
   check.equal(result.comprehensive_legal_check, false);
   const withEvidence = result.observations.filter((o) => o.evidence && o.evidence.page);
   check.ok(withEvidence.length >= 1, 'at least one observation names the page and line it came from');
-  check.ok(withEvidence.every((o) => o.measures_from === 'Last Payment Date'), 'and the field it was measured from');
+  check.ok(withEvidence.every((o) => /^(Last Payment Date(?: — determining fallback date)?|Date of First Delinquency)$/i.test(o.measures_from)),
+    'each comparison names its actual determining date, including fallback identity');
   return result;
 }
 
@@ -63,13 +64,16 @@ async function recordIndependence(t, check, caseId, result) {
   const locations = records.map((r) => `${r.location && r.location.page}:${r.location && r.location.line}`);
   check.equal(new Set(locations).size, locations.length, 'each account is located at its own page and line');
 
-  const readable = records.filter((r) => r.kind === 'COLLECTION_ACCOUNT' && r.status === 'RESOLVED');
+  const readable = records.filter((r) => r.status === 'RESOLVED'
+    && (r.kind === 'COLLECTION_ACCOUNT' || r.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT'
+      && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null)));
   const accountObservations = result.observations.filter((o) => o.account_number_in_report !== null);
-  check.equal(accountObservations.length, readable.length, 'one statutory comparison was attempted for every accepted readable collection account');
+  check.equal(accountObservations.length, readable.length, 'one period comparison is attempted for each readable collection or ordinary account with determining-date evidence');
 
   const citedPages = accountObservations.map((o) => o.evidence && o.evidence.page);
   check.ok(citedPages.every((p) => Number.isInteger(p)), 'and every comparison cites the page it came from');
-  check.equal(new Set(citedPages).size, citedPages.length, 'no two comparisons cite the same page');
+  check.equal(new Set(accountObservations.map(row => `${row.account_number_in_report}:${row.evidence.page}:${row.evidence.line}`)).size,
+    accountObservations.length, 'each comparison retains its own account and date location, including dates on the same page');
   check.ok(
     accountObservations.every((o) => /More than \d+ years|years have not yet passed/.test(o.headline)),
     'each account received its own comparison statement'

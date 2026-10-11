@@ -196,7 +196,9 @@ function unresolvedReportFields(extraction, evaluation) {
  * own are mapped here; every other run keeps the record's own source field exactly as before.
  */
 const ANCHOR_FIELD_LABELS = Object.freeze({
-  'tradeline.lastPaymentDate': 'Last Payment Date'
+  'tradeline.lastPaymentDate': 'Last Payment Date',
+  'tradeline.firstDelinquencyDate': 'Date of First Delinquency',
+  'collection.delinquencyDate': 'Date of First Delinquency'
 });
 
 function anchorFieldOf(machine) {
@@ -215,7 +217,17 @@ function anchorReading(record, field) {
 }
 
 /** The evidence for one comparison: the anchor's OWN printed reading when it is known, else the record's. */
-function evidenceForAnchor(record, field) {
+function evidenceForAnchor(record, field, anchor) {
+  if (anchor?.source?.location) {
+    const loc = anchor.source.location;
+    return { section: record?.location?.section || null,
+      field: anchor.date_label || anchor.source.source_field || ANCHOR_FIELD_LABELS[field] || null,
+      page: loc.page ?? null, line: loc.line ?? null,
+      account_number_in_report: record?.record_index ?? null,
+      account_starts_at: record?.location?.account_starts_at || null,
+      account_ends_at: record?.location?.account_ends_at || null,
+      printed_value: anchor.source.raw_value ?? null };
+  }
   const reading = anchorReading(record, field);
   if (!reading) return evidenceFrom(record);
   const loc = record.location || {};
@@ -252,10 +264,10 @@ function renderResultSet(input) {
     return {
       account_number_in_report: row.record_index,
       check_name: row.check ? row.check.citation : null,
-      measures_from: ANCHOR_FIELD_LABELS[anchorField] || (record && record.source_field ? record.source_field : null),
+      measures_from: row.machine?.anchor?.date_label || ANCHOR_FIELD_LABELS[anchorField] || (record && record.source_field ? record.source_field : null),
       headline: plain.headline,
       detail: plain.detail,
-      evidence: evidenceForAnchor(record, anchorField),
+      evidence: evidenceForAnchor(record, anchorField, row.machine?.anchor),
       output_level: row.check ? row.check.output_ceiling : null,
       assessment_completed: Boolean(row.machine && row.machine.state === 'EVALUATED'),
       is_a_finding: Boolean(finding),

@@ -195,22 +195,23 @@ function realEvidence(check, checkSkip) {
       applicability_unresolved: e.unresolved_applicability.length,
       summary: e.applicability_summary
     };
-    check.equal(e.results.length, 1, 'the US sample performs exactly one executed comparison');
+    check.equal(e.results.length, 3, 'the national period limb reaches all three accounts without adverse-status exclusions');
     check.equal(e.results[0].check.adapter_id, ADVERSE_ADAPTER, 'the federal adverse rule');
-    check.equal(e.results[0].machine.state, 'EVALUATED', 'evaluated');
-    check.equal(e.results[0].machine.outcome, 'PERIOD_NOT_EXCEEDED',
-      'and its outcome is the arithmetic comparison, not an applicability statement');
+    check.equal(e.results.filter(row => row.machine.state === 'EVALUATED').length, 1,
+      'the applicable seven-year limb retains the sourced rating-event comparison when neither determining date is printed');
+    check.ok(e.results.filter(row => row.machine.state === 'UNRESOLVED').every(row => row.machine.refusal_reason === 'ANCHOR_FACT_NOT_RESOLVED'),
+      'unreadable event dates remain unresolved rather than invented');
     check.equal(e.not_applicable_checks.length, 0,
       'no limb is NOT_APPLICABLE: the reassessed limbs find no entry of their kind and are reported unavailable instead');
     check.equal(e.unavailable_checks.filter((c) => /NO_RECORD_OF_THE_KIND/.test(c.reason)).length, 2,
       'two checklist-related limbs find no entry of their kind and are reported unavailable');
-    check.equal(e.unresolved_applicability.length, 5,
-      'the two unreadable adverse accounts stay unresolved under the federal rule, and all three adverse accounts stay unresolved under the fail-closed California rule (no event-date context)');
+    check.equal(e.unresolved_applicability.length, 3,
+      'the distinct California event/action timing requirement is retained without restoring the national adverse-status exclusion');
     check.ok(e.unresolved_applicability.every((c) => c.adapter_id === ADVERSE_ADAPTER || c.adapter_id === CA_ADVERSE_ADAPTER),
       'the unresolved readings are the two adverse rules on the adverse accounts');
-    check.equal(e.applicability_summary.APPLICABLE, 1);
+    check.equal(e.applicability_summary.APPLICABLE, 3);
     check.equal(e.applicability_summary.NOT_APPLICABLE, 0);
-    check.equal(e.applicability_summary.APPLICABILITY_UNRESOLVED, 5);
+    check.equal(e.applicability_summary.APPLICABILITY_UNRESOLVED, 3);
   } else {
     checkSkip('the captured US sample', 'THE_CAPTURED_ARTIFACT_PUB-001_IS_NOT_PRESENT');
   }

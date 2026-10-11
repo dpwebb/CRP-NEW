@@ -460,16 +460,16 @@ async function run(service, check) {
   await freePage.close();
 
   /* ---- 6. BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the court-limitation concern in the REAL browser, read by
-     the GENERAL reader: a fictional Nova Scotia collection entry whose own printed delinquency date is outside the
-     recorded period. An unpaid account sees it in the free summary and teaser; a subscriber selects it, and the
-     downloaded packet asks for the dates to be verified without claiming that any rule was broken. ---- */
+     the GENERAL reader: a fictional Northwest Territories collection with an expired court-screening period.
+     No fixed reporting period is declared for this general presentation in that jurisdiction. Court information
+     remains separate from reporting findings and cannot enter a dispute packet. ---- */
   const limLines = [
     'Equifax  Consumer Credit Report - FICTIONAL TEST FIXTURE',
     'Report Date: 12 June 2026',
     'Collection Agency ABC  Balance $500  Past Due $500  Date of First Delinquency 01/01/2019'
   ];
   const limActor = await service.unpaidAccount('bw-ns-limitation-free@example.test');
-  const limCase = (await service.request('POST', '/api/cases', { token: limActor.token, body: { country: 'CA', region: 'CA-NS' } })).json.case;
+  const limCase = (await service.request('POST', '/api/cases', { token: limActor.token, body: { country: 'CA', region: 'CA-NT' } })).json.case;
   const limPage = await (await browser.newContext()).newPage();
   limPage.setDefaultTimeout(20000);
   await limPage.goto(service.base + '/index.html#signin');
@@ -500,7 +500,7 @@ async function run(service, check) {
   check.ok(!/id="packet-block"/.test(await limPage.content()), 'while the complete findings and the packet stay locked');
   await limPage.close();
 
-  const gen = await setupPaidCase(service, 'bw-ns-limitation@example.test', 'CA', 'CA-NS');
+  const gen = await setupPaidCase(service, 'bw-ns-limitation@example.test', 'CA', 'CA-NT');
   opened = await openCasePage(gen.email, gen.password, gen.caseId, limLines);
   const genPage = opened.page;
   /* The complete assessment (step 3) states the date it was assessed; the packet step follows. */

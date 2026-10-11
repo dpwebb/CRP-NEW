@@ -208,8 +208,8 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
   check.equal(nsEvaluated.length, 4, 'the Nova Scotia last-payment limb measures the four account blocks of the TransUnion presentation');
   check.deepEqual([...new Set(nsEvaluated.map((r) => r.check.adapter_id))], ['CA-NS-CRA-S10-3-C-LIMB-1'],
     'and it is the only statutory limb seated on that presentation');
-  check.deepEqual([...new Set(nsEvaluated.map((r) => r.machine.anchor.field))], ['tradeline.lastPaymentDate'],
-    'measuring from the last payment date the report prints on each entry');
+  check.deepEqual([...new Set(nsEvaluated.map((r) => r.machine.anchor.field))], ['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'],
+    'determinate first delinquency is used; other entries use their own last payment as fallback');
   check.ok(ns.results.length > nsEvaluated.length,
     'while every record that prints no such date is recorded as an unread row, never as a comparison');
   check.deepEqual(ns.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
