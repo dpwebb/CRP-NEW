@@ -932,7 +932,7 @@ async function main() {
         'paid-or-settled-status-with-past-due',
         'last-payment-or-first-delinquency-date-conflict',
         'linked-original-and-collection-both-due',
-        'owner-list-of-20-across-82-jurisdictions-with-out-of-checklist-statutory-checks-retired'
+        'owner-expanded-common-error-checklist-across-82-jurisdictions-with-independent-statutory-violation-checks-retired'
       ],
       distinct_amounts_extracted: ['account.balance', 'account.pastDueAmount', 'account.paymentAmount', 'account.creditLimit', 'account.currency'],
       payment_history: 'printed grid with periods, a code->meaning legend and raw cells; blank cells and unlisted codes are never guessed',

@@ -105,7 +105,7 @@ async function run(service, check) {
   check.ok(Object.values(capGeneral.checks).every((c) => c === true), 'the general-intake reader can structurally supply every one of the six issue types');
   const factualIds = require('../../common-error-checklist.cjs').CHECKS
     .map((row) => row.check_id).filter((id) => id.startsWith('COMMON-ERROR-'));
-  check.equal(factualIds.length, 20, 'the expanded checklist has 20 common-error rows including the omission umbrella');
+  check.equal(factualIds.length, 26, 'the expanded checklist has 26 common-error definitions including the omission umbrella and six concern mechanisms');
   check.deepEqual(Object.keys(capGeneral.all_factual_checks).sort(), factualIds.sort(),
     'the full reader inventory accounts for every factual check');
   check.equal(capGeneral.all_factual_checks['COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT'].field_ready,

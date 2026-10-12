@@ -138,6 +138,8 @@ async function run(service, check) {
   check.equal(tied.teaser.issue_id, 'aaa', 'equal severity breaks on the stable issue id');
   check.deepEqual(results.summariseAssessment({ issues: [] }), {
     distinct_total: 0,
+    violation_total: 0,
+    non_violation_concern_total: 0,
     information_total: 0,
     by_confidence: { violation: 0, probable_violation: 0, potential: 0 },
     categories_sum_to_total: true,
