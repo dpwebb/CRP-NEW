@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420">
+<rect width="1280" height="420" fill="#F7F5EE"/>
+<g fill="#142B3A" font-family="Arial" font-size="18" text-anchor="middle"><text x="160" y="365">A / ANGULAR</text><text x="480" y="365">B / OPEN FRAMES</text><text x="800" y="365">C / OFFSET</text><text x="1120" y="365">D / RECORD TO RESPONSE</text></g>
+<g transform="translate(54 76) scale(2.1)" fill="#142B3A">
+ <path d="M8 8L56 20V34L29 27V73L56 66V80L8 92Z"/>
+ <path d="M92 8L44 20V34L71 27V73L44 66V80L92 92Z"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(374 76) scale(2.1)" fill="#142B3A">
+ <path d="M8 8H56V22H23V78H56V92H8Z"/>
+ <path d="M92 8H44V22H77V78H44V92H92Z"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(694 76) scale(2.1)" fill="#142B3A">
+ <path d="M8 8H70V22H22V70H8Z"/>
+ <path d="M92 30V92H30V78H78V30Z"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(1014 76) scale(2.1)" fill="#142B3A">
+ <path d="M8 8H40V25H25V75H40V92H8Z"/>
+ <path d="M92 8H60V25H75V75H60V92H92Z"/>
+ <rect x="34" y="45" width="32" height="10" fill="#A57543"/>
+</g>
+</svg>
