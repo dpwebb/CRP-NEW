@@ -1,0 +1,51 @@
+{
+  "country": "GB",
+  "kind": "privacy",
+  "title": "Privacy Policy",
+  "sections": [
+    [
+      "Who operates CRP",
+      "Credit Regulator Pro a division of COMPND SYSTEMS LTD operates this service. For privacy requests and support, email support@creditregulatorpro.com."
+    ],
+    [
+      "Information we handle",
+      "We handle your account email and protected sign-in credentials; contact details you choose to save; reports and supporting documents you upload; extracted report facts, results, comparisons, selections, edits and approvals; and purchase, session, security and support records. Stripe handles your payment details."
+    ],
+    [
+      "Why we use it",
+      "We use information to provide and secure your account, read your report, run supported checks, show results and comparisons, prepare the documents you select and approve, provide downloads, manage purchases and answer support requests."
+    ],
+    [
+      "IP location",
+      "We use your IP address to choose starting prices and the regional version of these documents. Country.is receives only your IP for the country lookup. GeoJS receives only your IP when a province or state is needed. These providers do not receive your report, account details or payment details. IP location does not change the jurisdiction you select for your credit-report assessment or remove rights that apply where you actually live."
+    ],
+    [
+      "Service providers and international processing",
+      "Hosting, backup, security, geolocation and payment providers process information needed for their service. Information may be processed outside your country. We may disclose information where the law requires it. CRP does not send your packet to a bureau for you; you decide whether and how to send it."
+    ],
+    [
+      "Keeping and deleting information",
+      "Active report and case information remains until you delete the case or account. Account documents remain until you remove them or delete your account. Deleting a case does not remove documents saved separately in your account. Deletion from the active service does not mean immediate erasure from backups or Stripe records."
+    ],
+    [
+      "Sign-in cookies",
+      "CRP uses a sign-in cookie to keep you logged in and protect account access. Stripe may use its own cookies and similar technology at checkout."
+    ],
+    [
+      "Security and sessions",
+      "We use account access controls, protected credentials and session safeguards. Contact support if you believe your account has been compromised. No online service can guarantee absolute security."
+    ],
+    [
+      "Requests and complaints",
+      "Email support@creditregulatorpro.com to request access, correction, deletion or information about processing. We may need to verify your identity. Applicable law, legal obligations and other people\u2019s rights can affect a request."
+    ],
+    [
+      "UK data protection rights",
+      "Under applicable UK data protection law, you may request access, correction, erasure, restriction and data portability, and object to certain processing. Where processing relies on consent, you may withdraw that consent. You may complain to the Information Commissioner\u2019s Office (ICO)."
+    ],
+    [
+      "UK processing grounds",
+      "Processing needed to provide your account, assessment and purchase is based on performing the service contract. Security and misuse prevention may rely on legitimate interests. Legal recordkeeping relies on legal obligations. Consent is used where it is required; this notice does not replace a required consent request."
+    ]
+  ]
+}

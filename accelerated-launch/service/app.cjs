@@ -82,7 +82,7 @@ const STATIC_TYPES = Object.freeze({
   '.ttf': 'font/ttf',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/privacy-policy.html', '/terms-and-conditions.html', '/legal-document.js', '/legal-document.css', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -159,6 +159,7 @@ const ROUTES = Object.freeze([
   ['POST', '/api/cases/:caseId/packet/support', true, 'packetSupport'],
   ['POST', '/api/cases/:caseId/packet/requirements', true, 'packetRequirements'],
   ['GET', '/api/privacy', true, 'privacyDashboard'],
+  ['GET', '/api/legal-documents/:kind', false, 'legalDocument'],
   ['GET', '/api/support', true, 'supportInfo'],
   ['GET', '/api/support/references/:reference', true, 'supportLookup'],
   ['DELETE', '/api/account', true, 'deleteAccount'],
@@ -785,12 +786,19 @@ function createService(options) {
   const logger = new Logger(opts.logSink);
   const surface = loadJurisdictionSurface();
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
+  const legalJurisdiction = require('./legal-documents.cjs').resolver(opts.legalGeoLocate);
   const handlers = Object.assign(
     {},
     buildHandlers(store, logger, surface, pricingCurrency),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
-    {publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
+    { legalDocument: async ({ req, params }) => require('./legal-documents.cjs').document(params.kind, await legalJurisdiction(req), opts.legalDocumentConfig),
+      publicCreditNews: async ({ req }) => {
+        const geo=require('./pricing-location.cjs');let country=null;
+        try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}
+        return {status:200,json:require('./credit-news.cjs').select(country)};
+      }
+    }
   );
 
   /**
