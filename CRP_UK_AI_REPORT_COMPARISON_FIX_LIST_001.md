@@ -2,7 +2,7 @@
 
 Created October 12, 2026 (America/Halifax). Authority: owner-requested independent UK report review compared with enhanced local CRP. **No product code changes or staging/production deployment authorized by this task.**
 
-Status: **20/97 PDFs compared; 77 pending. Seventeen independent concerns: seven detected, ten missed. Two additional false-positive chronology outputs. Four OPEN corrective TODOs.** Two batches of ten cycles, twenty-eight original pages reviewed. These are printed discrepancies and qualified verification concerns, not established statutory breaches.
+Status: **30/97 PDFs compared; 67 pending. Thirty independent concerns: eleven detected, nineteen missed. Four additional false-positive chronology outputs. Four OPEN corrective TODOs.** Three batches of ten cycles, forty-two original pages reviewed. These are printed discrepancies and qualified verification concerns, not established statutory breaches.
 
 ## Candidate and account
 
@@ -45,10 +45,10 @@ This instruction changes required corrective behavior only. No runtime code was 
 
 | ID | Trigger / instances | Status | Required correction |
 | --- | --- | --- | --- |
-| UK-FIX-TODO-001 | Eight missed report-level postcode-format concerns | OPEN | Preserve UK two-column address blocks and add country-scoped postal syntax determination, issue selection and factual correction packet |
-| UK-FIX-TODO-002 | Two false chronology concerns from identical ambiguous date strings | OPEN | Correlate report/update interpretations under a consistent source convention; suppress artificial cross-interpretation conflicts |
-| UK-FIX-TODO-003 | One old court-entry concern, UK-012 | OPEN | Map public-record columns faithfully and assess UK-scoped qualified retention review without replacing Filed with judgment-made date |
-| UK-FIX-TODO-004 | One old collection-entry concern, UK-014 | OPEN | Preserve collection date meanings and support UK-scoped old-entry verification without inventing an original default date |
+| UK-FIX-TODO-001 | Fifteen missed report-level postcode-format concerns | OPEN | Preserve UK two-column address blocks and add country-scoped postal syntax determination, issue selection and factual correction packet |
+| UK-FIX-TODO-002 | Four false chronology concerns from identical ambiguous date strings | OPEN | Correlate report/update interpretations under a consistent source convention; suppress artificial cross-interpretation conflicts |
+| UK-FIX-TODO-003 | Two old court-entry concerns, UK-012 / UK-025 | OPEN | Map public-record columns faithfully and assess UK-scoped qualified retention review without replacing Filed with judgment-made date |
+| UK-FIX-TODO-004 | Two old collection-entry concerns, UK-014 / UK-027 | OPEN | Preserve collection date meanings and support UK-scoped old-entry verification using owner-directed Last Reported fallback when primary start unavailable |
 
 ### UK-FIX-TODO-001 — postcode syntax and address extraction
 
@@ -65,11 +65,11 @@ Page 1 source-owned address values:
 
 Internal confidence: **DEFINITE printed syntax discrepancies**, not established identity theft, correct replacement address or credit-law adjudication. The address may itself be synthetic or inaccurate; intended values are unknown. Aliases and scenario labels are not proof. Other postal allocation/locality issues were not exhaustively checked and are not silently certified correct.
 
-Diagnosis: all eight linked actual candidate extractions have empty identity_groups. The available postcode determination in au-comparison-concerns.cjs is AU-scoped and four digits; it cannot be reused as a UK predicate. Preserve address role, full wrapped right-column content, source geometry and raw postcode before validating. Do not borrow adjacent DOB/name text, truncate captions, force four digits, infer actual address ownership or whitelist filenames. Use accepted UK address readers where possible; source-linked GB postal syntax checks need governed checklist projection and selectable factual correction requests. Do not use an education data-validation rule as a credit-report statute.
+Diagnosis: all fifteen linked actual candidate extractions have empty identity_groups. The available postcode determination in au-comparison-concerns.cjs is AU-scoped and four digits; it cannot be reused as a UK predicate. Preserve address role, full wrapped right-column content, source geometry and raw postcode before validating. Do not borrow adjacent DOB/name text, truncate captions, force four digits, infer actual address ownership or whitelist filenames. Use accepted UK address readers where possible; source-linked GB postal syntax checks need governed checklist projection and selectable factual correction requests. Do not use an education data-validation rule as a credit-report statute.
 
 Primary postal-format reference: [2026–27 government postcode validation](https://guidance.submit-learner-data.service.gov.uk/26-27/validation-rules/rule/Postcode_15) identifies the ordinary numeric/alphabetic structure and excluded inward letters. [ICO credit guidance](https://ico.org.uk/for-the-public/credit/) supports correcting inaccurate report information; the page states its guidance is under review following the Data (Use and Access) Act. Sources checked October 12, 2026. Apply postal exceptions to their actual categories, not ordinary UK address strings; no correction of the consumer's address is invented.
 
-Acceptance: same eight originals detected with their exact address/page; ordinary UK postcodes and legitimate special-category controls preserved; two-column/continuation and adjacent-column controls; source-linked selection and reviewed packet request. No automatic mixed-file finding for aliases alone. Implementation NOT_STARTED, staging NOT_RUN, production NOT_RUN.
+Acceptance: same fifteen originals detected with their exact address/page; ordinary UK postcodes and legitimate special-category controls preserved; two-column/continuation and adjacent-column controls; source-linked selection and reviewed packet request. No automatic mixed-file finding for aliases alone. Implementation NOT_STARTED, staging NOT_RUN, production NOT_RUN.
 
 ### UK-FIX-TODO-002 — correlated date alternatives
 
@@ -131,3 +131,64 @@ First blocker: actual GENERAL_COLLECTION record now preserves agency, original c
 Required correction: reuse typed collection data and factual verification mechanism, implement the supported GB category/start hierarchy with source-owned **Last Reported determining fallback** when primary start is unavailable, keep correct numerical period and named uncertainty, and enable governed issue/selection/packet request. Controls must preserve known older original starts against later updates, legitimate current/recent collections, absent-entry-date behavior, ambiguous dates, purchased-account relationships and independence from court limitation periods. Implementation NOT_STARTED, staging NOT_RUN, production NOT_RUN.
 
 Cumulative after this batch: **20 reports, 28 pages, 17 independent concerns, 7 detected, 10 missed, 2 additional false-positive chronology instances, 4 OPEN TODOs**. Misses comprise eight report-level postcode-format concerns and two qualified old-entry concerns. Nine additional qualified requests across both batches remain separately recorded; no blanket zero-false-positive or full coverage claim. **77 original PDFs remain.**
+
+## Batch UK-021–030 — October 12, 2026
+
+Ten new original cycles, **fourteen pages** independently extracted and visually reviewed, AI findings frozen before candidate outputs inspected. Same clean candidate commit `7a4cf4b56556eb41a79090f61cad1e8662d9e0d1`; tracked service hashes unchanged through the batch. Fresh local login verified existing credentials and exact account `acc_04ec4bdb680850b9c8ae1bc8`, full-access annual complimentary SUBSCRIPTION and historical access. Real local HTTP candidate modules were used in fresh isolated private storage; listener closed after completion. No staging/production request, purchase, production-session reuse, product-source edit or deployment.
+
+The inventory contains **28 Equifax PDFs**, so this batch finishes those and begins Experian. Alias-to-original mappings are explicit below; aliases no longer mirror every filename number. UK-024 current Glasgow selects GB-SCT, UK-027 current Cardiff selects GB-WLS, others select GB-ENG. These current-locality test inputs do not establish legal residence. EQUIFAX / EXPERIAN selections match their printed headers.
+
+| Alias | Original PDF | Pages | Independent | CRP outputs | Detected | Missed |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| UK-021 | UK-Equifax-UK-021.pdf | 1 | 2 | 2 | 1 | 1 |
+| UK-022 | UK-Equifax-UK-022.pdf | 1 | 1 | 1 | 0 | 1 |
+| UK-023 | UK-Equifax-UK-023.pdf | 2 | 0 | 0 | 0 | 0 |
+| UK-024 | UK-Equifax-UK-024.pdf | 2 | 2 | 2 | 1 | 1 |
+| UK-025 | UK-Equifax-UK-025.pdf | 1 | 1 | 0 | 0 | 1 |
+| UK-026 | UK-Equifax-UK-026.pdf | 1 | 2 | 3 | 1 | 1 |
+| UK-027 | UK-Equifax-UK-027.pdf | 2 | 2 | 1 | 0 | 2 |
+| UK-028 | UK-Equifax-UK-028.pdf | 2 | 2 | 3 | 1 | 1 |
+| UK-029 | UK-Experian-UK-001.pdf | 1 | 0 | 0 | 0 | 0 |
+| UK-030 | UK-Experian-UK-002.pdf | 1 | 1 | 1 | 0 | 1 |
+
+Thirteen independent concerns: **seven definite printed postcode discrepancies, one probable repeated-account concern, five potential attributed/old-entry verification concerns**. Four detected, nine missed. Thirteen CRP outputs: four matches, two false chronology positives and seven additional qualified closure-date requests. All ten originals admitted GENERAL. All four matches packet-eligible; no selection, approval or packet-download claimed. UK-028 duplicate is detected by the existing common-error path at POTENTIAL confidence versus PROBABLE in the frozen review; matching creditor/masked identity/date/amount facts support the match, but this conservative confidence difference is recorded separately from misses.
+
+Detected concerns: UK-021 explicitly disputed Harbor Retail Services Charge Off; UK-024 expressly denied Unrecognized Retail Bank account; UK-026 consumer-disputed Pioneer Bankcard GBP 7,240 balance; UK-028 matching first/fifth Pioneer Bankcard rows. Undated OK history does not disprove charge-off, over-limit balance alone is not an error, and explicit claims do not prove ownership or balance facts.
+
+Private evidence root: `C:\Users\webbd\.codex\private\crp-ai-comparison\2026-10-12-uk-turn3`. Source-manifest.json maps alias/Drive ID/hash/original file, independent-ai-UK-021-030.json preserves review, cycle-receipts.json records the ten assessments, comparison-manifest.json records exact matches/misses/additional outputs, and candidate-provenance.json / candidate-preservation.json establish frozen source continuity. Actual original PDFs, all page renders/text, assessment, full/stored result and packet-eligibility responses are retained. Final checks verified original hashes, frozen-review timing, same-account access, candidate-source hashes and **30 distinct Drive IDs across the three completed batches**. Indexed Royal Mail source metadata and its direct-fetch 403 limitation are recorded in the independent review; no private report content was used in web queries.
+
+### UK-FIX-TODO-001 extension — seven further postcode concerns
+
+Page 1 identity blocks, one grouped report-level syntax concern each:
+
+- **AI-UK-021-01:** previous **VH5 1ID** has excluded inward I.
+- **AI-UK-022-01:** current **JK1 0SV** has inward V; previous **UK1 6CM** has inward C/M.
+- **AI-UK-024-01:** ordinary Cardiff previous **QQ8 6SR** starts with Q, excluded from ordinary postcode first position.
+- **AI-UK-026-01:** current **BI5 3BC** has inward C; ordinary outward second I also invalid. This is not the distinct overseas format BIQQ 1ZZ.
+- **AI-UK-027-01:** current **BT4 9CR** has inward C; previous **NN9 2WK** inward K.
+- **AI-UK-028-01:** current **XL0 1YP** starts with excluded ordinary X; previous **EF7 3UO** inward O and **ED0 6IT** inward I.
+- **AI-UK-030-01:** current **TF3 4OJ** inward O; previous **ZC6 2VW** inward V. The filename's clean label is not evidence of correctness.
+
+All seven actual extractions have empty identity_groups. Required correction remains country-scoped faithful address extraction and governed postcode determination/selection/packet. Preserve distinct address roles and legitimate special, overseas, nongeographic and historical formats; never turn a syntax discrepancy into identity theft or invent a replacement postcode.
+
+Added primary-source support for ordinary outward restrictions: [NHS government postcode data element](https://v2.datadictionary.nhs.uk/data_dictionary/data_field_notes/p/postcode_de.asp@shownav=0.html) directly read October 12, 2026, preserves the government standard and exceptions. It is historical postcode documentation, not a current credit-report statute. [Royal Mail sorting guide, March 2024](https://www.royalmailtechnical.com/rmt_docs/User_Guides_2024/Sorting_15032024.pdf) primary indexed text corroborates Q/V/X first-position restrictions; direct fetch returned 403, so full-PDF inspection is not claimed. The existing 2026–27 government source supports the inward alphabet. No postal allocation/locality lookup was completed for every otherwise well-shaped value; no whole-file compliance claim.
+
+### UK-FIX-TODO-002 extension — two further false chronology outputs
+
+UK-026 printed report and first-account update both **01/06/2026**; UK-028 both **02/06/2026**. CRP compares inconsistent interpretations of each identical pair and emits SOURCE_DATE_CHRONOLOGY_REVIEW. Source/raw values and actual issue IDs are retained. Under a consistent convention each pair is equal, so these are two more false-positive triggers of the existing cross-product defect. **Four cumulative instances:** UK-001, UK-002, UK-026 and UK-028. Required correlated-source interpretation controls must cover all four while preserving real distinct-date chronology concerns.
+
+### UK-FIX-TODO-003 extension — UK-025 court entry
+
+**AI-UK-025-01**, page 1: Manchester County Court Civil Judgment, **Filed 09/06/2017**, **Satisfied**, reference CCJ-6163174, **GBP 1,425**, report22/06/2026. Both legitimate numeric-date readings (9 June / 6 September 2017) are older than six years. **POTENTIAL** old-entry review: Filed is not established judgment-made/registration date. No entry-owned Last Reported date is printed, so the owner's fallback is unavailable; report preparation cannot manufacture it.
+
+Actual GENERAL_PUBLIC_RECORD still stores the date under printed JUDGMENT without typed publicRecord.filedDate/source custody. Type/status/reference/amount fields are not faithfully mapped; amountState is VERIFIED_ABSENT despite printed GBP 1,425. No consumer omission finding was emitted, and none is inferred. Required correction extends the original TODO to the **Court Or Source** table layout and GBP-prefixed amount, preserving original date meaning and UK six-year qualified review rather than applying AU's period or inferring definitive expiry.
+
+### UK-FIX-TODO-004 extension — UK-027 collection and fallback
+
+**AI-UK-027-02**, page 1: Clearpath Recoveries UK, original Harbor Retail Services, ****7212, **Assigned 08/01/2019**, **Last Reported 22/05/2020**, **Open**, **Balance GBP 2,860**, own remark Stale collection remains on file, report31/05/2026. Source-owned **22 May 2020** is the owner's determining fallback when applicable primary start cannot be established; more than six years have elapsed at the snapshot. Keep original default/category/start uncertainty, raw Assigned versus Last Reported meanings and **POTENTIAL** factual retention/current-status verification; no statutory anchor or extinguished-debt claim invented.
+
+Actual collection fields and remark survive native table extraction, but the old-collection review remains AU-scoped and supplies no GB concern. Required correction extends the original TODO to this layout and fallback example, preserving accurate date/source custody and category-specific applicability. Do not replace an established older original start with a later update.
+
+Controls: UK-023 bankruptcy entry from2024 plus Included in Bankruptcy zero account balance does not prove continued collection; UK-029 explicitly unavailable payment history does not establish a mandatory omission. Additional closure-date requests on UK-021/022/024/026/027/028/030 remain distinct from independent breach concerns. No new independent mixed-file, missing NI-format, automatic balance-over-limit or late-history finding.
+
+Cumulative after batch 3: **30 reports / 42 pages; 30 independent concerns, 11 detected, 19 missed; 4 false-positive chronology outputs; 16 additional qualified requests; 4 OPEN TODOs.** Misses comprise **15 postcode concerns, 2 old-court concerns, 2 old-collection concerns**. Two conservative confidence differences remain recorded, not counted as misses. **67 PDFs remain**, next ordinary-bureau file UK-Experian-UK-003.pdf. All corrective implementation/staging/production statuses remain NOT_STARTED / NOT_RUN / NOT_RUN for this UK register.
