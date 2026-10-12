@@ -12,7 +12,7 @@ const ocr = require('./ocr/local-ocr.cjs');
 const { acceptFact, loadPolicy } = require('../reported-fact-policy.cjs');
 const fdt = require('./fdt-recovery.cjs');
 const paymentHistoryGrid = require('./payment-history-grid.cjs');
-const { summaryTableLines } = require('./account-summary-table.cjs');
+const { summaryTableLines, reportConcernEvidence } = require('./account-summary-table.cjs');
 const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
 
@@ -622,6 +622,9 @@ function collectPages(model) {
       const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
       const summary = summaryTableLines(page);
       page.lines = summary === page.lines ? columnCaptionLines(page) : summary;
+      page.table_row_census = summary.table_row_census || [];
+      page.report_note_rows = summary.report_note_rows || [];
+      page.report_concern_evidence = reportConcernEvidence(page);
       pages.push(page);
     }
   }
@@ -1382,7 +1385,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     canonical.facts['account.amountRaw'] = dueAmount.raw;
     canonical.facts['account.amount'] = dueAmount.numeric;
     canonical.amountLabel = dueAmount.label;
-    if (dueAmount.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
+    const currency = /\b(AUD|CAD|USD|GBP|EUR)\b/i.exec(String(line.column_raw || dueAmount.raw));
+    if (currency) canonical.facts['account.currency'] = currency[1].toUpperCase();
+    else if (dueAmount.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
   }
   for (const [key, val] of Object.entries(amountsByLabel)) {
     const usable = trusted && val.numeric != null && decisiveWordsTrusted(line, val.raw) !== false;
@@ -1393,7 +1398,9 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
       resolved += 1;
       canonical.facts[key] = val.numeric;
       canonical.facts[`${key}Raw`] = val.raw;
-      if (val.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
+      const currency = /\b(AUD|CAD|USD|GBP|EUR)\b/i.exec(String(line.column_raw || val.raw));
+      if (currency) canonical.facts['account.currency'] = currency[1].toUpperCase();
+      else if (val.raw.indexOf('$') >= 0) canonical.facts['account.currency'] = 'USD_SYMBOL_PRINTED';
     }
   }
   const printedStatus = PAYMENT_HISTORY_HEADER_RE.test(String(line.text || '').toUpperCase())
@@ -1800,6 +1807,80 @@ function criminalChargeEvidence(lines, allTrusted, positivelyBounded) {
   };
 }
 
+function ownTableFact(record, field, raw, value, line, kind = 'text') {
+  const trusted = line.trusted === true && line.caption_location?.trusted !== false;
+  const loc = { ...lineLocation(line), trusted };
+  record.printed[field] = { label:line.caption_label, raw, normalized:trusted ? value : null,
+    state:trusted ? 'VALUE' : 'UNRESOLVED', status:trusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED',
+    reason:trusted ? null : 'UNTRUSTED_VALUE', location:loc, kind };
+  record.fact_sources = record.fact_sources || {};
+  record.fact_sources[field] = { raw_value:raw, normalized_value:trusted ? value : null,
+    source_field:line.caption_label, location:loc, caption_count:1, trusted,
+    status:trusted ? 'RESOLVED' : 'EXTRACTION_UNRESOLVED', reason:trusted ? null : 'UNTRUSTED_VALUE' };
+  if (trusted) record.facts[field] = value;
+}
+
+function retainOwnRemarks(record, raw, line) {
+  if (!raw) return;
+  ownTableFact(record, 'account.reportRemarks', raw, raw, line);
+  // Keep a consumer assertion as the report's wording, never as the furnished status.
+  const closure = /(?:^|[;.]\s*)(?:account(?:\s+was)?\s+)?((?:closed|cancell?ed)\b[^;.]*)/i.exec(raw);
+  if (closure) {
+    const statement = closure[1].trim();
+    ownTableFact(record, 'account.closureStatement', statement, statement, line);
+    if (line.trusted === true) record.report_status_statements = [{ raw_value:statement, meaning:statement,
+      source_field:line.caption_label, caption_count:1, trusted:true, location:lineLocation(line) }];
+  }
+}
+
+function appendTableFields(record, line) {
+  const raw = line.column_raw;
+  if (line.column_field === 'remarks') { retainOwnRemarks(record, raw, line); return; }
+  if (['text','original_creditor','inquiry_identity'].includes(line.column_field)) {
+    if (raw) ownTableFact(record, line.column_field === 'original_creditor' ? 'collection.originalCreditor'
+      : line.column_field === 'inquiry_identity' ? 'enquiry.organisation'
+        : line.caption_label === 'Enquiry Purpose' ? 'enquiry.purpose' : 'enquiry.authorized', raw, raw, line);
+    return;
+  }
+  const fields = collectLineFields(line, lineFacts(line, null), record.kind, null, line.trusted === true, null);
+  Object.assign(record.facts, fields.canonical.facts);
+  for (const [key, reading] of Object.entries(fields.printed)) record.printed[uniqueKey(record.printed,key)] = reading;
+  if (line.column_field === 'type' && raw) ownTableFact(record, record.kind === 'GENERAL_INQUIRY' ? 'enquiry.type' : 'account.type', raw, raw.toUpperCase(), line, 'account_type');
+  if (['identity','collection_identity'].includes(line.column_field) && raw) {
+    const identity = record.facts['account.reported_identity'];
+    if (identity) ownTableFact(record, 'account.display_name', raw, raw, line, 'account_identity');
+    if (record.kind === 'GENERAL_COLLECTION' && identity) ownTableFact(record, 'collection.agency', raw, raw, line, 'account_identity');
+  }
+  if (line.caption_label === 'Assigned Date') {
+    const date = normalizePrintedDate(raw, null);
+    if (date.normalized) ownTableFact(record, 'collection.assignedDate', raw, date.normalized, line, 'date');
+  }
+  if (line.trusted === true && Object.keys(record.facts).length) { record.status = 'RESOLVED'; record.reason = null; }
+}
+
+function attachTableNotes(pages, records) {
+  const associations = [];
+  const tokenOf = note => note.identity.raw.toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+  for (const page of pages) for (const note of page.report_note_rows || []) {
+    const token = tokenOf(note);
+    const candidates = note.identity.trusted ? records.filter(record => record.location?.page === page.page
+      && record.facts['account.reported_identity'] === token && record.kind !== 'GENERAL_INQUIRY') : [];
+    // One physical report/name must identify exactly one account. No nearest-row borrowing.
+    const ownNoteCount = (page.report_note_rows || []).filter(item=>tokenOf(item)===token).length;
+    if (candidates.length !== 1 || ownNoteCount !== 1) { associations.push({row_id:note.coverage.row_id,binding:'UNBOUND'}); continue; }
+    const target = candidates[0]; associations.push({row_id:note.coverage.row_id,binding:target.record_index});
+    const noteLine = (reading, label) => ({...reading.location, text:label+': '+reading.raw, caption_label:label,
+      caption_location:reading.location.caption_location, trusted:reading.trusted});
+    retainOwnRemarks(target, note.remarks.raw, noteLine(note.remarks, 'Remarks'));
+    if (note.history.raw && /^(?:[A-Z0-9*#.-]{1,4}\s*)+$/i.test(note.history.raw)) {
+      const tokens = note.history.raw.split(/\s+/);
+      ownTableFact(target, 'account.undatedPaymentHistory', note.history.raw,
+        {tokens,count:tokens.length,periods_printed:false,legend_printed:false}, noteLine(note.history,'Recent Payment History'));
+    }
+  }
+  return associations;
+}
+
 function buildRecords(pages, convention) {
   const records = [];
   let index = 0;
@@ -1889,6 +1970,16 @@ function buildRecords(pages, convention) {
     for (let lineIndex = 0; lineIndex < pairedLines.length; lineIndex += 1) {
       const originalLine = pairedLines[lineIndex];
       const originalText = String(originalLine.text || '').trim();
+      if (originalLine.table_row_id) {
+        if (originalLine.table_boundary) {
+          current = { record_index:++index,kind:originalLine.table_kind,kind_label:kindLabel(originalLine.table_kind),
+            status:'EXTRACTION_UNRESOLVED',reason:'NO_RESOLVED_OWN_TABLE_FIELDS',location:lineLocation(originalLine),
+            printed:{},facts:{},table_row_coverage:originalLine.table_row_coverage };
+          records.push(current);
+        }
+        if (current?.table_row_coverage?.row_id === originalLine.table_row_id) appendTableFields(current,originalLine);
+        continue;
+      }
       if (/^ACCOUNTS\s*-\s*[A-Z ]+(?:\s*\(CONTINUED\))?\s*$/i.test(originalText)) {
         accountSection = originalLine.trusted !== false;
         current = null;
@@ -1925,7 +2016,7 @@ function buildRecords(pages, convention) {
       if (COLLECTION_CONTINUED_RE.test(text)) { collectionSection = line.trusted !== false; continue; }
       // A bare report summary or personal-information heading ends the preceding
       // account. Dates in those sections cannot become that account's dates.
-      if (/^(?:SUMMARY|PERSONAL INFORMATION)\s*:?\s*$/i.test(text)) {
+      if (/^(?:SUMMARY|PERSONAL INFORMATION|CONSUMER IDENTIFICATION)\s*:?\s*$/i.test(text)) {
         current = null; collectionSection = false; nonAccountSection = true; continue;
       }
       if (/^(?:ACCOUNTS|ACCOUNT INFORMATION|TRADELINES|PUBLIC RECORDS?|INQUIRIES|ENQUIRIES|CREDIT SEARCHES|SUMMARY|PERSONAL INFORMATION|EMPLOYMENT|EMPLOYERS)\s*:?\s*$/i.test(text)) {
@@ -2500,7 +2591,9 @@ function extractionCoverage(pages, records, grids, gridBindings) {
     pages_examined: pages.length,
     records: entries,
     history_grids,
-    unbound_history_grids: history_grids.filter((grid) => grid.binding === 'UNBOUND').length
+    unbound_history_grids: history_grids.filter((grid) => grid.binding === 'UNBOUND').length,
+    table_row_census:pages.flatMap(page=>(page.table_row_census||[]).map(table=>({...table,
+      parsed_rows:table.section==='HISTORY_REMARKS'?undefined:records.filter(record=>table.row_ids.includes(record.table_row_coverage?.row_id)).length})))
   };
 }
 
@@ -2572,6 +2665,9 @@ function extract(model, opts) {
   const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
+  const table_note_associations = attachTableNotes(pages,records);
+  const report_concern_evidence = pages.flatMap(page => (page.report_concern_evidence || []).map(item => ({...item,
+    source_bureau:bureau,report_reference_date:reference_date})));
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
      roles from every page, so an identity discrepancy can be surfaced from the report itself. */
   const identity_groups = [];
@@ -2642,6 +2738,8 @@ function extract(model, opts) {
     convention_basis: null,
     reference_date,
     records,
+    report_concern_evidence,
+    table_note_associations,
     content_markers,
     skipped_pages: dedup.skipped,
     missing_pages: missingPages,

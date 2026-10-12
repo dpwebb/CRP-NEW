@@ -1,68 +1,207 @@
 'use strict';
 
-// Source-owned summary rows. A brand or a synthetic filename is never admission evidence.
-// Read only measured native words under this explicit header; detail cards without
-// an account identity cannot be attached to whichever summary row happened to be last.
-const COLUMNS = ['ACCOUNT / CREDITOR', 'TYPE', 'STATUS', 'BALANCE', 'OPENED', 'REPORTED'];
-const LABELS = ['Creditor', 'Account Type', 'Status', 'Balance', 'Opened', 'Reported Date'];
+// Measure source columns, then carry their own captions and cells. A country,
+// bureau brand, filename or neighbouring account never supplies a missing field.
 const norm = text => String(text || '').replace(/\s+/g, ' ').trim();
-function summaryTableLines(page) {
-  if (page.source !== 'NATIVE_TEXT' || !page.words?.length) return page.lines;
-  const heights = page.words.map(w => w.y1 - w.y0).filter(h => h > 0).sort((a,b) => a-b);
-  const height = heights[Math.floor(heights.length / 2)];
-  const rows = [];
-  for (const word of page.words.slice().sort((a,b) => a.y0-b.y0 || a.x0-b.x0)) {
-    if (![word.x0,word.x1,word.y0,word.y1].every(Number.isFinite) || word.y1-word.y0 > height*1.8) continue;
-    let row = rows.find(r => Math.abs(r.y-word.y0)<2);
-    if (!row) rows.push(row={y:word.y0, words:[]});
+const upper = text => norm(text).toUpperCase().replace(/:\s*$/, '');
+const box = words => words.length ? { x0:Math.min(...words.map(w=>w.x0)), y0:Math.min(...words.map(w=>w.y0)),
+  x1:Math.max(...words.map(w=>w.x1)), y1:Math.max(...words.map(w=>w.y1)) } : null;
+const caption = Object.freeze({
+  'ACCOUNT / CREDITOR':['identity','Creditor'], CREDITOR:['identity','Creditor'],
+  'CREDITOR NAME':['identity','Creditor'], 'ACCOUNT NAME':['identity','Creditor'],
+  ACCOUNT:['identifier','Account Number'], 'ACCOUNT NUMBER':['identifier','Account Number'],
+  TYPE:['type','Account Type'], 'ACCOUNT TYPE':['type','Account Type'],
+  STATUS:['status','Status'], 'ACCOUNT STATUS':['status','Status'],
+  BALANCE:['money','Balance'], 'CURRENT BALANCE':['money','Balance'],
+  LIMIT:['money','Credit Limit'], 'CREDIT LIMIT':['money','Credit Limit'],
+  PAYMENT:['money','Payment Amount'], 'MONTHLY PAYMENT':['money','Payment Amount'],
+  'PAYMENT AMOUNT':['money','Payment Amount'], 'PAST DUE':['money','Past Due'],
+  OPENED:['date','Opened Date'], 'OPENED DATE':['date','Opened Date'],
+  CLOSED:['date','Closed Date'], 'CLOSED DATE':['date','Closed Date'],
+  REPORTED:['date','Reported Date'], 'REPORTED DATE':['date','Reported Date'],
+  'LAST REPORTED':['date','Last Reported'], LAST:['date','Last Reported'],
+  ASSIGNED:['date','Assigned Date'], 'ASSIGNED DATE':['date','Assigned Date'],
+  AGENCY:['collection_identity','Collection Agency'], 'COLLECTION AGENCY':['collection_identity','Collection Agency'],
+  ORIGINAL:['original_creditor','Original Creditor'], 'ORIGINAL CREDITOR':['original_creditor','Original Creditor'],
+  SUBSCRIBER:['inquiry_identity','Enquiry Organisation'], DATE:['date','Enquiry Date'],
+  PURPOSE:['text','Enquiry Purpose'], AUTHORIZED:['text','Enquiry Authorized'],
+  AUTHORISED:['text','Enquiry Authorized'], REMARKS:['remarks','Remarks'],
+  'RECENT PAYMENT HISTORY':['history','Recent Payment History'], 'PAYMENT HISTORY':['history','Recent Payment History']
+});
+const SECTION = /^(?:CONSUMER IDENTIFICATION|PERSONAL INFORMATION|ACCOUNT SUMMARY|ACCOUNT DETAIL|PAYMENT HISTORY AND REMARKS|COLLECTIONS|PUBLIC RECORDS|INQUIRIES|ENQUIRIES)\s*$/i;
+
+function physicalRows(page) {
+  const heights=page.words.map(w=>w.y1-w.y0).filter(h=>h>0).sort((a,b)=>a-b), height=heights[Math.floor(heights.length/2)];
+  const rows=[];
+  for(const word of page.words.slice().sort((a,b)=>a.y0-b.y0||a.x0-b.x0)) {
+    if(![word.x0,word.x1,word.y0,word.y1].every(Number.isFinite)||word.y1-word.y0>height*1.8) continue;
+    let row=rows.find(r=>Math.abs(r.y-word.y0)<2);
+    if(!row) rows.push(row={y:word.y0,words:[]});
     row.words.push(word);
   }
-  const box = words => words.length ? {x0:Math.min(...words.map(w=>w.x0)),y0:Math.min(...words.map(w=>w.y0)),
-    x1:Math.max(...words.map(w=>w.x1)),y1:Math.max(...words.map(w=>w.y1))} : null;
-  for (const row of rows) {
-    row.words.sort((a,b)=>a.x0-b.x0);
-    row.chunks=[];
-    for (const word of row.words) {
+  rows.forEach((row,index)=>{
+    row.line=index+1; row.words.sort((a,b)=>a.x0-b.x0); row.chunks=[];
+    for(const word of row.words) {
       let chunk=row.chunks.at(-1);
-      if (!chunk || word.x0-chunk.at(-1).x1>12) row.chunks.push(chunk=[]);
+      if(!chunk||word.x0-chunk.at(-1).x1>12) row.chunks.push(chunk=[]);
       chunk.push(word);
     }
-  }
-  const headers=rows.filter(r=>r.chunks.length===6 && r.chunks.every((c,i)=>norm(c.map(w=>w.text).join(' ')).toUpperCase()===COLUMNS[i]));
-  if (!headers.length) return page.lines;
-  const replacements=new Map();
-  for (const header of headers) {
-    const columns=header.chunks.map(box);
-    const values=[];
-    for (const row of rows.filter(r=>r.y>header.y)) {
-      // Stop at the first non-account row, including a detail/section heading or wrapped identity.
-      const cells=columns.map((c,i)=>row.words.filter(w=>w.x0>=c.x0-2 && w.x1<(columns[i+1]?.x0 ?? c.x0+100)-2));
-      if (!cells[0].length || Math.abs(cells[0][0].x0-columns[0].x0)>5
-        || cells.slice(1).filter(c=>c.length).length<3 || row.y-(values.at(-1)?.y ?? header.y)>30) break;
-      values.push(row);
-      replacements.set(row,cells.map((words,i)=>({text:LABELS[i]+': '+norm(words.map(w=>w.text).join(' ')),
-        page:page.page,line:rows.indexOf(row)+1,source:'NATIVE_TEXT',confidence:null,
-        trusted:words.length>0 && words.every(w=>w.trusted!==false) && header.chunks[i].every(w=>w.trusted!==false),
-        measured_words:true,words:words.map((w,j)=>({...w,start:LABELS[i].length+2+words.slice(0,j).reduce((n,v)=>n+String(v.text).length+1,0),
-          end:LABELS[i].length+2+words.slice(0,j+1).reduce((n,v)=>n+String(v.text).length+1,0)-1})),bbox:box(words),
-        caption_label:LABELS[i],caption_location:{page:page.page,line:rows.indexOf(header)+1,source:'NATIVE_TEXT',
-          trusted:header.chunks[i].every(w=>w.trusted!==false),bbox:columns[i],
-          printed_caption:norm(header.chunks[i].map(w=>w.text).join(' '))},
-        column_field:i===0?'identity':i===1?'type':i===2?'status':i===3?'money':'date',
-        column_raw:norm(words.map(w=>w.text).join(' ')),column_missing:!words.length,...(i===0?{column_boundary:true}:{})})));
-    }
-    if (values.length) {
-      replacements.set(header,[]);
-      replacements.get(values.at(-1)).push({text:'',page:page.page,line:rows.indexOf(values.at(-1))+1,column_reset:true});
-    }
-  }
-  if (!replacements.size) return page.lines;
-  // Native physical rows are the source for this page, including all unrelated sections.
-  // This avoids fragmented pdftotext rows and diagonal watermark characters changing association.
-  return rows.flatMap((row,index)=>replacements.get(row) ?? [{text:norm(row.words.map(w=>w.text).join(' ')),
-    page:page.page,line:index+1,source:'NATIVE_TEXT',confidence:null,trusted:row.words.every(w=>w.trusted!==false),
-    measured_words:true,bbox:box(row.words),words:row.words.map((w,j)=>({...w,
-      start:row.words.slice(0,j).reduce((n,v)=>n+String(v.text).length+1,0),
-      end:row.words.slice(0,j+1).reduce((n,v)=>n+String(v.text).length+1,0)-1}))}]);
+  });
+  return rows;
 }
-module.exports={summaryTableLines};
+function location(page, words, line, heading) {
+  return {page:page.page,line,source:'NATIVE_TEXT',trusted:words.length>0&&words.every(w=>w.trusted!==false),bbox:box(words),
+    ...(heading?{caption_location:{page:page.page,line:heading.line,source:'NATIVE_TEXT',
+      trusted:heading.words.every(w=>w.trusted!==false),bbox:box(heading.words),printed_caption:heading.raw}}:{})};
+}
+function cellsOf(row, columns) {
+  return columns.map((c,i)=>row.words.filter(w=>w.x0>=c.x0-2&&w.x1<(columns[i+1]?.x0??Infinity)-2));
+}
+function schemaOf(columns) {
+  const names=columns.map(c=>c.kind), labels=columns.map(c=>c.label);
+  if(names.includes('inquiry_identity')&&labels.includes('Enquiry Date')&&labels.includes('Enquiry Purpose')) return 'INQUIRIES';
+  if(names.includes('collection_identity')&&labels.includes('Balance')&&labels.includes('Status')) return 'COLLECTIONS';
+  if(names.includes('identity')&&names.includes('history')&&names.includes('remarks')) return 'HISTORY_REMARKS';
+  if(names.includes('identity')&&labels.includes('Balance')&&labels.includes('Status')
+    &&(labels.includes('Opened Date')||labels.includes('Reported Date'))) return 'ACCOUNT_SUMMARY';
+  return null;
+}
+function headerColumns(row) {
+  const parts=[];
+  for(const chunk of row.chunks) for(let i=0;i<chunk.length;) {
+    let count=0;
+    for(let n=Math.min(5,chunk.length-i);n>0;n--) if(caption[upper(chunk.slice(i,i+n).map(w=>w.text).join(' '))]) {count=n;break;}
+    const words=chunk.slice(i,i+(count||1)), raw=norm(words.map(w=>w.text).join(' ')), reading=caption[upper(raw)];
+    parts.push({words,raw,x0:words[0].x0,line:row.line,kind:reading?.[0]||'ignored',label:reading?.[1]||raw});
+    i+=count||1;
+  }
+  return parts;
+}
+function rowIsStart(cells, columns, schema) {
+  const identity=cells[columns.findIndex(c=>['identity','collection_identity','inquiry_identity'].includes(c.kind))];
+  const values=cells.map((words,i)=>({text:norm(words.map(w=>w.text).join(' ')),kind:columns[i].kind}));
+  if(schema==='HISTORY_REMARKS') return Boolean(identity?.length)&&values.some(v=>v.kind==='history'&&/^(?:[A-Z0-9*#.-]{1,4}\s*)+$/i.test(v.text));
+  const decisive=values.filter(v=>v.text&&['date','money','identifier'].includes(v.kind));
+  return decisive.length>=(schema==='INQUIRIES'?1:2);
+}
+function rowLine(page, group, column, index, rowId, coverage) {
+  const words=group.cells[index], raw=norm(words.map(w=>w.text).join(' '));
+  const own=location(page,words,group.rows[0].line,column);
+  return {text:column.label+': '+raw,...own,confidence:null,measured_words:true,
+    trusted:own.trusted&&column.words.every(w=>w.trusted!==false),
+    words:words.map((w,j)=>({...w,start:column.label.length+2+words.slice(0,j).reduce((n,v)=>n+String(v.text).length+1,0),
+      end:column.label.length+2+words.slice(0,j+1).reduce((n,v)=>n+String(v.text).length+1,0)-1})),
+    caption_label:column.label,column_field:column.kind,column_raw:raw,column_missing:!words.length,
+    table_row_id:rowId,table_kind:coverage.section==='COLLECTIONS'?'GENERAL_COLLECTION':coverage.section==='INQUIRIES'?'GENERAL_INQUIRY':'GENERAL_ACCOUNT',
+    table_row_coverage:coverage,table_boundary:['identity','collection_identity','inquiry_identity'].includes(column.kind)};
+}
+
+function summaryTableLines(page) {
+  if(page.source!=='NATIVE_TEXT'||!page.words?.length) return page.lines;
+  const rows=physicalRows(page), replacements=new Map(), census=[], noteRows=[], accountNames=[];
+  for(let h=0;h<rows.length;h++) {
+    const header=rows[h];
+    if(header.chunks.length<3) continue;
+    const columns=headerColumns(header);
+    const schema=schemaOf(columns);
+    if(!schema||columns.some(c=>/[\d$]/.test(c.raw))||new Set(columns.filter(c=>c.kind!=='ignored').map(c=>c.label)).size!==columns.filter(c=>c.kind!=='ignored').length) continue;
+    // "Original / Creditor" and "Last / Reported" may occupy two header rows.
+    const headerRows=[header];
+    if(rows[h+1]&&rows[h+1].y-header.y<20) {
+      const tails=cellsOf(rows[h+1],columns);
+      if(tails.some(w=>w.length)&&tails.every((words,i)=>!words.length||caption[upper(columns[i].raw+' '+words.map(w=>w.text).join(' '))])) {
+        columns.forEach((column,i)=>{if(tails[i].length){column.words.push(...tails[i]);column.raw=norm(column.words.map(w=>w.text).join(' '));}});
+        headerRows.push(rows[++h]);
+      }
+    }
+    const groups=[]; let last=null, end=h;
+    for(let j=h+1;j<rows.length;j++) {
+      const row=rows[j], text=norm(row.words.map(w=>w.text).join(' '));
+      if(SECTION.test(text)||row.y-(last?.rows.at(-1).y??headerRows.at(-1).y)>35) break;
+      const cells=cellsOf(row,columns);
+      const identity=norm(cells[columns.findIndex(c=>c.kind==='identity')]?.map(w=>w.text).join(' ')||'').toUpperCase();
+      const starts=rowIsStart(cells,columns,schema)&&(schema!=='HISTORY_REMARKS'||!accountNames.length
+        ||accountNames.some(name=>name===identity||name.startsWith(identity+' ')));
+      if(starts) {last={rows:[row],cells};groups.push(last);end=j;continue;}
+      if(!last||row.y-last.rows.at(-1).y>19||cells.filter(w=>w.length).length===0
+        ||cells.some((words,i)=>words.length&&['date','money','identifier'].includes(columns[i].kind))) break;
+      last.rows.push(row);cells.forEach((words,i)=>last.cells[i].push(...words));end=j;
+    }
+    if(!groups.length) continue;
+    headerRows.forEach(row=>replacements.set(row,[]));
+    const tableId=`table-${page.page}-${header.line}`;
+    groups.forEach((group,index)=>{
+      const rowId=tableId+'-'+(index+1), values=group.cells.flat(), own=location(page,values,group.rows[0].line);
+      const field_presence=Object.fromEntries(columns.filter(c=>c.kind!=='ignored').map(c=>[c.label.replace(/ /g,'_').toLowerCase(),true]));
+      field_presence.closed_date=columns.some(c=>c.label==='Closed Date');
+      const complete=columns.every((c,i)=>c.kind==='ignored'||group.cells[i].length>0)
+        &&columns.every(c=>c.words.every(w=>w.trusted!==false))&&values.every(w=>w.trusted!==false);
+      const coverage={complete,section:schema,row_id:rowId,field_presence,location:own};
+      group.rows.forEach(row=>replacements.set(row,[]));
+      if(schema==='HISTORY_REMARKS') {
+        const read=kind=>{const i=columns.findIndex(c=>c.kind===kind);return {raw:norm(group.cells[i].map(w=>w.text).join(' ')),
+          location:location(page,group.cells[i],group.rows[0].line,columns[i]),trusted:group.cells[i].length>0&&group.cells[i].every(w=>w.trusted!==false)&&columns[i].words.every(w=>w.trusted!==false)};};
+        noteRows.push({identity:read('identity'),history:read('history'),remarks:read('remarks'),coverage});
+      } else {
+        if(schema==='ACCOUNT_SUMMARY') accountNames.push(norm(group.cells[columns.findIndex(c=>c.kind==='identity')].map(w=>w.text).join(' ')).toUpperCase());
+        const ordered=columns.map((c,i)=>({c,i})).filter(({c})=>c.kind!=='ignored')
+          .sort((a,b)=>Number(['identity','collection_identity','inquiry_identity'].includes(b.c.kind))-Number(['identity','collection_identity','inquiry_identity'].includes(a.c.kind)));
+        replacements.set(group.rows[0],ordered.map(({c,i})=>rowLine(page,group,c,i,rowId,coverage)));
+      }
+    });
+    const lastRow=groups.at(-1).rows.at(-1);
+    replacements.get(lastRow).push({text:'',page:page.page,line:lastRow.line,column_reset:true});
+    census.push({table_id:tableId,section:schema,visible_rows:groups.length,row_ids:groups.map((g,i)=>tableId+'-'+(i+1)),
+      location:location(page,headerRows.flatMap(r=>r.words),header.line),complete:groups.every(g=>g.rows.length>0)});
+    h=end;
+  }
+  if(!replacements.size) return page.lines;
+  const lines=rows.flatMap(row=>replacements.get(row)??[{text:norm(row.words.map(w=>w.text).join(' ')),
+    ...location(page,row.words,row.line),confidence:null,measured_words:true,
+    words:row.words.map((w,j)=>({...w,start:row.words.slice(0,j).reduce((n,v)=>n+String(v.text).length+1,0),
+      end:row.words.slice(0,j+1).reduce((n,v)=>n+String(v.text).length+1,0)-1}))}]);
+  lines.table_row_census=census;lines.report_note_rows=noteRows;
+  return lines;
+}
+
+// This new structure retains locality/state/postcode and identifier-field presence
+// only. Street addresses, names and TFN digits are never copied into it.
+function reportConcernEvidence(page) {
+  if(page.source!=='NATIVE_TEXT'||!page.words?.length) return [];
+  const rows=physicalRows(page), result=[], headings=[];
+  rows.forEach((row,index)=>row.chunks.forEach(words=>{
+    const label=upper(words.map(w=>w.text).join(' '));
+    if(/^(?:CURRENT ADDRESS|PREVIOUS ADDRESS|TAX FILE NUMBER)$/.test(label)) headings.push({label,words,index,x0:words[0].x0});
+  }));
+  for(const heading of headings) {
+    const next=rows.slice(heading.index+1).find(row=>row.words.some(w=>w.x0>=heading.x0-2&&w.x0<=heading.x0+8));
+    if(!next||next.y-rows[heading.index].y>24) continue;
+    const right=rows[heading.index].chunks.find(words=>words[0].x0>heading.x0+12)?.[0].x0??Infinity;
+    const values=[];
+    for(const row of rows.slice(rows.indexOf(next))) {
+      if(row.y-(values.length?values.at(-1).y:next.y)>20) break;
+      const words=row.words.filter(w=>w.x0>=heading.x0-2&&w.x1<right-2);
+      if(!words.length||row!==next&&row.chunks.some(chunk=>chunk[0].x0>=heading.x0-2&&/^(?:CONTACT|DATE OF BIRTH|TAX FILE NUMBER|PREVIOUS ADDRESS|CURRENT ADDRESS|ALIASES|NAME|ACCOUNT SUMMARY)$/.test(upper(chunk.map(w=>w.text).join(' '))))) break;
+      values.push({words,y:row.y,line:row.line});
+      if(heading.label==='TAX FILE NUMBER') break;
+    }
+    const words=values.flatMap(v=>v.words), text=norm(words.map(w=>w.text).join(' '));
+    const own=location(page,words,next.line,{words:heading.words,line:rows[heading.index].line,raw:heading.label});
+    const trusted=own.trusted&&heading.words.every(w=>w.trusted!==false);
+    if(!trusted) continue;
+    if(heading.label==='TAX FILE NUMBER') {
+      if(/^[X*#\s.-]+\d{0,4}$/i.test(text)) result.push({kind:'IDENTIFIER_FIELD',identifier_type:'TFN',masked:true,
+        raw_value:'Tax file number shown (masked)',source_field:'Tax File Number',location:own,trusted:true});
+      continue;
+    }
+    const re=/,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)\s+(\d{4})\b/g;
+    let match;
+    while((match=re.exec(text))) {
+      const components={locality:norm(match[1]),state:match[2],postcode:match[3]};
+      result.push({kind:'ADDRESS_COMPONENTS',role:heading.label==='CURRENT ADDRESS'?'CURRENT':'PREVIOUS',components,
+        raw_value:`${components.locality}, ${components.state} ${components.postcode}`,source_field:heading.label==='CURRENT ADDRESS'?'Current Address':'Previous Address',location:own,trusted:true});
+    }
+  }
+  return result;
+}
+module.exports={summaryTableLines,reportConcernEvidence};
