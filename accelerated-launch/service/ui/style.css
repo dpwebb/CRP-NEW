@@ -222,7 +222,7 @@ body.auth-entry footer { width:100%; max-width:720px; margin:auto auto 0; paddin
   .steps[popover]:popover-open { top:152px; left:20px; width:190px; }
 }
 @media (max-width:1000px) {
-  .sidebar { position:relative; padding:16px 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; }
+  .sidebar { position:relative; width:auto; padding:16px 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; }
   .shell { margin:0; }
   .workspace-label, .sidebar-bottom { display:none; }
   .brand { font-size:15px; }
