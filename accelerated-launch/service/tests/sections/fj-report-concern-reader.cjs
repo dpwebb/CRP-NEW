@@ -3,6 +3,8 @@ const fs=require('node:fs');
 const path=require('node:path');
 const formats=require('../../formats.cjs');
 const {sourceForField}=require('../../report-fact-sources.cjs');
+const assembly=require('../../multi-file-assembly.cjs');
+const concerns=require('../../report-concerns.cjs');
 const {buildWordPdf}=require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 let sequence=0;
 
@@ -65,6 +67,31 @@ function readFixture(t,options={},mutate) {
   const file=path.join(t.dataDir,'report-concern-reader-'+(++sequence)+'.pdf');fs.writeFileSync(file,buildFixture(options));
   const model=formats.buildPdfDocumentModel(file);if(mutate)mutate(model);
   return formats.extractWithSharedAdapter(model,{mode:'REPORT',country:options.country||'AU'});
+}
+function readSegmentFixture(t,options={},mutate) {
+  function report(bureau,date,offset=0,second=false) {
+    const words=[], put=(text,y)=>{if(text)words.push({text,x:30,y:y+offset});};
+    put(bureau+' Consumer Credit Report - FICTIONAL TEST FIXTURE',20);
+    put(date?'Prepared Date: '+date:'No report date printed',40);
+    put('CONSUMER IDENTIFICATION',65);put('CURRENT ADDRESS',85);
+    put(second?'29 Fictional Lane, Canberra, VIC 5841, Australia':'19 Example Lane, Melbourne, ACT 7728, Australia',100);
+    put('TAX FILE NUMBER',120);put('XXX XXX 9876',135);
+    if(options.crossBoundary&&!second)put('CURRENT ADDRESS',195);
+    return words;
+  }
+  const secondBureau=options.ambiguous?'Equifax Experian':options.sameBureau?'Equifax':'Experian';
+  const secondDate=options.undatedSecond?null:'07/07/2026';
+  const pages=options.samePage?[{words:[...report('Equifax','06/06/2026'),...report(secondBureau,secondDate,190,true)]}]
+    :[{words:report('Equifax','06/06/2026')},{words:report(secondBureau,secondDate,0,true)}];
+  if(options.crossBoundary)pages[0].words.push({text:'18 Boundary Lane, Melbourne, ACT 7728, Australia',x:300,y:210});
+  const file=path.join(t.dataDir,'report-concern-segments-'+(++sequence)+'.pdf');
+  fs.writeFileSync(file,buildWordPdf(pages,{page_size:{width:600,height:800},font_size:8,
+    producer:'Fictional source-segment custody fixture',creator:'Fictional source-segment custody fixture'}));
+  const model=formats.buildPdfDocumentModel(file);if(mutate)mutate(model);
+  return formats.extractWithSharedAdapter(model,{mode:'REPORT',country:'AU'});
+}
+function assembledExtraction(extraction,fileId='report-file') {
+  return assembly.assemble([{file_id:fileId,stored_sha256:fileId,extraction}]).extraction;
 }
 async function run(t,check) {
   const x=readFixture(t), accounts=x.records.filter(r=>r.kind==='GENERAL_ACCOUNT'), collection=x.records.find(r=>r.kind==='GENERAL_COLLECTION');
@@ -133,6 +160,54 @@ async function run(t,check) {
   check.ok(!JSON.stringify(unmasked.report_concern_evidence).includes('123 456 789'),
     'unmasked identifier digits never enter the new concern evidence');
   check.equal(benign.records.find(r=>r.kind==='GENERAL_COLLECTION').facts['account.balance'],0,'paid-zero collection is preserved as benign source evidence');
+  for(const options of [{},{samePage:true},{sameBureau:true},{samePage:true,sameBureau:true}]) {
+    const segmented=readSegmentFixture(t,options), readings=segmented.report_concern_evidence;
+    check.equal(readings.length,4,'two source reports retain both owned address and identifier fields '+JSON.stringify(options));
+    check.deepEqual(readings.map(item=>item.source_bureau),['Equifax','Equifax',options.sameBureau?'Equifax':'Experian',options.sameBureau?'Equifax':'Experian'],'each reading keeps its own source bureau');
+    check.deepEqual(readings.map(item=>item.report_reference_date.normalized),['2026-06-06','2026-06-06','2026-07-07','2026-07-07'],'each field keeps its own report date even when document-level dates disagree');
+    check.deepEqual(readings.map(item=>item.report_segment_id),['segment-1','segment-1','segment-2','segment-2'],'field association identifies the correct source segment');
+    const before=JSON.stringify(segmented), assembled=assembledExtraction(segmented);
+    check.deepEqual(assembled.report_concern_evidence.map(item=>item.source_bureau),readings.map(item=>item.source_bureau),'assembly preserves field-specific bureau instead of document-global bureau');
+    check.deepEqual(assembled.report_concern_evidence.map(item=>item.report_reference_date.normalized),readings.map(item=>item.report_reference_date.normalized),'assembly preserves own report dates');
+    check.deepEqual(assembled.report_concern_evidence.map(item=>item.report_segment_id),['report-file:segment-1','report-file:segment-1','report-file:segment-2','report-file:segment-2'],'assembly namespaces each source segment to its uploaded file');
+    check.ok(assembled.report_concern_evidence.every(item=>item.location.file_id==='report-file'&&item.report_reference_date.location.file_id==='report-file'),'own field and own report-date locations receive exact file custody');
+    check.equal(JSON.stringify(segmented),before,'assembly does not mutate persisted per-file concern readings');
+    const surfaced=concerns.concernsFor(assembled,{country:'AU',region:'AU-ACT'});
+    check.deepEqual(surfaced.map(issue=>issue.report_identity.reference_date).sort(),['2026-06-06','2026-06-06','2026-07-07','2026-07-07'],'consumer violations and concerns keep their source-specific report dates');
+  }
+  const undated=assembledExtraction(readSegmentFixture(t,{undatedSecond:true}));
+  check.ok(undated.report_concern_evidence.filter(item=>item.report_segment_id.endsWith('segment-2')).every(item=>item.report_reference_date.normalized==null),'undated second report never borrows first report date');
+  check.ok(concerns.concernsFor(undated,{country:'AU',region:'AU-ACT'}).filter(issue=>issue.report_identity.segment_id.endsWith('segment-2')).every(issue=>issue.report_identity.reference_date==null),'date-free own segment custody stays date-free in consumer issue identity');
+  const ambiguous=readSegmentFixture(t,{samePage:true,ambiguous:true});
+  check.equal(ambiguous.report_concern_evidence.length,2,'ambiguous second bureau boundary withholds only its concern associations');
+  check.ok(ambiguous.report_concern_associations.some(item=>item.state==='UNRESOLVED'),'withheld segment associations remain internal diagnostics');
+  check.equal(concerns.concernsFor(assembledExtraction(ambiguous),{country:'AU',region:'AU-ACT'}).length,2,'assembly cannot restore ambiguous second-report concerns using global identity');
+  const untrustedBoundary=readSegmentFixture(t,{samePage:true},model=>{for(const word of model.pages[0].word_boxes)if(word.text==='Experian')word.trusted=false;});
+  check.equal(untrustedBoundary.report_concern_evidence.length,2,'untrusted second report title never establishes bureau association');
+  const crossing=readSegmentFixture(t,{samePage:true,crossBoundary:true});
+  check.equal(crossing.report_concern_evidence.length,4,'field heading before a boundary cannot claim a value after the boundary');
+  check.ok(crossing.report_concern_associations.some(item=>item.state==='UNRESOLVED'),'cross-boundary field association is retained as an internal refusal');
+  const own=readSegmentFixture(t);
+  for(const [label,change] of [
+    ['wrong own date',item=>{item.report_reference_date.normalized='2026-08-08';item.report_reference_date.normalized_value='2026-08-08';}],
+    ['wrong own bureau',item=>{item.source_bureau='TransUnion';}],
+    ['wrong source segment',item=>{item.report_segment_id='segment-2';}],
+    ['foreign date file',item=>{item.report_reference_date.location.file_id='foreign-file';}],
+    ['foreign field file',item=>{item.location.file_id='foreign-file';}],
+    ['foreign header file',item=>{item.location.caption_location.file_id='foreign-file';}],
+    ['foreign source page',item=>{item.location.page=3;item.location.caption_location.page=3;}],
+    ['mismatched header page',item=>{item.location.caption_location.page=2;}],
+    ['missing field location',item=>{delete item.location;}]
+  ]) {
+    const mismatch=structuredClone(own);change(mismatch.report_concern_evidence[0]);
+    const assembled=assembledExtraction(mismatch);
+    check.equal(assembled.report_concern_evidence.length,3,label+' withholds that association without rewriting source');
+    check.equal(concerns.concernsFor(assembled,{country:'AU',region:'AU-ACT'}).length,3,label+' cannot create a source-borrowed consumer issue');
+    check.ok(assembled.report_concern_associations.some(item=>item.reason==='REPORT_CONCERN_SOURCE_ASSOCIATION_MISMATCH'),label+' remains internally recorded');
+  }
+  const twoFiles=assembly.assemble([{file_id:'one',stored_sha256:'one',extraction:own},
+    {file_id:'two',stored_sha256:'two',extraction:readSegmentFixture(t,{sameBureau:true})}]).extraction;
+  check.equal(new Set(twoFiles.report_concern_evidence.map(item=>item.report_segment_id)).size,4,'identical local segment IDs in two uploads retain four distinct file-bound identities');
   return {scope:'fictional native nine-column account/collection/history/identification/inquiry layout',
     source_rows:7,source_remarks:5,undated_histories:4,privacy_redacted_identification:true,shipped_six_column_regression_required:true};
 }

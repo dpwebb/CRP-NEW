@@ -153,6 +153,39 @@ function mergeCrossFileContinuations(records) {
 }
 
 /** Assemble the admitted files of a case into one extraction. */
+function concernReferenceIdentity(reference) {
+  if (!reference) return null;
+  const loc = reference.location || {};
+  return JSON.stringify({status:reference.status,raw:reference.raw_value ?? reference.raw,
+    normalized:reference.normalized_value ?? reference.normalized,reason:reference.reason,
+    source_field:reference.source_field,precision:reference.precision,
+    location:{page:loc.page,line:loc.line,source:loc.source,trusted:loc.trusted,bbox:loc.bbox,
+      x0:loc.x0,y0:loc.y0,x1:loc.x1,y1:loc.y1}});
+}
+
+// Preserve the reader's field-specific report identity. A file-wide bureau/date
+// is unsuitable when the uploaded PDF contains several source reports.
+function annotateReportConcern(reading, fileRow) {
+  if (!reading || !reading.location || reading.trusted !== true || reading.location.trusted !== true
+    || reading.location.caption_location?.page !== reading.location.page
+    || reading.location.caption_location?.trusted !== true) return null;
+  const segment = (fileRow.extraction.report_segments || []).find(own=>own.segment_id===reading.report_segment_id);
+  const foreign = reading.source_file_id && reading.source_file_id !== fileRow.file_id
+    || [reading.location,reading.location?.caption_location,reading.report_reference_date?.location]
+      .some(loc=>loc?.file_id && loc.file_id !== fileRow.file_id);
+  if (!segment || segment.ambiguous || !segment.bureau || foreign || reading.source_bureau !== segment.bureau
+    || Array.isArray(segment.source_pages) && !segment.source_pages.includes(reading.location.page)
+    || !reading.report_reference_date || concernReferenceIdentity(reading.report_reference_date)!==concernReferenceIdentity(segment.reference_date)) return null;
+  const own = JSON.parse(JSON.stringify(reading));
+  own.source_file_id = fileRow.file_id;
+  own.source_report_segment_id = fileRow.file_id + ':' + reading.report_segment_id;
+  own.report_segment_id = own.source_report_segment_id;
+  own.location.file_id = fileRow.file_id;
+  if (own.location.caption_location) own.location.caption_location.file_id = fileRow.file_id;
+  if (own.report_reference_date.location) own.report_reference_date.location.file_id = fileRow.file_id;
+  return own;
+}
+
 function assemble(files) {
   const admitted = (files || []).filter(isAdmitted);
   if (!admitted.length) {
@@ -352,17 +385,22 @@ function assemble(files) {
     });
   }
 
+  const concernAssociations = unique.flatMap(file=>(file.extraction.report_concern_associations || []).map(item=>({
+    ...item,source_file_id:file.file_id,location:{...(item.location || {}),file_id:file.file_id}})));
+  const concernEvidence = unique.flatMap(file=>(file.extraction.report_concern_evidence || []).flatMap(reading=>{
+    const own = annotateReportConcern(reading,file);
+    if (own) return [own];
+    concernAssociations.push({kind:reading.kind,source_file_id:file.file_id,
+      location:{...(reading.location || {}),file_id:file.file_id},state:'UNRESOLVED',
+      reason:'REPORT_CONCERN_SOURCE_ASSOCIATION_MISMATCH'});
+    return [];
+  }));
   const extraction = Object.assign({}, base, {
     records: mergedRecords,
     // These are completed source readings, kept with their own uploaded file.
     // A report-level identity concern must never inherit a neighbouring file's identity.
-    report_concern_evidence: unique.flatMap(file => (file.extraction.report_concern_evidence || []).map(reading => ({
-      ...reading,
-      source_file_id: file.file_id,
-      source_bureau: file.extraction.bureau || null,
-      report_reference_date: file.extraction.reference_date || null,
-      location: { ...(reading.location || {}), file_id: file.file_id }
-    }))),
+    report_concern_evidence: concernEvidence,
+    report_concern_associations:concernAssociations,
     extraction_coverage: base.extraction_coverage ? {
       ...base.extraction_coverage,
       table_row_census: unique.flatMap(file => (file.extraction.extraction_coverage?.table_row_census || []).map(table => ({

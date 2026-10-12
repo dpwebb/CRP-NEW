@@ -2606,6 +2606,48 @@ function refused(result, outcome, reason) {
   });
 }
 
+// Report-level readings have no account record to carry their custody. Bind the
+// measured field heading AND value to one source segment before surfacing them.
+// A physical page shared by reports cannot lend its global bureau or date.
+function bindReportConcernEvidence(pages, segments) {
+  const evidence = [], associations = [];
+  const finiteBox = value => value && ['x0','y0','x1','y1'].every(key=>Number.isFinite(value[key]));
+  for (const page of pages) for (const reading of page.report_concern_evidence || []) {
+    const valueBox = reading.location?.bbox, headingBox = reading.location?.caption_location?.bbox;
+    const sourceBoxes = [valueBox,headingBox];
+    const candidates = reading.trusted === true && reading.location?.trusted === true
+      && reading.location.caption_location?.trusted === true
+      && reading.location.caption_location.page === reading.location.page
+      && sourceBoxes.every(finiteBox) ? segments.map((segment,index)=>({segment,index})).filter(({segment})=>
+        segment.pages.some(ownPage=>{
+          if (ownPage.page !== reading.location.page) return false;
+          const boxes = ownPage.lines.map(line=>line.bbox).filter(finiteBox);
+          if (!boxes.length) return false;
+          const top = Math.min(...boxes.map(bounds=>bounds.y0)), bottom = Math.max(...boxes.map(bounds=>bounds.y1));
+          return sourceBoxes.every(bounds=>bounds.y0>=top-1 && bounds.y1<=bottom+1);
+        })) : [];
+    const own = candidates.length === 1 && candidates[0];
+    const ownLines = own ? own.segment.pages.flatMap(ownPage=>ownPage.lines) : [];
+    const boundaries = ownLines.filter(line=>bureauSectionOf(line.text)===own?.segment.bureau);
+    const bureauTrusted = boundaries.length ? boundaries.some(line=>line.trusted===true&&finiteBox(line.bbox))
+      : segments.length===1&&ownLines.some(line=>line.trusted===true&&finiteBox(line.bbox)
+        &&/^\s*(?:EQUIFAX|EXPERIAN|TRANS\s?UNION|ILLION)\b/i.test(line.text)&&bureauOf(line.text)===own?.segment.bureau)
+        || segments.length===1&&!boundaries.length&&own?.segment.pages.some(ownPage=>(ownPage.native_words || []).some(word=>
+          word.trusted!==false&&finiteBox(word)&&/^(?:EQUIFAX|EXPERIAN|TRANSUNION|ILLION)$/i.test(word.text)
+          &&bureauOf(word.text)===own.segment.bureau));
+    if (!own || own.segment.ambiguous || !own.segment.bureau || !bureauTrusted) {
+      associations.push({kind:reading.kind,location:reading.location,state:'UNRESOLVED',
+        reason:'AMBIGUOUS_OR_UNMEASURED_REPORT_CONCERN_SEGMENT'});
+      continue;
+    }
+    const segmentId = 'segment-' + (own.index + 1);
+    evidence.push({...reading,source_bureau:own.segment.bureau,report_segment_id:segmentId,
+      report_reference_date:JSON.parse(JSON.stringify(own.segment.reference_date))});
+    associations.push({kind:reading.kind,location:reading.location,state:'BOUND',report_segment_id:segmentId});
+  }
+  return {evidence,associations};
+}
+
 function extract(model, opts) {
   const o = opts || {};
   const det = detect(model);
@@ -2666,8 +2708,8 @@ function extract(model, opts) {
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
   const table_note_associations = attachTableNotes(pages,records);
-  const report_concern_evidence = pages.flatMap(page => (page.report_concern_evidence || []).map(item => ({...item,
-    source_bureau:bureau,report_reference_date:reference_date})));
+  const concernBindings = bindReportConcernEvidence(pages,segments);
+  const report_concern_evidence = concernBindings.evidence;
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
      roles from every page, so an identity discrepancy can be surfaced from the report itself. */
   const identity_groups = [];
@@ -2732,13 +2774,15 @@ function extract(model, opts) {
     reason: det.reason,
     bureau,
     bureaus,
-    report_segments: segments.map((s, i) => ({ segment_id: 'segment-' + (i + 1), bureau: s.bureau, reference_date: s.reference_date })),
+    report_segments: segments.map((s, i) => ({ segment_id: 'segment-' + (i + 1), bureau: s.bureau,
+      ambiguous:Boolean(s.ambiguous),source_pages:[...new Set(s.pages.map(page=>page.page))],reference_date: s.reference_date })),
     markers,
     convention: null,
     convention_basis: null,
     reference_date,
     records,
     report_concern_evidence,
+    report_concern_associations:concernBindings.associations,
     table_note_associations,
     content_markers,
     skipped_pages: dedup.skipped,
