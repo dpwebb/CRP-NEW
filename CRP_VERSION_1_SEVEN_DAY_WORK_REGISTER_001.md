@@ -2,6 +2,13 @@
 
 # Version 1 seven-day work register
 
+## October 12 owner-authorized AU and UK fix-list implementation
+
+Owner requested implementation of both completed comparison registers. Root owns the isolated `codex/au-uk-fixlists-20261012` candidate based on `7a4cf4b`, its shared readers/checks/packet integration and validation; no other writers assigned. Preserve the mixed primary checkout and historical source evidence. Scope: all 18 AU TODOs and six UK TODOs, using the same 104 AU and 97 UK originals and existing full-access account. All 24 corrections are IMPLEMENTED locally. Final full regression 15,750/0/0, 162 completed sections, zero source drift/unrun; all 270 frozen concerns detected and eligible in read-only original-corpus projections. Ten original HTTP cycles this turn and final-source fictional UK approved packet verified. Source-owned primary clocks and qualified Last Reported fallback retained. Separate additional-output/confidence reviews and full-corpus HTTP journeys are not silently closed. See `CRP_AU_UK_FIXLIST_LOCAL_IMPLEMENTATION_2026_10_12.md` and both comparison registers. Local only; staging/production verification NOT RUN and deployment, provider purchases and external dispatch remain unauthorized.
+
+
+Committed local candidate: `0791543b11ede7703e241ff10c2296e059f3601e`. Enhanced local listener: `http://127.0.0.1:8890/`, same full-access credentials; actual login/entitlement and byte continuity verified privately.
+
 ## October 10 private Creator-led violation expansion
 
 Owner-authorized scope expansion under the October 10 amendment to `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. This private batch does not change the deployed production release. The first measured report is `transunion-ca_ca_ns_debt_missing_last_payment_date_seed-4100.pdf`. It has two separate accounts, one without a Last Payment Date caption, and both with a Reported Date later than the report date. The first omission is under seed review because this current, good-standing account and the report's own printed fields do not establish a required last-payment date. The two future Reported Dates are source-linked date conflicts and now reach selectable violations and an approved editable packet through the general reader. Preserve the initial report-specific internal activity log in `accelerated-launch/service/out/creator-audit/`.
