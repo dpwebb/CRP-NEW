@@ -1,0 +1,12 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "manifest_digest": "9799FD768CB7CDFA15CB128D8D61895D800FFC9E3B4E89F6037F08BB482FC9A3",
+  "git_head": "6e8c85e29a815f6c0819056e8e9bc307b80900f5",
+  "files": 147,
+  "verification_sha256": "251A47CF9CA31B3313629C166CF4DF5624DF20CEC9DAF9BED1F15D14AEB0EC78",
+  "verification_mode": "FRESH_FULL",
+  "archive_sha256": "B7080DF18E9F95FA29AA8E69C55892053617F8850E0F3EFC7B5E7F0E0D84E1FF",
+  "archive": "C:\\Users\\webbd\\.codex\\worktrees\\credit-news-release\\CRP-NEW\\accelerated-launch\\service\\out\\news-release\\candidate\\candidate.tar.gz",
+  "created_at": "2026-10-12T01:15:49.131Z",
+  "production_ready": false
+}

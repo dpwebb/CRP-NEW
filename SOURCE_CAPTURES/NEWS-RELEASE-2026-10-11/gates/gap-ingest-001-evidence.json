@@ -1,0 +1,1758 @@
+{
+  "identity": {
+    "build_id": "crp-v1-9799fd768cb7cdfa",
+    "served_build_id": "crp-v1-9799fd768cb7cdfa",
+    "local_only": false
+  },
+  "passed": true,
+  "measured_at": "2026-10-12T01:15:28.904Z",
+  "scope": "GAP-INGEST-001 image-set coherence. Every admitted page of the same report contributes to one coherent assessment in upload order; an exact duplicate is skipped rather than double-counted; distinct bureau reports and reference dates stay in separate groups with their own provenance; and no record borrows a fact from another file. Implementation is closed by ah-multifile-assessment + bb-gap-ingest-001; staging verification is pending.",
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "bb-gap-ingest-001",
+        "passed": true,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "two pages contribute one record each in upload order; a later-page fact is named in the generated report; reordering preserves the same evaluated facts/checks; a duplicate adds no record or finding; distinct bureaus and conflicting readings stay separate; the real endpoints upload, evaluate, view and isolate the assembled case",
+        "measured": "39/39 assertions pass: files_included 2, records [1,2], both printed dates reach the consumer result, later-page date 07/15/2026 named in the report, reordering keeps the same examined dates + record facts + checks_performed, duplicate adds no checks or examined facts, two bureau groups, conflicting readings stay two records, HTTP upload 201 + evaluate 201 + view 200 (two files, both facts) + cross-account 403"
+      },
+      {
+        "id": "ah-multifile-assessment",
+        "passed": true,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "the shared assembly foundation: both files examined, no fact borrowing, exact duplicate not double-counted, distinct bureaus and dates kept apart, missing pages flagged only when numbering is printed",
+        "measured": "66/66 assertions pass across the unit assembly cases (two files, duplicate, mixed bureaus, two dates, dedupe pages, missing pages, continuation merge) and an HTTP upload + evaluate journey with both assembled file_ids recorded"
+      },
+      {
+        "id": "production-final-freeze:ah-multifile-assessment",
+        "passed": true,
+        "assertions": 66,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "66 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      },
+      {
+        "id": "production-final-freeze:bb-gap-ingest-001",
+        "passed": true,
+        "assertions": 39,
+        "criteria": [
+          "upload_order_preserved",
+          "duplicate_handling",
+          "report_boundary"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "39 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/multi-file-assembly.cjs",
+        "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+      },
+      {
+        "file": "accelerated-launch/service/general-intake.cjs",
+        "sha256": "1537b352db4602b3cab5e3fee4739f75c2822e09c33e0c55d082c86207b7b839"
+      },
+      {
+        "file": "accelerated-launch/service/journey.cjs",
+        "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+        "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+        "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+        "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "VERIFIED",
+    "build_id": "crp-v1-9799fd768cb7cdfa",
+    "served_build_id": "crp-v1-9799fd768cb7cdfa",
+    "recorded_at": "2026-10-12T01:24:55.000Z",
+    "evidence_refs": [
+      "news-hosted-2026-10-11/measurements.json"
+    ],
+    "method": "Actual source-matched isolated hosted candidate HTTP, genuine Sandbox provider event, consumer packet review/approval/download, own-history comparison and cleanup; exact regional behavioral loops reused"
+  },
+  "criteria": {
+    "upload_order_preserved": {
+      "passed": true,
+      "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "native_order",
+            "expected": "Actual phase1 checks: NATIVE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "NATIVE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "64c920024593f16ef8ecc65132bf320b",
+                  "4c24714fb1c52fad664af6ea3dc0423d"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "image_order",
+            "expected": "Actual phase1 checks: IMAGE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "IMAGE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "cabc23cfbb9cd63883e77b64da77542e",
+                  "5e45360c5f9b178c037e04e286ea9e6e"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ah-multifile-assessment",
+            "assertions": 66,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "unit": {
+                "files_examined": 2,
+                "records": 2,
+                "duplicate_skipped": 1,
+                "bureau_groups": 2
+              },
+              "journey": {
+                "files_uploaded": 2,
+                "evaluated": 201,
+                "file_ids": [
+                  "1abcaebb7f8f6c851e43894fc0a2d22f",
+                  "a772265ba9866de5bab07e271cca8215"
+                ],
+                "examined": 4
+              }
+            }
+          },
+          {
+            "id": "bb-gap-ingest-001",
+            "assertions": 39,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "upload_order_preserved": true,
+              "duplicate_handling": true,
+              "report_boundary": true,
+              "generated_report": true,
+              "reorder_preserves_facts": true,
+              "duplicate_no_duplicate_findings": true,
+              "account_isolation": true,
+              "http_view_path": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "duplicate_handling": {
+      "passed": true,
+      "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "exact_duplicates",
+            "expected": "Actual phase1 checks: NATIVE_ORDER_duplicate_accounting, IMAGE_ORDER_duplicate_accounting",
+            "measured": [
+              {
+                "id": "NATIVE_ORDER_duplicate_accounting",
+                "passed": true,
+                "measured": {
+                  "records": 2,
+                  "assembly": {
+                    "files_examined": 3,
+                    "files_included": 2,
+                    "duplicate_files_skipped": 1,
+                    "report_groups": [
+                      {
+                        "bureau": "Equifax",
+                        "presentation_id": "GENERAL-BUREAU-REPORT",
+                        "reference_date": {
+                          "raw": "June 12, 2026",
+                          "normalized": "2026-06-12",
+                          "status": "RESOLVED"
+                        },
+                        "record_count": 2,
+                        "files_in_group": 2
+                      }
+                    ],
+                    "distinct_report_dates": [
+                      "2026-06-12"
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "IMAGE_ORDER_duplicate_accounting",
+                "passed": true,
+                "measured": {
+                  "records": 2,
+                  "assembly": {
+                    "files_examined": 3,
+                    "files_included": 2,
+                    "duplicate_files_skipped": 1,
+                    "report_groups": [
+                      {
+                        "bureau": "Equifax",
+                        "presentation_id": "GENERAL-BUREAU-REPORT",
+                        "reference_date": {
+                          "raw": "June 12, 2026",
+                          "normalized": "2026-06-12",
+                          "status": "RESOLVED"
+                        },
+                        "record_count": 2,
+                        "files_in_group": 2
+                      }
+                    ],
+                    "distinct_report_dates": [
+                      "2026-06-12"
+                    ]
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ah-multifile-assessment",
+            "assertions": 66,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "unit": {
+                "files_examined": 2,
+                "records": 2,
+                "duplicate_skipped": 1,
+                "bureau_groups": 2
+              },
+              "journey": {
+                "files_uploaded": 2,
+                "evaluated": 201,
+                "file_ids": [
+                  "1abcaebb7f8f6c851e43894fc0a2d22f",
+                  "a772265ba9866de5bab07e271cca8215"
+                ],
+                "examined": 4
+              }
+            }
+          },
+          {
+            "id": "bb-gap-ingest-001",
+            "assertions": 39,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "upload_order_preserved": true,
+              "duplicate_handling": true,
+              "report_boundary": true,
+              "generated_report": true,
+              "reorder_preserves_facts": true,
+              "duplicate_no_duplicate_findings": true,
+              "account_isolation": true,
+              "http_view_path": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "report_boundary": {
+      "passed": true,
+      "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "native_order",
+            "expected": "Actual phase1 checks: NATIVE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "NATIVE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "64c920024593f16ef8ecc65132bf320b",
+                  "4c24714fb1c52fad664af6ea3dc0423d"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "image_order",
+            "expected": "Actual phase1 checks: IMAGE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "IMAGE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "cabc23cfbb9cd63883e77b64da77542e",
+                  "5e45360c5f9b178c037e04e286ea9e6e"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "reference_dates",
+            "expected": "Actual phase1 checks: combined_bureau_dates, conflicting_report_header_withheld",
+            "measured": [
+              {
+                "id": "combined_bureau_dates",
+                "passed": true,
+                "measured": [
+                  {
+                    "bureau": "Experian",
+                    "date": {
+                      "raw": "June 12, 2020",
+                      "normalized": "2020-06-12",
+                      "normalized_value": "2020-06-12",
+                      "precision": "DAY",
+                      "status": "RESOLVED",
+                      "reason": null,
+                      "location": {
+                        "page": 1,
+                        "line": 2,
+                        "source": "NATIVE_TEXT",
+                        "confidence": null,
+                        "min_confidence": null,
+                        "trusted": true,
+                        "bbox": {
+                          "x0": 40,
+                          "y0": 46.458,
+                          "x1": 150.565,
+                          "y1": 54.783
+                        },
+                        "file_id": "0c2758128918a69197aece99af9e5ef7"
+                      },
+                      "alternative": null,
+                      "hint_basis": "REPORT_HEADER"
+                    }
+                  },
+                  {
+                    "bureau": "Equifax",
+                    "date": {
+                      "raw": "June 12, 2026",
+                      "normalized": "2026-06-12",
+                      "normalized_value": "2026-06-12",
+                      "precision": "DAY",
+                      "status": "RESOLVED",
+                      "reason": null,
+                      "location": {
+                        "page": 1,
+                        "line": 7,
+                        "source": "NATIVE_TEXT",
+                        "confidence": null,
+                        "min_confidence": null,
+                        "trusted": true,
+                        "bbox": {
+                          "x0": 40,
+                          "y0": 101.458,
+                          "x1": 150.565,
+                          "y1": 109.783
+                        },
+                        "file_id": "0c2758128918a69197aece99af9e5ef7"
+                      },
+                      "alternative": null,
+                      "hint_basis": "REPORT_HEADER"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "conflicting_report_header_withheld",
+                "passed": true,
+                "measured": [
+                  {
+                    "raw": null,
+                    "normalized": null,
+                    "normalized_value": null,
+                    "precision": null,
+                    "status": "EXTRACTION_UNRESOLVED",
+                    "reason": "CONFLICTING_REPORT_REFERENCE_DATES",
+                    "location": null,
+                    "conflicting_dates": [
+                      "2026-06-12",
+                      "2020-06-12"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ah-multifile-assessment",
+            "assertions": 66,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "unit": {
+                "files_examined": 2,
+                "records": 2,
+                "duplicate_skipped": 1,
+                "bureau_groups": 2
+              },
+              "journey": {
+                "files_uploaded": 2,
+                "evaluated": 201,
+                "file_ids": [
+                  "1abcaebb7f8f6c851e43894fc0a2d22f",
+                  "a772265ba9866de5bab07e271cca8215"
+                ],
+                "examined": 4
+              }
+            }
+          },
+          {
+            "id": "bb-gap-ingest-001",
+            "assertions": 39,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "upload_order_preserved": true,
+              "duplicate_handling": true,
+              "report_boundary": true,
+              "generated_report": true,
+              "reorder_preserves_facts": true,
+              "duplicate_no_duplicate_findings": true,
+              "account_isolation": true,
+              "http_view_path": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "end_to_end_journey": {
+      "passed": true,
+      "expected": "Native PDF set and raster set in actual upload order, exact duplicate bytes; two owned records once, no cross-file facts.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "actual_phase1",
+            "expected": "Actual hosted fictional HTTP upload/evaluate source-reading and trust checks all passed",
+            "measured": [
+              {
+                "id": "NATIVE_ORDER_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "IMAGE_ORDER_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "CONTINUATION_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "PARTIAL_AND_AMBIGUOUS_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "COMBINED_BUREAU_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "CONFLICTING_HEADERS_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "USEFUL_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "UNSUCCESSFUL_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "COMPARISON_EARLIER_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "COMPARISON_CURRENT_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "SUMMARY_POSITIVE_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "SUMMARY_BENIGN_free_summary_only",
+                "passed": true
+              },
+              {
+                "id": "summary_native_own_rows",
+                "passed": true
+              },
+              {
+                "id": "summary_future_issue",
+                "passed": true
+              },
+              {
+                "id": "summary_benign_no_issue",
+                "passed": true
+              },
+              {
+                "id": "NATIVE_ORDER_duplicate_accounting",
+                "passed": true
+              },
+              {
+                "id": "NATIVE_ORDER_upload_order",
+                "passed": true
+              },
+              {
+                "id": "IMAGE_ORDER_duplicate_accounting",
+                "passed": true
+              },
+              {
+                "id": "IMAGE_ORDER_upload_order",
+                "passed": true
+              },
+              {
+                "id": "written_ordinal",
+                "passed": true
+              },
+              {
+                "id": "written_closed",
+                "passed": true
+              },
+              {
+                "id": "numeric_unambiguous",
+                "passed": true
+              },
+              {
+                "id": "month_precision_preserved",
+                "passed": true
+              },
+              {
+                "id": "ambiguous_date_withheld",
+                "passed": true
+              },
+              {
+                "id": "combined_bureau_dates",
+                "passed": true
+              },
+              {
+                "id": "conflicting_report_header_withheld",
+                "passed": true
+              },
+              {
+                "id": "own_continuation",
+                "passed": true
+              },
+              {
+                "id": "USEFUL_bounded_pass",
+                "passed": true
+              },
+              {
+                "id": "USEFUL_recovered_facts",
+                "passed": true
+              },
+              {
+                "id": "UNSUCCESSFUL_bounded_pass",
+                "passed": true
+              },
+              {
+                "id": "UNSUCCESSFUL_recovered_facts",
+                "passed": true
+              },
+              {
+                "id": "support_stable_reference",
+                "passed": true
+              },
+              {
+                "id": "support_safe_fields",
+                "passed": true
+              },
+              {
+                "id": "support_owner_lookup",
+                "passed": true
+              },
+              {
+                "id": "support_stranger_lookup_refused",
+                "passed": true
+              },
+              {
+                "id": "support_anonymous_refused",
+                "passed": true
+              },
+              {
+                "id": "support_anonymous_lookup_refused",
+                "passed": true
+              },
+              {
+                "id": "case_stranger_refused",
+                "passed": true
+              },
+              {
+                "id": "case_anonymous_refused",
+                "passed": true
+              },
+              {
+                "id": "privacy_dashboard",
+                "passed": true
+              },
+              {
+                "id": "published_upload_limits",
+                "passed": true
+              },
+              {
+                "id": "unsupported_container_refused",
+                "passed": true
+              },
+              {
+                "id": "owned_plan_quotes",
+                "passed": true
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "native_order",
+            "expected": "Actual phase1 checks: NATIVE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "NATIVE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "64c920024593f16ef8ecc65132bf320b",
+                  "4c24714fb1c52fad664af6ea3dc0423d"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "image_order",
+            "expected": "Actual phase1 checks: IMAGE_ORDER_upload_order",
+            "measured": [
+              {
+                "id": "IMAGE_ORDER_upload_order",
+                "passed": true,
+                "measured": [
+                  "cabc23cfbb9cd63883e77b64da77542e",
+                  "5e45360c5f9b178c037e04e286ea9e6e"
+                ]
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "paid_result",
+            "expected": "Actual phase2 checks: paid_source_linked_result",
+            "measured": [
+              {
+                "id": "paid_source_linked_result",
+                "passed": true,
+                "measured": {
+                  "status": 200,
+                  "view": {
+                    "ok": true,
+                    "result": {
+                      "support": "ACTUAL_REPORT_EVIDENCE",
+                      "presentation_evidence": true,
+                      "jurisdiction": {
+                        "country": "CA",
+                        "region": "CA-NS"
+                      },
+                      "policy": null,
+                      "checks_performed": 8,
+                      "observations": [
+                        {
+                          "account_number_in_report": 1,
+                          "check_name": "Consumer Reporting Act (Nova Scotia), R.S.N.S. 1989, c. 93, s. 10(3)(c)",
+                          "measures_from": null,
+                          "headline": "The date this check runs from could not be read, so the comparison was not made.",
+                          "detail": "A date that could not be read is not the same as a date that is absent from your report. Nothing was assumed in its place.",
+                          "evidence": {
+                            "page": 1,
+                            "line": 3
+                          },
+                          "output_level": "violation",
+                          "assessment_completed": false,
+                          "is_a_finding": false,
+                          "classification": null,
+                          "consumer_label": null,
+                          "decisive_fact_unavailable": null,
+                          "decisive_facts_unavailable": null,
+                          "rule_source_version": "90A05625AFEC4F81BDEB6568249BDEE5A45C178A20026FEA9D4F50A18AF174CF",
+                          "omitted_content": null,
+                          "included_content": null,
+                          "rule_source": null,
+                          "qualification": "This comes from your report. It is not a finding that a rule was broken."
+                        }
+                      ],
+                      "report_consistency_checks": [
+                        {
+                          "check_class": "REPORT_FACT_CONSISTENCY",
+                          "check_name": "A date printed on an entry, against the date your report gives for itself",
+                          "outcome": "EVERY_ENTRY_DATE_IS_NOT_LATER_THAN_THE_REPORT_DATE",
+                          "agreement": "NO_DIFFERENCE_FOUND",
+                          "headline": "Your report is dated June 1, 2026, and every entry date this build could read is not later than that.",
+                          "detail": "EVERY_ENTRY_DATE_PRINTED_IS_NOT_LATER_THAN_THE_REPORT_DATE",
+                          "evidence": {
+                            "report_date": "June 1, 2026",
+                            "dates_examined": 4,
+                            "dates_later_than_the_report_date": []
+                          },
+                          "examined": [
+                            {
+                              "record_index": 1,
+                              "label": "OPENED",
+                              "printed_value": "01/01/2021"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "opened_date",
+                              "printed_value": "01/01/2021"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "CLOSED",
+                              "printed_value": "01/01/2020"
+                            },
+                            {
+                              "record_index": 1,
+                              "label": "closed_date",
+                              "printed_value": "01/01/2020"
+                            }
+                          ],
+                          "not_examinable": [],
+                          "output_level": "observation",
+                          "is_a_finding": false,
+                          "qualification": "This compares two things your report prints. It is not a finding that a rule was broken."
+                        },
+                        {
+                          "check_class": "REPORT_FACT_CONSISTENCY",
+                          "check_name": "The order of two dates printed on the same entry",
+                          "outcome": "A_PRINTED_DATE_ORDER_IS_REVERSED_ON_THE_SAME_ENTRY",
+                          "agreement": "A_DIFFERENCE_WAS_FOUND",
+                          "headline": "On entry 1, your report prints Closed as 01/01/2020 and Opened as 01/01/2021, which is the reverse of the expected order. That is a difference between two things your report prints, reported for you to check, and no conclusion is drawn from it.",
+                          "detail": "A_DATE_PRINTED_AS_LATER_IS_EARLIER_THAN_A_DATE_PRINTED_AS_EARLIER_ON_THE_SAME_ENTRY",
+                          "evidence": {
+                            "pairs_examined": 1,
+                            "pairs_where_the_printed_order_is_reversed": [
+                              {
+                                "record_index": 1,
+                                "earlier": "Opened",
+                                "earlier_value": "01/01/2021",
+                                "later": "Closed",
+                                "later_value": "01/01/2020",
+                                "location": {
+                                  "page": 1,
+                                  "line": 7,
+                                  "source": "NATIVE_TEXT",
+                                  "confidence": null,
+                                  "min_confidence": null,
+                                  "trusted": true,
+                                  "bbox": {
+                                    "x0": 40,
+                                    "y0": 101.458,
+                                    "x1": 115.546,
+                                    "y1": 109.783
+                                  }
+                                }
+                              }
+                            ]
+                          },
+                          "examined": [
+                            {
+                              "record_index": 1,
+                              "earlier": "Opened",
+                              "earlier_value": "01/01/2021",
+                              "later": "Closed",
+                              "later_value": "01/01/2020"
+                            }
+                          ],
+                          "not_examinable": [],
+                          "output_level": "observation",
+                          "is_a_finding": false,
+                          "qualification": "This compares two things your report prints. It is not a finding that a rule was broken."
+                        }
+                      ],
+                      "limitation_assessment": {
+                        "check_id": "LIMITATION-PERIOD-COURT-CLAIM",
+                        "check_class": "LIMITATION_ASSESSMENT",
+                        "jurisdiction": {
+                          "region_code": "CA-NS",
+                          "label": "Nova Scotia",
+                          "citation": "Limitation of Actions Act, S.N.S. 2014, c. 35, s. 8(1)",
+                          "basic_period_years": 2,
+                          "ultimate_period_years": 15,
+                          "source_capture": "SOURCE_CAPTURES/PHASE5-001G/NS-limitation-of-actions.pdf",
+                          "source_url": null,
+                          "operative_words": "a claim ... may not be brought after the earlier of (a) two years from the day on which the claim is discovered; and (b) fifteen years from the day on which the act or omission on which the claim is based occurred"
+                        },
+                        "assessment_clock": {
+                          "assessment_run_at": "2026-10-11T22:16:31-03:00",
+                          "assessment_date": "2026-10-11",
+                          "assessment_clock_basis": "America/Halifax",
+                          "clock_source": "SERVER_CLOCK",
+                          "report_reference_date": "2026-06-01"
+                        },
+                        "recorded_jurisdictions": [
+                          "AU-ACT",
+                          "AU-QLD",
+                          "CA-BC",
+                          "CA-MB",
+                          "CA-NS",
+                          "CA-NT",
+                          "CA-NU",
+                          "CA-ON",
+                          "GB-ENG",
+                          "GB-NIR",
+                          "GB-WLS"
+                        ],
+                        "performed": [],
+                        "withheld": [
+                          {
+                            "withheld": true,
+                            "reason": "NO_PRINTED_OUTSTANDING_CLAIM",
+                            "record_index": 1,
+                            "plain": "This entry does not print an outstanding amount, amount past due, collection, charge-off or default claim, so the court time limit was not applied to it.",
+                            "missing_prerequisite": "a printed indicator of an outstanding claim (an amount past due, a collection or charge-off action, or a default status)"
+                          }
+                        ],
+                        "summary": {
+                          "records": 1,
+                          "assessed": 0,
+                          "may_be_outside": 0,
+                          "within": 0,
+                          "withheld": 1,
+                          "rule_violations_emitted": 0,
+                          "report_date_used_for_the_comparison": false,
+                          "report_reference_date": "2026-06-01"
+                        }
+                      },
+                      "payment_history_analysis": {
+                        "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                        "performed": [
+                          {
+                            "check_id": "PH-RATING-CONTRADICTS-NARRATIVE-IN-THE-SAME-MONTH",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a month the report rates as a bad debt while the same month says the account was paid or closed without a derogatory rating",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "a status can change inside one month, so both statements may be partly true",
+                              "a code meaning is quoted exactly as the report prints it in its own legend, never decoded by this build"
+                            ],
+                            "source_records": [],
+                            "plain": "No month of any account read here has an adverse rating and a non-derogatory narrative at the same time."
+                          },
+                          {
+                            "check_id": "PH-PAYMENT-CONTRADICTS-NO-PAYMENT-NARRATIVE",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a payment amount and a no-payment description printed for the same month",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "a payment can be posted and later reversed, and a row may report the month a payment was applied rather than received",
+                              "a write-off is an accounting event and does not by itself stop a payment being recorded"
+                            ],
+                            "source_records": [],
+                            "plain": "No month of an account read here prints both a payment amount and an explicit no-payment description."
+                          },
+                          {
+                            "check_id": "PH-DELINQUENCY-ANCHOR-AFTER-THE-HISTORY-SHOWS-IT",
+                            "check_class": "PAYMENT_HISTORY_ANALYSIS",
+                            "label": "a first-delinquency date printed later than a month the same account already shows as late",
+                            "state": "NOT_DETECTED",
+                            "output_ceiling": "observation",
+                            "benign_explanations_considered": [
+                              "an unknown rating (X) and a blank cell are never treated as a late month",
+                              "a rating of 1 or 0 is a paid-as-agreed month and is not late",
+                              "the anchor may describe the current delinquency rather than the first one, which the report does not say"
+                            ],
+                            "source_records": [],
+                            "plain": "No account read here prints a first-delinquency date later than a month its own history already shows as late."
+                          }
+                        ],
+                        "withheld_candidates": [
+                          {
+                            "candidate": "AN_EVENT_DATED_AFTER_A_PRINTED_CLOSURE",
+                            "reason": "A creditor can close an account and then write it off or place it for collection, and a closed account normally keeps reporting its final state. The printed closure date is therefore not evidence that a later event is wrong.",
+                            "missing_prerequisite": "a report statement tying the later event to a date before the closure"
+                          },
+                          {
+                            "candidate": "CLOSURE_WITH_A_NON_ZERO_BALANCE",
+                            "reason": "Closure does not require a zero balance: an account can be closed with a balance outstanding, so a closed account with a balance is ordinary.",
+                            "missing_prerequisite": "a printed statement that the balance was paid at closure"
+                          },
+                          {
+                            "candidate": "A_COLLECTION_OR_TRANSFER_AS_RE_AGING",
+                            "reason": "A collection placement or a transfer does not by itself refresh or change the delinquency the account already shows, and the report prints no re-aged anchor.",
+                            "missing_prerequisite": "two comparable printed delinquency anchors for the same account"
+                          },
+                          {
+                            "candidate": "CUMULATIVE_COUNTS_VERSUS_THE_VISIBLE_MONTHS",
+                            "reason": "The printed 30/60/90/#M figures are cumulative lifetime counts while the visible table is a short window; the two are not comparable, so no comparison is made and no conclusion is drawn from their difference.",
+                            "missing_prerequisite": "a printed statement of the period the counts cover"
+                          },
+                          {
+                            "candidate": "AN_UNKNOWN_RATING_TREATED_AS_A_MISSED_PAYMENT",
+                            "reason": "An unknown rating (X), a blank cell and an unprinted month are not missed payments and are never counted as one.",
+                            "missing_prerequisite": "a printed meaning for the unknown rating"
+                          },
+                          {
+                            "candidate": "PRODUCT_TYPE_OPEN_READ_AS_A_LIFECYCLE_STATUS",
+                            "reason": "The product type OPEN describes the kind of account, not whether it is still open, so it is never read as a lifecycle status.",
+                            "missing_prerequisite": "a printed closure date or a closure narrative"
+                          },
+                          {
+                            "candidate": "THE_ORIGINAL_DELINQUENCY_ANCHOR_CHANGED_BETWEEN_TWO_OWNED_REPORTS",
+                            "reason": "Comparable evidence for this candidate exists only when the consumer owns two reports of the same account. The owned report history and its comparison view supply that evidence; it is never inferred from one snapshot, and the snapshot association must be shown before the candidate is raised.",
+                            "missing_prerequisite": "two owned results for the same account whose printed debt identifiers match"
+                          }
+                        ],
+                        "summary": {
+                          "records": 1,
+                          "analyses": 3,
+                          "potential_issue": 0,
+                          "not_detected": 3,
+                          "withheld_candidates": 7,
+                          "rule_violations_emitted": 0
+                        }
+                      },
+                      "retention_dual_date": {
+                        "check_class": "RETENTION_DUAL_DATE",
+                        "summary": {
+                          "rows": 0,
+                          "already_outside_at_both_dates": 0,
+                          "inside_at_report_outside_at_assessment": 0,
+                          "inside_at_both_dates": 0,
+                          "report_date_missing_but_assessment_compared": 0,
+                          "not_comparable": 0,
+                          "current_review_warranted": 0,
+                          "rule_violations_emitted": 0
+                        },
+                        "performed": []
+                      },
+                      "assessments_performed": 3,
+                      "assessed_on": "2026-10-11",
+                      "assessment_run_at": "2026-10-11T22:16:31-03:00",
+                      "assessment_clock_basis": "America/Halifax",
+                      "detected_report_information": [
+                        {
+                          "check_name": "DETECTED-MEDICAL_INFORMATION",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "medical_information",
+                          "label": "medical information",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect medical information in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c(a)(6)",
+                              "proposition": "information excluded from consumer reports: the recorded restrictions on medical information and their exceptions, including the furnisher-identity/recipient restrictions",
+                              "condition": "the report's furnishing purpose and recipient",
+                              "off_report": true,
+                              "note": "the furnishing purpose and recipient are not printed on the report"
+                            },
+                            {
+                              "citation": "15 U.S.C. § 1681b(g)",
+                              "proposition": "a consumer reporting agency shall not furnish a report containing medical information to a third party for credit, insurance or employment except as the provision permits (including consent)",
+                              "condition": "the report's furnishing purpose and consent",
+                              "off_report": true,
+                              "note": "whether the report is furnished to a third party for those purposes, and whether consent exists, is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-FRAUD_ALERT",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "fraud_alert",
+                          "label": "a fraud alert",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a fraud alert in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c-1",
+                              "proposition": "a fraud alert a consumer placed must be included in the consumer report",
+                              "condition": "whether the consumer actually placed a fraud alert",
+                              "off_report": true,
+                              "note": "whether the consumer placed a fraud alert is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-SECURITY_FREEZE",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "security_freeze",
+                          "label": "a security freeze",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a security freeze in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c-1",
+                              "proposition": "a security freeze is a disclosure restriction the consumer places on the file",
+                              "condition": "whether the consumer actually placed a security freeze",
+                              "off_report": true,
+                              "note": "a security freeze is a disclosure restriction, not automatically a mandatory printed notation; whether the consumer placed one is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        },
+                        {
+                          "check_name": "DETECTED-DISPUTE",
+                          "check_class": "DETECTED_REPORT_INFORMATION",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "marker": "dispute",
+                          "label": "a consumer dispute notation",
+                          "state": "NOT_DETECTED",
+                          "detail": "We did not detect a consumer dispute notation in the information we could read. Absence of a keyword does not prove the feature is absent or that any obligation was breached.",
+                          "legal_dependencies": [
+                            {
+                              "citation": "15 U.S.C. § 1681c(f)",
+                              "proposition": "a consumer reporting agency shall note in a subsequent report that a consumer notified the agency that information is disputed",
+                              "condition": "the consumer's actual notification of a dispute to the agency",
+                              "off_report": true,
+                              "note": "a dispute keyword on the report does not itself prove the notification required by § 1681c(f); whether the notification was made is not printed on the report"
+                            }
+                          ],
+                          "source_evidence": [],
+                          "record_matches": [],
+                          "boilerplate_matches": []
+                        }
+                      ],
+                      "common_errors": [
+                        {
+                          "check_name": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                          "check_class": "COMMON_ERROR",
+                          "output_level": "observation",
+                          "classification": null,
+                          "is_a_finding": false,
+                          "label": "an account with contradictory dates",
+                          "state": "POTENTIAL_ISSUE",
+                          "detail": "This report prints at least one account whose opened date is later than its closed date. The printed dates conflict.",
+                          "source_records": [
+                            {
+                              "record_index": 1,
+                              "kind": "CONSUMER_CREDIT_LIABILITY",
+                              "kind_label": "credit account",
+                              "location": {
+                                "page": 1,
+                                "line": 3,
+                                "source": "NATIVE_TEXT",
+                                "confidence": null,
+                                "min_confidence": null,
+                                "trusted": true,
+                                "bbox": {
+                                  "x0": 40,
+                                  "y0": 57.458,
+                                  "x1": 184.558,
+                                  "y1": 65.783
+                                },
+                                "file_id": "88366c34d21d87d1360f5ae1e8d502b3"
+                              },
+                              "source_file_id": "88366c34d21d87d1360f5ae1e8d502b3",
+                              "reason": "OPENED_DATE_AFTER_CLOSED_DATE",
+                              "evidence": {
+                                "opened": "2021-01-01",
+                                "closed": "2020-01-01"
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "common_error_checklist": [
+                        {
+                          "check_id": "COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY",
+                          "label": "Account opened after it was closed",
+                          "state": "PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-STATUS-DATE-CONTRADICTION",
+                          "label": "Account shown as open with a closing date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY",
+                          "label": "Balances, overdue amounts or payments that do not match",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REVOLVING-BALANCE-ZERO-LIMIT",
+                          "label": "Balance on a credit card or line of credit with a credit limit of $0",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-PAYMENT-HISTORY-INCONSISTENCY",
+                          "label": "Payment history that does not match other account details",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-RESPONSIBILITY-INCONSISTENCY",
+                          "label": "Conflicting details about who is responsible for an account",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-DUPLICATE-REPORTING",
+                          "label": "Duplicate account and collection entries",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-SIMILAR-ENTRIES-WORTH-REVIEWING",
+                          "label": "Similar accounts to review",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REPORTED-DATES-OUT-OF-ORDER",
+                          "label": "Account first reported before it was opened",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-ENTRY-REPORTED-AFTER-REPORT-DATE",
+                          "label": "Account reported after the report date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-POTENTIAL-RE-AGING-SIGNAL",
+                          "label": "First missed-payment date moved to a later date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-IDENTITY-REVIEW",
+                          "label": "Names, addresses and personal details to review",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR",
+                          "label": "Bad debt or collection without a first missed-payment date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE",
+                          "label": "Write-off date missing for a debt marked as a loss",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE",
+                          "label": "Account marked closed or cancelled without a closing date",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REQUIRED-REPORT-DATA-VISIBLY-MISSING",
+                          "label": "Required report details left blank",
+                          "state": "NOT_PERFORMED",
+                          "components": {
+                            "COMMON-ERROR-ADVERSE-ENTRY-WITHOUT-A-DELINQUENCY-ANCHOR": false,
+                            "COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE": false,
+                            "COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE": false
+                          }
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID",
+                          "label": "Paid or settled account still shown as unpaid",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE",
+                          "label": "Last-payment or first missed-payment date errors",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE",
+                          "label": "Original debt and its collection both showing money owed",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "COMMON-ERROR-REPORTING-PERIOD-EXCEEDED",
+                          "label": "Entry appears after its applicable credit-reporting period",
+                          "state": "NOT_PERFORMED"
+                        },
+                        {
+                          "check_id": "LIMITATION-PERIOD-COURT-CLAIM",
+                          "label": "Court deadlines and credit-report time limits",
+                          "description": "A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.",
+                          "state": "NOT_PERFORMED",
+                          "components": {
+                            "court_claim": false,
+                            "reporting_period": false
+                          }
+                        }
+                      ],
+                      "issues": [
+                        {
+                          "issue_id": "0a6e269358bd4012",
+                          "confidence": "PROBABLE",
+                          "basis_type": "FACTUAL_CONSISTENCY",
+                          "request_type": "VERIFICATION",
+                          "eligible": true,
+                          "explanation": "This report prints SPRUCE FICTION BANK with an opened date later than its closed date (2021-01-01 after 2020-01-01).",
+                          "uncertainty": "The dates conflict. The report does not show which date needs correction, and a later correction may explain the difference.",
+                          "account_number_in_report": 1,
+                          "record_kind": "credit account",
+                          "preview_category": "DATE_CONFLICT",
+                          "report_identity": {
+                            "bureau": "Equifax",
+                            "reference_date": "2026-06-01"
+                          },
+                          "account_identity": {
+                            "name": "SPRUCE FICTION BANK",
+                            "source_field": "Account Name",
+                            "raw_value": "Spruce Fiction Bank",
+                            "location": {
+                              "section": null,
+                              "page": 1,
+                              "line": 3
+                            }
+                          },
+                          "check_kind": "an account with contradictory dates",
+                          "citation": null,
+                          "rule_source_version": null,
+                          "rule_assessment": {
+                            "classification": "PROBABLE_VIOLATION",
+                            "requirement": "An account cannot close before it opened."
+                          },
+                          "evidence": {
+                            "opened": "2021-01-01",
+                            "closed": "2020-01-01"
+                          },
+                          "source_facts": [
+                            {
+                              "source_field": "opened_date",
+                              "raw_value": "01/01/2021",
+                              "normalized_value": "2021-01-01",
+                              "location": {
+                                "section": null,
+                                "page": 1,
+                                "line": 6
+                              }
+                            },
+                            {
+                              "source_field": "closed_date",
+                              "raw_value": "01/01/2020",
+                              "normalized_value": "2020-01-01",
+                              "location": {
+                                "section": null,
+                                "page": 1,
+                                "line": 7
+                              }
+                            }
+                          ],
+                          "source_location": {
+                            "section": null,
+                            "page": 1,
+                            "line": 3
+                          },
+                          "consumer_label": "VIOLATION"
+                        }
+                      ],
+                      "unresolved_report_fields": [],
+                      "checks_not_examinable": [],
+                      "checks_not_run": [],
+                      "checks_not_applicable": [],
+                      "checks_applicability_unresolved": [],
+                      "applicability_summary": {
+                        "APPLICABLE": 0,
+                        "NOT_APPLICABLE": 0,
+                        "APPLICABILITY_UNRESOLVED": 0,
+                        "NO_RULE_DECLARED": 0
+                      },
+                      "checks_unresolved": [],
+                      "eligibility": {
+                        "draft_eligible": false,
+                        "reason": "NO_ELIGIBLE_RESULT_IN_THIS_BATCH"
+                      },
+                      "assessment": {
+                        "kinds": [
+                          "STATUTORY_RULE_COMPARISON",
+                          "REPORT_FACT_CONSISTENCY",
+                          "DETECTED_REPORT_INFORMATION",
+                          "COMMON_ERROR"
+                        ],
+                        "performed_by_kind": {
+                          "STATUTORY_RULE_COMPARISON": 1,
+                          "REPORT_FACT_CONSISTENCY": 2,
+                          "PRINTED_POLICY_OBSERVATION": 0,
+                          "DETECTED_REPORT_INFORMATION": 4,
+                          "COMMON_ERROR": 1
+                        },
+                        "factual_summary": {
+                          "registered": 2,
+                          "performed": 2,
+                          "no_difference_found": 1,
+                          "a_difference_was_found": 1,
+                          "not_examinable": 0,
+                          "not_applicable": 0,
+                          "applicability_unresolved": 0,
+                          "statutory_checks_named": 0,
+                          "check_classes": [
+                            "REPORT_FACT_CONSISTENCY"
+                          ],
+                          "check_ids": [
+                            "GENERAL-FACT-ITEM-DATE-AFTER-REPORT-DATE",
+                            "GENERAL-FACT-DATE-ORDER-WITHIN-RECORD"
+                          ]
+                        },
+                        "common_error_summary": {
+                          "total": 1,
+                          "potential_issue": 1,
+                          "similar_entries_worth_reviewing": 0,
+                          "not_detected": 0
+                        },
+                        "statutory_checks_performed": 1,
+                        "factual_checks_performed": 2,
+                        "common_error_checks_performed": 1,
+                        "plain": "We reviewed your report against the common-error checklist using the report facts available for each applicable check."
+                      },
+                      "qualifications": [
+                        "These checks read your report. A violation is shown when report evidence supports a breach of a defined reporting rule or requirement.",
+                        "Only the checks named below were run against your report.",
+                        "No check of every possible legal issue was made, and none is implied.",
+                        "We have tested this service on five report layouts: one Equifax Canada consumer specimen admitted by digest, one TransUnion Canada consumer disclosure admitted by a measured structural contract, one Equifax Australia consumer credit file, one Experian United States consumer-disclosure format family, one Experian United Kingdom consumer format family evidenced by structure from a single captured consumer report example of a recorded vintage. The US and Australia examples are dated 2015 and 2016; the UK Experian example is dated 2007. These examples do not certify every current report layout. We also read recognizable bureau reports in a general way, including the supported UK TransUnion consumer fields. We then use the facts we can read. If a document is not a credit report, or we cannot read it, we say which of the two it is and what to do next.",
+                        "A check can also be reported as not applicable to your report, or as unresolved. Neither one ran, and neither one passed.",
+                        "A report-data rule can support a violation from source-linked report facts. An applicable statute may provide additional context.",
+                        "Each finding states the supporting report evidence and any specific uncertainty.",
+                        "A date comparison is arithmetic. On its own it does not show that anything was reported unlawfully."
+                      ],
+                      "read_but_no_usable_facts": null,
+                      "reading_limitations": {
+                        "limited": false,
+                        "incomplete": false,
+                        "affected_checks": [],
+                        "plain": null,
+                        "never_equates_unread_with_absence": true
+                      },
+                      "recovery": {
+                        "bounded": true,
+                        "substitution_forbidden": true,
+                        "recovery_attempts": 0,
+                        "facts_added": []
+                      },
+                      "comprehensive_legal_check": false,
+                      "disclaimer": "This assessment covers the checks listed in this report."
+                    }
+                  }
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase2-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ah-multifile-assessment",
+            "assertions": 66,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "unit": {
+                "files_examined": 2,
+                "records": 2,
+                "duplicate_skipped": 1,
+                "bureau_groups": 2
+              },
+              "journey": {
+                "files_uploaded": 2,
+                "evaluated": 201,
+                "file_ids": [
+                  "1abcaebb7f8f6c851e43894fc0a2d22f",
+                  "a772265ba9866de5bab07e271cca8215"
+                ],
+                "examined": 4
+              }
+            }
+          },
+          {
+            "id": "bb-gap-ingest-001",
+            "assertions": 39,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "upload_order_preserved": true,
+              "duplicate_handling": true,
+              "report_boundary": true,
+              "generated_report": true,
+              "reorder_preserves_facts": true,
+              "duplicate_no_duplicate_findings": true,
+              "account_isolation": true,
+              "http_view_path": true
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "bb-gap-ingest-001",
+      "passed": true,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "39 assertions pass",
+      "measured": "39/39"
+    },
+    {
+      "id": "ah-multifile-assessment",
+      "passed": true,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "66 assertions pass",
+      "measured": "66/66"
+    },
+    {
+      "id": "production-final-freeze:ah-multifile-assessment",
+      "passed": true,
+      "assertions": 66,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "66 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    },
+    {
+      "id": "production-final-freeze:bb-gap-ingest-001",
+      "passed": true,
+      "assertions": 39,
+      "criteria": [
+        "upload_order_preserved",
+        "duplicate_handling",
+        "report_boundary"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "39 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    }
+  ],
+  "coverage": {
+    "later_page_facts_reach_evaluation_result_and_report": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "both printed dates reach the consumer result and the generated report names a later-page fact",
+      "measured": "bb-gap-ingest-001 asserts both dates in report_consistency_checks.examined and 07/15/2026 in the report body"
+    },
+    "reordering_preserves_evaluated_facts_and_findings": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "reordering keeps the same examined dates, record facts and checks_performed",
+      "measured": "datesOf/factsOf/checks_performed deep-equal between [a,b] and [b,a]"
+    },
+    "duplicate_pages_do_not_duplicate_records_or_findings": {
+      "tests": [
+        "bb-gap-ingest-001",
+        "ah-multifile-assessment"
+      ],
+      "expected": "an exact duplicate is skipped and adds no record, check or examined fact",
+      "measured": "duplicate_files_skipped 1, records still 2, checks_performed and examined dates unchanged"
+    },
+    "separate_reports_keep_own_dates_same_bureau": {
+      "tests": [
+        "ah-multifile-assessment"
+      ],
+      "expected": "two Equifax reports with different dates are two reports, each record tied to its own date",
+      "measured": "report_groups 2 with reference dates 2025-03-14 and 2026-06-12"
+    },
+    "separate_bureaus_and_unrelated_records_never_borrow": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "records never borrow a fact from another file or bureau",
+      "measured": "recA lacks 2019-02-02, recB lacks 2015-01-01; two bureau groups"
+    },
+    "conflicting_and_unreadable_pages_no_fabricated_facts": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "low-confidence/conflicting/unreadable pages stay unresolved, never resolved facts or findings",
+      "measured": "low-confidence date EXTRACTION_UNRESOLVED; conflicting identifiers stay two records"
+    },
+    "account_isolation_for_assembled_uploads_and_results": {
+      "tests": [
+        "bb-gap-ingest-001"
+      ],
+      "expected": "another account cannot read the assembled case or result view",
+      "measured": "GET case and result view return 403 for the intruder"
+    },
+    "http_upload_evaluate_view_path": {
+      "tests": [
+        "ah-multifile-assessment",
+        "bb-gap-ingest-001"
+      ],
+      "expected": "the real endpoints assemble multiple files into one result and view",
+      "measured": "ah upload+evaluate records both file_ids; bb view returns 200 with two files and both facts"
+    }
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-9799fd768cb7cdfa",
+    "original_canonical_sha256": "5943dc8a8e13ae4a2206e7a9c3b17a8ac22f89365587226b06b22719e0e0710d",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "bb-gap-ingest-001",
+          "passed": true,
+          "criteria": [
+            "upload_order_preserved",
+            "duplicate_handling",
+            "report_boundary"
+          ],
+          "expected": "two pages contribute one record each in upload order; a later-page fact is named in the generated report; reordering preserves the same evaluated facts/checks; a duplicate adds no record or finding; distinct bureaus and conflicting readings stay separate; the real endpoints upload, evaluate, view and isolate the assembled case",
+          "measured": "39/39 assertions pass: files_included 2, records [1,2], both printed dates reach the consumer result, later-page date 07/15/2026 named in the report, reordering keeps the same examined dates + record facts + checks_performed, duplicate adds no checks or examined facts, two bureau groups, conflicting readings stay two records, HTTP upload 201 + evaluate 201 + view 200 (two files, both facts) + cross-account 403"
+        },
+        {
+          "id": "ah-multifile-assessment",
+          "passed": true,
+          "criteria": [
+            "upload_order_preserved",
+            "duplicate_handling",
+            "report_boundary"
+          ],
+          "expected": "the shared assembly foundation: both files examined, no fact borrowing, exact duplicate not double-counted, distinct bureaus and dates kept apart, missing pages flagged only when numbering is printed",
+          "measured": "66/66 assertions pass across the unit assembly cases (two files, duplicate, mixed bureaus, two dates, dedupe pages, missing pages, continuation merge) and an HTTP upload + evaluate journey with both assembled file_ids recorded"
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/multi-file-assembly.cjs",
+          "sha256": "3dccd6b133ad706be0eaae72f267c7ffec7bc496e0414af4a17000c24c3c0f0a"
+        },
+        {
+          "file": "accelerated-launch/service/general-intake.cjs",
+          "sha256": "1537b352db4602b3cab5e3fee4739f75c2822e09c33e0c55d082c86207b7b839"
+        },
+        {
+          "file": "accelerated-launch/service/journey.cjs",
+          "sha256": "e1c154abb85d8ec8a924e26eb5d74b33ba5e7b8f4d45982e318a5c0956d6f4a0"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+          "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+          "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "accelerated-launch/service/tests/sections/bb-gap-ingest-001.cjs",
+          "sha256": "a360e480c74b44f8aaee30e9e70b15e293a3aa121ef2a573f6ddb5071f7a33c9"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ah-multifile-assessment.cjs",
+          "sha256": "8cd3cb430662de42ac81628a537dc6db517924250e75fb5d0e5f0260a30c4e76"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "news-hosted-2026-10-11/phase1-receipt.json",
+        "sha256": "679bdc6b9f54616e1e6ee784ca453d392eeada3d2b9a2675c8b3f579f67f6145",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/provider-paid.json",
+        "sha256": "20101bb5543cc290f3b7ea94c6dcf2afe0d55c60a787273e010fa883f181b0ef",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/review-receipt.json",
+        "sha256": "12acec2139131b565ae9334fd403f86eaac8378cee483808951422349947e1a7",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/download-receipt.json",
+        "sha256": "566238e04f957812bbb25e323223c520b5a159ebdde367e264c16647731f50e3",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/continuity-receipt.json",
+        "sha256": "f1817042b03ac96104937435bb0b102772b9b808587a27da9ee4cbf31b0dd30b",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/phase2-receipt.json",
+        "sha256": "98d6e82aed15039cbdf43702d69bb477cbade155573d4a45e99c184ac37ec142",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/provider-cleanup.json",
+        "sha256": "8eb04b9bf1deb2ca2fb17c0df134fd948175a3a5a487f783d1b44a8bbb2724cf",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/cleanup-receipt.json",
+        "sha256": "782ebc8ea5691d6236537158dcfb7608757b5a15040f4138ad712b6043415f3d",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/checkout-receipt.json",
+        "sha256": "bbde3104e6091f58d83f35d5444238feb6959bc35742a683d8a30fe6809c5626",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/input-manifest.json",
+        "sha256": "17fc9281525911638ad9cba3ef6b8f2145ac59ec784df978bb2f42ab646fea47",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/browser-stage-navigation.json",
+        "sha256": "0acf2ef411108bdc1e95313842443e5e3afe5636435a93493e1cb9242894f3b8",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/upgrade-proof.json",
+        "sha256": "9af5ddbae057f5c65311198adb32b99f7d062e87e78551a20ca335cea5db058d",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/cancellation-proof.json",
+        "sha256": "1c1dc5c5b3b8d067848ebf7441e739c84715b8f6ab18d6569efe11f8f849f9f4",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/hosted-published-packet-probe.json",
+        "sha256": "cd4fa8002057633b04c0be012cdd5e58f12e5637499e2ca1d897e02fa6be5cc6",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "native-currency-hosted-2026-10-11/native-three-plan-proof.json",
+        "sha256": "e07ac9af69129e12c469020376615b35e793fae0a4aa5a95f2ef368281b33b75",
+        "identity_build_id": "crp-v1-378b2463903ad652"
+      },
+      {
+        "file": "native-currency-hosted-2026-10-11/native-checkout-browser-proof.json",
+        "sha256": "dca6fe6de577b71e5b106fdef90eebc7c458e5becc17592a12ac80c51ba5d85a",
+        "identity_build_id": "crp-v1-378b2463903ad652"
+      },
+      {
+        "file": "news-hosted-2026-10-11/billing-continuity.json",
+        "sha256": "e4f8164fd62fcc0995208763fc52472682e69d24d384b323af193f294b803e87",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/native-currency-choice-browser.json",
+        "sha256": "7ef947ce6f430424f098465048ebc5f083daabc43db5f8ad2966a7d8c9ab405a",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/fdt-mitigation-candidate.json",
+        "sha256": "0da85ee7aaab4a58bdbd07cbad84264e43baf50c60cdda695d723711a933dfd9",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "news-hosted-2026-10-11/measurements.json",
+    "prepared_at": "2026-10-12T01:24:55.000Z",
+    "canonical_evidence_written": false
+  }
+}

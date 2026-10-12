@@ -1,0 +1,22 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "steps": [
+    5,
+    6,
+    7
+  ],
+  "actions": [
+    "Continue to document preparation",
+    "Continue to packet review"
+  ],
+  "approved_controls_preserved": true,
+  "observed": [
+    "Step 7 of 7",
+    "Approve this version disabled",
+    "Download your PDF enabled"
+  ],
+  "measurement_origin": "Actual current Chrome browser interaction with the fresh fictional subscriber",
+  "scope": "Browser controls; packet byte continuity measured separately",
+  "recorded_at": "2026-10-12T01:21:32.057Z",
+  "passed": true
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "account_id": "acc_3669b6c456fe89700baaa9cb",
+  "session_id": "cs_test_a1SsKDL9AdbWEWyTEi4nwn0UfEvHLJ7yDDXyiUeFrumXmBpq8VDD4HPoJZ",
+  "checkout_id": "chk_02a5d7c771927bbde9a50ad2",
+  "test_mode": true,
+  "same_subscription": true,
+  "annual_price_cents": 7950,
+  "applied_credit_cents": 795,
+  "paid_invoice_cents": 7155,
+  "matched_applied_signed_webhook": true,
+  "measured_at": "2026-10-12T01:23:15.095Z"
+}

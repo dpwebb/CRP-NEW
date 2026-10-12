@@ -1,0 +1,189 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "passed": true,
+  "applied": [
+    {
+      "file": "fdt-mitigation-evidence.json",
+      "before_sha256": "7a7655d34b5f801020eadff0d0d0f67cc03ffb2fa6e3a67b82e1be9e057e39ba",
+      "after_sha256": "0da85ee7aaab4a58bdbd07cbad84264e43baf50c60cdda695d723711a933dfd9",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/fdt-mitigation-evidence.json"
+    },
+    {
+      "file": "clarify-evidence.json",
+      "before_sha256": "a9fda2153f5ef4d0a52863203c884ebbe45e7588b0019c3e794dbbcc1c778431",
+      "after_sha256": "f793c5832ebcd8b2ad6f8c70b4108573a89ad651756c506022b59bb9deb52926",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/clarify-evidence.json"
+    },
+    {
+      "file": "common-errors-evidence.json",
+      "before_sha256": "b78148ca286a000e410230e3b0cf54f59aaa31c45924958880169b0ed17de2f2",
+      "after_sha256": "5a2b0f2fca8b3a6c9cc608848f882338ad73d9f2929950e1637e38beb52b86a4",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/common-errors-evidence.json"
+    },
+    {
+      "file": "gap-ingest-001-evidence.json",
+      "before_sha256": "5943dc8a8e13ae4a2206e7a9c3b17a8ac22f89365587226b06b22719e0e0710d",
+      "after_sha256": "c044cba194c53c056340257ae6578c7207c45a50bbe9d65281d008af07ff5914",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-001-evidence.json"
+    },
+    {
+      "file": "gap-ingest-002-evidence.json",
+      "before_sha256": "3fbdb630c7c6dc589e89364cc4c5ae896b225b31157db392b4009fa82a882cba",
+      "after_sha256": "70c23a0db3aa346905c456c84f3ae403b17879073a1121607c4dd44916a21a39",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-002-evidence.json"
+    },
+    {
+      "file": "gap-ingest-003-evidence.json",
+      "before_sha256": "7d365c1f1f1c2ddc7d1c776563d21b48f34dac950788334ce92e61406ac2566d",
+      "after_sha256": "e611a021293442a640a1af2af9ad85a60f1a4b244bef0d30c773136778b67157",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-003-evidence.json"
+    },
+    {
+      "file": "gap-ingest-004-evidence.json",
+      "before_sha256": "58e0966d48aaf973a6895b6e71f0955e3773b4f441e17b40a4ceeefdeb8828d1",
+      "after_sha256": "c939c8110b9764c5d502ea2afb3cfecb3ca9af70ebe74e123091823b450db753",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-004-evidence.json"
+    },
+    {
+      "file": "gap-ingest-005-evidence.json",
+      "before_sha256": "f4abc493950e2d6c6513871651784b469b99fc3d740252ae988b49cc5ced6c9e",
+      "after_sha256": "3bd8614c283bf5d2ac01134fbc5ebba7b43cac9ab1c1ba8f491c067a18b4488b",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-005-evidence.json"
+    },
+    {
+      "file": "gap-ingest-006-evidence.json",
+      "before_sha256": "797dcf96f387d795829dc4cffbcdb23b66c928fb7c0926d53393871ae7bcbe97",
+      "after_sha256": "928e683116c90cbf575ab7dd9d25a32935ee982365ae441d626cca907955a7b8",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-006-evidence.json"
+    },
+    {
+      "file": "gap-ingest-007-evidence.json",
+      "before_sha256": "f6cfaddee3024a1a0be38793878e8a27e7dd1fe7d6922b56a44968d413c790d6",
+      "after_sha256": "24ad95b4e9d95c07fac465eb7fa1d38235d0212bd5e3e79afbb5794d40ff50e1",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-007-evidence.json"
+    },
+    {
+      "file": "gap-ingest-008-evidence.json",
+      "before_sha256": "4e0f9bc5d3b0378036fb25295f3acb3c8cd7f2768741adf5ff21f761d1d16917",
+      "after_sha256": "9593dd06db1f8bdd61f1c362e2bd7b5f89d844c7a988cdf96f23e7b19b31ee88",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-008-evidence.json"
+    },
+    {
+      "file": "gap-ingest-009-evidence.json",
+      "before_sha256": "791bdc3f25685612f08ccc28ae10c862feea9d4d49969d1f3ae355acb4a73fc7",
+      "after_sha256": "cc9ffba5688ad3228f9fc20acd90c86230affd3fa9254e13fe4c58677a2ff11e",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-009-evidence.json"
+    },
+    {
+      "file": "gap-ingest-010-evidence.json",
+      "before_sha256": "fdd14e897391dfe9ddb48a7b9dfa4965aa60783ae072aa7ad671976a2b1f6003",
+      "after_sha256": "b3b0722ba010eeb2a3c4168670068d2cfc1d669ba46ec5ad9b3d4e1d3a1ca2b9",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-ingest-010-evidence.json"
+    },
+    {
+      "file": "gap-finding-001-evidence.json",
+      "before_sha256": "231bda6a8c3ad43e23c2ea7a314742853395b55d8ec5e82df2fa85ea17663540",
+      "after_sha256": "8ca498579ae880d413ee1cb4f4add5322ff73be71d35df7b8d8fcf3dc56852bf",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-finding-001-evidence.json"
+    },
+    {
+      "file": "gap-finding-002-evidence.json",
+      "before_sha256": "d73e7d375c40e2cfe71df5b41892ffee8f9361fca4bb988a2af70269989a9f21",
+      "after_sha256": "0a08c7b2879212f08cd7667b7696f153fa0da4e2a6d89c51133de51d71a30e55",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-finding-002-evidence.json"
+    },
+    {
+      "file": "gap-finding-003-evidence.json",
+      "before_sha256": "d8e82a190b1df2aa200f0a3b7c9b87d8491cefbdf21813b5b66705785d41067c",
+      "after_sha256": "ca607207f9ad20eb974ecaae05e0201fd8f9c913e1996e8668685432803b9fd8",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-finding-003-evidence.json"
+    },
+    {
+      "file": "gap-finding-004-evidence.json",
+      "before_sha256": "044eee166cb17fddc83c4441221c90f41d7bb87847b4390ad2b85c0423aa6ffc",
+      "after_sha256": "30c26e963f00fbca06316209dccd12ac97800a0288bc6f3879f08a5855a036ca",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/gap-finding-004-evidence.json"
+    },
+    {
+      "file": "consumer-results-evidence.json",
+      "before_sha256": "a814518fab38ef048580802b9ce6d2960c60e05fee977108cff9d8183554a17f",
+      "after_sha256": "3bc45cce89378c4249fbbded5b0f1dff66843e93516bd73ee9d11cc0a70beb39",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-results-evidence.json"
+    },
+    {
+      "file": "consumer-explanations-evidence.json",
+      "before_sha256": "ff428bc4bfe640aedce9f7c01f0bfe4f693d06dddc1cbfd6e5327dc6584f90b0",
+      "after_sha256": "5355089520a90c23f3bc60b4811ff40a834d6893f67a7bf94825e703145b5a8b",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-explanations-evidence.json"
+    },
+    {
+      "file": "consumer-billing-evidence.json",
+      "before_sha256": "68f24849e09b7a2018ff453a9487731cf26ce117f4f7c1eff29f5dfa591e281f",
+      "after_sha256": "583820cfd67660ee1273520553ab407941eee3b5a7f49f7ffcd553e2577f741b",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-billing-evidence.json"
+    },
+    {
+      "file": "consumer-privacy-evidence.json",
+      "before_sha256": "43dc26a1c643be7cae8f8ccf0d747a6be1bb05831c911ce77142316934616e12",
+      "after_sha256": "7a53dc75e2efff97773cbeaf1e23aea08ba5e38384c26ac46e9c6740af772a90",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-privacy-evidence.json"
+    },
+    {
+      "file": "consumer-support-evidence.json",
+      "before_sha256": "df0b5f3c223cc90bdd41f3ff505b7b3cb357af7608f43f2ae3dc90bda07aec73",
+      "after_sha256": "c300486187d10ffc7dd8610f8f03d3213156525c219dad2f7f4884474fa206f2",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-support-evidence.json"
+    },
+    {
+      "file": "consumer-language-imperative-evidence.json",
+      "before_sha256": "c16ea2d1e585728cfd5b2c03250460006669718eba8a6a9116bb6d5b160e852d",
+      "after_sha256": "3403a3ee8234df30160c0dbc0b0126fb0c579ad12f9b18feafc66c16eaa8ec45",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-language-imperative-evidence.json"
+    },
+    {
+      "file": "consumer-incomplete-presentation-evidence.json",
+      "before_sha256": "5f53e01e295d3d73cdfb6446086c1940e80c6aa6a73bcba4274bc09d25f95a75",
+      "after_sha256": "5ee69d01f465395a70474cce8ab320da56531a5ea0d48c8d9763feb9d048a140",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/consumer-incomplete-presentation-evidence.json"
+    },
+    {
+      "file": "clarification-materiality-evidence.json",
+      "before_sha256": "69c860adb12750ca5768007ccdea564a7919fa054504722c0e41e23b0c6e67ef",
+      "after_sha256": "d3c1ce7054ed2e6f30741402d690401cac9e50c59354b18922913a3ff6d04daf",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/clarification-materiality-evidence.json"
+    },
+    {
+      "file": "finding-coverage-evidence.json",
+      "before_sha256": "1d21093fbbb28ea1ca19e065fd8fc61c123bf36c3fe139f002ea02990fdce6e8",
+      "after_sha256": "2d1d10d2c2453e00d3f8cc239af46701d018366f585c284e08822746c76c1743",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/finding-coverage-evidence.json"
+    },
+    {
+      "file": "all82-facilitation-evidence.json",
+      "before_sha256": "f57fd73e1978af6dd994015cd5d9a4f24c3b5d6e230c7bf70c9bd06d518f8deb",
+      "after_sha256": "17768b82c6ae87dc4867a620ee92479303eb914f213277e1dc6beaa9b5b9aaf8",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/all82-facilitation-evidence.json"
+    },
+    {
+      "file": "dispute-packet-evidence.json",
+      "before_sha256": "46312fcf57e3ef733518d4be4381eee43029fce67ec8df2bed4761d5e94cb293",
+      "after_sha256": "cfef77dcd2785120842a29f5a9855cb81a7923232293c52ec427b07c0d19795c",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/dispute-packet-evidence.json"
+    },
+    {
+      "file": "report-data-to-issue-evidence.json",
+      "before_sha256": "0e08490b778ea02913fcd01adee5f2ed090adfccabe29929ae71108c62893acf",
+      "after_sha256": "2832bcf7152e19fd01b7e4a56ce075b6cbe0c598ba43c9c1b5d84dcde65815fc",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/report-data-to-issue-evidence.json"
+    },
+    {
+      "file": "subscription-value-evidence.json",
+      "before_sha256": "807ae5266c00a2b9f81ac3a33303e2adfd84000f3b04d2328f2b8430a54c648b",
+      "after_sha256": "956242664b4cc17ac0f8221de269435079bea368b691605f1b5e17ad130e6e53",
+      "archive": "news-hosted-2026-10-11/canonical-before-integration/subscription-value-evidence.json"
+    }
+  ],
+  "canonical_evidence_written": true,
+  "old_bytes_archived": true,
+  "recorded_at": "2026-10-12T01:24:58.710Z"
+}

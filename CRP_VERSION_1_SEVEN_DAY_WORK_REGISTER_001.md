@@ -1221,3 +1221,8 @@ Staging: NOT activated or verified for this candidate. Production: UNCHANGED; th
 
 
 Deployment isolation: the banner release retains the accepted live policy navigation. The unverified jurisdiction-policy draft remains in the coordinator checkout. This isolated source has its own subsequent regression and hosted acceptance receipts.
+
+
+### October 11 credit reporting news footer — accepted live production
+
+Source 6e8c85e29a815f6c0819056e8e9bc307b80900f5 was committed/pushed and deployed through guarded staging to production as crp-v1-9799fd768cb7cdfa (147 files). Fresh full regression 14,966/0/0, 154 sections, 301 hashes, no source drift; exact-build 30-gate/123-criterion staging acceptance and current production acceptance passed. New local 20-layout browser proof, current hosted regional/mixed footer, genuine Sandbox monthly activation/annual upgrade/cancellation, form-free six-page review/approval/download and comparison continuity passed. Original twelve currency/plan purchases remain historical with a separate 142-file hash-bound continuity record; actual current live twelve-price/webhook configuration was verified. Existing consumer collections and active sessions preserved. Pending address-dependent policy/design dirt remains outside this release. See CRP_CREDIT_NEWS_PRODUCTION_2026_10_11.md and SOURCE_CAPTURES/NEWS-RELEASE-2026-10-11/.

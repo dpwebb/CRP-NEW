@@ -1,0 +1,593 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "passed": true,
+  "original_receipts": [
+    {
+      "file": "native-currency-hosted-2026-10-11/native-three-plan-proof.json",
+      "sha256": "e07ac9af69129e12c469020376615b35e793fae0a4aa5a95f2ef368281b33b75",
+      "build_id": "crp-v1-378b2463903ad652",
+      "measured_at": "2026-10-11T23:19:23.907Z"
+    },
+    {
+      "file": "native-currency-hosted-2026-10-11/native-checkout-browser-proof.json",
+      "sha256": "dca6fe6de577b71e5b106fdef90eebc7c458e5becc17592a12ac80c51ba5d85a",
+      "build_id": "crp-v1-378b2463903ad652",
+      "measured_at": "2026-10-11T23:18:27.224Z"
+    }
+  ],
+  "unchanged_dependencies": [
+    {
+      "file": "accelerated-launch/service/packet-fonts/NotoSans-Regular.ttf",
+      "sha256": "B85C38ECEA8A7CFB39C24E395A4007474FA5A4FC864F6EE33309EB4948D232D5"
+    },
+    {
+      "file": "accelerated-launch/service/packet-fonts/OFL.txt",
+      "sha256": "0DAB92D0544F7B233403F14B84A663BDBFA746982EDA629E7F4F9FFE1B036FEB"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/fontkit-1.1.1.min.js",
+      "sha256": "D8DF561B9FBA98E24F2E5130E40948809281BBBC55A20C412359F1A0A5EB35A6"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/fontkit-LICENSE.txt",
+      "sha256": "7AB986B8CB4A27F8AC7CB0D72924C621A1A0418967B5AE9AC38C9FE981643AB8"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/fontkit-README.md",
+      "sha256": "7315FCC54511F5FFC906969C39333F93CD47F5217AB014FE45ACFF14BD5EC4C0"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/pdf-lib-1.17.1.min.js",
+      "sha256": "0F9A5CAD07941F0826586C94E089D89B918C46E5C17CF2D5A3C6F666E3BC694F"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/pdf-lib-LICENSE.md",
+      "sha256": "F2C9FC00FDB66EB99AC156BA52D734AF66D8D309F65753AE809AD34EE2883BCB"
+    },
+    {
+      "file": "accelerated-launch/service/pdf-vendor/provenance.json",
+      "sha256": "B730ACB9C554B5335BDF3C09B2CE0A37E98C382E5488251D7D7C74D3B91D97E0"
+    },
+    {
+      "file": "accelerated-launch/service/password-vendor/README.md",
+      "sha256": "2B16276E98AE4538A44CA93A950918D45AF453A873673EBA21046D0E0D212F4D"
+    },
+    {
+      "file": "accelerated-launch/service/password-vendor/bcryptjs-3.0.3.cjs",
+      "sha256": "ED01B52B436504D8BB7086D93FEE4BD8EDBB22D8ED88E1B456E0C604F30E79C4"
+    },
+    {
+      "file": "accelerated-launch/service/password-vendor/bcryptjs-LICENSE.txt",
+      "sha256": "095017EF78D2C818465EEA7D71EBED918EB415AEE9D38D36CE0B1240AE5781EE"
+    },
+    {
+      "file": "accelerated-launch/service/password-vendor/provenance.json",
+      "sha256": "C06709CC5E3ED0ACBC49DFE892D349ED5BFF51E77A1E1DFE255FF847C5E0E3A7"
+    },
+    {
+      "file": "accelerated-launch/service/account-display.cjs",
+      "sha256": "54F559FCEEE11B18EFE13FF49F623EE72E6FCC0D6A66E94517880E4DC7BCAC10"
+    },
+    {
+      "file": "accelerated-launch/service/account-documents.cjs",
+      "sha256": "D3D7BE034C340B6099C91869DAD2CBCC4F237CB58E244A677B6D11833D8A8023"
+    },
+    {
+      "file": "accelerated-launch/service/account-identity.cjs",
+      "sha256": "43AEB9E46A677D4107DA839FB6DCBD400018707F21D56AEF4B3D868BB8DD75A0"
+    },
+    {
+      "file": "accelerated-launch/service/account-profile.cjs",
+      "sha256": "BDD4F76BC5CB2349423158D6851FECEE2FD8E38B45126BD29CFB286B860DFB43"
+    },
+    {
+      "file": "accelerated-launch/service/account-summary-table.cjs",
+      "sha256": "31E4005F5390B4F39F73593B36BC6FD6CA8A70C8F4C926EF10AA4013CCAB30ED"
+    },
+    {
+      "file": "accelerated-launch/service/accounts.cjs",
+      "sha256": "AED3F456DA0F7B4800B098B417B23B26743752E444337792E72708AAB4243F73"
+    },
+    {
+      "file": "accelerated-launch/service/applicability.cjs",
+      "sha256": "A009120E0061523FA55A669B551B8868D4ADD5D06CBEAE5902D03404725EDD3D"
+    },
+    {
+      "file": "accelerated-launch/service/assessment-clock.cjs",
+      "sha256": "84958F0B2F13E93FD644914E2B05F1137CCB492D350DB2C5FBCBCC098F3F56A5"
+    },
+    {
+      "file": "accelerated-launch/service/assessment-pdf.cjs",
+      "sha256": "45F9941070562CF58661A6EAAE01F8E99F9CE898521332433934AFE515B068A7"
+    },
+    {
+      "file": "accelerated-launch/service/billing-credits.cjs",
+      "sha256": "D201E3FD79885F5B9F71A1CD8638D3BA6786674800186AC4F2FCA7CA9877EB3A"
+    },
+    {
+      "file": "accelerated-launch/service/billing-event-effects.cjs",
+      "sha256": "9E20ED8B02BDCB6F78DF18BBAF475713A7EDD350D2663FB15D898D6302E28D03"
+    },
+    {
+      "file": "accelerated-launch/service/billing-reconciliation.cjs",
+      "sha256": "F955AD633CCCE48BD851FC62C8893873B1BA66227F1869DAE0DD80261F320BD2"
+    },
+    {
+      "file": "accelerated-launch/service/build-subscription-value-evidence.cjs",
+      "sha256": "29FCAA615941018DA0DC2B6B8B6A44A419E01539071ACBE3B257C4B14A04B924"
+    },
+    {
+      "file": "accelerated-launch/service/bureau-dispute-requirements.cjs",
+      "sha256": "6ED77C6DD575B8A602C4053D578EC68847CC3AA2A18E8AC0610C57AEF868323C"
+    },
+    {
+      "file": "accelerated-launch/service/ca-consumer-file-facts.cjs",
+      "sha256": "3B884D809AC35603DBE388E9F572DE3E1DBF4FFA92D28E3BFF60C816059DDE13"
+    },
+    {
+      "file": "accelerated-launch/service/case-status.cjs",
+      "sha256": "6AAAE21835BCA96E4B5A56962FE15773537CF2FDB0D198B951A5E53C451BDF9D"
+    },
+    {
+      "file": "accelerated-launch/service/cases.cjs",
+      "sha256": "8DCC7E48F19ACA9368BD03ECE0178A6D86C4B3C008C7201E6B80B5CB4808B393"
+    },
+    {
+      "file": "accelerated-launch/service/checkout-purchase.cjs",
+      "sha256": "E0EC152B1E67CA87EB7B0753E2A661384050F27739C97526FAFE2410F6930C53"
+    },
+    {
+      "file": "accelerated-launch/service/clarification.cjs",
+      "sha256": "D0F5A64BA45CFEC211B6C121D0FD43B90E08162CC3CD4DDA91F0DCA3086167B8"
+    },
+    {
+      "file": "accelerated-launch/service/common-error-checklist.cjs",
+      "sha256": "1CFD7C2B1D1D4B9A4BD7D867BFAE8E4EA26B3DA9CF000582BFE8F25A7717E63F"
+    },
+    {
+      "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
+      "sha256": "7DB8238A5491E9FF79A76C9327B3514C4F587A4554AD2981A2B45CBFC3BD6A56"
+    },
+    {
+      "file": "accelerated-launch/service/common-error-scope.cjs",
+      "sha256": "78490F15C051FEAA7FBFDAF18A2264FACC98C772BF11295F429233B10AFB7195"
+    },
+    {
+      "file": "accelerated-launch/service/common-errors.cjs",
+      "sha256": "ABE8C3193E699EFA3C841BE20CD77B065C00E06C30F56184E9263AA831C0AF93"
+    },
+    {
+      "file": "accelerated-launch/service/comparison.cjs",
+      "sha256": "FD79A54061F76551B0D261D6EEE0AEF842C401B9FE84697C77F690258969DB6E"
+    },
+    {
+      "file": "accelerated-launch/service/consumer-dispute-letter.cjs",
+      "sha256": "E489719677DF621FF45793435B002FE5D5039AF8AE68EE8433D6E9847ADF98C9"
+    },
+    {
+      "file": "accelerated-launch/service/content-assessments.cjs",
+      "sha256": "659E1FA06B0052A12D2EC3E919D4157B8FF199D04941DB814680A9099B84E4BC"
+    },
+    {
+      "file": "accelerated-launch/service/coverage-matrix.cjs",
+      "sha256": "4A49A30751D8AAEF291CA0FFC5BE133D597EDF9ED0A5BCFCB904F3E70BE94B77"
+    },
+    {
+      "file": "accelerated-launch/service/demo.cjs",
+      "sha256": "4DF8523D56517C331360E1B45CE79BD7750D3A7CB7F2C8AFF4C2602D6E3F126D"
+    },
+    {
+      "file": "accelerated-launch/service/drafts.cjs",
+      "sha256": "8400DD521B36B99A1F5F4B33325AA6D0878B6B676C11C2AA4EE889050B8E8452"
+    },
+    {
+      "file": "accelerated-launch/service/duplicate-account-pair.cjs",
+      "sha256": "06993A8EFC90E021B68E97EF129048F6219776D4C0184CA3D2D4F7ADC96C8D8A"
+    },
+    {
+      "file": "accelerated-launch/service/entitlement.cjs",
+      "sha256": "7FA1EFAB382D7E4529CA83E367316EF93397E6BA744500F758C55629659C5A32"
+    },
+    {
+      "file": "accelerated-launch/service/errors.cjs",
+      "sha256": "0B33D84BD151611E606E5BA9BE007847E6DA3FF3DEA81AFA27233CA670C505F0"
+    },
+    {
+      "file": "accelerated-launch/service/evaluation.cjs",
+      "sha256": "C8127D3CB82EADAD2CFB089A657DFE79AFC8CA66018977DA17E77793B6DBA3AF"
+    },
+    {
+      "file": "accelerated-launch/service/evidence-validator.cjs",
+      "sha256": "17E36449FEF370196A4E8340B4F9DFEB358F34DDA82A9C6AD41EAD11EF223433"
+    },
+    {
+      "file": "accelerated-launch/service/factual-checks.cjs",
+      "sha256": "4A04A7C76F64A1AE81E8A7ECE035200CE262300039EF12BB8E109CC2BDAA27E7"
+    },
+    {
+      "file": "accelerated-launch/service/fdt-acceptance.cjs",
+      "sha256": "52150A0C5F4E4FF91EB57961B3FF819AB0F645F426EF0E4246B3D6BB705DB222"
+    },
+    {
+      "file": "accelerated-launch/service/fdt-benchmark.cjs",
+      "sha256": "7C5DB5DAB0479FF3466CE652C11435690017E7D5FD8FB8CF7590FE9FC7671606"
+    },
+    {
+      "file": "accelerated-launch/service/fdt-recovery.cjs",
+      "sha256": "06847142B367BAB9F0C22FB53FCDE59C6B78B6CEB05D6CAEEF9010C87D400D94"
+    },
+    {
+      "file": "accelerated-launch/service/finding-coverage.cjs",
+      "sha256": "AC6C2E63FE3DF7AA6023CC6D347C5C9D51ED79838B654674366295B54A49A937"
+    },
+    {
+      "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
+      "sha256": "736ADF4BE7AE33F212CB596809D2743E5B7091A9FDF13D92BC72F34D485E97EF"
+    },
+    {
+      "file": "accelerated-launch/service/format-families/ca-consumer-format-scope.cjs",
+      "sha256": "A22A104956819A0E7B0B7276103193E87C79543A5B88A4ABC4955A2261753B71"
+    },
+    {
+      "file": "accelerated-launch/service/format-families/gb-experian-consumer.cjs",
+      "sha256": "5793AB635CAAF57EA54D2E130DCA16BE554EE4C6C1F0C841EE1FBDBE28C5A028"
+    },
+    {
+      "file": "accelerated-launch/service/format-families/tu-ca-consumer.cjs",
+      "sha256": "F0E1524F5A184842C3A0DD9FBF7975031D12BD4D5C18C37C6224D7A8671D5308"
+    },
+    {
+      "file": "accelerated-launch/service/format-families/us-experian-consumer.cjs",
+      "sha256": "F8B6F52BF2BF1F9F72C0D9457524E9081CC7EF7540D7695DBBEFF58BD8FEA640"
+    },
+    {
+      "file": "accelerated-launch/service/formats.cjs",
+      "sha256": "A042E7A042009D0635FF85EFA18A948C455B4BC130D9480C6CEE4B8B5A725236"
+    },
+    {
+      "file": "accelerated-launch/service/gb-general-field-contract.cjs",
+      "sha256": "BDD7C7DA76CEB8523DE23A767821400B330FF4C084EABCB6664052CC2B3B58D8"
+    },
+    {
+      "file": "accelerated-launch/service/general-intake.cjs",
+      "sha256": "1537B352DB4602B3CAB5E3FEE4739F75C2822E09C33E0C55D082C86207B7B839"
+    },
+    {
+      "file": "accelerated-launch/service/issues.cjs",
+      "sha256": "01735A658032AC2DFB7CE74682FE21FDCD4284AAE89AFE398D9BD974B4E2FEF6"
+    },
+    {
+      "file": "accelerated-launch/service/journey.cjs",
+      "sha256": "E1C154ABB85D8EC8A924E26EB5D74B33BA5E7B8F4D45982E318A5C0956D6F4A0"
+    },
+    {
+      "file": "accelerated-launch/service/legacy-password.cjs",
+      "sha256": "61C87FC93FF2929ADF093A1550C09FE2B04C7DDA15DEB75851F47600560917BF"
+    },
+    {
+      "file": "accelerated-launch/service/limitation-assessment.cjs",
+      "sha256": "59911E688B1C4AF64B81F8A02DE9AB6B69BF284387DFE0B69143E23A626BBD67"
+    },
+    {
+      "file": "accelerated-launch/service/logger.cjs",
+      "sha256": "C16E6D0F584F4A0FC5EEDA0CE81014A86268EF7075915DAF12F2DC84CCFC154F"
+    },
+    {
+      "file": "accelerated-launch/service/multi-file-assembly.cjs",
+      "sha256": "3DCCD6B133AD706BE0EAAE72F267C7FFEC7BC496E0414AF4A17000C24C3C0F0A"
+    },
+    {
+      "file": "accelerated-launch/service/ocr/local-ocr.cjs",
+      "sha256": "0D86B3F237A3310464B13A6B0B2EAFB24398DB2DDCC521071D91DA3223FEA8F9"
+    },
+    {
+      "file": "accelerated-launch/service/packet-archive.cjs",
+      "sha256": "DD5AD67C85C49ECE7C11963FB5887C08EC567608FB29827669ADC118348B0DE2"
+    },
+    {
+      "file": "accelerated-launch/service/packet-composer-worker.cjs",
+      "sha256": "3188AE4B1C7DD32AC1C4B3DEC06C5297794073069EB2951D234FEAE983971500"
+    },
+    {
+      "file": "accelerated-launch/service/packet-composer.cjs",
+      "sha256": "C6C6B5BDD396AF577B1360124F12E27C90F5134E879CB46588D948711BECC110"
+    },
+    {
+      "file": "accelerated-launch/service/packet-pdf.cjs",
+      "sha256": "D610E35A46C10BA9A7DE0BB6C99BA2A82D02535EB6FF57E7A58FB0B6B4BEB90B"
+    },
+    {
+      "file": "accelerated-launch/service/packet-report-exhibits.cjs",
+      "sha256": "33F22F90C9EA11E19A6A93802F1F25B79CD9AB3C08515431B4B99B5E8F13BFA2"
+    },
+    {
+      "file": "accelerated-launch/service/packet-support.cjs",
+      "sha256": "CFAC7710F104570F21BFA50251E53A5AEEBDF09A04881A0770A9EEA4FCB366B4"
+    },
+    {
+      "file": "accelerated-launch/service/packets.cjs",
+      "sha256": "5CD74AE34E2DDA90B170B2F8C697FEE4F2C375FE0C5FB0CF9EA45E7EFF494691"
+    },
+    {
+      "file": "accelerated-launch/service/payment-history-analysis.cjs",
+      "sha256": "406073AB9C6C34265B0717012C76E066A28CBB718C96309D16C79470C36C4A8A"
+    },
+    {
+      "file": "accelerated-launch/service/payment-history-grid.cjs",
+      "sha256": "6D2DA3430201347E50813C9EB4A0CC964CE1D08E2E4A6838745C2A13F243EFEF"
+    },
+    {
+      "file": "accelerated-launch/service/payment-provider.cjs",
+      "sha256": "B9016E4287087E624C6BBE24C4F86719643E57E5FDA4A93AF2A745A06D4D8E05"
+    },
+    {
+      "file": "accelerated-launch/service/plan-catalog.cjs",
+      "sha256": "18FC6FC91BBBA7638C7DFD817E7E0940FAB68D029193289F8EC3554AACFC1E9A"
+    },
+    {
+      "file": "accelerated-launch/service/pricing-location.cjs",
+      "sha256": "4E78759BDB0D47A0E862BA925FEAEE204BB5A3C3618C6AFB49941E9443BF55E3"
+    },
+    {
+      "file": "accelerated-launch/service/privacy.cjs",
+      "sha256": "FD134E4BFBC88257832EF020981CE42069AE4364E0B65476B55B3655187B2477"
+    },
+    {
+      "file": "accelerated-launch/service/private-store.cjs",
+      "sha256": "7493C1D54269354C551EF613054BEC19F9263A2308E8FBA0B63BE9D04E75898E"
+    },
+    {
+      "file": "accelerated-launch/service/published-reporting-periods.cjs",
+      "sha256": "F1145071DD99FF9831809156173DF757FD864C58BBE04A8AE86E5F430AFAA616"
+    },
+    {
+      "file": "accelerated-launch/service/reaging.cjs",
+      "sha256": "74A0891543D945B22031CF844DC1FE80B026BB4280086157B05945BF3696665F"
+    },
+    {
+      "file": "accelerated-launch/service/referral-engine.cjs",
+      "sha256": "C32C592FF1968B2C6AF2C6EB3DFBD8A762CD44DF26C46B8E7CBA578AE537A39B"
+    },
+    {
+      "file": "accelerated-launch/service/referral-staging.cjs",
+      "sha256": "36C6419655CE931B2B3619D534D79DCD9DEAE63F92ED2FDD4FAE1FD0B3A29B92"
+    },
+    {
+      "file": "accelerated-launch/service/release-check.cjs",
+      "sha256": "A57B8373A158CAD150B07AFBDB0CA5EE3774A504B2710EC2DF29F11CD9CA94E8"
+    },
+    {
+      "file": "accelerated-launch/service/report-amount.cjs",
+      "sha256": "384B31822C1F3BED7E8F3E9E53F248A8682582BCA5249881F84A27EB9729DE33"
+    },
+    {
+      "file": "accelerated-launch/service/report-code-definitions.cjs",
+      "sha256": "667F049067D609EA1EEA332004B8EC869399B2E811BC551B737D22180CBACB67"
+    },
+    {
+      "file": "accelerated-launch/service/report-fact-sources.cjs",
+      "sha256": "16201A62AD8A71AD200B177924EF27A3E771768D87070BBAA0AB252F95D62778"
+    },
+    {
+      "file": "accelerated-launch/service/results.cjs",
+      "sha256": "B312D2F70FC53E46A185701924F2F5428F0821A9867DC4CD63F182FAB5FDBBAC"
+    },
+    {
+      "file": "accelerated-launch/service/retention.cjs",
+      "sha256": "F0BFB2441D14628236072AF7F8703D5355685AC8C4F6817B5F2838FDBF2C298E"
+    },
+    {
+      "file": "accelerated-launch/service/server.cjs",
+      "sha256": "090041331B4AB7DAF33D570A7A7A24A4BA3353D5891023C2900B55AEECFAD41C"
+    },
+    {
+      "file": "accelerated-launch/service/store-diagnostic.cjs",
+      "sha256": "B9A63F7A90D9C24ADF9C2EE0CFBEF5D7CDDA0F29B9AD4D721B4CE0A7599BF18D"
+    },
+    {
+      "file": "accelerated-launch/service/stripe.cjs",
+      "sha256": "9D9EDC70CC8ED953125DCBF9C954C7DEB4F31DFEA2E372CCDF44B17CE22FC93A"
+    },
+    {
+      "file": "accelerated-launch/service/support.cjs",
+      "sha256": "3B4692F345087F8277AA84F1942101EBA3E8BDF50B7B480B8ACF61154E51710C"
+    },
+    {
+      "file": "accelerated-launch/service/upgrade-credit.cjs",
+      "sha256": "0146A441B36FC1995BE28E6305114E29CFAEBE5FA11545F50605C59A38BA730D"
+    },
+    {
+      "file": "accelerated-launch/service/uploads.cjs",
+      "sha256": "25904C79938706BE6E1CB8EA340517F8A78A3E3AB1BFC5DAEA7A813463832405"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/constants.cjs",
+      "sha256": "4A8F757057065845177C65B1DB6AB64BE85FECEF9492783F522D5E4159F9C155"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/document-model.cjs",
+      "sha256": "6F19174D9E3333788F0BD1127264017998A8FFCB9F8A01C6F3EFBD00CE716853"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/extraction.cjs",
+      "sha256": "19F548BB9F5C20D295C9D8B044756E1477FDC98BCC0A6C65D8F2F516A7054A2F"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/locators.cjs",
+      "sha256": "22CD88EB56DC25B729BBAB27DAF14709B0562A252DADD9150A9C34B55856F530"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/presentation-contract.cjs",
+      "sha256": "19ED33500478A89ADCC2F49CC67CCCD956F57377BC10662602417FAF0D3B4CE4"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/run-internal-validation.cjs",
+      "sha256": "11A5C3BB3E17E8FB512D5EAC9FA3642E50B6FC465545EA5EEA742449AC880B5E"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/runtime-config.cjs",
+      "sha256": "844E41CDEC338E3CF9461021B8E8F5FFB972E0BC376F252BCD7DF9372D1C10CF"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/six-year-evaluator.cjs",
+      "sha256": "1845F9695BB31351F5815F5AA6B270C0D8C896F27C42A63D36D0BD76C486A5CD"
+    },
+    {
+      "file": "internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs",
+      "sha256": "12F18CABE0C1CF37F0C2054B48069ABB3BF1B24FE0F33B5ECC4EF010D9A5BDD3"
+    },
+    {
+      "file": "consumer-wizard/dist/jurisdiction-data.js",
+      "sha256": "C6A6CBCCA2E0DB81E189F9FE5D7E7BBB2DE0DDAD4C5C1616A53AC0A024A49906"
+    },
+    {
+      "file": "accelerated-launch/adapters/adapter-configs.json",
+      "sha256": "F12828CF9FCEE4ED9A9B33DCB699022B56F9B9EB0949855922DBB5E288C8E281"
+    },
+    {
+      "file": "accelerated-launch/adapters/applicability-records.json",
+      "sha256": "DE53F2E9D92642DC0424A2139C8DD92AD0842C5858952487B73F6FBE2C10AFBF"
+    },
+    {
+      "file": "accelerated-launch/adapters/evaluation-primitives.cjs",
+      "sha256": "A943043C76150B523AB131507E04CAD4219F433627F9A14E5325DAC838CC5B95"
+    },
+    {
+      "file": "accelerated-launch/adapters/report-use.cjs",
+      "sha256": "0797A7CBAFC716E4E61FD10D0F77ACBE6A8C74509FB7799AB22921336F333522"
+    },
+    {
+      "file": "accelerated-launch/adapters/reporting-period-anchor.cjs",
+      "sha256": "7B126486F08A1955369C931D5867A29979562B4A279475EE78D00BBAF9F44F4D"
+    },
+    {
+      "file": "accelerated-launch/adapters/rule-adapter-catalog.json",
+      "sha256": "006AEED2006C7FEAA35B6F725F605C2AC49F7414062F4F8532492922AB9899B1"
+    },
+    {
+      "file": "accelerated-launch/adapters/rule-adapters.cjs",
+      "sha256": "EADD4755EF900B671BDA324A264B680E75DFE628EA2464FC66A7BCFDFC451CF3"
+    },
+    {
+      "file": "accelerated-launch/adapters/test-adapters.cjs",
+      "sha256": "13A54A98285011ECC16BF745E3F313AA8347FCA0C87005F7B1F47E67E0EA996D"
+    },
+    {
+      "file": "accelerated-launch/benchmark-ingestion.cjs",
+      "sha256": "56C5899D7A1B6FBE83B65980A75148DF2D76FF83E5D92E1281DDAE54901A63BE"
+    },
+    {
+      "file": "accelerated-launch/check-field-matrix.json",
+      "sha256": "18BA195228E8BFE34A19C119EF28E4F76C7327C923C98990947965D9957A9A68"
+    },
+    {
+      "file": "accelerated-launch/coverage-matrix.json",
+      "sha256": "94D8562D330E355F113C2E4555E29E1238DC729C8AE710272D053BA130EEC08C"
+    },
+    {
+      "file": "accelerated-launch/jurisdiction-router.cjs",
+      "sha256": "A83EA0A08C6A5C4AF033FBC974681176C1DC84640BEC1FB26FD159E2D419A74B"
+    },
+    {
+      "file": "accelerated-launch/launch-matrix.json",
+      "sha256": "8C109020CEC716872DBD039AD2A350945336E5E74E2692110E2825C077064C5C"
+    },
+    {
+      "file": "accelerated-launch/reported-fact-policy.approval.json",
+      "sha256": "57060D45EA2DD06B1AAB34E2E2CE4ED0CC65F42BB2498EAAA426EB434CF5C48E"
+    },
+    {
+      "file": "accelerated-launch/reported-fact-policy.cjs",
+      "sha256": "42A1DD443D938F7A946B8E9E2586818E23941A1EA82FF52D0A431EDF83F5595E"
+    },
+    {
+      "file": "accelerated-launch/reported-fact-policy.json",
+      "sha256": "9D81D094394A8F8F053F3792A888C690ADDD0713565013D9396355675AEE0ADD"
+    },
+    {
+      "file": "accelerated-launch/test-router.cjs",
+      "sha256": "B2ED51FD3E31B15DA28925E53E31896D82A24A64EB420EC8A6DEE822C515EC4A"
+    },
+    {
+      "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
+      "sha256": "5894A3649B213CF5B2D673B6E7A871815FD1D120FA68A463592F27DB14EAE323"
+    },
+    {
+      "file": "accelerated-launch/service/ui/OpenSans-Regular.ttf",
+      "sha256": "E64E508B2AA2880F907E470C4550980EC4C0694D103A43F36150AC3F93189BEE"
+    },
+    {
+      "file": "accelerated-launch/service/ui/Roboto-Bold.ttf",
+      "sha256": "EF2AB0E402D5CB9DE893E263A2C44E57F57FEC3974B0D981BFE84DEC3DAE83A1"
+    },
+    {
+      "file": "accelerated-launch/service/ui/app.js",
+      "sha256": "7D82A24C612AB3CC5A78148B18DC56AE423FAFF1F2C0C4688964FFE1F5B9EF86"
+    },
+    {
+      "file": "accelerated-launch/service/ui/favicon.svg",
+      "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
+    },
+    {
+      "file": "accelerated-launch/service/ui/index.html",
+      "sha256": "F772446EF70D3FF7A4EF161BBAC2808BCA4793D3344086C490D443AED36A7449"
+    },
+    {
+      "file": "accelerated-launch/service/ui/landing.css",
+      "sha256": "EA788DBEDA00CC0DD5D895EACB69680703FE063F4C22D5E5C4082E2138E1800A"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.css",
+      "sha256": "8B58BD4D187FE3B24A870E697B3613264E545D6AB5993C7695115B574247735D"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.html",
+      "sha256": "F0067C74F0A93BB40AB08934A48F50880C86F9D653CC7C82E8EDAA423C06FAA1"
+    },
+    {
+      "file": "accelerated-launch/service/ui/mailing-preview.js",
+      "sha256": "F7E28952B7791229181B01F4937D0AABB52CA9239C732A51D68B2FFE31328F0E"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.css",
+      "sha256": "828D9E03EB324830AD421FE400A2394F9611B56A9BC1D0AFA7C9C972898AB9CE"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.html",
+      "sha256": "5F4824A6516116491A7F8972E334F8618FD40E5DB77F6A0AB0A82624510F3490"
+    },
+    {
+      "file": "accelerated-launch/service/ui/referrals.js",
+      "sha256": "8DB041FD3E2405468E697A91B2A5964D933788CFB7EC631A84C80C7CE1B22EFE"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.css",
+      "sha256": "A007DF50C37C89B7D47ED9FECFF994D141F0B78B300B4E7B30703B3096D89174"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.html",
+      "sha256": "349A27EF8799ABF2AA5DF76E0C9A5147780D8E25435F9E2DF4C372FF97CEE1A1"
+    },
+    {
+      "file": "accelerated-launch/service/ui/score-simulator.js",
+      "sha256": "18C76736B2BDD2680E65A29C16FCB097DC68E9E85CDBB18BB236D3C73D902E68"
+    },
+    {
+      "file": "accelerated-launch/service/ui/story-font-license.txt",
+      "sha256": "20F7835D86AF589F46E762FEB51AB57EC0DD60F7D8037B85836A52CD601350A2"
+    },
+    {
+      "file": "accelerated-launch/service/ui/story.css",
+      "sha256": "ECDF3A3182857DFCB2E1163925575EC02E5914E2DA16A57CC76D0AB14771C0EA"
+    },
+    {
+      "file": "accelerated-launch/service/ui/style.css",
+      "sha256": "A419522084926DEEB93F48367064A69E84921162884E1D5722781507CFC512B1"
+    }
+  ],
+  "original_identities_preserved": true,
+  "fresh_provider_execution": false,
+  "scope": "Fixed three-plan/four-currency proof reused with unchanged billing dependency hashes; fresh current-build monthly purchase, annual upgrade and currency-choice browser proof measured separately",
+  "measured_at": "2026-10-12T00:44:56.290Z",
+  "shared_router_change": "Public news GET handler and two public assets added in app.cjs; fresh full regression and current hosted monthly checkout/annual upgrade provide changed-router proof"
+}
