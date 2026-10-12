@@ -93,6 +93,33 @@ function readSegmentFixture(t,options={},mutate) {
 function assembledExtraction(extraction,fileId='report-file') {
   return assembly.assemble([{file_id:fileId,stored_sha256:fileId,extraction}]).extraction;
 }
+function readNoteScopeFixture(t,options={},mutate) {
+  const xs=[30,185,245,325,410,495,575,665,755];
+  function block(second=false,offset=0) {
+    const words=[],put=(text,x,y)=>words.push({text,x,y:y+offset});
+    put((second?(options.sameBureau?'Equifax':'Experian'):'Equifax')+' Consumer Credit Report - FICTIONAL TEST FIXTURE',30,20);
+    put('Prepared Date: '+(second?'05/05/2025':'06/06/2026'),30,40);
+    if(!second||!options.foreignOnly) {
+      put('ACCOUNT SUMMARY',30,60);
+      ['Creditor','Account','Type','Opened','Reported','Status','Balance','Limit','Payment'].forEach((text,i)=>put(text,xs[i],80));
+      ['Cedar Card',second?'****2233':'****1122','Credit Card','15/01/2021',second?'05/05/2025':'06/06/2026','Current','$1,240 AUD','$6,500 AUD','$45 AUD'].forEach((text,i)=>put(text,xs[i],105));
+      if(!second&&options.duplicateName)['Cedar Card','****3344','Credit Card','16/01/2021','06/06/2026','Current','$320 AUD','$2,200 AUD','$30 AUD'].forEach((text,i)=>put(text,xs[i],124));
+    }
+    if(second||!options.foreignOnly) {
+      put('PAYMENT HISTORY AND REMARKS',30,145);
+      ['Creditor','Recent Payment History','Remarks'].forEach((text,i)=>put(text,[30,210,630][i],164));
+      if(options.crossBoundary&&!second)put('Experian Consumer Credit Report - FICTIONAL TEST FIXTURE',30,174);
+      ['Cedar Card',Array(24).fill(second?'Z9':'OK').join(' '),second?'Closed at consumer request':'Account in good standing'].forEach((text,i)=>put(text,[30,210,630][i],184));
+    }
+    return words;
+  }
+  const pages=options.crossBoundary?[{words:block()}]:options.samePage?[{words:[...block(),...block(true,250)]}]:[{words:block()},{words:block(true)}];
+  const file=path.join(t.dataDir,'note-source-scope-'+(++sequence)+'.pdf');
+  fs.writeFileSync(file,buildWordPdf(pages,{page_size:{width:1050,height:800},font_size:8,
+    producer:'Fictional note-segment custody fixture',creator:'Fictional note-segment custody fixture'}));
+  const model=formats.buildPdfDocumentModel(file);if(mutate)mutate(model);
+  return formats.extractWithSharedAdapter(model,{mode:'REPORT',country:'AU'});
+}
 async function run(t,check) {
   const x=readFixture(t), accounts=x.records.filter(r=>r.kind==='GENERAL_ACCOUNT'), collection=x.records.find(r=>r.kind==='GENERAL_COLLECTION');
   check.equal(accounts.length,4,'nine-column summary yields exactly four accounts, no identity/DOB/history/inquiry phantom accounts');
@@ -208,6 +235,35 @@ async function run(t,check) {
   const twoFiles=assembly.assemble([{file_id:'one',stored_sha256:'one',extraction:own},
     {file_id:'two',stored_sha256:'two',extraction:readSegmentFixture(t,{sameBureau:true})}]).extraction;
   check.equal(new Set(twoFiles.report_concern_evidence.map(item=>item.report_segment_id)).size,4,'identical local segment IDs in two uploads retain four distinct file-bound identities');
+  for(const options of [{},{samePage:true},{sameBureau:true},{samePage:true,sameBureau:true}]) {
+    const scoped=readNoteScopeFixture(t,options), first=scoped.records.find(record=>record.facts['account.masked_identifier']==='MASK-1122'),second=scoped.records.find(record=>record.facts['account.masked_identifier']==='MASK-2233');
+    check.equal(first.facts['account.reportRemarks'],'Account in good standing','first source keeps its own remarks '+JSON.stringify(options));
+    check.equal(second.facts['account.closureStatement'],'Closed at consumer request','second source owns its closure despite repeated creditor name');
+    check.equal(first.facts['account.closureStatement'],undefined,'later report closure cannot attach to the earlier account');
+    check.equal(first.facts['account.undatedPaymentHistory']?.tokens[0],'OK','first account owns first report history');
+    check.equal(second.facts['account.undatedPaymentHistory']?.tokens[0],'Z9','second account owns second report literal history');
+    check.ok(scoped.table_note_associations.every(row=>row.binding!=='UNBOUND'),'unique names per source report stay usable even with cross-report duplicates');
+  }
+  for(const options of [{foreignOnly:true},{foreignOnly:true,samePage:true},{foreignOnly:true,sameBureau:true},{foreignOnly:true,samePage:true,sameBureau:true}]) {
+    const scoped=readNoteScopeFixture(t,options), account=scoped.records.find(record=>record.facts['account.masked_identifier']==='MASK-1122');
+    check.equal(account.facts['account.closureStatement'],undefined,'a different report cannot lend its closure to the only matching creditor '+JSON.stringify(options));
+    check.equal(account.facts['account.undatedPaymentHistory'],undefined,'a different report cannot lend its history to the only matching creditor');
+    check.equal(account.facts['account.balance'],1240,'independent first-report balance survives note refusal');
+    check.ok(scoped.table_note_associations.some(row=>row.binding==='UNBOUND'),'cross-report note refusal remains internal');
+  }
+  const duplicateNotes=readNoteScopeFixture(t,{duplicateName:true,samePage:true});
+  check.ok(duplicateNotes.records.filter(record=>record.report_segment_id==='segment-1').every(record=>!record.facts['account.reportRemarks']&&!record.facts['account.undatedPaymentHistory']),'two own matching accounts leave the first segment note unbound');
+  check.equal(duplicateNotes.records.find(record=>record.report_segment_id==='segment-2').facts['account.closureStatement'],'Closed at consumer request','duplicate names in an earlier segment cannot suppress a unique later segment note');
+  const crossedNote=readNoteScopeFixture(t,{crossBoundary:true});
+  const crossingAccount=crossedNote.records.find(record=>record.facts['account.masked_identifier']==='MASK-1122');
+  check.equal(crossingAccount.facts['account.reportRemarks'],undefined,'a note header before a new bureau cannot claim the value after it');
+  check.equal(crossingAccount.facts['account.undatedPaymentHistory'],undefined,'crossed history caption/value boundary is withheld');
+  check.equal(crossingAccount.facts['account.balance'],1240,'crossed note boundary leaves independent account facts usable');
+  const untrustedNote=readNoteScopeFixture(t,{samePage:true},model=>{for(const word of model.pages[0].word_boxes)if(word.text==='Remarks'&&word.y0<200)word.trusted=false;});
+  const independent=untrustedNote.records.find(record=>record.facts['account.masked_identifier']==='MASK-1122');
+  check.equal(independent.facts['account.reportRemarks'],undefined,'untrusted own remarks caption cannot support that field');
+  check.equal(independent.facts['account.undatedPaymentHistory']?.count,24,'independent trusted history caption and value stay usable');
+  check.equal(untrustedNote.records.find(record=>record.facts['account.masked_identifier']==='MASK-2233').facts['account.closureStatement'],'Closed at consumer request','untrusted earlier remarks do not suppress later supported note fields');
   return {scope:'fictional native nine-column account/collection/history/identification/inquiry layout',
     source_rows:7,source_remarks:5,undated_histories:4,privacy_redacted_identification:true,shipped_six_column_regression_required:true};
 }

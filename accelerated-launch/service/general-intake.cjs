@@ -20,7 +20,7 @@ const crypto = require('node:crypto');
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 1;
+const GENERAL_READER_VERSION = 2;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -628,6 +628,20 @@ function collectPages(model) {
       page.table_row_census = summary.table_row_census || [];
       page.report_note_rows = summary.report_note_rows || [];
       page.report_concern_evidence = reportConcernEvidence(page);
+      // Normalization removes history rows from account assembly, but their
+      // empty source anchors keep the segment geometry and order measurable.
+      const anchors = new Map();
+      for (const note of page.report_note_rows) for (const reading of [note.identity,note.history,note.remarks]) {
+        for (const loc of [reading.location,reading.location?.caption_location]) {
+          if (!loc?.bbox) continue;
+          const key = JSON.stringify([loc.page,loc.line,loc.bbox]);
+          anchors.set(key,{text:'',...loc,note_source_anchor:true});
+        }
+      }
+      for (const anchor of [...anchors.values()].sort((a,b)=>a.line-b.line)) {
+        const at = page.lines.findIndex(line=>line.line>=anchor.line);
+        page.lines.splice(at<0?page.lines.length:at,0,anchor);
+      }
       pages.push(page);
     }
   }
@@ -1861,21 +1875,30 @@ function appendTableFields(record, line) {
   if (line.trusted === true && Object.keys(record.facts).length) { record.status = 'RESOLVED'; record.reason = null; }
 }
 
-function attachTableNotes(pages, records) {
+function attachTableNotes(pages, records, segments) {
   const associations = [];
   const tokenOf = note => note.identity.raw.toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
-  for (const page of pages) for (const note of page.report_note_rows || []) {
+  const scoped = pages.flatMap(page=>(page.report_note_rows || []).map(note=>({page,note,
+    owner:ownReadingSegment(note.identity,segments)})));
+  for (const {page,note,owner} of scoped) {
     const token = tokenOf(note);
-    const candidates = note.identity.trusted ? records.filter(record => record.location?.page === page.page
-      && record.facts['account.reported_identity'] === token && record.kind !== 'GENERAL_INQUIRY') : [];
+    const segmentId = owner ? 'segment-' + (owner.index + 1) : null;
+    const candidates = owner ? records.filter(record => record.location?.page === page.page
+      && record.report_segment_id === segmentId && record.facts['account.reported_identity'] === token
+      && record.kind !== 'GENERAL_INQUIRY') : [];
     // One physical report/name must identify exactly one account. No nearest-row borrowing.
-    const ownNoteCount = (page.report_note_rows || []).filter(item=>tokenOf(item)===token).length;
+    const ownNoteCount = scoped.filter(item=>item.page.page===page.page&&tokenOf(item.note)===token
+      &&item.owner?.index===owner?.index).length;
     if (candidates.length !== 1 || ownNoteCount !== 1) { associations.push({row_id:note.coverage.row_id,binding:'UNBOUND'}); continue; }
-    const target = candidates[0]; associations.push({row_id:note.coverage.row_id,binding:target.record_index});
+    const target = candidates[0];
+    const sameSegment = reading => ownReadingSegment(reading,segments)?.index === owner.index;
+    const remarksOwned = sameSegment(note.remarks), historyOwned = sameSegment(note.history);
+    associations.push({row_id:note.coverage.row_id,binding:remarksOwned||historyOwned?target.record_index:'UNBOUND',
+      report_segment_id:segmentId,field_bindings:{remarks:remarksOwned?target.record_index:'UNBOUND',history:historyOwned?target.record_index:'UNBOUND'}});
     const noteLine = (reading, label) => ({...reading.location, text:label+': '+reading.raw, caption_label:label,
       caption_location:reading.location.caption_location, trusted:reading.trusted});
-    retainOwnRemarks(target, note.remarks.raw, noteLine(note.remarks, 'Remarks'));
-    if (note.history.raw && /^(?:[A-Z0-9*#.-]{1,4}\s*)+$/i.test(note.history.raw)) {
+    if (remarksOwned) retainOwnRemarks(target, note.remarks.raw, noteLine(note.remarks, 'Remarks'));
+    if (historyOwned && note.history.raw && /^(?:[A-Z0-9*#.-]{1,4}\s*)+$/i.test(note.history.raw)) {
       const tokens = note.history.raw.split(/\s+/);
       ownTableFact(target, 'account.undatedPaymentHistory', note.history.raw,
         {tokens,count:tokens.length,periods_printed:false,legend_printed:false}, noteLine(note.history,'Recent Payment History'));
@@ -2612,10 +2635,8 @@ function refused(result, outcome, reason) {
 // Report-level readings have no account record to carry their custody. Bind the
 // measured field heading AND value to one source segment before surfacing them.
 // A physical page shared by reports cannot lend its global bureau or date.
-function bindReportConcernEvidence(pages, segments) {
-  const evidence = [], associations = [];
+function ownReadingSegment(reading, segments) {
   const finiteBox = value => value && ['x0','y0','x1','y1'].every(key=>Number.isFinite(value[key]));
-  for (const page of pages) for (const reading of page.report_concern_evidence || []) {
     const valueBox = reading.location?.bbox, headingBox = reading.location?.caption_location?.bbox;
     const sourceBoxes = [valueBox,headingBox];
     const candidates = reading.trusted === true && reading.location?.trusted === true
@@ -2626,7 +2647,15 @@ function bindReportConcernEvidence(pages, segments) {
           if (ownPage.page !== reading.location.page) return false;
           const boxes = ownPage.lines.map(line=>line.bbox).filter(finiteBox);
           if (!boxes.length) return false;
-          const top = Math.min(...boxes.map(bounds=>bounds.y0)), bottom = Math.max(...boxes.map(bounds=>bounds.y1));
+          const top = Math.min(...boxes.map(bounds=>bounds.y0));
+          let bottom = Math.max(...boxes.map(bounds=>bounds.y1));
+          // A wrapped value cannot extend a segment through the next report
+          // header merely by carrying a tall source box.
+          for (const following of segments.slice(segments.indexOf(segment)+1)) {
+            const nextPage = following.pages.find(part=>part.page===ownPage.page);
+            const nextBoxes = (nextPage?.lines || []).filter(line=>!line.note_source_anchor).map(line=>line.bbox).filter(finiteBox);
+            if (nextBoxes.length) {bottom=Math.min(bottom,Math.min(...nextBoxes.map(bounds=>bounds.y0))-1);break;}
+          }
           return sourceBoxes.every(bounds=>bounds.y0>=top-1 && bounds.y1<=bottom+1);
         })) : [];
     const own = candidates.length === 1 && candidates[0];
@@ -2638,7 +2667,14 @@ function bindReportConcernEvidence(pages, segments) {
         || segments.length===1&&!boundaries.length&&own?.segment.pages.some(ownPage=>(ownPage.native_words || []).some(word=>
           word.trusted!==false&&finiteBox(word)&&/^(?:EQUIFAX|EXPERIAN|TRANSUNION|ILLION)$/i.test(word.text)
           &&bureauOf(word.text)===own.segment.bureau));
-    if (!own || own.segment.ambiguous || !own.segment.bureau || !bureauTrusted) {
+    return !own || own.segment.ambiguous || !own.segment.bureau || !bureauTrusted ? null : own;
+}
+
+function bindReportConcernEvidence(pages, segments) {
+  const evidence = [], associations = [];
+  for (const page of pages) for (const reading of page.report_concern_evidence || []) {
+    const own = ownReadingSegment(reading,segments);
+    if (!own) {
       associations.push({kind:reading.kind,location:reading.location,state:'UNRESOLVED',
         reason:'AMBIGUOUS_OR_UNMEASURED_REPORT_CONCERN_SEGMENT'});
       continue;
@@ -2710,7 +2746,7 @@ function extract(model, opts) {
   const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
   records.forEach((record, index) => { record.record_index = index + 1; });
-  const table_note_associations = attachTableNotes(pages,records);
+  const table_note_associations = attachTableNotes(pages,records,segments);
   const concernBindings = bindReportConcernEvidence(pages,segments);
   const report_concern_evidence = concernBindings.evidence;
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
