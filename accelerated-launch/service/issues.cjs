@@ -1263,7 +1263,11 @@ function issuesFor(ctx) {
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
   const published = publishedPeriodIssues(extraction, evaluation.published_reporting_periods, statutory.concat(retentionReview));
   const concerns = reportConcerns.concernsFor(extraction, evaluation);
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation, published, concerns)
+  const coveredPrintedConflicts = new Set(concerns.filter(issue=>issue.au_comparison_concern
+    && issue.concern_kind==='OPEN_CLOSED_STATEMENT').map(issue=>issue.check_id+'|'+issue.record_index));
+  const distinctFactual = mergeOverlappingFactualIssues(statutory, factual)
+    .filter(issue=>!coveredPrintedConflicts.has(issue.check_id+'|'+issue.record_index));
+  return statutory.concat(distinctFactual, paymentHistory, retentionReview, limitation, published, concerns)
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
       if (!record) return issue;
@@ -1625,6 +1629,11 @@ function publicIssue(issue) {
 }
 
 function consumerFactValue(fact, key) {
+  if(fact.field==='account.datedRepaymentHistory'&&Array.isArray(fact.normalized_value)) {
+    const periods=fact.normalized_value.map(cell=>cell.period).filter(Boolean).sort();
+    return `${periods.length} dated repayment entries${periods.length?' from '+periods[0]+' to '+periods.at(-1):''}`;
+  }
+  if(fact.privacy_redacted&&/sourceLocatorToken|sourceOriginalLocator|masked_identifier/.test(fact.field||''))return 'Account reference matched from the report';
   return fact.privacy_redacted ? fact.field === 'account.member_reference'
     ? 'Member number matched from the report' : /Member Name/i.test(fact.source_field || '')
       ? 'Reporting member matched from the report' : 'Creditor identity matched from the report' : fact[key];

@@ -1269,3 +1269,21 @@ October 12 owner follow-up: merge-commit-push authorized for the verified hambur
 ### October 12 mobile hamburger — staging verified
 
 Final committed/pushed source c5c5a58b3b1eaeaff19bd8007f9162515d9f8edc is staged as crp-v1-d9a2bfd3f5d73564. First source bf44398 passed fresh full regression 14,967/0/0; hosted visual review identified tablet header width crowding. Final one-line CSS correction passed fresh affected regression 2,511/0/0 with separately recorded full-proof continuity. Guarded staging activation, exact-byte smoke and six hosted viewport checks passed, including keyboard/dismissal, all seven steps/four tools, Upload/Plans and landing hamburger. Fictional accounts cleaned up. Production remains crp-v1-9799fd768cb7cdfa; this is staging verification only. Other active tasks and unpublished policy/address work preserved. See CRP_MOBILE_HAMBURGER_STAGING_2026_10_12.md.
+
+## AU comparison fixes — October 12, 2026 owner implementation order
+
+Status: implementation IN PROGRESS; candidate corpus verification NOT RUN; staging NOT RUN; production fix verification NOT RUN. No deployment, provider purchase or consumer communication is authorized.
+
+Working checkout: `C:\Users\webbd\.codex\worktrees\au-comparison-fixes\CRP-NEW`, branch `codex/au-comparison-fixes-20261012`. Production comparison source is `6e8c85e`; reuse is pinned to the separately completed concern candidate `1ade222` (shared reader, concern selection and packet mechanisms). Root dirty checkout and other worktrees remain untouched. This task adds no release authorization for that inherited candidate.
+
+Single implementation owner: this chat. Related dependency batches:
+
+1. Native AU admission/field association, explicit AUD amounts and own report headers: dependencies for FIX-TODO-001–018. Preserve issuer uncertainty, exact rows, labelled dates, privacy and source geometry.
+2. Source-linked account/address/inquiry verification: FIX-TODO-001–013. Reuse existing status, balance and guarded duplicate checks; add bounded attributed claims and factual requests with confidence distinctions.
+3. Category clocks, hardship and original/purchaser relationships: FIX-TODO-014–018. Preserve category-specific clocks, month/date alternatives, one-month destruction window and historical/current distinctions.
+4. Meaningful benign/source/ownership/entitlement/approval checks; exact 104-original candidate comparisons limited to ten complete report cycles per turn; one final change-aware full regression on frozen executable bytes. Use private outputs and retain prior failed attempts.
+5. Update the fix register with measured per-TODO outcomes and prepare an exact-source release plan. Stop before staging or production activation.
+
+The detailed evidence register remains `CRP_AI_REPORT_COMPARISON_FIX_LIST_001.md`. Private candidate evidence is outside source control under `C:\Users\webbd\.codex\private\crp-ai-comparison\implementation-2026-10-12`. Original reviews/results remain immutable. Implementation closure requires measured behavior; neither local test success nor inherited staging evidence establishes hosted fix verification.
+
+Batch 1 checkpoint: code paths for all eighteen fixes are implemented locally; all eighteen TODOs remain OPEN. Ten original-report cycles completed on early candidate bytes, reaching selected/approved/downloaded packets; repairs and exact-confidence/source retests remain pending. The other 94 originals have not had candidate comparison cycles. Latest focused repairs and restored-specimen checks pass 2,830/0/0 across 19 sections. The completed full attempt is retained as 14,393/93/14, NOT PASSING; interrupted attempts are separately retained. Required final full regression remains pending after corpus-driven source changes. No deployment, real-provider purchase or consumer communication occurred. The next bounded ten-cycle retest is prepared, not executed. See the fix register for per-TODO outcomes, source manifest and release requirements.

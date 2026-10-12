@@ -25,10 +25,10 @@ const caption = Object.freeze({
   ORIGINAL:['original_creditor','Original Creditor'], 'ORIGINAL CREDITOR':['original_creditor','Original Creditor'],
   SUBSCRIBER:['inquiry_identity','Enquiry Organisation'], DATE:['date','Enquiry Date'],
   PURPOSE:['text','Enquiry Purpose'], AUTHORIZED:['text','Enquiry Authorized'],
-  AUTHORISED:['text','Enquiry Authorized'], REMARKS:['remarks','Remarks'],
+  AUTHORISED:['text','Enquiry Authorized'], AUTHORIZATION:['text','Enquiry Authorized'], REMARKS:['remarks','Remarks'],
   'RECENT PAYMENT HISTORY':['history','Recent Payment History'], 'PAYMENT HISTORY':['history','Recent Payment History']
 });
-const SECTION = /^(?:CONSUMER IDENTIFICATION|PERSONAL INFORMATION|ACCOUNT SUMMARY|ACCOUNT DETAIL|PAYMENT HISTORY AND REMARKS|COLLECTIONS|PUBLIC RECORDS|INQUIRIES|ENQUIRIES)\s*$/i;
+const SECTION = /^(?:CONSUMER IDENTIFICATION|PERSONAL INFORMATION|IDENTIFICATION DETAILS|CREDIT ACCOUNT INFORMATION|CREDIT ACCOUNTS AND DEFAULTS|ACCOUNT SUMMARY|ACCOUNT DETAIL|PAYMENT HISTORY AND REMARKS|COLLECTIONS|COLLECTION AND DEFAULT LISTINGS|DEFAULT AND COLLECTION INFORMATION|PUBLIC RECORDS|COURT AND INSOLVENCY RECORDS|COURT JUDGMENTS AND INSOLVENCY|CREDIT ENQUIRIES|INQUIRIES|ENQUIRIES)\s*$/i;
 
 function physicalRows(page) {
   const heights=page.words.map(w=>w.y1-w.y0).filter(h=>h>0).sort((a,b)=>a-b), height=heights[Math.floor(heights.length/2)];
@@ -181,6 +181,11 @@ function reportConcernEvidence(page) {
     for(const row of rows.slice(rows.indexOf(next))) {
       if(row.y-(values.length?values.at(-1).y:next.y)>20) break;
       const words=row.words.filter(w=>w.x0>=heading.x0-2&&w.x1<right-2);
+      // In the observed two-column disclosures the CONTACT caption overlaps a
+      // wrapped address vertically. Skip only that caption; a phone/email value
+      // still fences the address. Keep the following own postcode/country line.
+      if(heading.label==='PREVIOUS ADDRESS'&&upper(words.map(w=>w.text).join(' '))==='CONTACT')continue;
+      if(heading.label==='PREVIOUS ADDRESS'&&/^(?:\+\d|PHONE|EMAIL)|@/i.test(norm(words.map(w=>w.text).join(' '))))break;
       if(!words.length||row!==next&&row.chunks.some(chunk=>chunk[0].x0>=heading.x0-2&&/^(?:CONTACT|DATE OF BIRTH|TAX FILE NUMBER|PREVIOUS ADDRESS|CURRENT ADDRESS|ALIASES|NAME|ACCOUNT SUMMARY)$/.test(upper(chunk.map(w=>w.text).join(' '))))) break;
       values.push({words,y:row.y,line:row.line});
       if(heading.label==='TAX FILE NUMBER') break;
@@ -197,7 +202,7 @@ function reportConcernEvidence(page) {
       continue;
     }
     const patterns = [
-      ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)\s+(\d{4})\b/gi],
+      ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA|AU)\s+([A-Z0-9]{4,8})\b/gi],
       ['CA', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
       ['US', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]
     ];
@@ -213,4 +218,4 @@ function reportConcernEvidence(page) {
   }
   return result;
 }
-module.exports={summaryTableLines,reportConcernEvidence};
+module.exports={summaryTableLines,reportConcernEvidence,physicalRows,cellsOf,location};

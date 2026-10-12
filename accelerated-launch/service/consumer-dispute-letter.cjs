@@ -49,7 +49,9 @@ function dateReading(value, fact) {
 function requestFor(issue) {
   // A completed review concern asks about its sourced facts without asserting a breach.
   if (issue.classification === 'NON_VIOLATION' && issue.report_concern === true) {
-    return [sentence(issue.explanation), sentence(issue.request_wording)].filter(Boolean).join(' ');
+    const qualifiedAU = require('./au-comparison-concerns.cjs').KINDS.includes(issue.concern_kind);
+    return [sentence(issue.explanation), qualifiedAU ? sentence(issue.uncertainty) : null,
+      sentence(issue.request_wording)].filter(Boolean).join(' ');
   }
   // A consolidated finding may lead with its statutory support. Its accepted checklist
   // basis still supplies the concrete report problem for the consumer's letter.

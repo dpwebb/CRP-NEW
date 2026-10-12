@@ -14,7 +14,7 @@ function ownSource(record, field) {
 
 function identityFor(record) {
   if (!record) return null;
-  const fields = /COLLECTION/.test(record.kind || '')
+  const fields = record.kind==='GENERAL_INQUIRY' ? ['enquiry.organisation','account.display_name','account.reported_identity'] : /COLLECTION/.test(record.kind || '')
     ? ['collection.agency', 'account.display_name', 'account.reported_identity']
     : ['account.display_name', 'account.reported_identity'];
   for (const field of fields) {

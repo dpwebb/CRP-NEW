@@ -528,6 +528,21 @@ const ISSUE_TYPE_FIELD_REQUIREMENTS = Object.freeze({
  * occur on the same account. The relation and report-structure notes remain explicit because
  * field availability alone cannot establish a duplicate, an omission, or an identity conflict. */
 const FACTUAL_CHECK_CAPABILITY = Object.freeze({
+  ...Object.fromEntries(Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
+    .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
+    .map(([kind,id])=>[id,{field_sets:({
+      ACCOUNT_OWNERSHIP_REVIEW:[['account.reported_identity','account.reportRemarks']],
+      ACCOUNT_STATUS_DISPUTE:[['account.reported_identity','account.status','account.reportRemarks']],
+      ACCOUNT_BALANCE_DISPUTE:[['account.reported_identity','account.balance','account.reportRemarks']],
+      INQUIRY_PURPOSE_REVIEW:[['account.reported_identity','enquiry.authorized']],
+      OLD_COLLECTION_REVIEW:[['account.reported_identity','reportedAccount.reportedDate','report.referenceDate']],
+      OLD_COURT_ENTRY_REVIEW:[['publicRecord.filedDate','report.referenceDate']],
+      SOURCE_DATE_CHRONOLOGY_REVIEW:[['reportedAccount.reportedDate']],
+      AU_CATEGORY_RETENTION_REVIEW:[['default.defaultDate','report.referenceDate'],['enquiry.requestDate','report.referenceDate'],['hardship.periods'],['account.datedRepaymentHistory']],
+      AU_MINIMUM_DEFAULT_REVIEW:[['default.originalAmount']],HARDSHIP_PERIOD_REVIEW:[['account.datedRepaymentHistory','account.sourceLocatorToken']],
+      PURCHASER_RELATIONSHIP_REVIEW:[['collection.originalCreditor','account.consumerStatement']],
+      DEFAULT_OPENING_ORDER_REVIEW:[['account.sourceLocatorToken','default.defaultDate']],AU_POSTCODE_FORMAT:[]
+    })[kind],presentation_scope:['GENERAL-BUREAU-REPORT'],additional_evidence:'OWN_TRUSTED_AU_SOURCE_ASSOCIATION_AND_KIND_SPECIFIC_AFFIRMATIVE_TRIGGER'}])),
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': { field_sets: [['liability.openedDate', 'liability.closedDate']] },
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': { field_sets: [['account.status', 'liability.closedDate']] },
   'COMMON-ERROR-BALANCE-PAYMENT-INCONSISTENCY': { field_sets: [

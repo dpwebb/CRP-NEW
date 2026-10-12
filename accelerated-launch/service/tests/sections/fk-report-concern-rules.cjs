@@ -59,8 +59,8 @@ function byKind(ctx, kind) { return issues.issuesFor(ctx).filter((issue) => issu
 const copy = (value) => JSON.parse(JSON.stringify(value));
 
 async function run(_service, check) {
-  check.equal(CHECKS.length, 27, 'six supported concern mechanisms join the existing shared checklist');
-  check.equal(new Set(CHECKS.map((item) => item.check_id)).size, 27, 'check IDs remain unique');
+  check.equal(CHECKS.length, 40, 'source-linked AU review mechanisms join the existing shared checklist');
+  check.equal(new Set(CHECKS.map((item) => item.check_id)).size, 40, 'check IDs remain unique');
   for (const kind of concerns.KINDS) {
     check.ok(CHECKS.some((item) => item.check_id === concerns.CHECK_BY_KIND[kind]), `${kind}: governed checklist entry exists`);
     check.ok(common.FACTUAL_CHECK_CAPABILITY[concerns.CHECK_BY_KIND[kind]], `${kind}: capability entry is explicit`);
@@ -263,7 +263,7 @@ async function run(_service, check) {
     'demonstration evidence cannot become consumer concerns');
   const measured = context([paid, closed, history], [address(), tfn()]);
   check.equal(measured.evaluation.report_concerns.performed.length, 6, 'all six mechanisms measure supported own report facts');
-  for (const id of Object.values(concerns.CHECK_BY_KIND)) {
+  for (const id of ['ADDRESS_GEOGRAPHIC_INCONSISTENCY','PAID_CLAIM','CLOSURE_DATE_REVIEW','UNDATED_PAYMENT_HISTORY','AU_TFN_HANDLING','AU_AMOUNT_CATEGORY_REVIEW'].map(kind=>concerns.CHECK_BY_KIND[kind])) {
     check.equal(checklistFor(measured.evaluation).find((entry) => entry.check_id === id).state, 'PERFORMED',
       `${id}: source-backed performed state reaches the shared checklist`);
     check.equal(checklistFor({ common_errors: { performed: [] } }).find((entry) => entry.check_id === id).state, 'NOT_PERFORMED',

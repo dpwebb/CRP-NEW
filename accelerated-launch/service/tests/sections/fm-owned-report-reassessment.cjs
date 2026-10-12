@@ -79,7 +79,9 @@ async function run(t,check) {
     check.deepEqual(current.extraction.records.map(row=>row.kind),['GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_COLLECTION','GENERAL_INQUIRY','GENERAL_INQUIRY'],'fresh extraction recovers four accounts, one collection and two inquiries');
     const surfaced=issues.issuesFor({evaluation:current.evaluation,extraction:current.extraction});
     check.deepEqual([...new Set(surfaced.filter(issue=>issue.report_concern).map(issue=>issue.concern_kind))].sort(),EXPECTED.slice().sort(),'five actionable concern categories reach the new result while all-OK histories are disregarded');
-    check.equal(surfaced.filter(issue=>issue.report_concern&&!issue.non_violation).length,3,'fresh result retains three sourced geography violations');
+    const geography=surfaced.filter(issue=>issue.report_concern&&!issue.non_violation);
+    check.equal(geography.length,1,'fresh result groups sourced geography discrepancies into one selectable report issue');
+    check.equal(geography[0].evidence.addresses.length,3,'grouped geography issue retains all three independently sourced addresses');
     check.equal(surfaced.filter(issue=>issue.report_concern&&issue.non_violation).length,7,'fresh result retains seven bounded review concerns');
     check.equal(fileState(t,first.fileId).reassessment_extraction.reader_version,general.GENERAL_READER_VERSION,'only derived reassessment data is cached with the new version');
     check.equal(digest(frozenFile(fileState(t,first.fileId))),sourceFileHash,'original file metadata and upload-time extraction stay unchanged');

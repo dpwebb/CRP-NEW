@@ -51,6 +51,9 @@ function mappingFor(item) {
       'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
       'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
     ], requirement: null, field_sets: [], additional_evidence: spec.additional_evidence };
+  if (id === 'COMMON-ERROR-AU-POSTCODE-FORMAT') return {...item,scope:'REPORT_DATA_RULE',
+    requirement:'A source-declared Australian postcode has four numeric digits; preserve leading zeros and do not infer the replacement.',
+    field_sets:[],additional_evidence:spec.additional_evidence};
   if (id === ADDRESS_CHECK) return { ...item, scope: 'REPORT_DATA_RULE',
     requirement: 'A reported locality and state or province must identify a consistent location within an exactly supported country mapping.',
     field_sets: spec.field_sets.map(set => [...set]), additional_evidence: spec.additional_evidence || null };
@@ -87,6 +90,10 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
       [suffix, ['fj-report-concern-reader', 'fk-report-concern-rules', 'fm-owned-report-reassessment'],
         ['fl-report-concern-delivery'], 'FICTIONAL_NATIVE_TABLE_UPLOAD_AND_SCOPED_CONCERN_PACKET'])
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
+  .concat(Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
+    .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
+    .map(([,id])=>[id,{assessment:['fn-au-comparison-fixes'],packet:['fo-au-comparison-delivery'],
+      exercise_class:'FICTIONAL_TYPED_PREDICATE_AND_SHARED_NATIVE_AU_PACKET'}]))
   .concat([['COMMON-ERROR-REPORTING-PERIOD-EXCEEDED', {
     assessment: ['ct-owner-common-error-scope', 'cr-ca-ns-tu-real-report', 'ch-ca-ab-debt-six-year'],
     packet: ['cr-ca-ns-tu-real-report', 'ch-ca-ab-debt-six-year'],

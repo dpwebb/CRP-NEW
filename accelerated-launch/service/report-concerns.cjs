@@ -6,17 +6,18 @@
 const crypto = require('node:crypto');
 const { sourceForField, reportReference, reportDateValue } = require('./report-fact-sources.cjs');
 const { VERSION, SOURCES, LOCALITY_MAPPINGS } = require('./report-concern-sources.cjs');
+const auReviews = require('./au-comparison-concerns.cjs');
 
 const ADDRESS_CHECK = 'COMMON-ERROR-ADDRESS-GEOGRAPHIC-INCONSISTENCY';
 const NON_VIOLATION_LABEL = 'NON-VIOLATION CONCERN';
 const KINDS = Object.freeze(['ADDRESS_GEOGRAPHIC_INCONSISTENCY', 'PAID_CLAIM',
-  'CLOSURE_DATE_REVIEW', 'UNDATED_PAYMENT_HISTORY', 'AU_TFN_HANDLING', 'AU_AMOUNT_CATEGORY_REVIEW']);
+  'CLOSURE_DATE_REVIEW', 'UNDATED_PAYMENT_HISTORY', 'AU_TFN_HANDLING', 'AU_AMOUNT_CATEGORY_REVIEW', ...auReviews.KINDS]);
 const CHECK_BY_KIND = Object.freeze({ ADDRESS_GEOGRAPHIC_INCONSISTENCY: ADDRESS_CHECK,
   PAID_CLAIM: 'COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW',
   CLOSURE_DATE_REVIEW: 'COMMON-ERROR-CLOSURE-DATE-DISCLOSURE-REVIEW',
   UNDATED_PAYMENT_HISTORY: 'COMMON-ERROR-UNDATED-HISTORY-DISCLOSURE-REVIEW',
   AU_TFN_HANDLING: 'COMMON-ERROR-IDENTIFIER-HANDLING-REVIEW',
-  AU_AMOUNT_CATEGORY_REVIEW: 'COMMON-ERROR-CREDIT-DATA-CATEGORY-REVIEW' });
+  AU_AMOUNT_CATEGORY_REVIEW: 'COMMON-ERROR-CREDIT-DATA-CATEGORY-REVIEW', ...auReviews.CHECK_BY_KIND });
 const STATES = Object.freeze({ 'AUSTRALIAN CAPITAL TERRITORY': 'ACT', 'NEW SOUTH WALES': 'NSW',
   'NORTHERN TERRITORY': 'NT', QUEENSLAND: 'QLD', 'SOUTH AUSTRALIA': 'SA', TASMANIA: 'TAS',
   VICTORIA: 'VIC', 'WESTERN AUSTRALIA': 'WA' });
@@ -105,6 +106,27 @@ function concernFingerprint(issue) {
     source_version: issue.source_version, request_type: issue.request_type });
 }
 
+function groupAustralianAddresses(issues) {
+  const grouped=new Map(),others=[];
+  for(const issue of issues) {
+    if(issue.concern_kind!=='ADDRESS_GEOGRAPHIC_INCONSISTENCY'||issue.evidence.country!=='AU') {others.push(issue);continue;}
+    const key=digest(issue.report_identity);
+    if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(issue);
+  }
+  for(const entries of grouped.values()) {
+    if(entries.length===1){others.push(entries[0]);continue;}
+    const issue=JSON.parse(JSON.stringify(entries[0]));
+    issue.source_facts=entries.flatMap(entry=>entry.source_facts);
+    issue.evidence={country:'AU',addresses:entries.map(entry=>entry.evidence),postcode_only_determination:false};
+    issue.explanation='These printed address details do not match: '+entries.map(entry=>`${entry.evidence.locality} is shown in ${entry.evidence.reported_state}; the supported locality mapping places it in ${entry.evidence.expected_state}`).join('. ')+'.';
+    issue.request_wording='please verify the locality, state and postcode for each listed address and correct any inaccurate location details';
+    issue.rule_assessment.required_facts=issue.source_facts.map(source=>({field:source.field,source}));
+    const fingerprint=concernFingerprint(issue);issue.issue_id=digest(['report-concern',issue.concern_kind,fingerprint]).slice(0,16);
+    issue.concern_assessment.fingerprint=fingerprint;issue.eligible=isGovernedIssue(issue);others.push(issue);
+  }
+  return others;
+}
+
 function finish({ kind, record, report, sources, title, explanation, uncertainty,
   request, evidence, contextSources = [], violation = false }) {
   const sourceFacts = sources.map((source) => ({ ...source }));
@@ -151,6 +173,7 @@ function finish({ kind, record, report, sources, title, explanation, uncertainty
  * report association and its decisive evidence. A confidence flag or manually
  * invented REPORT_CONCERN object is never enough to enable correspondence. */
 function isGovernedIssue(issue) {
+  if (issue?.au_comparison_concern === true) return auReviews.isGovernedIssue(issue);
   if (!issue || issue.report_concern !== true || !KINDS.includes(issue.concern_kind)
     || issue.source_version !== VERSION || issue.request_type !== 'VERIFICATION'
     || !issue.request_wording || !issue.report_identity?.bureau
@@ -374,7 +397,8 @@ function review(extraction, evaluation) {
     const tfn = tfnReview(item, extraction, evaluation);
     mark('AU_TFN_HANDLING', tfn, false);
   }
-  return { issues: [...new Map(issues.map((issue) => [issue.issue_id, issue])).values()],
+  for (const issue of auReviews.concernsFor(extraction,evaluation)) mark(issue.concern_kind,issue,false);
+  return { issues: groupAustralianAddresses([...new Map(issues.map((issue) => [issue.issue_id, issue])).values()]),
     address, performed: [...performed.values()] };
 }
 

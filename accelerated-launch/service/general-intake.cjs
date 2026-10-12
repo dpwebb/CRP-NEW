@@ -15,12 +15,13 @@ const paymentHistoryGrid = require('./payment-history-grid.cjs');
 const { summaryTableLines, reportConcernEvidence } = require('./account-summary-table.cjs');
 const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
+const auDisclosure = require('./au-disclosure-fields.cjs');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 2;
+const GENERAL_READER_VERSION = 3;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -257,6 +258,14 @@ function detect(model) {
   }
   const bureau = bureauOf(text);
   const markers = contentMarkers(text);
+  if ((!bureau || /\bSource style\s*:/i.test(text)) && auDisclosure.disclosureShape(text)) {
+    const nativePages=(model.pages||[]).filter(page=>page.has_native_text&&page.word_boxes?.length)
+      .map(page=>({page:page.page,source:'NATIVE_TEXT',words:page.word_boxes}));
+    const native=auDisclosure.extract(nativePages,normalizePrintedDate);
+    const accountRead=native.records.some(record=>record.kind==='GENERAL_ACCOUNT'
+      &&record.facts['account.sourceLocatorToken']&&record.facts['account.reported_identity']);
+    if(accountRead)return { outcome:'GENERAL', reason:'UNBRANDED_AU_DISCLOSURE_CONTENT_PRESENT', bureau:'Unidentified Australian reporting body', source_issuer_identified:false, markers, needs_ocr:false };
+  }
   if (!bureau) return { outcome: 'UNRELATED', reason: 'NO_BUREAU_IDENTITY_FOUND', bureau: null, markers: [], needs_ocr: false };
   if (!markers.length) return { outcome: 'UNRELATED', reason: 'BUREAU_IDENTITY_BUT_NO_CREDIT_REPORT_CONTENT', bureau, markers: [], needs_ocr: false };
   return { outcome: 'GENERAL', reason: 'BUREAU_AND_REPORT_CONTENT_PRESENT', bureau, markers, needs_ocr: false };
@@ -1361,7 +1370,8 @@ function collectLineFields(line, facts, kind, convention, trusted, recordIdentit
     printed[key] = {
       label: line.caption_label || d.label || 'Date', state, raw: d.raw, normalized: value ? d.normalized : null,
       reason: value ? null : (!trusted ? 'LOW_CONFIDENCE_OCR_READING' : (decisiveWordsTrusted(line, d.raw) === false ? 'LOW_CONFIDENCE_OCR_READING_ON_DECISIVE_CHARACTERS' : (d.reason || 'DATE_NOT_RECOGNISED'))),
-      location: lineLocation(line), kind: 'date', precision: d.precision || null
+      location: lineLocation(line), kind: 'date', precision: d.precision || null,
+      ...(d.interpretations ? { interpretations:d.interpretations.slice() } : {})
     };
   }
   for (const amount of facts.amounts) {
@@ -2529,7 +2539,8 @@ function bindPrintedOmissionEvidence(record) {
 function findReferenceDate(pages, convention) {
   // A report date never borrows the numeric order of another field.
   const evidencedConvention = convention;
-  const candidates = [];
+  const candidates = /AUSTRALIA(?:N)?|Jurisdiction:\s*AU\b/i.test(pages.map(page=>page.lines.map(line=>line.text).join(' ')).join(' '))
+    ? auDisclosure.referenceCandidates(pages,normalizePrintedDate) : [];
   for (const page of pages) {
     for (const line of page.lines) {
       /* GAP-INGEST-003: a report date read from a low-confidence OCR line is not a resolved report date. */
@@ -2560,6 +2571,16 @@ function findReferenceDate(pages, convention) {
       const up = line.text.toUpperCase();
       if (!REFERENCE_DATE_HINTS.some((h) => up.includes(h))) continue;
       const strong = REPORT_HEADER_DATE_HINTS.some((h) => up.includes(h));
+      if (strong) {
+        const header = new RegExp('\\b(' + REPORT_HEADER_DATE_HINTS.join('|') + ')\\s*:?\\s*' + DATE_TOKEN.source, 'i').exec(line.text);
+        if (header) {
+          const raw = header[2], date = normalizePrintedDate(raw, evidencedConvention);
+          const d = {raw,normalized:date.normalized,precision:date.precision,ambiguous:date.ambiguous,
+            interpretations:date.interpretations,alternative:date.alternative,reason:date.reason};
+          if (date.normalized || date.interpretations?.length) candidates.push({d,location:lineLocation(line),strong:true});
+          continue; // A neighbouring birth date is never another report header.
+        }
+      }
       const facts = lineFacts(line, evidencedConvention);
       for (const d of facts.dates) {
         if (d.normalized) candidates.push({ d, location: lineLocation(line), strong });
@@ -2583,7 +2604,7 @@ function findReferenceDate(pages, convention) {
 
   const best = candidates[0];
   const d = best.d;
-  return { raw: d.raw, normalized: d.normalized, normalized_value: d.normalized, precision: d.precision, status: 'RESOLVED', reason: null, location: best.location, ambiguous: d.ambiguous === true || undefined, alternative: d.alternative || null, hint_basis: best.strong ? 'REPORT_HEADER' : 'AMBIGUOUS_DATE_HINT' };
+  return { raw: d.raw, normalized: d.normalized, normalized_value: d.normalized, precision: d.precision, status: d.normalized ? 'RESOLVED':'EXTRACTION_UNRESOLVED', reason: d.normalized ? null:d.reason, location: best.location, ambiguous: d.ambiguous === true || undefined, interpretations:d.interpretations || undefined, alternative: d.alternative || null, hint_basis: best.strong ? 'REPORT_HEADER' : 'AMBIGUOUS_DATE_HINT' };
 }
 
 function summaryFor(records, status, reason) {
@@ -2743,9 +2764,21 @@ function extract(model, opts) {
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
   }
-  const records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
+  let records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
+  if (segments.length===1 && !segments[0].ambiguous && /AUSTRALIA(?:N)?|Jurisdiction:\s*AU\b/i.test(nativeText(model))) {
+    const mapped = auDisclosure.extract(pages,normalizePrintedDate);
+    // Replace only measured native rows, or a complete measured AU account layout.
+    // Other readers and independent unrelated sections retain their own records.
+    records = records.filter(record => !mapped.fences.some(fence=>
+      fence.page===record.location?.page && record.location?.bbox?.y0>=fence.y0 && record.location?.bbox?.y0<=fence.y1));
+    for(const record of mapped.records) {
+      record.bureau=bureau; record.report_segment_id='segment-1'; record.report_reference_date=reference_date;
+      records.push(record);
+    }
+  }
   records.forEach((record, index) => { record.record_index = index + 1; });
+  auDisclosure.attachStatements(records,pages);
   const table_note_associations = attachTableNotes(pages,records,segments);
   const concernBindings = bindReportConcernEvidence(pages,segments);
   const report_concern_evidence = concernBindings.evidence;
@@ -2800,6 +2833,7 @@ function extract(model, opts) {
     view_id: GENERAL_PRESENTATION_ID,
     presentation_id: GENERAL_PRESENTATION_ID,
     bureau,
+    source_issuer_identified:det.source_issuer_identified !== false,
     records,
     reference_date,
     summary_counts: [],

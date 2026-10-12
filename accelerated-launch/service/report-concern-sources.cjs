@@ -3,7 +3,7 @@
 /* Bounded mappings for completed report concerns. These records supply context,
  * never an automatic finding that a privacy statute was breached. The locality
  * finder was verified on the date below; it is not a historical report snapshot. */
-const VERSION = '2026-10-11.1';
+const VERSION = '2026-10-12.1';
 const SOURCES = Object.freeze({
   AU_MELBOURNE: Object.freeze({ publisher: 'Australia Post', title: 'Melbourne postcode finder',
     url: 'https://auspost.com.au/postcode/melbourne', version: 'verified 2026-10-11',
@@ -39,7 +39,11 @@ const SOURCES = Object.freeze({
 });
 const AU_LOCALITIES = Object.freeze({
   MELBOURNE: Object.freeze({ state: 'VIC', source: SOURCES.AU_MELBOURNE }),
-  CANBERRA: Object.freeze({ state: 'ACT', source: SOURCES.AU_CANBERRA })
+  CANBERRA: Object.freeze({ state: 'ACT', source: SOURCES.AU_CANBERRA }),
+  ...Object.fromEntries(Object.entries({SYDNEY:'NSW',BRISBANE:'QLD',PERTH:'WA',ADELAIDE:'SA',HOBART:'TAS',DARWIN:'NT'})
+    .map(([locality,state])=>[locality,Object.freeze({state,source:Object.freeze({publisher:'Australian Department of Home Affairs',
+      title:'Australia states, territories and capital cities',url:'https://immi.homeaffairs.gov.au/citizenship/test-and-interview/listen-to-podcast/transcript-episode-2',
+      version:'verified 2026-10-12',scope:'Named Australian capital locality and state; no postcode-range inference',verified_on:'2026-10-12'})})]))
 });
 
 /* City names and postal prefixes can cross borders. Outside the two verified
