@@ -79,6 +79,43 @@ async function run(t, check) {
   check.ok(merged.includes('Published definition: Published payment-history order - most recent first.')
     && merged.includes('Fictional Bureau, Report guide (version 2026-07). Payment-history dates. https://example.test/report-guide'), 'published reading definitions remain separate and sourced in the paid PDF');
 
+  const completedConcern = (kind, title) => issue({ issue_id: `private-concern-${kind}`,
+    basis_type: 'REPORT_CONCERN', report_concern: true, concern_kind: kind,
+    classification: 'NON_VIOLATION', non_violation: true, confidence: 'POTENTIAL',
+    consumer_label: 'NON-VIOLATION CONCERN', title, check_kind: null, rule_assessment: null,
+    explanation: 'The report records this detail for the consumer to ask the bureau to check.' });
+  const legacyReview = issue({ issue_id: 'private-legacy-review', consumer_label: null,
+    confidence: 'POTENTIAL', check_kind: 'Similar accounts to review', rule_assessment: null,
+    explanation: 'Compare these similar entries with your own records.' });
+  const mixedInput = rendering([issue(), completedConcern('PAID_CLAIM', 'Payment status needs checking'),
+    completedConcern('UNDATED_PAYMENT_HISTORY', 'Payment history dates need checking'), legacyReview,
+    issue({ issue_id: 'private-mixed-information', basis_type: 'LIMITATION_ASSESSMENT',
+      consumer_label: 'INFORMATION', limitation_concern: true, rule_assessment: null,
+      check_kind: 'Court time limits', explanation: 'The printed date prompts a court time-limit review.' })]);
+  const originalMixed = JSON.stringify(mixedInput);
+  const mixedPdf = renderAssessmentPdf(mixedInput, '2026-10-08', { plan_code: 'monthly' });
+  const mixedRead = pdfText(mixedPdf.bytes), mixedText = comparableText(mixedRead);
+  const summaryLines = mixedRead.split('\n');
+  const labelsAt = summaryLines.findIndex(row => row.includes('NON-VIOLATION CONCERNS'));
+  const summaryCount = summaryLines.slice(0, labelsAt).reverse().find(row => /^\s*\d+\s+\d+\s+\d+\s*$/.test(row));
+  check.deepEqual(summaryCount?.trim().split(/\s+/), ['1', '2', '1'],
+    'the actual mixed PDF counts one violation, exactly two non-violation concerns and one information item');
+  check.ok(mixedText.includes('Other details to review: 1'),
+    'the legacy review has its own count instead of inflating the non-violation count');
+  check.ok(mixedText.includes('Payment status needs checking') && mixedText.includes('Payment history dates need checking'),
+    'each new concern retains its distinct source issue title in the actual PDF');
+  check.equal(mixedText.includes('Report details to review'), false,
+    'a titled completed concern is not replaced by the generic review heading');
+  check.ok(mixedText.includes('Similar accounts to review') && mixedText.includes('REVIEW'),
+    'a legacy review retains its own title and review label');
+  check.equal(JSON.stringify(mixedInput), originalMixed, 'separate counts and titles do not mutate saved classifications or evidence');
+  check.ok(mixedPdf.layout[0].filter(item => item.type === 'text').every(item =>
+    item.x >= 48 && item.x + item.width <= 564.01 && item.y >= 38 && item.y <= 754),
+    'the separate legacy review summary stays within the established page margins');
+  const legacyOnlyRead = pdfText(renderAssessmentPdf(rendering([issue(), legacyReview]), '2026-10-08').bytes);
+  check.ok(legacyOnlyRead.includes('DETAILS TO REVIEW') && !legacyOnlyRead.includes('NON-VIOLATION CONCERNS')
+    && !legacyOnlyRead.includes('Other details to review:'), 'a PDF with no new concerns preserves its legacy summary labels');
+
   const large = rendering(Array.from({ length: 14 }, (_, index) => issue({ issue_id: 'private-long-' + index,
     account_identity: { name: `Account ${index + 1}: ` + 'Élodie Northern Collection Agency '.repeat(12) },
     source_facts: [{ source_field: 'Description', raw_value: `FACT-${index + 1}-START ` + 'A lengthy printed account detail '.repeat(85) + ` FACT-${index + 1}-END`, location: { page: index + 1, line: 17 } }] })));

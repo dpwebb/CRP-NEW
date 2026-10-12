@@ -77,6 +77,8 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
   const information = projected.filter(issue => issue.limitation_concern || issue.consumer_label === 'INFORMATION');
   const violations = reporting.filter(issue => issue.consumer_label === 'VIOLATION');
   const reviews = reporting.length - violations.length;
+  const concerns = reporting.filter(issue => issue.consumer_label === 'NON-VIOLATION CONCERN');
+  const otherReviews = reviews - concerns.length;
   const subscribed = context.plan_code === 'monthly' || context.plan_code === 'annual';
   const pages = [];
   let page, y, continuation = null;
@@ -130,8 +132,9 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
   text(String(violations.length), LEFT + 21, summaryBottom + 45, 29, COLORS.green, true);
   text(violations.length === 1 ? 'VIOLATION' : 'VIOLATIONS', LEFT + 21, summaryBottom + 25, 10, COLORS.green, true);
   line(LEFT + 159, summaryBottom + 18, LEFT + 159, summaryBottom + 75);
-  text(String(reviews), LEFT + 178, summaryBottom + 45, 29, COLORS.green, true);
-  text(reporting.some(issue => issue.consumer_label === 'NON-VIOLATION CONCERN') ? 'NON-VIOLATION CONCERNS' : 'DETAILS TO REVIEW', LEFT + 178, summaryBottom + 25, 8, COLORS.green, true);
+  text(String(concerns.length || reviews), LEFT + 178, summaryBottom + 45, 29, COLORS.green, true);
+  text(concerns.length ? 'NON-VIOLATION CONCERNS' : 'DETAILS TO REVIEW', LEFT + 178, summaryBottom + 25, 8, COLORS.green, true);
+  if (concerns.length && otherReviews) text(`Other details to review: ${otherReviews}`, LEFT + 178, summaryBottom + 10, 8, COLORS.muted);
   line(LEFT + 334, summaryBottom + 18, LEFT + 334, summaryBottom + 75);
   text(String(information.length), LEFT + 353, summaryBottom + 45, 29, COLORS.green, true);
   text('INFORMATION NOTES', LEFT + 353, summaryBottom + 25, 9, COLORS.green, true);
@@ -143,7 +146,8 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
   function issueCard(issue, number, isInformation) {
     const label = isInformation ? 'INFORMATION' : issue.consumer_label === 'VIOLATION' ? 'VIOLATION'
       : issue.consumer_label === 'NON-VIOLATION CONCERN' ? 'NON-VIOLATION CONCERN' : 'REVIEW';
-    const title = displayLabel(issue.check_kind || (isInformation ? 'Court time-limit information' : 'Report details to review'));
+    const title = displayLabel(issue.report_concern && issue.title ? issue.title
+      : issue.check_kind || (isInformation ? 'Court time-limit information' : 'Report details to review'));
     continuation = null;
     ensure(112);
     line(LEFT, y + 7, LEFT + WIDTH, y + 7);
