@@ -227,24 +227,31 @@ function closureReview(record, account) {
     evidence: { closure_statement: statement.normalized_value, complete_row: true, closed_date_column_printed: false } });
 }
 
+const historyToken = (value) => upper(value).replace(/\s/g, '');
+
 function usableHistorySource(record) {
   const source = ownSource(record, 'account.undatedPaymentHistory'), value = source?.normalized_value;
   if (!value || typeof value.periods_printed !== 'boolean' || !Array.isArray(value.tokens) || !value.tokens.length
     || value.tokens.length > 120 || value.count !== value.tokens.length
-    || value.tokens.some((token) => !/^[A-Z0-9*#.-]{1,8}$/i.test(String(token)))) return null;
+    || value.tokens.some((token) => !/^[A-Z0-9*#.-]{1,8}$/.test(historyToken(token)))) return null;
   return source;
 }
 
 function undatedHistory(record, account, country) {
   const source = usableHistorySource(record), value = source?.normalized_value;
   if (!value || value.periods_printed !== false
+    // Owner direction: undated histories made entirely of OK codes are benign.
+    // Normalize only for this comparison; keep the original source tokens.
+    || value.tokens.every((token) => historyToken(token) === 'OK')
     || (record.facts?.['account.paymentHistoryCells'] || []).some((cell) => cell?.period)) return null;
+  const nonOkTokens = value.tokens.filter((token) => historyToken(token) !== 'OK');
   return finish({ kind: 'UNDATED_PAYMENT_HISTORY', record, report: account.report,
     sources: [source, account.identity], title: 'Payment history dates need checking',
-    explanation: `The report shows ${value.count} payment-history codes for this account without month or year labels.${value.legend_printed === false ? ' It also gives no key explaining these codes.' : ''}`,
+    explanation: `The report shows ${nonOkTokens.length} non-OK payment-history ${nonOkTokens.length === 1 ? 'code' : 'codes'} for this account without month or year labels.${value.legend_printed === false ? ' It also gives no key explaining these codes.' : ''}`,
     uncertainty: 'The codes have not been interpreted as payments or missed payments. The report does not establish which months they describe or that a disclosure rule was breached.',
-    request: 'please identify the month and year for each payment-history entry and provide a clear explanation of its codes, correcting any incomplete or inaccurate information',
-    evidence: { count: value.count, tokens: value.tokens.slice(), periods_printed: false,
+    request: 'please identify the month and year for the non-OK payment-history entries and explain their codes, correcting any incomplete or inaccurate information',
+    evidence: { count: value.count, tokens: value.tokens.slice(), non_ok_count: nonOkTokens.length,
+      review_tokens: nonOkTokens, periods_printed: false,
       legend_printed: value.legend_printed === true }, contextSources: country === 'AU' ? [SOURCES.AU_ACCESS] : [] });
 }
 

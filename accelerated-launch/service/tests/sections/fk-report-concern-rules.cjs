@@ -122,14 +122,51 @@ async function run(_service, check) {
   check.equal(byKind(context([record()]), 'CLOSURE_DATE_REVIEW').length, 0, 'ordinary missing fields do not automatically become violations or concerns');
 
   const history = record(3);
-  field(history, 'account.undatedPaymentHistory', { tokens: Array(24).fill('OK'), count: 24,
+  const historyTokens = Array.from({ length: 24 }, (_, index) => index === 0 ? '30' : 'OK');
+  field(history, 'account.undatedPaymentHistory', { tokens: historyTokens, count: 24,
     periods_printed: false, legend_printed: false }, '24-Month Payment History');
   const historyIssue = byKind(context([history]), 'UNDATED_PAYMENT_HISTORY')[0];
-  check.equal(historyIssue?.classification, 'NON_VIOLATION', 'printed undated history is a supported review concern');
-  check.match(historyIssue.explanation, /24 payment-history codes/, 'the factual code count reaches the consumer');
-  check.equal(historyIssue.source_facts[0].normalized_value.tokens.every((token) => token === 'OK'), true,
+  check.equal(historyIssue?.classification, 'NON_VIOLATION', 'printed undated non-OK history retains a supported review concern');
+  check.match(historyIssue.explanation, /1 non-OK payment-history code/, 'only the non-OK code count is raised for consumer review');
+  check.deepEqual(historyIssue.evidence.review_tokens, ['30'], 'OK tokens are excluded from the entries to review');
+  check.equal(historyIssue.evidence.count, 24, 'the complete printed history count remains source evidence');
+  check.match(historyIssue.request_wording, /non-OK payment-history entries/, 'the request targets only the non-OK entries');
+  check.deepEqual(historyIssue.source_facts[0].normalized_value.tokens, historyTokens,
     'codes remain literal rather than becoming invented payments');
   check.equal(history.facts['account.paymentHistoryCells'], undefined, 'no month or code meaning is guessed');
+  for (const country of ['AU', 'CA', 'US', 'GB']) {
+    for (const [label, tokens] of [['all OK', Array(24).fill('OK')],
+      ['mixed case', ['ok', 'Ok', 'oK']], ['whitespace', [' OK ', ' ok\t', '\nOk ', ' O K ']]]) {
+      const benign = record(3);
+      field(benign, 'account.undatedPaymentHistory', { tokens, count: tokens.length,
+        periods_printed: false, legend_printed: false }, 'Payment History');
+      const before = JSON.stringify(benign), ctx = context([benign], [], country);
+      check.equal(byKind(ctx, 'UNDATED_PAYMENT_HISTORY').length, 0,
+        `${country}: ${label} undated OK codes are disregarded`);
+      check.equal(ctx.evaluation.report_concerns.performed.find(row =>
+        row.check_id === concerns.CHECK_BY_KIND.UNDATED_PAYMENT_HISTORY)?.state, 'NOT_DETECTED',
+      `${country}: ${label} supported OK history completes a benign review`);
+      check.equal(JSON.stringify(benign), before, `${country}: ${label} source readings remain untouched`);
+    }
+  }
+  const mixedHistory = copy(history), mixedTokens = [' ok ', ' 30 ', 'c o'];
+  field(mixedHistory, 'account.undatedPaymentHistory', { tokens: mixedTokens, count: 3,
+    periods_printed: false, legend_printed: false }, 'Payment History');
+  const mixedHistoryConcern = byKind(context([mixedHistory]), 'UNDATED_PAYMENT_HISTORY')[0];
+  check.equal(mixedHistoryConcern?.classification, 'NON_VIOLATION', 'one non-OK code preserves the existing qualified review');
+  check.deepEqual(mixedHistoryConcern?.evidence.tokens, mixedTokens, 'comparison normalization never rewrites mixed source tokens');
+  check.equal(mixedHistory.facts['account.paymentHistoryCells'], undefined, 'mixed non-OK tokens are not decoded into missed payments');
+  for (const [label, amend] of [
+    ['untrusted reading', (r) => { r.fact_sources['account.undatedPaymentHistory'].trusted = false; }],
+    ['untrusted geometry', (r) => { r.fact_sources['account.undatedPaymentHistory'].location.trusted = false; }],
+    ['other account', (r) => { r.fact_sources['account.undatedPaymentHistory'].record_index = 19; }],
+    ['other file', (r) => { r.fact_sources['account.undatedPaymentHistory'].location.file_id = 'other-file'; }],
+    ['duplicate caption', (r) => { r.fact_sources['account.undatedPaymentHistory'].caption_count = 2; }]
+  ]) {
+    const rejected = copy(mixedHistory); amend(rejected);
+    check.equal(byKind(context([rejected]), 'UNDATED_PAYMENT_HISTORY').length, 0,
+      `${label}: mixed tokens cannot bypass original source safeguards`);
+  }
   const dated = copy(history);
   field(dated, 'account.undatedPaymentHistory', { tokens: ['OK'], count: 1, periods_printed: true,
     legend_printed: true }, 'Payment History');
