@@ -14,12 +14,12 @@ function buildFixture(options={}) {
   put('Prepared Date: 06/06/2026',710,40);
   put('CONSUMER IDENTIFICATION',30,65);
   put('NAME',30,85);put('CURRENT ADDRESS',510,85);
-  put('Fictional Sample Person',30,99);put(options.benign?'19 Sample Lane, Melbourne, VIC 3000, Australia':'19 Sample Lane, Melbourne, ACT 7728, Australia',510,99);
+  put('Fictional Sample Person',30,99);put(options.currentAddress || (options.benign?'19 Sample Lane, Melbourne, VIC 3000, Australia':'19 Sample Lane, Melbourne, ACT 7728, Australia'),510,99);
   put('ALIASES',30,115);put('PREVIOUS ADDRESS',510,115);
   put('Fictional Sample',30,129);put(options.benign?'31 Example Road, Canberra, ACT 2601, Australia':'31 Example Road, Melbourne, NSW 1006, Australia; 42 Test Road,',510,129);
   if(!options.benign) put('Canberra, VIC 5841, Australia',510,141);
   put('DATE OF BIRTH',30,145);put('01/01/1980',30,159);
-  put('TAX FILE NUMBER',30,172);put('XXX XXX 1234',30,185);
+  put('TAX FILE NUMBER',30,172);put(options.tfnValue || 'XXX XXX 1234',30,185);
   put('ACCOUNT SUMMARY',30,208);
   let headers=['Creditor','Account','Type','Opened','Reported','Status','Balance','Limit','Payment'];
   if(options.reordered) headers=['Status','Balance','Creditor','Reported','Account','Payment','Type','Limit','Opened'];
@@ -127,6 +127,11 @@ async function run(t,check) {
   const foreign=structuredClone(accounts[0]);foreign.source_file_id='other-file';foreign.fact_sources['account.reportRemarks'].location.file_id='original-file';
   check.equal(sourceForField(foreign,'account.reportRemarks'),null,'wrong-owner/file remarks source is refused');
   const benign=readFixture(t,{benign:true});
+  const unmasked=readFixture(t,{tfnValue:'123 456 789'});
+  check.ok(unmasked.report_concern_evidence.some(e=>e.kind==='IDENTIFIER_FIELD'&&e.masked===false),
+    'an unmasked identifier field also produces privacy-safe presence evidence');
+  check.ok(!JSON.stringify(unmasked.report_concern_evidence).includes('123 456 789'),
+    'unmasked identifier digits never enter the new concern evidence');
   check.equal(benign.records.find(r=>r.kind==='GENERAL_COLLECTION').facts['account.balance'],0,'paid-zero collection is preserved as benign source evidence');
   return {scope:'fictional native nine-column account/collection/history/identification/inquiry layout',
     source_rows:7,source_remarks:5,undated_histories:4,privacy_redacted_identification:true,shipped_six_column_regression_required:true};

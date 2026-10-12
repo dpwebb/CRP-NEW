@@ -29,8 +29,9 @@ const digest = (value) => crypto.createHash('sha256').update(JSON.stringify(valu
 
 function trustedLocation(location) {
   if (!location || location.trusted !== true || !Number.isInteger(location.page) || location.page < 1) return false;
+  const bounds = location.bbox && typeof location.bbox === 'object' ? location.bbox : location;
   const box = Array.isArray(location.bbox) ? location.bbox
-    : [location.x0, location.y0, location.x1, location.y1];
+    : [bounds.x0, bounds.y0, bounds.x1, bounds.y1];
   return box.length === 4 && box.every(Number.isFinite) && box[2] > box[0] && box[3] > box[1];
 }
 
@@ -96,6 +97,8 @@ function coverage(record) {
 
 function concernFingerprint(issue) {
   return digest({ kind: issue.concern_kind, classification: issue.classification,
+    confidence: issue.confidence, explanation: issue.explanation, uncertainty: issue.uncertainty,
+    request_wording: issue.request_wording,
     check_id: issue.check_id || null, record_index: issue.record_index,
     report: issue.report_identity, evidence: issue.evidence,
     sources: (issue.source_facts || []).filter((fact) => fact.supporting_evidence !== true),
@@ -255,9 +258,9 @@ function amountCategory(record, account, country) {
   if (!amounts.length) return null;
   return finish({ kind: 'AU_AMOUNT_CATEGORY_REVIEW', record, report: account.report,
     sources: [...amounts, account.identity], title: 'Reported money amounts need checking',
-    explanation: `This Australian report includes ${amounts.map((source) => `${clean(source.source_field)} (${clean(source.raw_value)})`).join(' and ')} for this account. These amounts need their credit-reporting category explained.`,
-    uncertainty: 'A permitted maximum-credit amount can resemble a balance, including the amortised maximum principal of a loan. The report alone does not establish that prohibited information was collected or disclosed.',
-    request: 'please explain whether these figures are actual outstanding balances or repayment amounts, maximum-credit amounts or another permitted category, and correct or remove information that is inaccurate or not permitted for this credit report',
+    explanation: `This report lists ${amounts.map((source) => `${clean(source.source_field)} (${clean(source.raw_value)})`).join(' and ')} for this account. Please check what these amounts mean.`,
+    uncertainty: 'The report may show the permitted maximum-credit amount rather than money currently owed. The figures alone do not establish that prohibited information was collected or disclosed.',
+    request: 'please explain what each amount represents. Check whether it is allowed in this credit report, and correct or remove any wrong information',
     evidence: { review_fields: amounts.map((source) => source.field), permitted_category_unresolved: true,
       regulations_effective_from: SOURCES.AU_CREDIT_CATEGORIES.effective_from }, contextSources: [SOURCES.AU_CREDIT_CATEGORIES] });
 }
@@ -311,19 +314,20 @@ function addressResult(item, extraction, evaluation) {
 
 function tfnReview(item, extraction, evaluation) {
   if (evaluation.country !== 'AU' || item.kind !== 'IDENTIFIER_FIELD' || item.identifier_type !== 'TFN'
-    || item.masked !== true || !/^(?:tax\s+file\s+number|TFN)$/i.test(clean(item.source_field))) return null;
+    || typeof item.masked !== 'boolean' || !/^(?:tax\s+file\s+number|TFN)$/i.test(clean(item.source_field))) return null;
   const bound = topEvidence(item, extraction);
   if (!bound) return null;
-  if (item.raw_value !== 'Tax file number shown (masked)') return null;
+  if (item.raw_value !== (item.masked ? 'Tax file number shown (masked)' : 'Tax file number shown (unmasked)')) return null;
   const source = { field: 'report.maskedTfnPresence', source_field: item.source_field,
-    raw_value: item.raw_value, normalized_value: 'MASKED_TFN_PRESENT',
+    raw_value: item.raw_value, normalized_value: item.masked ? 'MASKED_TFN_PRESENT' : 'UNMASKED_TFN_PRESENT',
     trusted: true, record_index: null, location: bound.location };
   return finish({ kind: 'AU_TFN_HANDLING', report: bound.report, sources: [source],
     title: 'Tax file number information needs review',
-    explanation: 'The identification section of this credit report includes a masked tax file number field.',
-    uncertainty: 'A masked field does not establish that a full tax file number was collected, used or disclosed unlawfully. Returning tax file number information to its owner is permitted.',
+    explanation: `The identification section of this credit report includes ${item.masked ? 'a masked' : 'an unmasked'} tax file number field.`,
+    uncertainty: item.masked ? 'A masked field does not establish that a full tax file number was collected, used or disclosed unlawfully. Returning tax file number information to its owner is permitted.'
+      : 'The number is omitted from this concern to protect your privacy. Its presence does not establish unlawful handling; returning tax file number information to its owner is permitted.',
     request: 'please explain what tax file number information is held, its source and permitted purpose, and remove or correct any information that should not be held or used for this credit report',
-    evidence: { identifier_type: 'TFN', masked: true, unlawful_handling_established: false }, contextSources: [SOURCES.AU_TFN] });
+    evidence: { identifier_type: 'TFN', masked: item.masked, unlawful_handling_established: false }, contextSources: [SOURCES.AU_TFN] });
 }
 
 function review(extraction, evaluation) {

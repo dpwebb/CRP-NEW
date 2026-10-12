@@ -15,8 +15,8 @@ function rec(index, kind, facts) {
 }
 
 async function run(t, check) {
-  check.equal(CHECKS.length, 21, 'the expanded checklist has twenty-one shared entries');
-  check.equal(new Set(CHECKS.map((x) => x.check_id)).size, 21, 'every entry has one stable id');
+  check.equal(CHECKS.length, 27, 'the owner-expanded checklist includes six sourced concern mechanisms');
+  check.equal(new Set(CHECKS.map((x) => x.check_id)).size, 27, 'every entry has one stable id');
   check.ok(CHECKS.every(item => !/\bSOL\b|\btradelines?\b|\banchor\b|\bre-aging\b/i.test(item.label)),
     'consumer checklist labels avoid unexplained reporting and legal shorthand');
   check.equal(catalogue.regions.length, 82, 'the declared jurisdiction population remains 82');
@@ -31,7 +31,7 @@ async function run(t, check) {
     const selected = evaluation.applicableAdapters(code);
     check.ok(selected.confirmed.concat(selected.unconfirmed).every((a) => activeAdapter(a.adapter_id)),
       `only checklist-related statutory adapters remain active for ${code}`);
-    check.equal(checklistFor({ common_errors: { performed: [] } }).length, 21,
+    check.equal(checklistFor({ common_errors: { performed: [] } }).length, 27,
       `the same checklist exists for ${code}`);
     const omitted = checklistFor({ common_errors: { performed: [{
       check_id: 'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
@@ -115,7 +115,7 @@ async function run(t, check) {
       `${id} reaches a selectable factual verification issue`);
   }
 
-  return { checklist: 21, jurisdictions: 82, retired_adapters: retired.length,
+  return { checklist: 27, jurisdictions: 82, retired_adapters: retired.length,
     newly_connected_categories: 3 };
 }
 

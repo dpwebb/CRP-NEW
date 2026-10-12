@@ -304,6 +304,7 @@ function renderResultSet(input) {
   const checkNotRun = evaluation.unavailable_checks.map(sanitizeCheck);
   const factualRanAlready = Boolean(evaluation.factual_checks && evaluation.factual_checks.performed.length);
   const otherRanAlready = Boolean(evaluation.common_errors && evaluation.common_errors.performed.length
+    || evaluation.report_concerns && evaluation.report_concerns.performed.length
     || evaluation.detected_report_information && evaluation.detected_report_information.performed.length
     || evaluation.assessments_performed > 0);
   if (!rendered.length && !factualRanAlready && !otherRanAlready && !checkNotRun.length && !evaluation.unresolved_checks.length) {
@@ -361,6 +362,7 @@ function renderResultSet(input) {
   /* BLOCKER-COMMON-ERRORS-001: the common-error data-consistency surface, its own group. Each is a potential
      issue with source-linked evidence — never a finding. */
   const commonErrors = evaluation.common_errors ? evaluation.common_errors.performed : [];
+  const concernCount = evaluation.report_concerns?.performed?.length || 0;
   const commonRendered = commonErrors.map((c) => ({
     check_name: c.check_id,
     check_class: c.check_class,
@@ -383,7 +385,7 @@ function renderResultSet(input) {
     presentation_evidence: Boolean(extraction && extraction.presentation_evidence),
     jurisdiction: { country: evaluation.country, region: evaluation.region },
     policy,
-    checks_performed: rendered.length + factualPerformed.length + detectedRendered.length + commonRendered.length,
+    checks_performed: rendered.length + factualPerformed.length + detectedRendered.length + commonRendered.length + concernCount,
     observations: rendered,
     report_consistency_checks: factualPerformed,
   /* BLOCKER-REPORT-DATA-TO-ISSUE-001 (Batch 31): the two new assessment surfaces, in their own result fields.
@@ -445,8 +447,9 @@ function renderResultSet(input) {
       statutory_checks_performed: rendered.length,
       factual_checks_performed: factualPerformed.length,
       common_error_checks_performed: commonRendered.length,
+      report_concern_checks_performed: concernCount,
       plain: assessmentPlain(assessmentKinds, rendered.length, factualPerformed.length,
-        commonRendered.length, evaluation.assessments_performed || 0)
+        commonRendered.length, (evaluation.assessments_performed || 0) + concernCount)
     },
     qualifications: SET_QUALIFICATIONS.slice(),
     read_but_no_usable_facts: readButNoUsableFacts
@@ -577,7 +580,8 @@ function teaserFor(issue) {
   return {
     issue_id: issue.issue_id,
     severity: SEVERITY_ORDER[rank],
-    title: TEASER_TITLE[issue.preview_category],
+    title: issue.concern_kind === 'ADDRESS_GEOGRAPHIC_INCONSISTENCY'
+      ? 'Address details do not match' : TEASER_TITLE[issue.preview_category],
     confidence: issue.confidence,
     confidence_label: issues.consumerLabel(issue),
     explanation: issue.preview_category === 'RE_AGING'
@@ -609,6 +613,8 @@ function summariseAssessment(rendered) {
     || (a.issue_id < b.issue_id ? -1 : (a.issue_id > b.issue_id ? 1 : 0)));
   return {
     distinct_total: rows.length,
+    violation_total: rows.filter(issue => issues.consumerLabel(issue) === 'VIOLATION').length,
+    non_violation_concern_total: rows.filter(issue => issues.consumerLabel(issue) === 'NON-VIOLATION CONCERN').length,
     information_total: allRows.length - rows.length,
     by_confidence: by,
     categories_sum_to_total: by.violation + by.probable_violation + by.potential === rows.length,

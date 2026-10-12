@@ -354,6 +354,22 @@ function assemble(files) {
 
   const extraction = Object.assign({}, base, {
     records: mergedRecords,
+    // These are completed source readings, kept with their own uploaded file.
+    // A report-level identity concern must never inherit a neighbouring file's identity.
+    report_concern_evidence: unique.flatMap(file => (file.extraction.report_concern_evidence || []).map(reading => ({
+      ...reading,
+      source_file_id: file.file_id,
+      source_bureau: file.extraction.bureau || null,
+      report_reference_date: file.extraction.reference_date || null,
+      location: { ...(reading.location || {}), file_id: file.file_id }
+    }))),
+    extraction_coverage: base.extraction_coverage ? {
+      ...base.extraction_coverage,
+      table_row_census: unique.flatMap(file => (file.extraction.extraction_coverage?.table_row_census || []).map(table => ({
+        ...table, source_file_id: file.file_id,
+        location: { ...(table.location || {}), file_id: file.file_id }
+      })))
+    } : undefined,
     reference_date: referenceDate,
     content_markers: mergedContentMarkers || base.content_markers,
     evidence_readings: evidenceReadings,

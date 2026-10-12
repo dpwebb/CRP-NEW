@@ -34,7 +34,7 @@ const SOURCES = Object.freeze({
     scope: 'Australian tax file number handling; returning a TFN to its owner is permitted' }),
   AU_ACCESS: Object.freeze({ publisher: 'Australian Government', title: 'Privacy (Credit Reporting) Code 2025',
     section: 'Sections 19(6) and 19(16)', version: 'F2025L00385',
-    url: 'https://www.legislation.gov.au/F2025L00385/asmade/2025-03-25/text/original/epub/OEBPS/document_1/document_1.html',
+    url: 'https://www.oaic.gov.au/__data/assets/pdf_file/0014/250160/24-March-2025-Privacy-Credit-Reporting-Code-2025.PDF',
     scope: 'Australian credit reporting access and clear explanations' })
 });
 const AU_LOCALITIES = Object.freeze({

@@ -186,6 +186,9 @@ async function run(_service, check) {
   check.equal(identifier?.classification, 'NON_VIOLATION', 'masked TFN presence is a handling review, not an unlawful-disclosure finding');
   check.match(identifier.uncertainty, /owner is permitted/, 'the permitted return-to-owner exception stays explicit');
   check.equal(identifier.source_facts[0].raw_value, 'Tax file number shown (masked)', 'no original TFN digits reach the issue');
+  const unmaskedIdentifier = byKind(context([], [{ ...tfn(), masked:false, raw_value:'Tax file number shown (unmasked)' }]), 'AU_TFN_HANDLING')[0];
+  check.equal(unmaskedIdentifier?.classification, 'NON_VIOLATION', 'unmasked presence supports review without assuming illegal disclosure to its owner');
+  check.ok(!/123456789/.test(JSON.stringify(unmaskedIdentifier)), 'unmasked presence also stays privacy-minimized');
   check.equal(byKind(context([], [{ ...tfn(), raw_value: 'TFN 123456789' }]), 'AU_TFN_HANDLING').length, 0,
     'unsafe identifier text is rejected rather than exposed');
   const category = byKind(context([record()]), 'AU_AMOUNT_CATEGORY_REVIEW')[0];

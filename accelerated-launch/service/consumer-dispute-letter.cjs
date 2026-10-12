@@ -47,6 +47,10 @@ function dateReading(value, fact) {
     ? ` (printed as "${raw}")` : '');
 }
 function requestFor(issue) {
+  // A completed review concern asks about its sourced facts without asserting a breach.
+  if (issue.classification === 'NON_VIOLATION' && issue.report_concern === true) {
+    return [sentence(issue.explanation), sentence(issue.request_wording)].filter(Boolean).join(' ');
+  }
   // A consolidated finding may lead with its statutory support. Its accepted checklist
   // basis still supplies the concrete report problem for the consumer's letter.
   const checklistBasis = !issue.check_id ? (issue.supported_bases || []).find(basis => basis.check_id?.startsWith('COMMON-ERROR-')) : null;
@@ -113,6 +117,15 @@ function itemsFor(row, selected) {
       ...(issue.check_id === 'COMMON-ERROR-COLLECTION-ORIGINAL-BOTH-DUE' ? [issue.evidence?.original_record] : [])];
     const entries = [...new Set([...named.map(entry => entry.record_index), ...indexes].filter(index => index != null))]
       .map(record_index => named.find(entry => entry.record_index === record_index) || { record_index });
+    if (!entries.length && issue.report_concern === true) {
+      const location = issue.source_facts?.find(fact => fact.location?.page)?.location || issue.location || {};
+      return [{ issue_id: issue.issue_id, letter_item: index + 1, record_index: null, check_id: issue.check_id,
+        kind: 'REPORT_DETAILS', name: issue.concern_kind === 'ADDRESS_GEOGRAPHIC_INCONSISTENCY'
+          ? 'Address details on my report' : 'Identification details on my report', account_reference: '',
+        report_reference: location.page ? `Report page ${location.page}${location.line ? ', line ' + location.line : ''}` : '',
+        request: requestFor(issue), explanation: issue.explanation || '', report_date: issue.report_identity?.reference_date || '',
+        source_location: { page: location.page || null, line: location.line || null } }];
+    }
     return entries.map(entry => {
       const record = row?.extraction?.records?.find(record => record.record_index === entry.record_index);
       const location = entry.location || record?.location || issue.location || {};

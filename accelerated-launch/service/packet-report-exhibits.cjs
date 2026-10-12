@@ -110,6 +110,8 @@ function available(store, actor, current, selected) {
   }
   function addFact(fact, issue) {
     const source = fact.source || fact;
+    if (source.location?.source_kind === 'AUTHORITATIVE_LOCALITY_MAPPING'
+      && !source.source_file_id && !source.location.file_id) return;
     const role = fact.role === 'earlier_report' || source.role === 'earlier_report' ? 'EARLIER' : 'CURRENT';
     const resultId = role === 'EARLIER' ? source.source_result_id : current.result_id;
     if (role === 'CURRENT' && source.source_result_id && source.source_result_id !== current.result_id
@@ -120,6 +122,18 @@ function available(store, actor, current, selected) {
     if (!result) { if (source.source_file_id) blocked.add(source.source_file_id); return; }
     const index = source.record_index ?? fact.record_index ?? (role === 'CURRENT' ? issue.record_index : issue.evidence?.earlier_record_index);
     const record = result.extraction?.records?.find(row => row.record_index === index);
+    if (!record && index == null && role === 'CURRENT' && issue.report_concern === true) {
+      const fileId = fileFor(result, null, source);
+      const reading = (result.extraction?.report_concern_evidence || []).find(entry => entry.trusted === true
+        && entry.source_file_id === fileId && entry.location?.file_id === fileId
+        && entry.source_field === source.source_field && entry.raw_value === source.raw_value
+        && entry.location?.page === source.location?.page && entry.location?.line === source.location?.line);
+      if (!reading || source.trusted === false || source.location?.trusted === false) {
+        if (fileId) blocked.add(fileId); return;
+      }
+      add(resultId, fileId, role, null, source);
+      return;
+    }
     if (!record) { if (source.source_file_id) blocked.add(source.source_file_id); return; }
     const fileId = fileFor(result, record, source);
     add(resultId, fileId, role, record, source);

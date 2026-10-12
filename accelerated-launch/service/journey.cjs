@@ -94,6 +94,8 @@ function viewForResult(store, actor, caseRow, resultRow) {
         assessed_on: rendered ? (rendered.assessed_on || null) : null,
         assessment_clock_basis: rendered ? (rendered.assessment_clock_basis || null) : null,
         distinct_total: summary.distinct_total,
+        violation_total: summary.violation_total,
+        non_violation_concern_total: summary.non_violation_concern_total,
         information_total: summary.information_total,
         by_confidence: summary.by_confidence,
         teaser: summary.teaser,

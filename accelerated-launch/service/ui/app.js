@@ -1228,7 +1228,10 @@ function freeSummaryBlock(view) {
   const summary = view.assessment_summary || {};
   const teaser = summary.teaser?.confidence_label === 'VIOLATION' ? summary.teaser : null;
   const total = Number(summary.distinct_total || 0);
-  const counts = total > 0
+  const concerns = Number(summary.non_violation_concern_total || 0);
+  const counts = concerns > 0
+    ? `<p class="evidence">Violations: <b>${Number(summary.violation_total || 0)}</b> · Non-violation concerns: <b>${concerns}</b></p>`
+    : total > 0
     ? `<p class="evidence">Reporting issues found: <b>${total}</b></p>`
     : '<p class="evidence">We did not find a reporting issue in the information we could review.</p>';
   const preview = teaser
@@ -1377,10 +1380,16 @@ function issuesSection(result) {
       ${i.limitation && i.limitation.assessed_on ? `<p class="evidence">Assessed on <b>${esc(i.limitation.assessed_on)}</b>${i.limitation.assessment_clock_basis ? ` (${esc(i.limitation.assessment_clock_basis)})` : ''}${i.limitation.report_date ? ` · the report itself is dated <b>${esc(i.limitation.report_date)}</b>` : ''}.</p>` : ''}
       ${i.retention_review ? `<p class="evidence">${i.retention_review.report_issued ? `Report issued: <b>${esc(i.retention_review.report_issued)}</b> · ` : 'Report issued: <b>not stated</b> · '}Assessed on: <b>${esc(i.retention_review.assessed_on || '')}</b> · the reporting period appears to end ${i.retention_review.period_appears_to_end_from ? `somewhere between <b>${esc(i.retention_review.period_appears_to_end_from)}</b> and <b>${esc(i.retention_review.period_appears_to_end_on)}</b>` : `<b>${esc(i.retention_review.period_appears_to_end_on || '')}</b>`}${i.retention_review.arose_through_later_passage_of_time ? ' · this arose through the passage of time since your report was issued' : ''}.</p>` : ''}
       ${i.source_location ? `<p class="evidence">Your report, ${i.source_location.section ? esc(i.source_location.section) + ', ' : ''}page <b>${esc(i.source_location.page)}</b>${i.source_location.line != null ? `, line <b>${esc(i.source_location.line)}</b>` : ''}${i.account_number_in_report != null ? `, account <b>${esc(i.account_number_in_report)}</b>` : ''}.</p>` : ''}
-      ${i.rule_assessment ? `<p class="evidence">${esc(i.rule_assessment.requirement)}${i.citation ? ` Supporting statute: ${esc(i.citation)}.` : ''}</p>` : i.retention_review || i.limitation_concern ? '' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
+      ${i.rule_assessment ? `<p class="evidence">${esc(i.rule_assessment.requirement)}${i.citation ? ` Supporting statute: ${esc(i.citation)}.` : ''}</p>` : i.retention_review || i.limitation_concern ? '' : i.report_concern ? '<p class="evidence">You can ask the bureau to check this report detail.</p>' : '<p class="evidence">A factual discrepancy like this supports a verification request.</p>'}
     </div>`).join('');
   const reporting = issues.filter(i => !informational(i)), information = issues.filter(informational);
-  return `${reporting.length ? `<h2>Reporting issues for your review</h2>${cards(reporting)}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>'}${information.length ? `<h2>Information about court time limits</h2><p>This information is for you. It is not included in a dispute packet.</p>${cards(information)}` : ''}`;
+  const concerns = reporting.filter(i => i.consumer_label === 'NON-VIOLATION CONCERN');
+  const findings = reporting.filter(i => i.consumer_label === 'VIOLATION');
+  const otherReviews = reporting.filter(i => i.consumer_label !== 'VIOLATION' && i.consumer_label !== 'NON-VIOLATION CONCERN');
+  const reportingCards = concerns.length
+    ? `${findings.length ? `<h2>Violations</h2>${cards(findings)}` : ''}<h2>Non-violation concerns</h2>${cards(concerns)}${otherReviews.length ? `<h2>Other details to review</h2>${cards(otherReviews)}` : ''}`
+    : reporting.length ? `<h2>Reporting issues for your review</h2>${cards(reporting)}` : '<p class="lede">We did not find a reporting issue in the information we could review.</p>';
+  return `${reportingCards}${information.length ? `<h2>Information about court time limits</h2><p>This information is for you. It is not included in a dispute packet.</p>${cards(information)}` : ''}`;
 }
 
 /* ------------------------------------------------------------------ optional clarification (BLOCKER-CLARIFY-001) */
@@ -1583,7 +1592,9 @@ function renderReview(panel) {
 /* OWNER-POTENTIAL-ISSUE-001: the correction-packet selection/review/edit/approve/download flow, wired into the
    Wizzard review step. Consumer wording is kept separate from the report facts. */
 function issueLabel(issue) {
-  return issue && issue.consumer_label === 'INFORMATION' ? 'INFORMATION' : issue && issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'Verification request';
+  return issue && issue.consumer_label === 'INFORMATION' ? 'INFORMATION'
+    : issue && issue.consumer_label === 'VIOLATION' ? 'VIOLATION'
+      : issue && issue.consumer_label === 'NON-VIOLATION CONCERN' ? 'NON-VIOLATION CONCERN' : 'Verification request';
 }
 
 /* OWNER-PACKET-CORRESPONDENCE-001: the consumer-visible name of each necessary correspondence detail. */

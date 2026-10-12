@@ -27,6 +27,9 @@ function sourceLocation(location = {}) {
 }
 function sourceText(fact) {
   const loc = fact.location || {};
+  if (loc.source_kind === 'AUTHORITATIVE_LOCALITY_MAPPING') {
+    return `Published address reference: ${plain(fact.source_field)} - ${plain(fact.normalized_value)}${loc.url ? `. ${loc.url}` : ''}.`;
+  }
   if (fact.privacy_redacted) {
     const label = /\bMember Number\b/i.test(fact.source_field || '') ? 'Member number matched from the report'
       : /Member Name/i.test(fact.source_field || '') ? 'Reporting member matched from the report'
@@ -128,7 +131,7 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
   text(violations.length === 1 ? 'VIOLATION' : 'VIOLATIONS', LEFT + 21, summaryBottom + 25, 10, COLORS.green, true);
   line(LEFT + 159, summaryBottom + 18, LEFT + 159, summaryBottom + 75);
   text(String(reviews), LEFT + 178, summaryBottom + 45, 29, COLORS.green, true);
-  text('DETAILS TO REVIEW', LEFT + 178, summaryBottom + 25, 9, COLORS.green, true);
+  text(reporting.some(issue => issue.consumer_label === 'NON-VIOLATION CONCERN') ? 'NON-VIOLATION CONCERNS' : 'DETAILS TO REVIEW', LEFT + 178, summaryBottom + 25, 8, COLORS.green, true);
   line(LEFT + 334, summaryBottom + 18, LEFT + 334, summaryBottom + 75);
   text(String(information.length), LEFT + 353, summaryBottom + 45, 29, COLORS.green, true);
   text('INFORMATION NOTES', LEFT + 353, summaryBottom + 25, 9, COLORS.green, true);
@@ -138,7 +141,8 @@ function renderAssessmentPdf(rendered, producedAt, context = {}) {
     : 'Start with the entries that affect you. A subscription helps you turn selected issues into a packet you can print and mail.', { size: 11, color: COLORS.muted, gap: 18 });
 
   function issueCard(issue, number, isInformation) {
-    const label = isInformation ? 'INFORMATION' : issue.consumer_label === 'VIOLATION' ? 'VIOLATION' : 'REVIEW';
+    const label = isInformation ? 'INFORMATION' : issue.consumer_label === 'VIOLATION' ? 'VIOLATION'
+      : issue.consumer_label === 'NON-VIOLATION CONCERN' ? 'NON-VIOLATION CONCERN' : 'REVIEW';
     const title = displayLabel(issue.check_kind || (isInformation ? 'Court time-limit information' : 'Report details to review'));
     continuation = null;
     ensure(112);

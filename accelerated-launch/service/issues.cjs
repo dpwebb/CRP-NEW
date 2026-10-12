@@ -1632,7 +1632,7 @@ function consumerFactValue(fact, key) {
 
 function publicFactLocation(location) {
   if (!location) return null;
-  if (['EXTERNAL_REPORT_CODE_DEFINITION', 'EXTERNAL_REPORT_PERIOD_DEFINITION'].includes(location.source_kind)) return {
+  if (['EXTERNAL_REPORT_CODE_DEFINITION', 'EXTERNAL_REPORT_PERIOD_DEFINITION', 'AUTHORITATIVE_LOCALITY_MAPPING'].includes(location.source_kind)) return {
     section: location.section, url: location.url, source_kind: location.source_kind
   };
   return { section: location.section || null, page: location.page, line: location.line };

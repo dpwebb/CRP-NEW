@@ -1,5 +1,13 @@
 # Controlling owner rule: violation determination
 
+## October 11 source-supported non-violation concerns
+
+Owner instruction: "Fix these gaps and surface these concerns violation and non-violation on the report", followed by "Also add these to the common-errors list and have CRP look for these in other credit reports in jurisdictions that have similar requirements".
+
+Add the supported address-geography, payment-claim/status, closure-date disclosure, undated payment-history disclosure, identifier-handling and credit-data-category mechanisms to the shared checklist. A completed, source-supported concern whose breach predicate is not established may appear as **NON-VIOLATION CONCERN**, with its specific facts and consumer-controlled verification request. This classification does not assert compliance, legal wrongdoing, a proven payment, a reporting deadline breach or unlawful identifier disclosure. Supported checklist breaches retain **VIOLATION** and their existing evidence gates. Failed/unrun checks, unread fields and internal extraction diagnostics remain internal.
+
+Reuse shared readers and facts across reports, with jurisdiction-specific requirements, effective dates and exceptions. Generic factual review concerns do not acquire an Australian legal rule when used elsewhere. New source mappings must remain bounded and supported. Preserve selection, review/approval, source custody, ownership, privacy and entitlement controls. This private implementation instruction does not authorize public deployment.
+
 ## October 11 reporting-period amendment
 
 The owner's explicit reporting-period directive is recorded in `CRP_OWNER_REPORTING_PERIOD_DIRECTIVE_001.md`. Reporting-period assessment must not exclude tradelines or collections based on favorable/adverse classification. Retain applicable numerical periods. First delinquency is the determining date when available; otherwise last payment is the determining fallback date, with its own source evidence and original field identity. This is a date-selection instruction, not a separate CRP rule or a claim that a statute prescribes that fallback. Implementation and release statuses must remain distinct.

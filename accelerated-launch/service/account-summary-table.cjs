@@ -190,16 +190,25 @@ function reportConcernEvidence(page) {
     const trusted=own.trusted&&heading.words.every(w=>w.trusted!==false);
     if(!trusted) continue;
     if(heading.label==='TAX FILE NUMBER') {
-      if(/^[X*#\s.-]+\d{0,4}$/i.test(text)) result.push({kind:'IDENTIFIER_FIELD',identifier_type:'TFN',masked:true,
-        raw_value:'Tax file number shown (masked)',source_field:'Tax File Number',location:own,trusted:true});
+      const masked=/^[X*#\s.-]+\d{0,4}$/i.test(text);
+      const unmasked=/^[\d\s.-]+$/.test(text)&&text.replace(/\D/g,'').length>=8&&text.replace(/\D/g,'').length<=9;
+      if(masked||unmasked) result.push({kind:'IDENTIFIER_FIELD',identifier_type:'TFN',masked,
+        raw_value:masked?'Tax file number shown (masked)':'Tax file number shown (unmasked)',source_field:'Tax File Number',location:own,trusted:true});
       continue;
     }
-    const re=/,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)\s+(\d{4})\b/g;
-    let match;
-    while((match=re.exec(text))) {
-      const components={locality:norm(match[1]),state:match[2],postcode:match[3]};
-      result.push({kind:'ADDRESS_COMPONENTS',role:heading.label==='CURRENT ADDRESS'?'CURRENT':'PREVIOUS',components,
-        raw_value:`${components.locality}, ${components.state} ${components.postcode}`,source_field:heading.label==='CURRENT ADDRESS'?'Current Address':'Previous Address',location:own,trusted:true});
+    const patterns = [
+      ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA)\s+(\d{4})\b/gi],
+      ['CA', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
+      ['US', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]
+    ];
+    for (const [country, re] of patterns) {
+      let match;
+      while((match=re.exec(text))) {
+        const components={country,locality:norm(match[1]),state:match[2].toUpperCase(),postcode:match[3].toUpperCase()};
+        result.push({kind:'ADDRESS_COMPONENTS',role:heading.label==='CURRENT ADDRESS'?'CURRENT':'PREVIOUS',components,
+          postal_exception:/\b(?:P\.?\s*O\.?\s*BOX|POST OFFICE BOX|GENERAL DELIVERY|RURAL ROUTE)\b/i.test(text),
+          raw_value:`${components.locality}, ${components.state} ${components.postcode}`,source_field:heading.label==='CURRENT ADDRESS'?'Current Address':'Previous Address',location:own,trusted:true});
+      }
     }
   }
   return result;

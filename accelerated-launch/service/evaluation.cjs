@@ -371,7 +371,10 @@ function evaluateCase(context) {
   base.reaging_baselines = reaging.freezeBaselines(extraction, Array.isArray(context.prior_reports) ? context.prior_reports : []);
   base.common_errors = runCommonErrorChecks({ country: context.country, region: context.region, extraction,
     prior_reports: base.reaging_baselines });
+  base.report_concerns = carriesReportEvidence(extraction)
+    ? require('./report-concerns.cjs').measure(extraction, base) : null;
   const commonPerformed = base.common_errors ? base.common_errors.performed : [];
+  const concernPerformed = base.report_concerns ? base.report_concerns.performed : [];
   /* The court-limitation assessment and the payment-history analysis run on the same admitted report evidence.
      `checks_performed` keeps its existing meaning (statutory, factual, detected and common-error checks);
      the new work is reported separately in `assessments_performed` and its own summaries, so no existing count
@@ -391,9 +394,10 @@ function evaluateCase(context) {
     REPORT_FACT_CONSISTENCY: factualPerformed.filter((c) => c.check_class === 'REPORT_FACT_CONSISTENCY').length,
     PRINTED_POLICY_OBSERVATION: factualPerformed.filter((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION').length,
     DETECTED_REPORT_INFORMATION: detectedPerformed.length,
-    COMMON_ERROR: commonPerformed.length
+    COMMON_ERROR: commonPerformed.length,
+    REPORT_CONCERN: concernPerformed.length
   };
-  base.checks_performed = base.results.length + factualPerformed.length + detectedPerformed.length + commonPerformed.length;
+  base.checks_performed = base.results.length + factualPerformed.length + detectedPerformed.length + commonPerformed.length + concernPerformed.length;
   base.factual_summary = base.factual_checks ? base.factual_checks.summary : null;
   base.detected_summary = base.detected_report_information ? base.detected_report_information.summary : null;
   base.common_error_summary = base.common_errors ? base.common_errors.summary : null;
@@ -402,7 +406,8 @@ function evaluateCase(context) {
     factualPerformed.some((c) => c.check_class === 'REPORT_FACT_CONSISTENCY') ? 'REPORT_FACT_CONSISTENCY' : null,
     factualPerformed.some((c) => c.check_class === 'PRINTED_POLICY_OBSERVATION') ? 'PRINTED_POLICY_OBSERVATION' : null,
     detectedPerformed.length ? CHECK_CLASS : null,
-    commonPerformed.length ? COMMON_ERROR_CLASS : null
+    commonPerformed.length ? COMMON_ERROR_CLASS : null,
+    concernPerformed.length ? 'REPORT_CONCERN' : null
   ].filter(Boolean);
 
   base.eligibility = draftEligibility(base.results);
