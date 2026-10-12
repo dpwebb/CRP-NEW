@@ -1,0 +1,10 @@
+{
+  "target": "staging",
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "previous_build": "crp-v1-d9a2bfd3f5d73564",
+  "package_receipt_sha256": "8526463D8A470566097F266C4418ED338C1A81C3240D3ECF4E605649712DC9F7",
+  "staging_acceptance_sha256": null,
+  "activated_at": "2026-10-12T06:52:54.298Z",
+  "public_smoke": "PASS",
+  "journey_acceptance": "PENDING"
+}

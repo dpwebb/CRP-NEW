@@ -1,0 +1,13 @@
+{
+  "mode": "FULL_CURRENT_PRODUCT",
+  "totals": {
+    "passed": 15522,
+    "failed": 0,
+    "skipped": 0
+  },
+  "sections": 158,
+  "source_files": 307,
+  "unrun": 0,
+  "source_drift": [],
+  "original_receipt_sha256": "ca5eefb027a45595d916c8c0d94c93175d4969c49f88ff048f421adb07898e74"
+}

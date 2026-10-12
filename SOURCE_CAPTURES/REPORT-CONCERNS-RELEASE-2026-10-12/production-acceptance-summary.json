@@ -1,0 +1,330 @@
+{
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "passed": true,
+  "production_accepted": true,
+  "blocking": [],
+  "checks": [
+    {
+      "id": "PRIVATE_DATA_DIRECTORY_OUTSIDE_THE_REPOSITORY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "STORAGE"
+    },
+    {
+      "id": "NO_SECRET_MATERIAL_IN_SERVICE_SOURCES",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "SECRETS"
+    },
+    {
+      "id": "PRODUCTION_TEMPLATE_NAMES_ONLY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "SECRETS"
+    },
+    {
+      "id": "SUPPORT_REFERENCE_SECRET_IS_CONFIGURED",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "DEPLOYMENT"
+    },
+    {
+      "id": "STATIC_ALLOWLIST_MATCHES_THE_PRIVATE_UI_TREE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "SERVICE"
+    },
+    {
+      "id": "LOG_SINK_ADMITS_ONLY_WHITELISTED_FIELDS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "PRIVACY"
+    },
+    {
+      "id": "ALL_82_REGIONS_PRESENT_IN_THE_LAUNCH_MATRIX",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "COVERAGE"
+    },
+    {
+      "id": "NO_REGION_IS_ADVERTISED_AS_LAUNCH_READY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "COVERAGE"
+    },
+    {
+      "id": "PAYMENT_PROVIDER_IS_CONFIGURED_FOR_BILLING",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "PAYMENT"
+    },
+    {
+      "id": "MATCHED_TEST_CHECKOUT_EVIDENCE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "PAYMENT"
+    },
+    {
+      "id": "RUNTIME_PATH_PORTABILITY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "PORTABILITY"
+    },
+    {
+      "id": "SUPPORTED_FORMAT_MESSAGING_MATCHES_THE_REGISTRY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FORMAT_SUPPORT"
+    },
+    {
+      "id": "PLAN_CATALOG_PRICES_EVERY_PLAN_ABOVE_THE_PROVIDER_MINIMUM",
+      "passed": true,
+      "applies_to_launch": false,
+      "category": "PAYMENT"
+    },
+    {
+      "id": "EVERY_MARKET_HAS_A_MATRIX_ROW",
+      "passed": true,
+      "applies_to_launch": false,
+      "category": "COVERAGE"
+    },
+    {
+      "id": "EVIDENCE_ARTIFACTS_PRESENT_AND_SEPARATE",
+      "passed": true,
+      "applies_to_launch": false,
+      "category": "EVIDENCE"
+    },
+    {
+      "id": "PRIVATE_DATA_DIRECTORY_IS_DURABLE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "STORAGE"
+    },
+    {
+      "id": "STATE_FILE_IS_READABLE_WHERE_A_DATA_DIRECTORY_EXISTS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "STORAGE"
+    },
+    {
+      "id": "ALL_82_JURISDICTIONS_HAVE_MEANINGFUL_ASSESSMENTS_ON_SUPPORTED_FORMATS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FORMAT_SUPPORT"
+    },
+    {
+      "id": "CANADIAN_GENERAL_UPLOAD_SUPPORT_ESTABLISHED_WITHIN_STATED_BOUNDARIES",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FORMAT_SUPPORT"
+    },
+    {
+      "id": "CURRENT_GB_SUPPORT_IS_ESTABLISHED",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FORMAT_SUPPORT"
+    },
+    {
+      "id": "ACCOUNT_ISOLATION_AND_DELETION_PASS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "ISOLATION"
+    },
+    {
+      "id": "SUPPORTED_CHECKS_AND_LIMITATIONS_SHOWN_BEFORE_PURCHASE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "PRESENTATION"
+    },
+    {
+      "id": "DEPLOYMENT_PROVENANCE_AND_RELEASE_AUTHORIZATION_RECORDED",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "DEPLOYMENT"
+    },
+    {
+      "id": "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FAILURE_TO_DETECT_MITIGATION"
+    },
+    {
+      "id": "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CLARIFICATION"
+    },
+    {
+      "id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "COMMON_ERRORS"
+    },
+    {
+      "id": "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-004_DATE_FORMS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-009_BUREAU_SEGMENTATION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "INGESTION"
+    },
+    {
+      "id": "GAP-FINDING-001_EXCEPTION_EVALUATION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FINDING"
+    },
+    {
+      "id": "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FINDING"
+    },
+    {
+      "id": "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FINDING"
+    },
+    {
+      "id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FINDING"
+    },
+    {
+      "id": "BLOCKER-RESULTS-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-EXPLANATIONS-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-BILLING-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-PRIVACY-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-SUPPORT-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-CONSUMER-LANGUAGE-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-CLARIFY-MATERIALITY-002",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "CONSUMER_EXPERIENCE"
+    },
+    {
+      "id": "BLOCKER-FINDING-COVERAGE-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "FINDING_COVERAGE"
+    },
+    {
+      "id": "BLOCKER-ALL82-FACILITATION-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "JURISDICTION_FACILITATION"
+    },
+    {
+      "id": "BLOCKER-DISPUTE-PACKET-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "DISPUTE_PACKET"
+    },
+    {
+      "id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "REPORT_DATA_TO_ISSUE"
+    },
+    {
+      "id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+      "passed": true,
+      "applies_to_launch": true,
+      "category": "SUBSCRIPTION_VALUE"
+    }
+  ],
+  "capability_gates": 30,
+  "required_criteria": 123,
+  "actual_live_charge_performed": false,
+  "recorded_at": "2026-10-12T07:30:45.662Z"
+}
