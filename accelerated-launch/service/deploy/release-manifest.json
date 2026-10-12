@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-11T22:47:07.934Z",
+  "generated_at": "2026-10-12T00:36:26.012Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 85,
-      "digest": "7CE9E7C0CC9ECCA4D8F67D3DC4F9017E69FCF3F05292F06D178F5D5512AADEE7",
+      "file_count": 86,
+      "digest": "7FEA41D6A244563CF48F14DB1A59D5017A5C887343D2B4353F49A352150F60C5",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -90,7 +90,7 @@
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "95FF21861940CFA6A452919FFCC36BB73CFEE054848883021306BD1450B1837A"
+          "sha256": "B47091B27AAD2AC0917C0EBD2D9EA1D4E11335700FE848CEDDFB1CABA8A2CA90"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -175,6 +175,10 @@
         {
           "file": "accelerated-launch/service/coverage-matrix.cjs",
           "sha256": "4A49A30751D8AAEF291CA0FFC5BE133D597EDF9ED0A5BCFCB904F3E70BE94B77"
+        },
+        {
+          "file": "accelerated-launch/service/credit-news.cjs",
+          "sha256": "49C619356683852DB37C9A4CC2BD981D340EAD4DC3912D7D3B2866C366E9929C"
         },
         {
           "file": "accelerated-launch/service/demo.cjs",
@@ -537,8 +541,8 @@
     },
     {
       "id": "SERVED_ASSETS",
-      "file_count": 20,
-      "digest": "9701D5F2A67EAA9341D8DEC70657D8DF529AA14213C2D070CECD4C5BAD09C3F6",
+      "file_count": 22,
+      "digest": "6634F9DA5648D9F0FE422BD7230274F34A21CF130B5F8DB8AEF92FAECCC82F55",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -557,6 +561,14 @@
           "sha256": "7D82A24C612AB3CC5A78148B18DC56AE423FAFF1F2C0C4688964FFE1F5B9EF86"
         },
         {
+          "file": "accelerated-launch/service/ui/credit-news.css",
+          "sha256": "1278630FDC79E592EC613F66278DFBACAFE2DA46D3171045C25B1A365412231E"
+        },
+        {
+          "file": "accelerated-launch/service/ui/credit-news.js",
+          "sha256": "0F9034F4F0A16947763019B0B4A9B78F6165BC202733A9B4127EA8DBB13BA9BE"
+        },
+        {
           "file": "accelerated-launch/service/ui/favicon.svg",
           "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
         },
@@ -570,7 +582,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/landing.html",
-          "sha256": "E0DBD840130BE84758390084A9DDB94F3474D939AC9C37B2139972F8B0ECE304"
+          "sha256": "8E992CC99A82A5507A9192CB68BC7B33B0E8C521F4D37AB9A2390C59EBC96668"
         },
         {
           "file": "accelerated-launch/service/ui/mailing-preview.css",
@@ -623,6 +635,6 @@
       ]
     }
   ],
-  "manifest_digest": "378B2463903AD6521601917C1644426CE461C26C79262EB1D5C240776B386E7B",
-  "total_file_count": 144
+  "manifest_digest": "9799FD768CB7CDFA15CB128D8D61895D800FFC9E3B4E89F6037F08BB482FC9A3",
+  "total_file_count": 147
 }
