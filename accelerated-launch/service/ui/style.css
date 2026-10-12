@@ -211,3 +211,28 @@ body.auth-entry footer { width:100%; max-width:720px; margin:auto auto 0; paddin
 .auth-brand .mark { width:36px; height:38px; font-size:23px; }
 .auth-brand b { display:block; color:#5c7843; font-size:10px; letter-spacing:2px; }
 @media (max-width:700px) { body.auth-entry main { padding:18px 14px; } body.auth-entry .card { padding:24px 20px; } }
+
+/* The existing journey controls become a native mobile disclosure. */
+.workspace-menu-toggle { display:none; }
+.steps[popover] { display:block; position:static; inset:auto; margin:0; width:auto; border:0; background:transparent; color:inherit; overflow:visible; }
+@media (min-width:1001px) {
+  .steps[popover]:popover-open { position:fixed; top:164px; left:25px; width:214px; }
+}
+@media (min-width:1001px) and (max-width:1150px) {
+  .steps[popover]:popover-open { top:152px; left:20px; width:190px; }
+}
+@media (max-width:1000px) {
+  .sidebar { position:relative; padding:16px 18px; display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; }
+  .shell { margin:0; }
+  .workspace-label, .sidebar-bottom { display:none; }
+  .brand { font-size:15px; }
+  .mark { width:32px; height:36px; font-size:21px; }
+  .workspace-menu-toggle { display:flex; align-items:center; justify-content:center; gap:8px; min-width:44px; min-height:44px; padding:9px 12px; border:1px solid #638074; border-radius:8px; background:transparent; color:#f5f7ef; }
+  .workspace-menu-toggle svg { width:24px; height:24px; }
+  .steps[popover] { display:none; }
+  .steps[popover]:popover-open { display:block; position:fixed; inset:78px 16px auto auto; margin:0; width:min(360px,calc(100vw - 32px)); max-height:calc(100dvh - 96px); overflow-y:auto; padding:12px; border:1px solid #638074; border-radius:12px; background:var(--accent); color:#f5f7ef; box-shadow:0 12px 30px #17362f30; }
+  .steps[popover] button { min-height:44px; padding:10px 12px; font-size:14px; }
+  .steps[popover] .tools-label { color:#aec4b9; padding:12px; }
+  .steps[popover]::backdrop { background:#17362f20; }
+}
+body.auth-entry .steps[popover] { display:none; }

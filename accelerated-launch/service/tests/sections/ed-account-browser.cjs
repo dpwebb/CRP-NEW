@@ -26,7 +26,10 @@ async function run(service, check) {
     await signupPage.screenshot({ path: path.join(__dirname, '..', '..', 'out', 'fictional-signup-mobile.png'), fullPage: true });
     await signupPage.locator('#create').click();
     await signupPage.waitForSelector('#open');
+    check.ok(await signupPage.locator('#steps').isHidden(), 'mobile journey starts collapsed behind the hamburger');
+    await signupPage.getByRole('button', { name: 'Navigation menu', exact: true }).click();
     await signupPage.locator('#steps button[data-step="0"]').click();
+    await signupPage.keyboard.press('Escape');
     await signupPage.waitForSelector('#account-save');
     check.equal(await signupPage.locator('#account-full_name').inputValue(), 'Fictional New Consumer', 'signup name persists into account details');
     check.equal(await signupPage.locator('#account-date_of_birth').inputValue(), '1991-04-03', 'signup date of birth persists into account details');
