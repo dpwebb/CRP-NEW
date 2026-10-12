@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'fi-credit-news.cjs',
   'fg-native-currency-pricing.cjs',
   'ez-reporting-period-directive.cjs',
   'ev-native-account-summary.cjs',

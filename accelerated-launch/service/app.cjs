@@ -82,7 +82,7 @@ const STATIC_TYPES = Object.freeze({
   '.ttf': 'font/ttf',
   '.txt': 'text/plain; charset=utf-8'
 });
-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
 const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
 const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
 const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
@@ -166,6 +166,7 @@ const ROUTES = Object.freeze([
   ['GET', '/api/health', false, 'health'],
   ['GET', '/api/formats', false, 'supportedFormats'],
   ['GET', '/api/pricing', false, 'publicPricing'],
+  ['GET', '/api/credit-news', false, 'publicCreditNews'],
   /* B4. `auth: false` on the two public reads and on the PROVIDER callback: the provider has no session, and
      the event it sends is trusted only after its signature verifies. The billing routes are authenticated but
      deliberately NOT entitlement-gated — they are how an account becomes entitled. */
@@ -788,7 +789,8 @@ function createService(options) {
     {},
     buildHandlers(store, logger, surface, pricingCurrency),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
-    buildBillingHandlers(store, logger, pricingCurrency)
+    buildBillingHandlers(store, logger, pricingCurrency),
+    {publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
   );
 
   /**
