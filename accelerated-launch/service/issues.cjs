@@ -18,11 +18,12 @@ const crypto = require('node:crypto');
 const accountDisplay = require('./account-display.cjs');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
+const reportConcerns = require('./report-concerns.cjs');
 const { PREVIEW_ORDER, PREVIEW_CATEGORY_BY_CHECK } = require('./common-error-checklist.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
 const CONFIDENCE = Object.freeze({ DEFINITE: 'DEFINITE', PROBABLE: 'PROBABLE', POTENTIAL: 'POTENTIAL' });
-const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT' });
+const BASIS_TYPE = Object.freeze({ STATUTORY_RETENTION: 'STATUTORY_RETENTION', CONTENT_FINDING: 'CONTENT_FINDING', FACTUAL_CONSISTENCY: 'FACTUAL_CONSISTENCY', LIMITATION_ASSESSMENT: 'LIMITATION_ASSESSMENT', REPORT_CONCERN: 'REPORT_CONCERN' });
 const { activeAdapter, activeRuleRef } = require('./common-error-scope.cjs');
 const CHECKLIST_IDS = new Set(require('./common-error-checklist.cjs').CHECKS.map((check) => check.check_id));
 const BREACH_CLASSES = new Set(['VIOLATION', 'PROBABLE_VIOLATION', 'POTENTIAL_VIOLATION']);
@@ -783,6 +784,9 @@ function describeWording(issue) {
 function consumerLabel(issue) {
   if (!issue) return null;
   if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return 'INFORMATION';
+  if (issue.basis_type === BASIS_TYPE.REPORT_CONCERN && issue.report_concern === true
+    && issue.classification === 'NON_VIOLATION' && issue.non_violation === true
+    && reportConcerns.KINDS.includes(issue.concern_kind)) return reportConcerns.NON_VIOLATION_LABEL;
   const classification = issue.rule_assessment && issue.rule_assessment.classification || issue.classification;
   const scopedRule = issue.rule_assessment && (!issue.check_id || CHECKLIST_IDS.has(issue.check_id));
   if (BREACH_CLASSES.has(classification) && (scopedRule || activeAdapter(issue.adapter_id))) return 'VIOLATION';
@@ -836,6 +840,9 @@ function describe(issue) {
 function isEligible(issue) {
   /* Court timing is informational and cannot be selected into bureau correspondence. */
   if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return false;
+  if (issue.basis_type === BASIS_TYPE.REPORT_CONCERN || issue.report_concern === true) {
+    return reportConcerns.isGovernedIssue(issue);
+  }
   if (issue.basis_type === BASIS_TYPE.STATUTORY_RETENTION || issue.basis_type === BASIS_TYPE.CONTENT_FINDING) {
     if (issue.confidence === CONFIDENCE.DEFINITE) return issue.packet_eligible === true;
     return issue.confidence === CONFIDENCE.PROBABLE;
@@ -1255,7 +1262,8 @@ function issuesFor(ctx) {
   const retentionReview = retentionCurrentReviewIssues(extraction, scopedRetention, statutory);
   const limitation = limitationIssues(extraction, evaluation.limitation_assessment);
   const published = publishedPeriodIssues(extraction, evaluation.published_reporting_periods, statutory.concat(retentionReview));
-  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation, published)
+  const concerns = reportConcerns.concernsFor(extraction, evaluation);
+  return statutory.concat(mergeOverlappingFactualIssues(statutory, factual), paymentHistory, retentionReview, limitation, published, concerns)
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
       if (!record) return issue;
@@ -1434,6 +1442,16 @@ function publicIssue(issue) {
     account_number_in_report: issue.record_index,
     record_kind: issue.record ? issue.record.kind_label : null
   };
+  if (issue.report_concern === true) {
+    out.report_concern = true;
+    out.concern_kind = issue.concern_kind;
+    out.title = issue.title;
+    out.non_violation = issue.non_violation === true;
+    out.classification = issue.non_violation ? 'NON_VIOLATION' : consumerLabel(issue);
+    out.concern_source_version = issue.source_version;
+    out.concern_sources = issue.concern_sources || [];
+    out.request_wording = issue.request_wording || null;
+  }
   const previewCategory = previewCategoryFor(issue);
   if (previewCategory) out.preview_category = previewCategory;
   if (issue.basis_type !== BASIS_TYPE.STATUTORY_RETENTION && COMPLETENESS_CHECK_IDS.has(issue.check_id)) {
