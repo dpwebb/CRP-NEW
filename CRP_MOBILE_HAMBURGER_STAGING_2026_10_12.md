@@ -1,5 +1,7 @@
 # Mobile hamburger staging verification — October 12, 2026
 
+Later October 12 provenance clarification: the following result is historical for the named mobile candidate. That tablet-corrected mobile source was subsequently included in the report-concern release now hosted on both environments. The main checkout's preserved CSS matches the earlier `bf44398` local variant, not these hosted bytes. Current provenance and this distinction are recorded in `CRP_WORKSPACE_RECONCILIATION_2026_10_12.md`. No historical proof is expanded by this clarification.
+
 ## Current result
 
 Staging VERIFIED for the bounded mobile-navigation change at https://staging.creditregulatorpro.com: `crp-v1-d9a2bfd3f5d73564`, source `c5c5a58b3b1eaeaff19bd8007f9162515d9f8edc`, 147 shipped files, manifest `D9A2BFD3F5D735641D939A45ADE75D244467FC87E3E8CF093162E1CA8CEB5E19`. Source committed and pushed to origin/main. Implementation verified; staging verified; production unchanged at `crp-v1-9799fd768cb7cdfa`. Production acceptance/activation for this menu batch remains separately pending.

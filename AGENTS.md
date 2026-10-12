@@ -1,8 +1,23 @@
 # Owner imperatives
 
+## October 12 workspace cleanup and current runtime provenance
+
+Read `CRP_WORKSPACE_RECONCILIATION_2026_10_12.md` for the current workspace/runtime matrix. Fresh read-only staging and production provenance both identify `crp-v1-b823b8b92d3b7559`, shipped source `ac181f431140abba50c607888944c044b8d04000`, 149 release files. Earlier release entries below retain historical scope. The main checkout is a preserved local source checkpoint containing unpublished policy work and an older mobile CSS variant; it is not the deployed source or a release-ready package. AU fixes remain isolated at `7a4cf4b`, with incomplete validation. UK comparison evidence covers 30/97 originals and four OPEN TODOs. Cleanup authorizes no deployment, changes to runtime bytes, implementation closure or release acceptance.
+
+## October 11 accepted credit reporting news release — historical predecessor
+
+The accepted news predecessor was `crp-v1-9799fd768cb7cdfa`, shipped source `6e8c85e29a815f6c0819056e8e9bc307b80900f5`. The IP-selected source-backed footer is live; unknown/other locations show mixed items and the five-year age limit is enforced. Fresh regression 14,966/0/0 and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting periods, form-free packets, seven steps, Your Story and native prices remain included. Prior twelve-purchase proof retains its original identity with separate unchanged-source continuity; fresh purchase/upgrade/cancellation and current live configuration were verified. The unpublished address-dependent policy candidate remains local. See `CRP_CREDIT_NEWS_PRODUCTION_2026_10_11.md`. In isolated verification worktrees, preflight required ignored fixture builders/evidence and `consumer-wizard/dist/app.js` before the long full regression; preserve failed runs honestly.
+
+
+
+## Owner-authorized jurisdiction privacy and terms direction
+
+Read `CRP_OWNER_JURISDICTION_POLICY_DIRECTIVE_001.md` for Privacy Policy and Terms & Conditions work. Use IP-resolved regional text, formal operator Credit Regulator Pro a division of COMPND SYSTEMS LTD, jurisdiction adult age, real verified local mailing addresses, December 13, 2026 effective date and support@creditregulatorpro.com. The local source candidate is not published: addresses and final verification remain pending. This document-display direction does not change consumer-selected report assessment jurisdiction. See `CRP_JURISDICTION_POLICY_LOCAL_REVIEW_2026_10_11.md`.
+
+
 ## October 11 accepted native-currency release
 
-Current production is `crp-v1-378b2463903ad652`, source `b910f9f714e37e2235f6ef888385052f67fd67ba`. Fixed CAD/USD/AUD/GBP prices use visitor IP; other/unknown locations use US prices; consumers can choose currency before paying. USD annual is $59.50. Unsupported settlement conversion is owner-authorized. Fresh full regression 14,897/0/0; twelve genuine Sandbox purchases and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting-period fixes, form-free packets, seven steps and Your Story designs remain included. See `CRP_NATIVE_CURRENCY_PRODUCTION_2026_10_11.md`; older receipts retain historical scope.
+The accepted native-currency predecessor was `crp-v1-378b2463903ad652`, source `b910f9f714e37e2235f6ef888385052f67fd67ba`. Fixed CAD/USD/AUD/GBP prices use visitor IP; other/unknown locations use US prices; consumers can choose currency before paying. USD annual is $59.50. Unsupported settlement conversion is owner-authorized. Fresh full regression 14,897/0/0; twelve genuine Sandbox purchases and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting-period fixes, form-free packets, seven steps and Your Story designs remain included. See `CRP_NATIVE_CURRENCY_PRODUCTION_2026_10_11.md`; older receipts retain historical scope.
 
 
 ## October 11 change-aware release process

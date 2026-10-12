@@ -1,5 +1,7 @@
 # Credit reporting news footer — accepted production release
 
+October 12 provenance clarification: this receipt records the historical accepted news release. Its build, tests and purchases retain their original date and scope. Current staging/production source is recorded in `CRP_WORKSPACE_RECONCILIATION_2026_10_12.md`; this record is not a new current-build acceptance run.
+
 Owner authority: October 11, 2026 footer-banner request, followed by “Commit-push-deploy”.
 
 ## Exact release

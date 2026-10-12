@@ -1,5 +1,7 @@
 # Jurisdiction policy source candidate — October 11, 2026
 
+October 12 provenance clarification: this is a historical local source-review record. The policy remains unpublished with address/final validation pending. The live build named below was current at this record's original date; fresh staging/production provenance is recorded in `CRP_WORKSPACE_RECONCILIATION_2026_10_12.md`. Saving this candidate in Git does not establish runtime readiness or authorize publication.
+
 ## Implemented locally
 
 Eight variants: US, CA, UK and AU Privacy Policy and Terms & Conditions. Metadata uses **Credit Regulator Pro a division of COMPND SYSTEMS LTD**, **support@creditregulatorpro.com**, and **December 13, 2026**. Country.is resolves the country; GeoJS provides a matching province/state when needed. The current actual provider preflight returned CA / CA-NS / adult age 19, without recording the IP or sending report/account information.
