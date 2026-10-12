@@ -44,7 +44,7 @@ function fixture(root) {
     case_association_matched: 82, presentations: ['GENERAL-BUREAU-REPORT'] });
   set('cw-common-error-rule-assessment', { ordinary_report_regions: 82, ordinary_report_checks_per_region: 6, statutory_gate: false });
   set('cx-all82-required-report-data', { regions_tested: 82 });
-  set('ct-owner-common-error-scope', { checklist: 40, jurisdictions: 82, retired_adapters: 18 });
+  set('ct-owner-common-error-scope', { checklist: 46, jurisdictions: 82, retired_adapters: 18 });
   set('o-all82-infrastructure', { regions_exercised: coverage.allRegions() });
   set('dg-owned-reaging', { jurisdictions: 82 });
   set('dl-general-caption-sources', { gb_field_contract: { approved_downloads: 4, source_isolation: true,

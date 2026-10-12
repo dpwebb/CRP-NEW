@@ -541,7 +541,7 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
       AU_CATEGORY_RETENTION_REVIEW:[['default.defaultDate','report.referenceDate'],['enquiry.requestDate','report.referenceDate'],['hardship.periods'],['account.datedRepaymentHistory']],
       AU_MINIMUM_DEFAULT_REVIEW:[['default.originalAmount']],HARDSHIP_PERIOD_REVIEW:[['account.datedRepaymentHistory','account.sourceLocatorToken']],
       PURCHASER_RELATIONSHIP_REVIEW:[['collection.originalCreditor','account.consumerStatement']],
-      DEFAULT_OPENING_ORDER_REVIEW:[['account.sourceLocatorToken','default.defaultDate']],AU_POSTCODE_FORMAT:[]
+      DEFAULT_OPENING_ORDER_REVIEW:[['account.sourceLocatorToken','default.defaultDate']],AU_POSTCODE_FORMAT:[],GB_POSTCODE_FORMAT:[],GB_DEFAULT_RETENTION_REVIEW:[['default.defaultDate','report.referenceDate']],DEFAULT_SETTLEMENT_ORDER_REVIEW:[['account.settlementDate','default.defaultDate']],FINANCIAL_ASSOCIATION_REVIEW:[['account.reported_identity','account.reportRemarks']],COURT_STATUS_REVIEW:[['publicRecord.type','account.reportRemarks']],SETTLEMENT_BALANCE_REVIEW:[['account.settlementDate','account.balance','account.status']]
     })[kind],presentation_scope:['GENERAL-BUREAU-REPORT'],additional_evidence:'OWN_TRUSTED_AU_SOURCE_ASSOCIATION_AND_KIND_SPECIFIC_AFFIRMATIVE_TRIGGER'}])),
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': { field_sets: [['liability.openedDate', 'liability.closedDate']] },
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': { field_sets: [['account.status', 'liability.closedDate']] },

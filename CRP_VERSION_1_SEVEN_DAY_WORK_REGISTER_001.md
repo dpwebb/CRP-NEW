@@ -2,6 +2,11 @@
 
 # Version 1 seven-day work register
 
+## October 12 owner-authorized AU and UK fix-list implementation
+
+Owner requested implementation of both completed comparison registers. Root owns the isolated `codex/au-uk-fixlists-20261012` candidate based on `7a4cf4b`, its shared readers/checks/packet integration and validation; no other writers assigned. Preserve the mixed primary checkout and historical source evidence. Scope: all 18 AU TODOs and six UK TODOs, using the same 104 AU and 97 UK originals and existing full-access account. All 24 corrections are IMPLEMENTED locally. Final full regression 15,750/0/0, 162 completed sections, zero source drift/unrun; all 270 frozen concerns detected and eligible in read-only original-corpus projections. Ten original HTTP cycles this turn and final-source fictional UK approved packet verified. Source-owned primary clocks and qualified Last Reported fallback retained. Separate additional-output/confidence reviews and full-corpus HTTP journeys are not silently closed. See `CRP_AU_UK_FIXLIST_LOCAL_IMPLEMENTATION_2026_10_12.md` and both comparison registers. Local only; staging/production verification NOT RUN and deployment, provider purchases and external dispatch remain unauthorized.
+
+
 ## October 11 independent audit: sourced violations and non-violation concerns
 
 Owner instruction: "Fix these gaps and surface these concerns violation and non-violation on the report". This bounded private batch repairs the demonstrated nine-column account/collection PDF, source-owned remarks, identity fields, inquiry isolation, AUD meanings and record census; adds supported shared concerns without upgrading consumer assertions or missing context into established breaches; and carries both classifications through consumer results, selection and approved packets. The original private attachment remains outside Git.

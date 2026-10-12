@@ -26,7 +26,7 @@ const caption = Object.freeze({
   SUBSCRIBER:['inquiry_identity','Enquiry Organisation'], DATE:['date','Enquiry Date'],
   PURPOSE:['text','Enquiry Purpose'], AUTHORIZED:['text','Enquiry Authorized'],
   AUTHORISED:['text','Enquiry Authorized'], AUTHORIZATION:['text','Enquiry Authorized'], REMARKS:['remarks','Remarks'],
-  'RECENT PAYMENT HISTORY':['history','Recent Payment History'], 'PAYMENT HISTORY':['history','Recent Payment History']
+  'RECENT PAYMENT HISTORY':['history','Recent Payment History'], 'RECENT 12 MONTH HISTORY':['history','Recent Payment History'], 'PAYMENT HISTORY':['history','Recent Payment History']
 });
 const SECTION = /^(?:CONSUMER IDENTIFICATION|PERSONAL INFORMATION|IDENTIFICATION DETAILS|CREDIT ACCOUNT INFORMATION|CREDIT ACCOUNTS AND DEFAULTS|ACCOUNT SUMMARY|ACCOUNT DETAIL|PAYMENT HISTORY AND REMARKS|COLLECTIONS|COLLECTION AND DEFAULT LISTINGS|DEFAULT AND COLLECTION INFORMATION|PUBLIC RECORDS|COURT AND INSOLVENCY RECORDS|COURT JUDGMENTS AND INSOLVENCY|CREDIT ENQUIRIES|INQUIRIES|ENQUIRIES)\s*$/i;
 
@@ -118,7 +118,7 @@ function summaryTableLines(page) {
     if(header.chunks.length<3) continue;
     const columns=headerColumns(header,rows.slice(h+1));
     const schema=schemaOf(columns);
-    if(!schema||columns.some(c=>/[\d$]/.test(c.raw))||new Set(columns.filter(c=>c.kind!=='ignored').map(c=>c.label)).size!==columns.filter(c=>c.kind!=='ignored').length) continue;
+    if(!schema||columns.some(c=>/[\d$]/.test(c.raw)&&c.kind!=='history')||new Set(columns.filter(c=>c.kind!=='ignored').map(c=>c.label)).size!==columns.filter(c=>c.kind!=='ignored').length) continue;
     // "Original / Creditor" and "Last / Reported" may occupy two header rows.
     const headerRows=[header];
     if(rows[h+1]&&rows[h+1].y-header.y<20) {
@@ -219,6 +219,7 @@ function reportConcernEvidence(page) {
       continue;
     }
     const patterns = [
+      ['GB', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(UK)\s+([A-Z0-9]{2,4}\s*[A-Z0-9]{2,4})(?=,|;|$)/gi],
       ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA|AU)\s+([A-Z0-9]{4,8})\b/gi],
       ['CA', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
       ['US', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]

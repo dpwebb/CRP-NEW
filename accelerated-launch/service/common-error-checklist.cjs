@@ -44,8 +44,8 @@ const CHECKS = Object.freeze([
       SOURCE_DATE_CHRONOLOGY_REVIEW:'Report and account update dates to verify',AU_CATEGORY_RETENTION_REVIEW:'Australian category time limits to verify',
       AU_MINIMUM_DEFAULT_REVIEW:'Original default amount below the Australian minimum',HARDSHIP_PERIOD_REVIEW:'Hardship periods to verify',
       PURCHASER_RELATIONSHIP_REVIEW:'Original lender and purchaser relationship to verify',DEFAULT_OPENING_ORDER_REVIEW:'Default and opening dates to verify',
-      AU_POSTCODE_FORMAT:'Australian postcode format does not match'
-    }[kind], 'Requires affirmative source-linked evidence and preserves material alternatives.',kind==='AU_POSTCODE_FORMAT'?'VIOLATION_ASSESSMENT':'NON_VIOLATION_REVIEW']),
+      AU_POSTCODE_FORMAT:'Australian postcode format does not match',GB_POSTCODE_FORMAT:'UK postcode format does not match',GB_DEFAULT_RETENTION_REVIEW:'Older UK default information to verify',DEFAULT_SETTLEMENT_ORDER_REVIEW:'Default and settlement dates do not match',FINANCIAL_ASSOCIATION_REVIEW:'Disputed financial association',COURT_STATUS_REVIEW:'Court status descriptions to verify',SETTLEMENT_BALANCE_REVIEW:'Settlement and remaining balance to verify'
+    }[kind], 'Requires affirmative source-linked evidence and preserves material alternatives.',/^(AU|GB)_POSTCODE_FORMAT$/.test(kind)?'VIOLATION_ASSESSMENT':'NON_VIOLATION_REVIEW']),
   ['LIMITATION-PERIOD-COURT-CLAIM', 'Court deadlines and credit-report time limits',
     'A debt may stay on your report after the deadline to sue has passed. These are two separate time limits.']
 ].map(([check_id, label, description, action_type]) => Object.freeze({ check_id, label,

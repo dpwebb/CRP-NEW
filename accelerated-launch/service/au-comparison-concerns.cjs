@@ -5,7 +5,7 @@
 const crypto = require('node:crypto');
 const {calendar:{addCalendarYears,daysInMonth},normalizeFactDate}=require('../adapters/evaluation-primitives.cjs');
 const {sourceForField,reportDateValue} = require('./report-fact-sources.cjs');
-const VERSION='2026-10-12.au-review.1';
+const VERSION='2026-10-12.au-uk-review.3';
 const CHECK_BY_KIND=Object.freeze({
   ACCOUNT_OWNERSHIP_REVIEW:'COMMON-ERROR-ACCOUNT-OWNERSHIP-REVIEW',
   ACCOUNT_STATUS_DISPUTE:'COMMON-ERROR-ACCOUNT-STATUS-DISPUTE',
@@ -20,6 +20,12 @@ const CHECK_BY_KIND=Object.freeze({
   PURCHASER_RELATIONSHIP_REVIEW:'COMMON-ERROR-PURCHASER-RELATIONSHIP-REVIEW',
   DEFAULT_OPENING_ORDER_REVIEW:'COMMON-ERROR-DEFAULT-OPENING-ORDER-REVIEW',
   AU_POSTCODE_FORMAT:'COMMON-ERROR-AU-POSTCODE-FORMAT',
+  GB_POSTCODE_FORMAT:'COMMON-ERROR-GB-POSTCODE-FORMAT',
+  GB_DEFAULT_RETENTION_REVIEW:'COMMON-ERROR-GB-DEFAULT-RETENTION-REVIEW',
+  DEFAULT_SETTLEMENT_ORDER_REVIEW:'COMMON-ERROR-DEFAULT-SETTLEMENT-ORDER-REVIEW',
+  FINANCIAL_ASSOCIATION_REVIEW:'COMMON-ERROR-FINANCIAL-ASSOCIATION-REVIEW',
+  COURT_STATUS_REVIEW:'COMMON-ERROR-COURT-STATUS-REVIEW',
+  SETTLEMENT_BALANCE_REVIEW:'COMMON-ERROR-SETTLEMENT-BALANCE-REVIEW',
   OPEN_CLOSED_STATEMENT:'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
   CORROBORATED_PRINTED_DUPLICATE:'COMMON-ERROR-DUPLICATE-REPORTING',
   DEFAULT_PAID_STATEMENT:'COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW'
@@ -74,9 +80,19 @@ function shift(value,years,months=0) {
   const last=daysInMonth(date.getUTCFullYear(),date.getUTCMonth()+1);
   return [date.getUTCFullYear(),String(date.getUTCMonth()+1).padStart(2,'0'),String(Math.min(d,last)).padStart(2,'0')].join('-');
 }
-function expired(reading,at,years) {
+function expired(reading,at,years,months=1) {
   return (reading?.interpretations||[]).map(value=>bounds(value)).filter(Boolean)
-    .map(range=>({anchor:range.latest,deadline:shift(range.latest,years,1),expired:at>shift(range.latest,years,1)}));
+    .map(range=>({anchor:range.latest,deadline:shift(range.latest,years,months),expired:at>shift(range.latest,years,months)}));
+}
+function correlatedLater(ref,update) {
+  if(upper(ref.raw_value)===upper(update.raw_value))return false;
+  const interpreted=(reading,convention)=>{
+    const m=/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(clean(reading.raw_value));
+    if(!m)return reading.interpretations;
+    const date=m[3]+'-'+String(convention==='DMY'?m[2]:m[1]).padStart(2,'0')+'-'+String(convention==='DMY'?m[1]:m[2]).padStart(2,'0');
+    return reading.interpretations.includes(date)?[date]:[];
+  };
+  return ['DMY','MDY'].some(c=>interpreted(ref,c).some(date=>interpreted(update,c).some(value=>value>date)));
 }
 function signature(issue) {
   return hash({version:issue.source_version,kind:issue.concern_kind,check:issue.check_id,report:issue.report_identity,
@@ -123,19 +139,20 @@ function concernsFor(extraction,evaluation) {
   if(extraction?.support!=='ACTUAL_REPORT_EVIDENCE'||!['AU','CA','GB','US'].includes(evaluation?.country)
     ||!String(evaluation.region||'').startsWith(evaluation.country+'-')) return [];
   const australian=evaluation.country==='AU';
+  const british=evaluation.country==='GB';
   const output=[],records=extraction.records||[], add=(...args)=>{const value=issue(extraction,evaluation,...args);if(value)output.push(value);};
   const assessment=evaluation.assessment_clock?.date||evaluation.assessment_date||evaluation.assessment_clock?.assessment_date||null;
   for(const record of records) {
     const identity=own(record,'account.reported_identity')||(record.kind==='GENERAL_INQUIRY'?own(record,'enquiry.organisation'):null),status=own(record,'account.status'),balance=own(record,'account.balance'),remark=own(record,'account.consumerStatement')||own(record,'account.reportRemarks');
     const text=clean(remark?.normalized_value),f=record.facts||{},ref=reportSource(extraction,record),reportDate=ref?.normalized_value;
     const closed=own(record,'liability.closedDate');
-    if(identity&&status&&closed&&['OPEN','ACTIVE'].includes(upper(status.normalized_value))&&record.au_source_mapping===true
+    if(identity&&status&&closed&&['OPEN','ACTIVE'].includes(upper(status.normalized_value))&&(record.au_source_mapping===true||record.uk_source_mapping===true)
       &&reportDate&&bounds(closed.normalized_value)?.latest<=bounds(reportDate)?.earliest)
       add(record,'OPEN_CLOSED_STATEMENT',[identity,status,closed,ref],'Open and closed account details conflict',
         'The same account is shown as open and has a source-reported closing date before this report.',
         'The printed details conflict. This does not establish that the account actually closed on that date or that a statute was breached.',
         'please verify the actual account status and closing date and correct the conflicting reported details',{},'DEFINITE',true);
-    if(identity&&remark&&/consumer\s+(?:states|says|reports|disputes)[^.;]*(?:does not belong|not (?:their|my|mine)|did not open|not responsible)/i.test(text))
+    if(identity&&remark&&/consumer\s+(?:states|says|reports|disputes)[^.;]*(?:does not belong|not (?:their|my|mine)|did not open|not responsible|finance was declined and no agreement was signed)/i.test(text))
       add(record,'ACCOUNT_OWNERSHIP_REVIEW',[identity,remark],'Account ownership needs checking','The report records a consumer statement that this account is not theirs.','The statement does not establish who opened the account or prove identity theft.','please verify who opened and is responsible for this account, and correct or remove any account incorrectly linked to me');
     if(identity&&remark&&status&&/consumer[^.;]*disput(?:es|ed)[^.;]*(?:status|past due|resolution)|consumer[^.;]*disput(?:es|ed)[^.;]*resolved|I dispute[^.;]*repayment history/i.test(text))
       add(record,'ACCOUNT_STATUS_DISPUTE',[identity,status,remark,own(record,'account.rhiPeriod'),own(record,'account.rhiRating'),own(record,'account.soldDate')],'Account status needs checking',
@@ -147,19 +164,22 @@ function concernsFor(extraction,evaluation) {
       add(record,'OPEN_CLOSED_STATEMENT',[identity,status,remark],'Open and closed status statements conflict','The same account is shown as open and described as closed.','This is a conflict in the printed statements. The actual closure date and status need checking.','please verify the account status and correct the conflicting open and closed descriptions',{},'DEFINITE',true);
     const inquiry=record.kind==='GENERAL_INQUIRY';
     const purpose=own(record,'enquiry.purpose'),authorized=own(record,'enquiry.authorized');
-    if(identity&&inquiry&&(authorized&&/^NO$/i.test(clean(authorized.normalized_value))||remark&&/consumer[^.;]*(?:no credit application|not an application|soft quote|no application)/i.test(text)))
+    if(identity&&inquiry&&(authorized&&/^NO$/i.test(clean(authorized.normalized_value))||remark&&/consumer[^.;]*(?:no credit application|not an application|soft quote|no application|only a quotation search was authori[sz]ed)/i.test(text)))
       add(record,'INQUIRY_PURPOSE_REVIEW',[identity,purpose,authorized,remark,dateReading(record,'enquiry.requestDate')],'Credit enquiry needs checking','The report contains an explicit authorization or application-purpose concern for this enquiry.',australian?'Consent is not required for every credit application access. The actual request, permitted purpose and notice need checking.':'The report statement does not establish why access occurred. The actual request, recorded purpose and meaning of the statement need checking.','please verify whether a credit application or other permitted access occurred, explain the enquiry purpose and notice, and correct any inaccurate enquiry');
-    if(australian&&identity&&record.kind==='GENERAL_COLLECTION') {
+    if((australian||british)&&identity&&record.kind==='GENERAL_COLLECTION') {
       const date=dateReading(record,'collection.lastReportedDate')||dateReading(record,'reportedAccount.reportedDate');
-      const comparisons=expired(date,reportDate,5);
-      if(date&&reportDate&&comparisons.length&&comparisons.every(row=>row.expired))
-        add(record,'OLD_COLLECTION_REVIEW',[identity,date,status,balance,ref],'Older collection entry needs checking',`The collection was last reported as ${date.raw_value} and appears in this report.`,'Last reported and assigned dates are not the first bureau collection date. The correct category, current status and retention start remain to be verified.','please verify the current status and applicable retention start for this older collection, and correct or remove information that should no longer be reported',{period_years:5,statutory_anchor_established:false,source:STATUTE});
+      const period=british?6:5;
+      const reportDates=british?ref?.interpretations||[]:reportDate?[reportDate]:[];
+      const comparisons=reportDates.flatMap(at=>expired(date,at,period,british?0:1));
+      if(date&&reportDates.length&&comparisons.length&&comparisons.every(row=>row.expired)&&(!british||!dateReading(record,'default.defaultDate')))
+        add(record,'OLD_COLLECTION_REVIEW',[identity,date,status,balance,ref],'Older collection entry needs checking',`The collection was last reported as ${date.raw_value} and appears in this report.`,british?'The source-owned Last Reported date is the determining fallback because an original default date is not available. Verify the category and original default; this fallback is not a statutory start date.':'Last reported and assigned dates are not the first bureau collection date. The correct category, current status and retention start remain to be verified.','please verify the current status and applicable retention start for this older collection, and correct or remove information that should no longer be reported',{period_years:period,determining_fallback:british,statutory_anchor_established:false,source:british?'https://ico.org.uk/for-the-public/credit/':STATUTE});
     }
-    if(australian&&identity&&record.kind==='GENERAL_PUBLIC_RECORD'&&/judg/i.test(f['publicRecord.type']||f['account.reported_identity']||'')) {
+    if((australian||british)&&identity&&record.kind==='GENERAL_PUBLIC_RECORD'&&/judg/i.test(f['publicRecord.type']||f['account.reported_identity']||'')) {
       const filed=dateReading(record,'publicRecord.filedDate'),made=own(record,'publicRecord.judgmentEntryDate');
       const reportDates=ref?.interpretations||[];
-      if(filed&&reportDates.length&&!made&&reportDates.every(at=>expired(filed,at,5).some(row=>row.expired)))
-        add(record,'OLD_COURT_ENTRY_REVIEW',[identity,filed,ref,own(record,'account.status'),own(record,'publicRecord.amount')],'Older court entry needs checking',`This report includes a court entry filed on ${filed.raw_value}.`,'The filing date is not necessarily the date judgment was made. A later judgment or a lawful retention exception may explain the entry.','please verify the judgment-made date, the applicable retention period and any retention exception, and remove or correct information that should no longer appear',{period_years:5,statutory_anchor_established:false,source:STATUTE});
+      const period=british?6:5;
+      if(filed&&reportDates.length&&!made&&reportDates.every(at=>expired(filed,at,period,british?0:1).every(row=>row.expired)))
+        add(record,'OLD_COURT_ENTRY_REVIEW',[identity,filed,ref,own(record,'account.status'),own(record,'publicRecord.amount')],'Older court entry needs checking',`This report includes a court entry dated ${filed.raw_value}.`,'The printed filing or record date is not necessarily the date judgment was made. A later judgment or a lawful retention exception may explain the entry.','please verify the judgment-made date, the applicable retention period and any retention exception, and remove or correct information that should no longer appear',{period_years:period,statutory_anchor_established:false,source:british?'https://www.gov.uk/county-court-judgments-ccj-for-debt/ccjs-and-your-credit-rating':STATUTE});
     }
     if(australian&&identity&&record.kind==='AU_DEFAULT_INFORMATION') {
       const amount=own(record,'default.originalAmount'),date=dateReading(record,'default.defaultDate'),currency=own(record,'account.currency');
@@ -195,6 +215,14 @@ function concernsFor(extraction,evaluation) {
     }
   }
   for(const entry of extraction.report_concern_evidence||[]) {
+    if(british&&entry.kind==='ADDRESS_COMPONENTS'&&entry.components?.country==='GB'&&entry.trusted===true&&trustedLocation(entry.location)) {
+      const postal=upper(entry.components.postcode).replace(/\s/g,'');
+      const valid=/^(?:GIR0AA|(?:ASCN|STHL|TDCU|BBND|BIQQ|FIQQ|SIQQ|PCRN)1ZZ|TKCA1ZZ|[A-PR-UWYZ](?:[A-HK-Y]?\d{1,2}|\d[A-HJKPSTUW]|[A-HK-Y]\d[ABEHMNPRVWXY])\d[ABD-HJLNP-UW-Z]{2})$/.test(postal);
+      if(!valid&&!/^BFPO\d+$/.test(postal)) {
+        const src={field:'report.addressPostcode',source_field:entry.source_field,raw_value:entry.raw_value,normalized_value:entry.components.postcode,location:entry.location,record_index:null,trusted:true};
+        add(null,'GB_POSTCODE_FORMAT',[src],'UK postcode format does not match',`The address has postcode ${entry.components.postcode}, which does not match the supported UK postal format.`,'The correct postcode and address ownership are unknown. This does not establish identity theft.','please verify and correct the printed postcode for this address',{address_role:entry.role,postcode:entry.components.postcode},'DEFINITE',true);
+      }
+    }
     if(!australian||entry.kind!=='ADDRESS_COMPONENTS'||entry.components?.country!=='AU'||entry.trusted!==true||entry.postal_exception===true
       ||!trustedLocation(entry.location)||!entry.components.postcode||/^\d{4}$/.test(entry.components.postcode))continue;
     const src={field:'report.addressPostcode',source_field:entry.source_field,raw_value:entry.raw_value,
@@ -202,6 +230,30 @@ function concernsFor(extraction,evaluation) {
     add(null,'AU_POSTCODE_FORMAT',[src],'Australian postcode format does not match',`The Australian address has postcode ${entry.components.postcode}. Australian postcodes have four numeric digits.`,
       'The intended postcode is unknown. This finding is about the printed format, not identity theft or the correct replacement address.',
       'please verify and correct the Australian postcode for this address',{address_role:entry.role,postcode:entry.components.postcode,source:POSTCODE},'DEFINITE',true);
+  }
+  if(british) for(const record of records) {
+    const id=own(record,'account.reported_identity'),statement=own(record,'account.reportRemarks'),status=own(record,'account.status'),settled=own(record,'account.settlementDate'),defaultReading=own(record,'default.defaultDate');
+    const settledDate=dateReading(record,'account.settlementDate'),remaining=own(record,'account.balance');
+    if(id&&status?.normalized_value==='SETTLED'&&remaining?.normalized_value>0&&settledDate&&!/partial|remaining balance agreed/i.test(statement?.raw_value||''))
+      add(record,'SETTLEMENT_BALANCE_REVIEW',[id,status,remaining,settledDate],'Settlement and balance need checking','The account records settlement and still shows a positive current balance.','A partial settlement or another valid balance may explain this. Verify the settlement terms and current amount.','please verify the settlement status, date and remaining balance and correct any inaccurate details',{},'PROBABLE');
+    if(id&&settled&&defaultReading&&defaultReading.normalized_value>settled.normalized_value)
+      add(record,'DEFAULT_SETTLEMENT_ORDER_REVIEW',[id,settled,defaultReading,status],'Default and settlement dates conflict','The same account has a printed default date after its settlement date.','The printed dates conflict; the actual events and correct dates need verification.','please verify the settlement and original default dates and correct the conflicting reported details',{},'DEFINITE',true);
+    if(id&&record.kind==='GENERAL_ASSOCIATION'&&statement&&/consumer[^.;]*(?:no joint account|never held joint credit)/i.test(statement.raw_value))
+      add(record,'FINANCIAL_ASSOCIATION_REVIEW',[id,status,statement],'Financial association needs checking','The report shows a financial link that the consumer disputes.','The statement does not establish whether a joint account or guarantor relationship exists.','please verify the source and basis of this financial association and remove or correct any inaccurate link');
+    if(id&&record.kind==='GENERAL_PUBLIC_RECORD'&&statement&&/satisfied[^.;]*;?\s*summary[^.]*unsatisfied/i.test(statement.raw_value))
+      add(record,'COURT_STATUS_REVIEW',[id,status,statement],'Court status descriptions need checking','The report describes satisfied and unsatisfied statuses for the same court entry.','The separate panels are not independently reproduced here; verify the underlying record and current status.','please verify the court entry status and correct inconsistent satisfaction descriptions',{},'PROBABLE');
+    const link=own(record,'collection.sourceOriginalLocator'),originals=records.filter(r=>r!==record&&r.facts?.['account.sourceLocatorToken']===link?.normalized_value);
+    if(id&&link&&originals.length===1){const original=originals[0],balance=own(record,'account.balance'),oldBalance=own(original,'account.balance'),oldStatus=own(original,'account.status'),oldDefault=own(original,'default.defaultDate'),newDefault=own(record,'default.defaultDate');
+      const dual=balance?.normalized_value>0&&oldBalance?.normalized_value>0&&oldDefault&&newDefault&&oldDefault.normalized_value===newDefault.normalized_value;
+      const settlement=balance?.normalized_value>0&&oldBalance?.normalized_value===0&&own(original,'account.settlementDate')&&oldStatus?.normalized_value==='DEFAULT'&&statement&&/same source account/i.test(statement.raw_value);
+      if(dual||settlement)add(record,'PURCHASER_RELATIONSHIP_REVIEW',[id,link,own(record,'collection.originalCreditor'),balance,oldBalance,oldStatus,oldDefault,newDefault,statement],'Original lender and purchaser reporting needs checking',dual?'The source-linked lender and purchaser show the same original default date and a positive balance on both entries.':'The source-linked original account records settlement while its purchaser still reports a balance.',
+        'Two related entries may describe a legitimate transfer. Verify the account relationship, settlement and balances without treating all lender and purchaser pairs as duplicates.','please verify the source-linked original lender and purchaser entries and correct any duplicate balance or misleading settlement reporting',{original_record:original.record_index,duplicate_debt_established:false},dual?'PROBABLE':'POTENTIAL');
+    }
+    const defaultDate=dateReading(record,'default.defaultDate'),identity=own(record,'account.reported_identity'),ref=reportSource(extraction,record);
+    if(!identity||!defaultDate||!ref?.interpretations?.length)continue;
+    if(ref.interpretations.every(at=>expired(defaultDate,at,6,0).length&&expired(defaultDate,at,6,0).every(row=>row.expired)))
+      add(record,'GB_DEFAULT_RETENTION_REVIEW',[identity,defaultDate,ref,own(record,'account.status'),own(record,'account.balance')],'Older default information needs checking',`The original default date ${defaultDate.raw_value} is more than six years before this report.`,
+        'Verify the original default and applicable retention period. A later update or debt purchase does not restart that original date.','please verify the original default date and remove or correct default information that should no longer appear',{period_years:6,anchor_type:'ORIGINAL_DEFAULT',source:'https://ico.org.uk/for-the-public/credit/'},'PROBABLE');
   }
   // Same-creditor duplicate corroboration preserves raw identifying-date
   // alternatives without choosing a convention. Different facilities remain possible.
@@ -265,7 +317,7 @@ function concernsFor(extraction,evaluation) {
     const ref=reportSource(extraction,record),update=dateReading(record,'reportedAccount.reportedDate');
     if(!ref?.interpretations?.length||ref.normalized_value||!update)continue;
     const key=record.source_file_id||record.report_segment_id||'report';
-    if(seenReports.has(key)||!ref.interpretations.some(date=>update.interpretations.some(value=>value>date)))continue;
+    if(seenReports.has(key)||!correlatedLater(ref,update))continue;
     add(record,'SOURCE_DATE_CHRONOLOGY_REVIEW',[ref,update,own(record,'account.reported_identity')],'Report and update dates need checking',`The printed report date ${ref.raw_value} could mean ${ref.interpretations.map(namedDate).join(' or ')}. One reading precedes the account update ${update.raw_value}.`,'Another valid numeric-date reading may resolve the chronology. The report date has not been replaced with the upload or assessment date.','please verify the report-issued date, its date convention and the account update dates, and correct any inaccurate dates',{report_date_alternatives:ref.interpretations,update_date_alternatives:update.interpretations});seenReports.add(key);
   }
   const reportGroups=new Map();
@@ -284,6 +336,26 @@ function concernsFor(extraction,evaluation) {
     const fingerprint=signature(grouped);grouped.issue_id=hash(['au-review',grouped.concern_kind,fingerprint]).slice(0,16);
     grouped.concern_assessment.fingerprint=fingerprint;grouped.eligible=isGovernedIssue(grouped);
     current.forEach(value=>replaced.add(value));groupedIssues.push(grouped);
+  }
+  const postalGroups=new Map();
+  for(const value of output.filter(value=>value.concern_kind==='GB_POSTCODE_FORMAT')) {
+    const key=hash(value.report_identity);if(!postalGroups.has(key))postalGroups.set(key,[]);postalGroups.get(key).push(value);
+  }
+  for(const current of postalGroups.values()) {
+    if(current.length<2)continue;
+    const grouped=JSON.parse(JSON.stringify(current[0]));grouped.source_facts=current.flatMap(value=>value.source_facts);
+    grouped.evidence.addresses=current.map(value=>value.evidence);grouped.explanation='The reported UK postcodes '+[...new Set(current.map(value=>value.evidence.postcode))].join(', ')+' do not match the supported postal format.';
+    const fingerprint=signature(grouped);grouped.issue_id=hash(['au-review',grouped.concern_kind,fingerprint]).slice(0,16);grouped.concern_assessment.fingerprint=fingerprint;grouped.eligible=isGovernedIssue(grouped);
+    current.forEach(value=>replaced.add(value));groupedIssues.push(grouped);
+  }
+  const defaultGroups=new Map();
+  for(const value of output.filter(value=>value.concern_kind==='GB_DEFAULT_RETENTION_REVIEW')){
+    const record=records.find(r=>r.record_index===value.record_index),locator=record?.facts?.['collection.sourceOriginalLocator']||record?.facts?.['account.sourceLocatorToken'];if(!locator)continue;
+    const key=hash([value.report_identity,locator]);if(!defaultGroups.has(key))defaultGroups.set(key,[]);defaultGroups.get(key).push(value);
+  }
+  for(const current of defaultGroups.values()){
+    if(current.length<2)continue;const grouped=JSON.parse(JSON.stringify(current[0]));grouped.source_facts=current.flatMap(value=>value.source_facts);grouped.evidence.related_records=current.map(value=>value.record_index);
+    const fingerprint=signature(grouped);grouped.issue_id=hash(['au-review',grouped.concern_kind,fingerprint]).slice(0,16);grouped.concern_assessment.fingerprint=fingerprint;grouped.eligible=isGovernedIssue(grouped);current.forEach(value=>replaced.add(value));groupedIssues.push(grouped);
   }
   return output.filter(value=>value&&!replaced.has(value)).concat(groupedIssues);
 }

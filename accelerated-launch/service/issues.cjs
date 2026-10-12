@@ -996,6 +996,7 @@ function potentialIssues(extraction, commonErrors, evaluation) {
         issue.source_version = assessment.source_version;
         issue.rule_assessment = assessment;
         issue.source_facts = assessment.required_facts.map((f) => ({
+          record_index: f.source.record_index,
           field: f.field, source_field: f.role === 'earlier_report' || f.role === 'current_report'
             ? `${f.role === 'earlier_report' ? 'Earlier' : 'Current'} report ${f.source.report_reference_date}: ${f.source.source_field}`
             : assessment.required_facts.some((item) => item.source.record_index !== f.source.record_index)

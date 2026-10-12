@@ -16,12 +16,13 @@ const { summaryTableLines, reportConcernEvidence } = require('./account-summary-
 const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
 const auDisclosure = require('./au-disclosure-fields.cjs');
+const ukDisclosure = require('./uk-disclosure-fields.cjs');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 4;
+const GENERAL_READER_VERSION = 5;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -258,6 +259,12 @@ function detect(model) {
   }
   const bureau = bureauOf(text);
   const markers = contentMarkers(text);
+  if((!bureau||/\bSource style\s*:/i.test(text))&&ukDisclosure.shape(text)) {
+    const nativePages=(model.pages||[]).filter(page=>page.has_native_text&&page.word_boxes?.length).map(page=>({page:page.page,source:'NATIVE_TEXT',words:page.word_boxes,text:page.text}));
+    const native=ukDisclosure.extract(nativePages,normalizePrintedDate);
+    if(native.records.some(record=>record.kind==='GENERAL_ACCOUNT'&&record.facts['account.sourceLocatorToken']&&record.facts['account.reported_identity']))
+      return {outcome:'GENERAL',reason:'UNBRANDED_UK_DISCLOSURE_CONTENT_PRESENT',bureau:'Unidentified UK reporting body',source_issuer_identified:false,markers,needs_ocr:false};
+  }
   if ((!bureau || /\bSource style\s*:/i.test(text)) && auDisclosure.disclosureShape(text)) {
     const nativePages=(model.pages||[]).filter(page=>page.has_native_text&&page.word_boxes?.length)
       .map(page=>({page:page.page,source:'NATIVE_TEXT',words:page.word_boxes}));
@@ -830,7 +837,8 @@ const OPENED_LABELS = Object.freeze(['OPENED', 'OPENED DATE', 'DATE OPENED', 'OP
    state. "Open" vs "Closed" is a printed label, not a conclusion about the account's actual state. */
 const STATUS_WORDS = Object.freeze(['PAID AS AGREED', 'PAID IN FULL', 'SETTLED IN FULL',
   'NOT OVERDUE', 'UP TO DATE', 'CHARGED OFF', 'CHARGE OFF', 'IN COLLECTION',
-  'OPEN', 'CLOSED', 'PAID', 'CURRENT', 'ACTIVE', 'SETTLED', 'DEFAULT']);
+  'OPEN', 'CLOSED', 'PAID', 'CURRENT', 'ACTIVE', 'SETTLED', 'DEFAULT',
+  '30 DAYS LATE', '60 DAYS LATE', '90 DAYS LATE', '120 DAYS LATE']);
 const STATUS_PATTERN = STATUS_WORDS.map((word) => word.replace(/\s+/g, '\\s+')).join('|');
 
 function isAccountStatusLine(text) {
@@ -2539,7 +2547,7 @@ function bindPrintedOmissionEvidence(record) {
 function findReferenceDate(pages, convention) {
   // A report date never borrows the numeric order of another field.
   const evidencedConvention = convention;
-  const candidates = /AUSTRALIA(?:N)?|Jurisdiction:\s*AU\b/i.test(pages.map(page=>page.lines.map(line=>line.text).join(' ')).join(' '))
+  const candidates = /AUSTRALIA(?:N)?|United Kingdom|Jurisdiction:\s*(?:AU|UK)\b/i.test(pages.map(page=>page.lines.map(line=>line.text).join(' ')).join(' '))
     ? auDisclosure.referenceCandidates(pages,normalizePrintedDate) : [];
   for (const page of pages) {
     for (const line of page.lines) {
@@ -2752,6 +2760,7 @@ function extract(model, opts) {
      supplies another field's convention. */
   const segments = reportSegments(pages);
   const reference_date = findReferenceDate(pages, null);
+  if(det.source_issuer_identified===false&&segments.length===1){segments[0].bureau=bureau;segments[0].ambiguous=false;}
   // A single-bureau PDF may print its report date immediately before its bureau title on
   // the same page. Keep the measured header date with that bureau's following records.
   if (segments.length === 2 && !segments[0].bureau && !segments[0].ambiguous &&
@@ -2776,6 +2785,12 @@ function extract(model, opts) {
       record.bureau=bureau; record.report_segment_id='segment-1'; record.report_reference_date=reference_date;
       records.push(record);
     }
+  }
+  if(segments.length===1&&!segments[0].ambiguous&&/United Kingdom|Jurisdiction:\s*UK\b/i.test(nativeText(model))) {
+    const mapped=ukDisclosure.extract(pages,normalizePrintedDate);
+    if(ukDisclosure.shape(nativeText(model))&&mapped.records.some(record=>record.kind==='GENERAL_ACCOUNT'&&record.facts['account.sourceLocatorToken']))records=[];
+    records=records.filter(record=>!mapped.fences.some(fence=>fence.page===record.location?.page&&record.location?.bbox?.y0>=fence.y0&&record.location?.bbox?.y0<=fence.y1));
+    for(const record of mapped.records){record.bureau=bureau;record.report_segment_id='segment-1';record.report_reference_date=reference_date;records.push(record);}
   }
   records.forEach((record, index) => { record.record_index = index + 1; });
   auDisclosure.attachStatements(records,pages);

@@ -10,7 +10,7 @@ const upper = value => clean(value).toUpperCase();
 const token = value => crypto.createHash('sha256').update(upper(value)).digest('hex');
 const LABELS = {
   'CREDITOR / ACCOUNT':'identity', 'CREDITOR':'identity', 'CREDIT PROVIDER':'identity',
-  'AGENCY':'identity', 'COURT':'identity', 'TYPE':'type', 'ACCOUNT TYPE':'type', 'CREDIT TYPE':'type',
+  'AGENCY':'identity', 'COURT':'identity', 'COURT OR SOURCE':'identity', 'TYPE':'type', 'ACCOUNT TYPE':'type', 'CREDIT TYPE':'type',
   'ACCOUNT':'identifier', 'ACCOUNT NO.':'identifier', 'ACCOUNT NUMBER':'identifier',
   'OPENED':'opened', 'OPENED DATE':'opened', 'CLOSED':'closed', 'CLOSED DATE':'closed',
   'STATUS':'status', 'STATUS AS REPORTED':'status', 'BALANCE':'balance', 'CURRENT BALANCE':'balance',
@@ -161,7 +161,10 @@ function tableRecords(page, normalize, convention) {
       const category=upper(cells.category?.raw),kind=schema==='PUBLIC'?'GENERAL_PUBLIC_RECORD':schema==='DEFAULT'?'AU_DEFAULT_INFORMATION':schema==='HARDSHIP'?'AU_HARDSHIP_INFORMATION':schema==='INQUIRY'||category==='ENQUIRY'?'GENERAL_INQUIRY':category==='RHI'?'AU_REPAYMENT_INFORMATION':category==='DEFAULT INFORMATION'?'AU_DEFAULT_INFORMATION':'GENERAL_ACCOUNT';
       const target=record(kind,page,group.values.flat(),group.rows[0].line);
       populate(target,cells,normalize,convention);
-      if (schema==='PUBLIC') setFact(target,'publicRecord.type',cells.type,cells.type.raw);
+      if (schema==='PUBLIC') {
+        setFact(target,'publicRecord.type',cells.type,cells.type.raw);
+        if(cells.reference?.raw)setFact(target,'publicRecord.reference',cells.reference,cells.reference.raw);
+      }
       if (schema==='MIXED' && category==='DEFAULT INFORMATION') {
         const raw=cells.amountStatus.raw, match=/^(AUD\s+\d[\d,.]*)\s+(unpaid|paid)\b/i.exec(raw);
         if (match) {setFact(target,'default.originalAmount',{...cells.amountStatus,raw:match[1]},printedAmount(match[1]));setFact(target,'account.status',{...cells.amountStatus,raw:match[2],label:'Default status'},upper(match[2]));}
@@ -295,7 +298,7 @@ function referenceCandidates(pages,normalize) {
     if(page.source!=='NATIVE_TEXT'||!page.words?.length||page.multi_bureau_same_page===true)continue;
     for(const row of physicalRows(page)) {
       const text=clean(row.words.map(word=>word.text).join(' '));
-      const match=new RegExp('\\b(Report date|Prepared date|File date|Date of report)\\s*:?\\s*'+dateToken,'i').exec(text);if(!match)continue;
+      const match=new RegExp('\\b(Report date|Prepared date|Disclosure date|File date|Date of report)\\s*:?\\s*'+dateToken,'i').exec(text);if(!match)continue;
       const offsets=[];let start=0;
       for(const word of row.words){offsets.push({word,start,end:start+String(word.text).length});start+=String(word.text).length+1;}
       const valueStart=match.index+match[0].lastIndexOf(match[2]);

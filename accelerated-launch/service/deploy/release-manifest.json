@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-12T13:09:30.720Z",
+  "generated_at": "2026-10-12T18:26:30.043Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 90,
-      "digest": "2F561D501020FBCC8F8088EEBC5D28D3B8CFC6A1DDDC61D98A1C4CE56B4428A3",
+      "file_count": 91,
+      "digest": "90D53AC06A3557E2F40C305295FA81A61BD400A9326FC72B6004958310B9620C",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -82,7 +82,7 @@
         },
         {
           "file": "accelerated-launch/service/account-summary-table.cjs",
-          "sha256": "26900636ECA8261D8B6F232C8A19DEF59A786D839A7400E7290470F11A88494A"
+          "sha256": "B933F03D6C0514DE23F5A80B1AF3A7F3476B6B1C0C602BD0C1A7AC2A773C5B71"
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -106,11 +106,11 @@
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "A5F265D6DCA0F69E6DEB8AD4DE5137BB771EE4802BDC8BB8815CB190FDED26BD"
+          "sha256": "2901E31CB536864738BDF3EB90763BDF1D1516F0621710DC0026AF5182E2C7FD"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
-          "sha256": "065A9C788B6ECC566050276C568C85BA2346CD6391E9441629BB8821185CF542"
+          "sha256": "FA16830D17619DF8D4BCF22234DC3E986CBAEDA78C7D3190932A08F131995641"
         },
         {
           "file": "accelerated-launch/service/billing-credits.cjs",
@@ -154,7 +154,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "0CB30DC7BAC1A33BB573D7CD8CE7538A72B8048A416B350FCCDB86EAE2EFE79C"
+          "sha256": "161D79106C928AD31E8A18B61996FF5BCB99751DF51F240CF26A61C6A8549639"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -166,7 +166,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "83A83FBB65E09E1D4EE1A9195E54032F171C7337A51685DCE77B7F4ED210186A"
+          "sha256": "0FC60E7ADDDC991C20C744FC248F93D7CE86F40BFBFE0688AEC669A46D2FEA09"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -266,11 +266,11 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "737E7C8AD4C2B5408C901379C98C83D56B218F750647AE526F66A9DC7D076A48"
+          "sha256": "0AF066EBFE49E068965B36778F9EE5420A66B3A1F0C4B189EC66E8C5F2143480"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "C616FBE6BB8DD1349A9D685E1E96473527D12D7E6518446B2CBB0CED43E7A660"
+          "sha256": "C2B3CC925F22E1FDF48A8C2534E23140B881EFB23E175AA13EC295D7BB3BBC96"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -415,6 +415,10 @@
         {
           "file": "accelerated-launch/service/support.cjs",
           "sha256": "3B4692F345087F8277AA84F1942101EBA3E8BDF50B7B480B8ACF61154E51710C"
+        },
+        {
+          "file": "accelerated-launch/service/uk-disclosure-fields.cjs",
+          "sha256": "5B4D9E45162703EE0C19B645530BDCFCBCA1AB5A803CC28F1F99660DC1305370"
         },
         {
           "file": "accelerated-launch/service/upgrade-credit.cjs",
@@ -651,6 +655,6 @@
       ]
     }
   ],
-  "manifest_digest": "FCFB9DB5537825B25BF138C9025039874EB2AA14D42BE779915DFDFE5E895284",
-  "total_file_count": 151
+  "manifest_digest": "ADCB114E873CDA953B69C434E693C8F649F873870091E4F603ADE5B0533AB7FC",
+  "total_file_count": 152
 }
