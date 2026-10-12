@@ -26,6 +26,8 @@ const { labelFor } = require('./case-status.cjs');
 const entitlement = require('./entitlement.cjs');
 const assessmentClock = require('./assessment-clock.cjs');
 const accountDisplay = require('./account-display.cjs');
+const { GENERAL_PRESENTATION_ID, GENERAL_READER_VERSION } = require('./general-intake.cjs');
+const { MAX_FILE_BYTES } = require('./uploads.cjs');
 
 function nowIso() {
   return new Date().toISOString();
@@ -163,9 +165,82 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
   });
 }
 
+function reassessmentRefusal(reason) {
+  throw new ServiceError('SERVICE_STATE_UNAVAILABLE', { reason });
+}
+
+// Reassessment is an explicit consumer action. Refresh only stale, admitted
+// native GENERAL PDFs from their exact owned originals. Upload-time extraction
+// and receipt data stay intact; historical results and approvals are untouched.
+function ownedEvaluationFile(store, actor, caseRow, file) {
+  if (file.account_id !== actor.account_id || file.case_id !== caseRow.case_id) throw new ServiceError('NOT_AUTHORIZED');
+  const original = file.extraction;
+  if (!original || file.demonstration || original.demonstration
+    || original.support !== formats.SUPPORT.ACTUAL_REPORT_EVIDENCE
+    || original.admission?.admitted !== true || original.extraction_ran !== true
+    || original.presentation_id !== GENERAL_PRESENTATION_ID && file.presentation_id !== GENERAL_PRESENTATION_ID) return file;
+  if (file.container === 'IMAGE' && original.container === 'IMAGE') return file;
+  const knownReading = original.reading_state;
+  if (original.admission.reason === 'IMAGE_ONLY_OR_SCANNED_NEEDS_OCR'
+    || ['image_only_pages','partial_native_pages','mixed_native_pages'].some(field=>knownReading?.[field]?.length)) return file;
+  if (file.container !== 'PDF' || original.container !== 'PDF' || !file.supported_format
+    || file.presentation_id !== GENERAL_PRESENTATION_ID || original.presentation_id !== GENERAL_PRESENTATION_ID) reassessmentRefusal('GENERAL_REASSESSMENT_METADATA_MISMATCH');
+  if (!/^[a-f0-9]{32}$/.test(file.file_id) || !/^[a-f0-9]{64}$/i.test(file.stored_sha256)
+    || file.stored_blob === false || !Number.isSafeInteger(file.stored_bytes) || file.stored_bytes <= 0 || file.stored_bytes > MAX_FILE_BYTES
+    || store.state().files.filter(row=>row.file_id===file.file_id).length !== 1) reassessmentRefusal('GENERAL_REASSESSMENT_CUSTODY_INVALID');
+  const version = original.reader_version;
+  if (version != null && (!Number.isSafeInteger(version) || version < 0)) reassessmentRefusal('GENERAL_REASSESSMENT_VERSION_INVALID');
+  let bytes;
+  try { bytes = store.readBlob(file.file_id); }
+  catch { reassessmentRefusal('GENERAL_REASSESSMENT_ORIGINAL_UNAVAILABLE'); }
+  const digest = Buffer.isBuffer(bytes) ? crypto.createHash('sha256').update(bytes).digest('hex') : null;
+  if (!digest || digest !== file.stored_sha256.toLowerCase() || bytes.length !== file.stored_bytes
+    || !bytes.subarray(0,5).equals(Buffer.from('%PDF-'))) reassessmentRefusal('GENERAL_REASSESSMENT_ORIGINAL_MISMATCH');
+  // Current/future upload-time readers are never reparsed by this older runtime.
+  if (version != null && version >= GENERAL_READER_VERSION) return file;
+  const cached = file.reassessment_extraction, cachedSource = file.reassessment_source;
+  if (cached?.reader_version === GENERAL_READER_VERSION) {
+    if (cached.presentation_id !== GENERAL_PRESENTATION_ID || cached.admission?.admitted !== true
+      || cached.support !== formats.SUPPORT.ACTUAL_REPORT_EVIDENCE || cached.extraction_ran !== true
+      || cachedSource?.file_id !== file.file_id || cachedSource?.case_id !== caseRow.case_id
+      || cachedSource?.account_id !== actor.account_id || cachedSource?.country !== caseRow.country
+      || cachedSource?.stored_sha256 !== digest || cachedSource?.stored_bytes !== bytes.length) reassessmentRefusal('GENERAL_REASSESSMENT_CACHE_CUSTODY_MISMATCH');
+    return { ...file,extraction:cached };
+  }
+  let model;
+  try { model = formats.buildPdfDocumentModel(store.blobPath(file.file_id)); }
+  catch { reassessmentRefusal('GENERAL_REASSESSMENT_NATIVE_READ_FAILED'); }
+  // The model opens the opaque blob path separately: validate that reading too.
+  if (String(model?.sha256 || '').toLowerCase() !== digest || model.bytes !== bytes.length) reassessmentRefusal('GENERAL_REASSESSMENT_MODEL_CUSTODY_MISMATCH');
+  if (model.read_errors?.length || model.not_a_pdf || !model.pages?.length) reassessmentRefusal('GENERAL_REASSESSMENT_NATIVE_READ_FAILED');
+  if (model.pages.some(page=>!page.has_native_text || page.native_text_incomplete || page.has_image_region)) return file;
+  let fresh;
+  try { fresh = formats.extractWithSharedAdapter(model,{mode:'REPORT',country:caseRow.country}); }
+  catch { reassessmentRefusal('GENERAL_REASSESSMENT_NATIVE_READ_FAILED'); }
+  if (fresh.presentation_id !== GENERAL_PRESENTATION_ID || fresh.admission?.admitted !== true
+    || fresh.support !== formats.SUPPORT.ACTUAL_REPORT_EVIDENCE || fresh.extraction_ran !== true
+    || fresh.reader_version !== GENERAL_READER_VERSION) reassessmentRefusal('GENERAL_REASSESSMENT_PRESENTATION_CHANGED');
+  let afterReading;
+  try { afterReading = store.readBlob(file.file_id); }
+  catch { reassessmentRefusal('GENERAL_REASSESSMENT_ORIGINAL_UNAVAILABLE'); }
+  if (!Buffer.isBuffer(afterReading) || afterReading.length !== bytes.length
+    || crypto.createHash('sha256').update(afterReading).digest('hex') !== digest) reassessmentRefusal('GENERAL_REASSESSMENT_ORIGINAL_CHANGED_DURING_READ');
+  const source = {file_id:file.file_id,case_id:caseRow.case_id,account_id:actor.account_id,
+    stored_sha256:digest,stored_bytes:bytes.length,country:caseRow.country};
+  store.update(state=>{
+    const row = state.files.find(own=>own.file_id===file.file_id);
+    if (!row || row.account_id!==actor.account_id || row.case_id!==caseRow.case_id
+      || String(row.stored_sha256).toLowerCase()!==digest || row.stored_bytes!==bytes.length
+      || row.presentation_id!==GENERAL_PRESENTATION_ID) reassessmentRefusal('GENERAL_REASSESSMENT_CUSTODY_CHANGED');
+    row.reassessment_extraction = fresh;
+    row.reassessment_source = source;
+  });
+  return { ...file,extraction:fresh };
+}
+
 /**
- * Evaluate the report already attached to the case. Reuse assessed facts; recover only missing display
- * names from owned originals when an older reader retained private matching keys. No new report access.
+ * Evaluate the report already attached to the case, refreshing an outdated
+ * native GENERAL reading only for this explicit reassessment.
  *
  * GAP-INGEST-001: when no single file is named, EVERY admitted file is assembled into one coherent report, in
  * upload order, so the latest upload can never silently replace earlier pages. An explicit `fileId` still
@@ -174,7 +249,8 @@ function persistResult(store, actor, caseRow, provenance, evaluated, extraction,
 function evaluateCase(store, actor, caseId, options) {
   const caseRow = cases.requireOwnedCase(store, actor, caseId);
   const wanted = options && options.fileId;
-  const files = filesFor(store, caseId).map(file => ({ ...file,
+  const selectedFiles = filesFor(store, caseId).filter(file=>!wanted || file.file_id===wanted);
+  const files = selectedFiles.map(file=>ownedEvaluationFile(store,actor,caseRow,file)).map(file => ({ ...file,
     extraction: accountDisplay.extractionForFiles(store, file.extraction, [file]) }));
 
   let extraction;

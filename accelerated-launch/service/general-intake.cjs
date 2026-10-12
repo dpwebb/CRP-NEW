@@ -18,6 +18,9 @@ const crypto = require('node:crypto');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
+// Version of derived GENERAL readings, separate from stored uploads and results.
+// Bump only when an explicit reassessment must replace stale reader output.
+const GENERAL_READER_VERSION = 1;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -2770,6 +2773,7 @@ function extract(model, opts) {
   };
   return {
     admitted: true,
+    reader_version:GENERAL_READER_VERSION,
     outcome: 'GENERAL',
     reason: det.reason,
     bureau,
@@ -2806,6 +2810,7 @@ function extract(model, opts) {
 
 module.exports = {
   GENERAL_PRESENTATION_ID,
+  GENERAL_READER_VERSION,
   GENERAL_ADMISSION_PATH,
   BUREAUS,
   CONTENT_MARKERS,
