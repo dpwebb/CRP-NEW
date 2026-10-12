@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-12T09:34:26.314Z",
+  "generated_at": "2026-10-12T13:09:30.720Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 90,
-      "digest": "CBD36CBB934F28DFA712AA6B422D7358FE83E8D0B7DDFD50C66E7B3B88123603",
+      "digest": "2F561D501020FBCC8F8088EEBC5D28D3B8CFC6A1DDDC61D98A1C4CE56B4428A3",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -82,7 +82,7 @@
         },
         {
           "file": "accelerated-launch/service/account-summary-table.cjs",
-          "sha256": "1F9F31F49821C8DD4A961AE47917C6CE5AA03CC5B5E1E69EBFE59FC52987702D"
+          "sha256": "26900636ECA8261D8B6F232C8A19DEF59A786D839A7400E7290470F11A88494A"
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "B9E8CD117109AF122C6252BAA1D6C817D4A28DDFA5775DB5EB3A2147FD2EDF4F"
+          "sha256": "A5F265D6DCA0F69E6DEB8AD4DE5137BB771EE4802BDC8BB8815CB190FDED26BD"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
@@ -266,7 +266,7 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "FB36B930DA27B2D81CC35649337795EC28ECDF1F1DD6F838B5B84E7E233DE01E"
+          "sha256": "737E7C8AD4C2B5408C901379C98C83D56B218F750647AE526F66A9DC7D076A48"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -290,7 +290,7 @@
         },
         {
           "file": "accelerated-launch/service/multi-file-assembly.cjs",
-          "sha256": "5735DCCAF38D068EE6A81DBDEE1594CFF5B0A611DE66D1F0CD386348B0EA72C1"
+          "sha256": "F2F9638BE32023792496E21D4060C66E3F8750EA51C3059AD0F084142F43E89C"
         },
         {
           "file": "accelerated-launch/service/ocr/local-ocr.cjs",
@@ -651,6 +651,6 @@
       ]
     }
   ],
-  "manifest_digest": "4C5E4CC72AFC76CC435711817974B00B429E0429ECCCE56CACA8E7DEF60F536D",
+  "manifest_digest": "FCFB9DB5537825B25BF138C9025039874EB2AA14D42BE779915DFDFE5E895284",
   "total_file_count": 151
 }

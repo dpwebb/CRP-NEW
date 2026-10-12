@@ -285,6 +285,15 @@ function assemble(files) {
       }
       if (source.location && !source.location.file_id) source.location.file_id = fileRow.file_id;
     }
+    const printed = record.printed ? JSON.parse(JSON.stringify(record.printed)) : record.printed;
+    for (const reading of Object.values(printed || {})) {
+      // These readings came from this per-file reader. Preserve an explicit
+      // foreign identity for rejection; fill only missing custody metadata on
+      // the copied measured source, including its own caption geometry.
+      for (const location of [reading?.location,reading?.location?.caption_location,reading?.uncertainty?.location]) {
+        if(location&&!location.file_id)location.file_id=fileRow.file_id;
+      }
+    }
     return Object.assign({}, record, {
       record_index: index,
       source_file_id: fileRow.file_id,
@@ -298,7 +307,7 @@ function assemble(files) {
       source_report_segment_id: record.report_segment_id ? fileRow.file_id + ':' + record.report_segment_id : null,
       location: Object.assign({}, loc, { file_id: fileRow.file_id }),
       /* Deep-copy the mutable fact surfaces so a cross-file merge never mutates the original per-file record. */
-      printed: record.printed ? JSON.parse(JSON.stringify(record.printed)) : record.printed,
+      printed,
       facts: record.facts ? JSON.parse(JSON.stringify(record.facts)) : record.facts,
       fact_sources: factSources
     });

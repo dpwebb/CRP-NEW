@@ -168,8 +168,15 @@ function concernsFor(extraction,evaluation) {
         add(record,'AU_MINIMUM_DEFAULT_REVIEW',[identity,amount,currency,own(record,'report.category')],'Default amount needs checking',`The printed default amount is ${amount.raw_value}, below the $150 consumer-credit default minimum.`,'The original overdue total or information category may differ from a later remaining amount. Notices and the time overdue are not established.','please verify the originally eligible overdue amount and category of this default, and correct or remove any ineligible or inaccurate listing',{minimum:150,source:STATUTE},'PROBABLE');
       if(date&&reportDate&&expired(date,reportDate,5).some(row=>row.expired))
         add(record,'AU_CATEGORY_RETENTION_REVIEW',[identity,date,ref,amount,status],'Older default needs checking',`The report includes default information dated ${date.raw_value}.`,'The default date does not establish when the bureau first collected it. Later payment or update dates do not restart that clock. A retention exception may apply.','please verify when the bureau first collected this default information and whether it remains eligible to be reported, correcting or removing expired information',{category:'DEFAULT',period_years:5,statutory_anchor_established:false,source:STATUTE});
-      if(identity&&remark&&status&&upper(status.normalized_value)==='UNPAID'&&/paid in full/i.test(text)&&!/(?:not|partially|partly) paid/i.test(text))
-        add(record,'DEFAULT_PAID_STATEMENT',[identity,status,remark,own(record,'default.paidDate')],'Default payment status needs checking','The default says unpaid while its own notes say paid in full.','The report statements conflict; payment clearance and the meaning of the status still need verification. A historical default amount can remain.','please verify the payment and update any inaccurate unpaid status while preserving valid historical information');
+      const printedNote=own(record,'account.reportRemarks'),paymentNote=printedNote&&/paid in full/i.test(printedNote.normalized_value)?printedNote:remark;
+      const paymentText=clean(paymentNote?.normalized_value);
+      if(identity&&paymentNote&&status&&upper(status.normalized_value)==='UNPAID'&&/paid in full/i.test(paymentText)
+        &&!/(?:not|partially|partly) paid|revers(?:ed|al)|returned payment|reopened|new advance/i.test(paymentText)) {
+        const printedConflict=paymentNote===printedNote&&!/\bconsumer|\bcustomer|\bI\b|claims?|says|alleges|disputes/i.test(paymentText);
+        add(record,'DEFAULT_PAID_STATEMENT',[identity,status,paymentNote,own(record,'default.paidDate')],printedConflict?'Default payment statements conflict':'Default payment status needs checking',
+          'The default says unpaid while its own report note says paid in full.','The printed statements conflict; actual payment clearance and the meaning of the status still need verification. A historical default amount can remain.',
+          'please verify the payment and update any inaccurate unpaid status while preserving valid historical information',{},printedConflict?'DEFINITE':'POTENTIAL',printedConflict);
+      }
     }
     const history=own(record,'account.datedRepaymentHistory');
     if(australian&&identity&&history&&assessment&&reportDate) {
@@ -212,8 +219,8 @@ function concernsFor(extraction,evaluation) {
     if(openedA.normalized_value&&openedB.normalized_value)continue;
     const key=ai.normalized_value+'|'+aid.normalized_value;if(pairs.has(key))continue;pairs.add(key);
     add(a,'CORROBORATED_PRINTED_DUPLICATE',[ai,bi,aid,bid,openedA,openedB,...supporting.flat().filter(Boolean)],'Repeated account entries need checking',
-      'Two physical rows repeat the same creditor, masked reference, printed identifying date and independent account facts.',
-      'Masked-reference collisions or separate facilities remain possible. The numeric-date convention has not been guessed.',
+      'The report lists two rows with the same lender, last account digits, printed opening date and matching account details.',
+      'They could be different accounts with the same last digits. The printed opening date could mean '+openedA.interpretations.map(value=>value.length===10?namedDate(value):value).join(' or ')+'.',
       'please verify whether these two rows describe one account and correct any duplicate reporting',{other_record:b.record_index,pairing_basis:'SAME_CREDITOR_REFERENCE_PRINTED_DATE_AND_INDEPENDENT_FACTS'},'PROBABLE');
   }
   for(const defaultRecord of records.filter(record=>australian&&record.kind==='AU_DEFAULT_INFORMATION')) {

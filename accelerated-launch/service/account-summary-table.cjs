@@ -66,7 +66,7 @@ function schemaOf(columns) {
     &&(labels.includes('Opened Date')||labels.includes('Reported Date'))) return 'ACCOUNT_SUMMARY';
   return null;
 }
-function headerColumns(row) {
+function headerColumns(row, followingRows = []) {
   const parts=[];
   for(const chunk of row.chunks) for(let i=0;i<chunk.length;) {
     let count=0;
@@ -75,7 +75,21 @@ function headerColumns(row) {
     parts.push({words,raw,x0:words[0].x0,line:row.line,kind:reading?.[0]||'ignored',label:reading?.[1]||raw});
     i+=count||1;
   }
-  return parts;
+  // Close independent Account/Type headings can share a physical chunk.
+  // Split only with their own aligned masked-reference and type cells.
+  return parts.flatMap((column,index)=>{
+    if(column.words.length!==2||upper(column.words[0].text)!=='ACCOUNT'||upper(column.words[1].text)!=='TYPE')return [column];
+    const typeX=column.words[1].x0,nextX=parts[index+1]?.x0??Infinity;
+    const end=followingRows.findIndex(data=>data.y-row.y>100||SECTION.test(norm(data.words.map(word=>word.text).join(' '))));
+    const supported=(end<0?followingRows:followingRows.slice(0,end)).some(data=>{
+      const identifier=data.words.filter(word=>word.x0>=column.x0-2&&word.x1<typeX-2);
+      const type=data.words.filter(word=>word.x0>=typeX-2&&word.x1<nextX-2);
+      return column.words.every(word=>word.trusted!==false)&&identifier.every(word=>word.trusted!==false)&&type.every(word=>word.trusted!==false)
+        &&/^[*#Xx·•]{2,}[\s-]?\d{3,4}$/.test(norm(identifier.map(word=>word.text).join(' ')))
+        &&type[0]?.x0<=typeX+8&&/^(?:credit card|personal loan|student loan|auto loan|mortgage|line of credit|consumer loan)$/i.test(norm(type.map(word=>word.text).join(' ')));
+    });
+    return supported?column.words.map((word,i)=>({words:[word],raw:word.text,x0:word.x0,line:row.line,kind:i?'type':'identifier',label:i?'Account Type':'Account Number'})):[column];
+  });
 }
 function rowIsStart(cells, columns, schema) {
   const identity=cells[columns.findIndex(c=>['identity','collection_identity','inquiry_identity'].includes(c.kind))];
@@ -102,7 +116,7 @@ function summaryTableLines(page) {
   for(let h=0;h<rows.length;h++) {
     const header=rows[h];
     if(header.chunks.length<3) continue;
-    const columns=headerColumns(header);
+    const columns=headerColumns(header,rows.slice(h+1));
     const schema=schemaOf(columns);
     if(!schema||columns.some(c=>/[\d$]/.test(c.raw))||new Set(columns.filter(c=>c.kind!=='ignored').map(c=>c.label)).size!==columns.filter(c=>c.kind!=='ignored').length) continue;
     // "Original / Creditor" and "Last / Reported" may occupy two header rows.
@@ -186,7 +200,10 @@ function reportConcernEvidence(page) {
       // still fences the address. Keep the following own postcode/country line.
       if(heading.label==='PREVIOUS ADDRESS'&&upper(words.map(w=>w.text).join(' '))==='CONTACT')continue;
       if(heading.label==='PREVIOUS ADDRESS'&&/^(?:\+\d|PHONE|EMAIL)|@/i.test(norm(words.map(w=>w.text).join(' '))))break;
-      if(!words.length||row!==next&&row.chunks.some(chunk=>chunk[0].x0>=heading.x0-2&&/^(?:CONTACT|DATE OF BIRTH|TAX FILE NUMBER|PREVIOUS ADDRESS|CURRENT ADDRESS|ALIASES|NAME|ACCOUNT SUMMARY)$/.test(upper(chunk.map(w=>w.text).join(' '))))) break;
+      if(SECTION.test(norm(row.words.map(word=>word.text).join(' '))))break;
+      // An intervening caption in the other column does not end a wrap.
+      if(!words.length)continue;
+      if(row!==next&&row.chunks.some(chunk=>chunk[0].x0>=heading.x0-2&&/^(?:CONTACT|DATE OF BIRTH|TAX FILE NUMBER|PREVIOUS ADDRESS|CURRENT ADDRESS|ALIASES|NAME|ACCOUNT SUMMARY)$/.test(upper(chunk.map(w=>w.text).join(' '))))) break;
       values.push({words,y:row.y,line:row.line});
       if(heading.label==='TAX FILE NUMBER') break;
     }

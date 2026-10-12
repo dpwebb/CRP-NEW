@@ -22,6 +22,7 @@ const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
   'fn-au-comparison-fixes.cjs',
   'fo-au-comparison-delivery.cjs',
+  'fp-au-retest-source-repairs.cjs',
   'fj-report-concern-reader.cjs',
   'fk-report-concern-rules.cjs',
   'fl-report-concern-delivery.cjs',
