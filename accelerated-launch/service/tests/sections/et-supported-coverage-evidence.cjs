@@ -44,7 +44,7 @@ function fixture(root) {
     case_association_matched: 82, presentations: ['GENERAL-BUREAU-REPORT'] });
   set('cw-common-error-rule-assessment', { ordinary_report_regions: 82, ordinary_report_checks_per_region: 6, statutory_gate: false });
   set('cx-all82-required-report-data', { regions_tested: 82 });
-  set('ct-owner-common-error-scope', { checklist: 21, jurisdictions: 82, retired_adapters: 18 });
+  set('ct-owner-common-error-scope', { checklist: 27, jurisdictions: 82, retired_adapters: 18 });
   set('o-all82-infrastructure', { regions_exercised: coverage.allRegions() });
   set('dg-owned-reaging', { jurisdictions: 82 });
   set('dl-general-caption-sources', { gb_field_contract: { approved_downloads: 4, source_isolation: true,
@@ -98,6 +98,19 @@ async function run(t, check) {
       'downstream family and historical UK specimens are not promoted to current full-layout upload proof');
 
     const section = (execution, id) => execution.sections.find(row => row.id === id);
+    const newChecks = ['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW',
+      'CLOSURE-DATE-DISCLOSURE-REVIEW', 'UNDATED-HISTORY-DISCLOSURE-REVIEW',
+      'IDENTIFIER-HANDLING-REVIEW', 'CREDIT-DATA-CATEGORY-REVIEW'].map(id => 'COMMON-ERROR-' + id);
+    check.equal(accepted.check_mapping.find(row => row.check_id === newChecks[0]).scope, 'REPORT_DATA_RULE',
+      'sourced geographic contradiction stays a bounded breach instead of an unclassified review');
+    check.ok(newChecks.slice(1).every(id => accepted.check_mapping.find(row => row.check_id === id).scope === 'FACTUAL_REVIEW'),
+      'the five contextual concerns retain non-violation coverage scope');
+    for (const missing of ['fj-report-concern-reader', 'fk-report-concern-rules', 'fl-report-concern-delivery']) {
+      const execution = clone(baseline); section(execution, missing).completed = false;
+      const rejected = build(execution);
+      check.ok(newChecks.every(id => rejected.check_mapping.find(row => row.check_id === id).status === 'OPEN'),
+        missing + ': missing exact reader/rule/selected-packet proof leaves the new checklist rows open');
+    }
     const failures = [
       ['focused proof', execution => { execution.mode = 'FOCUSED'; }],
       ['reported failed total', execution => { execution.totals.failed = 1; }],

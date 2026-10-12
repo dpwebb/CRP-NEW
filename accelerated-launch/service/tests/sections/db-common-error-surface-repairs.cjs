@@ -12,8 +12,8 @@ async function run(service, check) {
   const regions = response.json.surface.regions;
   check.equal(regions.length, 82, 'all promised selections retain the shared checklist');
   const ids = CHECKS.map((item) => item.check_id);
-  check.equal(new Set(ids).size, 21, 'the expanded product scope has twenty-one unique checklist rows');
-  check.deepEqual(regions.filter((region) => region.checklist_items !== 21
+  check.equal(new Set(ids).size, 27, 'the expanded product scope has twenty-seven unique checklist rows');
+  check.deepEqual(regions.filter((region) => region.checklist_items !== 27
     || JSON.stringify((region.common_error_checklist || []).map((item) => item.check_id)) !== JSON.stringify(ids)), [],
   'no jurisdiction silently substitutes statutory adapter counts or a second factual list for the shared checklist');
   check.ok(regions.every((region) => /common-error checklist/.test(region.availability.plain)

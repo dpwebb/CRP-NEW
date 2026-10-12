@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
 const { buildFixture } = require('./fj-report-concern-reader.cjs');
+const { buildWordPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const { pdfText, comparableText } = require('../packet-pdf-assertions.cjs');
 const issues = require('../../issues.cjs');
 const results = require('../../results.cjs');
@@ -179,6 +180,35 @@ async function run(t, check) {
     if (address) check.ok(found.some(issue => issue.check_id === EXPECTED[0] && issue.consumer_label === 'VIOLATION'),
       `${country}: source-mapped locality and code contradiction reaches the actual report`);
   }
+  // A combined file must send each selected report-level request to its own bureau.
+  const combinedBytes = buildWordPdf([
+    ['Equifax Consumer Credit Report - FICTIONAL', 'Prepared Date: 06/06/2026', 'CURRENT ADDRESS',
+      '19 Sample Lane, Toronto, NS M5H 2N2, Canada'],
+    ['TransUnion Consumer Credit Report - FICTIONAL', 'Prepared Date: 07/07/2026', 'CURRENT ADDRESS',
+      '29 Example Lane, Halifax, ON B3J 3A5, Canada']
+  ].map(lines => ({ words: lines.map((text, index) => ({ text, x: 30, y: 30 + index * 20 })) })),
+  { page_size: { width: 600, height: 800 }, font_size: 8 });
+  const combinedId = (await t.request('POST', '/api/cases', { token: owner.token,
+    body: { country: 'CA', region: 'CA-NS', bureau: 'EQUIFAX' } })).json.case.case_id;
+  const combinedEndpoint = '/api/cases/' + combinedId;
+  check.equal((await t.request('POST', combinedEndpoint + '/files', { token: owner.token,
+    body: body(combinedBytes, 'CA') })).status, 201, 'two source bureaus in one native PDF reach real intake');
+  await t.request('POST', combinedEndpoint + '/evaluate', { token: owner.token });
+  const combinedView = (await t.request('GET', combinedEndpoint + '/packet', { token: owner.token })).json.view;
+  const ownSecond = combinedView.eligible_issues.find(issue => issue.report_identity?.bureau === 'TransUnion');
+  check.ok(ownSecond && ownSecond.source_location.page === 2, 'second report address concern retains TransUnion and page two');
+  check.equal(ownSecond?.report_identity.reference_date, '2026-07-07', 'second report concern retains its own date');
+  await t.request('POST', combinedEndpoint + '/packet/select', { token: owner.token,
+    body: { issue_ids: [ownSecond?.issue_id] } });
+  const combinedPrepared = await t.preparePostalPacket(owner, combinedId);
+  check.equal(combinedPrepared.support.requirements.bureau, 'TRANSUNION',
+    'selected report-level concern routes the actual prepared packet to its owning bureau');
+  check.equal((await t.request('POST', combinedEndpoint + '/packet/approve', { token: owner.token })).status, 200,
+    'the owned second-bureau verification packet can be reviewed and approved');
+  const combinedDownload = await t.request('GET', combinedEndpoint + '/packet-download', { token: owner.token });
+  check.equal(combinedDownload.status, 200, 'approved second-bureau packet downloads through the protected endpoint');
+  check.ok(comparableText(pdfText(combinedDownload.bytes)).includes('TransUnion'),
+    'the downloaded letter names the owning second bureau');
   const artifacts = path.join(__dirname, '../../out/report-concerns');
   fs.mkdirSync(artifacts, { recursive: true });
   fs.writeFileSync(path.join(artifacts, 'fictional-assessment.pdf'), report.bytes);

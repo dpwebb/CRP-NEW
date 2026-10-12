@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-12T02:47:35.570Z",
+  "generated_at": "2026-10-12T03:00:28.831Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 88,
-      "digest": "1CCF1D27B8A65B72BA9F7415B62385197FA60CFFE7A799FFA38D826B0D8A62E4",
+      "digest": "9D5C542AA9B37EE04C102DF940542E6AB7728E5EB89CD6437F88638CC4F562E9",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -102,7 +102,7 @@
         },
         {
           "file": "accelerated-launch/service/assessment-pdf.cjs",
-          "sha256": "15E9E2BC54416658A579B8E8E319B9BAA25C65264D64281BABACBB384823E762"
+          "sha256": "F9EFB5A26D604C436D88CA03E451EE9B1B604D100E2479B5CD68C07D38DF600E"
         },
         {
           "file": "accelerated-launch/service/billing-credits.cjs",
@@ -226,7 +226,7 @@
         },
         {
           "file": "accelerated-launch/service/finding-coverage.cjs",
-          "sha256": "AC6C2E63FE3DF7AA6023CC6D347C5C9D51ED79838B654674366295B54A49A937"
+          "sha256": "801C5C6F079148B9A1AF30346CAD00A03F99A46FFB4DE1FCAE1EFE4E35A68693"
         },
         {
           "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
@@ -258,7 +258,7 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "3A2553667D2020D1F84611366B39298540DDBF59D4F044F3D981814AD7877B31"
+          "sha256": "4D48D27AC6A947D094D38E044144E8442D53B2A51F2304ADAAF5EE0EF60BFCFF"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -282,7 +282,7 @@
         },
         {
           "file": "accelerated-launch/service/multi-file-assembly.cjs",
-          "sha256": "62032DF5ECA6557B857C15E7F203C3457B00A4071D7C60438FAB3075FC54FF70"
+          "sha256": "5735DCCAF38D068EE6A81DBDEE1594CFF5B0A611DE66D1F0CD386348B0EA72C1"
         },
         {
           "file": "accelerated-launch/service/ocr/local-ocr.cjs",
@@ -643,6 +643,6 @@
       ]
     }
   ],
-  "manifest_digest": "08716C2CC3C120C6C62D52B3216F7622782799B883EC6B07B0414E53862F4C58",
+  "manifest_digest": "C76E21C1F7FD5F8BEF0F3B3EF72D7E1F48898A13E608EC254A70D337353F2E0B",
   "total_file_count": 149
 }

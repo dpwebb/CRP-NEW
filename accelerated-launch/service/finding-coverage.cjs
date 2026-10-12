@@ -13,6 +13,7 @@ const { currentInventory } = require('./fdt-acceptance.cjs');
 const { CHECKS } = require('./common-error-checklist.cjs');
 const { FACTUAL_CHECK_CAPABILITY, PRESENTATION_FIELD_CAPABILITY, presentationCapability } = require('./common-errors.cjs');
 const { REPORT_RULES } = require('./common-error-rule-assessment.cjs');
+const { ADDRESS_CHECK } = require('./report-concerns.cjs');
 const { CHECKLIST_STATUTORY_SUPPORT } = require('./common-error-scope.cjs');
 const APPLICABILITY = require('../adapters/applicability-records.json');
 
@@ -50,6 +51,9 @@ function mappingFor(item) {
       'COMMON-ERROR-WRITE-OFF-WITHOUT-A-CHARGE-OFF-DATE',
       'COMMON-ERROR-CLOSURE-STATED-WITHOUT-A-CLOSED-DATE'
     ], requirement: null, field_sets: [], additional_evidence: spec.additional_evidence };
+  if (id === ADDRESS_CHECK) return { ...item, scope: 'REPORT_DATA_RULE',
+    requirement: 'A reported locality and state or province must identify a consistent location within an exactly supported country mapping.',
+    field_sets: spec.field_sets.map(set => [...set]), additional_evidence: spec.additional_evidence || null };
   return { ...item, scope: REPORT_RULES[id] ? 'REPORT_DATA_RULE' : 'FACTUAL_REVIEW',
     requirement: REPORT_RULES[id] || null, field_sets: spec.field_sets.map((set) => [...set]),
     additional_evidence: spec.additional_evidence || null };
@@ -76,7 +80,12 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ['REQUIRED-REPORT-DATA-VISIBLY-MISSING', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], [], 'GROUPING_ONLY'],
   ['PAID-SETTLED-SHOWN-UNPAID', ['cy-common-error-predicate-repairs', 'df-us-common-error-reader'], ['du-column-reader-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
   ['LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', ['cw-common-error-rule-assessment', 'de-tu-ca-common-error-sources'], ['de-tu-ca-common-error-sources'], 'NATIVE_READER_AND_DOWNSTREAM_FAMILY_CONTROL'],
-  ['COLLECTION-ORIGINAL-BOTH-DUE', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD']
+  ['COLLECTION-ORIGINAL-BOTH-DUE', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
+  ...['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW',
+    'CLOSURE-DATE-DISCLOSURE-REVIEW', 'UNDATED-HISTORY-DISCLOSURE-REVIEW',
+    'IDENTIFIER-HANDLING-REVIEW', 'CREDIT-DATA-CATEGORY-REVIEW'].map(suffix =>
+      [suffix, ['fj-report-concern-reader', 'fk-report-concern-rules'],
+        ['fl-report-concern-delivery'], 'FICTIONAL_NATIVE_TABLE_UPLOAD_AND_SCOPED_CONCERN_PACKET'])
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
   .concat([['COMMON-ERROR-REPORTING-PERIOD-EXCEEDED', {
     assessment: ['ct-owner-common-error-scope', 'cr-ca-ns-tu-real-report', 'ch-ca-ab-debt-six-year'],
@@ -234,7 +243,11 @@ function buildEvidence({ execution, regressionFile, sourceRoot = ROOT } = {}) {
       assessment_sections: proof?.assessment || [], packet_sections: proof?.packet || [],
       packet_evidence_scope: 'Named sections prove the shared selected-evidence, review, approval and download mechanism. The native omission/original-collection rows additionally prove this exact check in four country packet paths.',
       exercise_class: proof?.exercise_class || 'UNMAPPED',
-      boundary: item.scope === 'GROUPING_ONLY' ? 'Groups the three measured omission checks; never a second violation.'
+      boundary: proof?.exercise_class === 'FICTIONAL_NATIVE_TABLE_UPLOAD_AND_SCOPED_CONCERN_PACKET'
+        ? (item.check_id === ADDRESS_CHECK
+          ? 'Sourced AU locality mappings and exact CA/US locality-code examples; unsupported places and postal exceptions establish no breach.'
+          : 'Completed non-violation review, not a classified breach: shared payment/closure/history facts; identifier and amount category context stays Australian. One supported table family and selected approved packet, not every layout or jurisdiction requirement.')
+        : item.scope === 'GROUPING_ONLY' ? 'Groups the three measured omission checks; never a second violation.'
         : item.scope === 'FACTUAL_REVIEW' ? 'Review observation only; not a classified breach or a free VIOLATION teaser.'
           : item.check_id === PERIOD_ITEM ? 'Applicable sourced reporting periods can support a dispute. Court deadlines remain INFORMATION, ineligible for packets, with no proactive bureau questions.'
             : 'Supported decisive report sources only; no claim that this rule runs on every layout.',
