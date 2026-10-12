@@ -1,0 +1,41 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "host": "https://staging.creditregulatorpro.com",
+  "passed": true,
+  "actual_browser": true,
+  "resolved_country": null,
+  "mixed_fallback": true,
+  "actual_ip_resolution": true,
+  "items": 7,
+  "layouts": [
+    {
+      "width": 320,
+      "overflow": false,
+      "items": 7,
+      "scope": "All four countries · Publications and decisions from the past five years",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "items": 7,
+      "scope": "All four countries · Publications and decisions from the past five years",
+      "passed": true
+    },
+    {
+      "width": 768,
+      "overflow": false,
+      "items": 7,
+      "scope": "All four countries · Publications and decisions from the past five years",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "overflow": false,
+      "items": 7,
+      "scope": "All four countries · Publications and decisions from the past five years",
+      "passed": true
+    }
+  ],
+  "measured_at": "2026-10-12T01:16:30.367Z"
+}

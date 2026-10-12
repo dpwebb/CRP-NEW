@@ -1,8 +1,13 @@
 # Owner imperatives
 
+## October 11 accepted credit reporting news release
+
+Current production and staging are `crp-v1-9799fd768cb7cdfa`, shipped source `6e8c85e29a815f6c0819056e8e9bc307b80900f5`. The IP-selected source-backed footer is live; unknown/other locations show mixed items and the five-year age limit is enforced. Fresh regression 14,966/0/0 and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting periods, form-free packets, seven steps, Your Story and native prices remain included. Prior twelve-purchase proof retains its original identity with separate unchanged-source continuity; fresh purchase/upgrade/cancellation and current live configuration were verified. The unpublished address-dependent policy candidate remains local. See `CRP_CREDIT_NEWS_PRODUCTION_2026_10_11.md`. In isolated verification worktrees, preflight required ignored fixture builders/evidence and `consumer-wizard/dist/app.js` before the long full regression; preserve failed runs honestly.
+
+
 ## October 11 accepted native-currency release
 
-Current production is `crp-v1-378b2463903ad652`, source `b910f9f714e37e2235f6ef888385052f67fd67ba`. Fixed CAD/USD/AUD/GBP prices use visitor IP; other/unknown locations use US prices; consumers can choose currency before paying. USD annual is $59.50. Unsupported settlement conversion is owner-authorized. Fresh full regression 14,897/0/0; twelve genuine Sandbox purchases and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting-period fixes, form-free packets, seven steps and Your Story designs remain included. See `CRP_NATIVE_CURRENCY_PRODUCTION_2026_10_11.md`; older receipts retain historical scope.
+The accepted native-currency predecessor was `crp-v1-378b2463903ad652`, source `b910f9f714e37e2235f6ef888385052f67fd67ba`. Fixed CAD/USD/AUD/GBP prices use visitor IP; other/unknown locations use US prices; consumers can choose currency before paying. USD annual is $59.50. Unsupported settlement conversion is owner-authorized. Fresh full regression 14,897/0/0; twelve genuine Sandbox purchases and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting-period fixes, form-free packets, seven steps and Your Story designs remain included. See `CRP_NATIVE_CURRENCY_PRODUCTION_2026_10_11.md`; older receipts retain historical scope.
 
 
 ## October 11 change-aware release process

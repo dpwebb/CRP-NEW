@@ -1,0 +1,29 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "passed": true,
+  "actual_browser": true,
+  "pairs": [
+    {
+      "pricing_currency": "cad",
+      "news_country": "CA",
+      "news_scope": "Canada",
+      "news_items": 1
+    },
+    {
+      "pricing_currency": "cad",
+      "news_country": "CA",
+      "news_scope": "Canada",
+      "news_items": 1
+    },
+    {
+      "pricing_currency": "cad",
+      "news_country": "CA",
+      "news_scope": "Canada",
+      "news_items": 1
+    }
+  ],
+  "resolved_region_observed": true,
+  "unknown_fallback_observed": false,
+  "scope": "Actual per-request IP provider responses; legitimate unknown lookups retain mixed fallback",
+  "measured_at": "2026-10-12T01:22:20.090Z"
+}

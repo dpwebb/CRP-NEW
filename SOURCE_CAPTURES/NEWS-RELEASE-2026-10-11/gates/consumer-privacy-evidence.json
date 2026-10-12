@@ -1,0 +1,1215 @@
+{
+  "blocker_id": "BLOCKER-PRIVACY-001",
+  "measured_at": "2026-10-12T01:15:28.519Z",
+  "passed": true,
+  "implementation": {
+    "configured": true,
+    "status": "IMPLEMENTED_AND_TESTED",
+    "tests": [
+      {
+        "id": "ax-consumer-privacy",
+        "passed": true,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "25 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "k-ui-smoke",
+        "passed": true,
+        "criteria": [
+          "inventory",
+          "retention"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "96 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "f-deletion",
+        "passed": true,
+        "criteria": [
+          "deletion"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "26 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "g-privacy",
+        "passed": true,
+        "criteria": [
+          "isolation"
+        ],
+        "expected": "Configured behavior passes the relevant behavioral assertions",
+        "measured": "88 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+      },
+      {
+        "id": "production-final-freeze:ax-consumer-privacy",
+        "passed": true,
+        "assertions": 25,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "25 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      },
+      {
+        "id": "production-final-freeze:f-deletion",
+        "passed": true,
+        "assertions": 26,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "26 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      },
+      {
+        "id": "production-final-freeze:g-privacy",
+        "passed": true,
+        "assertions": 88,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "88 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      },
+      {
+        "id": "production-final-freeze:u-hardening",
+        "passed": true,
+        "assertions": 108,
+        "criteria": [
+          "inventory",
+          "retention",
+          "deletion",
+          "isolation"
+        ],
+        "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+        "measured": "108 passed; 0 failed; 0 skipped",
+        "measurement_origin": "current-regression-evidence.json",
+        "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+      }
+    ],
+    "source_files": [
+      {
+        "file": "accelerated-launch/service/privacy.cjs",
+        "sha256": "fd134e4bfbc88257832ef020981ce42069ae4364e0b65476b55b3655187b2477"
+      },
+      {
+        "file": "accelerated-launch/service/app.cjs",
+        "sha256": "b47091b27aad2ac0917c0ebd2d9ea1d4e11335700fe848ceddfb1caba8a2ca90"
+      },
+      {
+        "file": "accelerated-launch/service/cases.cjs",
+        "sha256": "8dcc7e48f19aca9368bd03ece0178a6d86c4b3c008c7201e6b80b5cb4808b393"
+      },
+      {
+        "file": "accelerated-launch/service/private-store.cjs",
+        "sha256": "7493c1d54269354c551ef613054bec19f9263a2308e8fba0b63be9d04e75898e"
+      },
+      {
+        "file": "accelerated-launch/service/retention.cjs",
+        "sha256": "f0bfb2441d14628236072af7f8703d5355685ac8c4f6817b5f2838fdbf2c298e"
+      },
+      {
+        "file": "accelerated-launch/service/ui/app.js",
+        "sha256": "7d82a24c612ab3cc5a78148b18dc56ae423faff1f2c0c4688964ffe1f5b9ef86"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/ax-consumer-privacy.cjs",
+        "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+        "sha256": "773b7a8e58d81444bd63e896a47112643b18c913ff0a04ce9c07ecb137c2b491"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/f-signout-and-deletion.cjs",
+        "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+      },
+      {
+        "file": "accelerated-launch/service/tests/sections/g-privacy.cjs",
+        "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+      }
+    ],
+    "evidence_refs": [
+      {
+        "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+        "sha256": "054da0e4d2281c04bbd6b954172629fbe0a24c41441b2934c8945e6a5080b128"
+      }
+    ]
+  },
+  "staging_verification": {
+    "status": "VERIFIED",
+    "build_id": "crp-v1-9799fd768cb7cdfa",
+    "served_build_id": "crp-v1-9799fd768cb7cdfa",
+    "recorded_at": "2026-10-12T01:24:55.784Z",
+    "evidence_refs": [
+      "news-hosted-2026-10-11/measurements.json"
+    ],
+    "method": "Actual source-matched isolated hosted candidate HTTP, genuine Sandbox provider event, consumer packet review/approval/download, own-history comparison and cleanup; exact regional behavioral loops reused"
+  },
+  "criteria": {
+    "inventory": {
+      "passed": true,
+      "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "privacy_inventory",
+            "expected": "Actual phase1 checks: privacy_dashboard",
+            "measured": [
+              {
+                "id": "privacy_dashboard",
+                "passed": true,
+                "measured": {
+                  "keys": [
+                    "ok",
+                    "pricing_location",
+                    "cases",
+                    "account_documents",
+                    "referral",
+                    "retention",
+                    "deletion"
+                  ]
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ax-consumer-privacy",
+            "assertions": 25,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "inventory": true,
+              "retention": true,
+              "deletion": true,
+              "isolation": true,
+              "backup_erasure_verified": false
+            }
+          },
+          {
+            "id": "f-deletion",
+            "assertions": 26,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "blobsAfterDeletion": 0
+            }
+          },
+          {
+            "id": "g-privacy",
+            "assertions": 88,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scanned_public_assets": 26,
+              "log_records": 6
+            }
+          },
+          {
+            "id": "u-hardening",
+            "assertions": 108,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "state_outside_the_repository": true,
+              "sessions": {
+                "idle_expiry_enforced": true,
+                "absolute_expiry_enforced": true,
+                "session_cap": 10,
+                "lockout_is_a_window": true
+              },
+              "concurrency": {
+                "concurrent_cases": 12,
+                "concurrent_uploads_to_one_case": 6,
+                "concurrent_evaluations": 4,
+                "orphan_blobs_cleared": 1,
+                "partial_blobs_cleared": 1,
+                "referenced_blobs_kept": 6
+              },
+              "upload_limits": {
+                "max_file_bytes": 10485760,
+                "max_case_files": 8,
+                "max_account_stored_bytes": 41943040,
+                "refused_before_any_write": true
+              },
+              "retry_idempotency": {
+                "same_file_id_reused": true,
+                "no_second_blob": true,
+                "tampered_key_refused": true
+              },
+              "restart_recovery": {
+                "recovered_from_backup": true,
+                "refuses_when_unreadable": true,
+                "state_version": 3,
+                "lapsed_sessions_swept_on_start": true,
+                "live_sessions_survive": true
+              },
+              "single_writer": {
+                "second_process_refused": true,
+                "stale_lock_taken_over": true,
+                "lock_file": "store.lock"
+              },
+              "retention": {
+                "policy_clauses": 11,
+                "account_deletion_cascades_to_entitlements": true,
+                "account_deletion_cascades_to_billing_events": true
+              },
+              "log_records": 94
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "retention": {
+      "passed": true,
+      "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "privacy_inventory",
+            "expected": "Actual phase1 checks: privacy_dashboard",
+            "measured": [
+              {
+                "id": "privacy_dashboard",
+                "passed": true,
+                "measured": {
+                  "keys": [
+                    "ok",
+                    "pricing_location",
+                    "cases",
+                    "account_documents",
+                    "referral",
+                    "retention",
+                    "deletion"
+                  ]
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "actual_cleanup",
+            "expected": "Exact paid fictional owner/session cancelled at provider; two fictional accounts deleted through API and sessions revoked",
+            "measured": {
+              "provider": {
+                "passed": true,
+                "build_id": "crp-v1-9799fd768cb7cdfa",
+                "account_id": "acc_3669b6c456fe89700baaa9cb",
+                "session_id": "cs_test_a1SsKDL9AdbWEWyTEi4nwn0UfEvHLJ7yDDXyiUeFrumXmBpq8VDD4HPoJZ",
+                "checkout_id": "chk_02a5d7c771927bbde9a50ad2",
+                "test_mode": true,
+                "same_subscription": true,
+                "annual_price_cents": 7950,
+                "applied_credit_cents": 795,
+                "paid_invoice_cents": 7155,
+                "matched_applied_signed_webhook": true,
+                "measured_at": "2026-10-12T01:24:20.037Z",
+                "test_subscription_ended": true,
+                "livemode": false,
+                "fixture_scope": "staging-news-release-20261011",
+                "provider_final_subscription_status": "canceled"
+              },
+              "checks": [
+                {
+                  "id": "deleted_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 401
+                },
+                {
+                  "id": "deleted_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 401
+                }
+              ]
+            },
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/provider-cleanup.json",
+              "news-hosted-2026-10-11/cleanup-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ax-consumer-privacy",
+            "assertions": 25,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "inventory": true,
+              "retention": true,
+              "deletion": true,
+              "isolation": true,
+              "backup_erasure_verified": false
+            }
+          },
+          {
+            "id": "f-deletion",
+            "assertions": 26,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "blobsAfterDeletion": 0
+            }
+          },
+          {
+            "id": "g-privacy",
+            "assertions": 88,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scanned_public_assets": 26,
+              "log_records": 6
+            }
+          },
+          {
+            "id": "u-hardening",
+            "assertions": 108,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "state_outside_the_repository": true,
+              "sessions": {
+                "idle_expiry_enforced": true,
+                "absolute_expiry_enforced": true,
+                "session_cap": 10,
+                "lockout_is_a_window": true
+              },
+              "concurrency": {
+                "concurrent_cases": 12,
+                "concurrent_uploads_to_one_case": 6,
+                "concurrent_evaluations": 4,
+                "orphan_blobs_cleared": 1,
+                "partial_blobs_cleared": 1,
+                "referenced_blobs_kept": 6
+              },
+              "upload_limits": {
+                "max_file_bytes": 10485760,
+                "max_case_files": 8,
+                "max_account_stored_bytes": 41943040,
+                "refused_before_any_write": true
+              },
+              "retry_idempotency": {
+                "same_file_id_reused": true,
+                "no_second_blob": true,
+                "tampered_key_refused": true
+              },
+              "restart_recovery": {
+                "recovered_from_backup": true,
+                "refuses_when_unreadable": true,
+                "state_version": 3,
+                "lapsed_sessions_swept_on_start": true,
+                "live_sessions_survive": true
+              },
+              "single_writer": {
+                "second_process_refused": true,
+                "stale_lock_taken_over": true,
+                "lock_file": "store.lock"
+              },
+              "retention": {
+                "policy_clauses": 11,
+                "account_deletion_cascades_to_entitlements": true,
+                "account_deletion_cascades_to_billing_events": true
+              },
+              "log_records": 94
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "deletion": {
+      "passed": true,
+      "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "actual_cleanup",
+            "expected": "Exact paid fictional owner/session cancelled at provider; two fictional accounts deleted through API and sessions revoked",
+            "measured": {
+              "provider": {
+                "passed": true,
+                "build_id": "crp-v1-9799fd768cb7cdfa",
+                "account_id": "acc_3669b6c456fe89700baaa9cb",
+                "session_id": "cs_test_a1SsKDL9AdbWEWyTEi4nwn0UfEvHLJ7yDDXyiUeFrumXmBpq8VDD4HPoJZ",
+                "checkout_id": "chk_02a5d7c771927bbde9a50ad2",
+                "test_mode": true,
+                "same_subscription": true,
+                "annual_price_cents": 7950,
+                "applied_credit_cents": 795,
+                "paid_invoice_cents": 7155,
+                "matched_applied_signed_webhook": true,
+                "measured_at": "2026-10-12T01:24:20.037Z",
+                "test_subscription_ended": true,
+                "livemode": false,
+                "fixture_scope": "staging-news-release-20261011",
+                "provider_final_subscription_status": "canceled"
+              },
+              "checks": [
+                {
+                  "id": "deleted_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 401
+                },
+                {
+                  "id": "deleted_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 401
+                }
+              ]
+            },
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/provider-cleanup.json",
+              "news-hosted-2026-10-11/cleanup-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ax-consumer-privacy",
+            "assertions": 25,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "inventory": true,
+              "retention": true,
+              "deletion": true,
+              "isolation": true,
+              "backup_erasure_verified": false
+            }
+          },
+          {
+            "id": "f-deletion",
+            "assertions": 26,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "blobsAfterDeletion": 0
+            }
+          },
+          {
+            "id": "g-privacy",
+            "assertions": 88,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scanned_public_assets": 26,
+              "log_records": 6
+            }
+          },
+          {
+            "id": "u-hardening",
+            "assertions": 108,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "state_outside_the_repository": true,
+              "sessions": {
+                "idle_expiry_enforced": true,
+                "absolute_expiry_enforced": true,
+                "session_cap": 10,
+                "lockout_is_a_window": true
+              },
+              "concurrency": {
+                "concurrent_cases": 12,
+                "concurrent_uploads_to_one_case": 6,
+                "concurrent_evaluations": 4,
+                "orphan_blobs_cleared": 1,
+                "partial_blobs_cleared": 1,
+                "referenced_blobs_kept": 6
+              },
+              "upload_limits": {
+                "max_file_bytes": 10485760,
+                "max_case_files": 8,
+                "max_account_stored_bytes": 41943040,
+                "refused_before_any_write": true
+              },
+              "retry_idempotency": {
+                "same_file_id_reused": true,
+                "no_second_blob": true,
+                "tampered_key_refused": true
+              },
+              "restart_recovery": {
+                "recovered_from_backup": true,
+                "refuses_when_unreadable": true,
+                "state_version": 3,
+                "lapsed_sessions_swept_on_start": true,
+                "live_sessions_survive": true
+              },
+              "single_writer": {
+                "second_process_refused": true,
+                "stale_lock_taken_over": true,
+                "lock_file": "store.lock"
+              },
+              "retention": {
+                "policy_clauses": 11,
+                "account_deletion_cascades_to_entitlements": true,
+                "account_deletion_cascades_to_billing_events": true
+              },
+              "log_records": 94
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "isolation": {
+      "passed": true,
+      "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "account_isolation",
+            "expected": "Actual phase1 checks: case_stranger_refused, case_anonymous_refused",
+            "measured": [
+              {
+                "id": "case_stranger_refused",
+                "passed": true,
+                "measured": "403/404"
+              },
+              {
+                "id": "case_anonymous_refused",
+                "passed": true,
+                "measured": 401
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "history_isolation",
+            "expected": "Actual phase2 checks: unpaid_stranger_comparison_refused, subscriber_foreign_result_refused",
+            "measured": [
+              {
+                "id": "unpaid_stranger_comparison_refused",
+                "passed": true,
+                "measured": 402
+              },
+              {
+                "id": "subscriber_foreign_result_refused",
+                "passed": true,
+                "measured": 403
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase2-receipt.json"
+            ]
+          },
+          {
+            "id": "support_isolation",
+            "expected": "Actual phase1 checks: support_stranger_lookup_refused, support_anonymous_refused, support_anonymous_lookup_refused",
+            "measured": [
+              {
+                "id": "support_stranger_lookup_refused",
+                "passed": true,
+                "measured": 404
+              },
+              {
+                "id": "support_anonymous_refused",
+                "passed": true,
+                "measured": 401
+              },
+              {
+                "id": "support_anonymous_lookup_refused",
+                "passed": true,
+                "measured": 401
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ax-consumer-privacy",
+            "assertions": 25,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "inventory": true,
+              "retention": true,
+              "deletion": true,
+              "isolation": true,
+              "backup_erasure_verified": false
+            }
+          },
+          {
+            "id": "f-deletion",
+            "assertions": 26,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "blobsAfterDeletion": 0
+            }
+          },
+          {
+            "id": "g-privacy",
+            "assertions": 88,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scanned_public_assets": 26,
+              "log_records": 6
+            }
+          },
+          {
+            "id": "u-hardening",
+            "assertions": 108,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "state_outside_the_repository": true,
+              "sessions": {
+                "idle_expiry_enforced": true,
+                "absolute_expiry_enforced": true,
+                "session_cap": 10,
+                "lockout_is_a_window": true
+              },
+              "concurrency": {
+                "concurrent_cases": 12,
+                "concurrent_uploads_to_one_case": 6,
+                "concurrent_evaluations": 4,
+                "orphan_blobs_cleared": 1,
+                "partial_blobs_cleared": 1,
+                "referenced_blobs_kept": 6
+              },
+              "upload_limits": {
+                "max_file_bytes": 10485760,
+                "max_case_files": 8,
+                "max_account_stored_bytes": 41943040,
+                "refused_before_any_write": true
+              },
+              "retry_idempotency": {
+                "same_file_id_reused": true,
+                "no_second_blob": true,
+                "tampered_key_refused": true
+              },
+              "restart_recovery": {
+                "recovered_from_backup": true,
+                "refuses_when_unreadable": true,
+                "state_version": 3,
+                "lapsed_sessions_swept_on_start": true,
+                "live_sessions_survive": true
+              },
+              "single_writer": {
+                "second_process_refused": true,
+                "stale_lock_taken_over": true,
+                "lock_file": "store.lock"
+              },
+              "retention": {
+                "policy_clauses": 11,
+                "account_deletion_cascades_to_entitlements": true,
+                "account_deletion_cascades_to_billing_events": true
+              },
+              "log_records": 94
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    },
+    "journey": {
+      "passed": true,
+      "expected": "Current owned inventory/retention view, stranger/anon refusal and deletion with revoked sessions; AB actual four-file cleanup reusable via source bridge.",
+      "measured": {
+        "actual_predicates": [
+          {
+            "id": "privacy_inventory",
+            "expected": "Actual phase1 checks: privacy_dashboard",
+            "measured": [
+              {
+                "id": "privacy_dashboard",
+                "passed": true,
+                "measured": {
+                  "keys": [
+                    "ok",
+                    "pricing_location",
+                    "cases",
+                    "account_documents",
+                    "referral",
+                    "retention",
+                    "deletion"
+                  ]
+                }
+              }
+            ],
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/phase1-receipt.json"
+            ]
+          },
+          {
+            "id": "actual_cleanup",
+            "expected": "Exact paid fictional owner/session cancelled at provider; two fictional accounts deleted through API and sessions revoked",
+            "measured": {
+              "provider": {
+                "passed": true,
+                "build_id": "crp-v1-9799fd768cb7cdfa",
+                "account_id": "acc_3669b6c456fe89700baaa9cb",
+                "session_id": "cs_test_a1SsKDL9AdbWEWyTEi4nwn0UfEvHLJ7yDDXyiUeFrumXmBpq8VDD4HPoJZ",
+                "checkout_id": "chk_02a5d7c771927bbde9a50ad2",
+                "test_mode": true,
+                "same_subscription": true,
+                "annual_price_cents": 7950,
+                "applied_credit_cents": 795,
+                "paid_invoice_cents": 7155,
+                "matched_applied_signed_webhook": true,
+                "measured_at": "2026-10-12T01:24:20.037Z",
+                "test_subscription_ended": true,
+                "livemode": false,
+                "fixture_scope": "staging-news-release-20261011",
+                "provider_final_subscription_status": "canceled"
+              },
+              "checks": [
+                {
+                  "id": "deleted_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_1ab50eeb3cbc2eca0b764991",
+                  "passed": true,
+                  "measured": 401
+                },
+                {
+                  "id": "deleted_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 200
+                },
+                {
+                  "id": "revoked_acc_3669b6c456fe89700baaa9cb",
+                  "passed": true,
+                  "measured": 401
+                }
+              ]
+            },
+            "passed": true,
+            "refs": [
+              "news-hosted-2026-10-11/provider-cleanup.json",
+              "news-hosted-2026-10-11/cleanup-receipt.json"
+            ]
+          }
+        ],
+        "current_named_sections": [
+          {
+            "id": "ax-consumer-privacy",
+            "assertions": 25,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "inventory": true,
+              "retention": true,
+              "deletion": true,
+              "isolation": true,
+              "backup_erasure_verified": false
+            }
+          },
+          {
+            "id": "f-deletion",
+            "assertions": 26,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "blobsAfterDeletion": 0
+            }
+          },
+          {
+            "id": "g-privacy",
+            "assertions": 88,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "scanned_public_assets": 26,
+              "log_records": 6
+            }
+          },
+          {
+            "id": "u-hardening",
+            "assertions": 108,
+            "failed": 0,
+            "skipped": [],
+            "evidence": {
+              "state_outside_the_repository": true,
+              "sessions": {
+                "idle_expiry_enforced": true,
+                "absolute_expiry_enforced": true,
+                "session_cap": 10,
+                "lockout_is_a_window": true
+              },
+              "concurrency": {
+                "concurrent_cases": 12,
+                "concurrent_uploads_to_one_case": 6,
+                "concurrent_evaluations": 4,
+                "orphan_blobs_cleared": 1,
+                "partial_blobs_cleared": 1,
+                "referenced_blobs_kept": 6
+              },
+              "upload_limits": {
+                "max_file_bytes": 10485760,
+                "max_case_files": 8,
+                "max_account_stored_bytes": 41943040,
+                "refused_before_any_write": true
+              },
+              "retry_idempotency": {
+                "same_file_id_reused": true,
+                "no_second_blob": true,
+                "tampered_key_refused": true
+              },
+              "restart_recovery": {
+                "recovered_from_backup": true,
+                "refuses_when_unreadable": true,
+                "state_version": 3,
+                "lapsed_sessions_swept_on_start": true,
+                "live_sessions_survive": true
+              },
+              "single_writer": {
+                "second_process_refused": true,
+                "stale_lock_taken_over": true,
+                "lock_file": "store.lock"
+              },
+              "retention": {
+                "policy_clauses": 11,
+                "account_deletion_cascades_to_entitlements": true,
+                "account_deletion_cascades_to_billing_events": true
+              },
+              "log_records": 94
+            }
+          }
+        ]
+      },
+      "evidence_refs": [
+        "news-hosted-2026-10-11/measurements.json"
+      ]
+    }
+  },
+  "tests": [
+    {
+      "id": "production-final-freeze:ax-consumer-privacy",
+      "passed": true,
+      "assertions": 25,
+      "criteria": [
+        "inventory",
+        "retention",
+        "deletion",
+        "isolation"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "25 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    },
+    {
+      "id": "production-final-freeze:f-deletion",
+      "passed": true,
+      "assertions": 26,
+      "criteria": [
+        "inventory",
+        "retention",
+        "deletion",
+        "isolation"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "26 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    },
+    {
+      "id": "production-final-freeze:g-privacy",
+      "passed": true,
+      "assertions": 88,
+      "criteria": [
+        "inventory",
+        "retention",
+        "deletion",
+        "isolation"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "88 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    },
+    {
+      "id": "production-final-freeze:u-hardening",
+      "passed": true,
+      "assertions": 108,
+      "criteria": [
+        "inventory",
+        "retention",
+        "deletion",
+        "isolation"
+      ],
+      "expected": "Current named behavioral section completed without failures/skips on the exact frozen source",
+      "measured": "108 passed; 0 failed; 0 skipped",
+      "measurement_origin": "current-regression-evidence.json",
+      "source_freeze_sha256": "f445d1c01a540def83016b32c85cfb86f6aa88dc3c74f6ef76f0973298a516c1"
+    }
+  ],
+  "identity": {
+    "build_id": "crp-v1-9799fd768cb7cdfa",
+    "served_build_id": "crp-v1-9799fd768cb7cdfa",
+    "local_only": false
+  },
+  "operational_reconciliation": {
+    "target_build_id": "crp-v1-9799fd768cb7cdfa",
+    "original_canonical_sha256": "43dc26a1c643be7cae8f8ccf0d747a6be1bb05831c911ce77142316934616e12",
+    "preserved_implementation_before_current_freeze": {
+      "configured": true,
+      "status": "IMPLEMENTED_AND_TESTED",
+      "tests": [
+        {
+          "id": "ax-consumer-privacy",
+          "passed": true,
+          "criteria": [
+            "inventory",
+            "retention",
+            "deletion",
+            "isolation"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "25 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+        },
+        {
+          "id": "k-ui-smoke",
+          "passed": true,
+          "criteria": [
+            "inventory",
+            "retention"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "96 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+        },
+        {
+          "id": "f-deletion",
+          "passed": true,
+          "criteria": [
+            "deletion"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "26 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+        },
+        {
+          "id": "g-privacy",
+          "passed": true,
+          "criteria": [
+            "isolation"
+          ],
+          "expected": "Configured behavior passes the relevant behavioral assertions",
+          "measured": "88 passing assertions; Authenticated inventory lists owned stored documents/results; retention is until deletion with no adjustable setting. Unauthorized deletion preserves bytes; own case/account deletion removes active bytes/results while the other account remains intact. Backup erasure is explicitly unverified."
+        }
+      ],
+      "source_files": [
+        {
+          "file": "accelerated-launch/service/privacy.cjs",
+          "sha256": "fd134e4bfbc88257832ef020981ce42069ae4364e0b65476b55b3655187b2477"
+        },
+        {
+          "file": "accelerated-launch/service/app.cjs",
+          "sha256": "b47091b27aad2ac0917c0ebd2d9ea1d4e11335700fe848ceddfb1caba8a2ca90"
+        },
+        {
+          "file": "accelerated-launch/service/cases.cjs",
+          "sha256": "8dcc7e48f19aca9368bd03ece0178a6d86c4b3c008c7201e6b80b5cb4808b393"
+        },
+        {
+          "file": "accelerated-launch/service/private-store.cjs",
+          "sha256": "7493c1d54269354c551ef613054bec19f9263a2308e8fba0b63be9d04e75898e"
+        },
+        {
+          "file": "accelerated-launch/service/retention.cjs",
+          "sha256": "f0bfb2441d14628236072af7f8703d5355685ac8c4f6817b5f2838fdbf2c298e"
+        },
+        {
+          "file": "accelerated-launch/service/ui/app.js",
+          "sha256": "7d82a24c612ab3cc5a78148b18dc56ae423faff1f2c0c4688964ffe1f5b9ef86"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/ax-consumer-privacy.cjs",
+          "sha256": "4d3687ffbd6a3741acfc3f633cfebf0da1a84e34e86f02e9cf1145f892fd9693"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/k-ui-smoke.cjs",
+          "sha256": "773b7a8e58d81444bd63e896a47112643b18c913ff0a04ce9c07ecb137c2b491"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/f-signout-and-deletion.cjs",
+          "sha256": "2c5c567fbf20bf8f1d7d4ca687096ee1cb59881e583987da0bca2343eb7b81d5"
+        },
+        {
+          "file": "accelerated-launch/service/tests/sections/g-privacy.cjs",
+          "sha256": "855042a4df3a49d83b4f48982b7fa0553d3cf99a783f4b0ea1bcc11517308fc0"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "file": "SOURCE_CAPTURES/CONSUMER-LANGUAGE-001/behavioral-summary.json",
+          "sha256": "054da0e4d2281c04bbd6b954172629fbe0a24c41441b2934c8945e6a5080b128"
+        }
+      ]
+    },
+    "actual_receipts": [
+      {
+        "file": "news-hosted-2026-10-11/phase1-receipt.json",
+        "sha256": "679bdc6b9f54616e1e6ee784ca453d392eeada3d2b9a2675c8b3f579f67f6145",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/provider-paid.json",
+        "sha256": "20101bb5543cc290f3b7ea94c6dcf2afe0d55c60a787273e010fa883f181b0ef",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/review-receipt.json",
+        "sha256": "12acec2139131b565ae9334fd403f86eaac8378cee483808951422349947e1a7",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/download-receipt.json",
+        "sha256": "566238e04f957812bbb25e323223c520b5a159ebdde367e264c16647731f50e3",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/continuity-receipt.json",
+        "sha256": "f1817042b03ac96104937435bb0b102772b9b808587a27da9ee4cbf31b0dd30b",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/phase2-receipt.json",
+        "sha256": "98d6e82aed15039cbdf43702d69bb477cbade155573d4a45e99c184ac37ec142",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/provider-cleanup.json",
+        "sha256": "8eb04b9bf1deb2ca2fb17c0df134fd948175a3a5a487f783d1b44a8bbb2724cf",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/cleanup-receipt.json",
+        "sha256": "782ebc8ea5691d6236537158dcfb7608757b5a15040f4138ad712b6043415f3d",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/checkout-receipt.json",
+        "sha256": "bbde3104e6091f58d83f35d5444238feb6959bc35742a683d8a30fe6809c5626",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/input-manifest.json",
+        "sha256": "17fc9281525911638ad9cba3ef6b8f2145ac59ec784df978bb2f42ab646fea47",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/browser-stage-navigation.json",
+        "sha256": "0acf2ef411108bdc1e95313842443e5e3afe5636435a93493e1cb9242894f3b8",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/upgrade-proof.json",
+        "sha256": "9af5ddbae057f5c65311198adb32b99f7d062e87e78551a20ca335cea5db058d",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/cancellation-proof.json",
+        "sha256": "1c1dc5c5b3b8d067848ebf7441e739c84715b8f6ab18d6569efe11f8f849f9f4",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/hosted-published-packet-probe.json",
+        "sha256": "cd4fa8002057633b04c0be012cdd5e58f12e5637499e2ca1d897e02fa6be5cc6",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "native-currency-hosted-2026-10-11/native-three-plan-proof.json",
+        "sha256": "e07ac9af69129e12c469020376615b35e793fae0a4aa5a95f2ef368281b33b75",
+        "identity_build_id": "crp-v1-378b2463903ad652"
+      },
+      {
+        "file": "native-currency-hosted-2026-10-11/native-checkout-browser-proof.json",
+        "sha256": "dca6fe6de577b71e5b106fdef90eebc7c458e5becc17592a12ac80c51ba5d85a",
+        "identity_build_id": "crp-v1-378b2463903ad652"
+      },
+      {
+        "file": "news-hosted-2026-10-11/billing-continuity.json",
+        "sha256": "e4f8164fd62fcc0995208763fc52472682e69d24d384b323af193f294b803e87",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/native-currency-choice-browser.json",
+        "sha256": "7ef947ce6f430424f098465048ebc5f083daabc43db5f8ad2966a7d8c9ab405a",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      },
+      {
+        "file": "news-hosted-2026-10-11/fdt-mitigation-candidate.json",
+        "sha256": "0da85ee7aaab4a58bdbd07cbad84264e43baf50c60cdda695d723711a933dfd9",
+        "identity_build_id": "crp-v1-9799fd768cb7cdfa"
+      }
+    ],
+    "historical_receipt_identities_preserved": true,
+    "measurements_file": "news-hosted-2026-10-11/measurements.json",
+    "prepared_at": "2026-10-12T01:24:55.785Z",
+    "canonical_evidence_written": false
+  }
+}

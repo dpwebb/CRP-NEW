@@ -1,0 +1,73 @@
+{
+  "schema": "crp-paid-packet-comparison-continuity-v1",
+  "fixture_scope": "staging-news-release-20261011",
+  "identity": {
+    "build_id": "crp-v1-9799fd768cb7cdfa",
+    "served_build_id": "crp-v1-9799fd768cb7cdfa"
+  },
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "account_id": "acc_3669b6c456fe89700baaa9cb",
+  "case_id": "case_8ee8e7ec3c2e4aa7faed8a19",
+  "version": "1f17aa4458b66ec02ad7abd7bb8642c92b824086b23b598a548f7776b0e5ff73",
+  "receipt_kind": "Derived from existing actual phase2 and browser packet observations",
+  "new_host_action_performed": false,
+  "derived_at": "2026-10-12T01:24:45.265Z",
+  "actual_measurement_at": "2026-10-12T01:22:14.015Z",
+  "approved": true,
+  "approval_survived_comparison": true,
+  "approved_packet_unchanged_after_comparison": true,
+  "pdf_sha256": "c52d0e3473b24289c2c0aab2086aa41d37d82145e997f289da504e863722f17e",
+  "pdf_bytes": 322985,
+  "comparison_before_pdf_sha256": "c52d0e3473b24289c2c0aab2086aa41d37d82145e997f289da504e863722f17e",
+  "comparison_after_pdf_sha256": "c52d0e3473b24289c2c0aab2086aa41d37d82145e997f289da504e863722f17e",
+  "actual_browser_download": true,
+  "preview_download_print_byte_equal": true,
+  "visual_review": "PASS: root inspected every exact rendered page; readable letter, selected original report pages, identity copies and address copy; no clipped text or bureau forms",
+  "selected_source_pages": [
+    2,
+    3
+  ],
+  "documents": [
+    {
+      "filename": "fictional-passport.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 4,
+      "original_sha256": "164733b671378900d94ba1d2b8ce0f073efee47bab081c782731932c39feb8ee",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-licence.pdf",
+      "document_type": "IDENTITY",
+      "packet_page": 5,
+      "original_sha256": "e65d686b4e188f83c9627495def0a038c2163e46b507a752c47af07e528d94f2",
+      "exact_streams": true,
+      "exact_rendering": true
+    },
+    {
+      "filename": "fictional-address.pdf",
+      "document_type": "ADDRESS",
+      "packet_page": 6,
+      "original_sha256": "5907c36aa0908a56b3609ea30c9c508e9f819925bfdc578b925ab46f1b053ffa",
+      "exact_streams": true,
+      "exact_rendering": true
+    }
+  ],
+  "source_phase2_receipt_sha256": "98d6e82aed15039cbdf43702d69bb477cbade155573d4a45e99c184ac37ec142",
+  "evidence_refs": [
+    {
+      "file": "news-hosted-2026-10-11/phase2-receipt.json",
+      "sha256": "98d6e82aed15039cbdf43702d69bb477cbade155573d4a45e99c184ac37ec142"
+    },
+    {
+      "file": "news-hosted-2026-10-11/review-receipt.json",
+      "sha256": "12acec2139131b565ae9334fd403f86eaac8378cee483808951422349947e1a7"
+    },
+    {
+      "file": "news-hosted-2026-10-11/download-receipt.json",
+      "sha256": "566238e04f957812bbb25e323223c520b5a159ebdde367e264c16647731f50e3"
+    }
+  ],
+  "release_continuity_claimed": false,
+  "passed": true
+}

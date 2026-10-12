@@ -1,0 +1,301 @@
+diff --git a/CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md b/CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md
+index b08ce38..5725fe8 100644
+--- a/CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md
++++ b/CRP_VERSION_1_SEVEN_DAY_WORK_REGISTER_001.md
+@@ -1203,3 +1203,21 @@ The owner corrected the unactivated Adaptive Pricing proposal to fixed CAD/USD/A
+ Implementation COMPLETE: source `b910f9f714e37e2235f6ef888385052f67fd67ba`, pushed; fresh full regression **14,897/0/0**, 153 sections/297 source hashes. Exact-build staging VERIFIED: twelve genuine Stripe Sandbox purchases, applied signed webhooks, original assessment preserved, correct one-time/subscriber boundaries, four currency choices, form-free packet approval/download, history/comparison and same-subscription credit/cancellation. Production ACCEPTED: `crp-v1-378b2463903ad652`, 144 exact shipped files, **30 gates/123 criteria**, zero blockers, guarded activation and data/session preservation passed. All fictional test accounts/subscriptions cleaned up; no live card charge.
+ 
+ This closes the current native-currency batch and supersedes its earlier pending CAD-base/Adaptive Pricing entry without changing historical proof. Reporting-period fixes, form-free packets, seven steps, Your Story screens, 21 checklist items and all 82 jurisdictions remain in the accepted runtime. Unrelated 205 files retain their original hashes. Details: `CRP_NATIVE_CURRENCY_PRODUCTION_2026_10_11.md`; evidence: `SOURCE_CAPTURES/NATIVE-CURRENCY-RELEASE-2026-10-11/`.
++
++
++### October 11 owner landing-footer credit reporting banner — locally verified
++
++Owner request: a scrolling multi-line landing-footer area for recent court decisions and reliable reporting about inaccurate bureau information and consumer harm, selected by visitor IP for US, UK, CA and AU, with a mixed-country fallback. Baseline remains branch `main`, HEAD `31b2f4cffa69cc9641c2234ad5473440ecaffea1`; the existing policy candidate, branding and legal drafts were preserved. The news batch is isolated in the review diff from the changes already present.
++
++Implementation COMPLETE locally: seven curated, dated, source-linked items across all four countries; current court/enforcement entries are US records, alongside media reporting for CA, UK and AU. The server filters future publications and entries older than five calendar years, uses the existing trusted visitor-IP lookup, and returns interleaved country items when location is unknown or outside the four supported countries. Checkout currency and query parameters cannot select news jurisdiction. The landing footer includes automatic vertical scrolling when needed, pause, manual/keyboard navigation, hover/focus pause, reduced-motion support, and accessible loading/empty/error states. Short lists fit their content. The TransUnion settlement entry uses the actual October 18, 2023 court filing date, $11 million consumer relief plus $4 million penalty, and the complaint-supported eviction-record harm scope. Media estimates, allegations, decisions and settlements retain their respective attribution.
++
++Changed source: `accelerated-launch/service/app.cjs`, `ui/landing.html`, `ui/credit-news.js`, `ui/credit-news.css`, `credit-news.cjs`, `tests/run-tests.cjs`, `tests/sections/fi-credit-news.cjs`; generated `deploy/release-manifest.json` now binds 161 shipped files. Paths beginning `ui/`, `tests/`, or `deploy/` here are relative to `accelerated-launch/service/`.
++
++Final combined-source full regression: **15,129 passed / 0 failed / 0 skipped**, 155 sections, 316 source hashes, **zero source drift**. The new news section passed 65 assertions. Real-browser verification passed 20 country/viewport layouts (CA, US, GB, AU, mixed; 320/390/768/1440 px), automatic scrolling, pause, keyboard navigation, reduced motion, empty/error states and 44px control styling. Production-style public-entry routing and checkout-return preservation were verified on an isolated loopback fixture. These are local results, not hosted acceptance or provider purchases.
++
++Evidence: `accelerated-launch/service/out/news-banner/review.json`, `full-regression.json`, `browser-final.log`, `public-entry.json`, `news-only.diff`, `preexisting.patch`, and `preview-urls.json`. Desktop/mobile screenshots for all four countries and fallback are in `output/playwright/news-COUNTRY-WIDTH.png`. Manifest digest: `FE52087EE183C43F0FE22A2DFC394237E5F2B66B86BBE7CC03553B7259C67608`.
++
++Staging: NOT activated or verified for this candidate. Production: UNCHANGED; this batch is not deployed or committed. The initial source list is curated, with automatic expiry; new reporting requires editorial research and addition. Existing policy publication prerequisites, including real verified addresses, retain their separate status. Historical production receipts retain their original scope.
++
++
++Deployment isolation: the banner release retains the accepted live policy navigation. The unverified jurisdiction-policy draft remains in the coordinator checkout. This isolated source has its own subsequent regression and hosted acceptance receipts.
+diff --git a/accelerated-launch/service/app.cjs b/accelerated-launch/service/app.cjs
+index 81a3bf2..8f5097c 100644
+--- a/accelerated-launch/service/app.cjs
++++ b/accelerated-launch/service/app.cjs
+@@ -82,7 +82,7 @@ const STATIC_TYPES = Object.freeze({
+   '.ttf': 'font/ttf',
+   '.txt': 'text/plain; charset=utf-8'
+ });
+-const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
++const STATIC_ALLOWLIST = Object.freeze(['/', '/index.html', '/app.js', '/style.css', '/favicon.svg', '/credit-news.js', '/credit-news.css', '/landing.html', '/landing.css', '/story.css', '/Roboto-Bold.ttf', '/OpenSans-Regular.ttf', '/OpenSans-Bold.ttf', '/story-font-license.txt']);
+ const STAGING_SCORE_SIMULATOR_ASSETS = Object.freeze(['/score-simulator.html', '/score-simulator.css', '/score-simulator.js']);
+ const STAGING_MAILING_ASSETS = Object.freeze(['/mailing-preview.html', '/mailing-preview.css', '/mailing-preview.js']);
+ const STAGING_REFERRAL_ASSETS = Object.freeze(['/referrals.html', '/referrals.css', '/referrals.js']);
+@@ -166,6 +166,7 @@ const ROUTES = Object.freeze([
+   ['GET', '/api/health', false, 'health'],
+   ['GET', '/api/formats', false, 'supportedFormats'],
+   ['GET', '/api/pricing', false, 'publicPricing'],
++  ['GET', '/api/credit-news', false, 'publicCreditNews'],
+   /* B4. `auth: false` on the two public reads and on the PROVIDER callback: the provider has no session, and
+      the event it sends is trusted only after its signature verifies. The billing routes are authenticated but
+      deliberately NOT entitlement-gated — they are how an account becomes entitled. */
+@@ -788,7 +789,8 @@ function createService(options) {
+     {},
+     buildHandlers(store, logger, surface, pricingCurrency),
+     buildCaseHandlers(store, logger, surface, pricingCurrency),
+-    buildBillingHandlers(store, logger, pricingCurrency)
++    buildBillingHandlers(store, logger, pricingCurrency),
++    {publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
+   );
+ 
+   /**
+diff --git a/accelerated-launch/service/credit-news.cjs b/accelerated-launch/service/credit-news.cjs
+new file mode 100644
+index 0000000..6a7a943
+--- /dev/null
++++ b/accelerated-launch/service/credit-news.cjs
+@@ -0,0 +1,25 @@
++'use strict';
++// Curated reporting, not assessment rules. Dates refer to the linked publication/decision.
++const ITEMS = Object.freeze([
++  {id:'au-savings-2024',country:'AU',date:'2024-09-11',type:'Media report',source:'Savings.com.au',title:'Disputed bureau entries can delay home borrowing',summary:'Savings.com.au examined an illion report with an account that should have expired, and a consumer’s repeated correction disputes. Its refinancing examples illustrate possible financial costs of delays, rather than damages awarded to that consumer.',url:'https://www.savings.com.au/news/credit-reporting-errors-preventing-home-ownership-dreams'},
++  {id:'ca-cbc-2026',country:'CA',date:'2026-02-24',type:'Media report',source:'CBC Go Public, republished by Atin Ito',title:'Consumers describe long fights to correct bureau records',summary:'Reporting describes disputed debts returning to Equifax and TransUnion files. One consumer estimated an $11,000 mortgage-rate loss after an 11-month correction delay; this is his estimate, not a court award.',url:'https://www.atinitonews.com/2026/02/edmonton-woman-frustrated-by-18-month-battle-with-equifax-and-transunion-to-fix-credit-rating/'},
++  {id:'gb-guardian-2022',country:'GB',date:'2022-04-27',type:'Media report',source:'The Guardian',title:'Mixed records affected borrowing',summary:'Reporting linked TransUnion and Equifax file confusion to a sharp credit-limit reduction.',url:'https://www.theguardian.com/money/2022/apr/27/a-mysterious-stranger-has-trashed-my-credit-rating'},
++  {id:'au-7news-2024',country:'AU',date:'2024-06-02',type:'Media report',source:'7NEWS',title:'A small card balance put a home-loan application at risk',summary:'7NEWS reported missed-payment entries and distress following a bank oversight. NAB apologised and asked credit bureaus to restore the file. The report attributes the original error to the bank, not a court finding against a bureau.',url:'https://7news.com.au/news/sam-was-told-he-could-be-denied-a-home-loan-because-he-owed-2-on-his-citibank-credit-card-c-14823501'},
++  {id:'us-equifax-2025',country:'US',date:'2025-01-17',type:'Regulatory action',source:'Consumer Financial Protection Bureau',title:'Equifax ordered to pay $15 million over dispute investigations',summary:'The CFPB found failures including ignored evidence and errors returning to files. Its order describes possible higher borrowing costs and denial of credit, housing or employment. The penalty is not an individual consumer damages award.',url:'https://www.consumerfinance.gov/enforcement/actions/equifax-inc-and-equifax-information-services-llc/'},
++  {id:'us-sessa-2023',country:'US',date:'2023-07-17',type:'Court decision',source:'US Court of Appeals, Second Circuit',title:'Sessa: a lease option appeared as a debt',summary:'The court described a $19,444 balloon payment on a TransUnion report that the lease did not require. It overturned dismissal and returned the case for further proceedings; this decision did not award damages or decide final liability.',url:'https://www.govinfo.gov/content/pkg/USCOURTS-ca2-22-00087/pdf/USCOURTS-ca2-22-00087-0.pdf'},
++  {id:'us-transunion-2023',country:'US',date:'2023-10-18',type:'Court settlement order',source:'Federal Trade Commission · US District Court, Colorado',title:'TransUnion tenant-screening accuracy settlement',summary:'The settlement required $11 million for consumer relief and a $4 million penalty. Regulators alleged misleading eviction records caused housing denials and additional costs. The companies neither admitted nor denied the allegations.',url:'https://www.ftc.gov/legal-library/browse/cases-proceedings/182-3204-transunion-rental-screening-solutions-inc-trans-union-llc-ftc-cfpb-v'}
++].map(Object.freeze));
++const COUNTRIES={CA:'Canada',US:'United States',GB:'United Kingdom',AU:'Australia'};
++function select(country, now = new Date()) {
++  const end=new Date(now); if(!Number.isFinite(end.getTime()))throw Error('Invalid news date');
++  const cutoff=new Date(end);cutoff.setUTCFullYear(cutoff.getUTCFullYear()-5);
++  const day=end.toISOString().slice(0,10), first=cutoff.toISOString().slice(0,10);
++  const eligible=ITEMS.filter(item=>item.date>=first&&item.date<=day);
++  const resolved=Object.hasOwn(COUNTRIES,country)?country:null;
++  const rows=eligible.filter(item=>!resolved||item.country===resolved).sort((a,b)=>b.date.localeCompare(a.date));
++  // Interleave countries for the mixed fallback instead of showing a US block.
++  const buckets=Object.keys(COUNTRIES).map(key=>rows.filter(item=>item.country===key)), mixed=[];
++  while(buckets.some(bucket=>bucket.length))for(const bucket of buckets)if(bucket.length)mixed.push(bucket.shift());
++  return {ok:true,country:resolved,scope:resolved?COUNTRIES[resolved]:'All four countries',as_of:day,items:resolved?rows:mixed};
++}
++module.exports={ITEMS,COUNTRIES,select};
+diff --git a/accelerated-launch/service/deploy/release-manifest.json b/accelerated-launch/service/deploy/release-manifest.json
+index 8359da8..27a652d 100644
+--- a/accelerated-launch/service/deploy/release-manifest.json
++++ b/accelerated-launch/service/deploy/release-manifest.json
+@@ -1,6 +1,6 @@
+ {
+   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
+-  "generated_at": "2026-10-11T22:47:07.934Z",
++  "generated_at": "2026-10-12T00:36:26.012Z",
+   "read_only": true,
+   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
+   "groups": [
+@@ -61,8 +61,8 @@
+     },
+     {
+       "id": "RUNTIME",
+-      "file_count": 85,
+-      "digest": "7CE9E7C0CC9ECCA4D8F67D3DC4F9017E69FCF3F05292F06D178F5D5512AADEE7",
++      "file_count": 86,
++      "digest": "7FEA41D6A244563CF48F14DB1A59D5017A5C887343D2B4353F49A352150F60C5",
+       "files": [
+         {
+           "file": "accelerated-launch/service/account-display.cjs",
+@@ -90,7 +90,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/app.cjs",
+-          "sha256": "95FF21861940CFA6A452919FFCC36BB73CFEE054848883021306BD1450B1837A"
++          "sha256": "B47091B27AAD2AC0917C0EBD2D9EA1D4E11335700FE848CEDDFB1CABA8A2CA90"
+         },
+         {
+           "file": "accelerated-launch/service/applicability.cjs",
+@@ -176,6 +176,10 @@
+           "file": "accelerated-launch/service/coverage-matrix.cjs",
+           "sha256": "4A49A30751D8AAEF291CA0FFC5BE133D597EDF9ED0A5BCFCB904F3E70BE94B77"
+         },
++        {
++          "file": "accelerated-launch/service/credit-news.cjs",
++          "sha256": "49C619356683852DB37C9A4CC2BD981D340EAD4DC3912D7D3B2866C366E9929C"
++        },
+         {
+           "file": "accelerated-launch/service/demo.cjs",
+           "sha256": "4DF8523D56517C331360E1B45CE79BD7750D3A7CB7F2C8AFF4C2602D6E3F126D"
+@@ -537,8 +541,8 @@
+     },
+     {
+       "id": "SERVED_ASSETS",
+-      "file_count": 20,
+-      "digest": "9701D5F2A67EAA9341D8DEC70657D8DF529AA14213C2D070CECD4C5BAD09C3F6",
++      "file_count": 22,
++      "digest": "6634F9DA5648D9F0FE422BD7230274F34A21CF130B5F8DB8AEF92FAECCC82F55",
+       "files": [
+         {
+           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
+@@ -556,6 +560,14 @@
+           "file": "accelerated-launch/service/ui/app.js",
+           "sha256": "7D82A24C612AB3CC5A78148B18DC56AE423FAFF1F2C0C4688964FFE1F5B9EF86"
+         },
++        {
++          "file": "accelerated-launch/service/ui/credit-news.css",
++          "sha256": "1278630FDC79E592EC613F66278DFBACAFE2DA46D3171045C25B1A365412231E"
++        },
++        {
++          "file": "accelerated-launch/service/ui/credit-news.js",
++          "sha256": "0F9034F4F0A16947763019B0B4A9B78F6165BC202733A9B4127EA8DBB13BA9BE"
++        },
+         {
+           "file": "accelerated-launch/service/ui/favicon.svg",
+           "sha256": "E43D24442CA5D9B2094B291F8ECCD349D23AE77F4CFF0F2746909D63AE772A05"
+@@ -570,7 +582,7 @@
+         },
+         {
+           "file": "accelerated-launch/service/ui/landing.html",
+-          "sha256": "E0DBD840130BE84758390084A9DDB94F3474D939AC9C37B2139972F8B0ECE304"
++          "sha256": "8E992CC99A82A5507A9192CB68BC7B33B0E8C521F4D37AB9A2390C59EBC96668"
+         },
+         {
+           "file": "accelerated-launch/service/ui/mailing-preview.css",
+@@ -623,6 +635,6 @@
+       ]
+     }
+   ],
+-  "manifest_digest": "378B2463903AD6521601917C1644426CE461C26C79262EB1D5C240776B386E7B",
+-  "total_file_count": 144
++  "manifest_digest": "9799FD768CB7CDFA15CB128D8D61895D800FFC9E3B4E89F6037F08BB482FC9A3",
++  "total_file_count": 147
+ }
+diff --git a/accelerated-launch/service/tests/run-tests.cjs b/accelerated-launch/service/tests/run-tests.cjs
+index 3920c61..2a72ec9 100644
+--- a/accelerated-launch/service/tests/run-tests.cjs
++++ b/accelerated-launch/service/tests/run-tests.cjs
+@@ -20,6 +20,7 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
+ 
+ const OUT_DIR = path.join(__dirname, '..', 'out');
+ const SECTION_FILES = [
++  'fi-credit-news.cjs',
+   'fg-native-currency-pricing.cjs',
+   'ez-reporting-period-directive.cjs',
+   'ev-native-account-summary.cjs',
+diff --git a/accelerated-launch/service/tests/sections/fi-credit-news.cjs b/accelerated-launch/service/tests/sections/fi-credit-news.cjs
+new file mode 100644
+index 0000000..850bce7
+--- /dev/null
++++ b/accelerated-launch/service/tests/sections/fi-credit-news.cjs
+@@ -0,0 +1,30 @@
++'use strict';
++const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),http=require('node:http');
++const news=require('../../credit-news.cjs'),{createService}=require('../../app.cjs');
++async function run(t,check){
++ const now=new Date('2026-10-11T12:00:00Z');
++ for(const country of Object.keys(news.COUNTRIES)){
++  const result=news.select(country,now);check.ok(result.items.length>0,country+' has researched reporting');
++  check.ok(result.items.every(item=>item.country===country),country+' never receives another country');
++ }
++ for(const country of [null,undefined,'ZZ','DE','UK','usd'])check.equal(news.select(country,now).items.length,news.ITEMS.length,'unknown/unsupported location uses all four: '+country);
++ check.equal(new Set(news.ITEMS.map(item=>item.id)).size,news.ITEMS.length,'unique story identifiers');
++ for(const item of news.ITEMS){check.ok(new URL(item.url).protocol==='https:','HTTPS source '+item.id);check.ok(item.date>='2021-10-11'&&item.date<='2026-10-11','eligible verified date '+item.id);}
++ check.ok(news.select(null,new Date('2022-04-26T12:00:00Z')).items.length===0,'future publications excluded');
++ check.ok(news.select('GB',new Date('2027-04-27T23:00:00Z')).items.length===1,'five-year boundary included through anniversary day');
++ check.equal(news.select('GB',new Date('2027-04-28T00:00:00Z')).items.length,0,'past five-year boundary removed automatically');
++ check.equal(news.select(null,new Date('2032-01-01')).items.length,0,'expired inventory never displayed');
++ for(const country of ['CA','US','GB','AU',null,'DE','THROW']){
++  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'crp-news-test-'));const service=createService({dataDir:directory,geoLocate:async()=>{if(country==='THROW')throw Error('provider unavailable');return country;},logSink:()=>{}});
++  const server=http.createServer((req,res)=>service.handle(req,res));await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
++  try{const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/credit-news?currency=usd&country=US');const data=await response.json();
++   check.equal(response.status,200,'public news available '+country);check.equal(data.country,news.COUNTRIES[country]?country:null,'IP country controls content; query/currency cannot override '+country);
++   check.ok(data.items.every(item=>!data.country||item.country===data.country),'HTTP content scoped '+country);check.ok(!JSON.stringify(data).includes('127.0.0.1'),'response contains no visitor IP '+country);
++  }finally{await new Promise(resolve=>server.close(resolve));fs.rmSync(directory,{recursive:true,force:true});}
++ }
++ for(const file of ['/credit-news.js','/credit-news.css'])check.equal((await t.request('GET',file)).status,200,'new public asset served '+file);
++ const landing=await t.request('GET','/landing.html');check.ok(landing.text.includes('data-news-pause')&&landing.text.includes('data-news-window'),'landing has scroll and pause controls');
++ check.ok(!(await t.request('GET','/index.html')).text.includes('id="credit-news"'),'authenticated/auth workspace excludes news');
++ return{countries:4,unknown_location:'MIXED',rolling_five_years:true,source_items:news.ITEMS.length};
++}
++module.exports={id:'fi-credit-news',title:'Country-selected, dated credit reporting news and public endpoint',run};
+diff --git a/accelerated-launch/service/ui/credit-news.css b/accelerated-launch/service/ui/credit-news.css
+new file mode 100644
+index 0000000..a1b829c
+--- /dev/null
++++ b/accelerated-launch/service/ui/credit-news.css
+@@ -0,0 +1,4 @@
++.credit-news{width:100%;margin:0 0 28px;padding:24px;border:1px solid #D6DFD2;border-radius:18px;background:#EAF0DD;color:#17362F;box-sizing:border-box}
++.credit-news-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.credit-news h2{font-size:24px;margin:0 0 8px}.credit-news-scope{color:#52675B;margin:0 0 16px;font-size:14px}.credit-news-controls{display:flex;gap:8px;flex-wrap:wrap}.credit-news button{min-height:44px;padding:8px 15px;border:1px solid #17362F;border-radius:8px;background:#FAFAF3;color:#17362F;font:inherit;cursor:pointer}.credit-news button:focus-visible,.credit-news a:focus-visible,.credit-news-window:focus-visible{outline:3px solid #17362F;outline-offset:3px}.credit-news-window{max-height:290px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.credit-news-list{list-style:none;padding:0;margin:0}.credit-news-item{padding:18px 4px;border-top:1px solid #D6DFD2;overflow-wrap:anywhere}.credit-news-item h3{margin:8px 0;font-size:19px;line-height:1.4}.credit-news-item p{font-size:16px;line-height:1.65;margin:8px 0}.credit-news-item a{color:#17362F;text-decoration:underline;text-underline-offset:3px}.credit-news-meta{font-size:13px!important;color:#52675B}.credit-news-note{font-size:13px;line-height:1.6;color:#52675B;margin-bottom:0}.story-footer>.credit-news{flex-basis:100%;grid-column:1/-1}
++.credit-news-controls[hidden],.credit-news-window[hidden]{display:none}
++@media(max-width:600px){.credit-news{padding:18px}.credit-news-window{max-height:330px}.credit-news h2{font-size:22px}}
+diff --git a/accelerated-launch/service/ui/credit-news.js b/accelerated-launch/service/ui/credit-news.js
+new file mode 100644
+index 0000000..2124db0
+--- /dev/null
++++ b/accelerated-launch/service/ui/credit-news.js
+@@ -0,0 +1,33 @@
++'use strict';
++(async()=>{
++  const root=document.getElementById('credit-news');if(!root)return;
++  const status=root.querySelector('[data-news-scope]'), viewport=root.querySelector('[data-news-window]'),list=root.querySelector('ul'),pause=root.querySelector('[data-news-pause]');
++  const motion=matchMedia('(prefers-reduced-motion: reduce)');let paused=motion.matches, timer=null, hovering=false;
++  function scrollable(){return viewport.scrollHeight>viewport.clientHeight+1;}
++  function label(){if(list.children.length)root.querySelector('.credit-news-controls').hidden=!scrollable();pause.disabled=motion.matches;pause.textContent=motion.matches?'Automatic scrolling off':paused?'Resume scrolling':'Pause scrolling';pause.setAttribute('aria-pressed',String(paused));}
++  function stop(){clearInterval(timer);timer=null;}
++  function start(){stop();if(paused||motion.matches||hovering||root.contains(document.activeElement)||document.hidden||!scrollable())return;
++    timer=setInterval(()=>{if(viewport.scrollHeight<=viewport.clientHeight)return;const end=viewport.scrollHeight-viewport.clientHeight;
++      viewport.scrollTop=viewport.scrollTop>=end-1?0:viewport.scrollTop+1;
++    },80);
++  }
++  pause.addEventListener('click',()=>{paused=!paused;label();start();});
++  root.addEventListener('mouseenter',()=>{hovering=true;stop();});root.addEventListener('mouseleave',()=>{hovering=false;start();});
++  root.addEventListener('focusin',stop);root.addEventListener('focusout',()=>setTimeout(start,0));
++  viewport.addEventListener('wheel',()=>{paused=true;label();stop();},{passive:true});viewport.addEventListener('touchstart',()=>{paused=true;label();stop();},{passive:true});
++  motion.addEventListener('change',()=>{paused=motion.matches;label();start();});document.addEventListener('visibilitychange',start);
++  window.addEventListener('resize',()=>{label();start();});
++  for(const button of root.querySelectorAll('[data-news-direction]'))button.addEventListener('click',()=>{paused=true;label();stop();viewport.scrollBy({top:Number(button.dataset.newsDirection)*viewport.clientHeight,behavior:'auto'});});
++  label();
++  try{
++    const response=await fetch('/api/credit-news',{credentials:'omit',cache:'no-store'});if(!response.ok)throw Error('unavailable');const data=await response.json();
++    if(!data.ok||!Array.isArray(data.items))throw Error('unavailable');
++    status.textContent=data.scope+' · Publications and decisions from the past five years';
++    for(const item of data.items){const li=document.createElement('li'),meta=document.createElement('p'),heading=document.createElement('h3'),link=document.createElement('a'),summary=document.createElement('p');
++      const url=new URL(item.url);if(url.protocol!=='https:')continue;
++      li.className='credit-news-item';meta.className='credit-news-meta';meta.textContent=[item.country==='GB'?'UK':item.country,item.type,item.date,item.source].join(' · ');
++      link.href=url.href;link.textContent=item.title;link.target='_blank';link.rel='noopener noreferrer';link.setAttribute('aria-label',item.title+' — read source (opens in a new tab)');heading.append(link);summary.textContent=item.summary;li.append(meta,heading,summary);list.append(li);
++    }
++    if(!list.children.length){status.textContent='No recent items are available for this country.';root.querySelector('.credit-news-controls').hidden=true;viewport.hidden=true;return;}label();start();
++  }catch{status.textContent='Reports could not be loaded. Please try again later.';root.querySelector('.credit-news-controls').hidden=true;viewport.hidden=true;}
++})();
+diff --git a/accelerated-launch/service/ui/landing.html b/accelerated-launch/service/ui/landing.html
+index 0dc0a14..a15a603 100644
+--- a/accelerated-launch/service/ui/landing.html
++++ b/accelerated-launch/service/ui/landing.html
+@@ -7,6 +7,8 @@
+   <title>Credit Regulator Pro — Your credit report tells a story</title>
+   <link rel="icon" href="favicon.svg">
+   <link rel="stylesheet" href="story.css">
++  <link rel="stylesheet" href="credit-news.css">
++  <script src="credit-news.js" defer></script>
+ </head>
+ <body class="story-page">
+   <a class="story-skip" href="#main">Skip to content</a>
+@@ -35,6 +37,14 @@
+     <section class="story-how" id="how" aria-labelledby="how-title"><p class="story-eyebrow">How it works</p><h2 id="how-title">Start free. <span>Choose what comes next.</span></h2><ol class="story-journey"><li><span class="story-step-number" aria-hidden="true">01</span><h3>Create an account</h3><p>Start with your email and password.</p></li><li><span class="story-step-number" aria-hidden="true">02</span><h3>Upload your report</h3><p>Choose your location and credit bureau.</p></li><li><span class="story-step-number" aria-hidden="true">03</span><h3>See a free summary</h3><p>Review a summary and limited preview.</p></li><li><span class="story-step-number" aria-hidden="true">04</span><h3>Choose your access</h3><p>One-time assessment or a subscription.</p></li></ol></section>
+     <section class="story-options" id="plans" aria-labelledby="plans-title"><p class="story-eyebrow">Your options</p><h2 id="plans-title">A closer look today. A view over time.</h2><p>Review current plan details and prices in your guided workspace before you purchase.</p><div class="story-option-grid"><article class="story-option"><p class="story-eyebrow">One-time access</p><h3>Understand one report.</h3><p>Unlock the full assessment and report evidence for one report.</p><ul><li>Download your assessment.</li><li>One payment. No renewal.</li><li>Dispute packets require a subscription.</li></ul></article><article class="story-option subscription"><p class="story-eyebrow">Subscription</p><h3>Take your next step.</h3><p>Full assessments, dispute packets you approve, report history, and comparisons when you add later reports.</p><ul><li>Choose disputes. Review and approve your packet.</li><li>Download, print, sign and mail it.</li><li>Keep your report history and compare later reports.</li></ul></article></div></section>
+   </main>
+-  <footer class="story-footer story-container"><div><a class="story-brand" href="/" aria-label="Credit Regulator Pro home"><span class="story-mark" aria-hidden="true">C</span><span>Credit Regulator Pro</span></a><p>Clear facts. Informed decisions. Consumer control.</p></div><nav aria-label="Footer navigation"><a href="#how">How it works</a><a href="#plans">Your options</a><a href="index.html#signin">Log in</a></nav><p class="story-footer-disclaimer">Credit Regulator Pro provides credit-report information, not legal advice.</p></footer>
++  <footer class="story-footer story-container">
++    <section id="credit-news" class="credit-news" aria-labelledby="credit-news-title">
++      <div class="credit-news-heading"><h2 id="credit-news-title">When credit records get it wrong</h2><div class="credit-news-controls"><button type="button" data-news-direction="-1" aria-label="Scroll reports up">↑ Previous</button><button type="button" data-news-pause aria-pressed="false">Pause scrolling</button><button type="button" data-news-direction="1" aria-label="Scroll reports down">Next ↓</button></div></div>
++      <p class="credit-news-scope" data-news-scope role="status">Loading recent reports and decisions…</p>
++      <div class="credit-news-window" data-news-window tabindex="0" role="region" aria-label="Recent credit-report stories; scroll to read more"><ul class="credit-news-list"></ul></div>
++      <p class="credit-news-note">Each item links to its source. Reported experiences, allegations, settlements and court findings are identified separately.</p>
++      <noscript><p>Enable JavaScript to load reports selected for your country.</p></noscript>
++    </section>
++    <div><a class="story-brand" href="/" aria-label="Credit Regulator Pro home"><span class="story-mark" aria-hidden="true">C</span><span>Credit Regulator Pro</span></a><p>Clear facts. Informed decisions. Consumer control.</p></div><nav aria-label="Footer navigation"><a href="#how">How it works</a><a href="#plans">Your options</a><a href="index.html#signin">Log in</a></nav><p class="story-footer-disclaimer">Credit Regulator Pro provides credit-report information, not legal advice.</p></footer>
+ </body>
+ </html>

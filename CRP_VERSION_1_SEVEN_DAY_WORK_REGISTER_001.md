@@ -1241,3 +1241,19 @@ Staging: NOT activated or verified for this candidate. Production: UNCHANGED; th
 
 
 Deployment isolation: the banner release retains the accepted live policy navigation. The unverified jurisdiction-policy draft remains in the coordinator checkout. This isolated source has its own subsequent regression and hosted acceptance receipts.
+
+
+### October 11 credit reporting news footer — accepted live production
+
+Source 6e8c85e29a815f6c0819056e8e9bc307b80900f5 was committed/pushed and deployed through guarded staging to production as crp-v1-9799fd768cb7cdfa (147 files). Fresh full regression 14,966/0/0, 154 sections, 301 hashes, no source drift; exact-build 30-gate/123-criterion staging acceptance and current production acceptance passed. New local 20-layout browser proof, current hosted regional/mixed footer, genuine Sandbox monthly activation/annual upgrade/cancellation, form-free six-page review/approval/download and comparison continuity passed. Original twelve currency/plan purchases remain historical with a separate 142-file hash-bound continuity record; actual current live twelve-price/webhook configuration was verified. Existing consumer collections and active sessions preserved. Pending address-dependent policy/design dirt remains outside this release. See CRP_CREDIT_NEWS_PRODUCTION_2026_10_11.md and SOURCE_CAPTURES/NEWS-RELEASE-2026-10-11/.
+
+
+### October 11 mobile hamburger navigation — locally implemented
+
+Owner-directed workspace hamburger at mobile/tablet widths through 1000px; native opening/dismissal, keyboard/focus, all seven steps and four tools, and desktop sidebar/resize verified. Local focused checks 612/0/0 across seven affected sections; browser widths 320/390/768/1000/1440 passed without overflow. Landing hamburger already present and verified. Existing mobile account test updated to open the menu first. Implementation verified; staging and production verification pending, no deployment. See CRP_MOBILE_HAMBURGER_LOCAL_REVIEW_2026_10_11.md. Unrelated policy/design dirt preserved.
+
+October 12 owner follow-up: merge-commit-push authorized for the verified hamburger batch. Integrate the bounded candidate into origin/main; retain 612/0/0 focused evidence, unchanged private draft tree and pending hosted/deployment statuses.
+
+### October 12 mobile hamburger — staging verified
+
+Final committed/pushed source c5c5a58b3b1eaeaff19bd8007f9162515d9f8edc is staged as crp-v1-d9a2bfd3f5d73564. First source bf44398 passed fresh full regression 14,967/0/0; hosted visual review identified tablet header width crowding. Final one-line CSS correction passed fresh affected regression 2,511/0/0 with separately recorded full-proof continuity. Guarded staging activation, exact-byte smoke and six hosted viewport checks passed, including keyboard/dismissal, all seven steps/four tools, Upload/Plans and landing hamburger. Fictional accounts cleaned up. Production remains crp-v1-9799fd768cb7cdfa; this is staging verification only. Other active tasks and unpublished policy/address work preserved. See CRP_MOBILE_HAMBURGER_STAGING_2026_10_12.md.

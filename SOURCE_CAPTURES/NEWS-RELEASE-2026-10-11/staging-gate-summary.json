@@ -1,0 +1,350 @@
+{
+  "build_id": "crp-v1-9799fd768cb7cdfa",
+  "passed": true,
+  "gates": 30,
+  "criteria": 123,
+  "measurement_receipt_sha256": "775a91978be32e950de7f7ff531cd6af08c7d5eb50068b1f6da33ad2a38f7085",
+  "predicates": [
+    {
+      "id": "final_full_freeze",
+      "passed": true,
+      "refs": [
+        "current-regression-evidence.json"
+      ]
+    },
+    {
+      "id": "immutable_served_source",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json",
+        "news-hosted-2026-10-11/phase2-receipt.json",
+        "news-hosted-2026-10-11/input-manifest.json"
+      ]
+    },
+    {
+      "id": "actual_phase1",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_paid_activation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/provider-paid.json",
+        "news-hosted-2026-10-11/checkout-receipt.json",
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_phase2",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_cleanup",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/provider-cleanup.json",
+        "news-hosted-2026-10-11/cleanup-receipt.json"
+      ]
+    },
+    {
+      "id": "native_order",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "image_order",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "exact_duplicates",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "continuation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "written_dates",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "numeric_dates",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "month_precision",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "reference_dates",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "useful_recovery",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "bounded_unsuccessful",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "upload_limits",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "stable_support",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "support_isolation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "account_isolation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "privacy_inventory",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "current_plan_quotes",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "owned_history",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "chronological_linkage",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "changed_issue",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "history_isolation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_comparison_continuity",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_result",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "paid_plan_quotes",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "own_ocr_locations",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "checklist_source_breach",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "actual_probable_breach",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "no_irrelevant_context_questions",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "consumer_violation_labels",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "serious_clear_unpaid_example",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "plain_consumer_explanations",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "internal_reading_limit_retained",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/phase1-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_current_owner_version",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/review-receipt.json",
+        "news-hosted-2026-10-11/download-receipt.json",
+        "news-hosted-2026-10-11/continuity-receipt.json",
+        "news-hosted-2026-10-11/phase2-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_editable_visual_review",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_exact_source_sequence",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_inline_identity_address",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_forms_retired",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/review-receipt.json"
+      ]
+    },
+    {
+      "id": "packet_browser_download_print",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "current_approval_navigation",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/browser-stage-navigation.json",
+        "news-hosted-2026-10-11/download-receipt.json"
+      ]
+    },
+    {
+      "id": "genuine_unused_payment_upgrade",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/upgrade-proof.json",
+        "news-hosted-2026-10-11/cancellation-proof.json"
+      ]
+    },
+    {
+      "id": "reporting_period_directive",
+      "passed": true,
+      "refs": [
+        "news-hosted-2026-10-11/hosted-published-packet-probe.json",
+        "current-regression-evidence.json"
+      ]
+    }
+  ],
+  "additional_billing_verification": {
+    "native_currency_three_plan_checkout": true,
+    "original_native_payments_build_id": "crp-v1-378b2463903ad652",
+    "billing_continuity_sha256": "e4f8164fd62fcc0995208763fc52472682e69d24d384b323af193f294b803e87",
+    "fresh_provider_cleanup_sha256": "8eb04b9bf1deb2ca2fb17c0df134fd948175a3a5a487f783d1b44a8bbb2724cf",
+    "fresh_native_twelve_purchase_claimed": false
+  },
+  "recorded_at": "2026-10-12T01:24:58.817Z"
+}
