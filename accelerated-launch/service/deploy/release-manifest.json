@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-12T03:00:28.831Z",
+  "generated_at": "2026-10-12T03:32:54.492Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 88,
-      "digest": "9D5C542AA9B37EE04C102DF940542E6AB7728E5EB89CD6437F88638CC4F562E9",
+      "digest": "5E7920A0CB8B33E6172A31DBFBB153453EB678E0A9BA19473BDF7FAEC5BCF285",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -226,7 +226,7 @@
         },
         {
           "file": "accelerated-launch/service/finding-coverage.cjs",
-          "sha256": "801C5C6F079148B9A1AF30346CAD00A03F99A46FFB4DE1FCAE1EFE4E35A68693"
+          "sha256": "B931CF2B1438ADD1F34EBE159CCC8203D01D9196EF0BADAE570C2C3892C712D2"
         },
         {
           "file": "accelerated-launch/service/format-families/au-equifax-consumer.cjs",
@@ -258,7 +258,7 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "4D48D27AC6A947D094D38E044144E8442D53B2A51F2304ADAAF5EE0EF60BFCFF"
+          "sha256": "61E8DCC7E127685AB6FCDEF1D44D965E57BB1C0E37705F72EDCC1DE8DE60731D"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -266,7 +266,7 @@
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "EF2C9A0914CE0C7315BB4D5F278F6C6819C5D4AFF4B68E80F929EE9E9471B10B"
+          "sha256": "17C565EBF1EA781E20CBDE07E60CF24FC717B1D320F960D079C399F19D0FE1F9"
         },
         {
           "file": "accelerated-launch/service/legacy-password.cjs",
@@ -643,6 +643,6 @@
       ]
     }
   ],
-  "manifest_digest": "C76E21C1F7FD5F8BEF0F3B3EF72D7E1F48898A13E608EC254A70D337353F2E0B",
+  "manifest_digest": "DD72A4BF68DC9D466679D5C75D393BE31C129C76B3F5D1D801E097A31DCE6CF0",
   "total_file_count": 149
 }

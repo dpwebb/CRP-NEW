@@ -84,7 +84,7 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ...['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW',
     'CLOSURE-DATE-DISCLOSURE-REVIEW', 'UNDATED-HISTORY-DISCLOSURE-REVIEW',
     'IDENTIFIER-HANDLING-REVIEW', 'CREDIT-DATA-CATEGORY-REVIEW'].map(suffix =>
-      [suffix, ['fj-report-concern-reader', 'fk-report-concern-rules'],
+      [suffix, ['fj-report-concern-reader', 'fk-report-concern-rules', 'fm-owned-report-reassessment'],
         ['fl-report-concern-delivery'], 'FICTIONAL_NATIVE_TABLE_UPLOAD_AND_SCOPED_CONCERN_PACKET'])
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
   .concat([['COMMON-ERROR-REPORTING-PERIOD-EXCEEDED', {

@@ -105,7 +105,7 @@ async function run(t, check) {
       'sourced geographic contradiction stays a bounded breach instead of an unclassified review');
     check.ok(newChecks.slice(1).every(id => accepted.check_mapping.find(row => row.check_id === id).scope === 'FACTUAL_REVIEW'),
       'the five contextual concerns retain non-violation coverage scope');
-    for (const missing of ['fj-report-concern-reader', 'fk-report-concern-rules', 'fl-report-concern-delivery']) {
+    for (const missing of ['fj-report-concern-reader', 'fk-report-concern-rules', 'fl-report-concern-delivery', 'fm-owned-report-reassessment']) {
       const execution = clone(baseline); section(execution, missing).completed = false;
       const rejected = build(execution);
       check.ok(newChecks.every(id => rejected.check_mapping.find(row => row.check_id === id).status === 'OPEN'),
