@@ -41,7 +41,7 @@ function client() {
 async function run(t, check) {
   const owner = await t.unpaidAccount('concern-delivery-owner@example.test');
   const other = await t.unpaidAccount('concern-delivery-other@example.test');
-  const nativeBytes = buildFixture();
+  const nativeBytes = buildFixture({ historyToken: 'Z9' });
   const caseId = (await t.request('POST', '/api/cases', { token: owner.token,
     body: { country: 'AU', region: 'AU-ACT', bureau: 'EQUIFAX' } })).json.case.case_id;
   const endpoint = '/api/cases/' + caseId;
@@ -164,7 +164,7 @@ async function run(t, check) {
     const id = (await t.request('POST', '/api/cases', { token: owner.token, body: { country, region } })).json.case.case_id;
     const address = country === 'CA' ? '19 Sample Lane, Toronto, NS M5H 2N2, Canada'
       : country === 'US' ? '19 Sample Lane, Washington, NY 20024, USA' : undefined;
-    const base = '/api/cases/' + id, bytes = buildFixture({ country, currentAddress: address });
+    const base = '/api/cases/' + id, bytes = buildFixture({ country, currentAddress: address, historyToken: 'Z9' });
     await t.request('POST', base + '/files', { token: owner.token, body: body(bytes, country) });
     await t.request('POST', base + '/evaluate', { token: owner.token });
     const view = (await t.request('GET', base, { token: owner.token })).json.view;
@@ -172,7 +172,7 @@ async function run(t, check) {
     const found = issues.issuesFor({ evaluation: row.evaluation, extraction: row.extraction });
     check.ok(found.some(issue => issue.check_id === EXPECTED[1]), `${country}: shared sourced payment-claim review is detected`);
     check.ok(found.some(issue => issue.check_id === EXPECTED[2]), `${country}: printed closed account supports a date verification request`);
-    check.ok(found.some(issue => issue.check_id === EXPECTED[3]), `${country}: undated history supports a dated-history request`);
+    check.ok(found.some(issue => issue.check_id === EXPECTED[3]), `${country}: undated non-OK history supports a qualified explanation request`);
     check.ok(!found.some(issue => [EXPECTED[4], EXPECTED[5]].includes(issue.check_id)),
       `${country}: Australian identifier and data-category rules are not copied into this jurisdiction`);
     check.ok(view.result.issues.some(issue => issue.consumer_label === 'NON-VIOLATION CONCERN'),
