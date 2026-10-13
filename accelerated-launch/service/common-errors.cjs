@@ -531,6 +531,11 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   ...Object.fromEntries(Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
     .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
     .map(([kind,id])=>[id,{field_sets:({
+      CREATOR_SUMMARY_COUNT_REVIEW:[],CREATOR_SUMMARY_AMOUNT_REVIEW:[],
+      CREATOR_COMPLETED_DATE_REVIEW:[['account.statusDate','report.referenceDate'],['account.lastActivityDate','report.referenceDate']],
+      CREATOR_DATE_SEQUENCE_REVIEW:[['liability.openedDate','liability.closedDate'],['reportedAccount.reportedDate','report.referenceDate']],
+      CREATOR_PAYMENT_DATE_REVIEW:[['liability.openedDate','tradeline.lastPaymentDate']],
+      CREATOR_CURRENT_PERIOD_REVIEW:[['liability.closedDate'],['collection.delinquencyDate'],['tradeline.lastPaymentDate']],
       ACCOUNT_OWNERSHIP_REVIEW:[['account.reported_identity','account.reportRemarks']],
       ACCOUNT_STATUS_DISPUTE:[['account.reported_identity','account.status','account.reportRemarks']],
       ACCOUNT_BALANCE_DISPUTE:[['account.reported_identity','account.balance','account.reportRemarks']],

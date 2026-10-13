@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-13T02:46:25.696Z",
+  "generated_at": "2026-10-13T07:51:18.965Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 93,
-      "digest": "CCAF73C6011681453772F8B8290B0836D396CE04E06155E281FD4F61485E1AA3",
+      "file_count": 95,
+      "digest": "D70DD092D7C1EDC8DBF3B7C9AD7F317481E67B8001FC40C2BCE5D01207C1CAF8",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "AC185F741FB20DF1598C0FB6D6E45698CD2EC3C29C24640DA28DC85F3928C777"
+          "sha256": "F24FCFFB04436A5D18D67D676DB5DF00156241FAC205CC133EAA96DAEEC46869"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
@@ -154,7 +154,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "D94867CE3F451EA9DEC6961A2B67A9A33B11221126B7A555EB0528680B67B7FC"
+          "sha256": "555B964C80A8367C8A2D8B40FB422DE6099C7A04D58E72D81CE7B20126F39B76"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -166,7 +166,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "84C50A32F5D35D46092ED690AE4DABDEE3575AAEA6543CEADC27E00C2678EA01"
+          "sha256": "58A33219467E06E10457093A5B9A33A0DF6D04EA26E5193CE9358985E6587CDF"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -183,6 +183,14 @@
         {
           "file": "accelerated-launch/service/coverage-matrix.cjs",
           "sha256": "4A49A30751D8AAEF291CA0FFC5BE133D597EDF9ED0A5BCFCB904F3E70BE94B77"
+        },
+        {
+          "file": "accelerated-launch/service/creator-comparison-concerns.cjs",
+          "sha256": "DCEDD96CEFC3250D8964F8615A4010982BEA2BEE5FA24C162302803B771B6407"
+        },
+        {
+          "file": "accelerated-launch/service/creator-report-fields.cjs",
+          "sha256": "06654B10DD6CA0A56E2A82C1C6174932CB3CF660E0424AB9A07587CEAED5EE1C"
         },
         {
           "file": "accelerated-launch/service/credit-news.cjs",
@@ -266,7 +274,7 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "9D5CAA193E156B6C13B67F03C69B89AE7777B5E2D03395A380B3A020D0EC8C1B"
+          "sha256": "4A558D49D48DC7CCCDE7B11FD10A86F5932C7662F3D1999499702A56C13C1B08"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -290,7 +298,7 @@
         },
         {
           "file": "accelerated-launch/service/multi-file-assembly.cjs",
-          "sha256": "F2F9638BE32023792496E21D4060C66E3F8750EA51C3059AD0F084142F43E89C"
+          "sha256": "2D66D2DC857D8263BF5D2394E18CDD6CCC1FB378804AABCB9B493D17417C4188"
         },
         {
           "file": "accelerated-launch/service/north-america-concerns.cjs",
@@ -298,11 +306,11 @@
         },
         {
           "file": "accelerated-launch/service/north-america-disclosure-fields.cjs",
-          "sha256": "3CA64EA88F4E0E650D49B0F66F6E48117BBECF17D84240BB7AD28081A2B63F35"
+          "sha256": "C016C4CEC1564D7D104AF23F6C64C1BEE3A4A8961C238844C1F730D3B37A229B"
         },
         {
           "file": "accelerated-launch/service/ocr/local-ocr.cjs",
-          "sha256": "0D86B3F237A3310464B13A6B0B2EAFB24398DB2DDCC521071D91DA3223FEA8F9"
+          "sha256": "25E2189EBE1DBA618144EAC205937976560476B0543993AB2B12BA22146FFD91"
         },
         {
           "file": "accelerated-launch/service/packet-archive.cjs",
@@ -488,7 +496,7 @@
     {
       "id": "RULE_CONFIGURATION",
       "file_count": 8,
-      "digest": "EC63D77F76D76548B3B25D1AB901AEC82221DB026F62ED7F10BA74418B090F18",
+      "digest": "E00D20485714B65B984AFD1682EA4E8E0CDCC17653FCED224EDD72230404040A",
       "files": [
         {
           "file": "accelerated-launch/adapters/adapter-configs.json",
@@ -516,7 +524,7 @@
         },
         {
           "file": "accelerated-launch/adapters/rule-adapters.cjs",
-          "sha256": "EADD4755EF900B671BDA324A264B680E75DFE628EA2464FC66A7BCFDFC451CF3"
+          "sha256": "A0F472B99B2730C81A7731F6402959414F069E2C3C9FAF07C8F47FFE6B22888A"
         },
         {
           "file": "accelerated-launch/adapters/test-adapters.cjs",
@@ -667,6 +675,6 @@
       ]
     }
   ],
-  "manifest_digest": "741325656AB5F4C0292031548955221A866273B93FF7CF327C3E58B47522538C",
-  "total_file_count": 155
+  "manifest_digest": "6EEF3796093559F13574D2B7599FD301D7FBC4EF49C985E7D18CA097C7262C6B",
+  "total_file_count": 157
 }

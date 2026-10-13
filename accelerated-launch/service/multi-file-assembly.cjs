@@ -409,6 +409,7 @@ function assemble(files) {
     // These are completed source readings, kept with their own uploaded file.
     // A report-level identity concern must never inherit a neighbouring file's identity.
     report_concern_evidence: concernEvidence,
+    creator_summaries:unique.flatMap(file=>(file.extraction.creator_summaries||[]).map(sum=>({...sum,source_file_id:file.file_id,fields:Object.fromEntries(Object.entries(sum.fields).map(([key,field])=>[key,{...field,location:{...field.location,file_id:file.file_id}}]))}))),
     report_concern_associations:concernAssociations,
     extraction_coverage: base.extraction_coverage ? {
       ...base.extraction_coverage,

@@ -38,6 +38,7 @@ const CHECKS = Object.freeze([
   ...Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
     .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
     .map(([kind,id])=>[id,{
+      CREATOR_SUMMARY_COUNT_REVIEW:'Account summary counts to verify',CREATOR_SUMMARY_AMOUNT_REVIEW:'Summary balances and limits to verify',CREATOR_COMPLETED_DATE_REVIEW:'Completed account dates to verify',CREATOR_DATE_SEQUENCE_REVIEW:'Account date order to verify',CREATOR_PAYMENT_DATE_REVIEW:'Payment and opening dates to verify',CREATOR_CURRENT_PERIOD_REVIEW:'Older information to verify in the current file',
       ACCOUNT_OWNERSHIP_REVIEW:'Account ownership to verify',ACCOUNT_STATUS_DISPUTE:'Disputed account status or repayment history',
       ACCOUNT_BALANCE_DISPUTE:'Disputed account balance',INQUIRY_PURPOSE_REVIEW:'Enquiry purpose to verify',
       OLD_COLLECTION_REVIEW:'Older collection information to verify',OLD_COURT_ENTRY_REVIEW:'Older court entry to verify',

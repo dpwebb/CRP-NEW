@@ -15,6 +15,7 @@ const paymentHistoryGrid = require('./payment-history-grid.cjs');
 const { summaryTableLines, reportConcernEvidence } = require('./account-summary-table.cjs');
 const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
+const creatorFields = require('./creator-report-fields.cjs');
 const auDisclosure = require('./au-disclosure-fields.cjs');
 const ukDisclosure = require('./uk-disclosure-fields.cjs');
 const northAmericanDisclosure = require('./north-america-disclosure-fields.cjs');
@@ -23,7 +24,7 @@ const northAmericanDisclosure = require('./north-america-disclosure-fields.cjs')
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 6;
+const GENERAL_READER_VERSION = 8;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -2147,7 +2148,7 @@ function buildRecords(pages, convention) {
         || (current && current.kind === 'GENERAL_PUBLIC_RECORD'
           && (JUDGMENT_CONTENT_LINE_RE.test(up) || CRIMINAL_CONTENT_LINE_RE.test(up)
             || JUDGMENT_TRUNCATION_MARKERS.test(up)));
-      const hasValue = hasDate || Boolean(line.column_field) || facts.dates.some((d) => CLOSURE_LABELS.includes(d.label)
+      const hasValue = hasDate || Boolean(current)&&facts.dates.some(d=>d.interpretations?.length&&['REPORTED DATE','LAST REPORTED','LAST UPDATED','AS OF','OPENED','CLOSED'].includes(d.label)) || Boolean(line.column_field) || facts.dates.some((d) => CLOSURE_LABELS.includes(d.label)
         || OPENED_LABELS.includes(d.label) || ['LAST PAYMENT DATE', 'FIRST DELINQUENCY DATE', 'FIRST REPORTED', 'CHARGE OFF DATE'].includes(d.label))
         || facts.amounts.length > 0 || Object.keys(labeledAmounts(line.text)).length > 0
         || hasPaymentHistory || hasResponsibility || hasAccountType || explicitAccountIdentity(line.text) || headingIdentity
@@ -2751,6 +2752,13 @@ function extract(model, opts) {
     const text = pages.map((p) => p.lines.map((l) => l.text).join('\n')).join('\n');
     bureau = bureauOf(text);
     markers = contentMarkers(text);
+    const trustedIssuer=pages.some(p=>p.words.some(w=>w.trusted!==false&&/^(?:EQUIFAX|EXPERIAN|TRANSUNION|ILLION)$/i.test(w.text)));
+    if(bureau&&!trustedIssuer){
+      const structural=/ACCOUNT TYPE[^\n]*ACCOUNT NUMBER[^\n]*OWNERSHIP/i.test(text)&&/OPENED[^\n]*CLOSED[^\n]*LAST PAYMENT/i.test(text)&&/STATUS[^\n]*STATUS DATE/i.test(text);
+      if(!structural)return refused(base,'UNRELATED','UNVERIFIED_ISSUER_WITHOUT_CREDIT_REPORT_STRUCTURE');
+      det.source_issuer_identified=false;
+      bureau='Unidentified reporting body (partial credit report)';
+    }
     if (!bureau) return refused(base, 'UNRELATED', 'NO_BUREAU_IDENTITY_FOUND');
     if (!markers.length) return refused(base, 'UNRELATED', 'BUREAU_IDENTITY_BUT_NO_CREDIT_REPORT_CONTENT');
   } else {
@@ -2790,9 +2798,12 @@ function extract(model, opts) {
   for (const segment of segments) if (segment.ambiguous || (segments.length > 1 && !segment.bureau)) {
     segment.reference_date = { status: 'EXTRACTION_UNRESOLVED', normalized: null, normalized_value: null, reason: 'AMBIGUOUS_REPORT_SEGMENT', raw: null };
   }
+  const ownBureauSegments=segments.filter(s=>s.bureau&&!s.ambiguous);
+  const oneOwnBureau=ownBureauSegments.length===1&&!segments.some(s=>s.ambiguous);
+  const sourceOwnedText=pages.map(p=>(p.lines||[]).map(l=>l.text).join('\n')).join('\n');
   let records = segments.flatMap((segment, index) => buildRecords(segment.pages, null).map(bindOrdinarySources).map(bindCollectionSources).map(bindPrintedOmissionEvidence).map((record) =>
     Object.assign(record, { bureau: segment.bureau, report_segment_id: 'segment-' + (index + 1), report_reference_date: segment.reference_date })));
-  if (segments.length===1 && !segments[0].ambiguous && /AUSTRALIA(?:N)?|Jurisdiction:\s*AU\b/i.test(nativeText(model))) {
+  if (segments.length===1 && !segments[0].ambiguous && /AUSTRALIA(?:N)?|Jurisdiction:\s*AU\b/i.test(sourceOwnedText)) {
     const mapped = auDisclosure.extract(pages,normalizePrintedDate);
     // Replace only measured native rows, or a complete measured AU account layout.
     // Other readers and independent unrelated sections retain their own records.
@@ -2803,22 +2814,25 @@ function extract(model, opts) {
       records.push(record);
     }
   }
-  if(segments.length===1&&!segments[0].ambiguous&&/United Kingdom|Jurisdiction:\s*UK\b/i.test(nativeText(model))) {
+  if(segments.length===1&&!segments[0].ambiguous&&/United Kingdom|Jurisdiction:\s*UK\b/i.test(sourceOwnedText)) {
     const mapped=ukDisclosure.extract(pages,normalizePrintedDate);
     if(ukDisclosure.shape(nativeText(model))&&mapped.records.some(record=>record.kind==='GENERAL_ACCOUNT'&&record.facts['account.sourceLocatorToken']))records=[];
     records=records.filter(record=>!mapped.fences.some(fence=>fence.page===record.location?.page&&record.location?.bbox?.y0>=fence.y0&&record.location?.bbox?.y0<=fence.y1));
     for(const record of mapped.records){record.bureau=bureau;record.report_segment_id='segment-1';record.report_reference_date=reference_date;records.push(record);}
   }
-  if(segments.length===1&&!segments[0].ambiguous&&northAmericanDisclosure.supports(nativeText(model))) {
+  if(oneOwnBureau&&northAmericanDisclosure.supports(sourceOwnedText)) {
     const mapped=northAmericanDisclosure.extract(pages,normalizePrintedDate);
     records=records.filter(record=>!mapped.fences.some(fence=>fence.page===record.location?.page&&record.location?.bbox?.y0>=fence.y0&&record.location?.bbox?.y0<=fence.y1));
     for(const record of mapped.records){record.bureau=bureau;record.report_segment_id='segment-1';record.report_reference_date=reference_date;records.push(record);}
   }
+  const creator=oneOwnBureau?creatorFields.recover(pages,records,normalizePrintedDate):{records:[],fences:[],summaries:[]};
+  records=records.filter(r=>!creator.fences.some(f=>f.page===r.location?.page&&r.location?.bbox?.y0>=f.y0&&r.location?.bbox?.y0<=f.y1));
+  for(const r of creator.records){r.bureau=bureau;r.report_segment_id='segment-'+(segments.indexOf(ownBureauSegments[0])+1);r.report_reference_date=ownBureauSegments[0].reference_date;records.push(r);}
   records.forEach((record, index) => { record.record_index = index + 1; });
   auDisclosure.attachStatements(records,pages);
   const table_note_associations = attachTableNotes(pages,records,segments);
   const concernBindings = bindReportConcernEvidence(pages,segments);
-  const report_concern_evidence = concernBindings.evidence;
+  const report_concern_evidence = [...concernBindings.evidence,...creator.summaries.flatMap(sum=>Object.values(sum.fields).map(field=>({source_field:field.label,raw_value:field.raw,normalized_value:field.value,location:field.location,trusted:field.trusted,record_index:null,report_segment_id:'segment-'+(segments.indexOf(ownBureauSegments[0])+1),source_bureau:ownBureauSegments[0].bureau,report_reference_date:ownBureauSegments[0].reference_date})))];
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
      roles from every page, so an identity discrepancy can be surfaced from the report itself. */
   const identity_groups = [];
@@ -2894,6 +2908,7 @@ function extract(model, opts) {
     reference_date,
     records,
     report_concern_evidence,
+    creator_summaries:creator.summaries.map(s=>({page:s.page.page,fields:s.fields})),
     report_concern_associations:concernBindings.associations,
     table_note_associations,
     content_markers,

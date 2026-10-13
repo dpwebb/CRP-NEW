@@ -7,6 +7,12 @@ const {calendar:{addCalendarYears,daysInMonth},normalizeFactDate}=require('../ad
 const {sourceForField,reportDateValue} = require('./report-fact-sources.cjs');
 const VERSION='2026-10-12.au-uk-review.3';
 const CHECK_BY_KIND=Object.freeze({
+  CREATOR_SUMMARY_COUNT_REVIEW:'COMMON-ERROR-CREATOR-SUMMARY-COUNT-REVIEW',
+  CREATOR_SUMMARY_AMOUNT_REVIEW:'COMMON-ERROR-CREATOR-SUMMARY-AMOUNT-REVIEW',
+  CREATOR_COMPLETED_DATE_REVIEW:'COMMON-ERROR-CREATOR-COMPLETED-DATE-REVIEW',
+  CREATOR_DATE_SEQUENCE_REVIEW:'COMMON-ERROR-CREATOR-DATE-SEQUENCE-REVIEW',
+  CREATOR_PAYMENT_DATE_REVIEW:'COMMON-ERROR-CREATOR-PAYMENT-DATE-REVIEW',
+  CREATOR_CURRENT_PERIOD_REVIEW:'COMMON-ERROR-CREATOR-CURRENT-PERIOD-REVIEW',
   ACCOUNT_OWNERSHIP_REVIEW:'COMMON-ERROR-ACCOUNT-OWNERSHIP-REVIEW',
   ACCOUNT_STATUS_DISPUTE:'COMMON-ERROR-ACCOUNT-STATUS-DISPUTE',
   ACCOUNT_BALANCE_DISPUTE:'COMMON-ERROR-ACCOUNT-BALANCE-DISPUTE',
@@ -160,6 +166,7 @@ function concernsFor(extraction,evaluation) {
   const british=evaluation.country==='GB';
   const output=[],records=extraction.records||[], add=(...args)=>{const value=issue(extraction,evaluation,...args);if(value)output.push(value);};
   const assessment=evaluation.assessment_clock?.date||evaluation.assessment_date||evaluation.assessment_clock?.assessment_date||null;
+  require('./creator-comparison-concerns.cjs').collect(extraction,evaluation,{own,dateReading,reportSource,add,assessment,shift});
   if(['CA','US'].includes(evaluation.country))require('./north-america-concerns.cjs').collect(extraction,evaluation,{own,dateReading,reportSource,issue,bounds,shift,expired,add,assessment});
   for(const record of records) {
     const identity=own(record,'account.reported_identity')||(record.kind==='GENERAL_INQUIRY'?own(record,'enquiry.organisation'):null),status=own(record,'account.status'),balance=own(record,'account.balance'),remark=own(record,'account.consumerStatement')||own(record,'account.reportRemarks');

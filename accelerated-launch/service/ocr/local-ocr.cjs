@@ -189,6 +189,87 @@ function oneLine(text) {
   return String(text).replace(/\s+/g, ' ').trim();
 }
 
+// A small screenshot can carry four-pixel footer letters. Magnify the actual
+// pixels, not OCR strings: no vocabulary, character correction or issuer hint.
+// Only the bounded, non-interlaced 8-bit PNG forms below are decoded. Other
+// containers retain the existing reader. Temporary grayscale rasters are erased.
+function smallPngRaster(file) {
+  const zlib = require('node:zlib');
+  const bytes = fs.readFileSync(file);
+  if (bytes.length < 33 || bytes.readUInt32BE(0) !== 0x89504e47) return null;
+  const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
+  const channels = { 0: 1, 2: 3, 4: 2, 6: 4 }[bytes[25]];
+  if (!channels || bytes[24] !== 8 || bytes[28] !== 0 || width > 1600 || height > 2400
+    || width * height * 9 > 16000000 || !width || !height) return null;
+  const compressed = [];
+  for (let at = 8; at + 12 <= bytes.length;) {
+    const length = bytes.readUInt32BE(at), type = bytes.toString('ascii', at + 4, at + 8);
+    if (at + length + 12 > bytes.length) return null;
+    if (type === 'IDAT') compressed.push(bytes.subarray(at + 8, at + 8 + length));
+    at += length + 12;
+  }
+  const stride = width * channels;
+  const inflated = zlib.inflateSync(Buffer.concat(compressed), { maxOutputLength: (stride + 1) * height });
+  if (inflated.length !== (stride + 1) * height) return null;
+  const pixels = Buffer.alloc(stride * height), gray = Buffer.alloc(width * height);
+  const paeth = (a, b, c) => { const p = a + b - c, x = Math.abs(p-a), y = Math.abs(p-b), z = Math.abs(p-c); return x <= y && x <= z ? a : y <= z ? b : c; };
+  for (let y = 0; y < height; y++) {
+    const filter = inflated[y * (stride + 1)];
+    if (filter > 4) return null;
+    for (let x = 0; x < stride; x++) {
+      const at = y * stride + x, left = x >= channels ? pixels[at-channels] : 0;
+      const above = y ? pixels[at-stride] : 0, corner = y && x >= channels ? pixels[at-stride-channels] : 0;
+      const predictor = [0, left, above, Math.floor((left+above)/2), paeth(left,above,corner)][filter];
+      pixels[at] = (inflated[y*(stride+1)+x+1] + predictor) & 255;
+    }
+    for (let x = 0; x < width; x++) {
+      const at = y * stride + x * channels;
+      const luminance = channels < 3 ? pixels[at] : (299*pixels[at]+587*pixels[at+1]+114*pixels[at+2])/1000;
+      const alpha = channels === 2 ? pixels[at+1] : channels === 4 ? pixels[at+3] : 255;
+      gray[y*width+x] = Math.round((luminance*alpha+255*(255-alpha))/255);
+    }
+  }
+  const scale = 3, scaledWidth = width*scale, scaledHeight = height*scale, raster = Buffer.alloc(scaledWidth*scaledHeight);
+  for (let y = 0; y < scaledHeight; y++) for (let x = 0; x < scaledWidth; x++) {
+    const sx = Math.max(0, Math.min(width-1, (x+.5)/scale-.5));
+    const sy = Math.max(0, Math.min(height-1, (y+.5)/scale-.5));
+    const x0 = Math.floor(sx), y0 = Math.floor(sy), x1 = Math.min(width-1,x0+1), y1 = Math.min(height-1,y0+1), dx=sx-x0, dy=sy-y0;
+    raster[y*scaledWidth+x] = Math.round(gray[y0*width+x0]*(1-dx)*(1-dy)+gray[y0*width+x1]*dx*(1-dy)+gray[y1*width+x0]*(1-dx)*dy+gray[y1*width+x1]*dx*dy);
+  }
+  return { width, height, scale, bytes: Buffer.concat([Buffer.from(`P5\n${scaledWidth} ${scaledHeight}\n255\n`), raster]) };
+}
+
+function readSmallImage(file, parsed, tesseract, tessdata, opts, psm) {
+  const heights = parsed.map(w => w.height).filter(h => h > 0).sort((a,b)=>a-b);
+  if (!heights.length || heights[Math.floor(heights.length/2)] >= 14 || psm !== '6') return null;
+  let workDir;
+  try {
+    const raster = smallPngRaster(file);
+    if (!raster) return null;
+    workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-small-image-'));
+    const target = path.join(workDir, 'magnified.pgm');
+    fs.writeFileSync(target, raster.bytes);
+    const read = tryRun(tesseract.path, [target, 'stdout', '--tessdata-dir', tessdata.dir,
+      '--psm', psm, '-l', opts.language || 'eng', 'tsv'],
+      { encoding:'utf8', stdio:['ignore','pipe','pipe'], timeout:OCR_TIMEOUT_MS, maxBuffer:64*1024*1024 });
+    if (!read.ok) return null;
+    const words = parseTsv(read.stdout).map(w=>({...w,left:w.left/raster.scale,top:w.top/raster.scale,
+      width:w.width/raster.scale,height:w.height/raster.scale}));
+    const mean = values => values.length ? values.reduce((sum,w)=>sum+Math.max(0,w.conf),0)/values.length : 0;
+    if (!words.length || mean(words) < mean(parsed)) return null;
+    return { words, size:[raster.width,raster.height], recovery:{source:'LOCAL_SMALL_IMAGE_OCR',
+      scale:raster.scale, preprocessing:'BILINEAR_GRAYSCALE', source_coordinates:'ORIGINAL_IMAGE_PIXELS',
+      source_sha256:require('node:crypto').createHash('sha256').update(fs.readFileSync(file)).digest('hex'),
+      confidence_floor:TRUSTED_LINE_CONFIDENCE, original_word_count:parsed.length} };
+  } catch { return null; }
+  finally {
+    if (workDir && path.resolve(workDir).startsWith(path.resolve(os.tmpdir()) + path.sep)
+      && path.basename(workDir).startsWith('crp-small-image-')) {
+      try { fs.rmSync(workDir, {recursive:true,force:true}); } catch { /* best effort */ }
+    }
+  }
+}
+
 /**
  * Read one PDF into a text layer.
  *
@@ -451,7 +532,10 @@ function readImage(file, options) {
     return report;
   }
 
-  const parsed = parseTsv(ocr.stdout);
+  const originalParsed = parseTsv(ocr.stdout);
+  const smallImage = readSmallImage(file, originalParsed, tesseract, tessdata, opts, psm);
+  const parsed = smallImage?.words || originalParsed;
+  if (smallImage) report.small_image_recovery = smallImage.recovery;
   const words = parsed.map((word) => ({
     text: word.text,
     confidence: word.conf,
@@ -478,7 +562,7 @@ function readImage(file, options) {
   report.pages.push({
     page: 1,
     source: 'LOCAL_OCR',
-    raster_pixels: null,
+    raster_pixels: smallImage?.size || null,
     line_count: evidence.length,
     trusted_line_count: evidence.filter((line) => line.trusted).length,
     lines: evidence.map((line) => line.text),

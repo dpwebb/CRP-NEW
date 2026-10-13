@@ -11,7 +11,7 @@ const chunk=c=>clean((c||[]).map(w=>w.text).join(' '));
 const STOP=/^(?:Seeded Parser Errors|Expected Flags|Processing guardrails|Consumer supplied evidence|Detailed account notes as they appear|Consumer statement and dispute history|Alerts, Disclosures|Account Review and Other Inquiries|Public Records|Credit Inquiries|Inquiries|Collection Information|Collections|File Summary|Additional Identification Items|Credit Account Details|Accounts -|Page \d)/i;
 function shape(t){return /Canadian Consumer Disclosure/i.test(t)&&/Canada\s*-\s*[A-Za-z ]+\|\s*Report reference:/i.test(t)&&/File Summary/i.test(t)&&/Credit Account Details/i.test(t)&&/Account number/i.test(t)&&/Condition\s+.*Payment status/i.test(t)&&/Credit Inquiries/i.test(t);}
 function adminShape(t){return /^\s*Canada\s*-/im.test(t)&&/Source style\s*:/i.test(t)&&/Report locator/i.test(t)&&/Account \/ tradeline section/i.test(t)&&/Account no\./i.test(t)&&/Status as reported/i.test(t)&&/Collections, public records, inquiries/i.test(t);}
-function supports(t){return shape(t)||/\bCanada\b|\bJurisdiction:\s*(?:CA|US)\b|United States|SYNTHETIC EQUIFAX-STYLE/i.test(t);}
+function supports(t){return shape(t)||/\bCanada\b|\bJurisdiction:\s*(?:CA|US)\b|\bMarket\s*:?\s*(?:CA|US)\b|United States|SYNTHETIC EQUIFAX-STYLE/i.test(t);}
 function fresh(kind,page,words,line){return {kind,kind_label:kind==='GENERAL_COLLECTION'?'collection':kind==='GENERAL_INQUIRY'?'credit enquiry':kind==='GENERAL_PUBLIC_RECORD'?'public record':kind==='GENERAL_FILE_SUMMARY'?'file summary':kind==='GENERAL_IDENTITY'?'personal information':'credit account',status:'EXTRACTION_UNRESOLVED',shared_facts_status:'EXTRACTION_UNRESOLVED',facts:{},printed:{},fact_sources:{},au_fields:{},north_america_source_mapping:true,location:location(page,words,line)};}
 function put(r,field,s,value=s?.raw){base.setFact(r,field,s,value);}
 function identity(r,s){if(!s?.raw)return;put(r,'account.reported_identity',s,upper(s.raw));put(r,'account.display_name',s,s.raw);}
@@ -139,11 +139,67 @@ function bodyPages(pages){return pages.map(p=>{
  // original coordinates and bytes. This is neither OCR nor edited-upload input.
  return body&&heights.at(-1)>body*2?{...p,words:p.words.filter(w=>w.y1-w.y0<=body*1.8)}:p;
 });}
+
+// The image's collection card owns its title, caption columns and wrapped DOFD
+// value. Neither an original-creditor row nor another public record's expiry
+// becomes the collection's identity or date. Missing cover dates remain missing.
+function ocrCollectionCards(page,normalize){
+ const rows=physicalRows(page),records=[],fences=[];let section=false;
+ const source=(words,line,label,head=[])=>{const s=base.source(page,words,line,label,head);
+  s.location={...s.location,source:'LOCAL_OCR',coordinate_space:'ORIGINAL_IMAGE_PIXELS',
+   word_evidence:words.map(w=>({text:w.text,confidence:w.confidence,trusted:w.trusted,x0:w.x0,y0:w.y0,x1:w.x1,y1:w.y1}))};
+  if(s.location.caption_location)s.location.caption_location={...s.location.caption_location,source:'LOCAL_OCR'};
+  return s;};
+ for(let i=0;i<rows.length;i++){
+  const row=rows[i],value=text(row);
+  if(/^COLLECTIONS(?:\s*\(\d+\))?$/i.test(value)){section=true;continue;}
+  if(section&&/^(?:NOTICES|FINANCIAL ASSOCIATES|PUBLIC RECORDS|INQUIRIES|CREDIT ACCOUNT)/i.test(value)){section=false;continue;}
+  if(!section)continue;
+  const labels=row.chunks.map(c=>upper(chunk(c)));
+  if(labels.join('|')!=='ORIGINAL CREDITOR|PLACED|DATE OF FIRST DELINQUENCY|BALANCE')continue;
+  const cols=row.chunks.map((words,j)=>({words,label:labels[j],x0:words[0].x0}));
+  const heading=rows.slice(0,i).reverse().find(r=>r.y<row.y&&row.y-r.y<65
+   &&Math.abs(r.words[0].x0-cols[0].x0)<8&&!/^COLLECTIONS(?:\s*\(\d+\))?$|^IN COLLECTION$/i.test(text(r)));
+  if(!heading)continue;
+  const name=heading.chunks[0];
+  if(!name.length)continue;
+  const r=fresh('GENERAL_COLLECTION',page,name,heading.line);
+  const agency=source(name,heading.line,'Collection agency');r.location=agency.location;identity(r,agency);
+  let bottom=heading.y,expiryHeading=null;
+  for(const own of rows.slice(i+1)){
+   if(own.y-row.y>110||/^(?:NOTICES|FINANCIAL ASSOCIATES|COLLECTIONS|PUBLIC RECORDS|INQUIRIES)/i.test(text(own)))break;
+   const raw=text(own);
+   if(/^Fictional|^Synthetic|^Consumer statement/i.test(raw))break;
+   bottom=own.y+12;
+   if(upper(raw)==='REPORTABLE UNTIL'){expiryHeading=own;continue;}
+   if(expiryHeading){const words=own.words.filter(w=>w.x0>=expiryHeading.words[0].x0-2&&w.x1<cols[1].x0-2);
+    const s=source(words,own.line,'Reportable until',expiryHeading.words);
+    if(/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s.raw))date(r,'collection.reportableUntilDate',s,normalize);
+    break;
+   }
+   for(let j=0;j<cols.length;j++){
+    const words=own.words.filter(w=>w.x0>=cols[j].x0-2&&w.x1<(cols[j+1]?.x0??Infinity)-2);
+    const s=source(words,own.line,cols[j].label,cols[j].words);if(!s.raw)continue;
+    if(j===0&&!r.au_fields['collection.originalCreditor'])put(r,'collection.originalCreditor',s,upper(s.raw));
+    if(j===1&&/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s.raw))date(r,'collection.assignedDate',s,normalize);
+    if(j===2&&/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(s.raw))date(r,'tradeline.firstDelinquencyDate',s,normalize);
+    if(j===3&&/^\$[\d,.]+$/.test(s.raw))money(r,'account.balance',s);
+   }
+  }
+  if(r.au_fields['collection.originalCreditor']&&r.au_fields['tradeline.firstDelinquencyDate']){
+   records.push(r);fences.push({page:page.page,y0:heading.y-2,y1:bottom});
+  }
+ }
+ return {records,fences};
+}
 function mixed(page,normalize){const rows=physicalRows(page),records=[],fences=[];for(let i=0;i<rows.length;i++){const head=rows[i],cols=head.chunks.map(words=>({words,label:upper(chunk(words)),x0:words[0].x0}));if(cols.map(c=>c.label).join('|')!=='RECORD TYPE|SOURCE / PARTY|DATE|AMOUNT / STATUS|REPORT TEXT')continue;let last=head;const groups=[];let group;
  for(const row of rows.slice(i+1)){if(STOP.test(text(row))||row.y-last.y>35)break;const s=cells(page,row,cols),category=upper(s[0].raw);if(/^(?:Inquiry|Identity \/ alias|Collection note|Public record)$/i.test(category)){group={rows:[row],sources:s};groups.push(group);}else if(group&&row.y-last.y<19&&!s[0].raw){group.rows.push(row);s.forEach((value,j)=>{if(value.raw){group.sources[j].raw=clean(group.sources[j].raw+' '+value.raw);group.sources[j].location=location(page,group.rows.flatMap(r=>r.words.filter(w=>w.x0>=cols[j].x0-1.5&&w.x1<=(cols[j+1]?.x0??Infinity)-1.5)),group.rows[0].line,{words:cols[j].words,line:head.line,raw:cols[j].label});}});}else break;last=row;}
  for(const g of groups){const s=g.sources,category=upper(s[0].raw);if(/^NONE REPORTED$/i.test(s[1].raw)||category==='COLLECTION NOTE')continue;const r=fresh(category==='INQUIRY'?'GENERAL_INQUIRY':category==='IDENTITY / ALIAS'?'GENERAL_IDENTITY':'GENERAL_PUBLIC_RECORD',page,g.rows.flatMap(r=>r.words),g.rows[0].line);identity(r,s[1]);put(r,'account.reportRemarks',s[4]);put(r,'account.status',s[3]);if(r.kind==='GENERAL_INQUIRY'){date(r,'enquiry.requestDate',s[2],normalize);put(r,'enquiry.organisation',s[1]);put(r,'enquiry.purpose',s[3]);}records.push(r);}if(groups.length)fences.push({page:page.page,y0:head.y-1,y1:last.y+12});
  }return {records,fences};}
 function extract(pages,normalize){const records=[],fences=[],usable=bodyPages(pages.filter(p=>p.source==='NATIVE_TEXT'&&p.words?.length));
+ for(const page of pages.filter(p=>p.source==='LOCAL_OCR'&&p.words?.length)){
+  const mapped=ocrCollectionCards(page,normalize);records.push(...mapped.records);fences.push(...mapped.fences);
+ }
  for(const page of usable){const native=tables(page,normalize),admin=base.tableRecords(page,normalize,null),cards=collectionCards(page,normalize),other=mixed(page,normalize);
   for(const r of admin.records){delete r.au_source_mapping;r.north_america_source_mapping=true;const amounts=Object.entries(r.au_fields).filter(([f])=>/balance|Amount/.test(f));delete r.facts['account.currency'];delete r.fact_sources['account.currency'];delete r.printed['account.currency'];delete r.au_fields['account.currency'];for(const [,s]of amounts){const currency=/\b(CAD|USD|GBP|AUD)\b/i.exec(s.raw)?.[1]?.toUpperCase();if(currency)put(r,'account.currency',{...s,raw:currency,label:'Printed currency'},currency);}
    const key=r.au_fields['account.keyDates'];if(key){for(const [label,field]of [['DOFD','tradeline.firstDelinquencyDate'],['last payment','tradeline.lastPaymentDate'],['last reported','reportedAccount.reportedDate'],['Assigned','collection.assignedDate']]){const m=new RegExp('\\b'+label+'\\s+(\\d{4}-\\d{2}-\\d{2})','i').exec(key.raw);if(m)date(r,field,{...key,raw:m[1],label},normalize);}const orig=/\boriginal\s+(.+)$/i.exec(key.raw);if(orig){r.kind='GENERAL_COLLECTION';put(r,'collection.originalCreditor',{...key,raw:orig[1],label:'Original creditor'},upper(orig[1]));}}
@@ -157,4 +213,4 @@ function extract(pages,normalize){const records=[],fences=[],usable=bodyPages(pa
  for(const r of records.filter(r=>r.kind==='GENERAL_COLLECTION')){const original=r.au_fields['collection.originalCreditor'];if(!original)continue;const matches=records.filter(o=>o.kind==='GENERAL_ACCOUNT'&&upper(o.facts['account.reported_identity'])===upper(original.raw));if(matches.length===1){put(r,'collection.linkedOriginalName',original,upper(original.raw));}}
  return {records,fences};
 }
-module.exports={shape,adminShape,supports,extract,fresh,put,identity,locator,date,money,bodyPages,reference,narrativeReference,enrichPinned};
+module.exports={shape,adminShape,supports,extract,fresh,put,identity,locator,date,money,bodyPages,reference,narrativeReference,enrichPinned,ocrCollectionCards};

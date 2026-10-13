@@ -325,9 +325,17 @@ function runAdapter(adapterId, request) {
        CURRENT question, because the anchor and the period are the reports' own printed values. The historical
        position is explicitly NOT established, and the concern is recorded as such — the report date is never
        invented to fill the gap. */
-    const fallbackAnchor = determiningPolicyRequired ? determiningDate : adapter.anchor_mode === 'SINGLE_FIELD' && adapter.anchor_field
+    let fallbackAnchor = determiningPolicyRequired ? determiningDate : adapter.anchor_mode === 'SINGLE_FIELD' && adapter.anchor_field
       ? primitives.resolvePriorityAnchor(req.facts, [adapter.anchor_field])
       : primitives.resolvePriorityAnchor(req.facts, adapter.anchor_fields || adapter.anchor_field);
+    // The current review uses the same statutory start as the historical comparison.
+    // A missing report date never removes the FCRA delinquency-plus-180-day offset.
+    if (fallbackAnchor && adapter.anchor_day_offset) {
+      const shifted = primitives.calendar.addDays(fallbackAnchor.iso, adapter.anchor_day_offset);
+      fallbackAnchor = shifted ? Object.assign({}, fallbackAnchor, { iso: shifted,
+        anchor_day_offset: adapter.anchor_day_offset,
+        anchor_day_offset_basis: adapter.anchor_day_offset_basis || null }) : null;
+    }
     const assessmentDate = primitives.normalizeFactDate(req.assessmentDate) || null;
     const dual = fallbackAnchor && assessmentDate
       ? retentionDates({

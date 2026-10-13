@@ -20,6 +20,8 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'ft-creator-comparison-fixes.cjs',
+  'fc-creator-image-custody.cjs',
   'fr-north-america-comparison-fixes.cjs',
   'fs-north-america-comparison-delivery.cjs',
   'fq-uk-comparison-fixes.cjs',
