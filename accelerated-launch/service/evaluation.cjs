@@ -303,8 +303,10 @@ function evaluateCase(context) {
     const accountPeriod = governsAccountPeriod(config);
     const fields = [config.anchor_field, ...(config.anchor_fields || [])].flat().filter(Boolean);
     const ordinaryPeriod = accountPeriod && fields.some(field => field.startsWith('tradeline.') || field.startsWith('reportedAccount.'));
-    const statutoryRecords = extraction.records.filter((r) => r.kind !== 'CA_EQUIFAX_ORDINARY_ACCOUNT'
-      || accountPeriod && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null));
+    const statutoryRecords = extraction.records.filter((r) => !(accountPeriod
+      && /INQUIRY|ENQUIRY|SUMMARY|IDENTITY|ADDRESS|ASSOCIATION|EMPLOY/.test(r.kind || ''))
+      && (r.kind !== 'CA_EQUIFAX_ORDINARY_ACCOUNT'
+        || accountPeriod && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null)));
     const candidates = kinds ? statutoryRecords.filter((r) => kinds.includes(r.kind)
       || ordinaryPeriod && !/COLLECTION|PUBLIC_RECORD|INQUIRY|EMPLOY|ADDRESS|IDENTITY/.test(r.kind || '')
         && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null)) : statutoryRecords;

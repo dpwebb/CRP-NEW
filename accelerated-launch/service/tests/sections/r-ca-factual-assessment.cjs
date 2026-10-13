@@ -134,7 +134,8 @@ async function uploadSpecimen(t, check, owner, caseId, specimen, region) {
 /** The consumer-facing factual surface, asserted from the rendered result set. */
 function assertFactualSurface(check, result, label, expectStatutory) {
   check.equal(result.checks_performed, result.observations.length + result.report_consistency_checks.length
-    + result.common_errors.length + result.detected_report_information.length,
+    + result.common_errors.length + result.detected_report_information.length
+    + result.assessment.report_concern_checks_performed,
     `${label}: the performed count includes every comparison that actually ran`);
   check.deepEqual(result.common_errors.map((c) => c.check_name), COMMON_CHECKS,
     `${label}: recovered own-account facts run the five supported checklist checks`);
@@ -226,7 +227,8 @@ function everyCaRegion(check, extraction) {
     check.equal(common.find(c => c.check_id === 'COMMON-ERROR-DUPLICATE-REPORTING')?.source_records.length, 1,
       `${region}: the real report's duplicate collections reach the same shared rule`);
     check.equal(evaluated.checks_performed, statutory.length + factual.performed.length
-      + common.length + evaluated.detected_report_information.performed.length,
+      + common.length + evaluated.detected_report_information.performed.length
+      + evaluated.report_concerns.performed.length,
       `${region}: the performed count is exactly what ran`);
     if (region === 'CA-NS') {
       check.equal(statutory.length, 4, 'CA-NS: the period comparison includes own date-bearing ordinary accounts and collections');
@@ -237,11 +239,11 @@ function everyCaRegion(check, extraction) {
         'CA-NS: each date-bearing entry carries its own comparison');
       check.ok(!evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
         'CA-NS: the out-of-checklist bankruptcy adapter is absent from active assessment, including unavailable checks');
-      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
+      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR','REPORT_CONCERN'],
         'CA-NS: its internal mechanism inventory includes the shared date check and retained last-payment limb');
     } else {
       check.equal(statutory.length, 0, `${region}: no statutory comparison runs, because none is recorded for it`);
-      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
+      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR','REPORT_CONCERN'],
         `${region}: the shared date check is recorded without adding a statutory comparison`);
     }
     check.ok(factual.performed.every((c) => c.legal_finding === undefined), `${region}: no factual check carries a legal finding`);

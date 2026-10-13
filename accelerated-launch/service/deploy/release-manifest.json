@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-13T02:18:50.657Z",
+  "generated_at": "2026-10-13T02:46:25.696Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 93,
-      "digest": "77F8D5662D5BDDBB024E02B836EDC78C6D24A2468D6A85D381FCBD441A77D80E",
+      "digest": "CCAF73C6011681453772F8B8290B0836D396CE04E06155E281FD4F61485E1AA3",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -82,7 +82,7 @@
         },
         {
           "file": "accelerated-launch/service/account-summary-table.cjs",
-          "sha256": "2AD320EA9C7067187089A0E22776CDFFD6D6FC683D1AD0DFDBBF61956DAC43E5"
+          "sha256": "3934865801BA7C4FFFCE6E300621E60ABF7E9DF95B6A6B03938BF80586627C36"
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -210,7 +210,7 @@
         },
         {
           "file": "accelerated-launch/service/evaluation.cjs",
-          "sha256": "E6794284B7589FBFBA62829442323EEFBB020430449EC61C9869E6E5F5BBE830"
+          "sha256": "8E56B5CA92677898025A4A0287CEEC46EACFBFA13BAF39A2B33453D118D9F1BE"
         },
         {
           "file": "accelerated-launch/service/evidence-validator.cjs",
@@ -294,7 +294,7 @@
         },
         {
           "file": "accelerated-launch/service/north-america-concerns.cjs",
-          "sha256": "200B1CD72596234959FCD93A62734BA2F7991A428C4FD267CCE61C31D5259CD4"
+          "sha256": "3AD672540B5308C03C4109A929035FCA3F9524EF13AB4F84895EEA032207BD1D"
         },
         {
           "file": "accelerated-launch/service/north-america-disclosure-fields.cjs",
@@ -667,6 +667,6 @@
       ]
     }
   ],
-  "manifest_digest": "A8B94D890E03FB5C8DB3859779FCE6DE9B40D68F9F906CB0FB39C61D67595081",
+  "manifest_digest": "741325656AB5F4C0292031548955221A866273B93FF7CF327C3E58B47522538C",
   "total_file_count": 155
 }

@@ -138,7 +138,8 @@ async function run(t, check) {
     const endpoint = await upload('CA', 'CA-NS', fs.readFileSync(localCa), 'local-canadian-report.pdf');
     const state = t.service.store.state(), caseId = endpoint.split('/').at(-1);
     const stored = state.results.find((row) => row.case_id === caseId);
-    check.equal(stored.extraction.records.length, 4, 'actual PR-01 stores two collections and two recovered ordinary accounts');
+    check.equal(stored.extraction.records.filter(r=>['COLLECTION_ACCOUNT','CA_EQUIFAX_ORDINARY_ACCOUNT'].includes(r.kind)).length, 4, 'actual PR-01 retains two collections and two recovered ordinary accounts');
+    check.ok(stored.extraction.records.some(r=>r.kind==='GENERAL_INQUIRY'),'source-owned inquiries are retained as a distinct category');
     check.equal(stored.extraction.records.filter((r) => r.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT'
       && r.facts?.['tradeline.lastPaymentDate']).length, 2,
       'actual recovered ordinary last-payment dates reach the shared result');

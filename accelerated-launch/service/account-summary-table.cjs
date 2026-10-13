@@ -4,6 +4,16 @@
 // bureau brand, filename or neighbouring account never supplies a missing field.
 const norm = text => String(text || '').replace(/\s+/g, ' ').trim();
 const upper = text => norm(text).toUpperCase().replace(/:\s*$/, '');
+let countryNames;
+const countryKey=value=>upper(value).normalize('NFKD').replace(/\p{M}/gu,'').replace(/[-'’.,]/g,' ').replace(/\s+/g,' ').trim();
+function printedCountry(value){
+  if(!countryNames){const names=new Map([['UK','GB'],['USA','US'],['CAN','CA'],['GBR','GB'],['AUS','AU']]);
+    for(const language of ['en','fr']){const display=new Intl.DisplayNames([language],{type:'region'});for(let a=65;a<=90;a++)for(let b=65;b<=90;b++){const code=String.fromCharCode(a,b),name=display.of(code);if(name&&name!==code)names.set(countryKey(name),code);}}
+    countryNames=[...names].sort((a,b)=>b[0].length-a[0].length);
+  }
+  const key=countryKey(value),country=countryNames.find(([name])=>key===name||key.startsWith(name+' '))?.[1];
+  return country==='UK'?'GB':['AS','GU','MP','PR','VI','UM','FM','MH','PW'].includes(country)?'US':country;
+}
 const box = words => words.length ? { x0:Math.min(...words.map(w=>w.x0)), y0:Math.min(...words.map(w=>w.y0)),
   x1:Math.max(...words.map(w=>w.x1)), y1:Math.max(...words.map(w=>w.y1)) } : null;
 const caption = Object.freeze({
@@ -226,10 +236,10 @@ function reportConcernEvidence(page) {
       ['GB', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(UK)\s+([A-Z0-9]{2,4}\s*[A-Z0-9]{2,4})(?=,|;|$)/gi],
       ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA|AU)\s+([A-Z0-9]{4,8})\b/gi],
       ['CA', page.source_country==='CA'
-        ? /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9]{1,12}(?:\s[A-Z0-9]{3})?(?:-[A-Z0-9]{1,6})?)\b/gi
+        ? /,\s*([\p{L}][\p{L} .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9*#]{1,12}(?:\s[A-Z0-9*#]{3})?(?:-[A-Z0-9*#]{1,6})?)(?![A-Z0-9*#])/giu
         : /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
       ['US', page.source_country==='US'
-        ? /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9]{1,12}(?:\s[A-Z0-9]{3})?(?:-[A-Z0-9]{1,6})?)\b/gi
+        ? /,\s*([\p{L}][\p{L} .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9*#]{1,12}(?:\s[A-Z0-9*#]{3})?(?:-[A-Z0-9*#]{1,6})?)(?![A-Z0-9*#])/giu
         : /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]
     ];
     for (const [country, re] of patterns) {
@@ -237,9 +247,11 @@ function reportConcernEvidence(page) {
       let match;
       while((match=re.exec(text))) {
         const suffix=text.slice(match.index+match[0].length).split(';')[0];
-        const explicit=/^\s*,?\s*(Canada|United States|USA|United Kingdom|UK|Australia)\b/i.exec(suffix)?.[1].toUpperCase();
-        const addressCountry=explicit?({CANADA:'CA','UNITED STATES':'US',USA:'US','UNITED KINGDOM':'GB',UK:'GB',AUSTRALIA:'AU'}[explicit]):country;
-        const components={country:addressCountry,locality:norm(match[1]),state:match[2].toUpperCase(),postcode:match[3].toUpperCase()};
+        let code=match[3].toUpperCase(),inlineCountry=/\s+(USA|CAN|GBR|AUS)$/.exec(code)?.[1];if(inlineCountry)code=code.slice(0,-inlineCountry.length).trim();
+        const explicit=printedCountry(suffix.replace(/^\s*,?\s*/,''))||printedCountry(inlineCountry||'');
+        const addressCountry=explicit||(/^UK$/i.test(match[2])?'GB':country);
+        const compact=code.replace(/\s/g,''),masked=/[\*#]/.test(compact)||/^X+$/.test(compact)||/^[A-Z0-9]{3}X{2,3}$/.test(compact);
+        const components={country:addressCountry,locality:norm(match[1]),state:match[2].toUpperCase(),postcode:code,postcode_masked:masked};
         result.push({kind:'ADDRESS_COMPONENTS',role:heading.label==='CURRENT ADDRESS'?'CURRENT':'PREVIOUS',components,
           postal_exception:/\b(?:P\.?\s*O\.?\s*BOX|POST OFFICE BOX|GENERAL DELIVERY|RURAL ROUTE)\b/i.test(text),
           raw_value:`${components.locality}, ${components.state} ${components.postcode}`,source_field:heading.label==='CURRENT ADDRESS'?'Current Address':'Previous Address',location:own,trusted:true});
