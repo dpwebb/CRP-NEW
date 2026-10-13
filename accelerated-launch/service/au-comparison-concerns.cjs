@@ -29,6 +29,23 @@ const CHECK_BY_KIND=Object.freeze({
   OPEN_CLOSED_STATEMENT:'COMMON-ERROR-STATUS-DATE-CONTRADICTION',
   CORROBORATED_PRINTED_DUPLICATE:'COMMON-ERROR-DUPLICATE-REPORTING',
   DEFAULT_PAID_STATEMENT:'COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW'
+  ,CA_POSTAL_PROVINCE_REVIEW:'COMMON-ERROR-CA-POSTAL-PROVINCE-REVIEW'
+  ,US_ZIP_STATE_REVIEW:'COMMON-ERROR-US-ZIP-STATE-REVIEW'
+  ,CA_POSTCODE_FORMAT:'COMMON-ERROR-CA-POSTCODE-FORMAT'
+  ,US_POSTCODE_FORMAT:'COMMON-ERROR-US-POSTCODE-FORMAT'
+  ,US_STATE_FORMAT:'COMMON-ERROR-US-STATE-FORMAT'
+  ,CA_PROVINCE_FORMAT:'COMMON-ERROR-CA-PROVINCE-FORMAT'
+  ,CA_IDENTITY_ASSERTION_REVIEW:'COMMON-ERROR-CA-IDENTITY-ASSERTION-REVIEW'
+  ,CA_BIRTH_DATE_CONFLICT:'COMMON-ERROR-CA-BIRTH-DATE-CONFLICT'
+  ,CA_FILE_COUNT_REVIEW:'COMMON-ERROR-CA-FILE-COUNT-REVIEW'
+  ,CA_INQUIRY_PERIOD_REVIEW:'COMMON-ERROR-CA-INQUIRY-PERIOD-REVIEW'
+  ,CA_HISTORY_DATE_REVIEW:'COMMON-ERROR-CA-HISTORY-DATE-REVIEW'
+  ,CA_COMPLETED_DATE_CONFLICT:'COMMON-ERROR-CA-COMPLETED-DATE-CONFLICT'
+  ,CA_ASSIGNMENT_SEQUENCE_REVIEW:'COMMON-ERROR-CA-ASSIGNMENT-SEQUENCE-REVIEW'
+
+  ,CA_PANEL_STATUS_REVIEW:'COMMON-ERROR-CA-PANEL-STATUS-REVIEW'
+  ,CA_COLLECTION_PAIR_REVIEW:'COMMON-ERROR-CA-COLLECTION-PAIR-REVIEW'
+  ,US_COURT_INCLUSION_REVIEW:'COMMON-ERROR-US-COURT-INCLUSION-REVIEW'
 });
 const KINDS=Object.freeze(Object.keys(CHECK_BY_KIND));
 const STATUTE='https://www.legislation.gov.au/C2004A03712/2026-06-04/2026-06-04/text/original/epub/OEBPS/document_1/document_1.html';
@@ -45,6 +62,7 @@ function trustedLocation(loc) {
 function own(record,field) {
   const source=sourceForField(record,field);
   if(!source || !trustedLocation(source.location) || record.source_file_id && source.location.file_id && source.location.file_id!==record.source_file_id
+    || typeof record.facts?.[field]==='object'&&record.fact_sources?.[field]&&JSON.stringify(record.fact_sources[field].normalized_value)!==JSON.stringify(record.facts[field])
     || record.fact_sources?.[field]?.record_index != null && record.fact_sources[field].record_index!==record.record_index) return null;
   return {...source,field,record_index:record.record_index,trusted:true};
 }
@@ -62,9 +80,9 @@ function dateReading(record,field) {
 }
 function reportSource(extraction,record) {
   const ref=record?.report_reference_date || extraction.reference_date;
-  if(!ref?.raw || !trustedLocation(ref.location)) return null;
-  return {field:'report.referenceDate',source_field:'Report date',raw_value:ref.raw,normalized_value:reportDateValue(ref),
-    interpretations:ref.interpretations || (ref.alternative?[ref.normalized,ref.alternative]:ref.normalized?[ref.normalized]:[]),
+  if(!(ref?.raw??ref?.raw_value) || !trustedLocation(ref.location)||record?.source_file_id&&ref.location.file_id&&record.source_file_id!==ref.location.file_id) return null;
+  return {field:'report.referenceDate',source_field:'Report date',raw_value:ref.raw??ref.raw_value,normalized_value:reportDateValue(ref),
+    interpretations:ref.interpretations || (ref.alternative?[ref.normalized,ref.alternative]:(ref.normalized??ref.normalized_value)?[ref.normalized??ref.normalized_value]:[]),
     location:ref.location,record_index:record?.record_index??null,trusted:true};
 }
 function bounds(value) {
@@ -142,6 +160,7 @@ function concernsFor(extraction,evaluation) {
   const british=evaluation.country==='GB';
   const output=[],records=extraction.records||[], add=(...args)=>{const value=issue(extraction,evaluation,...args);if(value)output.push(value);};
   const assessment=evaluation.assessment_clock?.date||evaluation.assessment_date||evaluation.assessment_clock?.assessment_date||null;
+  if(['CA','US'].includes(evaluation.country))require('./north-america-concerns.cjs').collect(extraction,evaluation,{own,dateReading,reportSource,issue,bounds,shift,expired,add,assessment});
   for(const record of records) {
     const identity=own(record,'account.reported_identity')||(record.kind==='GENERAL_INQUIRY'?own(record,'enquiry.organisation'):null),status=own(record,'account.status'),balance=own(record,'account.balance'),remark=own(record,'account.consumerStatement')||own(record,'account.reportRemarks');
     const text=clean(remark?.normalized_value),f=record.facts||{},ref=reportSource(extraction,record),reportDate=ref?.normalized_value;

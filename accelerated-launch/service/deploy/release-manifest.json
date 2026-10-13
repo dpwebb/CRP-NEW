@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-12T18:26:30.043Z",
+  "generated_at": "2026-10-13T02:18:50.657Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 91,
-      "digest": "90D53AC06A3557E2F40C305295FA81A61BD400A9326FC72B6004958310B9620C",
+      "file_count": 93,
+      "digest": "77F8D5662D5BDDBB024E02B836EDC78C6D24A2468D6A85D381FCBD441A77D80E",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -82,7 +82,7 @@
         },
         {
           "file": "accelerated-launch/service/account-summary-table.cjs",
-          "sha256": "B933F03D6C0514DE23F5A80B1AF3A7F3476B6B1C0C602BD0C1A7AC2A773C5B71"
+          "sha256": "2AD320EA9C7067187089A0E22776CDFFD6D6FC683D1AD0DFDBBF61956DAC43E5"
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "2901E31CB536864738BDF3EB90763BDF1D1516F0621710DC0026AF5182E2C7FD"
+          "sha256": "AC185F741FB20DF1598C0FB6D6E45698CD2EC3C29C24640DA28DC85F3928C777"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
@@ -154,7 +154,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "161D79106C928AD31E8A18B61996FF5BCB99751DF51F240CF26A61C6A8549639"
+          "sha256": "D94867CE3F451EA9DEC6961A2B67A9A33B11221126B7A555EB0528680B67B7FC"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -166,7 +166,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "0FC60E7ADDDC991C20C744FC248F93D7CE86F40BFBFE0688AEC669A46D2FEA09"
+          "sha256": "84C50A32F5D35D46092ED690AE4DABDEE3575AAEA6543CEADC27E00C2678EA01"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -258,7 +258,7 @@
         },
         {
           "file": "accelerated-launch/service/formats.cjs",
-          "sha256": "A042E7A042009D0635FF85EFA18A948C455B4BC130D9480C6CEE4B8B5A725236"
+          "sha256": "A7351984A3CB939E17D99F02F878024E73DDC07C80A106F932C54157DC265B30"
         },
         {
           "file": "accelerated-launch/service/gb-general-field-contract.cjs",
@@ -266,7 +266,7 @@
         },
         {
           "file": "accelerated-launch/service/general-intake.cjs",
-          "sha256": "0AF066EBFE49E068965B36778F9EE5420A66B3A1F0C4B189EC66E8C5F2143480"
+          "sha256": "9D5CAA193E156B6C13B67F03C69B89AE7777B5E2D03395A380B3A020D0EC8C1B"
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
@@ -291,6 +291,14 @@
         {
           "file": "accelerated-launch/service/multi-file-assembly.cjs",
           "sha256": "F2F9638BE32023792496E21D4060C66E3F8750EA51C3059AD0F084142F43E89C"
+        },
+        {
+          "file": "accelerated-launch/service/north-america-concerns.cjs",
+          "sha256": "200B1CD72596234959FCD93A62734BA2F7991A428C4FD267CCE61C31D5259CD4"
+        },
+        {
+          "file": "accelerated-launch/service/north-america-disclosure-fields.cjs",
+          "sha256": "3CA64EA88F4E0E650D49B0F66F6E48117BBECF17D84240BB7AD28081A2B63F35"
         },
         {
           "file": "accelerated-launch/service/ocr/local-ocr.cjs",
@@ -518,8 +526,8 @@
     },
     {
       "id": "RULE_CONFIGURATION_TOP_LEVEL",
-      "file_count": 9,
-      "digest": "247B372CE9D8063D453A8F60FFCDF404FC27089B9B4CC092F43AFAB22240A5F1",
+      "file_count": 10,
+      "digest": "4F253EDC671324CEAB74F2C4FC6FECA3F09D8D26BEE260598D4729777D784C20",
       "files": [
         {
           "file": "accelerated-launch/benchmark-ingestion.cjs",
@@ -556,6 +564,10 @@
         {
           "file": "accelerated-launch/test-router.cjs",
           "sha256": "B2ED51FD3E31B15DA28925E53E31896D82A24A64EB420EC8A6DEE822C515EC4A"
+        },
+        {
+          "file": "accelerated-launch/us-postal-prefix-states.json",
+          "sha256": "EAAA99CC5C92A1DD328DAE004744F05D7F88BFFF898AD19EED8B029DC6DEB7C3"
         }
       ]
     },
@@ -655,6 +667,6 @@
       ]
     }
   ],
-  "manifest_digest": "ADCB114E873CDA953B69C434E693C8F649F873870091E4F603ADE5B0533AB7FC",
-  "total_file_count": 152
+  "manifest_digest": "A8B94D890E03FB5C8DB3859779FCE6DE9B40D68F9F906CB0FB39C61D67595081",
+  "total_file_count": 155
 }

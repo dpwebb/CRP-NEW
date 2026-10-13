@@ -185,16 +185,20 @@ function reportConcernEvidence(page) {
   const rows=physicalRows(page), result=[], headings=[];
   rows.forEach((row,index)=>row.chunks.forEach(words=>{
     const label=upper(words.map(w=>w.text).join(' '));
-    if(/^(?:CURRENT ADDRESS|PREVIOUS ADDRESS|TAX FILE NUMBER)$/.test(label)) headings.push({label,words,index,x0:words[0].x0});
+    if(/^(?:CURRENT ADDRESS|PREVIOUS ADDRESS|TAX FILE NUMBER)$/.test(label)) {
+      const at=row.chunks.indexOf(words),inline=row.chunks[at+1];
+      headings.push({label,words,index,x0:words[0].x0,inline: inline&&/^\d|^P\.?\s*O\.?\s*BOX/i.test(norm(inline.map(w=>w.text).join(' ')))?inline:null});
+    }
   }));
   for(const heading of headings) {
-    const next=rows.slice(heading.index+1).find(row=>row.words.some(w=>w.x0>=heading.x0-2&&w.x0<=heading.x0+8));
+    const next=heading.inline?rows[heading.index]:rows.slice(heading.index+1).find(row=>row.words.some(w=>w.x0>=heading.x0-2&&w.x0<=heading.x0+8));
     if(!next||next.y-rows[heading.index].y>24) continue;
-    const right=rows[heading.index].chunks.find(words=>words[0].x0>heading.x0+12)?.[0].x0??Infinity;
+    const right=heading.inline?Infinity:rows[heading.index].chunks.find(words=>words[0].x0>heading.x0+12)?.[0].x0??Infinity;
     const values=[];
     for(const row of rows.slice(rows.indexOf(next))) {
       if(row.y-(values.length?values.at(-1).y:next.y)>20) break;
-      const words=row.words.filter(w=>w.x0>=heading.x0-2&&w.x1<right-2);
+      const words=heading.inline?row===next?heading.inline:[]:row.words.filter(w=>w.x0>=heading.x0-2&&w.x1<right-2);
+      if(heading.inline&&row!==next)break;
       // In the observed two-column disclosures the CONTACT caption overlaps a
       // wrapped address vertically. Skip only that caption; a phone/email value
       // still fences the address. Keep the following own postcode/country line.
@@ -221,13 +225,21 @@ function reportConcernEvidence(page) {
     const patterns = [
       ['GB', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(UK)\s+([A-Z0-9]{2,4}\s*[A-Z0-9]{2,4})(?=,|;|$)/gi],
       ['AU', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(ACT|NSW|NT|QLD|SA|TAS|VIC|WA|AU)\s+([A-Z0-9]{4,8})\b/gi],
-      ['CA', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
-      ['US', /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]
+      ['CA', page.source_country==='CA'
+        ? /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9]{1,12}(?:\s[A-Z0-9]{3})?(?:-[A-Z0-9]{1,6})?)\b/gi
+        : /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AB|BC|MB|NB|NL|NS|NT|NU|ON|PE|QC|SK|YT)\s+([ABCEGHJKLMNPRSTVXY]\d[A-Z]\s?\d[A-Z]\d)\b/gi],
+      ['US', page.source_country==='US'
+        ? /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+([A-Z]{2})\s+([A-Z0-9]{1,12}(?:\s[A-Z0-9]{3})?(?:-[A-Z0-9]{1,6})?)\b/gi
+        : /,\s*([A-Za-z][A-Za-z .'-]{1,50}?),?\s+(AL|AK|AZ|AR|CA|CO|CT|DE|DC|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY)\s+(\d{5}(?:-\d{4})?)\b/gi]
     ];
     for (const [country, re] of patterns) {
+      if(['CA','US'].includes(country)&&page.source_country&&page.source_country!==country) continue;
       let match;
       while((match=re.exec(text))) {
-        const components={country,locality:norm(match[1]),state:match[2].toUpperCase(),postcode:match[3].toUpperCase()};
+        const suffix=text.slice(match.index+match[0].length).split(';')[0];
+        const explicit=/^\s*,?\s*(Canada|United States|USA|United Kingdom|UK|Australia)\b/i.exec(suffix)?.[1].toUpperCase();
+        const addressCountry=explicit?({CANADA:'CA','UNITED STATES':'US',USA:'US','UNITED KINGDOM':'GB',UK:'GB',AUSTRALIA:'AU'}[explicit]):country;
+        const components={country:addressCountry,locality:norm(match[1]),state:match[2].toUpperCase(),postcode:match[3].toUpperCase()};
         result.push({kind:'ADDRESS_COMPONENTS',role:heading.label==='CURRENT ADDRESS'?'CURRENT':'PREVIOUS',components,
           postal_exception:/\b(?:P\.?\s*O\.?\s*BOX|POST OFFICE BOX|GENERAL DELIVERY|RURAL ROUTE)\b/i.test(text),
           raw_value:`${components.locality}, ${components.state} ${components.postcode}`,source_field:heading.label==='CURRENT ADDRESS'?'Current Address':'Previous Address',location:own,trusted:true});

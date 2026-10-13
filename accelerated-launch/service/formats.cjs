@@ -382,7 +382,7 @@ function extractWithSharedAdapter(model, options) {
 
   const raw = extractFacts(model);
   const factualView = caFacts.read(model);
-  return Object.assign({
+  const pinnedExtraction = Object.assign({
     presentation_id: DEMONSTRATION_SHAPE,
     family_id: null,
     demonstration: false,
@@ -402,6 +402,7 @@ function extractWithSharedAdapter(model, options) {
       factual_view: factualView
     }
   });
+  return require('./north-america-disclosure-fields.cjs').enrichPinned(pinnedExtraction,model,generalIntake.normalizePrintedDate);
 }
 
 /** True only when the extraction record may be presented as evidence about an actual report. */

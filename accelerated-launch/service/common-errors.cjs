@@ -542,6 +542,17 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
       AU_MINIMUM_DEFAULT_REVIEW:[['default.originalAmount']],HARDSHIP_PERIOD_REVIEW:[['account.datedRepaymentHistory','account.sourceLocatorToken']],
       PURCHASER_RELATIONSHIP_REVIEW:[['collection.originalCreditor','account.consumerStatement']],
       DEFAULT_OPENING_ORDER_REVIEW:[['account.sourceLocatorToken','default.defaultDate']],AU_POSTCODE_FORMAT:[],GB_POSTCODE_FORMAT:[],GB_DEFAULT_RETENTION_REVIEW:[['default.defaultDate','report.referenceDate']],DEFAULT_SETTLEMENT_ORDER_REVIEW:[['account.settlementDate','default.defaultDate']],FINANCIAL_ASSOCIATION_REVIEW:[['account.reported_identity','account.reportRemarks']],COURT_STATUS_REVIEW:[['publicRecord.type','account.reportRemarks']],SETTLEMENT_BALANCE_REVIEW:[['account.settlementDate','account.balance','account.status']]
+      ,CA_POSTAL_PROVINCE_REVIEW:[],US_ZIP_STATE_REVIEW:[],CA_POSTCODE_FORMAT:[],US_POSTCODE_FORMAT:[],US_STATE_FORMAT:[],CA_PROVINCE_FORMAT:[]
+      ,CA_IDENTITY_ASSERTION_REVIEW:[['account.reported_identity','account.reportRemarks']]
+      ,CA_BIRTH_DATE_CONFLICT:[['identity.primaryBirthDate','identity.additionalBirthDate']]
+      ,CA_FILE_COUNT_REVIEW:[['summary.totalAccounts','summary.openAccounts','summary.closedAccounts']]
+      ,CA_INQUIRY_PERIOD_REVIEW:[['enquiry.requestDate','enquiry.affectsScores','report.referenceDate'],['enquiry.requestDate','enquiry.purpose','report.referenceDate']]
+      ,CA_HISTORY_DATE_REVIEW:[['tradeline.lastPaymentDate','account.datedPaymentAmounts'],['account.historySummaryWindow'],['account.historyLateCounters','account.historyDatedLateCodes']]
+      ,CA_COMPLETED_DATE_CONFLICT:[['tradeline.lastPaymentDate','report.referenceDate'],['tradeline.firstDelinquencyDate','report.referenceDate'],['collection.assignedDate','report.referenceDate']]
+      ,CA_ASSIGNMENT_SEQUENCE_REVIEW:[['collection.assignedDate','tradeline.firstDelinquencyDate']]
+      ,CA_PANEL_STATUS_REVIEW:[['account.reported_identity','account.reportRemarks','account.balance']]
+      ,CA_COLLECTION_PAIR_REVIEW:[['collection.originalCreditor','collection.memberNumber','account.sourceLocatorToken','tradeline.firstDelinquencyDate','tradeline.lastPaymentDate','account.balance']]
+      ,US_COURT_INCLUSION_REVIEW:[['publicRecord.type','publicRecord.filedDate','report.referenceDate']]
     })[kind],presentation_scope:['GENERAL-BUREAU-REPORT'],additional_evidence:'OWN_TRUSTED_AU_SOURCE_ASSOCIATION_AND_KIND_SPECIFIC_AFFIRMATIVE_TRIGGER'}])),
   'COMMON-ERROR-ACCOUNT-DATES-CONTRADICTORY': { field_sets: [['liability.openedDate', 'liability.closedDate']] },
   'COMMON-ERROR-STATUS-DATE-CONTRADICTION': { field_sets: [['account.status', 'liability.closedDate']] },

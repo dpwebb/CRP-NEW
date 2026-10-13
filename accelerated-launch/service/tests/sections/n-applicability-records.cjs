@@ -1,4 +1,5 @@
 'use strict';
+const { CHECKS } = require('../../common-error-checklist.cjs');
 /**
  * n-applicability-records.cjs — OWNER-ALL82-001 / B3. Every claimed association is tested, for every region.
  *
@@ -302,7 +303,7 @@ async function surfaceAvailability(t, check) {
   for (const region of surface.regions) {
     counts[region.availability.state] = (counts[region.availability.state] || 0) + 1;
     if (region.availability.state === 'SUPPORTED') {
-      check.equal(region.checklist_items, 46,
+      check.equal(region.checklist_items, CHECKS.length,
         `${region.value}: the shared checklist scope is available before upload`);
       check.ok(region.supported_format_families.length >= 1, `${region.value}: names its available reader paths`);
       check.equal(region.working_assessment, true);

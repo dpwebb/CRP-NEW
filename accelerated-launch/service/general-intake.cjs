@@ -17,12 +17,13 @@ const { printedAmount } = require('./report-amount.cjs');
 const crypto = require('node:crypto');
 const auDisclosure = require('./au-disclosure-fields.cjs');
 const ukDisclosure = require('./uk-disclosure-fields.cjs');
+const northAmericanDisclosure = require('./north-america-disclosure-fields.cjs');
 
 
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 5;
+const GENERAL_READER_VERSION = 6;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -259,6 +260,12 @@ function detect(model) {
   }
   const bureau = bureauOf(text);
   const markers = contentMarkers(text);
+  if((!bureau||/Source style\s*:/i.test(text))&&(northAmericanDisclosure.shape(text)||northAmericanDisclosure.adminShape(text))) {
+    const nativePages=(model.pages||[]).filter(p=>p.has_native_text&&p.word_boxes?.length).map(p=>({page:p.page,source:'NATIVE_TEXT',words:p.word_boxes,text:p.text}));
+    const native=northAmericanDisclosure.extract(nativePages,normalizePrintedDate);
+    if(native.records.some(r=>r.kind==='GENERAL_ACCOUNT'&&r.facts['account.sourceLocatorToken']&&r.facts['account.reported_identity']))
+      return {outcome:'GENERAL',reason:'UNBRANDED_CA_DISCLOSURE_CONTENT_PRESENT',bureau:'Unidentified Canadian reporting body',source_issuer_identified:false,markers,needs_ocr:false};
+  }
   if((!bureau||/\bSource style\s*:/i.test(text))&&ukDisclosure.shape(text)) {
     const nativePages=(model.pages||[]).filter(page=>page.has_native_text&&page.word_boxes?.length).map(page=>({page:page.page,source:'NATIVE_TEXT',words:page.word_boxes,text:page.text}));
     const native=ukDisclosure.extract(nativePages,normalizePrintedDate);
@@ -638,7 +645,9 @@ function collectPages(model) {
   const pages = [];
   for (const p of native) {
     if (p.has_native_text) {
-      const page = { page: p.page, source: 'NATIVE_TEXT', lines: nativeLineObjects(p), words: p.word_boxes || [], native_words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
+      const sourceText=nativeText(model);
+      const sourceCountry=/Jurisdiction:\s*US\b|^\s*(?:Equifax|Experian|TransUnion)\s+US\b/im.test(sourceText)?'US':/Jurisdiction:\s*CA\b|CANADIAN (?:CONSUMER|CREDIT)|^\s*Canada\s*-|Canadian Consumer Disclosure/im.test(sourceText)?'CA':null;
+      const page = { page: p.page, source: 'NATIVE_TEXT', source_country:sourceCountry, lines: nativeLineObjects(p), words: p.word_boxes || [], native_words: p.word_boxes || [], native_text_incomplete: p.native_text_incomplete === true || undefined, has_image_region: p.has_image_region === true || undefined };
       const summary = summaryTableLines(page);
       page.lines = summary === page.lines ? columnCaptionLines(page) : summary;
       page.table_row_census = summary.table_row_census || [];
@@ -2545,6 +2554,14 @@ function bindPrintedOmissionEvidence(record) {
 }
 
 function findReferenceDate(pages, convention) {
+  const sourceText=pages.map(p=>p.lines?.map(l=>l.text).join(' ')||'').join(' ');
+  if(northAmericanDisclosure.supports(sourceText)) {
+    const nativeReference=northAmericanDisclosure.reference(pages,normalizePrintedDate);
+    if(nativeReference)return nativeReference;
+    // An old narrative disclosure's explicit two-digit cover year remains
+    // unresolved. Never substitute a birth-date reporting date from its body.
+    if(/disclosure of your personal credit file as of/i.test(sourceText))return northAmericanDisclosure.narrativeReference(pages)||{raw:null,normalized:null,normalized_value:null,status:'EXTRACTION_UNRESOLVED',reason:'NARRATIVE_COVER_DATE_REQUIRES_YEAR_CONVENTION',location:null};
+  }
   // A report date never borrows the numeric order of another field.
   const evidencedConvention = convention;
   const candidates = /AUSTRALIA(?:N)?|United Kingdom|Jurisdiction:\s*(?:AU|UK)\b/i.test(pages.map(page=>page.lines.map(line=>line.text).join(' ')).join(' '))
@@ -2792,6 +2809,11 @@ function extract(model, opts) {
     records=records.filter(record=>!mapped.fences.some(fence=>fence.page===record.location?.page&&record.location?.bbox?.y0>=fence.y0&&record.location?.bbox?.y0<=fence.y1));
     for(const record of mapped.records){record.bureau=bureau;record.report_segment_id='segment-1';record.report_reference_date=reference_date;records.push(record);}
   }
+  if(segments.length===1&&!segments[0].ambiguous&&northAmericanDisclosure.supports(nativeText(model))) {
+    const mapped=northAmericanDisclosure.extract(pages,normalizePrintedDate);
+    records=records.filter(record=>!mapped.fences.some(fence=>fence.page===record.location?.page&&record.location?.bbox?.y0>=fence.y0&&record.location?.bbox?.y0<=fence.y1));
+    for(const record of mapped.records){record.bureau=bureau;record.report_segment_id='segment-1';record.report_reference_date=reference_date;records.push(record);}
+  }
   records.forEach((record, index) => { record.record_index = index + 1; });
   auDisclosure.attachStatements(records,pages);
   const table_note_associations = attachTableNotes(pages,records,segments);
@@ -2858,6 +2880,7 @@ function extract(model, opts) {
   };
   return {
     admitted: true,
+    source_country: [...new Set(pages.map(p=>p.source_country).filter(Boolean))].length===1?pages.find(p=>p.source_country)?.source_country:null,
     reader_version:GENERAL_READER_VERSION,
     outcome: 'GENERAL',
     reason: det.reason,

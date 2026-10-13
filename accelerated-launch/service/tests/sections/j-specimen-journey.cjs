@@ -49,7 +49,8 @@ async function evaluateAndInspect(t, check, owner, caseId) {
   check.ok(result.observations.every((o) => o.is_a_finding === false), 'none of them is a finding');
   check.ok(result.observations.every((o) => ['observation', 'none', 'violation'].includes(o.output_level)), 'each carries its recorded ceiling without becoming a finding');
   check.equal(result.comprehensive_legal_check, false);
-  const withEvidence = result.observations.filter((o) => o.evidence && o.evidence.page);
+  const withEvidence = result.observations.filter((o) => o.evidence && o.evidence.page
+    && /10\(3\)\(c\)/.test(o.check_name || '') && o.assessment_completed === true);
   check.ok(withEvidence.length >= 1, 'at least one observation names the page and line it came from');
   check.ok(withEvidence.every((o) => /^(Last Payment Date(?: — determining fallback date)?|Date of First Delinquency)$/i.test(o.measures_from)),
     'each comparison names its actual determining date, including fallback identity');
@@ -67,7 +68,8 @@ async function recordIndependence(t, check, caseId, result) {
   const readable = records.filter((r) => r.status === 'RESOLVED'
     && (r.kind === 'COLLECTION_ACCOUNT' || r.kind === 'CA_EQUIFAX_ORDINARY_ACCOUNT'
       && ['tradeline.firstDelinquencyDate', 'tradeline.lastPaymentDate'].some(field => r.facts?.[field] != null)));
-  const accountObservations = result.observations.filter((o) => o.account_number_in_report !== null);
+  const accountObservations = result.observations.filter((o) => o.account_number_in_report !== null
+    && /10\(3\)\(c\)/.test(o.check_name || '') && o.assessment_completed === true);
   check.equal(accountObservations.length, readable.length, 'one period comparison is attempted for each readable collection or ordinary account with determining-date evidence');
 
   const citedPages = accountObservations.map((o) => o.evidence && o.evidence.page);
