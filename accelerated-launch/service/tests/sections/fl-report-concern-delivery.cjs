@@ -60,13 +60,14 @@ async function run(t, check) {
   const stored = t.service.store.state().results.find(row => row.case_id === caseId);
   const internal = issues.issuesFor({ evaluation: stored.evaluation, extraction: stored.extraction });
   const scoped = internal.filter(issue => EXPECTED.includes(issue.check_id));
-  for (const id of EXPECTED) check.ok(scoped.some(issue => issue.check_id === id), `${id} reaches the assessed report`);
+  for (const id of EXPECTED.slice(0,2)) check.ok(scoped.some(issue => issue.check_id === id), `${id} reaches the assessed report`);
+  for (const id of EXPECTED.slice(2)) check.ok(!scoped.some(issue=>issue.check_id===id), `${id}: default noise is absent`);
   check.ok(scoped.filter(issue => issue.check_id !== EXPECTED[0]).every(issue => issue.classification === 'NON_VIOLATION'),
     'payment claims and context-dependent questions remain non-violation reviews');
   check.ok(scoped.filter(issue => issue.check_id === EXPECTED[0]).every(issue => issues.consumerLabel(issue) === 'VIOLATION'),
     'the geography contradiction uses the bounded report-data violation');
   const publicConcerns = paid.result.issues.filter(issue => issue.report_concern);
-  check.ok(publicConcerns.length >= 6 && publicConcerns.every(issue => issue.source_facts?.length),
+  check.ok(publicConcerns.length >= 2 && publicConcerns.every(issue => issue.source_facts?.length),
     'public concern cards retain their own measured facts');
   check.ok(publicConcerns.every(issue => issue.source_facts.filter(fact => fact.location?.source_kind !== 'AUTHORITATIVE_LOCALITY_MAPPING')
     .every(fact => fact.location?.page)), 'every printed concern fact identifies its original report page');
@@ -171,8 +172,8 @@ async function run(t, check) {
     const row = t.service.store.state().results.find(result => result.case_id === id);
     const found = issues.issuesFor({ evaluation: row.evaluation, extraction: row.extraction });
     check.ok(found.some(issue => issue.check_id === EXPECTED[1]), `${country}: shared sourced payment-claim review is detected`);
-    check.ok(found.some(issue => issue.check_id === EXPECTED[2]), `${country}: printed closed account supports a date verification request`);
-    check.ok(found.some(issue => issue.check_id === EXPECTED[3]), `${country}: undated non-OK history supports a qualified explanation request`);
+    check.ok(!found.some(issue => issue.check_id === EXPECTED[2]), `${country}: missing closing column alone is not a dispute`);
+    check.ok(!found.some(issue => issue.check_id === EXPECTED[3]), `${country}: uninterpreted history alone is not a dispute`);
     check.ok(!found.some(issue => [EXPECTED[4], EXPECTED[5]].includes(issue.check_id)),
       `${country}: Australian identifier and data-category rules are not copied into this jurisdiction`);
     check.ok(view.result.issues.some(issue => issue.consumer_label === 'NON-VIOLATION CONCERN'),

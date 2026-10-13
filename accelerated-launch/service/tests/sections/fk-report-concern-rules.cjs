@@ -102,90 +102,13 @@ async function run(_service, check) {
   const oldPaid = issues.issuesFor(context([creditorPaid])).find((item) => item.check_id === 'COMMON-ERROR-PAID-SETTLED-SHOWN-UNPAID');
   check.equal(issues.consumerLabel(oldPaid), 'VIOLATION', 'the existing sourced paid-in-full contradiction keeps its violation label');
 
-  const closed = record(2);
-  field(closed, 'account.closureStatement', 'Closed at consumer request', 'Remarks');
-  const closure = byKind(context([closed]), 'CLOSURE_DATE_REVIEW')[0];
-  check.equal(closure?.classification, 'NON_VIOLATION', 'a wholly absent closing-date column is a review concern');
-  check.equal(closure?.eligible, true, 'an own closure statement and complete row enable verification');
-  check.equal(/45|missed.*deadline/.test(closure.explanation), false, 'no unproven closure notification deadline is alleged');
-  for (const [label, amend] of [
-    ['missing complete-row proof', (r) => { delete r.table_row_coverage; }],
-    ['untrusted complete-row geometry', (r) => { r.table_row_coverage.location.trusted = false; }],
-    ['closing-date column present', (r) => { r.table_row_coverage.field_presence.closed_date = true; }],
-    ['actual closing date', (r) => field(r, 'liability.closedDate', '2026-05-20', 'Closed Date')],
-    ['existing explicit-blank rule', (r) => { r.printed = { 'Closed Date': { state: 'LABEL_PRINTED_WITHOUT_VALUE' } }; }],
-    ['closure negated', (r) => field(r, 'account.closureStatement', 'Not closed', 'Remarks')]
-  ]) {
-    const next = copy(closed); amend(next);
-    check.equal(byKind(context([next]), 'CLOSURE_DATE_REVIEW').length, 0, `${label}: no absent-date concern is invented`);
+  const closed=record(2);field(closed,'account.closureStatement','Closed at consumer request','Remarks');
+  const history=record(3);field(history,'account.undatedPaymentHistory',{tokens:['OK','30'],count:2,periods_printed:false,legend_printed:false},'Payment History');
+  for(const country of ['AU','CA','US','GB']) {
+    const ctx=context([closed,history],[],country);
+    for(const kind of ['CLOSURE_DATE_REVIEW','UNDATED_PAYMENT_HISTORY','AU_AMOUNT_CATEGORY_REVIEW'])check.equal(byKind(ctx,kind).length,0,country+': normal fields and missing interpretation are not dispute findings');
   }
-  check.equal(byKind(context([record()]), 'CLOSURE_DATE_REVIEW').length, 0, 'ordinary missing fields do not automatically become violations or concerns');
-
-  const history = record(3);
-  const historyTokens = Array.from({ length: 24 }, (_, index) => index === 0 ? '30' : 'OK');
-  field(history, 'account.undatedPaymentHistory', { tokens: historyTokens, count: 24,
-    periods_printed: false, legend_printed: false }, '24-Month Payment History');
-  const historyIssue = byKind(context([history]), 'UNDATED_PAYMENT_HISTORY')[0];
-  check.equal(historyIssue?.classification, 'NON_VIOLATION', 'printed undated non-OK history retains a supported review concern');
-  check.match(historyIssue.explanation, /1 non-OK payment-history code/, 'only the non-OK code count is raised for consumer review');
-  check.deepEqual(historyIssue.evidence.review_tokens, ['30'], 'OK tokens are excluded from the entries to review');
-  check.equal(historyIssue.evidence.count, 24, 'the complete printed history count remains source evidence');
-  check.match(historyIssue.request_wording, /non-OK payment-history entries/, 'the request targets only the non-OK entries');
-  check.deepEqual(historyIssue.source_facts[0].normalized_value.tokens, historyTokens,
-    'codes remain literal rather than becoming invented payments');
-  check.equal(history.facts['account.paymentHistoryCells'], undefined, 'no month or code meaning is guessed');
-  for (const country of ['AU', 'CA', 'US', 'GB']) {
-    for (const [label, tokens] of [['all OK', Array(24).fill('OK')],
-      ['mixed case', ['ok', 'Ok', 'oK']], ['whitespace', [' OK ', ' ok\t', '\nOk ', ' O K ']]]) {
-      const benign = record(3);
-      field(benign, 'account.undatedPaymentHistory', { tokens, count: tokens.length,
-        periods_printed: false, legend_printed: false }, 'Payment History');
-      const before = JSON.stringify(benign), ctx = context([benign], [], country);
-      check.equal(byKind(ctx, 'UNDATED_PAYMENT_HISTORY').length, 0,
-        `${country}: ${label} undated OK codes are disregarded`);
-      check.equal(ctx.evaluation.report_concerns.performed.find(row =>
-        row.check_id === concerns.CHECK_BY_KIND.UNDATED_PAYMENT_HISTORY)?.state, 'NOT_DETECTED',
-      `${country}: ${label} supported OK history completes a benign review`);
-      check.equal(JSON.stringify(benign), before, `${country}: ${label} source readings remain untouched`);
-    }
-  }
-  const mixedHistory = copy(history), mixedTokens = [' ok ', ' 30 ', 'c o'];
-  field(mixedHistory, 'account.undatedPaymentHistory', { tokens: mixedTokens, count: 3,
-    periods_printed: false, legend_printed: false }, 'Payment History');
-  const mixedHistoryConcern = byKind(context([mixedHistory]), 'UNDATED_PAYMENT_HISTORY')[0];
-  check.equal(mixedHistoryConcern?.classification, 'NON_VIOLATION', 'one non-OK code preserves the existing qualified review');
-  check.deepEqual(mixedHistoryConcern?.evidence.tokens, mixedTokens, 'comparison normalization never rewrites mixed source tokens');
-  check.equal(mixedHistory.facts['account.paymentHistoryCells'], undefined, 'mixed non-OK tokens are not decoded into missed payments');
-  for (const [label, amend] of [
-    ['untrusted reading', (r) => { r.fact_sources['account.undatedPaymentHistory'].trusted = false; }],
-    ['untrusted geometry', (r) => { r.fact_sources['account.undatedPaymentHistory'].location.trusted = false; }],
-    ['other account', (r) => { r.fact_sources['account.undatedPaymentHistory'].record_index = 19; }],
-    ['other file', (r) => { r.fact_sources['account.undatedPaymentHistory'].location.file_id = 'other-file'; }],
-    ['duplicate caption', (r) => { r.fact_sources['account.undatedPaymentHistory'].caption_count = 2; }]
-  ]) {
-    const rejected = copy(mixedHistory); amend(rejected);
-    check.equal(byKind(context([rejected]), 'UNDATED_PAYMENT_HISTORY').length, 0,
-      `${label}: mixed tokens cannot bypass original source safeguards`);
-  }
-  const dated = copy(history);
-  field(dated, 'account.undatedPaymentHistory', { tokens: ['OK'], count: 1, periods_printed: true,
-    legend_printed: true }, 'Payment History');
-  check.equal(byKind(context([dated]), 'UNDATED_PAYMENT_HISTORY').length, 0, 'dated history creates no undated-history concern');
-  const broken = copy(history); broken.facts['account.undatedPaymentHistory'] = { ...broken.facts['account.undatedPaymentHistory'], count: 23 };
-  check.equal(byKind(context([broken]), 'UNDATED_PAYMENT_HISTORY').length, 0, 'altered history facts cannot reuse an unchanged source association');
-
-  for (const country of ['AU', 'CA', 'US', 'GB']) {
-    const ctx = context([copy(paid), copy(closed), copy(history)], [], country);
-    for (const kind of ['PAID_CLAIM', 'CLOSURE_DATE_REVIEW', 'UNDATED_PAYMENT_HISTORY']) {
-      check.equal(byKind(ctx, kind).length, 1, `${country}: shared report-fact concern is reviewed`);
-    }
-    if (country !== 'AU') {
-      check.equal(byKind(ctx, 'AU_AMOUNT_CATEGORY_REVIEW').length, 0, `${country}: Australian credit-data requirements are not ported`);
-      check.equal(byKind(context([], [tfn()], country), 'AU_TFN_HANDLING').length, 0,
-        `${country}: Australian TFN handling is not ported`);
-    }
-  }
-
+  check.equal(history.facts['account.paymentHistoryCells'],undefined,'precision correction never invents history dates or meanings');
   const geography = byKind(context([], [address()]), 'ADDRESS_GEOGRAPHIC_INCONSISTENCY')[0];
   check.equal(issues.consumerLabel(geography), 'VIOLATION', 'a verified locality/state mismatch is a source-linked checklist violation');
   check.equal(geography.eligible, true, 'report-level geographic evidence supports verification');
@@ -219,28 +142,9 @@ async function run(_service, check) {
       `${country}: locality alone or an arbitrary code cannot substitute for the verified pair`);
   }
 
-  const identifier = byKind(context([], [tfn()]), 'AU_TFN_HANDLING')[0];
-  check.equal(identifier?.classification, 'NON_VIOLATION', 'masked TFN presence is a handling review, not an unlawful-disclosure finding');
-  check.match(identifier.uncertainty, /owner is permitted/, 'the permitted return-to-owner exception stays explicit');
-  check.equal(identifier.source_facts[0].raw_value, 'Tax file number shown (masked)', 'no original TFN digits reach the issue');
-  const unmaskedIdentifier = byKind(context([], [{ ...tfn(), masked:false, raw_value:'Tax file number shown (unmasked)' }]), 'AU_TFN_HANDLING')[0];
-  check.equal(unmaskedIdentifier?.classification, 'NON_VIOLATION', 'unmasked presence supports review without assuming illegal disclosure to its owner');
-  check.ok(!/123456789/.test(JSON.stringify(unmaskedIdentifier)), 'unmasked presence also stays privacy-minimized');
-  check.equal(byKind(context([], [{ ...tfn(), raw_value: 'TFN 123456789' }]), 'AU_TFN_HANDLING').length, 0,
-    'unsafe identifier text is rejected rather than exposed');
-  const category = byKind(context([record()]), 'AU_AMOUNT_CATEGORY_REVIEW')[0];
-  check.equal(category?.classification, 'NON_VIOLATION', 'an ordinary account amount prompts a category review rather than an automatic prohibition');
-  check.match(category.uncertainty, /maximum-credit|maximum principal/, 'the permitted loan-credit category alternative stays explicit');
-  check.equal(category.concern_sources[0].version, 'F2025L01377', 'the current 2025 Regulations provide scoped category context');
-  check.equal(SOURCES.AU_CREDIT_CATEGORIES.effective_from, '2026-04-01', 'commencement is part of the source scope');
-  const oldReport = record(); oldReport.report_reference_date = reference('2026-03-31');
-  check.equal(byKind(context([oldReport]), 'AU_AMOUNT_CATEGORY_REVIEW').length, 0,
-    'a report before current Regulations commencement cannot be assessed under this mapping');
-  const defaultAmount = record(); defaultAmount.kind = 'GENERAL_COLLECTION'; defaultAmount.table_row_coverage.section = 'COLLECTIONS';
-  check.equal(byKind(context([defaultAmount]), 'AU_AMOUNT_CATEGORY_REVIEW').length, 0,
-    'historical/default collection amounts are not claimed ordinary prohibited credit-data amounts');
-
-  for (const concern of [payment, closure, historyIssue, geography, identifier, category]) {
+  for(const masked of [true,false])check.equal(byKind(context([],[{...tfn(),masked,raw_value:masked?'Tax file number shown (masked)':'Tax file number shown (unmasked)'}]),'AU_TFN_HANDLING').length,0,'identifier presence alone does not establish a handling concern');
+  for(const amount of [0,100,1860]){const ordinary=record();field(ordinary,'account.balance',amount,'Balance');field(ordinary,'account.paymentAmount',0,'Payment Amount');check.equal(byKind(context([ordinary]),'AU_AMOUNT_CATEGORY_REVIEW').length,0,'ordinary amount '+amount+' does not need explanation');}
+  for (const concern of [payment, geography]) {
     check.equal(issues.isEligible(copy(concern)), true, `${concern.concern_kind}: persisted original evidence remains eligible`);
     const publicView = issues.publicIssue(concern);
     let projected = publicView;
@@ -262,8 +166,8 @@ async function run(_service, check) {
   check.equal(concerns.concernsFor(demo.extraction, demo.evaluation).length, 0,
     'demonstration evidence cannot become consumer concerns');
   const measured = context([paid, closed, history], [address(), tfn()]);
-  check.equal(measured.evaluation.report_concerns.performed.length, 6, 'all six mechanisms measure supported own report facts');
-  for (const id of ['ADDRESS_GEOGRAPHIC_INCONSISTENCY','PAID_CLAIM','CLOSURE_DATE_REVIEW','UNDATED_PAYMENT_HISTORY','AU_TFN_HANDLING','AU_AMOUNT_CATEGORY_REVIEW'].map(kind=>concerns.CHECK_BY_KIND[kind])) {
+  check.equal(measured.evaluation.report_concerns.performed.length, 2, 'all six mechanisms measure supported own report facts');
+  for (const id of ['ADDRESS_GEOGRAPHIC_INCONSISTENCY','PAID_CLAIM'].map(kind=>concerns.CHECK_BY_KIND[kind])) {
     check.equal(checklistFor(measured.evaluation).find((entry) => entry.check_id === id).state, 'PERFORMED',
       `${id}: source-backed performed state reaches the shared checklist`);
     check.equal(checklistFor({ common_errors: { performed: [] } }).find((entry) => entry.check_id === id).state, 'NOT_PERFORMED',

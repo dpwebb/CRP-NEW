@@ -7,6 +7,7 @@ const crypto = require('node:crypto');
 const { sourceForField, reportReference, reportDateValue } = require('./report-fact-sources.cjs');
 const { VERSION, SOURCES, LOCALITY_MAPPINGS } = require('./report-concern-sources.cjs');
 const auReviews = require('./au-comparison-concerns.cjs');
+const { supportsConsumerIssue } = require('./consumer-issue-materiality.cjs');
 
 const ADDRESS_CHECK = 'COMMON-ERROR-ADDRESS-GEOGRAPHIC-INCONSISTENCY';
 const NON_VIOLATION_LABEL = 'NON-VIOLATION CONCERN';
@@ -173,6 +174,7 @@ function finish({ kind, record, report, sources, title, explanation, uncertainty
  * report association and its decisive evidence. A confidence flag or manually
  * invented REPORT_CONCERN object is never enough to enable correspondence. */
 function isGovernedIssue(issue) {
+  if (!supportsConsumerIssue(issue)) return false;
   if (issue?.au_comparison_concern === true) return auReviews.isGovernedIssue(issue);
   if (!issue || issue.report_concern !== true || !KINDS.includes(issue.concern_kind)
     || issue.source_version !== VERSION || issue.request_type !== 'VERIFICATION'
@@ -366,6 +368,7 @@ function review(extraction, evaluation) {
     || !String(evaluation.region || '').startsWith(evaluation.country + '-')
     || extraction.support !== 'ACTUAL_REPORT_EVIDENCE') return { issues, address, performed: [] };
   const mark = (kind, issue, ready) => {
+    if (issue && !supportsConsumerIssue(issue)) return;
     if (!issue && !ready) return;
     const checkId = CHECK_BY_KIND[kind], prior = performed.get(checkId);
     const row = prior || { check_id: checkId,

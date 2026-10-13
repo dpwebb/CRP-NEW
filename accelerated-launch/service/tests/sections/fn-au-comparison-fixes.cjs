@@ -134,7 +134,7 @@ async function run(t,check) {
   check.equal(find([paidDefault],'DEFAULT_PAID_STATEMENT').length,0,'source-explained reversal does not establish a printed contradiction');
   const chron=identity(row(15));chron.report_reference_date={raw:'10/01/2026',normalized:null,status:'EXTRACTION_UNRESOLVED',interpretations:['2026-01-10','2026-10-01'],location:loc(1,33)};
   put(chron,'reportedAccount.reportedDate','22/06/2026','2026-06-22');
-  check.equal(find([chron],'SOURCE_DATE_CHRONOLOGY_REVIEW')[0]?.confidence,'POTENTIAL','concrete header/update ambiguity becomes one qualified review');
+  check.equal(find([chron],'SOURCE_DATE_CHRONOLOGY_REVIEW').length,0,'a valid report-date reading resolves the apparent conflict');put(chron,'reportedAccount.reportedDate','22/11/2026','2026-11-22');check.ok(find([chron],'SOURCE_DATE_CHRONOLOGY_REVIEW').some(i=>issues.isEligible(i)),'update later than every report-date interpretation remains actionable');put(chron,'reportedAccount.reportedDate','22/06/2026','2026-06-22');
   chron.report_reference_date.interpretations=['2026-11-10','2026-12-10'];
   check.equal(find([chron],'SOURCE_DATE_CHRONOLOGY_REVIEW').length,0,'updates earlier than every viable report-date reading are benign');
   const original=identity(row(16),'Fictional Original','original-token');put(original,'account.status','Closed / sold','CLOSED / SOLD');put(original,'account.balance','AUD 0',0);

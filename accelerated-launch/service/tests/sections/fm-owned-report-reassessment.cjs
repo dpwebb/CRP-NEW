@@ -15,8 +15,7 @@ const clone=value=>JSON.parse(JSON.stringify(value));
 const digest=value=>crypto.createHash('sha256').update(Buffer.isBuffer(value)?value:JSON.stringify(value)).digest('hex');
 const upload=(bytes,key)=>({originalFilename:'fictional-retained-table.pdf',declaredBytes:bytes.length,
   mimeType:'application/pdf',contentBase64:bytes.toString('base64'),uploadKey:key});
-const EXPECTED=['ADDRESS_GEOGRAPHIC_INCONSISTENCY','PAID_CLAIM','CLOSURE_DATE_REVIEW',
-  'AU_TFN_HANDLING','AU_AMOUNT_CATEGORY_REVIEW'];
+const EXPECTED=['ADDRESS_GEOGRAPHIC_INCONSISTENCY','PAID_CLAIM'];
 
 function legacyCache(extraction) {
   const old=clone(extraction);delete old.reader_version;delete old.report_concern_evidence;
@@ -78,11 +77,11 @@ async function run(t,check) {
     check.notEqual(current.result_id,historical.result_id,'new assessment gets a distinct result identity');
     check.deepEqual(current.extraction.records.map(row=>row.kind),['GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_ACCOUNT','GENERAL_COLLECTION','GENERAL_INQUIRY','GENERAL_INQUIRY'],'fresh extraction recovers four accounts, one collection and two inquiries');
     const surfaced=issues.issuesFor({evaluation:current.evaluation,extraction:current.extraction});
-    check.deepEqual([...new Set(surfaced.filter(issue=>issue.report_concern).map(issue=>issue.concern_kind))].sort(),EXPECTED.slice().sort(),'five actionable concern categories reach the new result while all-OK histories are disregarded');
+    check.deepEqual([...new Set(surfaced.filter(issue=>issue.report_concern).map(issue=>issue.concern_kind))].sort(),EXPECTED.slice().sort(),'legitimate geography and payment claims survive without retired defaults');
     const geography=surfaced.filter(issue=>issue.report_concern&&!issue.non_violation);
     check.equal(geography.length,1,'fresh result groups sourced geography discrepancies into one selectable report issue');
     check.equal(geography[0].evidence.addresses.length,3,'grouped geography issue retains all three independently sourced addresses');
-    check.equal(surfaced.filter(issue=>issue.report_concern&&issue.non_violation).length,7,'fresh result retains seven bounded review concerns');
+    check.equal(surfaced.filter(issue=>issue.report_concern&&issue.non_violation).length,1,'fresh result retains the supported payment claim only');
     check.equal(fileState(t,first.fileId).reassessment_extraction.reader_version,general.GENERAL_READER_VERSION,'only derived reassessment data is cached with the new version');
     check.equal(digest(frozenFile(fileState(t,first.fileId))),sourceFileHash,'original file metadata and upload-time extraction stay unchanged');
     check.equal(digest(t.service.store.readBlob(first.fileId)),digest(bytes),'owned original bytes remain exact');

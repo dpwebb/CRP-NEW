@@ -1,4 +1,5 @@
 'use strict';
+const { supportsConsumerIssue } = require('./consumer-issue-materiality.cjs');
 
 // Governed, source-linked AU accuracy/currency reviews. Nothing here accepts an
 // expected outcome, a filename or a consumer-document instruction as authority.
@@ -156,6 +157,7 @@ function issue(extraction,evaluation,record,kind,sources,title,explanation,uncer
   return result;
 }
 function isGovernedIssue(value) {
+  if (!supportsConsumerIssue(value)) return false;
   if(value?.au_comparison_concern!==true || !KINDS.includes(value.concern_kind) || value.source_version!==VERSION
     || value.check_id!==CHECK_BY_KIND[value.concern_kind] || !['DEFINITE','PROBABLE','POTENTIAL'].includes(value.confidence)
     || value.request_type!=='VERIFICATION'||!value.request_wording||!value.report_identity?.bureau
@@ -354,7 +356,7 @@ function concernsFor(extraction,evaluation) {
     if(!ref?.interpretations?.length||ref.normalized_value||!update)continue;
     const key=record.source_file_id||record.report_segment_id||'report';
     if(seenReports.has(key)||!correlatedLater(ref,update))continue;
-    add(record,'SOURCE_DATE_CHRONOLOGY_REVIEW',[ref,update,own(record,'account.reported_identity')],'Report and update dates need checking',`The printed report date ${ref.raw_value} could mean ${ref.interpretations.map(namedDate).join(' or ')}. One reading precedes the account update ${update.raw_value}.`,'Another valid numeric-date reading may resolve the chronology. The report date has not been replaced with the upload or assessment date.','please verify the report-issued date, its date convention and the account update dates, and correct any inaccurate dates',{report_date_alternatives:ref.interpretations,update_date_alternatives:update.interpretations});seenReports.add(key);
+    add(record,'SOURCE_DATE_CHRONOLOGY_REVIEW',[ref,update,own(record,'account.reported_identity')],'Report and update dates need checking',`The printed report date ${ref.raw_value} could mean ${ref.interpretations.map(namedDate).join(' or ')}. Every valid reading precedes the account update ${update.raw_value}.`,'The update follows every valid report-date reading. Verify the source dates; the report date is never replaced with the upload or assessment date.','please verify the report-issued date, its date convention and the account update dates, and correct any inaccurate dates',{report_date_alternatives:ref.interpretations,update_date_alternatives:update.interpretations});seenReports.add(key);
   }
   const reportGroups=new Map();
   for(const value of output.filter(value=>value.concern_kind==='AU_CATEGORY_RETENTION_REVIEW'&&value.evidence.category==='RHI')) {
@@ -393,6 +395,6 @@ function concernsFor(extraction,evaluation) {
     if(current.length<2)continue;const grouped=JSON.parse(JSON.stringify(current[0]));grouped.source_facts=current.flatMap(value=>value.source_facts);grouped.evidence.related_records=current.map(value=>value.record_index);
     const fingerprint=signature(grouped);grouped.issue_id=hash(['au-review',grouped.concern_kind,fingerprint]).slice(0,16);grouped.concern_assessment.fingerprint=fingerprint;grouped.eligible=isGovernedIssue(grouped);current.forEach(value=>replaced.add(value));groupedIssues.push(grouped);
   }
-  return output.filter(value=>value&&!replaced.has(value)).concat(groupedIssues);
+  return output.filter(value=>value&&!replaced.has(value)).concat(groupedIssues).filter(supportsConsumerIssue);
 }
 module.exports={VERSION,KINDS,CHECK_BY_KIND,concernsFor,isGovernedIssue,own,dateReading,reportSource,issue,bounds,shift,expired};

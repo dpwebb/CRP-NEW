@@ -200,7 +200,7 @@ async function run(t,check) {
     check.ok(assembled.report_concern_evidence.every(item=>item.location.file_id==='report-file'&&item.report_reference_date.location.file_id==='report-file'),'own field and own report-date locations receive exact file custody');
     check.equal(JSON.stringify(segmented),before,'assembly does not mutate persisted per-file concern readings');
     const surfaced=concerns.concernsFor(assembled,{country:'AU',region:'AU-ACT'});
-    check.deepEqual(surfaced.map(issue=>issue.report_identity.reference_date).sort(),['2026-06-06','2026-06-06','2026-07-07','2026-07-07'],'consumer violations and concerns keep their source-specific report dates');
+    check.deepEqual(surfaced.map(issue=>issue.report_identity.reference_date).sort(),['2026-06-06','2026-07-07'],'consumer violations and concerns keep their source-specific report dates');
   }
   const undated=assembledExtraction(readSegmentFixture(t,{undatedSecond:true}));
   check.ok(undated.report_concern_evidence.filter(item=>item.report_segment_id.endsWith('segment-2')).every(item=>item.report_reference_date.normalized==null),'undated second report never borrows first report date');
@@ -208,7 +208,7 @@ async function run(t,check) {
   const ambiguous=readSegmentFixture(t,{samePage:true,ambiguous:true});
   check.equal(ambiguous.report_concern_evidence.length,2,'ambiguous second bureau boundary withholds only its concern associations');
   check.ok(ambiguous.report_concern_associations.some(item=>item.state==='UNRESOLVED'),'withheld segment associations remain internal diagnostics');
-  check.equal(concerns.concernsFor(assembledExtraction(ambiguous),{country:'AU',region:'AU-ACT'}).length,2,'assembly cannot restore ambiguous second-report concerns using global identity');
+  check.equal(concerns.concernsFor(assembledExtraction(ambiguous),{country:'AU',region:'AU-ACT'}).length,1,'assembly cannot restore ambiguous second-report concerns using global identity');
   const untrustedBoundary=readSegmentFixture(t,{samePage:true},model=>{for(const word of model.pages[0].word_boxes)if(word.text==='Experian')word.trusted=false;});
   check.equal(untrustedBoundary.report_concern_evidence.length,2,'untrusted second report title never establishes bureau association');
   const crossing=readSegmentFixture(t,{samePage:true,crossBoundary:true});
@@ -229,7 +229,7 @@ async function run(t,check) {
     const mismatch=structuredClone(own);change(mismatch.report_concern_evidence[0]);
     const assembled=assembledExtraction(mismatch);
     check.equal(assembled.report_concern_evidence.length,3,label+' withholds that association without rewriting source');
-    check.equal(concerns.concernsFor(assembled,{country:'AU',region:'AU-ACT'}).length,3,label+' cannot create a source-borrowed consumer issue');
+    check.equal(concerns.concernsFor(assembled,{country:'AU',region:'AU-ACT'}).length,1,label+' cannot create a source-borrowed consumer issue');
     check.ok(assembled.report_concern_associations.some(item=>item.reason==='REPORT_CONCERN_SOURCE_ASSOCIATION_MISMATCH'),label+' remains internally recorded');
   }
   const twoFiles=assembly.assemble([{file_id:'one',stored_sha256:'one',extraction:own},

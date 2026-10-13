@@ -239,11 +239,11 @@ function everyCaRegion(check, extraction) {
         'CA-NS: each date-bearing entry carries its own comparison');
       check.ok(!evaluated.unavailable_checks.some((u) => u.adapter_id === 'CA-NS-CRA-S10-3-E-BANKRUPTCY-6Y'),
         'CA-NS: the out-of-checklist bankruptcy adapter is absent from active assessment, including unavailable checks');
-      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR','REPORT_CONCERN'],
+      check.deepEqual(evaluated.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
         'CA-NS: its internal mechanism inventory includes the shared date check and retained last-payment limb');
     } else {
       check.equal(statutory.length, 0, `${region}: no statutory comparison runs, because none is recorded for it`);
-      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR','REPORT_CONCERN'],
+      check.deepEqual(evaluated.assessment_kinds, ['REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
         `${region}: the shared date check is recorded without adding a statutory comparison`);
     }
     check.ok(factual.performed.every((c) => c.legal_finding === undefined), `${region}: no factual check carries a legal finding`);

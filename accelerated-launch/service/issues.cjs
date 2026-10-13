@@ -19,6 +19,7 @@ const accountDisplay = require('./account-display.cjs');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
 const reportConcerns = require('./report-concerns.cjs');
+const { supportsConsumerIssue } = require('./consumer-issue-materiality.cjs');
 const { PREVIEW_ORDER, PREVIEW_CATEGORY_BY_CHECK } = require('./common-error-checklist.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
@@ -838,6 +839,7 @@ function describe(issue) {
  *  statutory finding (retention OR content) is eligible when its per-rule permission authorizes a VIOLATION
  *  packet, or when it is a PROBABLE verification request. */
 function isEligible(issue) {
+  if (!supportsConsumerIssue(issue)) return false;
   /* Court timing is informational and cannot be selected into bureau correspondence. */
   if (issue.basis_type === BASIS_TYPE.LIMITATION_ASSESSMENT) return false;
   if (issue.basis_type === BASIS_TYPE.REPORT_CONCERN || issue.report_concern === true) {
@@ -1269,6 +1271,7 @@ function issuesFor(ctx) {
   const distinctFactual = mergeOverlappingFactualIssues(statutory, factual)
     .filter(issue=>!coveredPrintedConflicts.has(issue.check_id+'|'+issue.record_index));
   return statutory.concat(distinctFactual, paymentHistory, retentionReview, limitation, published, concerns)
+    .filter(supportsConsumerIssue)
     .map((issue) => {
       const record = recordFor(extraction, issue.record_index);
       if (!record) return issue;
