@@ -34,7 +34,7 @@ function address(profile) {
   return ['address_line1', 'address_line2', 'city', 'region', 'postal_code', 'country'].map(field => profile[field]).filter(Boolean).join(', ');
 }
 function enrich(store, actor, country, packet, mixed) {
-  if (!packet || !packet.support) return packet;
+  if (!packet || !packet.support) return packet ? { ...packet } : packet;
   const support = snapshot(store, actor, country, packet.support, mixed);
   const correspondence = { ...packet.correspondence };
   if (packet.support.use_account_profile) {

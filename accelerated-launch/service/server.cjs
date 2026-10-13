@@ -7,14 +7,21 @@ const { ProcessingDispatcher, refusal } = require('./processing-dispatcher.cjs')
 const HOST = process.env.CRP_LOCAL_SERVICE_HOST || '127.0.0.1';
 const PORT = Number(process.env.CRP_LOCAL_SERVICE_PORT || 8787);
 const dispatcher = new ProcessingDispatcher();
+const requestPolicy=require('./request-policy.cjs').policy();
 let recovery;
 const identity = () => ({ ok: dispatcher.ready && !dispatcher.closed, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: recovery?.payment?.key_mode || null, launch_ready: false });
 const server = http.createServer((req, res) => {
   let pathname;
   try { pathname = new URL(req.url, 'http://localhost').pathname; } catch { return refusal(res, 'INVALID_REQUEST', 400); }
+  try{requestPolicy(req);}catch(error){return refusal(res,error.code,error.status || 400);}
   if ((req.method === 'GET' || req.method === 'HEAD') && pathname === '/api/health') {
     res.writeHead(identity().ok ? 200 : 503, { ...SECURITY_HEADERS, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
     return res.end(req.method === 'HEAD' ? '' : JSON.stringify(identity()));
+  }
+  if((req.method==='GET'||req.method==='HEAD') && pathname==='/api/ready') {
+    const ready=identity().ok && dispatcher.storage?.readable===true && dispatcher.storage?.writable===true && Date.now()-dispatcher.storageCheckedAt<60000 && dispatcher.admitted<dispatcher.limit;
+    res.writeHead(ready?200:503,{...SECURITY_HEADERS,'Content-Type':'application/json','Cache-Control':'no-store'});
+    return res.end(req.method==='HEAD'?'':JSON.stringify({...identity(),ok:ready,storage_ready:ready,storage_recovered:dispatcher.storage?.recovered===true}));
   }
   if ((req.method === 'GET' || req.method === 'HEAD') && !pathname.startsWith('/api/')) {
     const asset = staticResponse(req, pathname);

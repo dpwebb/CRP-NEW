@@ -40,21 +40,32 @@ cleanup() {
 }
 trap cleanup EXIT HUP INT TERM
 
-mkdir -m 700 "$work/data" "$work/config"
+release=$(realpath -e /opt/crp-wizard-staging/current)
+case "$release" in /opt/crp-wizard-staging/releases/crp-v1-*) ;; *) exit 1 ;; esac
+test -z "$(find "$release" -type l -print -quit)"
+mkdir -m 700 "$work/data" "$work/config" "$work/release"
 stopped=1
 systemctl stop "$service"
 cp -a "$data/." "$work/data/"
 cp -p "$environment" "$work/config/staging.env"
+cp -a "$release/." "$work/release/"
+(cd "$release" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$work/release.source.sha256"
+(cd "$work/release" && sha256sum --quiet -c "$work/release.source.sha256")
+cp -a /etc/crp "$work/config/crp"
+cp -a /opt/crp-operations "$work/config/operations"
+systemctl cat "$service" > "$work/config/application-unit.txt"
+systemctl cat crp-v1-monitor.service crp-v1-monitor.timer > "$work/config/monitor-units.txt"
+cp -p /opt/crp-wizard-staging/offsite-backup.sh "$work/config/backup.sh"
 (cd "$data" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$work/source.sha256"
 (cd "$work/data" && sha256sum --quiet -c "$work/source.sha256")
 systemctl start "$service"
 stopped=0
 systemctl is-active --quiet "$service"
 
-(cd "$work" && find data config -type f -print0 | sort -z | xargs -0 sha256sum > MANIFEST.sha256)
+(cd "$work" && find data config release -type f -print0 | sort -z | xargs -0 sha256sum > MANIFEST.sha256)
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 archive="$backup_root/crp-v1-staging-$stamp.tar.gz.age"
-tar -C "$work" -czf - data config MANIFEST.sha256 | age -R "$recipient" -o "$archive"
+tar -C "$work" -czf - data config release MANIFEST.sha256 | age -R "$recipient" -o "$archive"
 sha256sum "$archive" > "$archive.sha256"
 if [ "$mode" = snapshot-only ]; then
   printf 'ENCRYPTED_SNAPSHOT_READY %s\n' "$archive"

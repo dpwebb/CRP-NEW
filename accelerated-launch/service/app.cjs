@@ -44,6 +44,7 @@ const MATRIX_FILE = path.join(__dirname, '..', 'launch-matrix.json');
  */
 const SECURITY_HEADERS = Object.freeze({
   'X-Content-Type-Options': 'nosniff',
+  ...(process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE==='1'?{'Strict-Transport-Security':'max-age=31536000'}:{}),
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'no-referrer',
   'Cross-Origin-Opener-Policy': 'same-origin',
@@ -783,6 +784,7 @@ function createService(options) {
   const opts = options || {};
   const store = new PrivateStore(opts.dataDir);
   const logger = new Logger(opts.logSink);
+  const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
@@ -812,6 +814,7 @@ function createService(options) {
   async function handle(req, res) {
     const urlPath = new URL(req.url, 'http://127.0.0.1').pathname;
     try {
+      requestPolicy(req);
       if (!urlPath.startsWith('/api/')) {
         const asset = staticResponse(req, urlPath);
         if (!asset) {

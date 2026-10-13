@@ -336,7 +336,7 @@ function resolveSession(store, token) {
     });
     throw new ServiceError('AUTHENTICATION_REQUIRED');
   }
-  store.update((s) => {
+  if(!Number.isFinite(Date.parse(session.last_seen_at)) || Date.now()-Date.parse(session.last_seen_at)>=60000 || Date.parse(session.idle_expires_at)-Date.now()<60000)store.update((s) => {
     const live = s.sessions.find((row) => row.session_id === session.session_id);
     if (!live) return false;
     live.last_seen_at = nowIso();

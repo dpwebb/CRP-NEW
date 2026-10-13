@@ -39,4 +39,4 @@ function supportsConsumerIssue(issue) {
   return true;
 }
 
-module.exports = { supportsConsumerIssue };
+module.exports = { supportsConsumerIssue, isRetiredDefault: kind => RETIRED_DEFAULTS.has(kind) };

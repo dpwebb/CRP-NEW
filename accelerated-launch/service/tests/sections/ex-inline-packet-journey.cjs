@@ -97,7 +97,7 @@ async function run(t, check) {
 
   // Controlled unknown-page provenance test; no claim that this is a new reader layout.
   const row = t.service.store.state().results.find(item => item.case_id === id);
-  const selected = packets.eligibleIssues(row).slice(0,1);
+  const selected = structuredClone(packets.eligibleIssues(row).slice(0,1));
   const fileId = row.file_ids[0];
   const stripped = JSON.parse(JSON.stringify(row));
   function removePages(value) { if (!value || typeof value !== 'object') return; delete value.page; for (const child of Object.values(value)) removePages(child); }

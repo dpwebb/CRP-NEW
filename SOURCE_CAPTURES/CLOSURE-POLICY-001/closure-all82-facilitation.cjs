@@ -64,7 +64,7 @@ const inventory = sections.get('o-all82-infrastructure').evidence;
 if (journey.regions_tested !== 82 || journey.download_content_matched !== 82
   || journey.case_association_matched !== 82 || common.ordinary_report_regions !== 82
   || common.ordinary_report_checks_per_region !== 6 || common.statutory_gate !== false
-  || checklist.checklist !== 21 || checklist.jurisdictions !== 82
+  || checklist.checklist !== require(path.join(root,'accelerated-launch/service/common-error-checklist.cjs')).CHECKS.length || checklist.jurisdictions !== 82
   || inventory.regions_exercised.length !== 82) throw Error('Measured all-82 checklist journey is incomplete');
 const sourceFiles = ['app.cjs', 'cases.cjs', 'journey.cjs', 'formats.cjs', 'general-intake.cjs',
   'entitlement.cjs', 'applicability.cjs', 'issues.cjs', 'results.cjs', 'packets.cjs',

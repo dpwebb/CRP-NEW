@@ -135,10 +135,14 @@ verified_copy "$data" "$work/data" data
 cp -p -- "$environment" "$work/config/production.env"
 chmod 600 "$work/config/production.env"
 cmp -s "$environment" "$work/config/production.env" || fail "configuration copy mismatch"
-for name in release-manifest.json deployment-provenance.json; do
-  cp -p -- "$release/$name" "$work/release/$name"
-  cmp -s "$release/$name" "$work/release/$name" || fail "release metadata copy mismatch"
-done
+ordinary_tree "$release"
+verified_copy "$release" "$work/release" release
+mkdir -m 700 "$work/config/operations"
+cp -a -- /opt/crp-operations/. "$work/config/operations/"
+cp -a -- /etc/crp "$work/config/crp"
+systemctl cat "$service" > "$work/config/application-unit.txt"
+systemctl cat crp-v1-monitor.service crp-v1-monitor.timer > "$work/config/monitor-units.txt"
+cp -p -- "$base/offsite-backup-production.sh" "$work/config/backup.sh"
 cp -p -- "$base/candidate-activation.json" "$work/release/candidate-activation.json"
 cmp -s "$base/candidate-activation.json" "$work/release/candidate-activation.json" || fail "activation metadata copy mismatch"
 legacy_included=false

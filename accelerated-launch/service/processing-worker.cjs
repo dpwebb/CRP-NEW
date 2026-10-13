@@ -5,7 +5,9 @@ const { EventEmitter } = require('node:events');
 const { createService } = require('./app.cjs');
 const service = createService({ dataDir: process.env.CRP_LOCAL_SERVICE_DATA });
 const recovery = service.startup();
+function readiness() {const proof=service.store.readiness();parentPort.postMessage({type:'readiness',proof,checkedAt:Date.now()});return proof;}
 parentPort.postMessage({ type: 'ready', recovery, dataDir: service.store.dataDir });
+readiness();setInterval(readiness,30000).unref();
 parentPort.on('message', async ({ id, request }) => {
   const req = new EventEmitter();
   Object.assign(req, request, { socket: { remoteAddress: request.remoteAddress }, destroy() {} });
@@ -19,6 +21,6 @@ parentPort.on('message', async ({ id, request }) => {
   // handle() installs body listeners synchronously before its first await.
   if (request.body?.length) req.emit('data', Buffer.from(request.body));
   req.emit('end');
-  try { await handling; }
+  try { await handling; readiness(); }
   catch { if (!finished) res.writeHead(500, { 'Content-Type': 'application/json' }), res.end('{"ok":false,"error":{"code":"INTERNAL_ERROR"}}'); }
 });

@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-13T21:49:35.078Z",
+  "generated_at": "2026-10-13T22:50:31.830Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 101,
-      "digest": "4D5A9DDADD49F7D73F989662E91ED84EACC6C9298BB1EEA52FEE11C154908D92",
+      "file_count": 102,
+      "digest": "AE6935ECD10B0B1ECA3AF5FF6C6B4AEAE6BB08D9DF8641BC86B85CBE7CFF6171",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -86,11 +86,11 @@
         },
         {
           "file": "accelerated-launch/service/accounts.cjs",
-          "sha256": "AED3F456DA0F7B4800B098B417B23B26743752E444337792E72708AAB4243F73"
+          "sha256": "5EB590B50FA27EBCB3639B4013F924CE0C4CB5EE042D6D5B6A70B94F443FC5D7"
         },
         {
           "file": "accelerated-launch/service/app.cjs",
-          "sha256": "B47091B27AAD2AC0917C0EBD2D9EA1D4E11335700FE848CEDDFB1CABA8A2CA90"
+          "sha256": "CACC0D111300C9B0E8108A091A63C7623872F2AB931D2D9BBA68F61D61FCA4F3"
         },
         {
           "file": "accelerated-launch/service/applicability.cjs",
@@ -178,7 +178,7 @@
         },
         {
           "file": "accelerated-launch/service/consumer-issue-materiality.cjs",
-          "sha256": "C6A53146DBF61A5FC2AE90871564880995CB9D8723167670319C14F8D1561AD0"
+          "sha256": "21161D87BCC4176B3D1F59209288A63BF9971886ABA19F7D1D010DE6C1E02BFF"
         },
         {
           "file": "accelerated-launch/service/content-assessments.cjs",
@@ -342,7 +342,7 @@
         },
         {
           "file": "accelerated-launch/service/packet-support.cjs",
-          "sha256": "CFAC7710F104570F21BFA50251E53A5AEEBDF09A04881A0770A9EEA4FCB366B4"
+          "sha256": "991A71AFE0FE5CD29D5F40A584D576DD9FE4214861DD16B0FCEB9046FA9280B2"
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
@@ -374,15 +374,15 @@
         },
         {
           "file": "accelerated-launch/service/private-store.cjs",
-          "sha256": "7493C1D54269354C551EF613054BEC19F9263A2308E8FBA0B63BE9D04E75898E"
+          "sha256": "DE398BC69C7D2156DB82F81F22D24FE7FBE00DE0787ED94F590C025FA9143EA7"
         },
         {
           "file": "accelerated-launch/service/processing-dispatcher.cjs",
-          "sha256": "7B5FCA0874820DC76263F66BD56AA7D720B6D76B18B8A8CE907DE389461AE265"
+          "sha256": "C3C12F43DD208E69249E254C5945B11D479D4A1D4F4CD596CABE874B7AE6FE10"
         },
         {
           "file": "accelerated-launch/service/processing-worker.cjs",
-          "sha256": "C751274DA93E6A45FE925B2EFBF727AF70EDD04DE32D0B16705F658DAEDCF4F9"
+          "sha256": "5294361425FFB66F34FF2DCC06925E9EDECE7577F360A13BBCE06DD496FBB7C8"
         },
         {
           "file": "accelerated-launch/service/published-reporting-periods.cjs",
@@ -422,7 +422,7 @@
         },
         {
           "file": "accelerated-launch/service/report-concerns.cjs",
-          "sha256": "708590532BA476C05CC8231A000D45D448392D95BFD9C760F28E3B2B958C5FDC"
+          "sha256": "D461D05C8E4A63709581EDA542EA03ED29E4A3EF11945CBEDF741FB5C4ED4015"
         },
         {
           "file": "accelerated-launch/service/report-context-fields.cjs",
@@ -431,6 +431,10 @@
         {
           "file": "accelerated-launch/service/report-fact-sources.cjs",
           "sha256": "16201A62AD8A71AD200B177924EF27A3E771768D87070BBAA0AB252F95D62778"
+        },
+        {
+          "file": "accelerated-launch/service/request-policy.cjs",
+          "sha256": "B3AD4A22F7D2435AF34D4C37F5D16096EB2A6C7B339E3E14DC0BDF84888E833A"
         },
         {
           "file": "accelerated-launch/service/results.cjs",
@@ -442,7 +446,7 @@
         },
         {
           "file": "accelerated-launch/service/server.cjs",
-          "sha256": "D5D34C33676FA7D5D637A89DEFA7325BBC3B6244E4CA0091FD32067974802BAF"
+          "sha256": "8C9F44E9DD2CF5510E699EF0A8745B14931A487D039AC4E65992E25175E6E15B"
         },
         {
           "file": "accelerated-launch/service/store-diagnostic.cjs",
@@ -699,6 +703,6 @@
       ]
     }
   ],
-  "manifest_digest": "CAA7542A6107782E2B4D65DA3EBFA0160B8485A22F60B828809577EE173C7B1F",
-  "total_file_count": 163
+  "manifest_digest": "64C4420738A214141AD05895A745B4E75399FBB8F1E020D7A59888ED6FE92E04",
+  "total_file_count": 164
 }

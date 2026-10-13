@@ -12,16 +12,19 @@ class ProcessingDispatcher extends EventEmitter {
   constructor(options = {}) {
     super();
     this.limit = options.queueLimit ?? 8;
-    this.timeout = options.timeoutMs ?? 180000;
+    // One response budget includes receiving, waiting and executing. Leave a
+    // margin below the existing 180-second proxy deadline.
+    this.timeout = options.timeoutMs ?? 150000;
     this.startupTimeout = options.startupTimeoutMs ?? 180000;
     this.workerFile = options.workerFile || path.join(__dirname, 'processing-worker.cjs');
     this.queue = []; this.active = null; this.admitted = 0; this.serial = 0; this.ready = false; this.closed = false;
     this.worker = new Worker(this.workerFile, { resourceLimits: { maxOldGenerationSizeMb: options.memoryMb ?? 4096 } });
     this.bootTimer = setTimeout(() => this.fail('PROCESSING_STARTUP_TIMEOUT'), this.startupTimeout);
     this.worker.on('message', message => {
+      if(message.type==='readiness'){this.storage=message.proof;this.storageCheckedAt=message.checkedAt;return;}
       if (message.type === 'ready') { clearTimeout(this.bootTimer); this.ready = true; this.emit('ready', message); this.next(); return; }
       if (message.type !== 'response' || message.id !== this.active?.id) return this.fail('PROCESSING_PROTOCOL_ERROR');
-      const job = this.active; clearTimeout(job.timer); this.active = null; this.admitted--;
+      const job = this.active; clearTimeout(job.timer); clearTimeout(job.queueTimer); this.active = null; this.admitted--;
       if (message.bytes?.length > MAX_RESPONSE) { refusal(job.res, 'PROCESSING_OUTPUT_LIMIT'); }
       else if (!job.res.destroyed) { job.res.writeHead(message.status, message.headers); job.res.end(Buffer.from(message.bytes)); }
       this.next();
@@ -32,13 +35,14 @@ class ProcessingDispatcher extends EventEmitter {
   fail(code) {
     if (this.closed) return;
     this.closed = true; this.ready = false; clearTimeout(this.bootTimer);
-    for (const job of [this.active, ...this.queue].filter(Boolean)) { clearTimeout(job.timer); if (!job.res.destroyed) refusal(job.res, code); }
+    for (const job of [this.active, ...this.queue].filter(Boolean)) { clearTimeout(job.timer); clearTimeout(job.queueTimer); if (!job.res.destroyed) refusal(job.res, code); }
     this.queue = []; this.active = null; this.admitted = 0;
     this.worker.terminate(); this.emit('fatal', code);
     // The owning server exits; systemd restarts it. Do not start a second writer
     // while an old worker or its native subprocess may still be finishing.
   }
   handle(req, res) {
+    const received = Date.now();
     if (!this.ready || this.closed) return refusal(res, 'PROCESSING_UNAVAILABLE');
     if (this.admitted >= this.limit) return refusal(res, 'PROCESSING_BUSY');
     this.admitted++;
@@ -54,7 +58,14 @@ class ProcessingDispatcher extends EventEmitter {
     });
     req.on('end', () => {
       if (finished) return; finished = true; clearTimeout(bodyTimer);
-      this.queue.push({ id: ++this.serial, res, enqueued: Date.now(), request: { url: req.url, method: req.method, headers: req.headers, remoteAddress: req.socket?.remoteAddress, body: Buffer.concat(chunks) } });
+      const job = { id: ++this.serial, res, deadline: received + this.timeout, request: { url: req.url, method: req.method, headers: req.headers, remoteAddress: req.socket?.remoteAddress, body: Buffer.concat(chunks) } };
+      job.queueTimer = setTimeout(() => {
+        const index = this.queue.indexOf(job);
+        if (index < 0) return;
+        this.queue.splice(index, 1); this.admitted--;
+        if (!res.destroyed) refusal(res, 'PROCESSING_QUEUE_TIMEOUT');
+      }, Math.max(1, job.deadline - Date.now()));
+      this.queue.push(job);
       this.next();
     });
   }
@@ -62,12 +73,13 @@ class ProcessingDispatcher extends EventEmitter {
     if (!this.ready || this.closed || this.active) return;
     while (this.queue.length) {
       const job = this.queue.shift();
-      if (job.res.destroyed || Date.now() - job.enqueued > this.timeout) { this.admitted--; if (!job.res.destroyed) refusal(job.res, 'PROCESSING_QUEUE_TIMEOUT'); continue; }
+      clearTimeout(job.queueTimer);
+      if (job.res.destroyed || Date.now() >= job.deadline) { this.admitted--; if (!job.res.destroyed) refusal(job.res, 'PROCESSING_QUEUE_TIMEOUT'); continue; }
       this.active = job;
-      job.timer = setTimeout(() => this.fail('PROCESSING_TIMEOUT'), this.timeout);
+      job.timer = setTimeout(() => this.fail('PROCESSING_TIMEOUT'), Math.max(1, job.deadline - Date.now()));
       this.worker.postMessage({ id: job.id, request: job.request }); return;
     }
   }
-  async close() { this.closed = true; this.ready = false; clearTimeout(this.bootTimer); clearTimeout(this.active?.timer); await this.worker.terminate(); }
+  async close() { this.closed = true; this.ready = false; clearTimeout(this.bootTimer); clearTimeout(this.active?.timer); for(const job of this.queue)clearTimeout(job.queueTimer); await this.worker.terminate(); }
 }
 module.exports = { ProcessingDispatcher, refusal, MAX_BODY };

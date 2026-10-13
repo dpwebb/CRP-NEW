@@ -7,7 +7,7 @@ const crypto = require('node:crypto');
 const { sourceForField, reportReference, reportDateValue } = require('./report-fact-sources.cjs');
 const { VERSION, SOURCES, LOCALITY_MAPPINGS } = require('./report-concern-sources.cjs');
 const auReviews = require('./au-comparison-concerns.cjs');
-const { supportsConsumerIssue } = require('./consumer-issue-materiality.cjs');
+const { supportsConsumerIssue, isRetiredDefault } = require('./consumer-issue-materiality.cjs');
 
 const ADDRESS_CHECK = 'COMMON-ERROR-ADDRESS-GEOGRAPHIC-INCONSISTENCY';
 const NON_VIOLATION_LABEL = 'NON-VIOLATION CONCERN';
@@ -368,6 +368,7 @@ function review(extraction, evaluation) {
     || !String(evaluation.region || '').startsWith(evaluation.country + '-')
     || extraction.support !== 'ACTUAL_REPORT_EVIDENCE') return { issues, address, performed: [] };
   const mark = (kind, issue, ready) => {
+    if (isRetiredDefault(kind)) return;
     if (issue && !supportsConsumerIssue(issue)) return;
     if (!issue && !ready) return;
     const checkId = CHECK_BY_KIND[kind], prior = performed.get(checkId);

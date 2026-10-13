@@ -33,6 +33,11 @@ async function inspect(target, dependencies={}) {
     const response=await get(target.url+'/api/health',{signal:AbortSignal.timeout(10000)}),body=await response.json();
     if(!response.ok || body.ok!==true || body.build_id!==expected || body.deployment!==target.name || body.billing_mode!==(target.name==='production'?'live':'test'))failed.push('PUBLIC_HEALTH_IDENTITY');
   } catch {failed.push('PUBLIC_HEALTH_UNREACHABLE');}
+  if(!maintenance && target.require_readiness)try {
+    const response=await get(target.url+'/api/ready',{signal:AbortSignal.timeout(10000)}),body=await response.json();
+    if(!response.ok || body.storage_ready!==true || body.build_id!==expected)failed.push('SERVICE_NOT_READY');
+    if(body.storage_recovered===true)failed.push('STORE_BACKUP_RECOVERY');
+  }catch{failed.push('READINESS_UNREACHABLE');}
   for(const [args,expected,code] of [[['is-active',target.service],'active','SERVICE_NOT_ACTIVE'],[['is-enabled',target.service],'enabled','SERVICE_NOT_ENABLED'],[['show',target.backup_service,'--property=Result','--value'],'success','BACKUP_JOB_FAILED']]) {
     if(maintenance && code==='SERVICE_NOT_ACTIVE')continue;
     try {if(command(args)!==expected)failed.push(code);}catch{failed.push(code);}
@@ -45,7 +50,16 @@ async function main() {
   const config=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
   const results=await Promise.all(config.targets.map(target=>inspect(target)));
   const record={checked_at:new Date().toISOString(),passed:results.every(r=>r.passed),results};
-  const directory='/var/lib/crp-v1-monitor';fs.mkdirSync(directory,{recursive:true,mode:0o700});
+  const directory=config.status_directory||'/var/lib/crp-v1-monitor';fs.mkdirSync(directory,{recursive:true,mode:0o700});
+  if(config.alert_environment_file) {
+    const alert=require('./operational-alert.cjs'),file=directory+'/alert-delivery.json';let previous;
+    try{previous=JSON.parse(fs.readFileSync(file,'utf8'));}catch{}
+    try{
+      const delivery=await alert.notify(record,previous,(subject,body)=>alert.send(alert.settings(config.alert_environment_file),subject,body));
+      fs.writeFileSync(file+'.tmp',JSON.stringify(delivery)+'\n',{mode:0o600});fs.renameSync(file+'.tmp',file);
+      record.alert_delivery='OK';
+    }catch{record.alert_delivery='FAILED';record.passed=false;}
+  } else if(config.require_alerts) {record.alert_delivery='NOT_CONFIGURED';record.passed=false;}
   fs.writeFileSync(directory+'/status.json.tmp',JSON.stringify(record)+'\n',{mode:0o600});fs.renameSync(directory+'/status.json.tmp',directory+'/status.json');
   process.stdout.write(JSON.stringify(record)+'\n');
   if(!record.passed)process.exitCode=1;

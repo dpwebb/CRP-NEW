@@ -21,6 +21,22 @@ const STATE_FILE = 'state.json';
 const BACKUP_FILE = 'state.json.bak';
 const LOCK_FILE = 'store.lock';
 const BLOB_DIR = 'blobs';
+function freeze(value) {
+  if(value && typeof value==='object' && !Object.isFrozen(value)) { for(const child of Object.values(value))freeze(child);Object.freeze(value); }
+  return value;
+}
+function stamp(file) {const s=fs.statSync(file,{bigint:true});return [s.ino,s.size,s.mtimeNs,s.ctimeNs].join(':');}
+function syncDirectory(dir) {
+  // Windows does not expose a directory fsync through Node. File data is still
+  // flushed there; POSIX also flushes the renamed directory entry.
+  if(process.platform==='win32')return;
+  const fd=fs.openSync(dir,'r');try{fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+}
+function durableWrite(file,bytes) {
+  const temp=file+'.tmp',fd=fs.openSync(temp,'w',0o600);
+  try{fs.writeFileSync(fd,bytes);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+  fs.renameSync(temp,file);syncDirectory(path.dirname(file));
+}
 
 /**
  * The state shape. `version` is checked on read so a file written by a newer build is refused rather than
@@ -106,9 +122,11 @@ class PrivateStore {
     this.dataDir = assertOutsideRepository(dataDir || defaultDataDir());
     this.stateFile = path.join(this.dataDir, STATE_FILE);
     this.backupFile = path.join(this.dataDir, BACKUP_FILE);
+    this.initializedFile = path.join(this.dataDir, '.state-initialized');
     this.lockFile = path.join(this.dataDir, LOCK_FILE);
     this.blobDir = path.join(this.dataDir, BLOB_DIR);
     this.recoveredFromBackup = false;
+    this.cache=null; this.cacheStamp=null;
     fs.mkdirSync(this.dataDir, { recursive: true, mode: 0o700 });
     fs.mkdirSync(this.blobDir, { recursive: true, mode: 0o700 });
     try {
@@ -118,6 +136,7 @@ class PrivateStore {
       /* Windows does not implement POSIX modes; the ACLs it does have are not changed here. */
     }
     if (opts.allowMultiWriter !== true) this.claimWriterLock();
+    if (opts.allowMultiWriter !== true && (fs.existsSync(this.stateFile) || fs.existsSync(this.backupFile)) && !fs.existsSync(this.initializedFile)) durableWrite(this.initializedFile, 'CRP_PRIVATE_STORE_INITIALIZED\n');
   }
 
   /**
@@ -153,21 +172,25 @@ class PrivateStore {
    * the caller gets a typed failure and the service refuses the request rather than guessing.
    */
   state() {
-    if (!fs.existsSync(this.stateFile)) return normalizeState(null);
+    if (!fs.existsSync(this.stateFile) && !this.cache && !fs.existsSync(this.backupFile) && !fs.existsSync(this.initializedFile) && fs.readdirSync(this.blobDir).length===0) return freeze(normalizeState(null));
     try {
-      return normalizeState(JSON.parse(fs.readFileSync(this.stateFile, 'utf8')));
+      const current=stamp(this.stateFile);
+      if(this.cache && current===this.cacheStamp)return this.cache;
+      this.cache=freeze(normalizeState(JSON.parse(fs.readFileSync(this.stateFile, 'utf8'))));
+      this.cacheStamp=current;
+      return this.cache;
     } catch (primaryError) {
       if (fs.existsSync(this.backupFile)) {
         try {
           const recovered = normalizeState(JSON.parse(fs.readFileSync(this.backupFile, 'utf8')));
-          fs.copyFileSync(this.backupFile, this.stateFile);
+          durableWrite(this.stateFile,fs.readFileSync(this.backupFile));
           this.recoveredFromBackup = true;
-          return recovered;
+          this.cache=freeze(recovered);this.cacheStamp=stamp(this.stateFile);return this.cache;
         } catch {
           /* Fall through to the typed refusal below. */
         }
       }
-      const error = new Error(`PRIVATE_STORE_STATE_UNREADABLE: ${primaryError.message}`);
+      const error = new Error('PRIVATE_STORE_STATE_UNREADABLE');
       error.code = 'SERVICE_STATE_UNAVAILABLE';
       throw error;
     }
@@ -179,19 +202,18 @@ class PrivateStore {
    * kept as a backup, which is what makes the recovery above possible.
    */
   update(mutator) {
-    const next = this.state();
+    const next = structuredClone(this.state());
     const returned = mutator(next);
     const serialized = JSON.stringify(next, null, 2);
     if (fs.existsSync(this.stateFile)) {
-      try {
-        fs.copyFileSync(this.stateFile, this.backupFile);
-      } catch {
-        /* A backup that cannot be written must not stop the write itself. */
-      }
+      const backupTemp=this.backupFile+'.tmp';
+      fs.copyFileSync(this.stateFile,backupTemp);
+      const fd=fs.openSync(backupTemp,'r+');try{fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+      fs.renameSync(backupTemp,this.backupFile);syncDirectory(this.dataDir);
     }
-    const temp = `${this.stateFile}.tmp`;
-    fs.writeFileSync(temp, serialized, { encoding: 'utf8', mode: 0o600 });
-    fs.renameSync(temp, this.stateFile);
+    if (!fs.existsSync(this.initializedFile)) durableWrite(this.initializedFile, 'CRP_PRIVATE_STORE_INITIALIZED\n');
+    durableWrite(this.stateFile,serialized);
+    this.cache=freeze(next);this.cacheStamp=stamp(this.stateFile);
     return returned;
   }
 
@@ -217,6 +239,17 @@ class PrivateStore {
     }
     return report;
   }
+  readiness() {
+    let probe,fd;
+    try {
+      this.state();
+      probe=path.join(this.dataDir,'.readiness-'+require('node:crypto').randomUUID()+'.tmp');
+      fd=fs.openSync(probe,'wx',0o600);fs.writeFileSync(fd,'CRP_STORAGE_PROBE');fs.fsyncSync(fd);fs.closeSync(fd);fd=undefined;
+      fs.unlinkSync(probe);probe=undefined;syncDirectory(this.dataDir);
+      return {readable:true,writable:true,recovered:this.recoveredFromBackup};
+    } catch {return {readable:false,writable:false,recovered:this.recoveredFromBackup};}
+    finally {if(fd!==undefined)fs.closeSync(fd);if(probe)try{fs.unlinkSync(probe);}catch{}}
+  }
 
   /** Blobs are keyed by an opaque internal id the caller generated — never by a consumer file name. */
   blobPath(fileId) {
@@ -227,9 +260,9 @@ class PrivateStore {
   putBlob(fileId, bytes) {
     const file = this.blobPath(fileId);
     /* Written under a temporary name and renamed, so a crash cannot leave a half blob that looks complete. */
-    const temp = `${file}.part`;
-    fs.writeFileSync(temp, bytes, { mode: 0o600 });
-    fs.renameSync(temp, file);
+    const temp = `${file}.part`,fd=fs.openSync(temp,'w',0o600);
+    try{fs.writeFileSync(fd,bytes);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
+    fs.renameSync(temp,file);syncDirectory(this.blobDir);
     return file;
   }
 
@@ -301,5 +334,6 @@ module.exports = {
   assertOutsideRepository,
   isProcessAlive,
   normalizeState,
-  defaultDataDir
+  defaultDataDir,
+  durableWrite
 };
