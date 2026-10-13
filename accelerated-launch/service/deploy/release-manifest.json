@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-13T16:46:40.282Z",
+  "generated_at": "2026-10-13T18:44:51.834Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -61,8 +61,8 @@
     },
     {
       "id": "RUNTIME",
-      "file_count": 97,
-      "digest": "EF84F124E553B2A2E9DEBF9FB05788F6802FFC603901874AC4E85BC8357F61B4",
+      "file_count": 98,
+      "digest": "E34232D3AFEAA2100D03F151F5AE2EBBE9E545C0F5E6677F8594C0D203090C98",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -106,7 +106,7 @@
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "030FAF1E6D1E49AC671B990C522AE7F800923E1F681C011FEE7921344A7C08AF"
+          "sha256": "8F7A72A70902D5916C915BDAADC8B36E113AC16B8077BB4B55E238D69A6A005D"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
@@ -177,6 +177,10 @@
           "sha256": "4BE38BC5783A4267FBC763090FE4D15CA7BA8E42DD97728BC9C4C98A2994915B"
         },
         {
+          "file": "accelerated-launch/service/consumer-issue-materiality.cjs",
+          "sha256": "C6A53146DBF61A5FC2AE90871564880995CB9D8723167670319C14F8D1561AD0"
+        },
+        {
           "file": "accelerated-launch/service/content-assessments.cjs",
           "sha256": "659E1FA06B0052A12D2EC3E919D4157B8FF199D04941DB814680A9099B84E4BC"
         },
@@ -186,7 +190,7 @@
         },
         {
           "file": "accelerated-launch/service/creator-comparison-concerns.cjs",
-          "sha256": "DCEDD96CEFC3250D8964F8615A4010982BEA2BEE5FA24C162302803B771B6407"
+          "sha256": "088B6D801E315FF79F1B0D06B43CDAB65B78DCB46F6884A37CF55B7149D211CD"
         },
         {
           "file": "accelerated-launch/service/creator-report-fields.cjs",
@@ -278,7 +282,7 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "C2B3CC925F22E1FDF48A8C2534E23140B881EFB23E175AA13EC295D7BB3BBC96"
+          "sha256": "33ADEE8EA9543FE0E1EED8FD4A915B3DA30FC5B17A1138883617564D914D3053"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
@@ -302,7 +306,7 @@
         },
         {
           "file": "accelerated-launch/service/north-america-concerns.cjs",
-          "sha256": "3AD672540B5308C03C4109A929035FCA3F9524EF13AB4F84895EEA032207BD1D"
+          "sha256": "285166E9E51DE3517E0E4AF9605614E012D5CB968B9CA251E5F53CA2319DD20C"
         },
         {
           "file": "accelerated-launch/service/north-america-disclosure-fields.cjs",
@@ -406,7 +410,7 @@
         },
         {
           "file": "accelerated-launch/service/report-concerns.cjs",
-          "sha256": "9EBB7664C2300395585C201F100185CCEFED5B1A94F9707C71DC29A217D4B384"
+          "sha256": "708590532BA476C05CC8231A000D45D448392D95BFD9C760F28E3B2B958C5FDC"
         },
         {
           "file": "accelerated-launch/service/report-context-fields.cjs",
@@ -683,6 +687,6 @@
       ]
     }
   ],
-  "manifest_digest": "52D60D9A31FF45373103CD3CD853AB1461A3D5DE2F971C5DA160706DAE1B7464",
-  "total_file_count": 159
+  "manifest_digest": "9F2657B12661C219AA8D0A4BCD8C5061255178513EC251D6DDB745589C23F5FF",
+  "total_file_count": 160
 }
