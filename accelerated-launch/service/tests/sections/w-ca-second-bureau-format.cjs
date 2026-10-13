@@ -210,8 +210,11 @@ function twoContractsKeepTheirOwnBoundaries(check, specimens) {
     'and it is the only statutory limb seated on that presentation');
   check.deepEqual([...new Set(nsEvaluated.map((r) => r.machine.anchor.field))], ['tradeline.lastPaymentDate', 'tradeline.firstDelinquencyDate'],
     'determinate first delinquency is used; other entries use their own last payment as fallback');
-  check.ok(ns.results.length > nsEvaluated.length,
-    'while every record that prints no such date is recorded as an unread row, never as a comparison');
+  const inquiryIndexes = new Set(extraction.records.filter(r => /INQUIRY|ENQUIRY/.test(r.kind || '')).map(r => r.record_index));
+  check.ok(inquiryIndexes.size > 0 && ns.results.every(r => !inquiryIndexes.has(r.record_index)),
+    'source inquiries never become account-retention comparisons or unread account rows');
+  check.equal(ns.results.length, nsEvaluated.length,
+    'all four eligible account blocks print their own determining date; added inquiries do not inflate the account rule count');
   check.deepEqual(ns.assessment_kinds, ['STATUTORY_RULE_COMPARISON', 'REPORT_FACT_CONSISTENCY', 'COMMON_ERROR'],
     'so its assessment names the statutory, factual and common-error classes');
   check.equal(ns.unavailable_checks.length, 0,
