@@ -80,7 +80,8 @@ function validateCapabilityStatus(evidence, opts) {
 function present(v) { return v != null && String(v).trim().length > 0; }
 
 function resolvePath(ref, baseDir) {
-  return path.isAbsolute(ref) ? ref : path.join(baseDir, ref);
+  const portable = String(ref).replace(/\\/g, '/');
+  return path.isAbsolute(portable) ? portable : path.join(baseDir, portable);
 }
 
 /* A reference must name a real FILE. */

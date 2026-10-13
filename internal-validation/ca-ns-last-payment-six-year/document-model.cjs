@@ -83,7 +83,7 @@ function scanForSyntheticMarkers(text) {
 function pageImages(file) {
   let list;
   try {
-    list = execFileSync(PDFIMAGES, ['-list', file], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    list = execFileSync(PDFIMAGES, ['-list', file], { timeout: 15000, killSignal: 'SIGKILL', maxBuffer: 4 * 1024 * 1024, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   } catch (err) {
     return { available: false, by_page: {} };
   }
@@ -175,7 +175,7 @@ function buildPdfDocumentModel(file, options) {
 
   let infoText;
   try {
-    infoText = execFileSync(PDFINFO, [file], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    infoText = execFileSync(PDFINFO, [file], { timeout: 15000, killSignal: 'SIGKILL', maxBuffer: 4 * 1024 * 1024, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   } catch (err) {
     model.not_a_pdf = true;
     model.read_errors.push({ stage: 'pdfinfo', error: 'pdfinfo could not read the document' });

@@ -1,0 +1,19 @@
+[Unit]
+Description=CRP public health, boot recovery and backup monitoring
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/crp-node/bin/node /opt/crp-operations/operational-monitor.cjs /etc/crp/v1-monitor.json
+User=root
+UMask=0077
+TimeoutStartSec=35
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/crp-v1-monitor
+StateDirectory=crp-v1-monitor
+StandardOutput=journal
+StandardError=journal
+SyslogLevel=warning

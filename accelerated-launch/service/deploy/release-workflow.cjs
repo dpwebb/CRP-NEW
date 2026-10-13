@@ -166,9 +166,71 @@ async function smoke(url, build, manifest, out) {
   const receipt={build_id:build,host:base.origin,checked_at:new Date().toISOString(),health:h,checks,passed:true,scope:'Public health and exact served assets; does not establish purchase or packet journey acceptance'};
   write(out,receipt);return receipt;
 }
-function acceptance(receipt, build) {
+function acceptance(receipt, build, proof) {
   const required=['final_full_freeze','immutable_served_source','actual_phase1','actual_paid_activation','actual_phase2','actual_cleanup','native_order','image_order','exact_duplicates','continuation','written_dates','numeric_dates','month_precision','reference_dates','useful_recovery','bounded_unsuccessful','upload_limits','stable_support','support_isolation','account_isolation','privacy_inventory','current_plan_quotes','owned_history','chronological_linkage','changed_issue','history_isolation','packet_comparison_continuity','paid_result','paid_plan_quotes','own_ocr_locations','checklist_source_breach','actual_probable_breach','no_irrelevant_context_questions','consumer_violation_labels','serious_clear_unpaid_example','plain_consumer_explanations','internal_reading_limit_retained','packet_current_owner_version','packet_editable_visual_review','packet_exact_source_sequence','packet_inline_identity_address','packet_forms_retired','packet_browser_download_print','current_approval_navigation','genuine_unused_payment_upgrade','reporting_period_directive'];
   if(receipt.build_id!==build || receipt.passed!==true || receipt.gates!==30 || receipt.criteria!==123 || receipt.predicates?.length!==required.length || new Set(receipt.predicates.map(p=>p.id)).size!==required.length || required.some(id=>!receipt.predicates.some(p=>p.id===id && p.passed===true)) || !/^[a-fA-F0-9]{64}$/.test(receipt.measurement_receipt_sha256 || '')) throw Error('Exact-build 30-gate / 123-criterion acceptance required');
+  if(!proof?.measurementFile || !proof?.evidenceRoot || !proof?.packageReceipt) throw Error('Acceptance requires the actual measurement file, evidence root and package identity');
+  const pkg=proof.packageReceipt, root=path.resolve(proof.evidenceRoot), sourceRoot=path.resolve(proof.sourceRoot || ROOT);
+  if(hash(proof.measurementFile)!==receipt.measurement_receipt_sha256.toUpperCase())throw Error('Acceptance measurement hash mismatch');
+  if(receipt.source_commit!==pkg.git_head || receipt.manifest_digest!==pkg.manifest_digest || build!=='crp-v1-'+pkg.manifest_digest.slice(0,16).toLowerCase())throw Error('Acceptance source/package identity mismatch');
+  const measured=read(proof.measurementFile);
+  if(measured.passed!==true || measured.failures?.length!==0 || measured.identity?.build_id!==build || measured.identity?.served_build_id!==build || measured.manifest_digest!==pkg.manifest_digest)throw Error('Measurement build or verdict mismatch');
+  for(const predicate of receipt.predicates) {
+    if(typeof predicate.expected!=='string' || !predicate.expected || predicate.measured===undefined || !Array.isArray(predicate.refs) || !predicate.refs.length || JSON.stringify(predicate)!==JSON.stringify(measured.predicates?.[predicate.id]))throw Error('Acceptance predicate lacks matching measured evidence: '+predicate.id);
+  }
+  const manifest=read(path.join(sourceRoot,'accelerated-launch/service/deploy/release-manifest.json'));
+  if(manifest.manifest_digest!==pkg.manifest_digest || manifest.total_file_count!==pkg.files)throw Error('Accepted manifest does not match package');
+  for(const row of manifest.groups.flatMap(g=>g.files))if(hash(inside(sourceRoot,row.file))!==row.sha256.toUpperCase())throw Error('Accepted manifest bytes changed: '+row.file);
+  for(const name of ['actual_phase1','actual_paid_activation','actual_phase2','actual_cleanup']) {
+    const refs=measured.predicates[name].refs;
+    if(!refs.every(ref=>fs.statSync(inside(root,normalize(ref))).isFile()))throw Error('Hosted phase evidence unavailable: '+name);
+  }
+  for(const name of ['actual_phase1','actual_phase2']) {
+    const phase=read(inside(root,normalize(measured.predicates[name].refs[0])));
+    if(phase.target!=='https://staging.creditregulatorpro.com' || phase.passed!==true || phase.identity?.build_id!==build || phase.identity?.served_build_id!==build || phase.source_proof?.passed!==true || phase.source_proof?.manifest_digest!==pkg.manifest_digest || phase.source_proof?.files?.length!==pkg.files || new Set(phase.source_proof.files.map(row=>row.file)).size!==pkg.files || phase.source_proof.files.some(row=>!manifest.groups.flatMap(g=>g.files).some(f=>f.file===row.file && f.sha256.toLowerCase()===String(row.expected).toLowerCase() && f.sha256.toLowerCase()===String(row.measured).toLowerCase())))throw Error('Hosted source/hostname proof mismatch: '+name);
+  }
+  const freeze=measured.source_freeze;
+  const fullFile=inside(root, normalize(freeze?.file || ''));
+  if(hash(fullFile)!==String(freeze?.sha256).toUpperCase())throw Error('Full regression receipt hash mismatch');
+  const full=read(fullFile);baselineValid(full);
+  if(JSON.stringify(full.source_hashes)!==JSON.stringify(freeze.source_hashes))throw Error('Source freeze inventory mismatch');
+  for(const row of full.source_hashes)if(hash(inside(sourceRoot,normalize(row.file)))!==row.sha256.toUpperCase())throw Error('Acceptance source drift: '+row.file);
+  const specs=require('./release-proof-gates.json');
+  if(specs.length!==30 || specs.reduce((n,g)=>n+g.criteria.length,0)!==123)throw Error('Invalid authoritative gate policy');
+  const {validateCapabilityStatus}=require('../evidence-validator.cjs');
+  for(const gate of specs) {
+    const verdict=validateCapabilityStatus(read(inside(root,gate.file)),{targetBuildId:build,baseDir:root,sourceRoot,requiredCriteria:gate.criteria});
+    if(!verdict.passed || verdict.staging_status!=='VERIFIED_ON_STAGING')throw Error('Current staging evidence rejected: '+gate.id);
+  }
+}
+function prepareAcceptanceProof(acceptanceFile,pkg,out,options={}) {
+  const evidenceRoot=path.resolve(options.evidenceRoot || path.join(ROOT,'accelerated-launch/service/out'));
+  const sourceRoot=path.resolve(options.sourceRoot || ROOT), receipt=read(acceptanceFile);
+  const measurementFile=path.join(path.dirname(acceptanceFile),'measurements.json');
+  acceptance(receipt,pkg.build_id,{measurementFile,evidenceRoot,sourceRoot,packageReceipt:pkg});
+  const bundle=path.join(out,'acceptance-proof');if(fs.existsSync(bundle))throw Error('Proof bundle already exists');
+  const measurement=read(measurementFile),full=read(inside(evidenceRoot,normalize(measurement.source_freeze.file)));
+  const manifest=read(path.join(sourceRoot,'accelerated-launch/service/deploy/release-manifest.json'));
+  const refs=new Set([...receipt.predicates.flatMap(p=>p.refs),measurement.source_freeze.file]);
+  for(const gate of require('./release-proof-gates.json')) {
+    refs.add(gate.file);
+    const evidence=read(inside(evidenceRoot,gate.file));
+    for(const criterion of Object.values(evidence.criteria))for(const ref of criterion.evidence_refs)refs.add(ref);
+  }
+  function copy(from,to) {fs.mkdirSync(path.dirname(to),{recursive:true,mode:0o700});fs.copyFileSync(from,to);if(hash(from)!==hash(to))throw Error('Proof copy mismatch');}
+  for(const ref of refs)copy(inside(evidenceRoot,normalize(ref)),inside(path.join(bundle,'evidence'),normalize(ref)));
+  const measurementRef=normalize(path.relative(evidenceRoot,measurementFile));
+  copy(measurementFile,inside(path.join(bundle,'evidence'),measurementRef));
+  for(const file of new Set([...full.source_hashes.map(r=>normalize(r.file)),...manifest.groups.flatMap(g=>g.files).map(r=>r.file)]))copy(inside(sourceRoot,file),inside(path.join(bundle,'source'),file));
+  for(const name of ['release-workflow.cjs','release-proof-gates.json'])copy(path.join(__dirname,name),path.join(bundle,'verifier/deploy',name));
+  copy(path.join(__dirname,'../evidence-validator.cjs'),path.join(bundle,'verifier/evidence-validator.cjs'));
+  copy(acceptanceFile,path.join(bundle,'acceptance.json'));
+  write(path.join(bundle,'package-identity.json'),{build_id:pkg.build_id,git_head:pkg.git_head,manifest_digest:pkg.manifest_digest,files:pkg.files,measurement_ref:measurementRef});
+  // The server verifies the very same strict proof, using the frozen source and
+  // referenced files. Never copy an entire private evidence directory or env file.
+  acceptance(read(path.join(bundle,'acceptance.json')),pkg.build_id,{measurementFile:inside(path.join(bundle,'evidence'),measurementRef),evidenceRoot:path.join(bundle,'evidence'),sourceRoot:path.join(bundle,'source'),packageReceipt:pkg});
+  const archive=path.join(out,'acceptance-proof.tar.gz');execFileSync('tar',['-czf',archive,'-C',bundle,'.']);
+  return {archive,sha256:hash(archive)};
 }
 async function activate(target, packageFile, previous, acceptanceFile, out) {
   if(!['staging','production'].includes(target))throw Error('Unknown deployment target');
@@ -179,13 +241,15 @@ async function activate(target, packageFile, previous, acceptanceFile, out) {
   const currentManifest=read(path.join(__dirname,'release-manifest.json'));manifestValid(currentManifest);
   if(r.manifest_digest!==currentManifest.manifest_digest)throw Error('Package does not match current manifest');
   if(r.build_id===previous)throw Error('Candidate is already the expected current build; no redeployment required');
-  if(target==='production')acceptance(read(acceptanceFile),r.build_id);
+  if(target==='production')acceptance(read(acceptanceFile),r.build_id,{measurementFile:path.join(path.dirname(acceptanceFile),'measurements.json'),evidenceRoot:path.join(ROOT,'accelerated-launch/service/out'),packageReceipt:r});
   fs.mkdirSync(out,{recursive:true});
+  const proof=target==='production'?prepareAcceptanceProof(acceptanceFile,r,out):null;
   const script=path.join(__dirname,'activate-'+target+'.sh');
   const remote='/tmp/'+r.build_id+'-'+target;
   await run('scp',[r.archive,'hostinger-vps:'+remote+'.tar.gz'],path.join(out,'transfer-package.log'));
   await run('scp',[script,'hostinger-vps:'+remote+'.sh'],path.join(out,'transfer-script.log'));
-  await run('ssh',['hostinger-vps','bash',remote+'.sh',r.build_id,remote+'.tar.gz',r.archive_sha256,previous,r.manifest_digest,String(r.files),r.git_head],path.join(out,'activation.log'));
+  if(proof)await run('scp',[proof.archive,'hostinger-vps:'+remote+'-proof.tar.gz'],path.join(out,'transfer-proof.log'));
+  await run('ssh',['hostinger-vps','bash',remote+'.sh',r.build_id,remote+'.tar.gz',r.archive_sha256,previous,r.manifest_digest,String(r.files),r.git_head,...(proof?[remote+'-proof.tar.gz',proof.sha256]:[])],path.join(out,'activation.log'));
   const url=target==='production'?'https://creditregulatorpro.com':'https://staging.creditregulatorpro.com';
   try {await smoke(url,r.build_id,read(path.join(__dirname,'release-manifest.json')),path.join(out,'public-smoke.json'));}
   catch(e) {await rollback(target,r.build_id,path.join(out,'failed-smoke-rollback'));throw Error('Hosted smoke failed; previous release restored: '+e.message);}
@@ -227,5 +291,5 @@ async function main() {
   else if(command==='attest') {const r=attest(read(args[0]),path.resolve(args[1]),path.resolve(args[2]));console.log(JSON.stringify({original_build:r.original_receipt.build_id,unchanged_dependencies:r.unchanged_dependencies.length,configuration_reuse:r.configuration_reuse}));}
   else throw Error('Usage: release-workflow.cjs plan BASE [BASELINE] [PLAN] | check PLAN OUTPUT | attest PLAN ORIGINAL_RECEIPT OUTPUT | package PLAN VERIFICATION OUTPUT | smoke URL BUILD RECEIPT | activate staging|production PACKAGE EXPECTED_PREVIOUS ACCEPTANCE_OR_DASH OUTPUT | rollback TARGET EXPECTED_CURRENT OUTPUT');
 }
-module.exports={classify,baselineValid,manifestValid,plan,frozen,check,packageCandidate,smoke,acceptance,attest};
+module.exports={classify,baselineValid,manifestValid,plan,frozen,check,packageCandidate,smoke,acceptance,prepareAcceptanceProof,attest};
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});

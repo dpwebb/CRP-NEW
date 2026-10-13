@@ -19,7 +19,11 @@ ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 ReadWritePaths=/var/lib/crp-wizard-production
-TimeoutStopSec=10
+TimeoutStopSec=190
+KillMode=control-group
+MemoryHigh=3G
+MemoryMax=6G
+CPUQuota=200%
 
 [Install]
 WantedBy=multi-user.target

@@ -22,11 +22,12 @@ if [ "$mode" = upload ]; then
 fi
 test "$(realpath -e "$data")" = "$data"
 test -z "$(find "$data" -type l -print -quit)"
-systemctl is-active --quiet "$service"
 mkdir -p "$backup_root"
 chmod 700 "$backup_root"
+test ! -L "$backup_root/backup.lock"
 exec 9>"$backup_root/backup.lock"
 flock -n 9
+systemctl is-active --quiet "$service"
 
 work=$(mktemp -d "$backup_root/.snapshot.XXXXXXXX")
 stopped=0

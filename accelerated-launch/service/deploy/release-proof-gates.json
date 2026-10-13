@@ -1,0 +1,305 @@
+[
+  {
+    "id": "BLOCKER-FDT-001_FAILURE_TO_DETECT_MITIGATION",
+    "file": "fdt-mitigation-evidence.json",
+    "criteria": [
+      "freeze_before_run",
+      "independent_held_out_set",
+      "zero_incorrect_decisive_facts",
+      "zero_cross_record_or_bureau_borrowing",
+      "zero_unsupported_violations",
+      "min_recovery_of_readable_assessment_required_facts",
+      "account_for_every_remaining_miss",
+      "withhold_unreadable_or_conflicting_decisive_facts",
+      "demonstrate_useful_recovery_on_deployed",
+      "demonstrate_bounded_unsuccessful_recovery_on_deployed",
+      "benchmark"
+    ]
+  },
+  {
+    "id": "BLOCKER-CLARIFY-001_MINIMAL_OPTIONAL_CLARIFICATION",
+    "file": "clarify-evidence.json",
+    "criteria": [
+      "at_most_two_questions",
+      "skip_and_dont_know",
+      "separate_supplemental_storage",
+      "no_escalation",
+      "browser_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-COMMON-ERRORS-001_COMMON_CREDIT_REPORT_ERROR_CHECKS",
+    "file": "common-errors-evidence.json",
+    "criteria": [
+      "checks_implemented",
+      "no_false_finding",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-001_IMAGE_SET_COHERENCE",
+    "file": "gap-ingest-001-evidence.json",
+    "criteria": [
+      "upload_order_preserved",
+      "duplicate_handling",
+      "report_boundary",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-002_MULTILINE_RECORD_BOUNDARIES",
+    "file": "gap-ingest-002-evidence.json",
+    "criteria": [
+      "multiline_boundaries",
+      "continuation_lines",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-003_OCR_CONFIDENCE_AND_COORDINATES",
+    "file": "gap-ingest-003-evidence.json",
+    "criteria": [
+      "ocr_confidence_preserved",
+      "coordinates_preserved",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-004_DATE_FORMS",
+    "file": "gap-ingest-004-evidence.json",
+    "criteria": [
+      "written_date_forms",
+      "unambiguous_parse",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-005_NUMERIC_DATE_CONVENTIONS",
+    "file": "gap-ingest-005-evidence.json",
+    "criteria": [
+      "numeric_date_conventions",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-006_PARTIAL_DATE_PRECISION",
+    "file": "gap-ingest-006-evidence.json",
+    "criteria": [
+      "partial_date_precision",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-007_REPORT_REFERENCE_DATE",
+    "file": "gap-ingest-007-evidence.json",
+    "criteria": [
+      "reference_date_identified",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-008_PARTIAL_NATIVE_TEXT_RECOVERY",
+    "file": "gap-ingest-008-evidence.json",
+    "criteria": [
+      "partial_text_recovery",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-009_BUREAU_SEGMENTATION",
+    "file": "gap-ingest-009-evidence.json",
+    "criteria": [
+      "bureau_segmentation",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-INGEST-010_UPLOAD_LIMITS_AND_CONTAINERS",
+    "file": "gap-ingest-010-evidence.json",
+    "criteria": [
+      "upload_limits",
+      "container_handling",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-FINDING-001_EXCEPTION_EVALUATION",
+    "file": "gap-finding-001-evidence.json",
+    "criteria": [
+      "rule_exceptions",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-FINDING-002_PROBABLE_VIOLATION_PATH",
+    "file": "gap-finding-002-evidence.json",
+    "criteria": [
+      "probable_violation_path",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-FINDING-003_RULE_IDENTITY_AND_VERSION",
+    "file": "gap-finding-003-evidence.json",
+    "criteria": [
+      "rule_identity",
+      "version_binding",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "GAP-FINDING-004_SOURCE_LINKED_FINDING_FACTS",
+    "file": "gap-finding-004-evidence.json",
+    "criteria": [
+      "source_linked_facts",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-RESULTS-001",
+    "file": "consumer-results-evidence.json",
+    "criteria": [
+      "prioritization",
+      "reasons",
+      "uncertainty",
+      "journey",
+      "isolation"
+    ]
+  },
+  {
+    "id": "BLOCKER-EXPLANATIONS-001",
+    "file": "consumer-explanations-evidence.json",
+    "criteria": [
+      "report_fact",
+      "rule_basis",
+      "uncertainty",
+      "journey",
+      "consistency"
+    ]
+  },
+  {
+    "id": "BLOCKER-BILLING-001",
+    "file": "consumer-billing-evidence.json",
+    "criteria": [
+      "plan",
+      "renewal",
+      "cancellation",
+      "upgrade_credit",
+      "isolation",
+      "journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-PRIVACY-001",
+    "file": "consumer-privacy-evidence.json",
+    "criteria": [
+      "inventory",
+      "retention",
+      "deletion",
+      "isolation",
+      "journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-SUPPORT-001",
+    "file": "consumer-support-evidence.json",
+    "criteria": [
+      "reference",
+      "redaction",
+      "access",
+      "journey",
+      "usefulness"
+    ]
+  },
+  {
+    "id": "BLOCKER-CONSUMER-LANGUAGE-001",
+    "file": "consumer-language-imperative-evidence.json",
+    "criteria": [
+      "affirmative_scope",
+      "no_legal_advice_disclaimers",
+      "finding_labels"
+    ]
+  },
+  {
+    "id": "BLOCKER-CONSUMER-INCOMPLETE-001",
+    "file": "consumer-incomplete-presentation-evidence.json",
+    "criteria": [
+      "internal_diagnostics_retained",
+      "incomplete_checks_hidden",
+      "no_false_compliance_claim"
+    ]
+  },
+  {
+    "id": "BLOCKER-CLARIFY-MATERIALITY-002",
+    "file": "clarification-materiality-evidence.json",
+    "criteria": [
+      "no_context_only_questions",
+      "rule_materiality",
+      "mandatory_omission_not_cured_by_answer"
+    ]
+  },
+  {
+    "id": "BLOCKER-FINDING-COVERAGE-001",
+    "file": "finding-coverage-evidence.json",
+    "criteria": [
+      "promise_inventory",
+      "check_mapping",
+      "executable_findings",
+      "material_questions",
+      "behavioral_coverage",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-ALL82-FACILITATION-001",
+    "file": "all82-facilitation-evidence.json",
+    "criteria": [
+      "jurisdiction_inventory",
+      "usable_intake",
+      "applicable_assessment",
+      "material_questions",
+      "consumer_delivery",
+      "account_isolation",
+      "behavioral_coverage",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-DISPUTE-PACKET-001",
+    "file": "dispute-packet-evidence.json",
+    "criteria": [
+      "packet_scope",
+      "finding_evidence",
+      "jurisdiction_content",
+      "consumer_review",
+      "usable_download",
+      "entitlement_isolation",
+      "behavioral_coverage",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-REPORT-DATA-TO-ISSUE-001",
+    "file": "report-data-to-issue-evidence.json",
+    "criteria": [
+      "material_field_extraction",
+      "issue_wiring",
+      "packet_delivery",
+      "behavioral_coverage",
+      "end_to_end_journey"
+    ]
+  },
+  {
+    "id": "BLOCKER-SUBSCRIPTION-VALUE-001",
+    "file": "subscription-value-evidence.json",
+    "criteria": [
+      "owned_history",
+      "comparison_linkage",
+      "issue_changes",
+      "consumer_view",
+      "isolation",
+      "behavioral_coverage",
+      "end_to_end_journey"
+    ]
+  }
+]

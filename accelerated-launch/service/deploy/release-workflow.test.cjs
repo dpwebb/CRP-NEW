@@ -14,7 +14,7 @@ baselineValid(pass);
 for(const patch of [{mode:'FOCUSED'},{totals:{failed:1}},{unrun_sections:['x']},{source_drift:['x']},{sections:[{completed:false}]},{sections:[]},{source_hashes:[]}])assert.throws(()=>baselineValid({...pass,...patch}));
 console.log('PASS: classification, unknown dependencies and incomplete baseline rejection');
 const gate=require('../../../SOURCE_CAPTURES/REPORTING-PERIOD-RELEASE-2026-10-11/staging-gate-summary.json');
-acceptance(gate,gate.build_id);
+assert.throws(()=>acceptance(gate,gate.build_id),/actual measurement/);
 for(const patch of [{build_id:'old'},{passed:false},{gates:29},{criteria:122},{predicates:[{passed:false}]},{measurement_receipt_sha256:null},{predicates:[...gate.predicates.slice(1),gate.predicates[1]]}])assert.throws(()=>acceptance({...gate,...patch},gate.build_id));
 console.log('PASS: production rejects wrong build, incomplete or failing gate receipts');
 const manifest=require('./release-manifest.json');manifestValid(manifest);

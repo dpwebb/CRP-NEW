@@ -71,6 +71,14 @@ if [ -e "$legacy" ] || [ -L "$legacy" ]; then
   ordinary_tree "$legacy"
 fi
 
+if [ ! -e "$backup_root" ] && [ ! -L "$backup_root" ]; then mkdir -m 700 -- "$backup_root"; fi
+canonical_directory "$backup_root"
+chmod 700 -- "$backup_root"
+test ! -L "$backup_root/backup.lock" || fail "symlinked lock"
+test ! -e "$backup_root/backup.lock" || test -f "$backup_root/backup.lock" || fail "unexpected lock type"
+exec 9>"$backup_root/backup.lock"
+flock -n 9 || fail "another backup or release operation holds the lock"
+
 test -L "$base/current" || fail "current must be a release pointer"
 release=$(realpath -e -- "$base/current")
 case "$release" in "$base/releases/"*) ;; *) fail "release outside production" ;; esac
@@ -81,13 +89,8 @@ canonical_directory "$release"
 for name in release-manifest.json deployment-provenance.json; do canonical_file "$release/$name"; done
 canonical_file "$base/candidate-activation.json"
 
-if [ ! -e "$backup_root" ] && [ ! -L "$backup_root" ]; then mkdir -m 700 -- "$backup_root"; fi
-canonical_directory "$backup_root"
-chmod 700 -- "$backup_root"
-test ! -L "$backup_root/backup.lock" || fail "symlinked lock"
-test ! -e "$backup_root/backup.lock" || test -f "$backup_root/backup.lock" || fail "unexpected lock type"
-exec 9>"$backup_root/backup.lock"
-flock -n 9 || fail "another backup or release operation holds the lock"
+
+
 
 work=$(mktemp -d "$backup_root/.snapshot.XXXXXXXX")
 [[ "$work" =~ ^/opt/crp-wizard-production/offsite-backups/\.snapshot\.[A-Za-z0-9]{8}$ ]] || fail "unexpected temporary path"

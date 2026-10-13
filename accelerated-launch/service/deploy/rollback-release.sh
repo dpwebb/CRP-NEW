@@ -6,6 +6,12 @@ expected=$2
 [[ "$expected" =~ ^crp-v1-[a-f0-9]{16}$ ]]
 base=/opt/crp-wizard-$target
 node=/opt/crp-node/bin/node
+
+# All release, rollback and backup operations share one persistent inode.
+install -d -m 700 "$base/offsite-backups"
+test ! -L "$base/offsite-backups/backup.lock"
+exec 9>"$base/offsite-backups/backup.lock"
+flock -w 60 9 || { echo "Another CRP operation holds the lock" >&2; exit 75; }
 test "$(readlink -f "$base/current")" = "$base/releases/$expected"
 mapfile -t values < <("$node" - "$base" "$expected" <<'NODE'
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');

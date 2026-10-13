@@ -1,0 +1,11 @@
+[Unit]
+Description=Check CRP health and recovery every two minutes
+
+[Timer]
+OnBootSec=90
+OnUnitActiveSec=120
+Persistent=true
+RandomizedDelaySec=10
+
+[Install]
+WantedBy=timers.target
