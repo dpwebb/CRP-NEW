@@ -1,5 +1,13 @@
 # Owner imperatives
 
+## October 13 operational candidate and current provenance
+
+Read `CRP_OPERATIONAL_REVIEW_2026_10_13.md` for the current workspace/runtime matrix and verification status. The enhanced local application is `crp-local-operational-78517b3f0f6afe8a`, with 164 manifest files. Runtime implementation is committed as `5f447f8` and `a6f708d`; `70c039d` only repairs browser-test Origin headers. The frozen full product regression passed 15,979 assertions, zero failures and zero skipped across 170 sections; all four evidence-restoration scripts passed. Supported all-82 evidence contains 5,218 measured assertions and retains its layout and hosted-acceptance limits.
+
+Fresh staging and production provenance identifies `crp-v1-9f2657b12661c219`. No new application runtime was deployed. The owner separately authorized SSH configuration of unattended alerts to admin@creditregulatorpro.com; the existing VPS monitor now uses the approved private Hostinger Mail API credential. Application process IDs and release pointers were preserved. Older release entries below retain historical scope, including their former current-build labels.
+
+The main C:\CRP-NEW checkout remains a preserved older checkpoint with pending policy/documentation work. Use the isolated `codex/remaining-operational-gaps-20261013` branch for this candidate. This provenance note changes no owner scope, consumer standard, deployment authorization or acceptance gate.
+
 ## October 11 accepted credit reporting news release
 
 Current production and staging are `crp-v1-9799fd768cb7cdfa`, shipped source `6e8c85e29a815f6c0819056e8e9bc307b80900f5`. The IP-selected source-backed footer is live; unknown/other locations show mixed items and the five-year age limit is enforced. Fresh regression 14,966/0/0 and exact-build 30-gate/123-criterion staging/production acceptance passed. Reporting periods, form-free packets, seven steps, Your Story and native prices remain included. Prior twelve-purchase proof retains its original identity with separate unchanged-source continuity; fresh purchase/upgrade/cancellation and current live configuration were verified. The unpublished address-dependent policy candidate remains local. See `CRP_CREDIT_NEWS_PRODUCTION_2026_10_11.md`. In isolated verification worktrees, preflight required ignored fixture builders/evidence and `consumer-wizard/dist/app.js` before the long full regression; preserve failed runs honestly.
