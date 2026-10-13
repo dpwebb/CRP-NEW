@@ -117,7 +117,7 @@ async function run(service, check) {
     await page.locator('#saved-recovery-key').click(); await page.locator('#recovery-back').click();
     await page.locator('#email').fill(actor.email); await page.locator('#password').fill('a-new-long-enough-password'); await page.locator('#signin').click(); await page.waitForSelector('#open');
     check.equal(await page.locator('#stepcount').innerText(), 'Step 2 of 7', 'the consumer signs in normally with the recovered password');
-    const removed = await page.request.delete(service.base + '/api/account');
+    const removed = await page.request.delete(service.base + '/api/account', { headers: { Origin: service.base } });
     check.equal(removed.status(), 200, 'fictional browser account and contact details cleaned up with the new owned session');
     return { real_browser: true, unpaid_account_contact_and_documents: true, sign_in_back_and_reload: true, jurisdiction_bureau_choice: true, recovery_key_download_and_password_reset: true, screenshot };
   } finally { await browser.close(); }

@@ -295,7 +295,7 @@ async function run(service, check) {
   check.equal(await page.locator('#packet-preview-reviewed').isDisabled(), true, 'a packet with missing correspondence details cannot be acknowledged as complete');
   check.equal(await page.locator('#packet-approve').isDisabled(), true, 'a packet with missing correspondence details cannot be approved');
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'a packet with missing correspondence details cannot download');
-  const missingDetailsApproval = await page.request.post(service.base + `/api/cases/${multi.caseId}/packet/approve`, { data: {} });
+  const missingDetailsApproval = await page.request.post(service.base + `/api/cases/${multi.caseId}/packet/approve`, { data: {}, headers: { Origin: service.base } });
   check.equal(missingDetailsApproval.status(), 409, 'the protected approval endpoint independently refuses the incomplete packet');
   await accountContact(page, 'Dana Whitfield', 'dana.whitfield@example.test');
   await saveReadApprove(page);
