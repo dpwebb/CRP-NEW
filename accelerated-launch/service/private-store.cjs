@@ -83,6 +83,22 @@ function normalizeState(parsed) {
   return state;
 }
 
+/** An existing state file must prove its shape; only an absent, new store may be empty by default. */
+function parsePersistedState(bytes) {
+  const parsed=JSON.parse(bytes);
+  if(parsed && Number.isInteger(parsed.version) && parsed.version>STATE_VERSION) {
+    const error=new Error('PRIVATE_STORE_SCHEMA_UNSUPPORTED');error.unsupportedVersion=true;throw error;
+  }
+  if(!parsed || typeof parsed!=='object' || Array.isArray(parsed) || !Array.isArray(parsed.accounts)
+    || (parsed.version!==undefined && (!Number.isInteger(parsed.version) || parsed.version<1)))throw Error('PRIVATE_STORE_STATE_SHAPE_INVALID');
+  const version=parsed.version || 1;
+  for(const key of Object.keys(EMPTY_STATE).filter(key=>key!=='version')) {
+    if(parsed[key]!==undefined && (!Array.isArray(parsed[key]) || parsed[key].some(row=>!row || typeof row!=='object' || Array.isArray(row))))throw Error('PRIVATE_STORE_STATE_SHAPE_INVALID');
+  }
+  if(version===STATE_VERSION && ['sessions','cases','files','results'].some(key=>!Array.isArray(parsed[key])))throw Error('PRIVATE_STORE_STATE_SHAPE_INVALID');
+  return normalizeState(parsed);
+}
+
 function defaultDataDir() {
   return process.env.CRP_LOCAL_SERVICE_DATA || path.join(os.homedir(), '.crp-local-service');
 }
@@ -176,13 +192,13 @@ class PrivateStore {
     try {
       const current=stamp(this.stateFile);
       if(this.cache && current===this.cacheStamp)return this.cache;
-      this.cache=freeze(normalizeState(JSON.parse(fs.readFileSync(this.stateFile, 'utf8'))));
+      this.cache=freeze(parsePersistedState(fs.readFileSync(this.stateFile, 'utf8')));
       this.cacheStamp=current;
       return this.cache;
     } catch (primaryError) {
-      if (fs.existsSync(this.backupFile)) {
+      if (!primaryError.unsupportedVersion && fs.existsSync(this.backupFile)) {
         try {
-          const recovered = normalizeState(JSON.parse(fs.readFileSync(this.backupFile, 'utf8')));
+          const recovered = parsePersistedState(fs.readFileSync(this.backupFile, 'utf8'));
           durableWrite(this.stateFile,fs.readFileSync(this.backupFile));
           this.recoveredFromBackup = true;
           this.cache=freeze(recovered);this.cacheStamp=stamp(this.stateFile);return this.cache;

@@ -64,6 +64,14 @@ async function run(_service,check) {
   check.equal(fs.readFileSync(path.join(orphan.blobDir,'original.bin'),'utf8'),'retained','failed readiness leaves report bytes intact');
   let apiCalls=0;const apiDelivery=await require('../../deploy/operational-alert.cjs').send({HOSTINGER_MAIL_TOKEN:'fictional-token',HOSTINGER_MAIL_ACCOUNT:'admin@creditregulatorpro.com'},'Fixture','No consumer data',{fetch:async(url,options)=>{apiCalls++;if(url.endsWith('/me'))return{ok:true,json:async()=>({data:{mailboxes:[{address:'admin@creditregulatorpro.com',resourceId:'ACfixture'}]}})};check.deepEqual(JSON.parse(options.body).to,['admin@creditregulatorpro.com'],'API delivery targets only the confirmed operational recipient');return{status:204};}});
   check.equal(apiDelivery.accepted,true,'provider acceptance is required for an API alert acknowledgement');
+  const schema=new PrivateStore(path.join(temp,'schema-store'));
+  schema.update(state=>state.accounts.push({account_id:'preserved-account'}));schema.update(state=>state.cases.push({case_id:'case'}));
+  fs.writeFileSync(schema.stateFile,'null');
+  check.equal(schema.state().accounts[0].account_id,'preserved-account','valid JSON null recovers the account backup instead of returning an empty store');
+  const future=JSON.stringify({...schema.state(),version:999});fs.writeFileSync(schema.stateFile,future);
+  let unsupported=false;try{schema.state();}catch(e){unsupported=e.code==='SERVICE_STATE_UNAVAILABLE';}
+  check.equal(unsupported,true,'a newer persisted schema refuses an older runtime');
+  check.equal(fs.readFileSync(schema.stateFile,'utf8'),future,'newer state is never overwritten with an older backup');
   const requestPolicy=require('../../request-policy.cjs').policy({limit:2});
   const request={method:'POST',url:'/api/sessions',headers:{host:'localhost',origin:'http://localhost','content-type':'application/json','content-length':'2'},socket:{remoteAddress:'192.0.2.1'}};
   let error;try{requestPolicy({...request,headers:{...request.headers,origin:'https://foreign.test'}});}catch(e){error=e;}
