@@ -47,6 +47,15 @@ function detectContainerFromBytes(bytes) {
 const MAX_CASE_FILES = 8;
 const MAX_ACCOUNT_STORED_BYTES = 40 * 1024 * 1024;
 
+// Owner-authorized local corpus verification; never expand hosted account quotas.
+function accountStorageLimit(actor) {
+  const bytes = Number(process.env.CRP_LOCAL_VERIFICATION_STORAGE_BYTES);
+  return process.env.CRP_DEPLOYMENT_ENV === 'local' &&
+    process.env.CRP_LOCAL_VERIFICATION_ACCOUNT_ID === actor.account_id &&
+    Number.isSafeInteger(bytes) && bytes > MAX_ACCOUNT_STORED_BYTES && bytes <= 1024 * 1024 * 1024
+    ? bytes : MAX_ACCOUNT_STORED_BYTES;
+}
+
 /**
  * Refuse BEFORE anything is written when the case or the account is already at its cap.
  *
@@ -63,8 +72,9 @@ function refuseIfOverQuota(store, actor, caseRow, incomingBytes) {
   const held = state.files
     .filter((f) => f.account_id === actor.account_id)
     .reduce((total, f) => total + (Number(f.stored_bytes) || 0), 0);
-  if (held + incomingBytes > MAX_ACCOUNT_STORED_BYTES) {
-    throw new ServiceError('ACCOUNT_STORAGE_QUOTA_EXCEEDED', { limit: MAX_ACCOUNT_STORED_BYTES, held });
+  const limit = accountStorageLimit(actor);
+  if (held + incomingBytes > limit) {
+    throw new ServiceError('ACCOUNT_STORAGE_QUOTA_EXCEEDED', { limit, held });
   }
   return { case_files_held: caseFiles.length, account_bytes_held: held };
 }
