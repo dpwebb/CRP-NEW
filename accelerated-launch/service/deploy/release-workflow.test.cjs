@@ -33,3 +33,26 @@ const source=Object.keys(p.source_snapshot).find(f=>f.endsWith('/issues.cjs'));
 assert.throws(()=>frozen({...p,source_snapshot:{...p.source_snapshot,[source]:'A'.repeat(64)}}));
 console.log('PASS: manifest integrity, dependency drift, receipt tampering and changed-file inventory rejection');
 fs.unlinkSync(baseline);fs.rmdirSync(temp);
+// Explicit unit fixtures, never usable as release receipts. Exercise numeric
+// FDT gates independently of the broader file/source/hostname custody guard.
+const {validateFdtProof}=require('./release-workflow.cjs');
+const acceptanceMetrics={implementation_passed:true,recovery_rate:1,incorrect_decisive_facts:0,cross_record_or_bureau_borrowing:0,unsupported_violations:0,missing_expected_violations:0,record_collapse_errors:0,withhold_errors:0,every_miss_accounted:true,freeze_unchanged:true,source_unchanged:true,source_files:[]};
+const benchmark={passed:true,baseline:'UNIT_FIXTURE_ONLY',metrics:{missed_fact_rate:0,incorrect_reading_rate:0}};
+const raw={acceptance:acceptanceMetrics,benchmark_full:benchmark,local_recovery:{useful_facts:1,useful_attempts:1,unsuccessful_facts:0,unsuccessful_attempts:1,pass_limit:1}};
+const fullFixture={sections:[{id:'am-fdt-recovery',completed:true,passed:1,evidence:raw}],source_hashes:[]};
+const fixtureBuild='UNIT_FIXTURE_ONLY',fixtureSha='A'.repeat(64);
+const recoveryCase=scenario=>({scenario,case_id:'UNIT_FIXTURE_ONLY',input_sha256:'a'.repeat(64),input_page_count:1,upload_status:201,result_status:201,recovery:{bounded:true,substitution_forbidden:true,recovery_attempts:1,facts_added:scenario==='USEFUL'?[{page:1,line:1,source:'LOCAL_OCR'}]:[]},reading_limitations:{incomplete:true,never_equates_unread_with_absence:true}});
+const gateFixture={acceptance:acceptanceMetrics,benchmark:{...benchmark.metrics,baseline:benchmark.baseline},implementation:{configured:true,source_files:[],evidence_refs:[{sha256:fixtureSha}]},served_recovery:{identity:{build_id:fixtureBuild,served_build_id:fixtureBuild},recovery_cases:[recoveryCase('USEFUL'),recoveryCase('UNSUCCESSFUL')]}};
+const sourceRoot=path.resolve(__dirname,'../../..');
+assert.doesNotThrow(()=>validateFdtProof(gateFixture,fullFixture,sourceRoot,fixtureSha,fixtureBuild));
+for(const corrupt of [
+  (g,f)=>{g.acceptance.recovery_rate=f.sections[0].evidence.acceptance.recovery_rate=0.2;},
+  (g,f)=>{g.benchmark.missed_fact_rate=f.sections[0].evidence.benchmark_full.metrics.missed_fact_rate=0.5;},
+  (g,f)=>{g.acceptance.recovered=123;},
+  (g,f)=>{g.served_recovery=null;},
+  (g,f)=>{g.implementation.evidence_refs[0].sha256='0'.repeat(64);}
+]) {
+  const g=structuredClone(gateFixture),f=structuredClone(fullFixture);corrupt(g,f);
+  assert.throws(()=>validateFdtProof(g,f,sourceRoot,fixtureSha,fixtureBuild));
+}
+console.log('PASS: FDT numeric thresholds, raw-receipt mismatch and missing hosted/custody proof rejection');

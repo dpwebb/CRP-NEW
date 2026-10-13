@@ -166,6 +166,13 @@ async function smoke(url, build, manifest, out) {
   const receipt={build_id:build,host:base.origin,checked_at:new Date().toISOString(),health:h,checks,passed:true,scope:'Public health and exact served assets; does not establish purchase or packet journey acceptance'};
   write(out,receipt);return receipt;
 }
+function validateFdtProof(evidence,full,sourceRoot,fullSha,build) {
+  const section=full.sections.find(row=>row.id==='am-fdt-recovery'),raw=section?.evidence;
+  const a=raw?.acceptance,b=raw?.benchmark_full,r=raw?.local_recovery;
+  if(!section?.completed || !section.passed || a?.implementation_passed!==true || !Number.isFinite(a.recovery_rate) || a.recovery_rate<0.95 || a.recovery_rate>1 || ['incorrect_decisive_facts','cross_record_or_bureau_borrowing','unsupported_violations','missing_expected_violations','record_collapse_errors','withhold_errors'].some(key=>a[key]!==0) || ['every_miss_accounted','freeze_unchanged','source_unchanged'].some(key=>a[key]!==true) || b?.passed!==true || !b.baseline || !Number.isFinite(b.metrics?.missed_fact_rate) || b.metrics.missed_fact_rate<0 || b.metrics.missed_fact_rate>0.05 || b.metrics.incorrect_reading_rate!==0 || !(r?.useful_facts>0) || r.useful_attempts!==1 || r.unsuccessful_facts!==0 || r.unsuccessful_attempts!==1 || r.pass_limit!==1)throw Error('FDT raw recovery/accuracy thresholds failed');
+  if(JSON.stringify(evidence.acceptance)!==JSON.stringify(a) || JSON.stringify(evidence.benchmark)!==JSON.stringify({...b.metrics,baseline:b.baseline}) || evidence.implementation?.configured!==true || JSON.stringify(evidence.implementation.source_files)!==JSON.stringify([...full.source_hashes,...a.source_files]) || evidence.implementation.evidence_refs?.length!==1 || evidence.implementation.evidence_refs[0].sha256.toUpperCase()!==fullSha.toUpperCase())throw Error('FDT gate differs from its hashed complete regression');
+  if(!require(path.join(sourceRoot,'accelerated-launch/service/fdt-acceptance.cjs')).hostedRecoveryPassed(evidence.served_recovery,build))throw Error('FDT current hosted useful and bounded unsuccessful recovery proof failed');
+}
 function acceptance(receipt, build, proof) {
   const required=['final_full_freeze','immutable_served_source','actual_phase1','actual_paid_activation','actual_phase2','actual_cleanup','native_order','image_order','exact_duplicates','continuation','written_dates','numeric_dates','month_precision','reference_dates','useful_recovery','bounded_unsuccessful','upload_limits','stable_support','support_isolation','account_isolation','privacy_inventory','current_plan_quotes','owned_history','chronological_linkage','changed_issue','history_isolation','packet_comparison_continuity','paid_result','paid_plan_quotes','own_ocr_locations','checklist_source_breach','actual_probable_breach','no_irrelevant_context_questions','consumer_violation_labels','serious_clear_unpaid_example','plain_consumer_explanations','internal_reading_limit_retained','packet_current_owner_version','packet_editable_visual_review','packet_exact_source_sequence','packet_inline_identity_address','packet_forms_retired','packet_browser_download_print','current_approval_navigation','genuine_unused_payment_upgrade','reporting_period_directive'];
   if(receipt.build_id!==build || receipt.passed!==true || receipt.gates!==30 || receipt.criteria!==123 || receipt.predicates?.length!==required.length || new Set(receipt.predicates.map(p=>p.id)).size!==required.length || required.some(id=>!receipt.predicates.some(p=>p.id===id && p.passed===true)) || !/^[a-fA-F0-9]{64}$/.test(receipt.measurement_receipt_sha256 || '')) throw Error('Exact-build 30-gate / 123-criterion acceptance required');
@@ -199,8 +206,10 @@ function acceptance(receipt, build, proof) {
   if(specs.length!==30 || specs.reduce((n,g)=>n+g.criteria.length,0)!==123)throw Error('Invalid authoritative gate policy');
   const {validateCapabilityStatus}=require('../evidence-validator.cjs');
   for(const gate of specs) {
-    const verdict=validateCapabilityStatus(read(inside(root,gate.file)),{targetBuildId:build,baseDir:root,sourceRoot,requiredCriteria:gate.criteria});
+    const evidence=read(inside(root,gate.file));
+    const verdict=validateCapabilityStatus(evidence,{targetBuildId:build,baseDir:root,sourceRoot,requiredCriteria:gate.criteria});
     if(!verdict.passed || verdict.staging_status!=='VERIFIED_ON_STAGING')throw Error('Current staging evidence rejected: '+gate.id);
+    if(gate.file==='fdt-mitigation-evidence.json')validateFdtProof(evidence,full,sourceRoot,hash(fullFile),build);
   }
 }
 function prepareAcceptanceProof(acceptanceFile,pkg,out,options={}) {
@@ -291,5 +300,5 @@ async function main() {
   else if(command==='attest') {const r=attest(read(args[0]),path.resolve(args[1]),path.resolve(args[2]));console.log(JSON.stringify({original_build:r.original_receipt.build_id,unchanged_dependencies:r.unchanged_dependencies.length,configuration_reuse:r.configuration_reuse}));}
   else throw Error('Usage: release-workflow.cjs plan BASE [BASELINE] [PLAN] | check PLAN OUTPUT | attest PLAN ORIGINAL_RECEIPT OUTPUT | package PLAN VERIFICATION OUTPUT | smoke URL BUILD RECEIPT | activate staging|production PACKAGE EXPECTED_PREVIOUS ACCEPTANCE_OR_DASH OUTPUT | rollback TARGET EXPECTED_CURRENT OUTPUT');
 }
-module.exports={classify,baselineValid,manifestValid,plan,frozen,check,packageCandidate,smoke,acceptance,prepareAcceptanceProof,attest};
+module.exports={classify,baselineValid,manifestValid,plan,frozen,check,packageCandidate,smoke,acceptance,prepareAcceptanceProof,validateFdtProof,attest};
 if(require.main===module)main().catch(e=>{console.error(e.message);process.exitCode=1;});
