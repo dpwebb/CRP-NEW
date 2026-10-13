@@ -24,7 +24,7 @@ const northAmericanDisclosure = require('./north-america-disclosure-fields.cjs')
 const GENERAL_PRESENTATION_ID = 'GENERAL-BUREAU-REPORT';
 // Version of derived GENERAL readings, separate from stored uploads and results.
 // Bump only when an explicit reassessment must replace stale reader output.
-const GENERAL_READER_VERSION = 8;
+const GENERAL_READER_VERSION = 10;
 const GENERAL_ADMISSION_PATH = 'BUREAU_AND_REPORT_CONTENT_PLAUSIBILITY';
 
 const BUREAUS = Object.freeze({ EQUIFAX: 'Equifax', TRANSUNION: 'TransUnion', EXPERIAN: 'Experian', ILLION: 'illion' });
@@ -2831,6 +2831,11 @@ function extract(model, opts) {
   records.forEach((record, index) => { record.record_index = index + 1; });
   auDisclosure.attachStatements(records,pages);
   const table_note_associations = attachTableNotes(pages,records,segments);
+  const contextReadings = require('./report-context-fields.cjs').extract(pages).flatMap(reading=>{
+    const matches=segments.map((segment,i)=>({segment,i})).filter(({segment})=>!segment.ambiguous&&segment.bureau&&segment.pages.some(page=>page.page===reading.location.page));
+    if(matches.length!==1)return [];
+    const {segment,i}=matches[0];return [{...reading,context_signal:true,record_index:null,report_segment_id:'segment-'+(i+1),source_bureau:segment.bureau,report_reference_date:segment.reference_date}];
+  });
   const concernBindings = bindReportConcernEvidence(pages,segments);
   const report_concern_evidence = [...concernBindings.evidence,...creator.summaries.flatMap(sum=>Object.values(sum.fields).map(field=>({source_field:field.label,raw_value:field.raw,normalized_value:field.value,location:field.location,trusted:field.trusted,record_index:null,report_segment_id:'segment-'+(segments.indexOf(ownBureauSegments[0])+1),source_bureau:ownBureauSegments[0].bureau,report_reference_date:ownBureauSegments[0].reference_date})))];
   /* OWNER-ACCEPT-009 item 4: report-internal identity fields (name/address/alias/co-applicant) read with their
@@ -2839,7 +2844,10 @@ function extract(model, opts) {
   for (const page of pages) {
     for (const line of (page.lines || [])) {
       const idf = identityFacts(line.text);
-      if (idf) identity_groups.push(Object.assign({}, idf, { location: lineLocation(line) }));
+      if (idf) {
+        const owners=segments.map((segment,i)=>({segment,i})).filter(({segment})=>!segment.ambiguous&&segment.bureau&&segment.pages.some(p=>p.page===page.page&&p.lines.includes(line)));
+        if(owners.length===1)identity_groups.push(Object.assign({},idf,{location:lineLocation(line),report_segment_id:'segment-'+(owners[0].i+1),source_bureau:owners[0].segment.bureau}));
+      }
     }
   }
   /* OWNER-ACCEPT-009 (geometry): assemble payment-history grids from positioned words, then attach each grid's
@@ -2907,7 +2915,8 @@ function extract(model, opts) {
     convention_basis: null,
     reference_date,
     records,
-    report_concern_evidence,
+    report_concern_evidence:[...report_concern_evidence,...contextReadings],
+    report_context_readings:contextReadings,
     creator_summaries:creator.summaries.map(s=>({page:s.page.page,fields:s.fields})),
     report_concern_associations:concernBindings.associations,
     table_note_associations,

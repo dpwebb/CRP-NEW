@@ -38,7 +38,16 @@ const CHECKS = Object.freeze([
   ...Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
     .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
     .map(([kind,id])=>[id,{
-      CREATOR_SUMMARY_COUNT_REVIEW:'Account summary counts to verify',CREATOR_SUMMARY_AMOUNT_REVIEW:'Summary balances and limits to verify',CREATOR_COMPLETED_DATE_REVIEW:'Completed account dates to verify',CREATOR_DATE_SEQUENCE_REVIEW:'Account date order to verify',CREATOR_PAYMENT_DATE_REVIEW:'Payment and opening dates to verify',CREATOR_CURRENT_PERIOD_REVIEW:'Older information to verify in the current file',
+      SUMMARY_STATUS_COUNT_CONTEXT_REVIEW:'Account counts need checking',
+      ADVERSE_OPENING_CONTEXT_REVIEW:'Account event dates need checking',
+      SECTION_STATUS_CONTEXT_REVIEW:'Account section and status need checking',
+      CLOSED_LIABILITY_CONTEXT_REVIEW:'Older closed account needs checking',
+      ENTRY_AGE_CONTEXT_REVIEW:'Older entry needs checking',
+  LINKED_IDENTITY_CONTEXT_REVIEW:'Linked personal details need checking',
+  LIFECYCLE_LINKAGE_CONTEXT_REVIEW:'Similar account entries need checking',
+  OWNERSHIP_STATEMENT_CONTEXT_REVIEW:'Disputed account ownership needs checking',
+  STATUS_HISTORY_CONTEXT_REVIEW:'Status and payment history need checking',
+  CREATOR_SUMMARY_COUNT_REVIEW:'Account summary counts to verify',CREATOR_SUMMARY_AMOUNT_REVIEW:'Summary balances and limits to verify',CREATOR_COMPLETED_DATE_REVIEW:'Completed account dates to verify',CREATOR_DATE_SEQUENCE_REVIEW:'Account date order to verify',CREATOR_PAYMENT_DATE_REVIEW:'Payment and opening dates to verify',CREATOR_CURRENT_PERIOD_REVIEW:'Older information to verify in the current file',
       ACCOUNT_OWNERSHIP_REVIEW:'Account ownership to verify',ACCOUNT_STATUS_DISPUTE:'Disputed account status or repayment history',
       ACCOUNT_BALANCE_DISPUTE:'Disputed account balance',INQUIRY_PURPOSE_REVIEW:'Enquiry purpose to verify',
       OLD_COLLECTION_REVIEW:'Older collection information to verify',OLD_COURT_ENTRY_REVIEW:'Older court entry to verify',

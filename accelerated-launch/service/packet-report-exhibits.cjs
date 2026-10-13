@@ -11,6 +11,7 @@ const PAGE_COUNTS = new Map();
 const sha256 = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
 function pageCount(bytes, digest, type) {
+  if (type === 'image/tiff') { try { return require('./ocr/bounded-tiff.cjs').validate(bytes).length; } catch { return null; } }
   if (type !== 'application/pdf') return 1;
   if (PAGE_COUNTS.has(digest)) return PAGE_COUNTS.get(digest);
   let info;
@@ -26,6 +27,7 @@ function pageCount(bytes, digest, type) {
 }
 
 function contentType(bytes) {
+  if (require('./ocr/bounded-tiff.cjs').isTiff(bytes)) return 'image/tiff';
   const container = detectContainerFromBytes(bytes);
   return container === 'PDF' ? 'application/pdf' : container === 'IMAGE'
     ? bytes.subarray(0, PNG_MAGIC.length).equals(PNG_MAGIC) ? 'image/png' : 'image/jpeg' : null;
@@ -231,7 +233,7 @@ function prepare(store, actor, caseId, result, selected, fileIds, pageChoices = 
   });
   const chosen = copies;
   const manifest = chosen.map((copy, index) => {
-    const ext = copy.content_type === 'application/pdf' ? 'pdf' : copy.content_type === 'image/png' ? 'png' : 'jpg';
+    const ext = copy.content_type === 'application/pdf' ? 'pdf' : copy.content_type === 'image/png' ? 'png' : copy.content_type === 'image/tiff' ? 'tiff' : 'jpg';
     return { ...view.find(item => item.file_id === copy.file_id),
       archive_name: `report-${String(index + 1).padStart(2, '0')}-${copy.role.toLowerCase()}.${ext}` };
   });

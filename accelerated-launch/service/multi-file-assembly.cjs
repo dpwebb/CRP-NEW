@@ -409,6 +409,14 @@ function assemble(files) {
     // These are completed source readings, kept with their own uploaded file.
     // A report-level identity concern must never inherit a neighbouring file's identity.
     report_concern_evidence: concernEvidence,
+    report_context_readings:concernEvidence.filter(reading=>reading.context_signal===true),
+    identity_groups:unique.flatMap(file=>(file.extraction.identity_groups||[]).flatMap(reading=>{
+      const segments=file.extraction.report_segments||[],segment=segments.find(s=>s.segment_id===reading.report_segment_id);
+      if(segments.length&&(!segment||segment.ambiguous||!segment.bureau||reading.source_bureau!==segment.bureau))return [];
+      if(reading.location?.file_id&&reading.location.file_id!==file.file_id)return [];
+      const own=file.file_id+':'+(reading.report_segment_id||'single-layout-report');
+      return[{...reading,source_file_id:file.file_id,source_report_segment_id:own,report_segment_id:own,location:{...reading.location,file_id:file.file_id}}];
+    })),
     creator_summaries:unique.flatMap(file=>(file.extraction.creator_summaries||[]).map(sum=>({...sum,source_file_id:file.file_id,fields:Object.fromEntries(Object.entries(sum.fields).map(([key,field])=>[key,{...field,location:{...field.location,file_id:file.file_id}}]))}))),
     report_concern_associations:concernAssociations,
     extraction_coverage: base.extraction_coverage ? {

@@ -7,6 +7,15 @@ const {calendar:{addCalendarYears,daysInMonth},normalizeFactDate}=require('../ad
 const {sourceForField,reportDateValue} = require('./report-fact-sources.cjs');
 const VERSION='2026-10-12.au-uk-review.3';
 const CHECK_BY_KIND=Object.freeze({
+  SUMMARY_STATUS_COUNT_CONTEXT_REVIEW:'COMMON-ERROR-SUMMARY-STATUS-COUNT-CONTEXT-REVIEW',
+  ADVERSE_OPENING_CONTEXT_REVIEW:'COMMON-ERROR-ADVERSE-OPENING-CONTEXT-REVIEW',
+  SECTION_STATUS_CONTEXT_REVIEW:'COMMON-ERROR-SECTION-STATUS-CONTEXT-REVIEW',
+  CLOSED_LIABILITY_CONTEXT_REVIEW:'COMMON-ERROR-CLOSED-LIABILITY-CONTEXT-REVIEW',
+  ENTRY_AGE_CONTEXT_REVIEW:'COMMON-ERROR-ENTRY-AGE-CONTEXT-REVIEW',
+  LINKED_IDENTITY_CONTEXT_REVIEW:'COMMON-ERROR-LINKED-IDENTITY-CONTEXT-REVIEW',
+  LIFECYCLE_LINKAGE_CONTEXT_REVIEW:'COMMON-ERROR-LIFECYCLE-LINKAGE-CONTEXT-REVIEW',
+  OWNERSHIP_STATEMENT_CONTEXT_REVIEW:'COMMON-ERROR-OWNERSHIP-STATEMENT-CONTEXT-REVIEW',
+  STATUS_HISTORY_CONTEXT_REVIEW:'COMMON-ERROR-STATUS-HISTORY-CONTEXT-REVIEW',
   CREATOR_SUMMARY_COUNT_REVIEW:'COMMON-ERROR-CREATOR-SUMMARY-COUNT-REVIEW',
   CREATOR_SUMMARY_AMOUNT_REVIEW:'COMMON-ERROR-CREATOR-SUMMARY-AMOUNT-REVIEW',
   CREATOR_COMPLETED_DATE_REVIEW:'COMMON-ERROR-CREATOR-COMPLETED-DATE-REVIEW',
@@ -167,6 +176,7 @@ function concernsFor(extraction,evaluation) {
   const output=[],records=extraction.records||[], add=(...args)=>{const value=issue(extraction,evaluation,...args);if(value)output.push(value);};
   const assessment=evaluation.assessment_clock?.date||evaluation.assessment_date||evaluation.assessment_clock?.assessment_date||null;
   require('./creator-comparison-concerns.cjs').collect(extraction,evaluation,{own,dateReading,reportSource,add,assessment,shift});
+  require('./report-context-fields.cjs').collect(extraction,evaluation,{add,shift});
   if(['CA','US'].includes(evaluation.country))require('./north-america-concerns.cjs').collect(extraction,evaluation,{own,dateReading,reportSource,issue,bounds,shift,expired,add,assessment});
   for(const record of records) {
     const identity=own(record,'account.reported_identity')||(record.kind==='GENERAL_INQUIRY'?own(record,'enquiry.organisation'):null),status=own(record,'account.status'),balance=own(record,'account.balance'),remark=own(record,'account.consumerStatement')||own(record,'account.reportRemarks');

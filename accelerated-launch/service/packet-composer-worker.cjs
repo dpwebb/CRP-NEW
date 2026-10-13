@@ -175,6 +175,21 @@ async function appendEvidence(target, entry, isReport, position, copyBudget) {
     pages = [...new Set(pages)].sort((a, b) => a - b);
     let copies; try { copies = await target.copyPages(source, pages.map(page => page - 1)); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }
     copies.forEach((page, at) => target.insertPage(position + at, page));
+  } else if (type === 'image/tiff') {
+    const tiff = require('./ocr/bounded-tiff.cjs'); let physical;
+    try { physical = tiff.inspect(bytes); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }
+    copyBudget.tiffPixels = (copyBudget.tiffPixels || 0) + physical.reduce((sum,p)=>sum+p.width*p.height,0);
+    if (copyBudget.tiffPixels > tiff.MAX_TOTAL_PIXELS) throw coded('INVALID_REQUEST');
+    try { tiff.validate(bytes); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }
+    pages = isReport ? entry.relevant_pages : physical.map((_,i)=>i+1);
+    if (!Array.isArray(pages) || !pages.length || pages.some(p=>!Number.isSafeInteger(p)||p<1||p>physical.length)) throw coded('INVALID_REQUEST');
+    pages = [...new Set(pages)].sort((a,b)=>a-b);
+    if (target.getPageCount() + pages.length > 400) throw coded('INVALID_REQUEST');
+    for (const [i,n] of pages.entries()) {
+      let image; try { image = await target.embedPng(tiff.png(bytes,physical[n-1])); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }
+      const page = target.insertPage(position+i,[612,792]), scale = Math.min(512/image.width,692/image.height);
+      page.drawImage(image,{x:(612-image.width*scale)/2,y:(792-image.height*scale)/2,width:image.width*scale,height:image.height*scale});
+    }
   } else if (type === 'image/png' || type === 'image/jpeg') {
     if (isReport && (!Array.isArray(entry.relevant_pages) || !entry.relevant_pages.length || entry.relevant_pages.some(page => page !== 1))) throw coded('INVALID_REQUEST');
     let image; try { image = type === 'image/png' ? await target.embedPng(bytes) : await target.embedJpg(bytes); } catch { throw coded('PACKET_ATTACHMENT_UNREADABLE'); }

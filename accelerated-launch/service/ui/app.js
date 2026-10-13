@@ -573,7 +573,7 @@ function coverage(region) {
 function uploadPreparation() {
   return `<p class="evidence">Use the PDF from your bureau if you have it. For photos, include the whole page and keep the text clear.</p>
     <details class="upload-help"><summary>File sizes and help</summary><ul class="plain">
-    <li>Use PDF, PNG or JPEG. Convert HEIC photos to JPEG first.</li><li>Each file must be 10 MB or less. Select up to 8 files at a time.</li>
+    <li>Use PDF, PNG, JPEG or TIFF. Convert HEIC photos to JPEG first.</li><li>Each file must be 10 MB or less. Select up to 8 files at a time.</li>
     <li>Keep pages in order. Split a large PDF into smaller files if needed.</li><li>Do not upload a file that needs a password.</li>
     </ul><div id="upload-limits-help">${uploadLimits?.plain ? esc(uploadLimits.plain) : 'The upload checks the file and page limits before it is saved.'}</div></details>`;
 }
@@ -619,9 +619,9 @@ function renderJurisdiction(panel) {
     <label for="bureau">Credit bureau</label><select id="bureau" ${bureauChoices.length ? '' : 'disabled'}><option value="">Choose a bureau</option>${bureauChoices.map(row => `<option value="${row.id}" ${row.id === selectedBureau ? 'selected' : ''}>${esc(row.label)}</option>`).join('')}</select>
     <p class="evidence">Choose the country and region where you live now. We use this selection to check your report,
     even if it shows a different or previous address.</p>
-    <label for="file">Credit report (PDF, PNG or JPEG)</label>
+    <label for="file">Credit report (PDF, PNG, JPEG or TIFF)</label>
     ${uploadPreparation()}
-    <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
+    <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/tiff,.pdf,.png,.jpg,.jpeg,.tif,.tiff">
     <p class="evidence">You can select up to 8 files, with a maximum of 10 MB each. Keep report images in page order.</p>
     <button class="primary" id="open">Upload your report</button>
     <div id="upload-progress" role="status" aria-live="polite"></div>
@@ -745,7 +745,7 @@ function validateReportFiles(files) {
   if (files.length > (uploadLimits?.max_case_files || 8)) throw new Error('Choose up to 8 files. Combine extra report images into a PDF.');
   for (const file of files) {
     if (!file.size || file.size > (uploadLimits?.max_file_bytes || 10485760)) throw new Error('Each file must be nonempty and no larger than 10 MB. Export a smaller readable copy or split it at page boundaries.');
-    if (!/\.(pdf|png|jpe?g)$/i.test(file.name)) throw new Error('Convert your report to PDF, PNG or JPEG first.');
+    if (!/\.(pdf|png|jpe?g|tiff?)$/i.test(file.name)) throw new Error('Convert your report to PDF, PNG, JPEG or TIFF first.');
   }
 }
 
@@ -838,11 +838,11 @@ function renderReport(panel) {
     ${access()}
     ${uploaded ? `<h2>Reviewing your report for ${where}</h2>` : ''}
     <label for="file">${uploaded ? 'Choose another file for this case, or a replacement for one already here' : 'Choose a PDF report or report images in page order'}</label>
-    <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg">
+    <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/tiff,.pdf,.png,.jpg,.jpeg,.tif,.tiff">
     <button class="primary" id="upload">Upload selected files</button>
     <button class="secondary" id="retry-upload" ${batch.some(x => x.status === 'pending') ? '' : 'disabled'}>Retry pending files</button>
-    <details><summary>File limits and help</summary><div class="note">PDF, PNG and JPEG: 10 MB per file, 8 files per report, 40 MB stored per account.
-    Images are limited to 25 million pixels and 12,000 pixels per side. Scanned PDFs are read up to 40 pages per file; split longer scans into complete page ranges of at most 40 pages within the 8-file limit. HEIC/HEIF, TIFF and ZIP are not supported; export images as PNG/JPEG or combine them into a PDF.
+    <details><summary>File limits and help</summary><div class="note">PDF, PNG, JPEG and TIFF: 10 MB per file, 8 files per report, 40 MB stored per account.
+    Images are limited to 25 million pixels and 12,000 pixels per side. Scanned PDFs are read up to 40 pages per file; split longer scans into complete page ranges of at most 40 pages within the 8-file limit. TIFF scans support up to 40 pages and 100 million total pixels; export unsupported TIFF layouts as PNG/JPEG or PDF. HEIC/HEIF and ZIP are not supported; export images as PNG/JPEG or combine them into a PDF.
     For an oversized report, export a smaller readable PDF or split at page boundaries into parts under 10 MB, keeping every page in order and the report header and date with each part.
     For more than 8 screenshots, combine pages into a PDF. Delete an unneeded case to free account storage.
     Keep the report header, date and every page.</div></details>

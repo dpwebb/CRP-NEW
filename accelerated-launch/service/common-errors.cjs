@@ -468,7 +468,7 @@ function identityDiscrepancy(identityGroups) {
   const matches = [];
   const seen = new Map();
   for (const g of list) {
-    const key = `${g.field}|${g.role}`;
+    const key = `${g.source_file_id || g.location?.file_id || ''}|${g.source_report_segment_id || g.report_segment_id || ''}|${g.field}|${g.role}`;
     const prior = seen.get(key);
     if (prior && prior.token !== g.token) {
       matches.push({ field: g.field, role: g.role, first_token: prior.token, second_token: g.token, location: g.location || null, reason: 'IDENTITY_FIELD_WORTH_REVIEWING' });
@@ -531,6 +531,15 @@ const FACTUAL_CHECK_CAPABILITY = Object.freeze({
   ...Object.fromEntries(Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
     .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
     .map(([kind,id])=>[id,{field_sets:({
+      SUMMARY_STATUS_COUNT_CONTEXT_REVIEW:[],
+      ADVERSE_OPENING_CONTEXT_REVIEW:[],
+      SECTION_STATUS_CONTEXT_REVIEW:[],
+      CLOSED_LIABILITY_CONTEXT_REVIEW:[],
+      ENTRY_AGE_CONTEXT_REVIEW:[],
+      LINKED_IDENTITY_CONTEXT_REVIEW:[],
+      LIFECYCLE_LINKAGE_CONTEXT_REVIEW:[],
+      OWNERSHIP_STATEMENT_CONTEXT_REVIEW:[],
+      STATUS_HISTORY_CONTEXT_REVIEW:[],
       CREATOR_SUMMARY_COUNT_REVIEW:[],CREATOR_SUMMARY_AMOUNT_REVIEW:[],
       CREATOR_COMPLETED_DATE_REVIEW:[['account.statusDate','report.referenceDate'],['account.lastActivityDate','report.referenceDate']],
       CREATOR_DATE_SEQUENCE_REVIEW:[['liability.openedDate','liability.closedDate'],['reportedAccount.reportedDate','report.referenceDate']],

@@ -77,6 +77,11 @@ function buildImageDocumentModel(file) {
   }
   model.sha256 = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
   model.bytes = fs.statSync(file).size;
+  const tiff = require('./ocr/bounded-tiff.cjs'), bytes = fs.readFileSync(file);
+  if (tiff.isTiff(bytes)) {
+    try { model.page_count = tiff.inspect(bytes).length; model.structure_tool = 'bounded TIFF physical IFDs'; }
+    catch (error) { model.read_errors.push({ stage: 'TIFF', error: error.message }); }
+  }
   return model;
 }
 

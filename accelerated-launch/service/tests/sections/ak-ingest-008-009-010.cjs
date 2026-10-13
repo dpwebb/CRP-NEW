@@ -89,9 +89,10 @@ async function run(t, check) {
   check.equal(limits.max_file_bytes, 10 * 1024 * 1024, 'the per-file limit is 10 MB');
   check.equal(limits.max_case_files, 8, 'the per-case limit is 8 files');
   check.equal(limits.max_account_stored_bytes, 40 * 1024 * 1024, 'the per-account limit is 40 MB');
-  check.deepEqual(limits.supported_mime_prefixes, ['application/pdf', 'image/png', 'image/jpeg'], 'PDF/PNG/JPEG are supported');
-  check.deepEqual(limits.supported_extensions, ['.pdf', '.png', '.jpg', '.jpeg'], 'and their extensions are supported');
-  check.deepEqual(limits.unsupported_containers, ['HEIC', 'HEIF', 'TIFF', 'ZIP'], 'HEIC/HEIF/TIFF/ZIP are explicitly bounded, never advertised as supported');
+  check.deepEqual(limits.supported_mime_prefixes, ['application/pdf', 'image/png', 'image/jpeg', 'image/tiff'], 'PDF/PNG/JPEG and bounded TIFF are supported');
+  check.deepEqual(limits.supported_extensions, ['.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff'], 'and their extensions are supported');
+  check.deepEqual(limits.unsupported_containers, ['HEIC', 'HEIF', 'ZIP'], 'HEIC/HEIF/ZIP remain explicitly unsupported');
+  check.ok(/TIFF supports up to 40 physical pages, 100 million pixels total, 8-bit grayscale\/RGB/.test(limits.guidance), 'TIFF support exposes its physical-page, aggregate-pixel and layout bounds');
   check.equal(limits.max_image_pixels, 25000000, 'the image pixel cap is exposed');
   check.equal(limits.max_image_dimension, 12000, 'and the image dimension cap is exposed');
   check.ok(/HEIC|TIFF/.test(limits.recovery), 'recovery names HEIC/TIFF conversion');

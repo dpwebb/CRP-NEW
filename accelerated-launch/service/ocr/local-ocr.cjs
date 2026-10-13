@@ -200,7 +200,7 @@ function smallPngRaster(file) {
   const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
   const channels = { 0: 1, 2: 3, 4: 2, 6: 4 }[bytes[25]];
   if (!channels || bytes[24] !== 8 || bytes[28] !== 0 || width > 1600 || height > 2400
-    || width * height * 9 > 16000000 || !width || !height) return null;
+    || width * height * 4 > 16000000 || !width || !height) return null;
   const compressed = [];
   for (let at = 8; at + 12 <= bytes.length;) {
     const length = bytes.readUInt32BE(at), type = bytes.toString('ascii', at + 4, at + 8);
@@ -229,7 +229,7 @@ function smallPngRaster(file) {
       gray[y*width+x] = Math.round((luminance*alpha+255*(255-alpha))/255);
     }
   }
-  const scale = 3, scaledWidth = width*scale, scaledHeight = height*scale, raster = Buffer.alloc(scaledWidth*scaledHeight);
+  const scale = width*height*9<=16000000?3:2, scaledWidth = width*scale, scaledHeight = height*scale, raster = Buffer.alloc(scaledWidth*scaledHeight);
   for (let y = 0; y < scaledHeight; y++) for (let x = 0; x < scaledWidth; x++) {
     const sx = Math.max(0, Math.min(width-1, (x+.5)/scale-.5));
     const sy = Math.max(0, Math.min(height-1, (y+.5)/scale-.5));
@@ -239,6 +239,27 @@ function smallPngRaster(file) {
   return { width, height, scale, bytes: Buffer.concat([Buffer.from(`P5\n${scaledWidth} ${scaledHeight}\n255\n`), raster]) };
 }
 
+function mergeImageWordReadings(original, alternate) {
+  const overlap=(a,b)=>Math.max(0,Math.min(a.left+a.width,b.left+b.width)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.top+a.height,b.top+b.height)-Math.max(a.top,b.top))/Math.max(1,Math.min(a.width*a.height,b.width*b.height));
+  let words=original.slice();
+  for(const next of alternate.filter(w=>w.conf>=TRUSTED_LINE_CONFIDENCE&&w.width>0&&w.height>0)) {
+    const old=words.filter(w=>overlap(w,next)>.5);
+    // A second reading cannot replace a conflicting trusted source value.
+    if(old.some(w=>w.conf>=TRUSTED_LINE_CONFIDENCE))continue;
+    if(old.length)words=words.filter(w=>!old.includes(w));
+    words.push(next);
+  }
+  const heights=words.map(w=>w.height).filter(h=>h>0).sort((a,b)=>a-b),height=heights[Math.floor(heights.length/2)]||10;
+  const rows=[];for(const word of words.slice().sort((a,b)=>a.top-b.top||a.left-b.left)){let row=rows.find(r=>Math.abs(r.top-word.top)<height*.45);if(!row){row={top:word.top,index:rows.length};rows.push(row);}word.line_key='image-recovery-'+row.index;}
+  return words;
+}
+function readSmallJpeg(file, parsed, tesseract, tessdata, opts) {
+  const heights=parsed.map(w=>w.height).filter(h=>h>0).sort((a,b)=>a-b),bytes=fs.readFileSync(file);
+  if(bytes[0]!==255||bytes[1]!==216||bytes[2]!==255||!heights.length||heights[Math.floor(heights.length/2)]>=14||parsed.length<50)return null;
+  const read=tryRun(tesseract.path,[file,'stdout','--tessdata-dir',tessdata.dir,'--psm','11','-l',opts.language||'eng','tsv'],{encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:OCR_TIMEOUT_MS,maxBuffer:64*1024*1024});
+  if(!read.ok)return null;const words=mergeImageWordReadings(parsed,parseTsv(read.stdout));
+  return{words,recovery:{source:'LOCAL_SMALL_JPEG_POSITIONED_REREAD',preprocessing:'NONE',source_coordinates:'ORIGINAL_IMAGE_PIXELS',confidence_floor:TRUSTED_LINE_CONFIDENCE,original_word_count:parsed.length}};
+}
 function readSmallImage(file, parsed, tesseract, tessdata, opts, psm) {
   const heights = parsed.map(w => w.height).filter(h => h > 0).sort((a,b)=>a-b);
   if (!heights.length || heights[Math.floor(heights.length/2)] >= 14 || psm !== '6') return null;
@@ -253,12 +274,17 @@ function readSmallImage(file, parsed, tesseract, tessdata, opts, psm) {
       '--psm', psm, '-l', opts.language || 'eng', 'tsv'],
       { encoding:'utf8', stdio:['ignore','pipe','pipe'], timeout:OCR_TIMEOUT_MS, maxBuffer:64*1024*1024 });
     if (!read.ok) return null;
-    const words = parseTsv(read.stdout).map(w=>({...w,left:w.left/raster.scale,top:w.top/raster.scale,
+    let words = parseTsv(read.stdout).map(w=>({...w,left:w.left/raster.scale,top:w.top/raster.scale,
       width:w.width/raster.scale,height:w.height/raster.scale}));
     const mean = values => values.length ? values.reduce((sum,w)=>sum+Math.max(0,w.conf),0)/values.length : 0;
     if (!words.length || mean(words) < mean(parsed)) return null;
+    // A second positioned reading recovers isolated small captions that page
+    // segmentation omitted. Existing trusted digits/words are never replaced.
+    const positioned=tryRun(tesseract.path,[target,'stdout','--tessdata-dir',tessdata.dir,'--psm','11','-l',opts.language||'eng','tsv'],
+      {encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:OCR_TIMEOUT_MS,maxBuffer:64*1024*1024});
+    if(positioned.ok)words=mergeImageWordReadings(words,parseTsv(positioned.stdout).map(w=>({...w,left:w.left/raster.scale,top:w.top/raster.scale,width:w.width/raster.scale,height:w.height/raster.scale})));
     return { words, size:[raster.width,raster.height], recovery:{source:'LOCAL_SMALL_IMAGE_OCR',
-      scale:raster.scale, preprocessing:'BILINEAR_GRAYSCALE', source_coordinates:'ORIGINAL_IMAGE_PIXELS',
+      scale:raster.scale, preprocessing:'BILINEAR_GRAYSCALE', positioned_reread:positioned.ok, source_coordinates:'ORIGINAL_IMAGE_PIXELS',
       source_sha256:require('node:crypto').createHash('sha256').update(fs.readFileSync(file)).digest('hex'),
       confidence_floor:TRUSTED_LINE_CONFIDENCE, original_word_count:parsed.length} };
   } catch { return null; }
@@ -478,6 +504,22 @@ function readOsd(file, tesseractPath, tessdataDir, language) {
  * segmentation mode, so a 90/180/270-degree phone photo is corrected without an image library.
  */
 function readImage(file, options) {
+  const tiff = require('./bounded-tiff.cjs');
+  if (file && fs.existsSync(file) && tiff.isTiff(fs.readFileSync(file))) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-tiff-'));
+    try {
+      const bytes = fs.readFileSync(file), pages = tiff.validate(bytes), readings = [];
+      for (let i=0; i<pages.length; i++) {
+        const raster = path.join(dir, `page-${i+1}.png`); fs.writeFileSync(raster, tiff.png(bytes, pages[i]));
+        const reading = readImage(raster, options);
+        if (!reading.available) return reading;
+        for (const page of reading.pages) { page.page = i+1; page.raster_pixels = { width: pages[i].width, height: pages[i].height }; }
+        readings.push(reading); fs.unlinkSync(raster);
+      }
+      return { ...readings[0], pages: readings.flatMap(r=>r.pages), geometry_source: 'original TIFF physical-page pixels', physical_page_count: pages.length };
+    } catch (error) { return { available: false, pages: [], trusted_confidence_floor: TRUSTED_LINE_CONFIDENCE, refusal_reason: 'UNSUPPORTED_OR_CORRUPT_TIFF', limits: [error.message] }; }
+    finally { fs.rmSync(dir, { recursive: true, force: true }); }
+  }
   const opts = options || {};
   const report = {
     available: false,
@@ -534,8 +576,10 @@ function readImage(file, options) {
 
   const originalParsed = parseTsv(ocr.stdout);
   const smallImage = readSmallImage(file, originalParsed, tesseract, tessdata, opts, psm);
-  const parsed = smallImage?.words || originalParsed;
+  const smallJpeg = !smallImage&&psm==='6'?readSmallJpeg(file,originalParsed,tesseract,tessdata,opts):null;
+  const parsed = smallImage?.words || smallJpeg?.words || originalParsed;
   if (smallImage) report.small_image_recovery = smallImage.recovery;
+  if (smallJpeg) report.small_image_recovery = smallJpeg.recovery;
   const words = parsed.map((word) => ({
     text: word.text,
     confidence: word.conf,
@@ -1000,6 +1044,7 @@ function readPdfRegions(file, regions, options = {}) {
 }
 
 module.exports = {
+  mergeImageWordReadings,
   readTextLayer,
   readImage,
   readOsd,

@@ -23,8 +23,8 @@ const formats = require('./formats.cjs');
 /** Legacy parity constants. Change these only with the legacy source in front of you. B6-INGEST-003 adds the
  *  image types as an owner-authorized extension of the PDF gate, kept separate from the legacy allowlist. */
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
-const SUPPORTED_MIME_PREFIXES = Object.freeze(['application/pdf', 'image/png', 'image/jpeg']);
-const SUPPORTED_EXTENSIONS = Object.freeze(['.pdf', '.png', '.jpg', '.jpeg']);
+const SUPPORTED_MIME_PREFIXES = Object.freeze(['application/pdf', 'image/png', 'image/jpeg', 'image/tiff']);
+const SUPPORTED_EXTENSIONS = Object.freeze(['.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff']);
 const PDF_MAGIC = Buffer.from('%PDF-', 'ascii');
 const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const JPEG_MAGIC = Buffer.from([0xff, 0xd8, 0xff]);
@@ -36,6 +36,7 @@ function detectContainerFromBytes(bytes) {
   if (bytes.subarray(0, PDF_MAGIC.length).equals(PDF_MAGIC)) return 'PDF';
   if (bytes.subarray(0, PNG_MAGIC.length).equals(PNG_MAGIC)) return 'IMAGE';
   if (bytes.subarray(0, JPEG_MAGIC.length).equals(JPEG_MAGIC)) return 'IMAGE';
+  if (require('./ocr/bounded-tiff.cjs').isTiff(bytes)) return 'IMAGE';
   return 'OTHER';
 }
 
@@ -139,6 +140,9 @@ function storeBytes(store, bytes) {
 
 // Bound decoded image work as well as compressed bytes, before storage or OCR.
 function validateImageDimensions(bytes) {
+  if (require('./ocr/bounded-tiff.cjs').isTiff(bytes)) {
+    try { require('./ocr/bounded-tiff.cjs').validate(bytes); return; } catch { throw new ServiceError('UNSUPPORTED_FILE_TYPE'); }
+  }
   let width = 0, height = 0;
   if (bytes.subarray(0, PNG_MAGIC.length).equals(PNG_MAGIC) && bytes.length >= 24) {
     width = bytes.readUInt32BE(16); height = bytes.readUInt32BE(20);
@@ -205,6 +209,11 @@ function receiveReport(store, actor, caseRow, input) {
   const bytes = decodeUploadBody(input);
   const container = detectContainerFromBytes(bytes);
   if (container === 'OTHER') throw new ServiceError('NOT_A_PDF_CONTAINER');
+  const tiffContainer = require('./ocr/bounded-tiff.cjs').isTiff(bytes);
+  const declaredMime = String(input.mimeType || '').toLowerCase().split(';')[0].trim();
+  const declaredExt = path.extname(String(input.originalFilename || '')).toLowerCase();
+  if ((tiffContainer && ((declaredMime && declaredMime !== 'image/tiff') || (declaredExt && !['.tif','.tiff'].includes(declaredExt))))
+    || (!tiffContainer && (declaredMime === 'image/tiff' || ['.tif','.tiff'].includes(declaredExt)))) throw new ServiceError('UNSUPPORTED_FILE_TYPE');
 
   // A retry after a lost response reuses the original receipt, before quota checks.
   const uploadKey = input && input.uploadKey;
@@ -306,9 +315,9 @@ function uploadLimits() {
     max_image_dimension: 12000,
     max_scanned_pdf_pages: require('./ocr/local-ocr.cjs').MAX_OCR_PAGES,
 
-    unsupported_containers: ['HEIC', 'HEIF', 'TIFF', 'ZIP'],
-    recovery: 'Export HEIC/HEIF or TIFF images as PNG/JPEG, or combine pages into a PDF. ZIP archives are not accepted. Scanned PDFs are read up to 40 pages per file; split longer scans into parts of at most 40 pages. For files over 10 MB, export a smaller readable PDF or split at page boundaries into parts under 10 MB; keep every page in order and preserve the printed report header/reference date with each part. Combine screenshot pages into a PDF if more than 8 files are needed. Check the saved file list after an interrupted upload; retry pending files only. Delete an unneeded case to free account storage.',
-    guidance: 'One case holds at most 8 files and one account at most 40 MB; a single file is at most 10 MB. PDF, PNG and JPEG are supported. A refused or interrupted upload is never reported as a complete review.'
+    unsupported_containers: ['HEIC', 'HEIF', 'ZIP'],
+    recovery: 'Export HEIC/HEIF or an unsupported TIFF layout as PNG/JPEG, or combine pages into a PDF. ZIP archives are not accepted. Scanned PDFs are read up to 40 pages per file; split longer scans into parts of at most 40 pages. For files over 10 MB, export a smaller readable PDF or split at page boundaries into parts under 10 MB; keep every page in order and preserve the printed report header/reference date with each part. Combine screenshot pages into a PDF if more than 8 files are needed. Check the saved file list after an interrupted upload; retry pending files only. Delete an unneeded case to free account storage.',
+    guidance: 'One case holds at most 8 files and one account at most 40 MB; a single file is at most 10 MB. PDF, PNG, JPEG and supported multipage TIFF are accepted. TIFF supports up to 40 physical pages, 100 million pixels total, 8-bit grayscale/RGB strip layouts with raw, LZW or deflate compression; other TIFF layouts must be exported as PDF or PNG/JPEG. A refused or interrupted upload is never reported as a complete review.'
   };
 }
 
