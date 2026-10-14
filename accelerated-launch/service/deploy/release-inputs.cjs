@@ -191,6 +191,16 @@ function resolveCommand(command, options = {}) {
 }
 function inspectPrerequisites(options) {
   const root = path.resolve(options.root), issues = [], dependencies = new Set(), tools = new Set(options.commands || []), dynamic = [];
+  const injected = new Map();
+  // Explicit, hash-bound review of commands injected by a test caller. This is
+  // never an automatic platform exception or evidence that a host command ran.
+  for (const row of options.injectedCommands || []) {
+    if (!row || typeof row.command !== 'string' || !row.command || !hashPattern.test(row.sha256 || '') || typeof row.reason !== 'string' || !row.reason.trim()) fail('INVALID_INJECTED_COMMAND_REVIEW');
+    const file = relativeName(row.file), absolute = inside(root, file);
+    if (!fs.existsSync(absolute) || sha(fs.readFileSync(absolute)) !== row.sha256.toUpperCase()) fail('INJECTED_COMMAND_REVIEW_STALE', file);
+    injected.set(file + '\n' + row.command, { ...row, file, sha256: row.sha256.toUpperCase() });
+  }
+  const reviewedInjected = [];
   const queue = [], scanned = new Set();
   const addIssue = (code, file, section) => issues.push({ code, ...(file ? { file } : {}), ...(section ? { section } : {}) });
   const catalog = new Map();
@@ -242,7 +252,11 @@ function inspectPrerequisites(options) {
       // External installed modules are resolved without loading or reading them.
     }
     if(options.discoverGeneratedAssets!==false)for (const match of source.matchAll(/(['"])(consumer-wizard\/dist\/(?:app\.js|index\.html|jurisdiction-data\.js))\1/g)) addFile(match[2], section);
-    for (const match of source.matchAll(/\b(?:execFileSync|execFile|spawnSync|spawn)\s*\(\s*(['"])([^'"\r\n]+)\1/g)) if (mask[match.index] !== ' ') tools.add(match[2]);
+    for (const match of source.matchAll(/\b(?:execFileSync|execFile|spawnSync|spawn)\s*\(\s*(['"])([^'"\r\n]+)\1/g)) if (mask[match.index] !== ' ') {
+      const review = injected.get(file + '\n' + match[2]);
+      if (review) reviewedInjected.push(review);
+      else tools.add(match[2]);
+    }
     if ([...mask.matchAll(/\brequire\s*\(/g)].some(match => !recognized.has(match.index))) dynamic.push({ file, section, scope: 'Caller must declare any additional computed dependencies in files/commands' });
   }
   for (const command of [...tools].sort()) if (!resolveCommand(command, options.commandOptions)) addIssue('MISSING_PREREQUISITE_COMMAND', command);
@@ -266,7 +280,7 @@ function inspectPrerequisites(options) {
   }
   const unique = [...new Map(issues.map(row => [JSON.stringify(row), row])).values()];
   return { passed: unique.length === 0, issues: unique, dependencies: [...dependencies].sort(), commands: [...tools].sort(),
-    dynamic_dependencies: dynamic, scope: 'Selected sections and literal/explicitly declared inputs only; no modules or commands executed' };
+    dynamic_dependencies: dynamic, injected_commands: [...new Map(reviewedInjected.map(row => [row.file + '\n' + row.command, row])).values()], scope: 'Selected sections and literal/explicitly declared inputs only; no modules or commands executed' };
 }
 function assertPrerequisites(options) {
   const result = inspectPrerequisites(options);

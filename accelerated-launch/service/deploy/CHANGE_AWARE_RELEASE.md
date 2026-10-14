@@ -1,6 +1,6 @@
 # Change-aware release workflow
 
-Authority: `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. This workflow reduces repeated local execution while retaining source custody, consumer consent, exact-build acceptance and separate staging/production authorization. Admin UI implementation and other enhancements remain on hold; release tooling does not authorize them.
+Authority: `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. This workflow reduces repeated local execution while retaining source custody, consumer consent, exact-build acceptance and separate staging/production authorization. The bounded local admin build is separately authorized by `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md`; release tooling does not authorize additional enhancements or deployment.
 
 ## Prepare one frozen candidate
 
@@ -64,6 +64,8 @@ To allow product reuse, provide a JSON profile with these fields:
 | `external_files` | Absolute paths to relevant installed package, browser, OCR or external fixture files |
 
 Review `dynamic_dependencies` in preflight output and account for each selected section's computed inputs. Empty lists are appropriate only when the review establishes that no additional inputs exist. The profile is a review declaration; the tool does not prove automatic closure of every dynamic dependency graph. Do not mark an incomplete profile complete to enable reuse.
+
+For a fresh run with reviewed dependency injection, a partial profile may instead set `complete:false` and `reuse_product:false`. It still requires the reviewer, exact selected sections and file/command/external-file lists. Optional `injected_commands` rows name `command`, repository-relative `file`, its exact `sha256`, and a review `reason`. This records that the selected tests supply a dependency instead of executing that module's default command. It never exempts an explicitly required command, claims that a host command passed, or permits product reuse. A changed module invalidates the review. This supports Windows tests of Linux monitoring with injected probes, without requiring unused Linux executables or skipping the behavioral tests. Both `prepare BASE RECEIPT PLAN PROFILE_JSON` and `check PLAN OUTPUT PROFILE_JSON` accept the same reviewed profile.
 
 ```powershell
 $reviewedInputProfile = '<path to the reviewed complete profile JSON>'

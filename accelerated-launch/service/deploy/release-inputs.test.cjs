@@ -112,6 +112,15 @@ try {
   equal(inspectPrerequisites({ root, sections: ['selected'], sectionCatalog: catalog, commands: [process.execPath] }).passed, true);
   equal(inspectPrerequisites({ root, sections: ['selected'], sectionCatalog: catalog, commands: ['crp-deliberately-missing-command'] }).issues.some(row => row.code === 'MISSING_PREREQUISITE_COMMAND'), true);
   equal(resolveCommand(process.execPath), process.execPath);
+  write(files.section, "'use strict'; const {execFileSync}=require('node:child_process'); function probe(command){return command || execFileSync('crp-injected-fixture-command');} module.exports={id:'selected',probe};\n");
+  const injectedReview={command:'crp-injected-fixture-command',file:files.section,sha256:sha(fs.readFileSync(path.join(root,files.section))),reason:'Fixture caller supplies the command function; default is not executed'};
+  equal(inspectPrerequisites({root,sections:['selected'],sectionCatalog:catalog}).issues.some(row=>row.code==='MISSING_PREREQUISITE_COMMAND'),true,'Missing commands remain required without explicit review');
+  const reviewed=inspectPrerequisites({root,sections:['selected'],sectionCatalog:catalog,injectedCommands:[injectedReview]});
+  equal(reviewed.passed,true,'Exact reviewed injected command does not require the uncalled binary');
+  equal(reviewed.injected_commands,[injectedReview],'The exception is explicit in preflight output');
+  equal(inspectPrerequisites({root,sections:[],commands:['crp-injected-fixture-command'],injectedCommands:[injectedReview]}).passed,false,'A module review never exempts an explicitly required command');
+  rejects(()=>inspectPrerequisites({root,sections:['selected'],sectionCatalog:catalog,injectedCommands:[{...injectedReview,sha256:'0'.repeat(64)}]}),/INJECTED_COMMAND_REVIEW_STALE/,'Changed module invalidates the review');
+  rejects(()=>inspectPrerequisites({root,sections:[],injectedCommands:[{...injectedReview,reason:''}]}),/INVALID_INJECTED_COMMAND_REVIEW/,'Review needs a reason');
   equal(inspectPrerequisites({ root, sections: [], files: ['../private.cjs'] }).issues[0].code, 'UNSAFE_PREREQUISITE_PATH');
 
   write(files.section, "'use strict'; module.exports={id:'selected'};\n");

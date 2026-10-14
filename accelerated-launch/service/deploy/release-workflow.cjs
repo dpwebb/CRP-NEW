@@ -192,14 +192,16 @@ function prepareInputs(p,options={}){
   const root=p.workspace_root||ROOT,catalog=sectionCatalog(root),product=p.risk.full_regression_required || p.risk.mode==='PRESENTATION',sections=p.risk.full_regression_required?catalog.map(r=>r.id):p.selected_sections;
   const deploy='accelerated-launch/service/deploy/',toolNames=['release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs','release-evidence-validator.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
   const profileFile=options.profileFile?path.resolve(options.profileFile):null,profile=profileFile?read(profileFile):null;
-  if(profile && (profile.schema!==1 || profile.complete!==true || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed complete input profile or selection');
+  const partialFreshProfile = profile?.complete === false && profile?.reuse_product === false;
+  if(profile && (profile.schema!==1 || (profile.complete!==true && !partialFreshProfile) || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed input profile or selection');
+  if (profile?.injected_commands?.length && profile.complete === true) throw Error('Injected-command reviews require fresh product execution');
   const files=[...toolNames.map(f=>deploy+f),...(product?['accelerated-launch/service/tests/run-tests.cjs','accelerated-launch/service/tests/harness.cjs']:[]),...(profile?.files||[])];
-  const preflight=inputs.assertPrerequisites({root,sections,sectionCatalog:catalog,files,commands:[process.execPath,'git','tar',...(profile?.commands||[])],discoverGeneratedAssets:product,committedManifest:true,candidateCommit:git(['rev-parse','HEAD'],root)});
+  const preflight=inputs.assertPrerequisites({root,sections,sectionCatalog:catalog,files,commands:[process.execPath,'git','tar',...(profile?.commands||[])],injectedCommands:profile?.injected_commands||[],discoverGeneratedAssets:product,committedManifest:true,candidateCommit:git(['rev-parse','HEAD'],root)});
   const rows=paths=>[...new Set(paths)].sort().map(file=>{const actual=fs.realpathSync(file);if(!fs.statSync(actual).isFile())throw Error('Expected input file: '+file);return {path:actual,sha256:hash(actual)};});
   const binaries=preflight.commands.map(command=>{const file=inputs.resolveCommand(command);if(!file)throw Error('Missing command: '+command);return file;});
   for(const file of profile?.external_files||[])if(!path.isAbsolute(file))throw Error('External input paths must be absolute');
   const binding={files:rows(preflight.dependencies.map(f=>inside(root,f))),external_files:rows(profile?.external_files||[]),binaries:rows(binaries),environment_sha256:environmentIdentity(),profile_file:profileFile,profile_sha256:profileFile?hash(profileFile):null};
-  return {toolNames,preflight,binding,productReuse:!!profile};
+  return {toolNames,preflight,binding,productReuse:profile?.complete === true};
 }
 function packageCandidate(p, verificationFile, out) {
   const verification=readVerification(verificationFile),v=verification.value;
@@ -438,7 +440,7 @@ async function main() {
     if(!fs.existsSync(anchor)){fs.mkdirSync(path.dirname(anchor),{recursive:true,mode:0o700});fs.writeFileSync(anchor,fs.readFileSync(source),{flag:'wx',mode:0o600});}
     if(hash(anchor)!==hash(source))throw Error('Captured baseline receipt mismatch');
     const p=plan(args[0],anchor);
-    if(command==='prepare')prepareInputs(p);
+    if(command==='prepare')prepareInputs(p,{profileFile:args[3]});
     write(destination,p);console.log(JSON.stringify({...p.risk,plan_file:destination}));
   }
   else if(command==='preflight'){const p=read(args[0]);frozen(p);const r=prepareInputs(p,{profileFile:args[1]});console.log(JSON.stringify({...r.preflight,product_reuse:r.productReuse?'REVIEWED_COMPLETE_INPUT_PROFILE':'DISABLED_WITHOUT_COMPLETE_INPUT_PROFILE'}));}

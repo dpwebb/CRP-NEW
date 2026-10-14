@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 14 autonomous local administration build
+
+Read `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md`. The owner's latest explicit instruction lifts the earlier Admin UI/partner/three-level-affiliate implementation hold for this bounded local build. Other unspecified enhancements remain held. Use isolated writer worktrees, server-owned permissions, session MFA, separate private admin metadata and explicit consumer grants for fulfillment. Do not restart the existing operational service, alter its real account/store, deploy, pay affiliates or send mail. The reconciled main source is 95617bad7a476641b7e083e63413f25b15495afa; old primary-checkpoint statements below are historical.
+
 ## October 14 reconciled local source
 
 Read `CRP_BRANCH_RECONCILIATION_2026_10_14.md` first for current workspace provenance. Main now contains the reconciled verified packet build and release tools; the old primary checkpoint and all pending primary files are preserved on `archive/primary-pending-20261014`. The October 12 matrix below is historical. Active shipped bytes remain the 167-file 52EE45AADE7AEE92 manifest, without a runtime restart or deployment. Held jurisdiction policy source is under `held-work/jurisdiction-policy-20261011` and is not an active service dependency. Other historical dirty worktrees remain preserved; do not treat them as release candidates or blanket-merge their old runtime.

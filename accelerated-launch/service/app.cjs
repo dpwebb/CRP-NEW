@@ -34,6 +34,8 @@ const { CHECKS: COMMON_ERROR_CHECKLIST } = require('./common-error-checklist.cjs
 
 const UI_DIR = path.join(__dirname, 'ui');
 const SESSION_COOKIE = 'crp_session';
+const ADMIN_COOKIE = 'crp_admin_session';
+const ADMIN_ASSETS = ['/admin', '/admin.html', '/admin.js', '/admin.css', '/partner-access', '/partner-access.html', '/partner-access.js', '/partner-access.css'];
 const BODY_LIMIT_BYTES = 20 * 1024 * 1024;
 const MATRIX_FILE = path.join(__dirname, '..', 'launch-matrix.json');
 
@@ -782,11 +784,12 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
  */
 function staticResponse(req, urlPath) {
   if (req.method !== 'GET' && req.method !== 'HEAD') return null;
-  if (!STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
+  const adminAsset = process.env.CRP_ADMIN_ENABLED === '1' && ADMIN_ASSETS.includes(urlPath);
+  if (!adminAsset && !STATIC_ALLOWLIST.includes(urlPath) && !(process.env.CRP_DEPLOYMENT_ENV === 'staging' &&
     (STAGING_MAILING_ASSETS.includes(urlPath) || STAGING_REFERRAL_ASSETS.includes(urlPath) || STAGING_SCORE_SIMULATOR_ASSETS.includes(urlPath)))) return null;
   const checkoutReturn = new URL(req.url || '/', 'http://localhost').searchParams.get('checkout');
   const publicEntry = ['staging', 'production'].includes(process.env.CRP_DEPLOYMENT_ENV) && !['return', 'cancel'].includes(checkoutReturn);
-  const file = path.resolve(UI_DIR, urlPath === '/' ? (publicEntry ? 'landing.html' : 'index.html') : urlPath.slice(1));
+  const file = path.resolve(UI_DIR, ['/admin', '/partner-access'].includes(urlPath) ? urlPath.slice(1) + '.html' : urlPath === '/' ? (publicEntry ? 'landing.html' : 'index.html') : urlPath.slice(1));
   if (!file.startsWith(UI_DIR + path.sep) || !fs.existsSync(file)) return null;
   return {
     status: 200,
@@ -799,6 +802,10 @@ function staticResponse(req, urlPath) {
 function createService(options) {
   const opts = options || {};
   const store = new PrivateStore(opts.dataDir);
+  // Administrative metadata is opt-in and has its own schema and sole writer.
+  // A normal consumer service never opens or migrates this optional store.
+  const adminStore = process.env.CRP_ADMIN_ENABLED === '1'
+    ? new (require('./admin-store.cjs').AdminStore)(store.dataDir, { consumerStore: store }) : null;
   const logger = new Logger(opts.logSink);
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
@@ -846,6 +853,33 @@ function createService(options) {
         return;
       }
 
+      const consumerGrant = /^\/api\/cases\/[^/]+\/fulfillment-grants(?:\/[^/]+)?$/.test(urlPath) || /^\/api\/fulfillment-organizations\/[^/]+$/.test(urlPath);
+      if (urlPath.startsWith('/api/admin/') || consumerGrant) {
+        if (!adminStore) throw new ServiceError('NOT_FOUND');
+        const token = sessionToken(req);
+        const actor = accounts.resolveSession(store, token);
+        require('./signup-security.cjs').requireReady(store, actor);
+        const body = ['GET', 'HEAD'].includes(req.method) ? {} : await readRequestBody(req);
+        const cookie = String(req.headers.cookie || '').split(';').map(part => part.trim()).find(part => part.startsWith(ADMIN_COOKIE + '='));
+        const adminToken = req.headers['x-crp-admin-session'] || (cookie ? cookie.slice(ADMIN_COOKIE.length + 1) : null);
+        const outcome = await require('./admin-service.cjs').dispatchAdmin({
+          store, adminStore, actor, req, method: req.method, pathname: urlPath,
+          body: body.json || {}, sessionToken: token, adminToken, env: process.env
+        });
+        if (!outcome) throw new ServiceError('NOT_FOUND');
+        const headers = { ...outcome.headers };
+        if (outcome.json?.admin_token) {
+          const value = outcome.json.admin_token;
+          if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{32,256}$/.test(value)) throw new Error('INVALID_ADMIN_SESSION');
+          headers['Set-Cookie'] = `${ADMIN_COOKIE}=${value}; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=900${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`;
+          delete outcome.json.admin_token;
+        }
+        if (urlPath === '/api/admin/lock' && req.method === 'POST') headers['Set-Cookie'] = `${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`;
+        if (outcome.text !== undefined) sendText(res, outcome.status, outcome.text, outcome.content_type, headers);
+        else sendJson(res, outcome.status, outcome.json, headers);
+        return;
+      }
+
       let matched = null;
       for (const [method, template, auth, name] of ROUTES) {
         if (method !== req.method) continue;
@@ -882,10 +916,12 @@ function createService(options) {
       sendJson(res, outcome.status, outcome.json, outcome.headers);
     } catch (err) {
       /* A store that cannot read its own state refuses the request; it never answers from an empty state. */
-      const serviceError = err instanceof ServiceError
+      const AdminError = adminStore ? require('./admin-access.cjs').AdminError : null;
+      const adminError = AdminError && err instanceof AdminError;
+      const serviceError = err instanceof ServiceError || adminError
         ? err
         : (err && err.code === 'SERVICE_STATE_UNAVAILABLE' ? new ServiceError('SERVICE_STATE_UNAVAILABLE') : null);
-      const refusal = serviceError ? toBody(serviceError) : toBody(err);
+      const refusal = adminError ? { ok: false, error: { code: err.code, message: err.message, detail: null } } : serviceError ? toBody(serviceError) : toBody(err);
       const status = serviceError ? serviceError.status : 500;
       /* No path, no query, no body and no header value is ever passed to the log sink. */
       logger.log({
@@ -898,7 +934,7 @@ function createService(options) {
     }
   }
 
-  return { store, logger, handle, surface, startup };
+  return { store, adminStore, logger, handle, surface, startup, close() { adminStore?.close(); } };
 }
 
 function sendJson(res, status, body, headers) {

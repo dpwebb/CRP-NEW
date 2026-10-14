@@ -290,6 +290,7 @@ class TestService {
   close() {
     return new Promise((resolve) => {
       this.server.close(() => {
+        this.service.close?.();
         fs.rmSync(this.dataDir, { recursive: true, force: true });
         resolve();
       });
