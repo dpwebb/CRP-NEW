@@ -31,6 +31,16 @@ async function run(disabled, check) {
     const staff = await secureAccount(t, 'admin-staff-http@example.test');
     const partner = await secureAccount(t, 'admin-partner-http@example.test');
     const consumer = await t.account('admin-consumer-http@example.test');
+    const ownerBeforeRouting = JSON.stringify(t.service.adminStore.state());
+    check.equal((await t.request('GET', '/api/session', { token: owner.token })).json.next_path, '/admin', 'main session selects the current server-owned owner destination before admin unlock');
+    check.equal(JSON.stringify(t.service.adminStore.state()), ownerBeforeRouting, 'navigation lookup never writes an admin unlock or audit');
+    check.equal((await t.request('GET', '/api/session', { token: consumer.token })).json.next_path, undefined, 'ordinary consumer session has no owner destination');
+    const forged = await t.request('POST', '/api/sessions', { body: { email: consumer.email, password, role: 'owner', next_path: '/admin' } });
+    check.equal(forged.status, 200, 'client-provided role cannot disrupt normal consumer sign-in');
+    check.equal(forged.json.next_path, undefined, 'client-provided role and destination never grant owner routing');
+    const wrongPassword = await t.request('POST', '/api/sessions', { body: { email: owner.email, password: 'incorrect-password', next_path: '/admin' } });
+    check.equal(wrongPassword.status, 401, 'failed credentials cannot obtain the owner destination');
+    check.equal(wrongPassword.json.next_path, undefined, 'failed sign-in has no navigation hint');
     check.equal((await t.request('GET', '/api/admin/session', { token: owner.token })).status, 401, 'existing consumer session alone cannot enter administration');
     const unlocked = await t.request('POST', '/api/admin/unlock', { token: owner.token, body: { code: security.totp(owner.secret) } });
     check.equal(unlocked.status, 200, 'fresh MFA unlock succeeds through HTTP');
@@ -45,6 +55,7 @@ async function run(disabled, check) {
     const staffMember = await ownerRequest('POST', '/api/admin/team', { account_id: staff.account_id, role: 'staff', permissions: ['accounts.read'] });
     check.equal(staffMember.status, 201, 'owner can assign a bounded staff role');
     check.equal((await ownerRequest('POST', '/api/admin/team', { account_id: partner.account_id, role: 'partner', org_id: organization.org_id, permissions: ['overview.read', 'fulfillment.read', 'fulfillment.prepare'] })).status, 201, 'fulfillment partner receives only scoped operational capabilities');
+    for (const actor of [staff, partner]) check.equal((await t.request('GET', '/api/session', { token: actor.token })).json.next_path, undefined, 'nonowner administrative role keeps its existing main sign-in destination');
     const staffUnlock = await t.request('POST', '/api/admin/unlock', { token: staff.token, body: { code: security.totp(staff.secret) } });
     const staffProof = /^crp_admin_session=([^;]+)/.exec(staffUnlock.setCookie)[1];
     check.equal((await t.request('GET', '/api/admin/accounts', { token: staff.token, headers: { 'x-crp-admin-session': staffProof } })).status, 200, 'staff account lookup follows its explicit capability');
@@ -74,6 +85,50 @@ async function run(disabled, check) {
 
     const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
     browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+    const routingOwner = await secureAccount(t, 'routing-owner-http@example.test');
+    await ownerRequest('POST', '/api/admin/team', { account_id: routingOwner.account_id, role: 'owner' });
+    const routingContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    try {
+      const routingPage = await routingContext.newPage(); routingPage.setDefaultTimeout(20000);
+      await routingPage.goto(t.base + '/index.html#signin');
+      await routingPage.locator('#email').fill(routingOwner.email); await routingPage.locator('#password').fill(password);
+      const signInCode = security.totp(routingOwner.secret);
+      await routingPage.locator('#signin-code').fill(signInCode);
+      await routingPage.locator('#signin').click();
+      await routingPage.waitForURL(t.base + '/admin'); await routingPage.locator('#stepup-form').waitFor();
+      check.ok(await routingPage.locator('#stepup-code').isVisible(), 'actual main owner login routes to the separate admin MFA screen');
+      await routingPage.locator('#stepup-code').fill(signInCode); await routingPage.locator('#stepup-form button[type=submit]').click();
+      await routingPage.locator('#stepup-error').filter({ hasText: 'already used' }).waitFor();
+      check.ok(await routingPage.locator('#workspace').isHidden(), 'routing never permits sign-in OTP replay or skips admin MFA');
+      await routingPage.locator('#stepup-code').fill(security.totp(routingOwner.secret, Date.now() + 30000));
+      await routingPage.locator('#stepup-form button[type=submit]').click(); await routingPage.locator('#workspace').waitFor();
+      check.equal(await routingPage.locator('#identity-role').innerText(), 'Owner', 'fresh separate MFA opens the routed owner workspace');
+      await routingPage.getByRole('link', { name: 'Consumer workspace', exact: false }).click();
+      await routingPage.locator('#country').waitFor();
+      check.equal(new URL(routingPage.url()).searchParams.get('workspace'), 'consumer', 'owner can explicitly return to consumer work without a redirect loop');
+      await routingContext.clearCookies({ name: 'crp_admin_session' });
+      await routingPage.goto(t.base + '/index.html#signin'); await routingPage.waitForURL(t.base + '/admin'); await routingPage.locator('#stepup-form').waitFor();
+      check.ok(await routingPage.locator('#stepup-code').isVisible(), 'restored owner cookie at the main sign-in entry also routes without creating admin proof');
+      await routingPage.goto(t.base + '/index.html?workspace=consumer#signin'); await routingPage.locator('#country').waitFor();
+      check.equal(new URL(routingPage.url()).pathname, '/index.html', 'explicit consumer sign-in entry suppresses owner routing');
+      const routingCase = (await t.request('POST', '/api/cases', { token: routingOwner.token, body: { country: 'CA', region: 'CA-NS', bureau: 'EQUIFAX' } })).json.case.case_id;
+      await routingPage.goto(t.base + '/?checkout=return&report=' + routingCase + '&plan=monthly#signin');
+      await routingPage.locator('#checkout-return-retry').waitFor();
+      check.equal(await routingPage.evaluate(() => state.caseId), routingCase, 'owner checkout return retains its owned report instead of redirecting to administration');
+      await routingPage.goto(t.base + '/index.html'); await routingPage.locator('#country').waitFor();
+      check.equal(new URL(routingPage.url()).pathname, '/index.html', 'ordinary restored consumer view is not forced into administration');
+      const routingOut = path.resolve(__dirname, '../../out/admin-browser'); fs.mkdirSync(routingOut, { recursive: true });
+      await routingPage.goto(t.base + '/index.html#signin'); await routingPage.waitForURL(t.base + '/admin'); await routingPage.locator('#stepup-form').waitFor();
+      await routingPage.screenshot({ path: path.join(routingOut, 'owner-main-login-unlock-1440.png'), fullPage: true });
+    } finally { await routingContext.close(); }
+    const routingConsumerContext = await browser.newContext({ viewport: { width: 390, height: 1000 } });
+    try {
+      await routingConsumerContext.addCookies([{ name: 'crp_session', value: consumer.token, url: t.base, httpOnly: true, sameSite: 'Strict' }]);
+      const consumerPage = await routingConsumerContext.newPage();
+      await consumerPage.route('**/api/session', async route => { const response = await route.fetch(); const body = await response.json(); body.next_path = 'https://outside.example/admin'; await route.fulfill({ response, json: body }); });
+      await consumerPage.goto(t.base + '/index.html#signin'); await consumerPage.locator('#country').waitFor();
+      check.equal(new URL(consumerPage.url()).pathname, '/index.html', 'browser refuses an injected nonconstant navigation destination');
+    } finally { await routingConsumerContext.close(); }
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
     const page = await context.newPage(); page.setDefaultTimeout(20000);
     await page.goto(t.base + '/admin'); await page.locator('#login-form').waitFor();
@@ -143,6 +198,9 @@ async function run(disabled, check) {
       await new Promise(resolve => listener.listen(0, '127.0.0.1', resolve)); const base = 'http://127.0.0.1:' + listener.address().port;
       check.equal((await fetch(base + '/api/cases', { headers: { Authorization: 'Bearer ' + ordinary.token } })).status, 200, 'unavailable optional admin metadata does not stop ordinary consumer operations');
       check.equal((await fetch(base + '/api/admin/session', { headers: { Authorization: 'Bearer ' + ordinary.token } })).status, 503, 'unavailable optional admin metadata fails closed only for admin operations');
+      const retained = await fetch(base + '/api/sessions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: ordinary.account.email, password }) });
+      check.equal(retained.status, 200, 'unavailable optional administration does not break consumer sign-in');
+      check.equal((await retained.json()).next_path, undefined, 'unavailable administration supplies no owner navigation hint');
     } finally {
       await new Promise(resolve => listener.close(resolve)); isolated.close();
       if (!path.resolve(brokenDir).startsWith(path.join(require('node:os').tmpdir(), 'crp-b2-admin-failure-'))) throw Error('Unexpected disposable fixture path');

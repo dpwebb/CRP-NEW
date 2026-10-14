@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 14 automatic owner routing follow-up
+
+The owner explicitly requested "Implement automatic owner routing". Follow the bounded follow-up in `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md` and the single work register. Coordinator owns server sign-in/session destination, affected UI and tests in clean admin-integration; other agents review read-only. Route only a server-verified current eligible active owner to the existing `/admin` MFA unlock, preserve consumer/checkout paths and an explicit owner consumer escape, and never grant/unlock from routing. One final governed full is required for shared authentication/UI changes. This is local implementation/package authority only; retain the currently accepted e188 production/staging and original local runtime until a new build's separate activation authorization. Other enhancements and external actions remain held.
+
 ## October 14 administration deployed and real owner activated
 
 Read `CRP_ADMIN_MANAGEMENT_PRODUCTION_2026_10_14.md` for current provenance. Explicit owner authorization promoted the unchanged `crp-v1-e1882ec0a7bf63e7` / executable source `c9a1e2ccd1beb01e334407998695062e9164d256` / 176-file archive to production. Administration is enabled/available. The verified, recovery-ready and MFA-enrolled `admin@creditregulatorpro.com` account was registered as owner through the frozen bootstrap using fresh owner-supplied MFA, a stopped verified snapshot and signed authority verification. After correcting an initial consumer-dashboard observation, the owner explicitly confirmed separate administration MFA unlock and entry through `/admin.html`. Main consumer sign-in still opens the consumer workspace; use `/admin` for administration. Role-aware navigation is an explicit unresolved follow-up.

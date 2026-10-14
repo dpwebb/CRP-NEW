@@ -323,7 +323,11 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer, adminStore) {
+  const ownerRoute = (account, token) => {
+    const nextPath = adminStore && require('./admin-access.cjs').ownerSignInPath(adminStore, account, token);
+    return nextPath === '/admin' ? { next_path: '/admin' } : {};
+  };
   return {
     /* ------------------------------------------------------------ accounts and sessions */
 
@@ -341,7 +345,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     signIn: ({ body }) => {
       const opened = accounts.signIn(store, body);
       logger.log({ event: 'SIGN_IN', outcome: 'OK' });
-      return { status: 200, json: { ok: true, account: opened.account, signed_in: true, ...accounts.securityView(store,opened.account) }, headers: { 'Set-Cookie': sessionCookie(opened.token, 86400) } };
+      return { status: 200, json: { ok: true, account: opened.account, signed_in: true, ...accounts.securityView(store,opened.account), ...ownerRoute(opened.account, opened.token) }, headers: { 'Set-Cookie': sessionCookie(opened.token, 86400) } };
     },
 
     signOut: ({ req }) => {
@@ -350,7 +354,7 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
       return { status: 200, json: { ok: true, signed_out }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
 
-    sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true, ...accounts.securityView(store,actor) } }),
+    sessionInfo: ({ actor, req }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true, ...accounts.securityView(store,actor), ...ownerRoute(actor, sessionToken(req)) } }),
 
     confirmEmail: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmEmail(store,actor,body)}}),
     resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer)}}),
@@ -816,7 +820,7 @@ function createService(options) {
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender()),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender(), adminStore),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
     {contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}

@@ -20,6 +20,12 @@ function accountSession(store,actor,token){
   return {account,session};
 }
 function memberFor(store,accountId){const state=store.state(),members=state.memberships.filter(r=>r.account_id===accountId&&r.status==='ACTIVE'),member=members[0];if(members.length!==1||!['owner','staff','partner'].includes(member.role)||!Number.isInteger(member.revision)||member.revision<1||!Array.isArray(member.permissions)||new Set(member.permissions).size!==member.permissions.length||member.permissions.some(p=>!PERMISSIONS.includes(p)))fail('NOT_AUTHORIZED',403);if(member.role==='staff'&&member.permissions.some(p=>OWNER_ONLY.has(p))||member.role==='partner'&&(member.permissions.some(p=>!PARTNER_ALLOWED.has(p))||!state.organizations.some(r=>r.org_id===member.org_id&&r.status==='ACTIVE')))fail('NOT_AUTHORIZED',403);return member;}
+// A navigation hint only: never consumes MFA or creates an administrative unlock.
+// Optional administration must not prevent an otherwise valid consumer sign-in.
+function ownerSignInPath(store,actor,consumerSessionToken){
+  try{const {account}=accountSession(store,actor,consumerSessionToken);return memberFor(store,account.account_id).role==='owner'?'/admin':null;}
+  catch{return null;}
+}
 function unlock(store,actor,consumerSessionToken,input){
   const {account,session}=accountSession(store,actor,consumerSessionToken),member=memberFor(store,account.account_id);
   if(!input?.code)fail('TWO_FACTOR_REQUIRED',401);
@@ -105,4 +111,4 @@ function updateMembership(store,actor,adminId,input){requireCapability(store,act
 function createOrganization(store,actor,input){requireCapability(store,actor,'organizations.manage');const name=typeof input.name==='string'?input.name.trim():'',status=input.status??'ACTIVE';if(!name||name.length>120||!['ACTIVE','DISABLED'].includes(status))fail('INVALID_REQUEST',400);return store.update(state=>{const org={org_id:id('org'),name,status,created_at:new Date().toISOString()};state.organizations.push(org);store.appendAudit(state,actor,'ADMIN_ORGANIZATION_CREATED',{org_id:org.org_id,status});return org;});}
 function updateOrganization(store,actor,orgId,input){requireCapability(store,actor,'organizations.manage');if(input.status!==undefined&&!['ACTIVE','DISABLED'].includes(input.status)||input.name!==undefined&&(typeof input.name!=='string'||!input.name.trim()||input.name.trim().length>120))fail('INVALID_REQUEST',400);return store.update(state=>{const org=state.organizations.find(r=>r.org_id===orgId);if(!org)fail('NOT_FOUND',404);if(input.name!==undefined)org.name=input.name.trim();if(input.status!==undefined){org.status=input.status;const admins=new Set(state.memberships.filter(r=>r.org_id===orgId).map(r=>r.admin_id));for(const row of state.unlocks)if(admins.has(row.admin_id)&&!row.revoked_at)row.revoked_at=new Date().toISOString();}store.appendAudit(state,actor,'ADMIN_ORGANIZATION_UPDATED',{org_id:orgId,status:org.status});return org;});}
 const addAudit=(store,actor,event,metadata)=>store.audit(actor,event,metadata);
-module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,principal,unlock,lock,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
+module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,principal,unlock,lock,ownerSignInPath,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
