@@ -288,6 +288,20 @@ function readableDate(value) {
   const date = new Date(value);
   return Number.isFinite(date.getTime()) ? date.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }) : '';
 }
+function accessDeadline(ent) { return ent?.state === 'PAST_DUE' && ent.grace_until ? ent.grace_until : ent?.expires_at; }
+function failedPaymentBlock(ent = state.entitlement) {
+  if (ent?.state !== 'PAST_DUE') return '';
+  const date = new Date(ent.grace_until);
+  const deadline = ent.grace_until && Number.isFinite(date.getTime()) ? date.toLocaleString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : '';
+  return `<div class="note" role="status">Your latest subscription payment failed. ${ent.entitled && deadline ? `Your paid access stays open until <b>${esc(deadline)}</b>. If payment is not confirmed by then, paid features will stop.` : 'Paid features are unavailable now.'} Your saved results stay readable.</div>`;
+}
+function renewalNeedsCancellation(ent = state.entitlement) {
+  return ent?.renewal_cancellation_available === true && !(ent.entitled && ent.access_via === 'SUBSCRIPTION');
+}
+function renewalAttentionBlock(inResults = false) {
+  if (!renewalNeedsCancellation()) return '';
+  return `<div class="note" role="status">An earlier subscription can still renew. Cancel renewal before starting another subscription. One-report purchases stay available.${inResults ? '<br><button class="secondary" id="renewal-plans">Cancel renewal in Plans</button>' : ''}</div>`;
+}
 function planName(code) { return ({ report_once: 'One report', monthly: 'Monthly subscription', annual: 'Yearly subscription' })[code] || 'Subscription'; }
 function paymentSentence(pay) { return pay?.is_a_working_payment ? 'You pay only after choosing a plan and completing checkout.' : 'Payments are unavailable right now.'; }
 function access() {
@@ -297,7 +311,7 @@ function access() {
   const parts = [];
   if (ent) {
     parts.push(ent.entitled
-      ? `<strong>Your plan:</strong> ${esc(planName(ent.plan_code))}${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
+      ? `<strong>Your plan:</strong> ${esc(planName(ent.plan_code))}${accessDeadline(ent) ? `, active until ${esc(readableDate(accessDeadline(ent)))}` : ''}.`
       : 'Upload and check your report for free. Unlock the full assessment with a one-time purchase, or choose a subscription for dispute packets and full access.');
   } else {
     parts.push('Your plan details are unavailable. Try again.');
@@ -308,7 +322,7 @@ function access() {
   if (credit && credit.eligible) {
     parts.push(`<strong>Your upgrade credit:</strong> ${esc(money(credit.credit_cents, credit.currency))} from unused payments toward a higher plan.`);
   }
-  return `<div class="note">${parts.join('<br>')}</div>`;
+  return `<div class="note">${parts.join('<br>')}</div>${failedPaymentBlock(ent)}`;
 }
 
 /** Refresh the account's access state after anything that could change it. */
@@ -1282,6 +1296,7 @@ function upgradeQuote(code) {
     ? quote : null;
 }
 function canChoosePlan(code) {
+  if (code !== 'report_once' && renewalNeedsCancellation()) return false;
   const quote = upgradeQuote(code);
   if (quote) return quote.allowed !== false && !quote.is_current;
   const ent = state.entitlement || {};
@@ -1449,7 +1464,9 @@ function startCheckout(planCode, confirmedUpgrade = false) {
     if (state.checkoutReturn?.status === 'pending' && state.checkoutReturn.caseId === state.caseId) throw new Error('Select Check payment before starting another checkout.');
     const pending = ownedPendingCheckout();
     if (pending && (planCode !== 'report_once' || pending.plan_code === 'report_once' && pending.case_id === state.caseId)) throw new Error('Continue your open payment or check its status before starting another checkout.');
-    if (!canChoosePlan(planCode)) throw new Error('This plan is already included in your subscription. Choose a higher plan to upgrade.');
+    if (!canChoosePlan(planCode)) throw new Error(renewalNeedsCancellation() && planCode !== 'report_once'
+      ? 'Cancel renewal of your earlier subscription in Plans before starting another subscription.'
+      : 'This plan is already included in your subscription. Choose a higher plan to upgrade.');
     if (state.entitlement?.entitled && state.entitlement.access_via === 'SUBSCRIPTION') {
       const quote = upgradeQuote(planCode);
       if (!quote || typeof quote.revision !== 'string' || !quote.revision) throw new Error('Your upgrade price is unavailable. Refresh your plans and try again.');
@@ -1582,6 +1599,7 @@ function renderResults(panel) {
     <p class="lede">Your report for ${esc(regionLabel(view.case.country, view.case.region))}.</p>
     ${notices()}
     ${pendingPaymentBlock(true)}
+    ${failedPaymentBlock()}${renewalAttentionBlock(true)}
     <button class="${summary ? 'secondary' : 'primary'}" id="evaluate">${summary ? 'Check this report again' : 'Check my report'}</button>
     ${summary
       ? (access.complete_assessment && result ? resultBlock(result, demo) : freeSummaryBlock(view))
@@ -1604,6 +1622,8 @@ function renderResults(panel) {
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
   if (packet) packet.onclick = () => navigateStep(STEP.CHOOSE);
+  const renewalPlans = el('renewal-plans');
+  if (renewalPlans) renewalPlans.onclick = () => navigateStep(STEP.BILLING);
 
   wireResultSelector(panel, view);
   wireClarification(panel, view);
@@ -2514,6 +2534,8 @@ function renderSupport(panel) {
     };
     const selectSummary = () => {
       const ta = el('supportSummary');
+      const details = ta?.closest?.('details');
+      if (details) details.open = true;
       if (ta && ta.select) { ta.select(); if (ta.focus) ta.focus(); }
     };
     const doCopy = async (text, label) => {
@@ -2597,20 +2619,21 @@ function renderBillingView(data) {
   rememberPendingCheckout(data);
 
   const accessLine = ent.entitled
-    ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
+    ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${accessDeadline(ent) ? `, active until ${esc(readableDate(accessDeadline(ent)))}` : ''}.`
     : 'You have no active paid plan. You can still read and delete your saved files.';
 
   const cancellationAvailable = ent.renewal_cancellation_available ?? (ent.entitled && ent.access_via === 'SUBSCRIPTION' && !ent.cancel_at_period_end);
   const renewalRecorded = ent.renewing_subscription_recorded ?? (ent.access_via === 'SUBSCRIPTION');
-  const renewalConfirmed = ent.renewal_status === 'CANCELLATION_CONFIRMED' || ent.cancel_at_period_end;
-  const renewalLine = renewalRecorded
-    ? renewalConfirmed ? 'Renewal is cancelled. Your paid access follows the date shown above.' : `Your subscription ${ent.entitled ? 'renews automatically' : 'can still renew'} ${ent.plan_code === 'annual' ? 'each year' : 'each month'}. Cancel renewal to stop future charges.`
-    : ent.access_via === 'ONE_TIME_CREDIT'
-    ? 'This purchase is one-time. It does not renew, and no recurring payment will be taken.'
-    : ent.access_via === 'SUBSCRIPTION'
-      ? (ent.cancel_at_period_end
-        ? 'Renewal is cancelled. Access continues until your recorded expiry.'
-        : `Your subscription renews automatically ${ent.plan_code === 'annual' ? 'each year' : 'each month'} until you cancel.`)
+  const renewalConfirmed = Object.prototype.hasOwnProperty.call(ent, 'renewal_status')
+    ? ent.renewal_status === 'CANCELLATION_CONFIRMED' : Boolean(ent.cancel_at_period_end);
+  const renewalLine = renewalConfirmed
+    ? 'Renewal is cancelled. Your paid access follows the date shown above.'
+    : renewalRecorded
+      ? ent.entitled && ent.access_via === 'SUBSCRIPTION' && !ent.cancel_at_period_end
+        ? `Your subscription renews automatically ${ent.plan_code === 'annual' ? 'each year' : 'each month'}. Cancel renewal to stop future charges.`
+        : 'An earlier subscription can still renew. Cancel renewal to stop future charges.'
+      : ent.access_via === 'ONE_TIME_CREDIT'
+        ? 'This purchase is one-time. It does not renew, and no recurring payment will be taken.'
       : 'You have no renewing subscription.';
 
   const cancelBlock = cancellationAvailable
@@ -2633,7 +2656,7 @@ function renderBillingView(data) {
       <p class="plan-price">${esc(allowed && quote ? money(quote.first_invoice_cents, quote.currency) : p.amount_display)}${allowed && quote ? '<small>today</small>' : ''}</p>
       <p class="evidence">${esc(intervalLabel(p.interval))}</p>
       <p>${p.plan_code === 'report_once' ? 'Full results and a PDF for one report. No dispute packet.' : 'Full results, print and mail dispute packets, saved reports and comparisons.'}</p>
-      ${allowed ? priceDetails(p.plan_code) : `<p class="evidence">${current ? 'This is your current subscription.' : quote?.reason === 'CHECKOUT_ALREADY_IN_PROGRESS' ? 'Finish your open checkout before choosing another plan.' : 'Included in your current subscription.'}</p>`}
+      ${allowed ? priceDetails(p.plan_code) : `<p class="evidence">${p.plan_code !== 'report_once' && renewalNeedsCancellation(ent) ? 'Cancel renewal of your earlier subscription before starting this plan.' : current ? 'This is your current subscription.' : quote?.reason === 'CHECKOUT_ALREADY_IN_PROGRESS' ? 'Finish your open checkout before choosing another plan.' : 'Included in your current subscription.'}</p>`}
       ${allowed ? `<button class="${p.plan_code === 'report_once' ? 'secondary' : 'primary'}" id="checkout-${esc(p.plan_code)}">${ent.entitled && ent.access_via === 'SUBSCRIPTION' ? 'Review' : ent.entitled && p.plan_code !== 'report_once' ? 'Upgrade to' : 'Choose'} ${p.plan_code === 'report_once' ? 'one report' : p.plan_code === 'annual' ? 'yearly' : 'monthly'}${ent.entitled && ent.access_via === 'SUBSCRIPTION' ? ' upgrade' : ''}</button>` : ''}
     </article>`;
   }).join('');
@@ -2641,8 +2664,9 @@ function renderBillingView(data) {
   box.innerHTML = `
     <h3>Your access</h3>
     <p class="evidence">${accessLine}</p>
+    ${failedPaymentBlock(ent)}
     <p class="evidence">${renewalLine}</p>
-    ${cancelBlock}
+    ${cancelBlock}${renewalAttentionBlock()}
     ${pendingPaymentBlock()}
     ${!ownedPendingCheckout() && Object.values(data.upgrade_quotes || {}).some(q => q.reason === 'CHECKOUT_ALREADY_IN_PROGRESS') ? '<div class="note" role="status">A checkout is already open. Your access changes after payment is confirmed.<br><button class="secondary" id="refresh-billing-payment">Check payment</button></div>' : ''}
     ${checkingPayment ? '' : upgradeConfirmationBlock()}
