@@ -39,6 +39,16 @@ async function run(_service,check) {
   let refusalCode;hung.handle(req,{writeHead(){},end(text){refusalCode=JSON.parse(text).error.code;}});req.emit('end');
   await failed;check.equal(refusalCode,'PROCESSING_TIMEOUT','worker watchdog refuses a hung operation');await hung.close();
   const target={name:'production',build_id:'test',url:'https://example.test',service:'app',backup_service:'backup'};
+  const monitor=require('../../deploy/operational-monitor.cjs');
+  const configuration={targets:[{...target,backup_directory:temp}],status_directory:path.join(temp,'monitor'),require_alerts:true,alert_environment_file:path.join(temp,'credentials.env')};
+  for(const bad of [{...configuration,targets:[]},{...configuration,targets:[{...configuration.targets[0],url:'http://example.test'}]},{...configuration,targets:[configuration.targets[0],configuration.targets[0]]}]) {
+    let refused=false;try{monitor.validate(bad);}catch{refused=true;}check.equal(refused,true,'invalid monitor configuration cannot pass');
+  }
+  let absent=false;try{await monitor.run(configuration,{inspect:async()=>({target:'production',passed:true,failures:[]})});}catch{absent=true;}
+  check.equal(absent,true,'quiet healthy monitor validates a missing credential file');
+  fs.writeFileSync(configuration.alert_environment_file,'HOSTINGER_MAIL_TOKEN=fixture\nHOSTINGER_MAIL_ACCOUNT=admin@creditregulatorpro.com\n');
+  check.equal((await monitor.run(configuration,{inspect:async()=>({target:'production',passed:true,failures:[]}),send:async()=>{throw Error('quiet cycle must not send');}})).passed,true,'valid quiet configuration passes without sending');
+  check.equal((await monitor.external(target,{fetch:async()=>{throw Error('whole-host outage');}})).passed,false,'off-host probe detects whole-host network outage without local systemctl');
   const healthy={fetch:async()=>({ok:true,json:async()=>({ok:true,build_id:'test',deployment:'production',billing_mode:'live'})}),command:args=>args[0]==='is-active'?'active':args[0]==='is-enabled'?'enabled':'success',backups:()=>[{mtime:Date.now(),verified:true}],disk:()=>({bavail:50,blocks:100})};
   check.equal((await inspect(target,healthy)).passed,true,'healthy operational probes pass');
   for(const [patch,code] of [[{fetch:async()=>{throw Error();}},'PUBLIC_HEALTH_UNREACHABLE'],[{backups:()=>[]},'BACKUP_STALE'],[{disk:()=>({bavail:1,blocks:100})},'DISK_LOW'],[{command:()=> 'failed'},'SERVICE_NOT_ACTIVE']])check.ok((await inspect(target,{...healthy,...patch})).failures.includes(code),'monitor surfaces '+code);
@@ -46,6 +56,22 @@ async function run(_service,check) {
   let rejected=false;try{acceptance({...historical,measurement_receipt_sha256:'0'.repeat(64)},historical.build_id,{measurementFile:fixture,evidenceRoot:temp,packageReceipt:{}});}catch{rejected=true;}
   check.equal(rejected,true,'syntactically valid fabricated measurement hash cannot authorize release');
   const {PrivateStore}=require('../../private-store.cjs');
+  const sleeper=spawn(process.execPath,['-e',"console.log('ready');setInterval(()=>{},1000)"],{stdio:['ignore','pipe','pipe']});
+  await once(sleeper.stdout,'data');
+  try {
+    const identity=require('../../process-identity.cjs').identity(sleeper.pid);
+    check.ok(identity,'live process start identity is available');
+    const locking=path.join(temp,'pid-identity');fs.mkdirSync(locking);
+    const lock=path.join(locking,'store.lock');
+    fs.writeFileSync(lock,JSON.stringify({pid:sleeper.pid,process_identity:identity}));
+    let refused=false;try{new PrivateStore(locking);}catch(e){refused=e.message.includes('PRIVATE_STORE_ALREADY_HAS_A_WRITER');}
+    check.equal(refused,true,'matching live writer identity refuses a second writer');
+    fs.writeFileSync(lock,JSON.stringify({pid:sleeper.pid,process_identity:identity+'-previous-process'}));
+    new PrivateStore(locking);check.equal(JSON.parse(fs.readFileSync(lock)).pid,process.pid,'recycled live PID cannot block stale-lock recovery');
+    fs.writeFileSync(lock,JSON.stringify({pid:sleeper.pid,started_at:'2000-01-01'}));
+    refused=false;try{new PrivateStore(locking);}catch{refused=true;}
+    check.equal(refused,true,'legacy live PID remains protected when identity is unavailable');
+  }finally{const exited=once(sleeper,'exit');sleeper.kill();await exited;}
   const store=new PrivateStore(path.join(temp,'durability'));
   store.update(state=>state.accounts.push({account_id:'retained'}));
   const first=store.state();check.equal(store.state(),first,'unchanged reads reuse the immutable state snapshot');

@@ -8,9 +8,16 @@ function settings(file) {
     let value=match[2].trim();if((value.startsWith('"')&&value.endsWith('"'))||(value.startsWith("'")&&value.endsWith("'")))value=value.slice(1,-1);
     values[match[1]]=value;
   }
-  if(values.HOSTINGER_MAIL_TOKEN){if(values.HOSTINGER_MAIL_ACCOUNT!=='admin@creditregulatorpro.com')throw Error('ALERT_MAILBOX_INVALID');return values;}
+  if(values.HOSTINGER_MAIL_TOKEN){
+    if(values.HOSTINGER_MAIL_ACCOUNT!=='admin@creditregulatorpro.com')throw Error('ALERT_MAILBOX_INVALID');
+    if(/\s/.test(values.HOSTINGER_MAIL_TOKEN))throw Error('ALERT_CREDENTIALS_INVALID');
+    if(values.HOSTINGER_MAILBOX_RESOURCE_ID&&!/^AC[A-Za-z0-9]+$/.test(values.HOSTINGER_MAILBOX_RESOURCE_ID))throw Error('ALERT_MAILBOX_INVALID');
+    return values;
+  }
   if(!values.SMTP_USER || !values.SMTP_PASSWORD)throw Error('ALERT_CREDENTIALS_UNAVAILABLE');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.SMTP_USER))throw Error('ALERT_MAILBOX_INVALID');
+  if(Number(values.SMTP_PORT||465)!==465)throw Error('ALERT_IMPLICIT_TLS_REQUIRED');
+  if(values.SMTP_HOST&&!/^[A-Za-z0-9.-]+$/.test(values.SMTP_HOST))throw Error('ALERT_HOST_INVALID');
   return values;
 }
 async function send(config,subject,body,dependencies={}) {

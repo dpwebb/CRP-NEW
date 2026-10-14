@@ -161,6 +161,16 @@ class PrivateStore {
    * left to brick the service; a live one is refused with an exact message.
    */
   claimWriterLock() {
+    const {identity}=require('./process-identity.cjs');
+    const ownIdentity=identity(process.pid);
+    const replacement=JSON.stringify({pid:process.pid,process_identity:ownIdentity,started_at:new Date().toISOString()});
+    const write=()=>fs.writeFileSync(this.lockFile,replacement,{encoding:'utf8',mode:0o600,flag:'wx'});
+    try {write();return;}catch(error){if(error.code!=='EEXIST')throw error;}
+    // Serialize stale-lock reclamation; a simultaneous starter must retry rather
+    // than unlink a replacement lock that it did not inspect.
+    const reclaim=this.lockFile+'.reclaim';let guard;
+    try {guard=fs.openSync(reclaim,'wx',0o600);}catch{throw Error('PRIVATE_STORE_LOCK_RECLAMATION_BUSY');}
+    try {
     if (fs.existsSync(this.lockFile)) {
       let held = null;
       try {
@@ -168,15 +178,20 @@ class PrivateStore {
       } catch {
         held = null;
       }
-      const alive = held && isProcessAlive(Number(held.pid)) && Number(held.pid) !== process.pid;
+      const pid=Number(held?.pid),live=held&&isProcessAlive(pid);
+      const actual=live&&pid!==process.pid?identity(pid):ownIdentity;
+      // Legacy/unknown identities stay fail-closed while their PID is live.
+      const alive = live && pid!==process.pid && (!held.process_identity || !actual || held.process_identity===actual);
       if (alive) {
         throw new Error(
           `PRIVATE_STORE_ALREADY_HAS_A_WRITER: pid ${held.pid} holds ${this.lockFile}. ` +
           'Two processes must not share one private data directory; stop the other one or point this one at its own directory.'
         );
       }
+      fs.unlinkSync(this.lockFile);
     }
-    fs.writeFileSync(this.lockFile, JSON.stringify({ pid: process.pid, started_at: new Date().toISOString() }), { encoding: 'utf8', mode: 0o600 });
+    write();
+    }finally{fs.closeSync(guard);fs.unlinkSync(reclaim);}
   }
 
   /**
@@ -220,7 +235,9 @@ class PrivateStore {
   update(mutator) {
     const next = structuredClone(this.state());
     const returned = mutator(next);
-    const serialized = JSON.stringify(next, null, 2);
+    // Persist identical values without display indentation: report-rich stores
+    // otherwise allocate and flush hundreds of MB of whitespace per transaction.
+    const serialized = JSON.stringify(next);
     if (fs.existsSync(this.stateFile)) {
       const backupTemp=this.backupFile+'.tmp';
       fs.copyFileSync(this.stateFile,backupTemp);
