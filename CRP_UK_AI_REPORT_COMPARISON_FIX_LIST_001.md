@@ -1,5 +1,17 @@
 # UK AI report comparison — FIX TODO register
 
+## Current local implementation — October 13, 2026
+
+**All 6 UK TODOs IMPLEMENTED_LOCAL; no implementation items remain open in this fix list.** Owner authorization now includes local implementation and validation. The original comparison-phase restrictions and missed counts below are historical evidence.
+
+Enhanced local CRP: http://127.0.0.1:8890/, build `crp-local-four-country-741325656ab5f4c0`; source checkout `C:/Users/webbd/.codex/worktrees/au-uk-fixlists/CRP-NEW`, branch `codex/au-uk-fixlists-20261012`. Runtime implementation source `8d7c87d19267fcc9152f7efdb2693351350e3d1a`; final tested source `61e831f2eb8faa70b1392f4a18bd93ed94dd6867` adds only the inquiry-category regression assertion. Manifest `741325656AB5F4C0292031548955221A866273B93FF7CF327C3E58B47522538C` (155 files) is identical. Same existing full-access account; credentials remain private and unchanged.
+
+Fresh original-byte extraction/evaluation projection: **97/97 admitted; 109/109 frozen concerns detected and packet-eligible; zero misses.** This is an offline source-bound projection, not a new HTTP run for every original. Final full regression: **15886 passed, 0 failed, 0 skipped**. Ten actual original-report localhost retests across US/CA: **29/29** frozen concerns detected and eligible, existing cases/files/results preserved. Fictional selected/approved packet and ownership controls passed; original-report retests did not select or approve packets.
+
+See [four-country implementation receipt](CRP_ALL_JURISDICTION_FIXLIST_LOCAL_IMPLEMENTATION_2026_10_13.md) for per-TODO mapping, qualification controls and failed-run history. Evidence: `C:\Users\webbd\.codex\private\crp-ai-comparison\implementation-2026-10-12\us-ca-fixes`. Staging/production **NOT RUN**; no push, purchase or external dispatch.
+
+## Historical comparison evidence and corrective requirements
+
 Created October 12, 2026 (America/Halifax). Authority: owner-requested independent UK report review compared with enhanced local CRP. **Historical comparison authority was read-only. The October 12 owner request now authorizes local implementation of both fix lists; staging/production deployment remains unauthorized.**
 
 Status: **97/97 PDFs compared; none pending. One hundred nine independent concerns: forty-five detected, sixty-four missed. Thirteen false-positive chronology outputs. Six corrective TODOs IMPLEMENTED locally.** Nine batches of ten and a final batch of seven; 141 original pages reviewed. Three originals were refused by CRP; those actual intake outcomes and supported misses are retained. These are printed discrepancies and qualified verification concerns, not established statutory breaches.

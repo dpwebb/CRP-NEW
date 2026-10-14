@@ -1,5 +1,17 @@
 # AI report comparison — FIX TODO evidence register
 
+## Current local implementation — October 13, 2026
+
+**All 18 AU TODOs IMPLEMENTED_LOCAL; no implementation items remain open in this fix list.** Owner authorization now includes local implementation and validation. The original comparison-phase restrictions and missed counts below are historical evidence.
+
+Enhanced local CRP: http://127.0.0.1:8890/, build `crp-local-four-country-741325656ab5f4c0`; source checkout `C:/Users/webbd/.codex/worktrees/au-uk-fixlists/CRP-NEW`, branch `codex/au-uk-fixlists-20261012`. Runtime implementation source `8d7c87d19267fcc9152f7efdb2693351350e3d1a`; final tested source `61e831f2eb8faa70b1392f4a18bd93ed94dd6867` adds only the inquiry-category regression assertion. Manifest `741325656AB5F4C0292031548955221A866273B93FF7CF327C3E58B47522538C` (155 files) is identical. Same existing full-access account; credentials remain private and unchanged.
+
+Fresh original-byte extraction/evaluation projection: **104/104 admitted; 161/161 frozen concerns detected and packet-eligible; zero misses.** This is an offline source-bound projection, not a new HTTP run for every original. Final full regression: **15886 passed, 0 failed, 0 skipped**. Ten actual original-report localhost retests across US/CA: **29/29** frozen concerns detected and eligible, existing cases/files/results preserved. Fictional selected/approved packet and ownership controls passed; original-report retests did not select or approve packets.
+
+See [four-country implementation receipt](CRP_ALL_JURISDICTION_FIXLIST_LOCAL_IMPLEMENTATION_2026_10_13.md) for per-TODO mapping, qualification controls and failed-run history. Evidence: `C:\Users\webbd\.codex\private\crp-ai-comparison\implementation-2026-10-12\us-ca-fixes`. Staging/production **NOT RUN**; no push, purchase or external dispatch.
+
+## Historical comparison evidence and corrective requirements
+
 Created: October 11, 2026 (America/Halifax).
 Authority: owner-requested fresh AI review of supplied sample credit reports, comparison with production CRP findings, and recording of every supported finding CRP missed.
 
