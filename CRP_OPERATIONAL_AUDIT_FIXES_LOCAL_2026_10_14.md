@@ -25,7 +25,7 @@ The port-selection defect was reproduced locally: this machine allocates dynamic
 
 - Final executable/test source: f60d6db587ec81ae1f8a5b5e58b62166b134e828.
 - Candidate: crp-v1-76dd4c2022831cae, 169 shipped files; manifest 76DD4C2022831CAEB74E476771480DC047A3B201D3BC35D49B5ACAC84BD44249.
-- Final full: 16,782 passes / zero failures / zero skipped across 181 completed sections; f60d6db587ec81ae1f8a5b5e58b62166b134e828_COUNT matching tested sources, no drift or unrun sections.
+- Final full: 16,782 passes / zero failures / zero skipped across 181 completed sections; 375 matching tested sources, no drift or unrun sections.
 - Governed checks: 32 syntax checks and ten release-tooling suites. Product reuse is disabled; the partial input review does not claim a complete dynamic dependency graph.
 - Required ignored prerequisites: all 55 original pins match. Historical hashes were not rewritten. The primary checkout's stale ignored behavioral-summary input was restored from those exact pins after preserving its previous bytes in private custody; tracked files and customer stores were not overwritten.
 - Package/archive and verification receipt: Immutable package receipt at C:/Users/webbd/.codex/private/crp-operational-audit-fixes-20261014/audit-release-final/candidate/package-receipt.json; archive SHA-256 5A3E94A93DF84C1F5C8C1D2ED6ABE697A91FE73E177D5A99BDEE798EB0ECA3C4; verification SHA-256 6B8668A46670FECA9EBC76EDD8F4A109A84FB6532069DA3237BCAD27DB4BDDEB; raw full SHA-256 B6ED8BAB98232BEDE19D5F7840FC5AA6D5003697E37FEC138F8E52A7DFCF1871. Production readiness remains false.
