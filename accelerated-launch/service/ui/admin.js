@@ -159,7 +159,7 @@
     wrap.append(title, control); if (help) { const description = node('p', 'field-help', help); description.id = `${id}-help`; control.setAttribute('aria-describedby', description.id); wrap.append(description); } return wrap;
   }
   function dialog({ title, description = '', eyebrow = views[state.view].label.toUpperCase(), fields = [], content, submit = 'Save changes', onSave, danger = false }) {
-    state.lastFocus = document.activeElement; state.dialog = onSave || null;
+    if (!$('editor').open) state.lastFocus = document.activeElement; state.dialog = onSave || null;
     $('editor-title').textContent = title; $('editor-eyebrow').textContent = eyebrow; $('editor-description').textContent = description; clear($('editor-fields')); showError('editor-error', '');
     if (fields.length) { const grid = node('div', 'form-grid'); for (const item of fields) grid.append(field(item)); $('editor-fields').append(grid); } if (content) $('editor-fields').append(content);
     $('editor-save').textContent = submit; $('editor-save').hidden = !onSave; $('editor-save').className = `button ${danger ? 'danger' : 'primary'}`; $('editor-cancel').textContent = onSave ? 'Cancel' : 'Close';
@@ -323,7 +323,7 @@
     section.append(keyValues(levels), node('p', 'field-help', 'This view includes only members your account is permitted to see.')); content.append(section); dialog({ title: 'Affiliate details', description: 'Referral codes and network records are separate from payment execution.', content });
   }
   function renderAffiliates(data) {
-    if (can('affiliate.manage')) $('page-actions').append(button('+ Enroll affiliate', affiliateForm, 'button primary'));
+    if (can('affiliate.manage')) $('page-actions').append(button('Reconcile verified purchases', affiliateSync, 'button secondary'), button('+ Enroll affiliate', affiliateForm, 'button primary'));
     const target = clear($('view')); const policy = data.policy || {}; const levels = node('div', 'level-grid');
     for (let level = 1; level <= 3; level++) { const rate = policy[`level${level}_bps`]; const wrap = node('article', 'level-card'); wrap.append(node('span', 'level-label', `LEVEL ${level}`), node('div', 'level-rate', Number.isFinite(rate) ? `${rate / 100}%` : '—'), node('p', '', level === 1 ? 'Direct referral' : level === 2 ? 'Second-level referral' : 'Third-level referral')); levels.append(wrap); } target.append(levels);
     const tabs = [['members', 'Members'], ['rewards', 'Rewards'], ['tranches', 'Schedule'], ['holds', 'Holds']]; if (!tabs.some(([id]) => id === state.tab)) state.tab = 'members';
@@ -353,8 +353,41 @@
     if (Number.isFinite(policy.hold_days) && Number.isFinite(policy.reserve_days) && Number.isFinite(policy.reserve_bps)) detail.textContent = `Rewards use the verified first purchase price before tax. The initial hold is ${policy.hold_days} days; ${policy.reserve_bps / 100}% is reserved for ${policy.reserve_days} days. Scheduled records do not initiate a payment.`;
     target.append(detail); if (data.payouts_enabled === false) { const notice = node('div', 'notice', 'Payout execution is disabled. Enrollment and holds manage affiliate records only.'); target.append(notice); }
   }
+  function affiliateSync() {
+    dialog({ title: 'Reconcile verified purchases?', description: 'Update referral reward records from purchases and refunds already verified by CRP. This does not purchase a service or send a payout.', submit: 'Reconcile records',
+      onSave: async () => {
+        const result = await api('POST', '/api/admin/affiliates/sync', {});
+        $('editor').close(); state.dialog = null;
+        toast(`Reconciliation completed: ${number(result.reward_count)} reward records and ${number(result.refund_count)} refund records.`); await loadView();
+      } });
+  }
   function fulfillmentForm() {
-    dialog({ title: 'Add a fulfillment task', description: 'Use the consumer’s current sharing grant. The service confirms the organization, consumer approval and packet version before a task is created.', fields: [{ name: 'grant_id', label: 'Consumer sharing grant ID', required: true, maxLength: 128, wide: true }], submit: 'Add task', onSave: (values) => mutate('/api/admin/fulfillment', { grant_id: values.grant_id.trim() }, 'Fulfillment task created.') });
+    let request = 0;
+    const description = 'Choose a current consumer sharing grant. The service confirms the organization, consumer approval and packet version before a task is created.';
+    async function loadGrants(offset = 0) {
+      const generation = ++request; const marker = node('div', 'loading-state'); marker.setAttribute('role', 'status'); marker.append(node('span', 'spinner'), node('span', '', 'Loading current sharing grants…'));
+      dialog({ title: 'Add a fulfillment task', description, content: marker });
+      try {
+        const data = await api('GET', `/api/admin/fulfillment-grants?status=ACTIVE&limit=100&offset=${offset}`);
+        if (generation !== request || !$('editor').open || !marker.isConnected) return;
+        const items = (data.items || []).filter((item) => item.status === 'ACTIVE'); const total = Number(data.total) || 0; const limit = Number(data.limit) || 100; const currentOffset = Number(data.offset) || 0; const content = node('div');
+        if (total > limit) {
+          const controls = node('div', 'pagination'); controls.append(node('span', '', `${number(currentOffset + 1)}–${number(Math.min(currentOffset + limit, total))} of ${number(total)} grants`)); const row = node('div', 'pagination-controls');
+          const previous = button('← Previous', () => loadGrants(Math.max(0, currentOffset - limit))); previous.disabled = currentOffset === 0;
+          const next = button('Next →', () => loadGrants(currentOffset + limit)); next.disabled = currentOffset + limit >= total; row.append(previous, next); controls.append(row); content.append(controls);
+        }
+        if (!items.length) content.prepend(empty('No active sharing grants', 'A consumer must approve a packet and explicitly share it with an eligible organization before a task can be added.'));
+        const allowed = new Set(items.map((item) => item.grant_id));
+        dialog({ title: 'Add a fulfillment task', description, content,
+          fields: items.length ? [{ name: 'grant_id', label: 'Approved consumer grant', required: true, wide: true, options: [{ value: '', label: 'Choose an approved consumer grant' }, ...items.map((item) => ({ value: item.grant_id, label: `${item.organization_name || item.org_id} · ${item.case_id} · ${item.grant_id}` }))] }] : [],
+          submit: 'Add task', onSave: items.length ? (values) => { if (!allowed.has(values.grant_id)) throw new Error('Choose a current consumer sharing grant.'); return mutate('/api/admin/fulfillment', { grant_id: values.grant_id }, 'Fulfillment task created.'); } : undefined });
+      } catch (error) {
+        if (generation !== request || !$('editor').open || !marker.isConnected) return;
+        const failure = node('div', 'notice error', error.message); failure.setAttribute('role', 'alert'); const content = node('div'); content.append(failure, button('Try again', () => loadGrants(offset)));
+        dialog({ title: 'Add a fulfillment task', description, content });
+      }
+    }
+    loadGrants();
   }
   function fulfillmentStatus(row, status) {
     dialog({ title: status === 'REVIEWED' ? 'Mark this task reviewed?' : 'Cancel this task?', description: `Task ${row.job_id} will be marked ${status === 'REVIEWED' ? 'reviewed' : 'cancelled'}. This changes the work record only.`, submit: status === 'REVIEWED' ? 'Mark reviewed' : 'Cancel task', danger: status === 'CANCELLED', onSave: () => mutate(`/api/admin/fulfillment/${encodeURIComponent(row.job_id)}`, { status }, status === 'REVIEWED' ? 'Task marked reviewed.' : 'Task cancelled.', 'PATCH') });
@@ -373,10 +406,10 @@
   function renderAudit(data) {
     clear($('view')).append(listCard(data, [
       { label: 'Activity', render: (row) => { const copy = node('div'); copy.append(node('strong', '', human(row.event || row.action)), node('small', '', row.audit_id || row.event_id)); return copy; } },
-      { label: 'Person', render: (row) => typeof row.actor === 'string' ? row.actor : row.actor?.email || row.actor?.admin_id || row.actor_id || row.admin_id || '—' },
+      { label: 'Person', render: (row) => { const identity = node('div'); identity.append(node('strong', '', row.actor_admin_id || row.actor_account_id || '—')); if (row.actor_role) identity.append(node('small', '', human(row.actor_role))); return identity; } },
       { label: 'Organization', render: (row) => row.org_id || row.metadata?.org_id }, { label: 'Time', className: 'cell-nowrap', render: (row) => date(row.at || row.created_at || row.timestamp, true) },
       { label: 'Actions', actions: true, render: (row) => actions(button('View', () => { const references = row.metadata || row.refs; const refs = references && typeof references === 'object' ? Object.entries(references).filter(([, value]) => typeof value === 'string' || typeof value === 'number').map(([key, value]) => [human(key), value]) : [];
-        showDetails('Activity details', [['Activity', human(row.event || row.action)], ['Activity ID', row.audit_id || row.event_id], ['Person', typeof row.actor === 'string' ? row.actor : row.actor?.email || row.actor?.admin_id || row.actor_id || row.admin_id], ['Organization', row.org_id], ['Time', date(row.at || row.created_at || row.timestamp, true)], ...refs]); }, 'button secondary small')) }
+        showDetails('Activity details', [['Activity', human(row.event || row.action)], ['Activity ID', row.audit_id || row.event_id], ['Person’s team ID', row.actor_admin_id], ['Person’s account ID', row.actor_account_id], ['Person’s role', human(row.actor_role)], ['Organization', row.org_id], ['Time', date(row.at || row.created_at || row.timestamp, true)], ...refs]); }, 'button secondary small')) }
     ], { placeholder: 'Search activities or references…', emptyTitle: 'No activity to show', emptyDescription: 'Recorded activity within your permitted workspace will appear here.' }));
   }
 
