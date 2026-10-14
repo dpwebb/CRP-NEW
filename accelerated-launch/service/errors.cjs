@@ -87,6 +87,8 @@ const STATUS_BY_CODE = Object.freeze({
   ACCOUNT_DELETION_PAYMENT_UNCONFIRMED: 502,
   ACCOUNT_DELETION_STALE: 409,
   ACCOUNT_DELETION_ADMIN_ACCESS_ACTIVE: 409,
+  CASE_DELETION_PAYMENT_UNCONFIRMED: 502,
+  CASE_DELETION_STALE: 409,
   ACCOUNT_STORAGE_QUOTA_EXCEEDED: 409,
   FILE_COUNT_LIMIT_REACHED: 409,
   TOO_MANY_FAILED_SIGN_INS: 429,
@@ -112,6 +114,8 @@ const MESSAGE_BY_CODE = Object.freeze({
   ACCOUNT_DELETION_PAYMENT_UNCONFIRMED: 'Your account was not deleted because we could not confirm that its payments were stopped. Try again or contact support.',
   ACCOUNT_DELETION_STALE: 'Your account or payments changed. Refresh the page and review them before trying deletion again.',
   ACCOUNT_DELETION_ADMIN_ACCESS_ACTIVE: 'Ask an owner to remove your administration access before deleting this account. The last owner must first add another active owner.',
+  CASE_DELETION_PAYMENT_UNCONFIRMED: 'Your report was not deleted because we could not stop a payment in progress. Try again or contact support.',
+  CASE_DELETION_STALE: 'Your report or its payment changed. Refresh the page before trying deletion again.',
 
   INVALID_RECOVERY_KEY: 'The email and recovery key do not match. Check them and try again.',
   INVALID_PASSWORD_RESET: 'This password reset link has expired or has already been used. Request a new email and try again.',
