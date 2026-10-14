@@ -850,6 +850,55 @@ function makeStripeAdapter(env) {
         expired: session.status === 'expired', session };
     },
 
+    /** Account deletion also stops old subscriptions and upgraded subscriptions.
+     * Current provider metadata must match one of this account's persisted,
+     * completed checkouts; an old monthly Checkout cannot invent annual authority. */
+    async cancelAccountSubscription(request) {
+      const req = request || {}, mode = /^(?:sk|rk)_(test|live)_/.exec(secretKey || '')?.[1];
+      const checkouts = req.checkouts;
+      if (!mode || !req.account_id || !Array.isArray(checkouts) || !checkouts.length ||
+          checkouts.some(c => c.account_id !== req.account_id || c.provider_id !== 'stripe' || c.state !== 'COMPLETED' || !['monthly', 'annual'].includes(c.plan_code))) refuse('ACCOUNT_CANCELLATION_BINDING_INVALID');
+      const bound = checkouts.find(c => c.provider_reference === req.provider_reference);
+      if (!bound) refuse('ACCOUNT_CANCELLATION_CHECKOUT_UNKNOWN');
+      let subscriptionId = req.subscription_reference;
+      if (/^cs_[A-Za-z0-9_]+$/.test(req.provider_reference || '')) {
+        const fetched = await stripe.retrieveSession(secretKey, req.provider_reference, base), session = fetched.json;
+        if (fetched.status !== 200 || session?.id !== req.provider_reference || session.mode !== 'subscription' || session.status !== 'complete' ||
+            session.livemode !== (mode === 'live') || session.client_reference_id !== req.account_id ||
+            session.metadata?.account_id !== req.account_id || session.metadata?.checkout_id !== bound.checkout_id || session.metadata?.plan_code !== bound.plan_code) refuse('ACCOUNT_CANCELLATION_CHECKOUT_MISMATCH');
+        const found = objectId(session.subscription);
+        if (subscriptionId && subscriptionId !== found) refuse('ACCOUNT_CANCELLATION_SUBSCRIPTION_MISMATCH');
+        subscriptionId = found;
+      } else if (/^in_[A-Za-z0-9_]+$/.test(req.provider_reference || '')) {
+        const fetched = await stripe.retrieveInvoice(secretKey, req.provider_reference, base);
+        if (fetched.status !== 200 || fetched.json?.id !== req.provider_reference || fetched.json.livemode !== (mode === 'live') ||
+            fetched.json.status !== 'paid' || fetched.json.paid !== true) refuse('ACCOUNT_CANCELLATION_INVOICE_MISMATCH');
+        const found = objectId(fetched.json.subscription);
+        if (subscriptionId && subscriptionId !== found) refuse('ACCOUNT_CANCELLATION_SUBSCRIPTION_MISMATCH');
+        subscriptionId = found;
+      } else refuse('ACCOUNT_CANCELLATION_REFERENCE_INVALID');
+      if (!/^sub_[A-Za-z0-9_]+$/.test(subscriptionId || '')) refuse('ACCOUNT_CANCELLATION_SUBSCRIPTION_MISSING');
+      const matches = sub => {
+        const current = checkouts.find(c => c.checkout_id === sub?.metadata?.checkout_id && c.plan_code === sub?.metadata?.plan_code);
+        return sub?.id === subscriptionId && sub.livemode === (mode === 'live') && sub.metadata?.account_id === req.account_id && current &&
+          (!current.provider_subscription_reference || current.provider_subscription_reference === subscriptionId);
+      };
+      const retrieved = await stripe.retrieveSubscription(secretKey, subscriptionId, base), subscription = retrieved.json;
+      if (retrieved.status !== 200 || !matches(subscription) || !['active', 'trialing', 'past_due', 'unpaid', 'canceled', 'incomplete', 'incomplete_expired'].includes(subscription.status)) refuse('ACCOUNT_CANCELLATION_SUBSCRIPTION_MISMATCH');
+      let confirmed = subscription;
+      // Deletion discards the account's future cancellation/reconciliation path.
+      // Stop now, without a final charge or proration, rather than merely schedule
+      // period-end cancellation while an unpaid renewal can still be collected.
+      if (!['canceled', 'incomplete_expired'].includes(subscription.status)) {
+        const key = 'crp-account-stop-' + crypto.createHash('sha256').update([req.account_id, subscriptionId, subscription.metadata.checkout_id].join('\u0000')).digest('hex');
+        const changed = await stripe.request({ method: 'DELETE', path: '/v1/subscriptions/' + subscriptionId,
+          secretKey, params: { invoice_now: false, prorate: false }, base, idempotencyKey: key });
+        confirmed = changed.json;
+        if (changed.status !== 200 || !matches(confirmed) || confirmed.status !== 'canceled') refuse('ACCOUNT_CANCELLATION_NOT_CONFIRMED');
+      }
+      return { renewal_cancelled: true, subscription_reference: subscriptionId, subscription_status: confirmed.status };
+    },
+
     /** Resolve this account's completed Checkout before cancelling its actual Stripe renewal. */
     async cancelRenewal(request) {
       const req = request || {};

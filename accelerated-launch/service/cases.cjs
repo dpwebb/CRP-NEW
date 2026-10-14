@@ -113,6 +113,7 @@ function deleteCase(store, actor, caseId) {
     state.results = state.results.filter((r) => r.case_id !== owned.case_id);
     state.drafts = state.drafts.filter((d) => d.case_id !== owned.case_id);
     state.packets = (state.packets || []).filter((p) => p.case_id !== owned.case_id);
+    state.purchased_downloads = (state.purchased_downloads || []).filter((p) => p.case_id !== owned.case_id);
     return files;
   });
   /* Only a row that actually had bytes on disk counts as a removed blob. */
@@ -121,8 +122,16 @@ function deleteCase(store, actor, caseId) {
 }
 
 /** Delete the account and every case, file, result, draft and PURCHASE that hangs off it. */
-function deleteAccount(store, actor) {
+function deleteAccount(store, actor, options = {}) {
   const files = store.update((state) => {
+    if (options.billing_binding && (!state.accounts.some(a => a.account_id === actor.account_id) ||
+        require('./entitlement.cjs').accountBillingBinding(state, actor.account_id) !== options.billing_binding)) throw new ServiceError('ACCOUNT_DELETION_STALE');
+    // The authority guard runs inside the final synchronous transaction, after
+    // provider cleanup and immediately before removing any account row.
+    if (options.beforeDelete) {
+      const checked = options.beforeDelete();
+      if (checked && typeof checked.then === 'function') throw new ServiceError('INVALID_REQUEST');
+    }
     const owned = state.files.filter((f) => f.account_id === actor.account_id);
     state.accounts = state.accounts.filter((a) => a.account_id !== actor.account_id);
     state.sessions = state.sessions.filter((s) => s.account_id !== actor.account_id);
@@ -139,11 +148,20 @@ function deleteAccount(store, actor) {
     state.entitlements = (state.entitlements || []).filter((e) => e.account_id !== actor.account_id);
     state.billing_events = (state.billing_events || []).filter((e) => e.account_id !== actor.account_id);
     state.checkout_sessions = (state.checkout_sessions || []).filter((c) => c.account_id !== actor.account_id);
+    state.upgrade_credits = (state.upgrade_credits || []).filter((c) => c.account_id !== actor.account_id);
+    state.purchased_downloads = (state.purchased_downloads || []).filter((p) => p.account_id !== actor.account_id);
     require('./referral-staging.cjs').purgeAccount(state, actor.account_id);
     return owned;
   });
   const removedBlobs = files.filter((f) => f.stored_blob !== false && store.deleteBlob(f.file_id)).length;
   return { deleted: true, blobs_removed: removedBlobs };
+}
+
+/** Public deletion must await confirmed provider cancellation. The synchronous
+ * primitive remains for isolated fixtures/offline callers without provider work. */
+async function deleteAccountSafely(store, actor, env, options = {}) {
+  const billing_binding = await require('./entitlement.cjs').stopAccountPayments(store, actor, env, options);
+  return deleteAccount(store, actor, { billing_binding, beforeDelete: options.beforeDelete });
 }
 
 module.exports = {
@@ -154,5 +172,6 @@ module.exports = {
   setStatus,
   deleteCase,
   deleteAccount,
+  deleteAccountSafely,
   resolveSelection
 };

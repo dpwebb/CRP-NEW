@@ -26,7 +26,7 @@ function dashboard(store, actor) {
       scope: 'ACTIVE_SERVICE_DATA',
       plain: 'Delete a case to remove its reports and results. Remove identification and address documents from Your account, or delete your account to remove all its contact details, documents, cases and sessions.',
       backups: 'Deletion from the active service does not establish erasure of separate backups. Backup erasure timing has not been verified.',
-      external_billing: 'Deleting your account here does not delete payment records held separately by the payment provider.'
+      external_billing: 'Before your account is deleted, we confirm that its open payments and subscription renewals are stopped. Payment records held by the payment provider remain.'
     }
   };
 }

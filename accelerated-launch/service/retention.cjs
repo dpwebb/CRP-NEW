@@ -37,7 +37,7 @@ const POLICY = Object.freeze({
     'the log sink accepts a fixed field whitelist and drops everything else. This service writes no log file.',
   public_assets:
     'No report, no identifier and no digest appears in any asset served to a browser. The static route is an allowlist.',
-  account_deletion: 'Deleting an account removes its cases, its stored bytes, its results, its purchase rows and every session at once.',
+  account_deletion: 'Before deleting an account, we confirm that its open payments and subscription renewals are stopped. Deletion then removes its cases, stored bytes, results, purchase and upgrade-credit rows and every session.',
   case_deletion: 'Deleting a case removes its stored bytes, its result sets and its purchase reference for that case. The id stops resolving afterwards.'
 });
 
