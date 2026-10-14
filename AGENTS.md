@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 14 reconciled local source
+
+Read `CRP_BRANCH_RECONCILIATION_2026_10_14.md` first for current workspace provenance. Main now contains the reconciled verified packet build and release tools; the old primary checkpoint and all pending primary files are preserved on `archive/primary-pending-20261014`. The October 12 matrix below is historical. Active shipped bytes remain the 167-file 52EE45AADE7AEE92 manifest, without a runtime restart or deployment. Held jurisdiction policy source is under `held-work/jurisdiction-policy-20261011` and is not an active service dependency. Other historical dirty worktrees remain preserved; do not treat them as release candidates or blanket-merge their old runtime.
+
 ## October 14 standing build and release workflow adoption
 
 The owner explicitly authorized integrating the completed release-process upgrades into the current CRP build for consistent future use. Read `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`, `CRP_OWNER_RELEASE_PROCESS_STREAMLINING_WORK_ORDER_001.md` and `accelerated-launch/service/deploy/CHANGE_AWARE_RELEASE.md` before final verification or release preparation. The mandatory release entry is `release-workflow.cjs prepare` → `check` → `record` → `package`, with `continuity`, `assemble` and `attest` as the selected proof requires. Use the plan's affected checks and matching immutable receipts; do not append a routine second full regression, provider purchase or browser run merely to rebuild evidence. Shared runtime/test/unknown changes retain full regression. Direct focused development checks and the default full runner remain available for explicit diagnostics; they do not replace the governed release path.
@@ -97,7 +101,3 @@ CRP identifies compliance violations and probable violations using governed rule
 Follow `CRP_OWNER_BLOCKER_CLOSURE_POLICY_001.md`: implementation closure, staging verification and production readiness are separate statuses. Passing behavioral tests can establish implementation closure; retain failed or pending staging outcomes honestly.
 
 Do not surface reasons why potential findings could not be completed, unresolved-value cards, or failed/not-run check qualifications to consumers. Keep those details internal. Do not imply that incomplete checks establish compliance or absence of violations. Follow the additional imperative in `CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md`.
-# October 14 reconciled local source
-
-Read `CRP_BRANCH_RECONCILIATION_2026_10_14.md` first for current workspace provenance. Main now contains the reconciled verified packet build and release tools; the old primary checkpoint and all pending primary files are preserved on `archive/primary-pending-20261014`. The October 12 matrix below is historical. Active shipped bytes remain the 167-file 52EE45AADE7AEE92 manifest, without a runtime restart or deployment. Held jurisdiction policy source is under `held-work/jurisdiction-policy-20261011` and is not an active service dependency. Other historical dirty worktrees remain preserved; do not treat them as release candidates or blanket-merge their old runtime.
-
