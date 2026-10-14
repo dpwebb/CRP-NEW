@@ -35,3 +35,5 @@ The initial, newly created mail app password appeared in a saved screenshot. It 
 Staging and production remain `crp-v1-331f32a35d213383`. No CRP deployment, hosted configuration change, account migration or original report reassessment occurred. New hosted signup/mail acceptance and any affected purchase/release proof remain separate requirements before a future deployment. Local mail credentials are not part of the Git package.
 
 Focused development failures and interrupted full attempts remain development evidence, not passing release evidence.
+
+October 14 follow-up: owner-authorized exact-build staging acceptance and production deployment completed on crp-v1-a926c178ef0dfc5c. The preceding no-deployment statements describe this original local checkpoint. See `CRP_SIGNUP_CONSUMER_UPDATES_PRODUCTION_2026_10_14.md` for fresh 30-gate/123-criterion acceptance, real hosted signup/email verification, preservation and backup proof.
