@@ -3,6 +3,7 @@
 // credentials, providers, consumers, stores or deployments are touched.
 const { EMPTY_STATE } = require('../../private-store.cjs');
 const entitlement = require('../../entitlement.cjs');
+const credits = require('../../billing-credits.cjs');
 const cases = require('../../cases.cjs');
 const { makeStripeAdapter } = require('../../payment-provider.cjs');
 const { StripeUpgradeFixture } = require('../stripe-upgrade-fixture.cjs');
@@ -212,6 +213,69 @@ async function run(t, check) {
   check.equal(newUpload.state().files.length, 1, 'new upload metadata is retained');
   await refusal(check, cases.deleteCaseSafely(newUpload, { account_id: 'acc_foreign' }, 'case_upload', {}, { provider: { provider_id: 'stripe', async cancelCheckout() { throw Error('must not access foreign payment'); } } }), 'NOT_AUTHORIZED', 'foreign report deletion fails before any payment operation');
 
+  const unfinished = memory(), unfinishedActor = subscriber(unfinished, 'unfinished');
+  const unfinishedId = 'chk_unfinished_payment';
+  unfinished.update(s => {
+    s.checkout_sessions.push({ account_id: unfinishedActor.account_id, checkout_id: unfinishedId, provider_id: 'stripe', state: 'OPEN', plan_code: 'annual', currency: 'cad', provider_reference: 'cs_unfinished' },
+      { account_id: unfinishedActor.account_id, checkout_id: 'chk_leave_open', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', provider_reference: 'cs_leave_open' });
+    s.entitlements.push({ account_id: unfinishedActor.account_id, entitlement_id: 'ent_pending_unfinished', checkout_id: unfinishedId,
+      state: 'PENDING', source: 'stripe', access_via: 'SUBSCRIPTION', plan_code: 'annual', expires_at: null });
+    credits.recordPayment(s, { account_id: unfinishedActor.account_id, payment_id: 'in_unused_monthly', payment_intent: 'pi_unused_monthly',
+      plan_code: 'monthly', amount_cents: 795, currency: 'cad', paid_at: at, verified_payment: true });
+  });
+  credits.reserveCredit(unfinished, unfinishedActor.account_id, unfinishedId, new Date().toISOString(), 'annual', 'cad');
+  const activeBefore = unfinished.state().entitlements[0], receiptBefore = unfinished.state().checkout_sessions[0];
+  const remainingBefore = unfinished.state().checkout_sessions.find(c => c.checkout_id === 'chk_leave_open');
+  const unfinishedCalls = [], unfinishedProvider = { provider_id: 'stripe', async cancelCheckout(request) { unfinishedCalls.push(request.checkout_id); return { cancelled: true }; },
+    async cancelRenewal() { throw Error('must not cancel current plan'); }, async cancelAccountSubscription() { throw Error('must not end current plan'); } };
+  const unfinishedCancelled = await entitlement.cancelEntitlement(unfinished, unfinishedActor, { cancel_checkout_id: unfinishedId }, {}, { provider: unfinishedProvider });
+  check.equal(unfinishedCancelled.checkout_cancelled, true, 'explicit unfinished-payment action returns a scoped confirmation');
+  check.deepEqual(unfinishedCalls, [unfinishedId], 'unfinished cancellation targets only the selected owned checkout');
+  check.deepEqual(unfinished.state().entitlements[0], activeBefore, 'unfinished cancellation preserves the current paid plan byte-for-byte');
+  check.deepEqual(unfinished.state().checkout_sessions[0], receiptBefore, 'unfinished cancellation preserves completed purchase receipts');
+  check.deepEqual(unfinished.state().checkout_sessions.find(c => c.checkout_id === 'chk_leave_open'), remainingBefore, 'another unfinished payment remains untouched');
+  check.equal(unfinished.state().checkout_sessions.find(c => c.checkout_id === unfinishedId).state, 'CANCELLED', 'provider-confirmed unfinished intent closes locally');
+  check.equal(unfinished.state().entitlements.find(e => e.entitlement_id === 'ent_pending_unfinished').state, 'CANCELLED', 'only its pending entitlement is cancelled');
+  check.equal(unfinished.state().upgrade_credits[0].state, 'ELIGIBLE', 'confirmed stop releases the held upgrade credit');
+  check.equal(unfinished.state().upgrade_credits[0].reserved_for_checkout_id, null, 'released credit is no longer bound to the stopped intent');
+  for (const id of [null, '', 123, receiptBefore.checkout_id, 'chk_unknown']) {
+    await refusal(check, entitlement.cancelEntitlement(unfinished, unfinishedActor, { cancel_checkout_id: id }, {}, { provider: unfinishedProvider }), 'CHECKOUT_NOT_FOUND', 'invalid or completed unfinished-payment selection cannot fall through into current-plan cancellation');
+  }
+  await refusal(check, entitlement.cancelPendingCheckout(unfinished, { account_id: 'acc_stranger' }, 'chk_leave_open', {}, { provider: unfinishedProvider }), 'CHECKOUT_NOT_FOUND', 'another account cannot close the owned provider intent');
+  check.equal(unfinishedCalls.length, 1, 'invalid/foreign/completed selections make no provider call');
+  check.deepEqual(unfinished.state().entitlements[0], activeBefore, 'rejected selections preserve current plan authority');
+
+  for (const outcome of [{ cancelled: false }, { cancelled: true, paid: true }, 'throw']) {
+    const retryStore = memory(), retryActor = subscriber(retryStore, 'unfinished-retry');
+    retryStore.update(s => s.checkout_sessions.push({ account_id: retryActor.account_id, checkout_id: 'chk_retry', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', provider_reference: 'cs_retry' }));
+    const prior = retryStore.state();
+    await refusal(check, entitlement.cancelPendingCheckout(retryStore, retryActor, 'chk_retry', {}, { provider: { provider_id: 'stripe', async cancelCheckout() {
+      if (outcome === 'throw') throw Error('fictional network failure'); return outcome;
+    } } }), 'CHECKOUT_CANCELLATION_FAILED', 'failed/unconfirmed/paid provider result refuses unfinished-payment cancellation');
+    check.deepEqual(retryStore.state(), prior, 'failed/unconfirmed/paid cancellation preserves every stored row');
+  }
+  const paidRace = memory(), paidRaceActor = subscriber(paidRace, 'unfinished-race');
+  paidRace.update(s => s.checkout_sessions.push({ account_id: paidRaceActor.account_id, checkout_id: 'chk_race', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', provider_reference: 'cs_race' }));
+  await refusal(check, entitlement.cancelPendingCheckout(paidRace, paidRaceActor, 'chk_race', {}, { provider: { provider_id: 'stripe', async cancelCheckout() {
+    paidRace.update(s => { s.checkout_sessions.find(c => c.checkout_id === 'chk_race').state = 'COMPLETED'; }); return { cancelled: true };
+  } } }), 'CHECKOUT_CANCELLATION_STALE', 'concurrent paid completion cannot be overwritten as cancelled');
+  check.equal(paidRace.state().checkout_sessions.find(c => c.checkout_id === 'chk_race').state, 'COMPLETED', 'concurrent completed receipt survives stale cancellation');
+  const opening = memory(), openingActor = subscriber(opening, 'opening');
+  opening.update(s => s.checkout_sessions.push({ account_id: openingActor.account_id, checkout_id: 'chk_opening_payment', provider_id: 'stripe', state: 'OPENING', plan_code: 'report_once', provider_reference: null,
+    provider_request: { account_id: openingActor.account_id, checkout_id: 'chk_opening_payment', plan_code: 'report_once', request_started_at: new Date().toISOString() } }));
+  const openingCalls = [];
+  await entitlement.cancelPendingCheckout(opening, openingActor, 'chk_opening_payment', {}, { provider: { provider_id: 'stripe', async createCheckout(request) {
+    openingCalls.push(['recover', request.checkout_id, request.resume]); return { provider_reference: 'cs_recovered' };
+  }, async cancelCheckout(request) { openingCalls.push(['expire', request.provider_reference]); return { cancelled: true }; } } });
+  check.deepEqual(openingCalls, [['recover', 'chk_opening_payment', true], ['expire', 'cs_recovered']], 'crashed ordinary opening is recovered with its original request before confirmed expiry');
+  check.equal(opening.state().checkout_sessions.find(c => c.checkout_id === 'chk_opening_payment').provider_reference, 'cs_recovered', 'recovered cancelled intent retains its provider custody reference');
+  const revoked = memory(), revokedActor = subscriber(revoked, 'revoked');
+  revoked.update(s => s.checkout_sessions.push({ account_id: revokedActor.account_id, checkout_id: 'chk_revoked_payment', provider_id: 'stripe', state: 'CREDIT_REVOKED', plan_code: 'annual', provider_reference: 'cs_revoked' }));
+  check.equal((await entitlement.cancelPendingCheckout(revoked, revokedActor, 'chk_revoked_payment', {}, { provider: unfinishedProvider })).checkout_cancelled, true, 'credit-revoked owned intent can be explicitly stopped');
+  const synthetic = memory(), syntheticActor = subscriber(synthetic, 'synthetic');
+  synthetic.update(s => s.checkout_sessions.push({ account_id: syntheticActor.account_id, checkout_id: 'chk_synthetic_payment', provider_id: require('../../payment-provider.cjs').TEST_PROVIDER_ID, state: 'OPEN', plan_code: 'report_once' }));
+  check.equal((await entitlement.cancelPendingCheckout(synthetic, syntheticActor, 'chk_synthetic_payment', {})).checkout_cancelled, true, 'nonfinancial test-adapter unfinished intent closes without a working provider');
+
   const fixture = await new StripeUpgradeFixture().listen();
   try {
     const originalRoute = fixture.route.bind(fixture);
@@ -228,6 +292,20 @@ async function run(t, check) {
     const created = await adapter.createCheckout({ account_id: 'acc_rest', checkout_id: 'chk_rest', plan_code: 'monthly', currency: 'cad', credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' });
     const session = fixture.completeSession(created.provider_reference), sub = fixture.subscriptions.get(session.subscription);
     const original = { account_id: 'acc_rest', checkout_id: 'chk_rest', provider_id: 'stripe', state: 'COMPLETED', plan_code: 'monthly', currency: 'cad', provider_reference: session.id, provider_subscription_reference: sub.id };
+    const upgradeRequest = { account_id: 'acc_rest', checkout_id: 'chk_pending_upgrade', plan_code: 'annual', currency: 'cad', existing_plan_code: 'monthly', existing_checkout_id: original.checkout_id,
+      provider_reference: original.provider_reference, subscription_reference: sub.id, credit_amount_cents: 0, return_url: 'http://127.0.0.1:8787/' };
+    const upgrade = await adapter.upgradeSubscription(upgradeRequest);
+    const upgradeStore = memory(), upgradeActor = subscriber(upgradeStore, 'rest', { provider_reference: original.provider_reference, provider_subscription_reference: sub.id });
+    upgradeStore.update(s => { s.checkout_sessions[0] = clone(original); s.checkout_sessions.push({ account_id: 'acc_rest', checkout_id: upgradeRequest.checkout_id, provider_id: 'stripe', state: 'OPEN', plan_code: 'annual', currency: 'cad', provider_reference: upgrade.provider_reference,
+      provider_subscription_reference: sub.id, is_subscription_upgrade: true, previous_entitlement_id: 'ent_rest', provider_request: upgradeRequest }); });
+    const upgradePlanBefore = upgradeStore.state().entitlements[0];
+    const stoppedUpgrade = await entitlement.cancelEntitlement(upgradeStore, upgradeActor, { cancel_checkout_id: upgradeRequest.checkout_id }, {}, { provider: adapter });
+    check.equal(stoppedUpgrade.checkout_cancelled, true, 'actual adapter voids an unfinished upgrade through the scoped cancellation path');
+    check.equal(fixture.invoices.get(upgrade.provider_reference).status, 'void', 'unfinished upgrade invoice is voided at loopback provider');
+    check.equal(sub.metadata.checkout_id, original.checkout_id, 'voided upgrade restores original subscription metadata');
+    check.equal(sub.status, 'active', 'stopping unfinished upgrade keeps existing subscription active');
+    check.equal(sub.cancel_at_period_end, false, 'stopping unfinished upgrade does not cancel current renewal');
+    check.deepEqual(upgradeStore.state().entitlements[0], upgradePlanBefore, 'actual adapter cancellation preserves current paid local plan');
     // A paid annual upgrade has replaced metadata, while old Checkout metadata
     // remains monthly. Both persisted bindings are known to the account.
     const invoice = fixture.invoice(sub, 'annual', 7950, { status: 'paid', paid: true, amount_paid: 7950 });
@@ -257,7 +335,7 @@ async function run(t, check) {
   check.equal(entitlement.SUBSCRIBER_ACTIONS.includes('REQUEST_RESPONSE_DRAFT'), false, 'unimplemented response drafts are not advertised as subscriber actions');
   return { proof: 'FICTIONAL_MEMORY_AND_LOOPBACK_PROVIDER_ONLY', grace_boundary: true, expired_cancellation: true,
     ended_subscription_collection: true, recurring_quote_control: true, safe_complete_deletion: true,
-    safe_report_deletion: true, concurrency_binding: true, stripe_adapter_ownership: true };
+    safe_report_deletion: true, unfinished_payment_cancellation: true, concurrency_binding: true, stripe_adapter_ownership: true };
 }
 module.exports = { id: 'gh-audit-billing-lifecycle', title: 'Safe provider-bound deletion, independent renewal cancellation and bounded failed-payment grace', run };
 

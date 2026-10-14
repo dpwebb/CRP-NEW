@@ -379,8 +379,50 @@ async function stopPendingCheckout(provider, checkout) {
   }
   if (typeof provider.cancelCheckout !== 'function') throw Error('CHECKOUT_CANCELLATION_NOT_CONFIGURED');
   const stopped = await provider.cancelCheckout(request);
-  if (stopped?.cancelled !== true) throw Error('CHECKOUT_CANCELLATION_NOT_CONFIRMED');
+  if (stopped?.cancelled !== true || stopped.paid === true || stopped.payment_verified === true) throw Error('CHECKOUT_CANCELLATION_NOT_CONFIRMED');
   return request;
+}
+
+function pendingCheckoutBinding(state, accountId, checkoutId) {
+  return crypto.createHash('sha256').update(JSON.stringify({
+    checkout: (state.checkout_sessions || []).find(c => c.account_id === accountId && c.checkout_id === checkoutId) || null,
+    entitlements: rowsFor(state, accountId).filter(row => row.checkout_id === checkoutId),
+    credits: (state.upgrade_credits || []).filter(row => row.account_id === accountId &&
+      (row.reserved_for_checkout_id === checkoutId || row.redeemed_checkout_id === checkoutId))
+  })).digest('hex');
+}
+
+/** Consumer-controlled unfinished-payment cancellation. It never cancels a
+ * current subscription or changes any completed purchase. */
+async function cancelPendingCheckout(store, actor, checkoutId, env, options = {}) {
+  const accountId = actor.account_id, before = store.state();
+  const checkout = typeof checkoutId === 'string' && checkoutId
+    ? before.checkout_sessions.find(c => c.account_id === accountId && c.checkout_id === checkoutId && pendingStates.has(c.state)) : null;
+  if (!checkout || !before.accounts.some(a => a.account_id === accountId)) throw new ServiceError('CHECKOUT_NOT_FOUND');
+  const expected = pendingCheckoutBinding(before, accountId, checkoutId);
+  let stopped = checkout;
+  if (checkout.provider_id === 'stripe') {
+    const provider = options.provider || payments.resolveProvider(env);
+    if (provider?.provider_id !== 'stripe') throw new ServiceError('CHECKOUT_CANCELLATION_FAILED');
+    try { stopped = await stopPendingCheckout(provider, checkout); }
+    catch { throw new ServiceError('CHECKOUT_CANCELLATION_FAILED'); }
+  } else if (checkout.provider_id !== payments.TEST_PROVIDER_ID) {
+    throw new ServiceError('CHECKOUT_CANCELLATION_FAILED');
+  }
+  store.update(state => {
+    if (!state.accounts.some(a => a.account_id === accountId) || pendingCheckoutBinding(state, accountId, checkoutId) !== expected) throw new ServiceError('CHECKOUT_CANCELLATION_STALE');
+    const live = state.checkout_sessions.find(c => c.account_id === accountId && c.checkout_id === checkoutId);
+    if (!live || !pendingStates.has(live.state)) throw new ServiceError('CHECKOUT_CANCELLATION_STALE');
+    live.state = 'CANCELLED';
+    live.provider_reference ||= stopped.provider_reference;
+    credits.releaseReservations(state, checkoutId);
+    for (const row of rowsFor(state, accountId)) if (row.checkout_id === checkoutId && row.state === 'PENDING') {
+      row.state = 'CANCELLED'; row.cancelled_at = nowIso();
+    }
+  });
+  return { cancelled: true, checkout_cancelled: true, checkout_id: checkoutId, at_period_end: false,
+    reason: 'UNFINISHED_CHECKOUT_STOPPED', entitlement: statusFor(store, accountId),
+    plain: 'Your unfinished payment is cancelled. Your current plan stays the same.' };
 }
 
 /** Stop every payment binding before public account deletion, retaining data on
@@ -720,6 +762,9 @@ async function recordEvent(store, input, env) {
  */
 async function cancelEntitlement(store, actor, input, env, options = {}) {
   const body = input || {};
+  // Presence, not truthiness: a malformed checkout ID must never fall through
+  // into cancellation of the consumer's current paid plan.
+  if (Object.hasOwn(body, 'cancel_checkout_id')) return cancelPendingCheckout(store, actor, body.cancel_checkout_id, env, options);
   const before = store.state();
   const outstanding = subscriptionRows(before, actor.account_id).filter(row => !row.cancel_at_period_end).at(-1);
   const original = outstanding ? observed(outstanding, nowIso()) : controlling(rowsFor(before, actor.account_id), nowIso());
@@ -913,6 +958,7 @@ module.exports = {
   confirmCheckout,
   recordEvent,
   cancelEntitlement,
+  cancelPendingCheckout,
   stopAccountPayments,
   accountBillingBinding,
   stopCasePayments,
