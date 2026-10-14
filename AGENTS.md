@@ -1,5 +1,11 @@
 # Owner imperatives
 
+## October 14 administration staging deployment authorized
+
+The owner subsequently instructed, "You are authorized to deploy", in response to the proposed next staging milestone. This authorizes staging deployment and affected hosted administration/consumer acceptance for frozen candidate `crp-v1-e1882ec0a7bf63e7`, including narrowly scoped staging configuration, controlled restart, fictional staging test accounts and Sandbox-only validation. Production promotion remains separate. Preserve existing staging accounts/data, credentials, private security keys and current production/local operations. The unchanged packaged source/full receipt must be reused; no repeat full regression solely for promotion or documentation.
+
+The coordinator owns all host/provider mutations and evidence reconciliation. Read `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md` and the single work register for staging helper ownership and current status. Earlier no-deployment/no-activation statements retain their local-build scope. No live payout, mailing fulfillment, real-customer outreach, production configuration or production activation is authorized.
+
 ## October 14 administration implemented and integrated locally
 
 Read `CRP_ADMIN_MANAGEMENT_LOCAL_2026_10_14.md` and `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md`. Owner/staff administration, separately permissioned referral/fulfillment partner workspaces and three-level affiliate management are IMPLEMENTED_AND_TESTED_LOCALLY. Main was fast-forwarded to tested executable source `c9a1e2ccd1beb01e334407998695062e9164d256`; subsequent closure changes are documentation only. The packaged 176-file candidate is `crp-v1-e1882ec0a7bf63e7`. Fresh full regression passed 16,249/0/0 across 175 sections, with 368 matching source hashes, no drift and no unrun current product sections; 10 tooling suites and 37 syntax checks passed. Main's 176 shipped files and all 368 tested sources match the accepted evidence.
