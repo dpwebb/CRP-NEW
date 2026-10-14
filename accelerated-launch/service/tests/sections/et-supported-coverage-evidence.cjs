@@ -99,13 +99,15 @@ async function run(t, check) {
       'downstream family and historical UK specimens are not promoted to current full-layout upload proof');
 
     const section = (execution, id) => execution.sections.find(row => row.id === id);
-    const newChecks = ['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW',
-      'CLOSURE-DATE-DISCLOSURE-REVIEW', 'UNDATED-HISTORY-DISCLOSURE-REVIEW',
-      'IDENTIFIER-HANDLING-REVIEW', 'CREDIT-DATA-CATEGORY-REVIEW'].map(id => 'COMMON-ERROR-' + id);
+    const newChecks = ['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW'].map(id => 'COMMON-ERROR-' + id);
     check.equal(accepted.check_mapping.find(row => row.check_id === newChecks[0]).scope, 'REPORT_DATA_RULE',
       'sourced geographic contradiction stays a bounded breach instead of an unclassified review');
     check.ok(newChecks.slice(1).every(id => accepted.check_mapping.find(row => row.check_id === id).scope === 'FACTUAL_REVIEW'),
-      'the five contextual concerns retain non-violation coverage scope');
+      'the material payment claim retains non-violation coverage scope');
+    for(const suffix of ['CLOSURE-DATE-DISCLOSURE','UNDATED-HISTORY-DISCLOSURE','IDENTIFIER-HANDLING','CREDIT-DATA-CATEGORY']) {
+      check.equal(accepted.check_mapping.some(row=>row.check_id==='COMMON-ERROR-'+suffix+'-REVIEW'),false,
+        suffix+': retired default is absent from current coverage certification');
+    }
     for (const missing of ['fj-report-concern-reader', 'fk-report-concern-rules', 'fl-report-concern-delivery', 'fm-owned-report-reassessment']) {
       const execution = clone(baseline); section(execution, missing).completed = false;
       const rejected = build(execution);

@@ -84,9 +84,7 @@ const CHECK_PROOF = Object.freeze(Object.fromEntries([
   ['PAID-SETTLED-SHOWN-UNPAID', ['cy-common-error-predicate-repairs', 'df-us-common-error-reader'], ['du-column-reader-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
   ['LAST-PAYMENT-OR-FIRST-DELINQUENCY-DATE', ['cw-common-error-rule-assessment', 'de-tu-ca-common-error-sources'], ['de-tu-ca-common-error-sources'], 'NATIVE_READER_AND_DOWNSTREAM_FAMILY_CONTROL'],
   ['COLLECTION-ORIGINAL-BOTH-DUE', ['ct-owner-common-error-scope', 'eu-general-omission-delivery'], ['eu-general-omission-delivery'], 'FICTIONAL_NATIVE_PDF_UPLOAD'],
-  ...['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW',
-    'CLOSURE-DATE-DISCLOSURE-REVIEW', 'UNDATED-HISTORY-DISCLOSURE-REVIEW',
-    'IDENTIFIER-HANDLING-REVIEW', 'CREDIT-DATA-CATEGORY-REVIEW'].map(suffix =>
+  ...['ADDRESS-GEOGRAPHIC-INCONSISTENCY', 'PAID-CLAIM-STATUS-REVIEW'].map(suffix =>
       [suffix, ['fj-report-concern-reader', 'fk-report-concern-rules', 'fm-owned-report-reassessment'],
         ['fl-report-concern-delivery'], 'FICTIONAL_NATIVE_TABLE_UPLOAD_AND_SCOPED_CONCERN_PACKET'])
 ].map(([suffix, assessment, packet, exercise_class]) => ['COMMON-ERROR-' + suffix, { assessment, packet, exercise_class }])
