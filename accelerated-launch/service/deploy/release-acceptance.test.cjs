@@ -50,7 +50,7 @@ try {
   // Copy only code/declared module dependencies. No report, account store, env
   // file, historical receipt, or private evidence directory is copied.
   const verifierNames = ['release-workflow.cjs', 'release-inputs.cjs', 'release-execution.cjs', 'release-artifact.cjs',
-    'release-continuity.cjs', 'release-transfer.cjs', 'release-proof-gates.json'];
+    'release-continuity.cjs', 'release-transfer.cjs', 'release-evidence-validator.cjs', 'release-proof-gates.json'];
   const entryFiles = ['accelerated-launch/service/fdt-acceptance.cjs', 'accelerated-launch/service/evidence-validator.cjs',
     ...verifierNames.map(file => 'accelerated-launch/service/deploy/' + file)];
   const graph = inputs.inspectPrerequisites({ root: repositoryRoot, sections: [], files: entryFiles });

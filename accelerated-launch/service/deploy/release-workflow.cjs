@@ -190,7 +190,7 @@ function verifyBinding(binding){
 function prepareInputs(p,options={}){
   if(process.env.CRP_RELEASE_INPUTS_TEST_MODULE || process.env.CRP_RELEASE_WORKFLOW_MODULE)throw Error('Release checks refuse alternate test-module overrides; standalone tooling development tests may use them');
   const root=p.workspace_root||ROOT,catalog=sectionCatalog(root),product=p.risk.full_regression_required || p.risk.mode==='PRESENTATION',sections=p.risk.full_regression_required?catalog.map(r=>r.id):p.selected_sections;
-  const deploy='accelerated-launch/service/deploy/',toolNames=['release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
+  const deploy='accelerated-launch/service/deploy/',toolNames=['release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs','release-evidence-validator.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
   const profileFile=options.profileFile?path.resolve(options.profileFile):null,profile=profileFile?read(profileFile):null;
   if(profile && (profile.schema!==1 || profile.complete!==true || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed complete input profile or selection');
   const files=[...toolNames.map(f=>deploy+f),...(product?['accelerated-launch/service/tests/run-tests.cjs','accelerated-launch/service/tests/harness.cjs']:[]),...(profile?.files||[])];
@@ -289,7 +289,7 @@ function acceptance(receipt, build, proof) {
   if(productContext.kind==='ACCEPTED_FULL_WITH_CONTINUITY' && !/continuity|inherited|focused/i.test(measured.predicates.final_full_freeze.expected))throw Error('Composite verification must disclose its inherited scope');
   const specs=require('./release-proof-gates.json');
   if(specs.length!==30 || specs.reduce((n,g)=>n+g.criteria.length,0)!==123)throw Error('Invalid authoritative gate policy');
-  const {validateCapabilityStatus}=require('../evidence-validator.cjs');
+  const {validateCapabilityStatus}=require('./release-evidence-validator.cjs');
   for(const gate of specs) {
     const evidence=read(inside(root,gate.file));
     const verdict=validateCapabilityStatus(evidence,{targetBuildId:build,baseDir:root,sourceRoot,requiredCriteria:gate.criteria});
@@ -318,7 +318,7 @@ function prepareAcceptanceProof(acceptanceFile,pkg,out,options={}) {
   const measurementRef=normalize(path.relative(evidenceRoot,measurementFile));
   copy(measurementFile,inside(path.join(bundle,'evidence'),measurementRef));
   for(const file of new Set([...context.currentSourceHashes.map(r=>normalize(r.file)),...manifest.groups.flatMap(g=>g.files).map(r=>r.file)]))copy(inside(sourceRoot,file),inside(path.join(bundle,'source'),file));
-  for(const name of ['release-workflow.cjs','release-inputs.cjs','release-execution.cjs','release-artifact.cjs','release-continuity.cjs','release-transfer.cjs','release-proof-gates.json'])copy(inside(sourceRoot,'accelerated-launch/service/deploy/'+name),path.join(bundle,'verifier/deploy',name));
+  for(const name of ['release-workflow.cjs','release-inputs.cjs','release-execution.cjs','release-artifact.cjs','release-continuity.cjs','release-transfer.cjs','release-evidence-validator.cjs','release-proof-gates.json'])copy(inside(sourceRoot,'accelerated-launch/service/deploy/'+name),path.join(bundle,'verifier/deploy',name));
   copy(inside(sourceRoot,'accelerated-launch/service/evidence-validator.cjs'),path.join(bundle,'verifier/evidence-validator.cjs'));
   copy(acceptanceFile,path.join(bundle,'acceptance.json'));
   write(path.join(bundle,'package-identity.json'),{build_id:pkg.build_id,git_head:pkg.git_head,manifest_digest:pkg.manifest_digest,files:pkg.files,measurement_ref:measurementRef});
