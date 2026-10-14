@@ -7,11 +7,11 @@ const {PrivateStore} = require('../private-store.cjs');
 const {AdminStore, openAdminStore} = require('../admin-store.cjs');
 const access = require('../admin-access.cjs'), accounts = require('../accounts.cjs'), security = require('../signup-security.cjs');
 const PASSWORD = 'Fictional-Admin-Test-Password-109';
-async function run() {
+async function run(onCheck) {
   let passed = 0, clock = Math.floor(Date.now() / 30000) * 30000 + 2000;
   const realNow = Date.now, directories = [], stores = [];
   Date.now = () => clock;
-  const check = (name, fn) => {fn(); passed++; process.stdout.write('PASS ' + name + '\n');};
+  const check = (name, fn) => {try {fn();} catch (error) {onCheck?.(false, name, error); throw error;} passed++; onCheck?.(true, name); process.stdout.write('PASS ' + name + '\n');};
   const refuses = (fn, code) => assert.throws(fn, e => e.code === code);
   const directory = () => {const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'crp-admin-access-')); directories.push(dir); return dir;};
   const open = (dir, consumerStore) => {const s = new AdminStore(dir, {consumerStore}); stores.push(s); return s;};
@@ -182,6 +182,74 @@ async function run() {
       assert.throws(() => cli.main([]), /Usage/);
       const child = spawnSync(process.execPath, [path.resolve(__dirname, '../deploy/admin-bootstrap.cjs'), '--data-dir', c.dataDir, '--account-id', u.actor.account_id], {input: '000000', encoding: 'utf8'});
       assert.equal(child.status, 1); assert.match(child.stderr, /PRIVATE_STORE_ALREADY_HAS_A_WRITER/);
+    });
+    const recoveryConsumer = new PrivateStore(directory()), original = user('retired-owner', true, recoveryConsumer), successor = user('successor-staff', true, recoveryConsumer), unready = user('unready-successor', false, recoveryConsumer);
+    let recovery = open(recoveryConsumer.dataDir, recoveryConsumer);
+    check('orphan recovery refuses uninitialized stores and implicit intent', () => {
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: security.totp(successor.secret, clock)}), 'NOT_AUTHORIZED');
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: security.totp(successor.secret, clock), offline: true}), 'NOT_AUTHORIZED');
+    });
+    const initialOwner = access.bootstrapOwner(recovery, {account_id: original.actor.account_id, code: security.totp(original.secret, clock)});
+    const initialAccess = unlock(original, recovery);
+    const successorMember = access.createMembership(recovery, initialAccess.principal, {account_id: successor.actor.account_id, role: 'staff', permissions: ['overview.read']});
+    const successorAccess = unlock(successor, recovery);
+    const originalBootstrap = recovery.state().bootstrapped_at;
+    check('offline recovery refuses while any active eligible owner exists without consuming OTP', () => {
+      const consumerBefore = JSON.stringify(recoveryConsumer.state()), adminBefore = JSON.stringify(recovery.state());
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: security.totp(successor.secret, clock + 30000), offline: true}), 'NOT_AUTHORIZED');
+      assert.equal(JSON.stringify(recoveryConsumer.state()), consumerBefore); assert.equal(JSON.stringify(recovery.state()), adminBefore);
+    });
+    recoveryConsumer.update(state => {state.accounts = state.accounts.filter(a => a.account_id !== original.actor.account_id); state.cases.push({case_id: 'fictional-surviving-case', account_id: successor.actor.account_id});});
+    recovery.update(state => {state.grants.push({grant_id: 'fictional-revoked-recovery-grant', status: 'REVOKED'});});
+    check('orphan recovery still requires verified completed MFA target and fresh OTP', () => {
+      const before = JSON.stringify(recovery.state());
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: unready.actor.account_id, code: '000000', offline: true}), 'ADMIN_SECURITY_REQUIRED');
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, offline: true}), 'TWO_FACTOR_REQUIRED');
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: 'invalid', offline: true}), 'TWO_FACTOR_INVALID');
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: security.totp(successor.secret, clock), offline: true}), 'TWO_FACTOR_INVALID');
+      assert.equal(JSON.stringify(recovery.state()), before);
+    });
+    recovery.close();
+    const cli = require('../deploy/admin-bootstrap.cjs');
+    function recoveryCli(extra, code) {
+      const read = fs.readFileSync, log = console.log; let printed;
+      fs.readFileSync = (file, ...args) => file === 0 ? code : read(file, ...args);
+      console.log = value => {printed = JSON.parse(value);};
+      try {const member = cli.main(['--data-dir', recoveryConsumer.dataDir, '--account-id', successor.actor.account_id, ...extra]); return {member, printed};}
+      finally {fs.readFileSync = read; console.log = log;}
+    }
+    check('CLI never falls back to orphan recovery without its exact flag', () => {
+      refuses(() => recoveryCli([], security.totp(successor.secret, clock + 30000)), 'NOT_AUTHORIZED');
+      assert.throws(() => recoveryCli(['--recover-owner'], '000000'), /Usage/);
+      assert.throws(() => recoveryCli(['--recover-orphaned-owner', '--recover-orphaned-owner'], '000000'), /Usage/);
+    });
+    check('explicit recovery CLI refuses the live consumer writer', () => {
+      const child = spawnSync(process.execPath, [path.resolve(__dirname, '../deploy/admin-bootstrap.cjs'), '--data-dir', recoveryConsumer.dataDir, '--account-id', successor.actor.account_id, '--recover-orphaned-owner'], {input: '000000', encoding: 'utf8'});
+      assert.equal(child.status, 1); assert.match(child.stderr, /PRIVATE_STORE_ALREADY_HAS_A_WRITER/);
+    });
+    check('explicit offline recovery promotes successor and atomically retires orphaned owner proof', () => {
+      const cases = JSON.stringify(recoveryConsumer.state().cases); clock += 30000;
+      const {member, printed} = recoveryCli(['--recover-orphaned-owner'], security.totp(successor.secret, clock));
+      assert.equal(printed.recovered, true); assert.equal(printed.created, false); assert.equal(member.admin_id, successorMember.admin_id); assert.equal(member.revision, 2);
+      recovery = open(recoveryConsumer.dataDir, recoveryConsumer);
+      const state = recovery.state(), retired = state.memberships.find(m => m.admin_id === initialOwner.admin_id);
+      assert.equal(retired.status, 'DISABLED'); assert.equal(retired.revision, 2); assert.equal(state.bootstrapped_at, originalBootstrap);
+      assert.deepEqual(member.permissions, access.PERMISSIONS); assert.equal(member.org_id, null);
+      assert.ok(state.unlocks.filter(u => [initialOwner.admin_id, successorMember.admin_id].includes(u.admin_id)).every(u => u.revoked_at));
+      assert.equal(state.audit_events.at(-1).event, 'ADMIN_OWNER_RECOVERED'); assert.equal(state.audit_events.at(-1).metadata.operation, 'OFFLINE_RECOVERY');
+      assert.equal(state.grants[0].status, 'REVOKED'); assert.equal(JSON.stringify(recoveryConsumer.state().cases), cases);
+      assert.equal(recoveryConsumer.state().accounts.some(a => a.account_id === original.actor.account_id), false);
+      refuses(() => access.principal(recovery, successor.actor, successor.token, successorAccess.token), 'TWO_FACTOR_REQUIRED');
+      assert.equal(unlock(successor, recovery).principal.role, 'owner');
+      refuses(() => access.recoverOrphanedOwner(recovery, {account_id: successor.actor.account_id, code: security.totp(successor.secret, clock + 30000), offline: true}), 'NOT_AUTHORIZED');
+    });
+    check('offline recovery can create a membership for an eligible existing consumer without restoring deleted accounts', () => {
+      recoveryConsumer.update(state => {state.accounts = state.accounts.filter(a => a.account_id !== successor.actor.account_id);});
+      const newOwner = user('successor-new-owner', true, recoveryConsumer); clock += 30000;
+      const member = access.recoverOrphanedOwner(recovery, {account_id: newOwner.actor.account_id, code: security.totp(newOwner.secret, clock), offline: true});
+      assert.equal(member.revision, 1); assert.equal(member.role, 'owner'); assert.equal(recovery.state().bootstrapped_at, originalBootstrap);
+      assert.equal(recoveryConsumer.state().accounts.some(a => [original.actor.account_id, successor.actor.account_id].includes(a.account_id)), false);
+      assert.equal(recovery.state().memberships.filter(m => m.status === 'ACTIVE' && m.role === 'owner').length, 1);
     });
     check('journal tampering is detected while cached and after restart', () => {
       const dir = directory(), s = open(dir); s.update(state => {state.grants.push({status: 'REVOKED'});});

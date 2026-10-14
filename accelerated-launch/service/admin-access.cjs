@@ -72,10 +72,37 @@ function bootstrapOwner(store,{account_id,code}){
   if(!store.consumerStore.update(state=>security.verifySignIn(store.consumerStore,state.accounts.find(r=>r.account_id===account.account_id),code)))fail('TWO_FACTOR_INVALID',401);
   return store.update(state=>{if(state.bootstrapped_at||state.memberships.length)fail('NOT_AUTHORIZED',403);const member={admin_id:id('admin'),account_id,role:'owner',permissions:[...PERMISSIONS],org_id:null,status:'ACTIVE',revision:1,created_at:new Date().toISOString()};state.memberships.push(member);state.bootstrapped_at=new Date().toISOString();store.appendAudit(state,member,'ADMIN_OWNER_BOOTSTRAPPED',{});return member;});
 }
+// Offline operator recovery only. Never dispatch this export from an HTTP route.
+// Deleting a consumer account remains permitted; it does not reset bootstrap state.
+function recoverOrphanedOwner(store,{account_id,code,offline=false}){
+  if(offline!==true)fail('NOT_AUTHORIZED',403);
+  const before=store.state();
+  if(!before.bootstrapped_at||hasOtherEligibleOwner(store,before,null))fail('NOT_AUTHORIZED',403);
+  const account=eligibleAccount(store,account_id);if(!code)fail('TWO_FACTOR_REQUIRED',401);
+  if(!store.consumerStore.update(state=>security.verifySignIn(store.consumerStore,state.accounts.find(r=>r.account_id===account.account_id),code)))fail('TWO_FACTOR_INVALID',401);
+  return store.update(state=>{
+    if(!state.bootstrapped_at||hasOtherEligibleOwner(store,state,null))fail('NOT_AUTHORIZED',403);
+    eligibleAccount(store,account_id);
+    const matches=state.memberships.filter(r=>r.account_id===account_id);
+    if(matches.length>1)fail('ADMIN_STATE_UNAVAILABLE',503);
+    const changed=new Set(),at=new Date().toISOString();
+    for(const row of state.memberships)if(row.role==='owner'&&row.status==='ACTIVE'){
+      row.status='DISABLED';row.revision=(row.revision||0)+1;changed.add(row.admin_id);
+      store.appendAudit(state,null,'ADMIN_MEMBERSHIP_UPDATED',{admin_id:row.admin_id,account_id:row.account_id,role:row.role,permissions:row.permissions,status:row.status,operation:'OFFLINE_RECOVERY'});
+    }
+    let member=matches[0];
+    if(member){Object.assign(member,{role:'owner',permissions:[...PERMISSIONS],org_id:null,status:'ACTIVE',revision:(member.revision||0)+1});}
+    else{member={admin_id:id('admin'),account_id,role:'owner',permissions:[...PERMISSIONS],org_id:null,status:'ACTIVE',revision:1,created_at:at};state.memberships.push(member);}
+    changed.add(member.admin_id);
+    for(const row of state.unlocks)if(changed.has(row.admin_id)&&!row.revoked_at)row.revoked_at=at;
+    store.appendAudit(state,member,'ADMIN_OWNER_RECOVERED',{admin_id:member.admin_id,account_id,role:member.role,permissions:member.permissions,operation:'OFFLINE_RECOVERY',reason:'NO_ACTIVE_ELIGIBLE_OWNER'});
+    return member;
+  });
+}
 // Only an already unlocked owner may add another owner. Initial ownership is offline.
 function createMembership(store,actor,input){requireCapability(store,actor,'team.manage');eligibleAccount(store,input.account_id);const values=fields(store,input);return store.update(state=>{if(state.memberships.some(r=>r.account_id===input.account_id))fail('INVALID_REQUEST',409);const member={admin_id:id('admin'),account_id:input.account_id,...values,revision:1,created_at:new Date().toISOString()};state.memberships.push(member);store.appendAudit(state,actor,'ADMIN_MEMBERSHIP_CREATED',{admin_id:member.admin_id,org_id:member.org_id||'',status:member.status,role:member.role,permissions:member.permissions});return member;});}
 function updateMembership(store,actor,adminId,input){requireCapability(store,actor,'team.manage');const before=store.state().memberships.find(r=>r.admin_id===adminId);if(!before)fail('NOT_FOUND',404);const values=fields(store,input,before);if(values.status==='ACTIVE')eligibleAccount(store,before.account_id);return store.update(state=>{const member=state.memberships.find(r=>r.admin_id===adminId);if(member.role==='owner'&&member.status==='ACTIVE'&&(values.role!=='owner'||values.status!=='ACTIVE')&&!hasOtherEligibleOwner(store,state,adminId))fail('ADMIN_LAST_OWNER',409);Object.assign(member,values,{revision:member.revision+1});for(const row of state.unlocks)if(row.admin_id===adminId&&!row.revoked_at)row.revoked_at=new Date().toISOString();store.appendAudit(state,actor,'ADMIN_MEMBERSHIP_UPDATED',{admin_id:adminId,status:member.status,org_id:member.org_id||'',role:member.role,permissions:member.permissions});return member;});}
 function createOrganization(store,actor,input){requireCapability(store,actor,'organizations.manage');const name=typeof input.name==='string'?input.name.trim():'',status=input.status??'ACTIVE';if(!name||name.length>120||!['ACTIVE','DISABLED'].includes(status))fail('INVALID_REQUEST',400);return store.update(state=>{const org={org_id:id('org'),name,status,created_at:new Date().toISOString()};state.organizations.push(org);store.appendAudit(state,actor,'ADMIN_ORGANIZATION_CREATED',{org_id:org.org_id,status});return org;});}
 function updateOrganization(store,actor,orgId,input){requireCapability(store,actor,'organizations.manage');if(input.status!==undefined&&!['ACTIVE','DISABLED'].includes(input.status)||input.name!==undefined&&(typeof input.name!=='string'||!input.name.trim()||input.name.trim().length>120))fail('INVALID_REQUEST',400);return store.update(state=>{const org=state.organizations.find(r=>r.org_id===orgId);if(!org)fail('NOT_FOUND',404);if(input.name!==undefined)org.name=input.name.trim();if(input.status!==undefined){org.status=input.status;const admins=new Set(state.memberships.filter(r=>r.org_id===orgId).map(r=>r.admin_id));for(const row of state.unlocks)if(admins.has(row.admin_id)&&!row.revoked_at)row.revoked_at=new Date().toISOString();}store.appendAudit(state,actor,'ADMIN_ORGANIZATION_UPDATED',{org_id:orgId,status:org.status});return org;});}
 const addAudit=(store,actor,event,metadata)=>store.audit(actor,event,metadata);
-module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,principal,unlock,lock,requireCapability,bootstrapOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
+module.exports={AdminError,PERMISSIONS,PARTNER_ALLOWED,UNLOCK_MS,principal,unlock,lock,requireCapability,bootstrapOwner,recoverOrphanedOwner,createMembership,updateMembership,createOrganization,updateOrganization,addAudit};
