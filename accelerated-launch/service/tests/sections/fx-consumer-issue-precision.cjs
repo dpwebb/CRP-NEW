@@ -5,6 +5,11 @@ const { row, put, identity } = require('./fn-au-comparison-fixes.cjs');
 const reviews = require('../../au-comparison-concerns.cjs');
 
 async function run(_service, check) {
+  const checklist=require('../../common-error-checklist.cjs').CHECKS;
+  for(const id of ['CLOSURE-DATE-DISCLOSURE','UNDATED-HISTORY-DISCLOSURE','IDENTIFIER-HANDLING','CREDIT-DATA-CATEGORY','ENTRY-AGE-CONTEXT','LINKED-IDENTITY-CONTEXT','LIFECYCLE-LINKAGE-CONTEXT','STATUS-HISTORY-CONTEXT']) {
+    check.equal(checklist.some(row=>row.check_id==='COMMON-ERROR-'+id+'-REVIEW'),false,
+      id+': retired default is not advertised in the active checklist');
+  }
   for (const kind of ['AU_AMOUNT_CATEGORY_REVIEW', 'AU_TFN_HANDLING', 'CLOSURE_DATE_REVIEW',
     'UNDATED_PAYMENT_HISTORY', 'LINKED_IDENTITY_CONTEXT_REVIEW', 'LIFECYCLE_LINKAGE_CONTEXT_REVIEW',
     'STATUS_HISTORY_CONTEXT_REVIEW', 'ENTRY_AGE_CONTEXT_REVIEW']) {

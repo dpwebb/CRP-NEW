@@ -88,7 +88,8 @@ async function run(t, check) {
     confidence: 'POTENTIAL', check_kind: 'Similar accounts to review', rule_assessment: null,
     explanation: 'Compare these similar entries with your own records.' });
   const mixedInput = rendering([issue(), completedConcern('PAID_CLAIM', 'Payment status needs checking'),
-    completedConcern('UNDATED_PAYMENT_HISTORY', 'Payment history dates need checking'), legacyReview,
+    completedConcern('OWNERSHIP_STATEMENT_CONTEXT_REVIEW', 'Disputed account ownership needs checking'), legacyReview,
+    completedConcern('UNDATED_PAYMENT_HISTORY', 'PRIVATE RETIRED HISTORY QUESTION'),
     issue({ issue_id: 'private-mixed-information', basis_type: 'LIMITATION_ASSESSMENT',
       consumer_label: 'INFORMATION', limitation_concern: true, rule_assessment: null,
       check_kind: 'Court time limits', explanation: 'The printed date prompts a court time-limit review.' })]);
@@ -102,8 +103,10 @@ async function run(t, check) {
     'the actual mixed PDF counts one violation, exactly two non-violation concerns and one information item');
   check.ok(mixedText.includes('Other details to review: 1'),
     'the legacy review has its own count instead of inflating the non-violation count');
-  check.ok(mixedText.includes('Payment status needs checking') && mixedText.includes('Payment history dates need checking'),
+  check.ok(mixedText.includes('Payment status needs checking') && mixedText.includes('Disputed account ownership needs checking'),
     'each new concern retains its distinct source issue title in the actual PDF');
+  check.equal(mixedText.includes('PRIVATE RETIRED HISTORY QUESTION'),false,'saved retired defaults do not reappear in a newly generated paid PDF');
+  check.equal(journey.publicResult(mixedInput).issues.some(row=>row.concern_kind==='UNDATED_PAYMENT_HISTORY'),false,'saved retired defaults do not reappear in the consumer JSON view');
   check.equal(mixedText.includes('Report details to review'), false,
     'a titled completed concern is not replaced by the generic review heading');
   check.ok(mixedText.includes('Similar accounts to review') && mixedText.includes('REVIEW'),

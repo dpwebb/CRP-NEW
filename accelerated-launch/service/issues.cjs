@@ -19,7 +19,7 @@ const accountDisplay = require('./account-display.cjs');
 const { factSourcesForRecord } = require('./formats.cjs');
 const commonErrorRuleAssessment = require('./common-error-rule-assessment.cjs');
 const reportConcerns = require('./report-concerns.cjs');
-const { supportsConsumerIssue } = require('./consumer-issue-materiality.cjs');
+const { supportsConsumerIssue, withoutRetiredDefaults } = require('./consumer-issue-materiality.cjs');
 const { PREVIEW_ORDER, PREVIEW_CATEGORY_BY_CHECK } = require('./common-error-checklist.cjs');
 const { sourceForField, reportReference } = require('./report-fact-sources.cjs');
 
@@ -825,7 +825,7 @@ function projectConsumerIssue(issue, label = consumerLabel(issue)) {
   for (const field of ['explanation', 'uncertainty', 'request_wording']) {
     if (Object.hasOwn(out, field)) out[field] = consumerText(out[field]);
   }
-  if (issue.supported_bases) out.supported_bases = issue.supported_bases.map((basis) => projectConsumerIssue(basis));
+  if (issue.supported_bases) out.supported_bases = withoutRetiredDefaults(issue.supported_bases).map((basis) => projectConsumerIssue(basis));
   return out;
 }
 

@@ -11,14 +11,9 @@ const { supportsConsumerIssue, isRetiredDefault } = require('./consumer-issue-ma
 
 const ADDRESS_CHECK = 'COMMON-ERROR-ADDRESS-GEOGRAPHIC-INCONSISTENCY';
 const NON_VIOLATION_LABEL = 'NON-VIOLATION CONCERN';
-const KINDS = Object.freeze(['ADDRESS_GEOGRAPHIC_INCONSISTENCY', 'PAID_CLAIM',
-  'CLOSURE_DATE_REVIEW', 'UNDATED_PAYMENT_HISTORY', 'AU_TFN_HANDLING', 'AU_AMOUNT_CATEGORY_REVIEW', ...auReviews.KINDS]);
+const KINDS = Object.freeze(['ADDRESS_GEOGRAPHIC_INCONSISTENCY', 'PAID_CLAIM', ...auReviews.KINDS]);
 const CHECK_BY_KIND = Object.freeze({ ADDRESS_GEOGRAPHIC_INCONSISTENCY: ADDRESS_CHECK,
-  PAID_CLAIM: 'COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW',
-  CLOSURE_DATE_REVIEW: 'COMMON-ERROR-CLOSURE-DATE-DISCLOSURE-REVIEW',
-  UNDATED_PAYMENT_HISTORY: 'COMMON-ERROR-UNDATED-HISTORY-DISCLOSURE-REVIEW',
-  AU_TFN_HANDLING: 'COMMON-ERROR-IDENTIFIER-HANDLING-REVIEW',
-  AU_AMOUNT_CATEGORY_REVIEW: 'COMMON-ERROR-CREDIT-DATA-CATEGORY-REVIEW', ...auReviews.CHECK_BY_KIND });
+  PAID_CLAIM: 'COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW', ...auReviews.CHECK_BY_KIND });
 const STATES = Object.freeze({ 'AUSTRALIAN CAPITAL TERRITORY': 'ACT', 'NEW SOUTH WALES': 'NSW',
   'NORTHERN TERRITORY': 'NT', QUEENSLAND: 'QLD', 'SOUTH AUSTRALIA': 'SA', TASMANIA: 'TAS',
   VICTORIA: 'VIC', 'WESTERN AUSTRALIA': 'WA' });
@@ -88,13 +83,6 @@ function ownAccount(record, extraction) {
   const identity = ownSource(record, 'account.reported_identity');
   const report = snapshot(record, extraction);
   return identity && report ? { identity, report } : null;
-}
-
-function coverage(record) {
-  const row = record?.table_row_coverage;
-  return row?.complete === true && typeof row.row_id === 'string' && row.row_id
-    && ['ACCOUNT_SUMMARY', 'COLLECTIONS'].includes(row.section)
-    && trustedLocation(row.location) && sameSourceFile(row.location, record) ? row : null;
 }
 
 function concernFingerprint(issue) {
@@ -233,70 +221,6 @@ function paidClaim(record, account) {
       status: status.normalized_value, balance: balance.normalized_value } });
 }
 
-function closureReview(record, account) {
-  const row = coverage(record);
-  const statement = ownSource(record, 'account.closureStatement');
-  if (!row || row.field_presence?.closed_date !== false || !statement
-    || /\b(?:not|never|may|might|will|pending)\s+(?:be\s+)?(?:closed|cancelled|canceled)\b/i.test(String(statement.normalized_value))
-    || !/\b(?:closed|cancelled|canceled)\b/i.test(String(statement.normalized_value))
-    || ['liability.closedDate', 'reportedAccount.closedDate', 'tradeline.closedDate'].some((field) => record.facts?.[field] != null)
-    || record.printed?.['Closed Date']?.state === 'LABEL_PRINTED_WITHOUT_VALUE') return null;
-  const omission = { field: 'account.closedDatePresence', source_field: 'Account table columns',
-    raw_value: 'No closing-date column in this complete account row', normalized_value: false,
-    record_index: record.record_index, trusted: true, location: safeLocation(row.location) };
-  return finish({ kind: 'CLOSURE_DATE_REVIEW', record, report: account.report,
-    sources: [statement, omission, account.identity], title: 'Closing date needs checking',
-    explanation: 'The report says this account was closed, but its account table gives no closing date.',
-    uncertainty: 'This report does not establish when the closure occurred or that a reporting deadline was missed. The account may have been closed recently.',
-    request: 'please confirm the closing date for this account and whether the date should be included or corrected in my report',
-    evidence: { closure_statement: statement.normalized_value, complete_row: true, closed_date_column_printed: false } });
-}
-
-const historyToken = (value) => upper(value).replace(/\s/g, '');
-
-function usableHistorySource(record) {
-  const source = ownSource(record, 'account.undatedPaymentHistory'), value = source?.normalized_value;
-  if (!value || typeof value.periods_printed !== 'boolean' || !Array.isArray(value.tokens) || !value.tokens.length
-    || value.tokens.length > 120 || value.count !== value.tokens.length
-    || value.tokens.some((token) => !/^[A-Z0-9*#.-]{1,8}$/.test(historyToken(token)))) return null;
-  return source;
-}
-
-function undatedHistory(record, account, country) {
-  const source = usableHistorySource(record), value = source?.normalized_value;
-  if (!value || value.periods_printed !== false
-    // Owner direction: undated histories made entirely of OK codes are benign.
-    // Normalize only for this comparison; keep the original source tokens.
-    || value.tokens.every((token) => historyToken(token) === 'OK')
-    || (record.facts?.['account.paymentHistoryCells'] || []).some((cell) => cell?.period)) return null;
-  const nonOkTokens = value.tokens.filter((token) => historyToken(token) !== 'OK');
-  return finish({ kind: 'UNDATED_PAYMENT_HISTORY', record, report: account.report,
-    sources: [source, account.identity], title: 'Payment history dates need checking',
-    explanation: `The report shows ${nonOkTokens.length} non-OK payment-history ${nonOkTokens.length === 1 ? 'code' : 'codes'} for this account without month or year labels.${value.legend_printed === false ? ' It also gives no key explaining these codes.' : ''}`,
-    uncertainty: 'The codes have not been interpreted as payments or missed payments. The report does not establish which months they describe or that a disclosure rule was breached.',
-    request: 'please identify the month and year for the non-OK payment-history entries and explain their codes, correcting any incomplete or inaccurate information',
-    evidence: { count: value.count, tokens: value.tokens.slice(), non_ok_count: nonOkTokens.length,
-      review_tokens: nonOkTokens, periods_printed: false,
-      legend_printed: value.legend_printed === true }, contextSources: country === 'AU' ? [SOURCES.AU_ACCESS] : [] });
-}
-
-function amountCategory(record, account, country) {
-  if (country !== 'AU' || !account.report.reference_date
-    || account.report.reference_date < SOURCES.AU_CREDIT_CATEGORIES.effective_from
-    || coverage(record)?.section !== 'ACCOUNT_SUMMARY'
-    || /COLLECTION|OVERDUE|DEFAULT|PUBLIC_RECORD/.test(String(record.kind))) return null;
-  const amounts = ['account.balance', 'account.paymentAmount'].map((field) => ownSource(record, field))
-    .filter((source) => source && typeof source.normalized_value === 'number' && source.normalized_value >= 0);
-  if (!amounts.length) return null;
-  return finish({ kind: 'AU_AMOUNT_CATEGORY_REVIEW', record, report: account.report,
-    sources: [...amounts, account.identity], title: 'Reported money amounts need checking',
-    explanation: `This report lists ${amounts.map((source) => `${clean(source.source_field)} (${clean(source.raw_value)})`).join(' and ')} for this account. Please check what these amounts mean.`,
-    uncertainty: 'The report may show the permitted maximum-credit amount rather than money currently owed. The figures alone do not establish that prohibited information was collected or disclosed.',
-    request: 'please explain what each amount represents. Check whether it is allowed in this credit report, and correct or remove any wrong information',
-    evidence: { review_fields: amounts.map((source) => source.field), permitted_category_unresolved: true,
-      regulations_effective_from: SOURCES.AU_CREDIT_CATEGORIES.effective_from }, contextSources: [SOURCES.AU_CREDIT_CATEGORIES] });
-}
-
 function topEvidence(item, extraction) {
   if (item?.trusted !== true || !trustedLocation(item.location)
     || !sameSourceFile(item.location, { source_file_id: item.source_file_id || extraction?.source_file_id })) return null;
@@ -344,24 +268,6 @@ function addressResult(item, extraction, evaluation) {
       address_role: item.role, postcode_only_determination: false }, contextSources: [mapping.source], violation: true }) };
 }
 
-function tfnReview(item, extraction, evaluation) {
-  if (evaluation.country !== 'AU' || item.kind !== 'IDENTIFIER_FIELD' || item.identifier_type !== 'TFN'
-    || typeof item.masked !== 'boolean' || !/^(?:tax\s+file\s+number|TFN)$/i.test(clean(item.source_field))) return null;
-  const bound = topEvidence(item, extraction);
-  if (!bound) return null;
-  if (item.raw_value !== (item.masked ? 'Tax file number shown (masked)' : 'Tax file number shown (unmasked)')) return null;
-  const source = { field: 'report.maskedTfnPresence', source_field: item.source_field,
-    raw_value: item.raw_value, normalized_value: item.masked ? 'MASKED_TFN_PRESENT' : 'UNMASKED_TFN_PRESENT',
-    trusted: true, record_index: null, location: bound.location };
-  return finish({ kind: 'AU_TFN_HANDLING', report: bound.report, sources: [source],
-    title: 'Tax file number information needs review',
-    explanation: `The identification section of this credit report includes ${item.masked ? 'a masked' : 'an unmasked'} tax file number field.`,
-    uncertainty: item.masked ? 'A masked field does not establish that a full tax file number was collected, used or disclosed unlawfully. Returning tax file number information to its owner is permitted.'
-      : 'The number is omitted from this concern to protect your privacy. Its presence does not establish unlawful handling; returning tax file number information to its owner is permitted.',
-    request: 'please explain what tax file number information is held, its source and permitted purpose, and remove or correct any information that should not be held or used for this credit report',
-    evidence: { identifier_type: 'TFN', masked: item.masked, unlawful_handling_established: false }, contextSources: [SOURCES.AU_TFN] });
-}
-
 function review(extraction, evaluation) {
   const issues = [], address = [], performed = new Map();
   if (!extraction || !evaluation || !['AU', 'CA', 'US', 'GB'].includes(evaluation.country)
@@ -387,19 +293,12 @@ function review(extraction, evaluation) {
     if (!account) continue;
     mark('PAID_CLAIM', paidClaim(record, account), Boolean(ownSource(record, 'account.reportRemarks')
       && ownSource(record, 'account.status') && ownSource(record, 'account.balance')));
-    mark('CLOSURE_DATE_REVIEW', closureReview(record, account), Boolean(coverage(record)
-      && ownSource(record, 'account.closureStatement') && typeof coverage(record).field_presence?.closed_date === 'boolean'));
-    mark('UNDATED_PAYMENT_HISTORY', undatedHistory(record, account, evaluation.country),
-      Boolean(usableHistorySource(record)
-        || (record.facts?.['account.paymentHistoryCells'] || []).some((cell) => cell?.period && trustedLocation(cell.location))));
-    const category = amountCategory(record, account, evaluation.country);
-    mark('AU_AMOUNT_CATEGORY_REVIEW', category, false);
+
   }
   for (const item of extraction.report_concern_evidence || []) {
     const result = addressResult(item, extraction, evaluation);
     if (result) { address.push(result); mark('ADDRESS_GEOGRAPHIC_INCONSISTENCY', result.issue, true); }
-    const tfn = tfnReview(item, extraction, evaluation);
-    mark('AU_TFN_HANDLING', tfn, false);
+
   }
   for (const issue of auReviews.concernsFor(extraction,evaluation)) mark(issue.concern_kind,issue,false);
   return { issues: groupAustralianAddresses([...new Map(issues.map((issue) => [issue.issue_id, issue])).values()]),

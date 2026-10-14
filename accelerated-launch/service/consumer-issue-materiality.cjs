@@ -39,4 +39,5 @@ function supportsConsumerIssue(issue) {
   return true;
 }
 
-module.exports = { supportsConsumerIssue, isRetiredDefault: kind => RETIRED_DEFAULTS.has(kind) };
+function withoutRetiredDefaults(items) { return (items || []).filter(issue => !RETIRED_DEFAULTS.has(issue.concern_kind)); }
+module.exports = { supportsConsumerIssue, isRetiredDefault: kind => RETIRED_DEFAULTS.has(kind), withoutRetiredDefaults };

@@ -27,14 +27,6 @@ const CHECKS = Object.freeze([
     'Uses supported location mappings. An unchecked address is not proof of accuracy.', 'VIOLATION_ASSESSMENT'],
   ['COMMON-ERROR-PAID-CLAIM-STATUS-REVIEW', 'Claim that a debt was paid while an amount is still shown owing',
     'Review the payment claim and the current status or balance; a claim is not verified payment.', 'NON_VIOLATION_REVIEW'],
-  ['COMMON-ERROR-CLOSURE-DATE-DISCLOSURE-REVIEW', 'Closed account whose table gives no closing date',
-    'Confirm the closing date without assuming a reporting deadline was missed.', 'NON_VIOLATION_REVIEW'],
-  ['COMMON-ERROR-UNDATED-HISTORY-DISCLOSURE-REVIEW', 'Non-OK payment-history codes shown without month or year labels',
-    'Disregard histories containing only OK codes. For other codes, ask for periods and clear explanations without guessing their meaning.', 'NON_VIOLATION_REVIEW'],
-  ['COMMON-ERROR-IDENTIFIER-HANDLING-REVIEW', 'Sensitive identifier information whose permitted handling needs review',
-    'Uses a supported country-specific identifier requirement; presence alone is not unlawful handling.', 'NON_VIOLATION_REVIEW'],
-  ['COMMON-ERROR-CREDIT-DATA-CATEGORY-REVIEW', 'Reported money amounts whose permitted credit-data category needs review',
-    'Uses supported country-specific credit-data categories; similar amounts can have different permitted meanings.', 'NON_VIOLATION_REVIEW'],
   ...Object.entries(require('./au-comparison-concerns.cjs').CHECK_BY_KIND)
     .filter(([kind])=>!['OPEN_CLOSED_STATEMENT','CORROBORATED_PRINTED_DUPLICATE','DEFAULT_PAID_STATEMENT'].includes(kind))
     .map(([kind,id])=>[id,{
@@ -42,11 +34,7 @@ const CHECKS = Object.freeze([
       ADVERSE_OPENING_CONTEXT_REVIEW:'Account event dates need checking',
       SECTION_STATUS_CONTEXT_REVIEW:'Account section and status need checking',
       CLOSED_LIABILITY_CONTEXT_REVIEW:'Older closed account needs checking',
-      ENTRY_AGE_CONTEXT_REVIEW:'Older entry needs checking',
-  LINKED_IDENTITY_CONTEXT_REVIEW:'Linked personal details need checking',
-  LIFECYCLE_LINKAGE_CONTEXT_REVIEW:'Similar account entries need checking',
   OWNERSHIP_STATEMENT_CONTEXT_REVIEW:'Disputed account ownership needs checking',
-  STATUS_HISTORY_CONTEXT_REVIEW:'Status and payment history need checking',
   CREATOR_SUMMARY_COUNT_REVIEW:'Account summary counts to verify',CREATOR_SUMMARY_AMOUNT_REVIEW:'Summary balances and limits to verify',CREATOR_COMPLETED_DATE_REVIEW:'Completed account dates to verify',CREATOR_DATE_SEQUENCE_REVIEW:'Account date order to verify',CREATOR_PAYMENT_DATE_REVIEW:'Payment and opening dates to verify',CREATOR_CURRENT_PERIOD_REVIEW:'Older information to verify in the current file',
       ACCOUNT_OWNERSHIP_REVIEW:'Account ownership to verify',ACCOUNT_STATUS_DISPUTE:'Disputed account status or repayment history',
       ACCOUNT_BALANCE_DISPUTE:'Disputed account balance',INQUIRY_PURPOSE_REVIEW:'Enquiry purpose to verify',

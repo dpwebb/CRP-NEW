@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-13T23:59:08.745Z",
+  "generated_at": "2026-10-14T00:38:15.491Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 103,
-      "digest": "B221DCC3A696B00EC5C0F64B3A99970577BFF3EE54373773599D284312AEF75A",
+      "digest": "A70D9EB67E46E622A11300AB629EC22C00C862BD4E391FF40C65275461345C08",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -102,11 +102,11 @@
         },
         {
           "file": "accelerated-launch/service/assessment-pdf.cjs",
-          "sha256": "F9EFB5A26D604C436D88CA03E451EE9B1B604D100E2479B5CD68C07D38DF600E"
+          "sha256": "9CCD4632E64860054590120EAE497B4953693A386AB1D0274D6657D4FEBBB87E"
         },
         {
           "file": "accelerated-launch/service/au-comparison-concerns.cjs",
-          "sha256": "8F7A72A70902D5916C915BDAADC8B36E113AC16B8077BB4B55E238D69A6A005D"
+          "sha256": "85699EF2B489B731D7FF56EEB43432838CC36CDDC7123E6D4226017F2F43EA53"
         },
         {
           "file": "accelerated-launch/service/au-disclosure-fields.cjs",
@@ -154,7 +154,7 @@
         },
         {
           "file": "accelerated-launch/service/common-error-checklist.cjs",
-          "sha256": "2764BF0F6601289B25A8A396B54D2A967D2DAADAC5C59EA22082F21C9ECB6BC1"
+          "sha256": "C03B6BF03858EE451275EDA0BDBB6FA7DC7F9FDE7F49FA9B215315508F95B2DF"
         },
         {
           "file": "accelerated-launch/service/common-error-rule-assessment.cjs",
@@ -166,7 +166,7 @@
         },
         {
           "file": "accelerated-launch/service/common-errors.cjs",
-          "sha256": "BF099BAC817F8B8FEC4D07F84FE44654AB966429058A15B361DD3EADF426F9E8"
+          "sha256": "CA91878902980B655480139C55DE9D2E3862679A18CA7B1D8E4A3CADB4D3CAB9"
         },
         {
           "file": "accelerated-launch/service/comparison.cjs",
@@ -178,7 +178,7 @@
         },
         {
           "file": "accelerated-launch/service/consumer-issue-materiality.cjs",
-          "sha256": "21161D87BCC4176B3D1F59209288A63BF9971886ABA19F7D1D010DE6C1E02BFF"
+          "sha256": "10DF744990865867C8EC0649BD7BFD6D8CDB00AEB0281D13B05C3C5C8818D80E"
         },
         {
           "file": "accelerated-launch/service/content-assessments.cjs",
@@ -282,11 +282,11 @@
         },
         {
           "file": "accelerated-launch/service/issues.cjs",
-          "sha256": "33ADEE8EA9543FE0E1EED8FD4A915B3DA30FC5B17A1138883617564D914D3053"
+          "sha256": "961DB7D41F0FEA1AD8E958E4A685E4AF2BDEFAB88292AC5584DED52DFCE9EA6E"
         },
         {
           "file": "accelerated-launch/service/journey.cjs",
-          "sha256": "17C565EBF1EA781E20CBDE07E60CF24FC717B1D320F960D079C399F19D0FE1F9"
+          "sha256": "88738AB9E659E1B192A389443FC18E588063321918D18C525BC0FBAB13FEC122"
         },
         {
           "file": "accelerated-launch/service/legacy-password.cjs",
@@ -426,11 +426,11 @@
         },
         {
           "file": "accelerated-launch/service/report-concerns.cjs",
-          "sha256": "D461D05C8E4A63709581EDA542EA03ED29E4A3EF11945CBEDF741FB5C4ED4015"
+          "sha256": "98803510B49DBA2D66BE9EB1C5C8A36E1B37A5D450F490E5D0327380FA430420"
         },
         {
           "file": "accelerated-launch/service/report-context-fields.cjs",
-          "sha256": "9481229093A28B2B5470D2C8DF4504CBA9AC74E3C8399A3AF2E5FACBFF41FFAB"
+          "sha256": "2914574CA8F8668091A1864143D483D8FFDD206114E5F67B7C20DC316825BF8D"
         },
         {
           "file": "accelerated-launch/service/report-fact-sources.cjs",
@@ -707,6 +707,6 @@
       ]
     }
   ],
-  "manifest_digest": "4598B886E2AD015D93452A96274A594BFC7F20BFCF5BE17F5F49B3CCF9E32F4C",
+  "manifest_digest": "D1FCB6AD9257CF214D9D9F42F6A4244C063E9C3F97D8C0C83163EA91247D22D3",
   "total_file_count": 165
 }

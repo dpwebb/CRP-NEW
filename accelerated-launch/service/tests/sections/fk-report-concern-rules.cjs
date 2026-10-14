@@ -59,7 +59,6 @@ function byKind(ctx, kind) { return issues.issuesFor(ctx).filter((issue) => issu
 const copy = (value) => JSON.parse(JSON.stringify(value));
 
 async function run(_service, check) {
-  check.equal(CHECKS.length, CHECKS.length, 'source-linked jurisdiction reviews join the existing shared checklist');
   check.equal(new Set(CHECKS.map((item) => item.check_id)).size, CHECKS.length, 'check IDs remain unique');
   for (const kind of concerns.KINDS) {
     check.ok(CHECKS.some((item) => item.check_id === concerns.CHECK_BY_KIND[kind]), `${kind}: governed checklist entry exists`);

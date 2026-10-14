@@ -2,6 +2,7 @@
 // Paid assessment design: owned report facts stay local, using the same shipped font as printed packets.
 const { renderDrawingPdf, measurePdfText, wrapPdfText } = require('./packet-pdf.cjs');
 const issues = require('./issues.cjs');
+const { withoutRetiredDefaults } = require('./consumer-issue-materiality.cjs');
 
 const COLORS = Object.freeze({ ink: [0.10, 0.22, 0.22], green: [0.13, 0.28, 0.24],
   muted: [0.34, 0.42, 0.40], pale: [0.94, 0.96, 0.92], accent: [0.52, 0.64, 0.28],
@@ -70,9 +71,9 @@ function supportingDetails(issue) {
   return { rules, facts };
 }
 
-/** The complete paid issue list is preserved. Layout does not run checks or change packet eligibility. */
+/** Saved history stays intact; retired defaults are excluded from newly produced consumer views. */
 function renderAssessmentPdf(rendered, producedAt, context = {}) {
-  const projected = (rendered.issues || []).map(issue => issues.projectConsumerIssue(issue));
+  const projected = withoutRetiredDefaults(rendered.issues).map(issue => issues.projectConsumerIssue(issue));
   const reporting = projected.filter(issue => !issue.limitation_concern && issue.consumer_label !== 'INFORMATION');
   const information = projected.filter(issue => issue.limitation_concern || issue.consumer_label === 'INFORMATION');
   const violations = reporting.filter(issue => issue.consumer_label === 'VIOLATION');

@@ -4,9 +4,13 @@
 
 Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) and `release-workflow.cjs` for affected-check planning, separate continuity records, committed-source packaging, public source verification and guarded activation/rollback. Verification frequency follows `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. Historical preparation instructions below retain their original scope.
 
-## Current production authority — October 9, 2026
+## Current operating authority
 
-The owner authorizes deployment to `https://creditregulatorpro.com` and required release repairs. The historical preparation notes below describe the original B4 batch, not current billing or deployment status. Current Stripe integration is implemented and verified in test mode; production must separately verify live CAD 595 one-time, 795/month and 7950/year prices and the dedicated `/api/billing/events` endpoint. Current upgrade credit uses every verified unused lower-plan cash payment and dynamic once-only coupons; a fixed 595-cent coupon is not required.
+Use the root `CRP_OPERATIONAL_REVIEW_2026_10_13.md` for current source/runtime provenance and remaining release gates. Each staging or production activation requires explicit owner authorization for that deployment. The historical authorization below is not standing permission for a new release. Current configured billing and native-currency prices are verified through the accepted runtime/configuration evidence; older CAD examples below retain their original scope.
+
+## Historical October 9 deployment authorization and preparation
+
+At that checkpoint, the owner authorized deployment to `https://creditregulatorpro.com` and required release repairs. The preparation notes describe the original B4 batch and October 9 configuration. Stripe integration had been implemented and verified in test mode; production preparation then called for live CAD 595 one-time, 795/month and 7950/year prices and the dedicated `/api/billing/events` endpoint. Upgrade credit uses every verified unused lower-plan cash payment and dynamic once-only coupons; a fixed 595-cent coupon is not required.
 
 Use a dedicated loopback production service, durable private storage, secure cookies and a stable support-reference secret. On the shared VPS, change only the exact apex/www CRP route and its own service/configuration. Preserve legacy accounts and authentic documents before cutover. Keep the manifest, frozen regression, actual provider reads, exact deployed source, restore/rollback, and other-domain preservation in the production acceptance receipt. Never commit consumer data or secret values.
 

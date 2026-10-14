@@ -2,7 +2,7 @@
 
 Authority: October 11, 2026 owner request, “Enable these proposed process improvement’s.”
 
-This amendment changes verification frequency and execution mechanics. It supersedes the blanket requirement for a new full product regression for every finished executable batch in `CRP_OWNER_BATCH_EXECUTION_001.md` when the bounded paths below apply. It does not change product scope, the 21-item checklist, 82 jurisdictions, reporting-period directives, consumer approval, ownership, privacy, billing or release acceptance requirements.
+This amendment changes verification frequency and execution mechanics. It supersedes the blanket requirement for a new full product regression for every finished executable batch in `CRP_OWNER_BATCH_EXECUTION_001.md` when the bounded paths below apply. It does not change product scope, the active common-error checklist governed by `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md` and its expansion amendment, 82 jurisdictions, reporting-period directives, consumer approval, ownership, privacy, billing or release acceptance requirements. Historical checklist counts retain their original scope; the runtime registry excludes owner-retired review defaults.
 
 ## Required workflow
 

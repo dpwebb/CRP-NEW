@@ -17,6 +17,7 @@ const formats = require('./formats.cjs');
 const evaluation = require('./evaluation.cjs');
 const results = require('./results.cjs');
 const issues = require('./issues.cjs');
+const { withoutRetiredDefaults } = require('./consumer-issue-materiality.cjs');
 const drafts = require('./drafts.cjs');
 const demo = require('./demo.cjs');
 const multiFileAssembly = require('./multi-file-assembly.cjs');
@@ -551,7 +552,7 @@ function assessmentReportBody(rendered, producedAt) {
   lines.push('REPORTING ISSUES AND REPORT FACTS');
   lines.push('');
   lines.push(`CHECKS PERFORMED (${rendered.checks_performed})`);
-  const reportIssues = (rendered.issues || []).map((issue) => issues.projectConsumerIssue(issue));
+  const reportIssues = withoutRetiredDefaults(rendered.issues).map((issue) => issues.projectConsumerIssue(issue));
   const sourceLines = (facts) => {
     for (const fact of facts || []) {
       const loc = fact.location || {};
@@ -673,7 +674,7 @@ function publicResult(rendered, savedEvaluation = null, extraction = null) {
     labels.set(id, issues.consumerLabel({ ...finding, adapter_id: machine.adapter_id }));
   }
   return Object.assign({}, rendered, {
-    issues: (rendered.issues || []).map((issue) => {
+    issues: withoutRetiredDefaults(rendered.issues).map((issue) => {
       const current = accounts?.get(issue.issue_id);
       const renamed = current?.account_identity?.name && current.account_identity.name !== issue.account_identity?.name;
       const view = current ? { ...issue, account_identity: current.account_identity || null,
