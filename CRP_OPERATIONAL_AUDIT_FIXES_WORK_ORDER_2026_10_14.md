@@ -1,5 +1,13 @@
 # Operational audit corrections — October 14, 2026
 
+## Subsequent staging authority
+
+After local completion the owner said "Proceed". The coordinator identified the next milestone as staging deployment and current-build hosted/Sandbox acceptance, with production promotion and shared-server maintenance separate. This authorizes guarded activation of the unchanged 169-file crp-v1-76dd4c2022831cae archive, affected hosted journeys, fictional staging actors, genuine test-mode purchases/cancellation/cleanup and existing encrypted staging backup verification. Reuse executable f60d6db587ec81ae1f8a5b5e58b62166b134e828 and its original 16,782/0/0 full; do not rebuild or repeat the full for promotion. Earlier local-only holds below retain their original milestone scope.
+
+Coordinator owns every host/provider action, original-data inventory, activation and serial evidence reconciliation in operational-audit-fixes/CRP-NEW. Bounded helper writers own only new ignored folders in their existing isolated checkouts: consumer_ux owns audit-consumer-flow out/audit-staging-browser/; security_technical owns audit-billing-lifecycle out/audit-staging-billing/; coverage_and_maintenance owns audit-maintenance out/audit-staging-ops/. Helpers prepare current-build scripts and review proof without executing host/provider/browser actions, changing tracked files, or copying historical passing outcomes. Coordinator reviews helpers before execution. Preserve original account/security/admin authority, credentials, business rows, blobs and signed journals; delete only newly designated fictional actors through normal guarded interfaces.
+
+All 30 gates, 123 criteria and 46 predicates remain required. Production/local runtime, real-account recovery/deletion, provider configuration, live charges, payouts, mailing, shared-VPS reboot, source push and customer outreach are outside this staging authorization. Coverage acquisition, capacity and operational rehearsals retain their open status.
+
 Owner authorization: "continue with your recommended order fixes", following the completed read-only audit. Local implementation, focused verification, one final governed full regression, committed candidate packaging and source integration are authorized. Staging/production activation, shared-VPS reboot, live provider changes, real-account deletion/recovery, mailing, payouts and external communication remain separate.
 
 Baseline: clean main 0b5cf0bc3cbbb1dc779223f40d4924aeba563429; accepted executable c43a164a91aa573e3dee8ce956b28cb2f0066532; deployed crp-v1-391d75bc3ef29f27. Preserve original 16,406/0/0 full, 30/123/46 acceptance, private custody, current services and owner authority.
