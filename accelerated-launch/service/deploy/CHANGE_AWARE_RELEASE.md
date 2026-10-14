@@ -8,6 +8,8 @@ Work in an isolated checkout based on the verified accepted source. Preserve unr
 
 Finish the bounded implementation and focused development checks first. Restore required ignored fixture builders, generated consumer assets and other declared prerequisites before an expensive regression. Generate the final manifest and commit the reviewed shipped source, including that manifest, before `prepare`. Stage only the intended files. Executable or verification-input changes after planning require a new plan and appropriate verification; bookkeeping-only documentation does not trigger product regression.
 
+Full product preparation also verifies `tests/required-full-fixtures.json`: 55 accepted ignored source/measurement fixtures and generated consumer assets are explicitly hash-bound. Missing or changed fixture bytes stop `prepare` before tooling or the long product run. Restore the accepted local fixture bundle; do not fabricate a missing register or rewrite historical hashes. The inventory is a test prerequisite list, not shipped product content or new hosted acceptance.
+
 Replace the two baseline placeholders below with identities from the verified release record; there is no standing hardcoded baseline commit.
 
 ```powershell

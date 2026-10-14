@@ -195,7 +195,18 @@ function prepareInputs(p,options={}){
   const partialFreshProfile = profile?.complete === false && profile?.reuse_product === false;
   if(profile && (profile.schema!==1 || (profile.complete!==true && !partialFreshProfile) || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed input profile or selection');
   if (profile?.injected_commands?.length && profile.complete === true) throw Error('Injected-command reviews require fresh product execution');
-  const files=[...toolNames.map(f=>deploy+f),...(product?['accelerated-launch/service/tests/run-tests.cjs','accelerated-launch/service/tests/harness.cjs']:[]),...(profile?.files||[])];
+  const fullFixtureFiles = [];
+  if (p.risk.full_regression_required) {
+    const inventory = 'accelerated-launch/service/tests/required-full-fixtures.json', declared = read(inside(root, inventory));
+    if (declared.schema !== 1 || !Array.isArray(declared.files) || new Set(declared.files.map(row => row.file)).size !== declared.files.length) throw Error('Invalid full-product fixture inventory');
+    fullFixtureFiles.push(inventory);
+    for (const row of declared.files) {
+      const file = inside(root, row.file);
+      if (!/^[A-Fa-f0-9]{64}$/.test(row.sha256 || '') || !fs.existsSync(file) || hash(file) !== row.sha256.toUpperCase()) throw Error('FULL_FIXTURE_PREREQUISITE_MISSING_OR_CHANGED: ' + row.file);
+      fullFixtureFiles.push(row.file);
+    }
+  }
+  const files=[...toolNames.map(f=>deploy+f),...(product?['accelerated-launch/service/tests/run-tests.cjs','accelerated-launch/service/tests/harness.cjs']:[]),...fullFixtureFiles,...(profile?.files||[])];
   const preflight=inputs.assertPrerequisites({root,sections,sectionCatalog:catalog,files,commands:[process.execPath,'git','tar',...(profile?.commands||[])],injectedCommands:profile?.injected_commands||[],discoverGeneratedAssets:product,committedManifest:true,candidateCommit:git(['rev-parse','HEAD'],root)});
   const rows=paths=>[...new Set(paths)].sort().map(file=>{const actual=fs.realpathSync(file);if(!fs.statSync(actual).isFile())throw Error('Expected input file: '+file);return {path:actual,sha256:hash(actual)};});
   const binaries=preflight.commands.map(command=>{const file=inputs.resolveCommand(command);if(!file)throw Error('Missing command: '+command);return file;});
