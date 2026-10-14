@@ -133,7 +133,7 @@ async function check(p, out, options={}) {
   const toolDirectory=inside(root,'accelerated-launch/service/deploy');
   const toolSources={};
   for(const f of fs.readdirSync(toolDirectory).filter(f=>/\.(cjs|json|sh)$/.test(f)))toolSources['accelerated-launch/service/deploy/'+f]=hash(path.join(toolDirectory,f));
-  const identity={execution:'LOCAL_DETERMINISTIC',source:p.source_snapshot,tests:toolSources,fixtures:binding.files,toolchain:{node:process.version,platform:process.platform,arch:process.arch,binaries:binding.binaries},environment:{sha256:binding.environment_sha256},verification:{mode:p.risk.mode,selected_sections:p.selected_sections,baseline_sha256:p.baseline.sha256}};
+  const identity={execution:'LOCAL_DETERMINISTIC',source:p.source_snapshot,tests:toolSources,fixtures:{files:binding.files,external_files:binding.external_files,profile_sha256:binding.profile_sha256},toolchain:{node:process.version,platform:process.platform,arch:process.arch,binaries:binding.binaries},environment:{sha256:binding.environment_sha256},verification:{mode:p.risk.mode,selected_sections:p.selected_sections,baseline_sha256:p.baseline.sha256}};
   const tools=await execution.executeStep({directory:out,id:'local-tooling',identity,run:async({outputDirectory})=>{
     await Promise.all(syntax.map((f,i)=>run(process.execPath,['--check',inside(root,f)],path.join(outputDirectory,'syntax-'+i+'.log'),root)));
     await Promise.all(toolNames.map(f=>run(process.execPath,[path.join(toolDirectory,f)],path.join(outputDirectory,f+'.log'),root)));
