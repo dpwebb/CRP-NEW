@@ -212,6 +212,19 @@ async function compose(input) {
     const pages = await appendEvidence(doc, entry, kind === 'report', position, copyBudget);
     sections.push({ kind, label: label(entry.label), start_page: position + 1, page_count: pages.length, source_pages: pages }); position += pages.length;
   }
+  if (input.instructions != null) {
+    if (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000) throw coded('INVALID_REQUEST');
+    const page = doc.insertPage(0, [612, 792]), font = await doc.embedFont(lib.StandardFonts.Helvetica), bold = await doc.embedFont(lib.StandardFonts.HelveticaBold);
+    page.drawText('YOUR MAILING INSTRUCTIONS', { x: 50, y: 730, size: 20, font: bold, color: rgb(.1,.2,.3) });
+    page.drawText('FOR YOU ONLY - REMOVE THIS PAGE BEFORE MAILING', { x: 50, y: 697, size: 13, font: bold, color: rgb(.6,.1,.1) });
+    const lines = wrapped(input.instructions, font, 13, 512);
+    if (lines.length > 29) throw coded('INVALID_REQUEST');
+    for (let i = 0; i < lines.length; i++) page.drawText(lines[i], { x: 50, y: 655 - i * 19, size: 13, font, color: rgb(0,0,0) });
+    page.drawText('Do not send this instruction sheet to the bureau.', { x: 50, y: 60, size: 13, font: bold });
+    for (const section of sections) section.start_page++;
+    for (const field of fields) field.page++;
+    sections.unshift({ kind: 'instructions', label: 'For you only - remove before mailing', start_page: 1, page_count: 1, send_to_bureau: false });
+  }
   if (doc.getPageCount() > 400) throw coded('INVALID_REQUEST');
   const bytes = Buffer.from(await doc.save({ useObjectStreams: false, addDefaultPage: false, updateFieldAppearances: false }));
   return { bytes: bytes.toString('base64'), sha256: digest(bytes), page_count: doc.getPageCount(), sections, editable_fields: fields, version: input.version };

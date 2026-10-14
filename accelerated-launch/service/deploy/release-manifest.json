@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-14T02:46:23.923Z",
+  "generated_at": "2026-10-14T09:08:10.232Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 105,
-      "digest": "B3485B959015B25FC30442700F03747E8AFCBCD178FD2964534A8EFD3CF7789C",
+      "digest": "0F4039FF72A98891CBBADAE4C9B384BECEF0A31F8FFDF7A687D68F637E00FD8D",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -330,11 +330,11 @@
         },
         {
           "file": "accelerated-launch/service/packet-composer-worker.cjs",
-          "sha256": "F66F28013ECD3A0656BBB8EF8B5D6C65D35CDCA19802186C7DBCA921DC034D50"
+          "sha256": "A1299A707ECA237F523DA44DF21C1FB4281D9D838933226D28F6384BED1CE948"
         },
         {
           "file": "accelerated-launch/service/packet-composer.cjs",
-          "sha256": "C6C6B5BDD396AF577B1360124F12E27C90F5134E879CB46588D948711BECC110"
+          "sha256": "867A7F4E0303150BD75CD4B8DC5CA0E75A0F0473DACD7FDE82F92FE29B7008FE"
         },
         {
           "file": "accelerated-launch/service/packet-pdf.cjs",
@@ -350,7 +350,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "5CD74AE34E2DDA90B170B2F8C697FEE4F2C375FE0C5FB0CF9EA45E7EFF494691"
+          "sha256": "B833A2D53BB244EA84C743E7E1237A9C0B5A73D73342C7071A240026BADF9F58"
         },
         {
           "file": "accelerated-launch/service/payment-history-analysis.cjs",
@@ -622,7 +622,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 22,
-      "digest": "375BAC5531C43D2C735497934415F4452EED9A7983C0FAA62E7435E744AAFA47",
+      "digest": "68C13F48FC800C0F88A2F63DFF3C1B521126A73D34A8EEF280F76BA5FECE6CD4",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -638,7 +638,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "92EEF0FACF27FEC3F6BDCAFB6ED059BE70387D763CEE247130007ECE0FAE7DD9"
+          "sha256": "3B763833347A77B8C0767A9AE627DAAE6055C1239D64C2C9E33142E5A435B9C3"
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.css",
@@ -710,11 +710,11 @@
         },
         {
           "file": "accelerated-launch/service/ui/style.css",
-          "sha256": "3E16B5F6781CE05EB8C969B3E5ECAF92CF9311A8F61FC5B428DC9CDA04FD73B7"
+          "sha256": "B52EAE2410873922BE976F18FF79927470B80E08A2CD6568C1E08BBFE7EB61ED"
         }
       ]
     }
   ],
-  "manifest_digest": "A926C178EF0DFC5C66E275E18B5D468D91F6EBDB2FBB0A70474C93B582ADA828",
+  "manifest_digest": "52EE45AADE7AEE92E2022CF627C41E763A313D0DD8E49123CEC33946DE751D58",
   "total_file_count": 167
 }

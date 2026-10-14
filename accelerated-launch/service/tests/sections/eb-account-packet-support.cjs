@@ -75,7 +75,8 @@ async function run(t, check) {
   check.equal(download.headers.get('content-type'), 'application/pdf', 'packet with selected selected documents is one complete PDF');
   const bytes = Buffer.from(await download.arrayBuffer()), pages = pdfPages(bytes);
   check.deepEqual(bytes, completePreview.bytes, 'approval preserves the complete packet PDF shown inline to the consumer');
-  check.equal(comparableText(pages[0]), comparableText(ready.packet.correspondence_preview), 'the first PDF page is the complete reviewed one-issue letter');
+  check.ok(pages[0].includes('REMOVE THIS PAGE BEFORE MAILING'), 'first page is explicitly for the consumer to remove');
+  check.equal(comparableText(pages[1]), comparableText(ready.packet.correspondence_preview), 'page two is the complete reviewed one-issue letter');
   check.deepEqual(ready.packet.required_form_manifest, [], 'no original bureau template is required');
   const printed = await t.request('GET', base + '/packet-print', { token: actor.token });
   check.ok(printed.bytes.equals(bytes), 'print endpoint serves the same approved complete PDF including the source pages and selected documents');
@@ -85,7 +86,7 @@ async function run(t, check) {
   const reportBytes = t.service.store.readBlob(source.file_id), reportPage = matchingPage(bytes, pdfPages(reportBytes)[0]);
   check.ok(reportPage > 1 && identityPage > reportPage && passportPage > reportPage && addressPage > identityPage
     && addressPage > passportPage, 'packet order is letter, relevant report pages, all identification, address proof, without bureau forms');
-  check.equal(pages.length, 1 + 1 + 3, 'complete packet includes exactly one letter, relevant report page, three selected documents and no extra form pages');
+  check.equal(pages.length, 1 + 1 + 1 + 3, 'complete PDF includes one removable instruction sheet, one letter, relevant report page and three copies, with no bureau forms');
   for (const [document, page, label] of [[identityBytes, identityPage, 'identification'], [passportBytes, passportPage, 'second identification'], [addressBytes, addressPage, 'address proof']]) {
     sameRenderedPage(check, t.dataDir, document, 1, bytes, page, label);
   }

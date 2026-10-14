@@ -84,7 +84,7 @@ async function run(service, check) {
     await page.waitForSelector('#evaluate');
     await page.locator('#evaluate').click();
     await page.waitForFunction(() => document.body.innerText.includes('Your results are ready.'), null, { timeout: 15000 });
-    await page.locator('#steps button[data-step="6"]').click();
+    await page.locator('#steps button[data-step="4"]').click();
     await page.waitForSelector('#packet-block');
     await page.waitForTimeout(600);
     return { page, context, reportBytes };
@@ -114,6 +114,8 @@ async function run(service, check) {
     return { status: 200, filename, text, bytes };
   }
   async function saveReadApprove(page) {
+    await page.locator('#steps button[data-step="6"]').click();
+    await page.waitForSelector('#packet-save:visible');
     const previewResponse = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
     await page.locator('#packet-save').click(); await (await previewResponse).finished();
     await page.waitForSelector('#packet-preview-reviewed:not([disabled])');
@@ -121,6 +123,8 @@ async function run(service, check) {
     await page.locator('#packet-approve').click();
   }
   async function accountContact(page, name, email, withDocuments = true) {
+    await page.locator('#steps button[data-step="5"]').click();
+    await page.waitForSelector('#packet-bureau');
     const usEquifax = await page.locator('#packet-us-identity').isVisible() && await page.locator('#packet-bureau').inputValue() === 'EQUIFAX';
     await page.locator('#steps button[data-step="0"]').click();
     await page.waitForSelector('#account-save');
@@ -141,6 +145,10 @@ async function run(service, check) {
     }
     if (await page.locator('#account-continue').innerText() === 'Return to my packet') await page.locator('#account-continue').click();
     else await page.locator('#steps button[data-step="6"]').click();
+    await page.locator('#steps button[data-step="4"]').click();
+    await page.waitForSelector('[data-check-issue]');
+    if (!await page.locator('[data-check-issue]:checked').count()) await page.locator('[data-check-issue]').first().check();
+    await page.locator('#steps button[data-step="5"]').click();
     await page.waitForSelector('#packet-bureau');
     check.equal(await page.locator('#packet-channel').count(), 0, 'the consumer packet has a mail-only path with no submission-method selector');
     if (withDocuments) {
@@ -164,9 +172,9 @@ async function run(service, check) {
   check.ok(/opened date later than its closed date/.test(potBlock), 'with readable evidence and the affirmative concern');
   check.ok(/which date needs correction/.test(potBlock), 'with specific uncertainty about the correction');
   check.ok(/01\/01\/2020/.test(potBlock), 'with the printed raw readings');
-  check.ok(/Mail your packet to:/.test(potBlock), 'the consumer review states where to mail the packet');
-  check.ok(/Equifax checklist/.test(potBlock), 'with the sourced bureau checklist');
-  check.ok(/Review and edit/.test(potBlock), 'and gives the consumer one simple review and edit step');
+  check.ok(await page.locator('#packet-preparation-content').isHidden(), 'issue choice does not repeat preparation information');
+  check.ok(await page.locator('#packet-review-controls').isHidden(), 'issue choice does not expose review actions before preparation');
+  check.ok(/Choose disputes/.test(reviewText), 'the first step clearly asks the consumer to choose disputes');
   await page.locator('#steps button[data-step="4"]').click();
   await page.waitForSelector('#packet-choose-next:visible');
   await page.locator('[data-check-issue]').first().check();
@@ -205,6 +213,8 @@ async function run(service, check) {
   const initialPacketText = require('../packet-pdf-assertions.cjs').pdfText(await reviewedForm.body());
   check.ok(initialPacketText.includes('Whitfield') && !initialPacketText.includes('DISPUTE REQUEST FORM'), 'actual complete PDF review keeps the consumer name without retired bureau artwork');
   check.ok(/Your packet is approved/.test(await page.locator('#packet-block').innerText()) && await page.locator('#packet-ready-status').isVisible(), 'approved and ready messages describe the current approved preview');
+  await page.locator('#steps button[data-step="5"]').click();
+  await page.waitForSelector('#packet-wording');
   await page.locator('#packet-wording').fill('CHANGED WORDS AFTER APPROVAL');
   await page.waitForTimeout(300);
   check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing wording after approval disables download');
@@ -262,10 +272,13 @@ async function run(service, check) {
   check.equal(await page.locator('#packet-letter').inputValue(),pendingLetter,'a delayed download preserves unsaved consumer letter edits');
   check.ok(await page.locator('#packet-download').isDisabled()&&await page.locator('#packet-approve').isDisabled(),'download completion cannot re-enable approval or download after an edit');
   await page.unroute('**/packet-download');
-  const originalLink=page.locator('#packet-reports a[href^="/api/"]').first(),originalUrl=new URL(await originalLink.getAttribute('href'),page.url()).href;
-  await page.route(originalUrl,route=>route.fulfill({status:409,contentType:'application/json',body:JSON.stringify({error:{message:'This fictional source is temporarily unavailable.'}})}));
-  await originalLink.click();await page.locator('#operation-error').waitFor();
-  check.equal(await page.locator('#packet-letter').inputValue(),pendingLetter,'a failed document opening preserves unsaved packet edits');
+  await page.locator('#packet-save').click();await page.locator('#packet-pdf-review').waitFor();
+  const originalLink=page.locator('#packet-pdf-review a').first(),originalUrl=new URL(await originalLink.getAttribute('href'),page.url()).href;
+  await page.route(originalUrl,async route=>{await new Promise(resolve=>setTimeout(resolve,1600));await route.fulfill({status:409,contentType:'application/json',body:JSON.stringify({error:{message:'This fictional source is temporarily unavailable.'}})});});
+  await originalLink.click();await page.locator('#operation-progress').waitFor({state:'visible'});
+  const failedOpenLetter=(await page.locator('#packet-letter').inputValue())+'\nFictional edit while the PDF opens.';await page.locator('#packet-letter').fill(failedOpenLetter);
+  await page.locator('#operation-error').waitFor();
+  check.equal(await page.locator('#packet-letter').inputValue(),failedOpenLetter,'a failed document opening preserves edits made while the PDF was opening');
   await page.unroute(originalUrl);
 
 
@@ -305,7 +318,9 @@ async function run(service, check) {
   check.equal(labels.length, 2, 'each is a distinct selectable card');
   await page.locator('[data-check-issue]').first().check();
   /* A missing necessary correspondence detail refuses approval: no packet that cannot be sent can be downloaded. */
+  await page.locator('#packet-choose-next').click();await page.locator('#packet-prepare-next').waitFor();
   check.ok(/Add your name/.test(await page.locator('#packet-block').innerText()), 'the review names the necessary detail that is still missing');
+  await page.locator('#packet-prepare-next').click();await page.locator('#packet-save').waitFor();
   const incompleteSave = page.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
   await page.locator('#packet-save').click(); await (await incompleteSave).finished();
   check.equal(await page.locator('#packet-preview-reviewed').isDisabled(), true, 'a packet with missing correspondence details cannot be acknowledged as complete');
@@ -589,7 +604,7 @@ async function run(service, check) {
   check.ok(/the reporting period appears to end 2026-11-28/.test(dualPanel), 'and the date the period appears to end');
   check.ok(/arose through the passage of time/.test(dualPanel), 'and that the concern arose through the passage of time');
   check.ok(/Date of first delinquency on the collection entry/.test(dualPanel), 'and names the printed field the way the report does');
-  await dualOpened.page.locator('#steps button[data-step="6"]').click();
+  await dualOpened.page.locator('#steps button[data-step="4"]').click();
   await dualOpened.page.waitForSelector('#packet-block');
   await dualOpened.page.waitForTimeout(600);
   const dualBlock = await dualOpened.page.locator('#packet-block').innerText();
@@ -617,9 +632,11 @@ async function run(service, check) {
   const currentCase = (await service.request('POST', '/api/cases', { token: copyActor.token, body: { country: 'US', region: 'US-CA' } })).json.case;
   const copies = await openCasePage('bw-report-copies@example.test', 'a-long-enough-password', currentCase.case_id, copyLines('2026', '2020'), [extraCopyPage]);
   const copyPage = copies.page;
-  check.ok(/letter, report pages and document copies in one PDF/.test(await copyPage.locator('#packet-block').innerText()), 'the first review states the complete one-file packet simply');
+  check.ok(await copyPage.locator('#packet-preparation-content').isHidden(), 'initial issue choice keeps previous preparation content out of view');
   await accountContact(copyPage, 'Fictional Copy Consumer', 'copy-consumer@example.test');
   await copyPage.locator('[data-check-issue]').first().check();
+  await copyPage.locator('#steps button[data-step="6"]').click();
+  await copyPage.waitForSelector('#packet-save');
   const firstCopyPreview = copyPage.waitForResponse(response => response.url().endsWith('/packet') && response.request().method() === 'GET');
   await copyPage.locator('#packet-save').click(); await (await firstCopyPreview).finished();
   await copyPage.waitForSelector('[data-packet-report]', { state: 'attached' });
@@ -629,6 +646,8 @@ async function run(service, check) {
   check.equal(originals.length, 2, 'a saved re-aging dispute offers both original earlier and current reports');
   check.ok(originals.every(report => report.selected === true), 'the relevant earlier and current pages are included automatically');
   check.equal(copyView.packet.approved, false, 'the user reviews all included pages before acknowledging and approving the first saved preview');
+  await copyPage.locator('#steps button[data-step="5"]').click();
+  await copyPage.waitForSelector('#packet-reports');
   const copyText = await copyPage.locator('#packet-reports').innerText();
   check.ok(/Earlier report — June 12, 2025/.test(copyText) && /Current report — June 12, 2026/.test(copyText), 'the real report choices show familiar earlier/current labels and dates');
   check.equal((copyText.match(/Included: report page 1/g) || []).length, 2, 'the review lists the relevant page from each source report');
@@ -644,9 +663,11 @@ async function run(service, check) {
     check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isChecked(), true, 'opening an original copy retains its already included relevant page');
     check.equal(await copyPage.locator(`[data-packet-report="${original.file_id}"]`).isVisible(), false, 'mandatory source pages have no confusing include checkbox');
   }
+  await copyPage.locator('#steps button[data-step="6"]').click();
+  await copyPage.waitForSelector('#packet-preview-reviewed');
   await copyPage.locator('#packet-preview-reviewed').check(); await copyPage.locator('#packet-approve').click();
   const includedView = (await (await copyPage.request.get(copyPacketUrl)).json()).view;
-  check.ok(/Download your PDF and print every page/.test(await copyPage.locator('#packet-ready-status').innerText()), 'one simple ready message tells the consumer to print the complete file');
+  check.ok(/first page is instructions for you only.*Remove it before mailing/s.test(await copyPage.locator('#packet-ready-status').innerText()), 'ready message explicitly excludes the instruction sheet from mailing');
   const withCopies = await downloadText(copyPage);
   check.equal(includedView.packet.report_attachment_manifest.length, 2, 'the approved packet binds both original source reports');
   check.ok(withCopies.text.includes('First Delinquency Date 01/01/2018') && withCopies.text.includes('First Delinquency Date 01/01/2020'), 'both exact relevant source pages appear inline in the same downloaded PDF');
@@ -665,6 +686,7 @@ async function run(service, check) {
   check.equal(returnedView.packet.approved, true, 'approval survives unchanged navigation');
   check.equal(returnedView.packet.preview_version, includedView.packet.preview_version, 'unchanged navigation retains reviewed version');
   check.ok((await downloadText(copyPage)).bytes.equals(withCopies.bytes), 'returning retains exact approved PDF bytes');
+  await copyPage.locator('#steps button[data-step="5"]').click();await copyPage.locator('#packet-wording').waitFor();
   await copyPage.locator('#packet-wording').fill('Please verify these entries against the enclosed report copies.');
   await copyPage.locator('#steps button[data-step="3"]').click();
   await copyPage.waitForSelector('#result-select');

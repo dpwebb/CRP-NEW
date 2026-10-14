@@ -34,8 +34,8 @@ const DETAILS = Object.freeze({
 
 function letterText(file) {
   const section = file.sections.find(section => section.kind === 'letter');
-  if (!section || section.start_page !== 1) throw new Error('packet has no first letter section');
-  return execFileSync('pdftotext', ['-f', '1', '-l', String(section.page_count), '-layout', '-', '-'], {
+  if (!section || section.start_page !== 2) throw new Error('letter must follow the consumer instruction sheet');
+  return execFileSync('pdftotext', ['-f', String(section.start_page), '-l', String(section.start_page + section.page_count - 1), '-layout', '-', '-'], {
     input: file.body, encoding: 'utf8', timeout: 30000, maxBuffer: 32 * 1024 * 1024
   }).replace(/\r/g, '').replace(/^\s*Page \d+ of \d+\s*$/gm, '').replace(/\f/g, '\n').trim();
 }
@@ -153,7 +153,7 @@ async function run(service, check) {
   const dl = await service.request('GET', `/api/cases/${caseId}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'and the approved packet downloads');
   check.equal(dl.headers.get('content-type'), 'application/pdf', 'as one complete printable PDF');
-  check.ok(dl.text.startsWith(DETAILS.consumer_name) && /Re: Credit report dispute/.test(dl.text), 'carrying the sendable business letter');
+  check.ok(dl.text.startsWith('YOUR MAILING INSTRUCTIONS') && dl.text.includes(DETAILS.consumer_name) && /Re: Credit report dispute/.test(dl.text), 'consumer instructions precede the sendable business letter');
   check.ok(dl.text.includes(DETAILS.consumer_name) && dl.text.includes(DETAILS.contact), 'with the consumer-supplied details');
   check.ok(!/EVIDENCE REFERENCES/.test(preview), 'the letter needs no separate evidence appendix');
   check.ok(/report page \d+/.test(preview), 'the letter directs the bureau to the included source page');
@@ -270,7 +270,7 @@ async function run(service, check) {
   const info = execFileSync('pdfinfo', ['-'], { input: longPrinted.body, encoding: 'utf8' });
   check.equal(Number(/^Pages:\s+(\d+)/m.exec(info)[1]), longPrinted.page_count, 'the independent PDF reader confirms the actual page count');
   const letterPages = longPrinted.sections.find(section => section.kind === 'letter').page_count;
-  const bbox = execFileSync('pdftotext', ['-f', '1', '-l', String(letterPages), '-bbox', '-', '-'], { input: longPrinted.body, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+  const bbox = execFileSync('pdftotext', ['-f', '2', '-l', String(letterPages + 1), '-bbox', '-', '-'], { input: longPrinted.body, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
   const words = [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">/g)];
   check.ok(words.length > 200, 'the independent renderer reads the long packet text geometry');
   check.ok(words.every(word => +word[1] >= 53.9 && +word[3] <= 558.1 && +word[2] >= 35 && +word[4] <= 765),

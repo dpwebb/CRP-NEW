@@ -19,7 +19,7 @@ function element(id) {
     checked: false, hidden: false, isConnected: true, style: {}, dataset: {}, files: [],
     onclick: null, onchange: null, oninput: null,
     setAttribute(key, value) { this[key] = value; }, getAttribute(key) { return this[key] ?? null; },
-    scrollIntoView() {}, after() {}, contains() { return true; }, querySelectorAll: () => [], querySelector: () => null };
+    scrollIntoView() {}, after() {}, append() {}, prepend() {}, contains() { return true; }, querySelectorAll: () => [], querySelector: () => null };
 }
 function harness(responder, { autoRead = true } = {}) {
   const nodes = new Map(), calls = [], navigations = [], readers = [];
@@ -31,6 +31,8 @@ function harness(responder, { autoRead = true } = {}) {
   const pageInputs = [];
   const caseButtons = [{ dataset: { open: 'existingA' }, onclick: null }, { dataset: { open: 'existingB' }, onclick: null }];
   panel.querySelector = selector => selector === '#packet-block' ? block : null;
+  const packetReviewBody = node('packet-review-body');
+  block.querySelector = selector => selector === '.packet-review' ? packetReviewBody : null;
   panel.querySelectorAll = selector => {
     if (selector === '[data-check-issue]:checked') return issues.filter(row => row.checked);
     if (selector === '[data-check-issue]') return issues;
@@ -72,6 +74,7 @@ function harness(responder, { autoRead = true } = {}) {
     context.nextCase = id;
     evaluate('state.caseId = nextCase; state.step = STEP.REVIEW;');
     block.isConnected = false; block = element('packet-block');
+    block.querySelector = selector => selector === '.packet-review' ? packetReviewBody : null;
     node('packet-download').disabled = !approved; node('packet-approve').disabled = approved;
     node('packet-bureau').value = 'TRANSUNION'; node('packet-channel').value = 'POSTAL'; node('packet-purpose').value = 'ACCOUNT';
     node('packet-name').value = 'Fictional Consumer'; node('packet-contact').value = '10 Fictional Street';

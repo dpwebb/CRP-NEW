@@ -78,7 +78,7 @@ async function run(t, check) {
   check.ok(/frame-ancestors 'self'/.test(preview.headers.get('content-security-policy')), 'preview refuses foreign-site framing');
   check.ok(pdfText(preview.bytes).includes('SELECTED SOURCE PAGE'), 'actual source page is inside the PDF');
   check.ok(!pdfText(preview.bytes).includes('UNRELATED PAGE MUST STAY OUT'), 'unrelated report page is excluded');
-  check.ok(comparableText(pdfText(preview.bytes)).startsWith(comparableText(edited)), 'editable consumer letter leads the PDF');
+  check.ok(pdfText(preview.bytes).startsWith('YOUR MAILING INSTRUCTIONS') && comparableText(pdfText(preview.bytes)).includes(comparableText(edited)), 'removable instructions precede the intact editable consumer letter');
   await t.request('POST', base + '/packet/approve', auth({ reviewed_version:view.packet.preview_version }));
   const download = await t.request('GET', base + '/packet-download', auth());
   const printed = await t.request('GET', base + '/packet-print', auth());
@@ -89,7 +89,8 @@ async function run(t, check) {
   const approved = t.service.store.state().packets.find(row => row.case_id === id);
   check.equal(approved.approved_pdf_sha256, digest(download.bytes), 'approval records the whole generated PDF digest');
   const recipe = packets.packetPrint(t.service.store, owner, id);
-  check.deepEqual(recipe.sections.map(section => section.kind), ['letter','report','document','document','document'], 'actual PDF follows letter, relevant report, identity/address order');
+  check.deepEqual(recipe.sections.map(section => section.kind), ['instructions','letter','report','document','document','document'], 'actual PDF follows removable instructions, letter, relevant report, identity/address order');
+  check.equal(recipe.sections[0].send_to_bureau, false, 'the instruction sheet is explicitly excluded from bureau correspondence');
   const out = path.join(__dirname, '../../out/inline-packet-review');
   fs.mkdirSync(out, {recursive:true});
   fs.writeFileSync(path.join(out, 'complete-approved-packet.pdf'), download.bytes);

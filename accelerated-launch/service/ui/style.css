@@ -45,6 +45,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .obs { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin: 12px 0; }
 .obs h3 { margin: 0 0 6px; font-size: 15px; }
 .pill { display: inline-block; background: #eef1e8; border-radius: 999px; padding: 2px 10px; font-size: 12px; margin-bottom: 8px; }
+.pill[hidden] { display: none; }
 .pill.demo { background: #dbe7fa; }
 .pill.stop { background: #f2d5d5; }
 .evidence { font-size: 13px; color: var(--muted); margin: 8px 0 0; }

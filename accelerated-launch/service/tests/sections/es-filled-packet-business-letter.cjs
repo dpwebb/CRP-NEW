@@ -34,7 +34,7 @@ async function run(t, check) {
   check.equal(preview.status, 200, 'consumer can review the complete packet PDF before approval');
   check.equal(form.status, 404, 'retired populated forms are unavailable');
   check.equal(preview.headers.get('content-type'), 'application/pdf', 'complete review is a real printable PDF');
-  check.ok(comparableText(pdfText(preview.bytes)).startsWith(comparableText(ready.packet.correspondence_preview)), 'the complete packet begins with the saved editable letter');
+  check.ok(pdfText(preview.bytes).startsWith('YOUR MAILING INSTRUCTIONS') && comparableText(pdfText(preview.bytes)).includes(comparableText(ready.packet.correspondence_preview)), 'consumer instruction sheet precedes the complete saved editable letter');
   check.equal(ready.packet.preview_ready, true, 'only the complete prepared PDF is ready for consumer approval');
   check.equal((await t.request('GET', formUrl, { token: stranger.token })).status, 403, 'other account cannot read a filled form');
   check.equal((await t.request('GET', ready.packet.letter_preview_url, { token: stranger.token })).status, 403, 'other account cannot read a letter preview');
@@ -58,9 +58,9 @@ async function run(t, check) {
   check.ok(pdfText(downloaded.bytes).includes('Fictional Cedar Bank') && pdfText(downloaded.bytes).includes('****1234'), 'the relevant source page and named account remain inline');
   const printed = require('../../packets.cjs').packetPrint(t.service.store, owner, id);
   check.ok(printed.body.equals(downloaded.bytes), 'print opens those exact approved bytes');
-  check.deepEqual([...new Set(printed.sections.map(section => section.kind))], ['letter', 'report', 'document'], 'one PDF orders letter, report pages, document copies, without bureau forms');
+  check.deepEqual([...new Set(printed.sections.map(section => section.kind))], ['instructions', 'letter', 'report', 'document'], 'one PDF orders removable instructions, letter, report pages and document copies without bureau forms');
   const letterPages = printed.sections.find(section => section.kind === 'letter').page_count;
-  const renderedLetter = execFileSync('pdftotext', ['-f', '1', '-l', String(letterPages), '-layout', '-', '-'], { input: printed.body, encoding: 'utf8' });
+  const renderedLetter = execFileSync('pdftotext', ['-f', '2', '-l', String(letterPages + 1), '-layout', '-', '-'], { input: printed.body, encoding: 'utf8' });
   check.equal(comparableText(renderedLetter), comparableText(body), 'the letter pages contain only the fully reviewed letter');
   const approved = t.service.store.state().packets.find(p => p.case_id === id);
   check.equal(approved.approved_form_digests, undefined, 'approval has no retired form digests');

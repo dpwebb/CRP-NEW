@@ -52,7 +52,8 @@ function composePacket(input) {
         label: typeof entry.label === 'string' ? entry.label.slice(0, 300) : '', filename: typeof entry.filename === 'string' ? entry.filename.slice(0, 300) : '' };
     });
   };
-  const payload = { letter_text: input.letter_text, reports: encode(input.reports || [], 256, true),
+  if (input.instructions != null && (typeof input.instructions !== 'string' || !input.instructions.trim() || input.instructions.length > 6000)) throw new ServiceError('INVALID_REQUEST');
+  const payload = { letter_text: input.letter_text, instructions: input.instructions || null, reports: encode(input.reports || [], 256, true),
     documents: encode(input.documents || [], 32), version: version() };
   const serialized = JSON.stringify(payload), key = digest(serialized), now = Date.now();
   for (const [oldKey, row] of cache) if (row.expires <= now) forget(oldKey);

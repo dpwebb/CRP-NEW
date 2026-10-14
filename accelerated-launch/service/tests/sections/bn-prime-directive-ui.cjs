@@ -18,6 +18,7 @@ function makeElement(id) {
     style: {}, dataset: {}, files: [], onclick: null, onchange: null, children,
     scrollIntoView() {},
     querySelectorAll: () => [],
+    append() {}, prepend() {}, after() {},
     querySelector: (sel) => { if (!children.has(sel)) children.set(sel, makeElement(sel)); return children.get(sel); }
   };
 }

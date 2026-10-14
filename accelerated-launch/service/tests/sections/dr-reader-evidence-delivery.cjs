@@ -204,12 +204,12 @@ async function run(t, check) {
       await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
-      await page.locator('#steps button[data-step="6"]').click(); await page.waitForSelector('#packet-block');
+      await page.locator('#steps button[data-step="4"]').click(); await page.waitForSelector('#packet-block');
       await page.waitForFunction(() => document.querySelector('#packet-block').innerText.includes('What the payment period means'));
       const text = await page.locator('#packet-block').innerText();
       check.ok(text.includes('What the payment period means') && text.includes('What the payment code means')
         && text.includes('File updated for the period to')
-        && text.includes('printed 1') && text.includes('printed 0'), 'actual browser review separates published ordering from the own printed date and codes');
+        && text.includes('printed 1') && text.includes('printed 0'), 'actual issue choice separates published ordering from the own printed date and codes');
       check.equal(/printed Most recent month first|printed Creditor identity matched|potential violation|probable violation/i.test(text), false,
         'actual review presents no calculated definition as report text or obsolete breach term');
     } finally { await browser.close(); }

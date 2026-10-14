@@ -20,7 +20,7 @@ function makeElement(id) {
   const el = {
     id, innerHTML: '', textContent: '', className: '', value: '', checked: false, disabled: false,
     style: {}, dataset: {}, files: [], onclick: null, onchange: null,
-    scrollIntoView() {},
+    scrollIntoView() {}, append() {}, prepend() {}, after() {},
     __queryResults: [],
     querySelectorAll: (selector) => selector.startsWith('[data-check-issue]') ? el.__queryResults : [],
     querySelector: (sel) => { if (!children.has(sel)) children.set(sel, makeElement(sel)); return children.get(sel); },

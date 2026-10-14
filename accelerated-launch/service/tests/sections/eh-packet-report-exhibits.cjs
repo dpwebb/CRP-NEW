@@ -127,7 +127,7 @@ async function run(t, check) {
   check.ok(!/Entire report|PRINT AND MAIL|EVIDENCE REFERENCES/.test(prepared.packet.correspondence_preview),
     'the bureau letter contains no whole-report manifest or consumer print instructions');
   check.ok(/report page 1/i.test(prepared.packet.correspondence_preview), 'report evidence references are written naturally in the letter');
-  check.ok(prepared.packet.print_instructions.some(line => /print every page/i.test(line)), 'simple print instructions stay outside the packet');
+  check.ok(prepared.packet.print_instructions.some(line => /Remove it before mailing/.test(line)) && prepared.packet.print_instructions.some(line => /print pages 2 onward/.test(line)), 'printing instructions explicitly exclude the first-page consumer sheet from mailing');
   const preview = await t.request('GET', prepared.packet.letter_preview_url, auth(actor));
   check.equal(preview.status, 200, 'the consumer reviews the complete PDF before approval');
   check.equal((await approve(t, actor, current, prepared)).status, 200, 'the consumer approves the reviewed original-report material');
@@ -142,9 +142,9 @@ async function run(t, check) {
     sameRenderedPage(check, t.dataDir, fixture.bytes, 1, downloaded.bytes, includedPage, fixture.fileId + ' report page');
   }
   check.equal(matchingPage(downloaded.bytes, pdfPages(unrelated.bytes)[0]), 0, 'a same-owner unrelated private report stays out of the complete PDF');
-  check.ok(comparableText(pages[0]).startsWith(comparableText(prepared.packet.correspondence_preview)),
-    'the first PDF page contains the complete consumer-reviewed one-issue letter');
-  check.equal(/Creditor B/.test(pages[0]), false,
+  check.ok(pages[0].includes('REMOVE THIS PAGE BEFORE MAILING') && comparableText(pages[1]).startsWith(comparableText(prepared.packet.correspondence_preview)),
+    'the removable instruction sheet precedes the complete consumer-reviewed one-issue letter');
+  check.equal(/Creditor B/.test(pages[1]), false,
     'an unselected account sharing the original report page adds no request to the letter');
   check.equal(/PRINT AND MAIL|Print report page|Download your packet PDF/i.test(pages.join('\n')), false,
     'consumer print and mail instructions do not become pages sent to the bureau');

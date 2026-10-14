@@ -715,7 +715,8 @@ function reportAttachmentManifest(packet) {
 }
 function printingInstructions(packet) {
   return [
-    'Download your packet PDF. Check it and print every page.',
+    'The first PDF page is instructions for you only. Remove it before mailing.',
+    'Check your packet, then print pages 2 onward: your letter and the included copies.',
     'Sign and date your letter.',
     'Mail it to the bureau address in your letter. Keep a copy.'
   ];
@@ -757,7 +758,14 @@ function completePdf(store, actor, packet, row, selected) {
     const file = accountDocuments.getDocument(store, actor, id);
     return { bytes: file.bytes, content_type: file.document.content_type, label: file.document.document_type };
   }).sort((a,b) => (/^IDENTITY|^IDENTIFICATION/.test(a.label) ? 0 : 1) - (/^IDENTITY|^IDENTIFICATION/.test(b.label) ? 0 : 1));
-  return composePacket({ letter_text: documentText(packet, row, selected),
+  return composePacket({ letter_text: documentText(packet, row, selected), instructions: packet.support?.channel === 'POSTAL' ? [
+    '1. Keep this instruction sheet for yourself. It is not part of the packet you send to the bureau.',
+    '', '2. Check every remaining page. Make sure the letter, report pages and supporting copies are the ones you approved.',
+    '', '3. Print pages 2 onward. Sign and date your letter where shown. If you change the letter, check the final version before sending.',
+    '', '4. Put the signed letter and the included copies in your envelope. Keep your original documents. Do not put this instruction sheet in the envelope.',
+    '', '5. Mail the packet to the bureau address shown on your letter.',
+    '', '6. Keep a copy of what you sent and your mailing receipt, if you have one.'
+  ].join('\n') : null,
     reports: packet.report_snapshot?.copies || [], documents });
 }
 

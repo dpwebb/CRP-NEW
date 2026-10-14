@@ -1789,11 +1789,12 @@ function renderPacketBlock(pv) {
     ${rows}
     <button class="primary" id="packet-choose-next">Continue to document preparation</button>
     </div><div id="packet-details">
-    <p class="evidence">We put your letter, report pages and document copies in one PDF.</p>
-    ${packetSupportingDocuments(pv)}
+    <div id="packet-preparation-content"><p class="evidence">We put your letter, report pages and document copies in one PDF, with a first-page instruction sheet for you to remove before mailing.</p>
+    ${packetReportCopies(packet)}${packetSupportingDocuments(pv)}
     <button class="primary" id="packet-prepare-next">Continue to packet review</button>
+    </div>
     <div id="packet-review-controls">
-    ${packetReportCopies(packet)}
+    <div id="packet-earlier-details">
     <div class="row">
       <label for="packet-name">Your name (as the sender)</label>
       <input id="packet-name" readonly value="${esc(correspondence.consumer_name || '')}">
@@ -1810,21 +1811,20 @@ function renderPacketBlock(pv) {
     <div class="row">
       <button class="primary" id="packet-save">Save and review packet</button>
     </div>
-    ${packet.approved ? '<p class="evidence" id="packet-approved-status">Your packet is approved.</p>' : ''}
-    ${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}
-    <div class="packet-review">
+    </div><div class="packet-review">
       <h3>Review and edit</h3>
       <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
       ${packet.correspondence_preview ? `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea><button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
       ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><p><a href="${esc(packet.letter_preview_url)}" target="_blank" rel="noopener noreferrer">Open your complete packet PDF</a></p><iframe title="Your complete dispute packet" src="${esc(packet.letter_preview_url)}" style="width:100%;height:720px;border:1px solid #dbe3d5"></iframe><p class="evidence">Check every page. You can edit the letter in your downloaded PDF before printing. To change your personal details, update your account details, then save and review your packet again.</p></div>` : ''}
+      <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
-      <button class="primary" id="packet-approve" disabled>Approve this version</button>
+      <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
       <button class="secondary" id="packet-print" ${(packet.print_available ?? packet.download_available) ? '' : 'disabled'}>Open PDF to print</button>
       <button class="secondary" id="packet-download" ${packet.download_available ? '' : 'disabled'}>Download your PDF</button>
-      ${packet.download_available ? `<p class="note" id="packet-ready-status">Download your PDF and print every page. Sign and date where shown. Mail it to the bureau address in your letter. Keep a copy.</p>` : ''}
+      ${packet.download_available ? `<p class="note" id="packet-ready-status">The first page is instructions for you only. Remove it before mailing. Print the remaining pages, sign and date your letter, and mail them to the bureau address in your letter. Keep a copy.</p>` : ''}
       ${surface?.preview_mode === true && packet.download_available ? '<p class="note demo"><strong>Staging preview:</strong> See how an optional paid mailing step could look. This sample cannot take payment or mail your packet.<br><a href="/mailing-preview.html" target="_blank" rel="noopener">Review the mailing design</a></p>' : ''}
-    </div></div></div>`;
+    </div></div></div></div>`;
 }
 
 async function wirePacket(panel) {
@@ -1858,6 +1858,17 @@ async function wirePacket(panel) {
   block.innerHTML = renderPacketBlock(pv);
   if (!(pv.eligible_issues || []).some(issue => issue.eligible)) return;
   const choosing = state.step === STEP.CHOOSE, preparing = state.step === STEP.PREPARE;
+  el('packet-selection').hidden = !choosing;
+  el('packet-preparation-content').hidden = !preparing;
+  el('packet-preparation-content').append(el('packet-earlier-details'));
+  const assessmentReview = el('review');
+  if (assessmentReview) { assessmentReview.hidden = !choosing; if (assessmentReview.previousElementSibling) assessmentReview.previousElementSibling.hidden = !choosing; }
+  // Keep saved inputs available to version-bound saving without repeating earlier steps.
+  const reviewBody = block.querySelector('.packet-review'), pdfReview = el('packet-pdf-review');
+  if (pdfReview) { reviewBody.prepend(pdfReview); pdfReview.after(el('packet-action-bar')); }
+  const saveButton = el('packet-save'), resetButton = el('packet-reset-letter');
+  if (resetButton) resetButton.after(saveButton);
+  else reviewBody.append(saveButton);
   el('packet-choose-next').hidden = !choosing;
   el('packet-details').hidden = choosing;
   el('packet-prepare-next').hidden = !preparing;
@@ -1974,6 +1985,7 @@ async function wirePacket(panel) {
     for (const id of ['consumer-notice', 'packet-approved-status', 'packet-ready-status', 'packet-pdf-review']) if (el(id)) el(id).hidden = true;
     for (const id of ['packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed']) if (el(id)) el(id).disabled = true;
     if (reviewed) reviewed.checked = false;
+    if (approve) approve.hidden = false;
     if (el('packet-preview-status')) el('packet-preview-status').textContent = 'Your packet changed. Select Save and review packet to read the new version.';
     if (el('packet-preview')) el('packet-preview').textContent = 'Save and review your changes before approving.';
   };
@@ -1982,7 +1994,12 @@ async function wirePacket(panel) {
   const letterInput = el('packet-letter');
   if (letterInput) letterInput.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); };
   const reset = el('packet-reset-letter');
-  if (reset) reset.onclick = () => { letterEdited = true; resetLetter = true; markChanged(); };
+  if (reset) reset.onclick = () => run(async () => {
+    letterEdited = true; resetLetter = true; markChanged();
+    const ensureCurrent = await persistSelection();
+    const answer = await api('GET', `/api/cases/${caseId}`); ensureCurrent(); state.view = answer.view;
+    state.notice = 'The prepared letter is restored. Check it and every page before approving.';
+  });
   for (const node of panel.querySelectorAll('[data-packet-pages]')) node.oninput = markChanged;
   for (const node of panel.querySelectorAll('[data-check-issue]')) node.onchange = markChanged;
   for (const id of ['packet-name', 'packet-contact', 'packet-reference', 'packet-bureau-reference']) {
