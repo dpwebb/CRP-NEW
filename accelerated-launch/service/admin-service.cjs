@@ -245,7 +245,7 @@ async function dispatchAdmin(options) {
       const grant = { grant_id: id('grant'), account_id: actor.account_id, case_id: caseId, org_id: org.org_id, packet_id: approval.packet_id,
         approved_version: approval.approved_version, pdf_sha256: approval.pdf_sha256, status: 'ACTIVE', created_at: iso(now) };
       approvedPdf(store, grant);
-      const existing = adminStore.state().grants.find(row => row.account_id === actor.account_id && row.case_id === caseId && row.org_id === org.org_id && row.status === 'ACTIVE' && row.approved_version === grant.approved_version && row.pdf_sha256 === grant.pdf_sha256);
+      const existing = adminStore.state().grants.find(row => row.account_id === actor.account_id && row.case_id === caseId && row.org_id === org.org_id && row.approved_version === grant.approved_version && row.pdf_sha256 === grant.pdf_sha256 && currentGrantAvailable(store, adminStore, row, now));
       if (existing) return response({ grant: grantView(adminStore, existing) });
       mutateAudited(adminStore, actor, 'ADMIN_CONSUMER_FULFILLMENT_GRANTED', { grant_id: grant.grant_id, account_id: actor.account_id, case_id: caseId, org_id: org.org_id, approved_version: grant.approved_version, pdf_sha256: grant.pdf_sha256 }, state => { state.grants.push(grant); });
       return response({ grant: grantView(adminStore, grant) }, 201);
