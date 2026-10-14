@@ -1410,10 +1410,9 @@ function wirePendingPayment() {
   const cancel = el('cancel-unfinished-payment');
   if (cancel && pending) cancel.onclick = () => run(async () => {
     ensureOwner();
-    const result = await api('POST', '/api/entitlement/cancel', { cancel_checkout_id: pending.checkout_id });
-    ensureOwner();
+    const result = await currentRequest(ensureOwner, 'POST', '/api/entitlement/cancel', { cancel_checkout_id: pending.checkout_id });
     if (result.cancellation?.cancelled !== true) throw new Error('The unfinished payment was not stopped. Try again or contact support.');
-    if (state.checkoutReturn?.caseId === pending.case_id && state.checkoutReturn.planCode === pending.plan_code) state.checkoutReturn = null;
+    if (state.checkoutReturn && state.checkoutReturn.caseId === pending.case_id && state.checkoutReturn.planCode === pending.plan_code) state.checkoutReturn = null;
     await refreshAccess(); ensureOwner();
     state.notice = 'Unfinished payment cancelled. Your current plan and reports are unchanged.';
   });

@@ -6,12 +6,13 @@ const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary
 const raw = fs.readFileSync(path.join(__dirname, '../../ui/app.js'), 'utf8');
 const source = raw.slice(0, raw.indexOf('/* ------------------------------------------------------------------ bootstrap */'));
 const tick = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(yes => { resolve = yes; }); return { promise, resolve }; };
+const deferred = () => { let resolve, reject; const promise = new Promise((yes, no) => { resolve = yes; reject = no; }); return { promise, resolve, reject }; };
 const surface = {
   countries: [{ value: 'CA', label: 'Canada' }], regions: [{ value: 'CA-NS', country: 'CA', label: 'Nova Scotia' }],
   bureau_choices: { CA: [{ id: 'TRANSUNION', label: 'TransUnion' }] }, preview_mode: true,
   entitlement: { payment_mode: 'test' }, support_contact: { email: 'admin@creditregulatorpro.com', label: 'Contact support' },
-  upload_limits: { max_account_stored_bytes: 41943040, max_file_bytes: 10485760, max_case_files: 8 }
+  upload_limits: { max_account_stored_bytes: 41943040, max_file_bytes: 10485760, max_case_files: 8 },
+  payment_actions: { cancel_unfinished_checkout: true }
 };
 const planCatalog = { currency: 'CAD', plans: [
   { plan_code: 'report_once', amount_display: '$5.95 CAD', amount_cents: 595, interval: 'one_time' },
@@ -92,6 +93,19 @@ async function deferredChecks(check) {
   const quota = harness(() => ({ ok: true })); quota.evaluate('state.storageSnapshot=40*1024*1024-1024;');
   let refused = false; try { quota.evaluate('validateReportFiles([{name:"fictional.pdf",size:2048}]);'); } catch { refused = true; }
   check.ok(refused, 'whole batch is refused locally when shared remaining storage is insufficient');
+  for (const target of ['signout', 'account-switch']) for (const fail of [false, true]) {
+    const stopped = deferred(), stale = harness(() => stopped.promise);
+    stale.evaluate('rememberPendingCheckout({pending_checkout:{checkout_id:"checkout-old",plan_code:"monthly"}}); wirePendingPayment();');
+    const cancelling = stale.node('cancel-unfinished-payment').onclick(); await tick();
+    stale.evaluate('accountEpoch++; state.account=null; state.error=null; state.notice="Current session"; rememberPendingCheckout({});');
+    if (target === 'account-switch') stale.evaluate('state.account={account_id:"accountB"}; rememberPendingCheckout({pending_checkout:{checkout_id:"checkout-B",plan_code:"annual"}});');
+    if (fail) stopped.reject(Error('Old payment error')); else stopped.resolve({ cancellation: { cancelled: true } });
+    await cancelling;
+    check.equal(stale.evaluate('state.error'), null, `${target}: ${fail ? 'failed' : 'successful'} late payment cancellation cannot set an old error`);
+    check.equal(stale.evaluate('state.notice'), 'Current session', 'late cancellation preserves the current session message');
+    check.equal(stale.calls.length, 1, 'late cancellation stops before reading another session access');
+    check.equal(stale.evaluate('state.pending_checkout?.checkout_id || null'), target === 'account-switch' ? 'checkout-B' : null, 'late cancellation preserves the current account pending checkout');
+  }
 }
 
 async function browserChecks(t, check) {
@@ -102,8 +116,9 @@ async function browserChecks(t, check) {
       const page = await context.newPage(); page.setDefaultTimeout(10000);
       const requests = [], downloads = []; let signedIn = false;
       let billingEnt = { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
+      let pendingCheckout = null, failUnfinished = true;
       await page.route('**/api/**', async route => {
-        const request = route.request(), url = new URL(request.url()), p = url.pathname; requests.push({ p, method: request.method(), search: url.search });
+        const request = route.request(), url = new URL(request.url()), p = url.pathname; requests.push({ p, method: request.method(), search: url.search, body: request.postData() });
         let status = 200, data = { ok: true };
         if (p === '/api/jurisdictions') data.surface = surface;
         else if (p === '/api/pricing') data.plan_catalog = planCatalog;
@@ -113,7 +128,11 @@ async function browserChecks(t, check) {
         else if (p === '/api/account/documents') data.documents = [];
         else if (p === '/api/cases') data.cases = [{ case_id: 'caseA', bureau: 'TransUnion', report_date: '2026-10-14', country: 'CA', region: 'CA-NS', created_at: '2026-10-14T12:00:00Z' }, { case_id: 'caseB', bureau: 'Equifax', report_date: '2026-09-14', country: 'CA', region: 'CA-NS', created_at: '2026-09-14T12:00:00Z' }];
         else if (p === '/api/privacy') Object.assign(data, { cases: [{ documents: [{ stored_bytes: 1048576 }] }], account_documents: [{ stored_bytes: 1048576 }] });
-        else if (p === '/api/entitlement' || p === '/api/billing/plans') Object.assign(data, { entitlement: billingEnt, payment: { is_a_working_payment: false }, plan_catalog: planCatalog });
+        else if (p === '/api/entitlement' || p === '/api/billing/plans') Object.assign(data, { entitlement: billingEnt, payment: { is_a_working_payment: false }, plan_catalog: planCatalog, pending_checkout: pendingCheckout });
+        else if (p === '/api/entitlement/cancel') {
+          if (failUnfinished) { status = 502; data = { ok: false, error: { message: 'The unfinished payment could not be stopped. Please try again.' } }; }
+          else { pendingCheckout = null; data.cancellation = { cancelled: true, checkout_cancelled: true, entitlement: billingEnt }; }
+        }
         else if (p === '/api/support') Object.assign(data, { reference: 'fictional-support-reference', build_id: 'fictional-build', category: 'RESULT_PRESENT', case_count: 2, file_count: 2, result_count: 2, jurisdiction: [{ country: 'CA', region: 'CA-NS' }], plain: 'Include this reference when you ask for help.' });
         else if (p === '/api/cases/caseA') data.view = view();
         else if (p === '/api/cases/caseA/results') data.results = [{ result_id: 'result-current', created_at: '2026-10-14' }, { result_id: 'result-old', created_at: '2026-09-14' }];
@@ -156,6 +175,18 @@ async function browserChecks(t, check) {
       check.ok(graceText.includes('October 16, 2026') && !graceText.includes('October 14, 2026'), 'past-due paid access displays the effective grace deadline rather than the old paid period');
       check.ok(graceText.includes('If payment is not confirmed by then, paid features will stop'), 'failed payment explains the access deadline in plain language');
       check.ok(await page.locator('#cancelEntitlement').isVisible(), 'grace-period account retains the ordinary cancellation control');
+      billingEnt = { ...billingEnt, state: 'ACTIVE' };
+      pendingCheckout = { checkout_id: 'fictional-unfinished', plan_code: 'monthly', state: 'OPEN' };
+      await navigate(10); await page.locator('#cancel-unfinished-payment').waitFor();
+      check.equal(await page.locator('#continue-payment').count(), 0, 'an obsolete ordinary checkout cannot continue alongside an active subscription');
+      check.ok((await page.locator('#billingView').innerText()).includes('Your current subscription will stay active'), 'unfinished payment cancellation clearly preserves the current plan');
+      await page.locator('#cancel-unfinished-payment').click(); await page.getByText('The unfinished payment could not be stopped. Please try again.').waitFor();
+      check.ok(await page.locator('#cancel-unfinished-payment').isVisible(), 'failed payment stop keeps the unfinished checkout and retry control');
+      failUnfinished = false;
+      await page.locator('#cancel-unfinished-payment').click(); await page.getByText('Unfinished payment cancelled. Your current plan and reports are unchanged.').waitFor();
+      check.equal(await page.locator('#cancel-unfinished-payment').count(), 0, 'confirmed cancellation removes only the finished pending action');
+      check.equal(JSON.parse(requests.filter(row => row.p === '/api/entitlement/cancel').at(-1).body).cancel_checkout_id, 'fictional-unfinished', 'consumer action sends the selected unfinished checkout identity');
+      check.ok(await page.locator('#cancelEntitlement').isVisible(), 'current subscription renewal control survives unfinished-payment cancellation');
       await navigate(8); await page.locator('#deleteAccount').waitFor();
       let dialogs = 0; const dismiss = dialog => { dialogs++; dialog.dismiss(); }; page.on('dialog', dismiss);
       await page.locator('#deleteAccount').click(); await page.locator('#delete').click();

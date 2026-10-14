@@ -103,6 +103,17 @@ async function run(t, check) {
 
   const owner = await t.account('audit-download-owner@example.test');
   const stranger = await t.account('audit-download-stranger@example.test');
+  const paidBefore = JSON.stringify(t.service.store.state().entitlements.filter(row => row.account_id === owner.account_id));
+  t.service.store.update(state => state.checkout_sessions.push({ account_id: owner.account_id,
+    checkout_id: 'chk_unfinished_api', provider_id: process.env.CRP_PAYMENT_PROVIDER, state: 'OPEN', plan_code: 'monthly', currency: 'cad' }));
+  check.equal((await t.request('POST', '/api/entitlement/cancel', { token: stranger.token, body: { cancel_checkout_id: 'chk_unfinished_api' } })).status, 404, 'unfinished-payment API refuses a foreign checkout');
+  const stopped = await t.request('POST', '/api/entitlement/cancel', { token: owner.token, body: { cancel_checkout_id: 'chk_unfinished_api' } });
+  check.equal(stopped.status, 200, 'public unfinished-payment action reaches the guarded cancellation helper');
+  check.equal(stopped.json.cancellation.cancelled, true, 'public cancellation envelope matches the consumer contract');
+  check.equal(stopped.json.cancellation.checkout_id, 'chk_unfinished_api', 'public action confirms exactly the selected checkout');
+  check.equal(t.service.store.state().checkout_sessions.find(row => row.checkout_id === 'chk_unfinished_api').state, 'CANCELLED', 'confirmed unfinished checkout is closed');
+  check.equal((await t.request('POST', '/api/entitlement/cancel', { token: owner.token, body: { cancel_checkout_id: null } })).status, 404, 'malformed public unfinished action cannot cancel the current plan');
+  check.equal(JSON.stringify(t.service.store.state().entitlements.filter(row => row.account_id === owner.account_id)), paidBefore, 'unfinished and malformed public cancellation preserve existing paid access');
   const create = async actor => (await t.request('POST', '/api/cases', { token: actor.token, body: { country: 'US', region: 'US-CA' } })).json.case.case_id;
   const assess = async (caseId, scenario, actor = owner) => (await t.request('POST', '/api/cases/' + caseId + '/demonstration', { token: actor.token, body: { scenario } })).json;
   const caseId = await create(owner);

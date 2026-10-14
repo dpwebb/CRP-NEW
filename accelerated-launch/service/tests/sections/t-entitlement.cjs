@@ -575,6 +575,9 @@ async function stripeRenewalCancellation(t, check, evidence) {
       data: { object: { ...olderSubscription, status: 'canceled' } } });
     check.equal((await t.request('POST', '/api/billing/events', { raw: confirmedEnd.raw, headers: confirmedEnd.headers })).json.event.accepted,
       true, 'the prior subscription is provider-confirmed ended before replacement');
+    const endedRecord = t.service.store.state().entitlements.find(row => row.account_id === replacement.actor.account_id);
+    check.equal(endedRecord.provider_subscription_status, 'canceled', 'normalized terminal provider event records confirmed subscription termination');
+    check.ok(Boolean(endedRecord.provider_subscription_ended_at), 'confirmed terminal event retains its own recorded ending date');
     const newerSubscription = await activate('replacement-annual', 'annual', replacement.actor);
     releaseUpdate();
     check.equal((await replaced).status, 409, 'a newly controlling subscription is not cancelled by an older response');

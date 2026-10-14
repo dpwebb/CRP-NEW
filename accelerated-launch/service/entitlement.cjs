@@ -698,17 +698,15 @@ function applyEffect(row, effect, planCode, event, at) {
   } else if (effect === 'CANCEL_AT_PERIOD_END') {
     row.cancel_at_period_end = true;
     row.cancelled_at = at;
+    if (row.source === 'stripe' && event.type === 'subscription.deleted') {
+      row.provider_subscription_status = 'canceled';
+      row.provider_subscription_ended_at = at;
+    }
   } else if (effect === 'REVOKE') {
     row.state = 'CANCELLED';
     row.cancelled_at = at;
     row.expires_at = at;
-    const endedSubscription = row.source === 'stripe' && event.type === 'customer.subscription.deleted';
-    row.access_revoked_reason = endedSubscription ? 'THE_PROVIDER_ENDED_THE_SUBSCRIPTION' : 'THE_PROVIDER_RECORDED_A_REFUND';
-    if (endedSubscription) {
-      row.cancel_at_period_end = true;
-      row.provider_subscription_status = 'canceled';
-      row.provider_subscription_ended_at = at;
-    }
+    row.access_revoked_reason = 'THE_PROVIDER_RECORDED_A_REFUND';
   }
   return row;
 }
