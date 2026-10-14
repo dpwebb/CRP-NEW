@@ -97,6 +97,7 @@ try {
 
   write(files.section, "'use strict'; const files=['consumer-wizard/dist/app.js']; module.exports={id:'selected'};\n");
   equal(inspectPrerequisites({ root, sections: ['selected'], sectionCatalog: catalog }).issues[0].file, 'consumer-wizard/dist/app.js');
+  equal(inspectPrerequisites({ root, sections: ['selected'], sectionCatalog: catalog,discoverGeneratedAssets:false }).passed,true,'Tool fixtures do not require their fictional generated product assets');
   write('consumer-wizard/dist/app.js', "throw Error('Generated browser fixture is not executed');\n");
   equal(inspectPrerequisites({ root, sections: ['selected'], sectionCatalog: catalog }).passed, true);
   write(files.section, "'use strict'; // require('./commented-out.cjs')\nconst text=\"https://fixture.invalid\"; /* require('./also-commented.cjs') */ module.exports={id:'selected'};\n");

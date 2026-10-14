@@ -241,7 +241,7 @@ function inspectPrerequisites(options) {
       else if (spec.startsWith('.')) addIssue('REQUIRED_MODULE_OUTSIDE_WORKSPACE', file, section);
       // External installed modules are resolved without loading or reading them.
     }
-    for (const match of source.matchAll(/(['"])(consumer-wizard\/dist\/(?:app\.js|index\.html|jurisdiction-data\.js))\1/g)) addFile(match[2], section);
+    if(options.discoverGeneratedAssets!==false)for (const match of source.matchAll(/(['"])(consumer-wizard\/dist\/(?:app\.js|index\.html|jurisdiction-data\.js))\1/g)) addFile(match[2], section);
     for (const match of source.matchAll(/\b(?:execFileSync|execFile|spawnSync|spawn)\s*\(\s*(['"])([^'"\r\n]+)\1/g)) if (mask[match.index] !== ' ') tools.add(match[2]);
     if ([...mask.matchAll(/\brequire\s*\(/g)].some(match => !recognized.has(match.index))) dynamic.push({ file, section, scope: 'Caller must declare any additional computed dependencies in files/commands' });
   }

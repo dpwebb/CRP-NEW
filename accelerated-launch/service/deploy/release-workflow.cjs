@@ -193,7 +193,7 @@ function prepareInputs(p,options={}){
   const profileFile=options.profileFile?path.resolve(options.profileFile):null,profile=profileFile?read(profileFile):null;
   if(profile && (profile.schema!==1 || profile.complete!==true || !profile.reviewed_by || !Array.isArray(profile.files) || !Array.isArray(profile.commands) || !Array.isArray(profile.external_files) || JSON.stringify([...profile.selected_sections||[]].sort())!==JSON.stringify([...sections].sort())))throw Error('Invalid reviewed complete input profile or selection');
   const files=[...toolNames.map(f=>deploy+f),...(product?['accelerated-launch/service/tests/run-tests.cjs','accelerated-launch/service/tests/harness.cjs']:[]),...(profile?.files||[])];
-  const preflight=inputs.assertPrerequisites({root,sections,sectionCatalog:catalog,files,commands:[process.execPath,'git','tar',...(profile?.commands||[])],committedManifest:true,candidateCommit:git(['rev-parse','HEAD'],root)});
+  const preflight=inputs.assertPrerequisites({root,sections,sectionCatalog:catalog,files,commands:[process.execPath,'git','tar',...(profile?.commands||[])],discoverGeneratedAssets:product,committedManifest:true,candidateCommit:git(['rev-parse','HEAD'],root)});
   const rows=paths=>[...new Set(paths)].sort().map(file=>{const actual=fs.realpathSync(file);if(!fs.statSync(actual).isFile())throw Error('Expected input file: '+file);return {path:actual,sha256:hash(actual)};});
   const binaries=preflight.commands.map(command=>{const file=inputs.resolveCommand(command);if(!file)throw Error('Missing command: '+command);return file;});
   for(const file of profile?.external_files||[])if(!path.isAbsolute(file))throw Error('External input paths must be absolute');
