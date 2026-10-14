@@ -1,5 +1,10 @@
 # Owner imperatives
 
+## October 13 accepted P3 production release
+
+Read `CRP_P3_PRODUCTION_2026_10_13.md` for current provenance. Both staging and production serve crp-v1-331f32a35d213383, 165 files, packaged source 450fc36. Strict exact-build acceptance passed 30 gates / 123 criteria / 46 required predicates; frozen full regression passed 15,986/0/0. Production server-side proof, immutable bytes, live configuration, browser checks, same full-access credentials/data and encrypted offsite custody passed. Current production/staging PIDs are 2912813 / 2873566. Tested monitor validation was installed separately with existing configuration/credentials preserved. No new runtime code was changed during acceptance. Earlier local-only/staging-pending/production-unchanged notes retain their historical scope. Explicit remaining boundaries are recorded in the release report.
+
+
 ## October 13 owner-authorized P3 staging activation
 
 Read `CRP_P3_STAGING_2026_10_13.md` for current hosted provenance. Staging is crp-v1-331f32a35d213383 (165 files), packaged source 450fc36; full release checks passed 15,986/0/0 and seven fresh hosted worker journeys passed using the existing full-access staging account. Original staging rows and 92 blobs were verified. Production remains crp-v1-9f2657b12661c219, PID 2103501, unchanged. Exact-build 30-gate acceptance and separate production authorization remain pending. Earlier no-deployment entries retain their historical scope.

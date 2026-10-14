@@ -6,7 +6,7 @@ Read-only review follows local implementation at bf45192 (preceded by 2b89124), 
 | --- | --- |
 | Source | codex/remaining-operational-gaps-20261013; runtime commit bf45192 |
 | Local runtime | http://127.0.0.1:8890/; crp-local-operational-331f32a35d213383; 165 shipped files |
-| Hosted applications | Staging crp-v1-331f32a35d213383, PID 2873566; production remains crp-v1-9f2657b12661c219, PID 2103501 unchanged |
+| Hosted applications | Both crp-v1-331f32a35d213383; production PID 2912813, staging PID 2873566; exact-build staging acceptance and production verification passed |
 | Main checkout | C:\CRP-NEW remains the preserved older db2b2e4 checkpoint; unrelated pending work untouched |
 | Account | Same full-access account/credentials; all original rows and 432 blob hashes preserved |
 | Independent alerts | Existing Google Cloud one-minute HTTPS checks and admin outage/recovery route retained; previous real delivery proof remains unchanged |
@@ -24,11 +24,13 @@ Operational cleanup was limited to demonstrated stale/broken legacy resources. A
 
 | Priority | Remaining gap or boundary |
 | --- | --- |
-| P1 | Staging activation, exact served assets and seven fresh worker journeys passed. Exact-build 30-gate / 123-criterion acceptance and separate production authorization remain pending; no changed billing dependency or fresh purchase is claimed. |
+| Completed release | Exact-build 30-gate / 123-criterion acceptance, owner-authorized production activation and live verification passed; see CRP_P3_PRODUCTION_2026_10_13.md. Current genuine Sandbox monthly/annual-upgrade/cleanup proof and separately preserved native-price continuity are explicit. |
 | P1 | Actual shared-VPS reboot and hosted rollback rehearsal remain unperformed; existing isolated restoration proof retains its original scope. |
 | P2 | Genuine modern dedicated-layout evidence remains insufficient in nine acquisition cells: US Equifax/TransUnion; AU Experian/illion; current GB Experian/Equifax/TransUnion; broader CA Equifax/TransUnion. GENERAL and supplied corpus proofs retain their measured scope. |
 | Capacity boundary | Prior bounded supplied-store and two-fixture-account load qualification remains hash-bound unchanged; arbitrary larger states, continuous higher throughput and horizontal writers are uncertified. |
 | Lock boundary | Legacy live-PID identities unavailable to the OS and an interrupted reclamation guard remain conservatively protected; verified manual recovery may be required. |
 | Other projects | Their functional releases, backups and contracts are not certified by this cleanup or its passing CRP tests. |
 
-No identified current CRP P3 defect remains open in this bounded review. Retained historical artifacts, reader/source evidence and necessary compatibility are not silently treated as active deprecated functionality. Production application bytes and release pointer remain unchanged. Owner-authorized staging activation is recorded separately in CRP_P3_STAGING_2026_10_13.md; earlier local-only evidence retains its original scope. Private evidence is under C:/Users/webbd/.codex/private/crp-ai-comparison/implementation-2026-10-13/operational-hardening/remaining-verification/p3/.
+No identified current CRP P3 defect remains open in this bounded review. Retained historical artifacts, reader/source evidence and necessary compatibility are not silently treated as active deprecated functionality. Owner-authorized production activation is recorded in CRP_P3_PRODUCTION_2026_10_13.md; earlier local-only and staging-only evidence retains its original scope. Private evidence is under C:/Users/webbd/.codex/private/crp-ai-comparison/implementation-2026-10-13/operational-hardening/remaining-verification/p3/.
+
+Production follow-up: the tested monitor validation tool is installed, existing alert settings retained, both targets pass, and encrypted production backup / exact-build acceptance proof verified offsite. See the release report for preservation counts and the normal bounded rejected-webhook diagnostic retention exclusion.
