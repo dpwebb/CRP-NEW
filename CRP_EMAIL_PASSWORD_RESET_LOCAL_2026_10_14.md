@@ -2,7 +2,17 @@
 
 October 14, 2026. Owner authority: “Proceed with the email password reset and consumer recovery guidance. Build and test locally, preserve MFA and the recovery key option, and do not deploy yet.”
 
-Status: **IMPLEMENTED_AND_TESTED_LOCALLY**. Staging and production: NOT_DEPLOYED / NOT_RUN for this candidate. Existing services, private accounts and hosted configuration are unchanged.
+## Current combined candidate — IMPLEMENTED_AND_TESTED_LOCALLY
+
+While the original email-only full ran, the separately owner-authorized automatic owner-routing fix was integrated into main as `e46e38b` / executable `4601e0a`. The primary-head guard refused to overwrite that newer work. The coordinator merged it into this isolated candidate, preserving reset-navigation priority, stale-response guards, the fixed authenticated owner destination and separate administrator MFA. Combined executable/test source is `c43a164a91aa573e3dee8ce956b28cb2f0066532`, manifest `391D75BC3EF29F273C71FE0084615061F295A133A7BEFC50E1F6CE37F912C33E`, 177 shipped files. Affected combined checks passed **402/0/0**, including an explicit owner destination assertion after email reset and normal MFA sign-in. Read-only integration review found no concrete remaining defect.
+
+Combined governed full verification passed **16,406 / 0 / 0** across **177 completed sections**, with **371 matching tested source hashes**, zero source drift and no unrun sections. All ten release-tooling suites and six changed-JavaScript syntax checks passed. The fresh product process took 1,079,919 ms (internal receipt: 1,078,685 ms); the complete governed verification took 1,136,497 ms. Its input profile disabled product reuse. This fresh run was necessary because integration changed executable authentication/UI inputs; it was not repeated for packaging or documentation. The email-only package/results below retain their original source scope and are not relabelled as combined proof.
+
+The current packaged candidate is **`crp-v1-391d75bc3ef29f27`**, 177 files, `FRESH_FULL`, `production_ready:false`. Candidate archive SHA-256: `029DF52BA08CED4810CD8007CC4A0CA0B505F73E0C8846628C2627775211D5F7`. Source-proof archive SHA-256: `92C805A8DF11E80E37391C898D7E736A5FF014DFBFD63DE4ECC169B68120F2BA`. Raw full receipt SHA-256: `50A1B0131F689F181CDFF229374C51D8F77AAD15F8B34A794162B27E3EBACF74`. Immutable verification SHA-256: `86DCE4A1C5F98AE7872030D1F0905252C42A60308D37409170DBA5D61EDB73E3`.
+
+Current evidence root is `accelerated-launch/service/out/email-reset-integrated-release/`; stable exact copies are under the private custody root's `combined/` directory, indexed separately without overwriting the original email-only custody manifest. Its execution record has two passing steps and no failed/interrupted/reused steps. Main source integration is a guarded fast-forward of these tested bytes; later closure edits are documentation only. The existing local operational process remains PID 20396 / 52ee, separate from this source/package. No runtime replacement or deployment is authorized or performed; hosted email delivery, staging verification and production acceptance remain NOT_RUN.
+
+Original email-only status: **IMPLEMENTED_AND_TESTED_LOCALLY**. Staging and production: NOT_DEPLOYED / NOT_RUN for this candidate. Existing services, private accounts and hosted configuration are unchanged.
 
 ## Consumer outcome
 
