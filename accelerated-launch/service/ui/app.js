@@ -254,10 +254,15 @@ function renderSteps() {
 }
 
 function navigateStep(step) {
-  if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) return packetLeave(step);
+  if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
+  if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) {
+    const accountId = state.account?.account_id, epoch = accountEpoch, caseId = state.caseId;
+    return packetLeave(step).then(() => {
+      if (state.account?.account_id === accountId && accountEpoch === epoch && state.caseId === caseId && state.step === step) focusStepHeading();
+    });
+  }
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
   state.step = step; render();
-  if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
   focusStepHeading();
 }
 
