@@ -58,6 +58,21 @@ const SERVICE_NON_SHIPPED = [
   'accelerated-launch/service/bureau-form-mappings.cjs'
 ];
 
+// Reviewed exclusions, not filename heuristics. Keep these sources and their
+// historical tests in Git/source proof; they are not running-service dependencies.
+// FDT validators/benchmarks, the synthetic PDF factory and store diagnostics stay
+// shipped because the frozen operator/recovery tools still depend on them.
+const REVIEWED_NON_SHIPPED = Object.freeze([
+  { file: 'accelerated-launch/service/packet-archive.cjs', reason: 'Legacy ZIP helper; current packets use the single-PDF compositor.' },
+  { file: 'accelerated-launch/service/upgrade-credit.cjs', reason: 'Legacy standalone quote helper; current credits use billing-credits.cjs.' },
+  { file: 'accelerated-launch/service/build-subscription-value-evidence.cjs', reason: 'Local test/evidence builder, not a served-service or frozen-operator dependency.' },
+  { file: 'accelerated-launch/service/finding-coverage.cjs', reason: 'Local coverage evidence builder; the operator validates its recorded proof separately.' },
+  { file: 'internal-validation/ca-ns-last-payment-six-year/run-internal-validation.cjs', reason: 'Standalone internal-validation runner; preserve its imported reader modules.' },
+  { file: 'accelerated-launch/adapters/test-adapters.cjs', reason: 'Standalone adapter test runner.' },
+  { file: 'accelerated-launch/benchmark-ingestion.cjs', reason: 'Standalone ingestion benchmark runner.' },
+  { file: 'accelerated-launch/test-router.cjs', reason: 'Standalone jurisdiction-router test runner.' }
+].map(row => Object.freeze(row)));
+
 const GROUPS = [
   { id: 'RUNTIME_ASSETS', dirs: ['accelerated-launch/service/packet-fonts', 'accelerated-launch/service/pdf-vendor', 'accelerated-launch/service/password-vendor'], filter: () => true },
   { id: 'RUNTIME', dirs: ['accelerated-launch/service'], filter: (n) => n.endsWith('.cjs') || n === 'release-scope.json', exclude: SERVICE_NON_SHIPPED },
@@ -77,12 +92,18 @@ function digestOf(rows) {
   return h.digest('hex').toUpperCase();
 }
 
-function main() {
+function collectGroups() {
+  const excluded = new Set(REVIEWED_NON_SHIPPED.map(row => row.file));
   const groups = GROUPS.map((group) => {
-    const files = [...new Set(group.dirs.flatMap((dir) => listFiles(dir, group.filter, { recursive: group.recursive, exclude: group.exclude })))];
+    const files = [...new Set(group.dirs.flatMap((dir) => listFiles(dir, group.filter, { recursive: group.recursive, exclude: group.exclude })))].filter(file => !excluded.has(file));
     const rows = files.map((file) => ({ file, sha256: sha256(file).toUpperCase() }));
     return { id: group.id, file_count: rows.length, digest: digestOf(rows), files: rows };
   });
+  return groups;
+}
+
+function main() {
+  const groups = collectGroups();
   const manifest = {
     generator: 'accelerated-launch/service/deploy/build-release-manifest.cjs',
     generated_at: new Date().toISOString(),
@@ -107,4 +128,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { main, GROUPS, OUT };
+module.exports = { main, collectGroups, GROUPS, OUT, REVIEWED_NON_SHIPPED };

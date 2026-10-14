@@ -6,6 +6,7 @@ const { ServiceError } = require('./errors.cjs');
 const cases = require('./cases.cjs');
 const packets = require('./packets.cjs');
 const entitlement = require('./entitlement.cjs');
+const accountDocuments = require('./account-documents.cjs');
 const signup = require('./signup-security.cjs');
 const { ReferralProgram, ReferralError, POLICY } = require('./referral-engine.cjs');
 const HOLD_REASONS = Object.freeze(['MANUAL_REVIEW', 'REFUND_REVIEW', 'ACCOUNT_REVIEW']);
@@ -213,7 +214,16 @@ function overview(store, adminStore, principal, query) {
     return { counts, operations: { payouts_enabled: false, mailing_enabled: false } };
   }
   if (permissions.has('accounts.read')) counts.accounts = state.accounts.length;
-  if (permissions.has('cases.read')) { counts.cases = state.cases.length; counts.reports = state.files.filter(row => row.purpose !== 'ACCOUNT_DOCUMENT').length; counts.results = state.results.length; counts.approved_packets = state.packets.filter(row => row.approved_version).length; }
+  if (permissions.has('cases.read')) {
+    const ownedCases = new Map(state.cases.map(row => [row.case_id, row.account_id]));
+    counts.cases = state.cases.length;
+    // Report uploads have no document purpose and belong to a case. Supporting
+    // documents use ACCOUNT_SUPPORT; neither they nor orphan rows are reports.
+    counts.reports = state.files.filter(row => row.purpose !== accountDocuments.PURPOSE && row.purpose == null &&
+      typeof row.case_id === 'string' && ownedCases.has(row.case_id) && ownedCases.get(row.case_id) === row.account_id).length;
+    counts.results = state.results.length;
+    counts.approved_packets = state.packets.filter(row => row.approved_version).length;
+  }
   if (permissions.has('affiliate.read')) counts.affiliate_members = state.referral_snapshots?.[0]?.members?.length || 0;
   if (permissions.has('fulfillment.read')) counts.fulfillment_jobs = metadata.fulfillment_queue.length;
   return { counts, operations: { payouts_enabled: false, mailing_enabled: false }, generated_at: iso() };
