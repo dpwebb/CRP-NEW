@@ -7,3 +7,68 @@
 @media(max-width:390px){.identity strong{max-width:92px}.identity small{max-width:92px}.account-controls{gap:7px}.topbar{padding:0 12px}.content{padding-inline:14px}.stat-card{padding:13px}.stat-value{font-size:25px}.stat-icon{display:none}.pagination{flex-wrap:wrap}.level-grid{grid-template-columns:1fr}.level-card{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px}.level-card .level-rate{grid-row:1/3;grid-column:2;justify-self:end;align-self:center;margin:0}.level-card p{grid-column:1}.page-heading h1{font-size:25px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .permission-fieldset{border:1px solid var(--line);border-radius:10px;padding:17px 19px;margin:22px 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}.permission-fieldset legend{font-size:12px;font-weight:700;padding:0 5px}.permission-fieldset>.field-help{grid-column:1/-1;margin:0 0 8px}.permission-fieldset .checkbox-label{font-size:10px;margin:0}.permission-fieldset input{margin-top:1px}.inline-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}.inline-summary .info-block{flex:1;min-width:170px}.mobile-close{display:none}@media(max-width:700px){.permission-fieldset{grid-template-columns:1fr}.mobile-close{display:inline-grid;position:absolute;right:8px;top:8px;color:#d9ef9d}.mobile-close:hover{background:#ffffff10;border-color:transparent}}
+
+/* Keep the mobile workspace readable; wide records scroll within their table. */
+@media(max-width:700px){
+  body{font-size:14px}
+  .content,.card,.table-scroll{min-width:0;max-width:100%}
+  .table-scroll{overflow-x:auto;overscroll-behavior-inline:contain}
+  table,.key-value{font-size:13px}
+  th{font-size:11px;letter-spacing:.025em;padding-block:14px}
+  td{font-size:13px;padding-block:16px}
+  td strong{font-size:13px}
+  td small{font-size:11px;line-height:1.7}
+  .button,.page-heading .button,.text-button{font-size:14px;min-height:42px}
+  .button.small{font-size:12px;min-height:38px;padding:8px 11px}
+  input,select,textarea{font-size:16px;min-height:44px}
+  label,.permission-fieldset legend{font-size:12px}
+  .field-help,.section-note,.auth-help,.permission-fieldset .checkbox-label{font-size:12px}
+  .label-row .text-button{font-size:12px;min-height:32px}
+  .page-heading p,.auth-card>p,.dialog-heading+.muted{font-size:13px}
+  .eyebrow,.nav-label{font-size:11px}
+  nav button{font-size:13px;min-height:46px}
+  .workspace-tag{font-size:12px}
+  .sidebar-note strong,.sidebar-bottom>a{font-size:12px}
+  .sidebar-note p{font-size:11px}
+  .sidebar .brand-pro{font-size:10px}
+  .identity strong{font-size:11px;max-width:100px}
+  .identity small{font-size:10px;max-width:100px}
+  .sign-out{font-size:12px;min-height:40px;white-space:nowrap}
+  .stat-label,.stat-description{font-size:11px}
+  .card-heading h2{font-size:16px}
+  .card-heading p{font-size:12px}
+  .toolbar .search-field input,.toolbar select{font-size:14px;min-height:44px}
+  .toolbar select{max-width:100%}
+  .toolbar .result-total{font-size:12px}
+  .pill{font-size:11px;min-height:26px;padding:5px 8px}
+  .pagination{font-size:12px;flex-wrap:wrap;align-items:center}
+  .pagination-controls{flex-wrap:wrap;gap:8px}
+  .pagination .button{font-size:14px;min-height:40px;padding:7px 11px}
+  .activity-copy strong{font-size:13px}
+  .activity-copy p{font-size:12px}
+  .activity-time{font-size:11px;white-space:normal}
+  .quick-link strong{font-size:14px}
+  .quick-link small{font-size:12px}
+  .info-block .info-label,.level-card .level-label{font-size:11px}
+  .info-block .info-value{font-size:14px}
+  .level-card p{font-size:11px}
+  .permission-list li{font-size:12px}
+  .detail-section h3{font-size:14px}
+  .detail-table,.detail-table td{font-size:13px}
+  .detail-table th{font-size:11px}
+  .code{font-size:12px}
+  .dashboard-note,.dashboard-note strong{font-size:13px}
+  .dashboard-note p{font-size:12px}
+  .loading-state,.empty-state p{font-size:13px}
+  .notice,.toast{font-size:13px}
+  .workspace-footer{font-size:11px;flex-wrap:wrap;gap:8px}
+  .auth-security{font-size:11px}
+  .back-link{font-size:12px}
+}
+@media(max-width:390px){
+  .identity strong,.identity small{max-width:82px}
+  .topbar,.account-controls{gap:7px}
+}
+@media(max-width:350px){
+  .identity>span:not(.avatar){display:none}
+}
