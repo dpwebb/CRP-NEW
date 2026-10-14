@@ -1,5 +1,13 @@
 # Owner-authorized change-aware release process
 
+## October 14 standing adoption
+
+The owner's explicit follow-up authorizes local integration of the completed process upgrades into the current CRP build for consistent future use. For every finished batch or release preparation, start with `accelerated-launch/service/deploy/release-workflow.cjs prepare`, execute its selected `check`, and inspect `record`. Package a release candidate once from its committed, verified bytes; use `continuity`, `assemble` and evidence-specific `attest` as needed. This is the standing entry point, not an optional parallel recipe. Direct focused development checks and an explicitly needed default full regression remain available, but do not run both a direct final full and another workflow full solely to satisfy an older recipe.
+
+Use the reconciled operational candidate at `C:/Users/webbd/.codex/worktrees/synthetic-corpus-fixes/CRP-NEW`, retaining completed source `196da86` and its immutable local full proof while locally adopting the reviewed upgrades. The preserved older `C:/CRP-NEW` checkpoint and its 161-file policy manifest are not a release baseline. Prior raw receipts, work-order sources and historical runtime records retain their identities; this adoption does not establish a new full product run or hosted acceptance.
+
+Resume completed passing local steps only with matching source/tests/fixtures/executables/environment and retained output hashes. Product reuse requires a complete reviewed profile covering dynamic and external inputs; absent or unbound inputs require fresh execution. Assemble receipts without invoking product/browser tests again. Promote the same archive through staging and production, keeping current host/provider configuration and affected hosted behavior freshly verified. All 30 gates / 123 criteria, separate activation authorization, consumer approval and data-preserving rollback remain mandatory. Admin UI and all other enhancements remain on hold; no deployment or runtime restart is authorized here.
+
 Authority: October 11, 2026 owner request, “Enable these proposed process improvement’s.”
 
 This amendment changes verification frequency and execution mechanics. It supersedes the blanket requirement for a new full product regression for every finished executable batch in `CRP_OWNER_BATCH_EXECUTION_001.md` when the bounded paths below apply. It does not change product scope, the active common-error checklist governed by `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md` and its expansion amendment, 82 jurisdictions, reporting-period directives, consumer approval, ownership, privacy, billing or release acceptance requirements. Historical checklist counts retain their original scope; the runtime registry excludes owner-retired review defaults.
@@ -19,6 +27,6 @@ This amendment changes verification frequency and execution mechanics. It supers
 
 Tracked CLI: `accelerated-launch/service/deploy/release-workflow.cjs`.
 
-Commands: `plan`, `check`, `attest`, `package`, `smoke`, `activate`, `rollback`. Hosted packet approval and presentation review still require the existing behavioral journey evidence; the CLI does not fabricate human visual review or approve consumer packets. Acceptance reconciliation continues to validate the relevant gate records. These tools automate mechanical release operations, not consumer consent.
+Commands: `prepare`, `plan`, `preflight`, `check`, `record`, `continuity`, `assemble`, `attest`, `package`, `smoke`, `activate`, `rollback`. See `accelerated-launch/service/deploy/CHANGE_AWARE_RELEASE.md` for current signatures, optional reviewed input profiles and immutable evidence boundaries. Hosted packet approval and presentation review still require the existing behavioral journey evidence; the CLI does not fabricate human visual review or approve consumer packets. Acceptance reconciliation continues to validate the relevant gate records. These tools automate mechanical release operations, not consumer consent.
 
 Operations-only adoption does not require replacing the already accepted production runtime. Existing historical receipts retain their original scope.

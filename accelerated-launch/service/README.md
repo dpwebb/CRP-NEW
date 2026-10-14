@@ -1,5 +1,13 @@
 # CRP consumer-journey service
 
+## Standing build and release entry
+
+Use `deploy/release-workflow.cjs prepare` → `check` → `record` → `package` for release candidates, following [CHANGE_AWARE_RELEASE.md](deploy/CHANGE_AWARE_RELEASE.md) and the root `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. Run from the reconciled operational candidate at `C:/Users/webbd/.codex/worktrees/synthetic-corpus-fixes/CRP-NEW`, preserving completed packet source `196da86` and its immutable local full receipt while adopting the reviewed tooling commits. `C:/CRP-NEW` is the preserved older 161-file policy checkpoint, not the release candidate. Earlier operating notes below retain their historical scope.
+
+The plan selects tooling-only, affected presentation or full product verification. Use matching passing proof and `continuity`/`assemble`/`attest` without re-executing tests just to rebuild receipts. Product-step reuse requires a complete reviewed dynamic/external input profile. Package once and promote that same archive, preserving exact-build 30-gate/123-criterion acceptance and fresh environment/provider checks. Documentation/tooling changes do not require product regression or a new runtime package when product dependencies are unchanged. Admin/partner/affiliate enhancements remain on hold; local process adoption authorizes no deployment or runtime restart.
+
+## Earlier P3 operating context — historical
+
 Current local operational work uses the isolated codex/remaining-operational-gaps-20261013 branch. Read the root CRP_OPERATIONAL_REVIEW_2026_10_13.md for the exact local build, account preservation, verification and remaining gaps. Main C:\CRP-NEW is a preserved older checkpoint, not the running local source.
 
 The existing enhanced local service is at http://127.0.0.1:8890/. It uses the established private account store outside the repository. Preserve its data directory, account credentials and full-access entitlement when restarting or testing; connection metadata is recorded privately under the operational-hardening remaining-verification directory. Secrets and report bytes never belong in Git.
@@ -22,11 +30,20 @@ Stripe integration supports configured test/live environments and continuing ser
 
 ## Verification
 
-    node accelerated-launch/service/tests/run-tests.cjs
+The governed final verification recipe is:
 
-The full runner executes all current product sections, including real local browser and regional controls. It writes current-regression-evidence.json and B2/B3/B4 evidence under out/. Full receipts identify tested source hashes, completed/unrun sections, source drift, failures and skips. Focused selections use a separate, new receipt path:
+    node accelerated-launch/service/deploy/release-workflow.cjs prepare ACCEPTED_COMMIT RAW_FULL_RECEIPT NEW_PLAN
+    node accelerated-launch/service/deploy/release-workflow.cjs check NEW_PLAN CHECK_DIRECTORY
+    node accelerated-launch/service/deploy/release-workflow.cjs record CHECK_DIRECTORY
+    node accelerated-launch/service/deploy/release-workflow.cjs package NEW_PLAN IMMUTABLE_VERIFICATION_RECEIPT CANDIDATE_DIRECTORY
+
+Replace the uppercase placeholders with reviewed values. `check` selects the required full product run internally when the change warrants it; do not append a second default full invocation. Use a complete reviewed profile only when enabling product reuse, and use the immutable `verification_file` returned by `check` for packaging. Documentation/tooling-only verification stops after `record` when no release artifact is needed.
+
+The default `tests/run-tests.cjs` remains an explicit full-validation/diagnostic entry and executes every current product section, including real local browser, regional and shared router/adapter controls. Full receipts identify tested source hashes, completed/unrun sections, source drift, failures and skips. Direct focused development selections use a separate, new receipt path:
 
     node accelerated-launch/service/tests/run-tests.cjs fx-consumer-issue-precision --receipt=/absolute/private/new-receipt.json
+
+Catalog, applicability and launch-matrix builders remain required when the selected dependencies actually need regenerated outputs. Run relevant producers in dependency order before freezing the candidate; changed shipped or tested inputs require the corresponding verification. The registered shared-regression section already runs `test-router.cjs` and `adapters/test-adapters.cjs`; preserve that coverage and run standalone diagnostics only when a concrete dependency or failure calls for them. Historical multi-step recipes are not the standing release sequence and do not justify a routine duplicate full run.
 
 Implementation closure, staging acceptance and production readiness are separate statuses. Follow the root CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md and deploy/CHANGE_AWARE_RELEASE.md for affected checks, unchanged-proof continuity, committed-byte packaging and guarded release operations. Every staging or production deployment needs its own owner authorization. This cleanup authorizes neither.
 
