@@ -60,6 +60,8 @@ const state = {
   contactLocation: null,
   packetReturn: null,
   checkoutReturn: null,
+  savedReportFilter: '',
+  storageSnapshot: null,
   /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
      missing purchase (which is a plan decision, not a failure). */
   assessing: false,
@@ -76,10 +78,34 @@ let assessmentOperationSequence = 0;
 let assessmentCaseId = null;
 let packetLeave = null;
 let checkoutReturnSequence = 0;
+let lastRenderedStep = 0;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
 function accountContext() {
   const id = state.account?.account_id, epoch = accountEpoch;
   return () => { if (state.account?.account_id !== id || accountEpoch !== epoch) throw cancelledAction(); };
+}
+
+/* A read or screen action may finish after its initiating view has gone away. */
+function viewContext(caseBound = true) {
+  const ensureAccount = accountContext(), sequence = renderSequence, step = state.step, caseId = state.caseId;
+  return () => {
+    ensureAccount();
+    if (sequence !== renderSequence || step !== state.step || (caseBound && caseId !== state.caseId)) throw cancelledAction();
+  };
+}
+
+function supportContactBlock() {
+  const contact = surface?.support_contact;
+  if (!contact || !/^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(contact.email || '')) return '';
+  return `<p class="support-contact"><a href="mailto:${esc(contact.email)}">${esc(contact.label || 'Contact support')}</a> · ${esc(contact.email)}</p>`;
+}
+
+function focusStepHeading() {
+  const heading = el('panel')?.querySelector?.('h1');
+  if (!heading) return;
+  heading.setAttribute?.('tabindex', '-1');
+  heading.focus?.({ preventScroll: true });
+  heading.scrollIntoView?.({ block: 'start', behavior: 'instant' });
 }
 
 const el = (id) => document.getElementById(id);
@@ -115,6 +141,11 @@ async function api(method, path, body) {
   }
   return data;
   } finally {activityDone();}
+}
+
+async function currentRequest(ensure, method, path, body) {
+  try { const data = await api(method, path, body); ensure(); return data; }
+  catch (error) { ensure(); throw error; }
 }
 
 const pendingControls = new Map();
@@ -226,6 +257,8 @@ function navigateStep(step) {
   if ([STEP.CHOOSE, STEP.PREPARE, STEP.REVIEW].includes(state.step) && packetLeave) return packetLeave(step);
   if (step !== STEP.BILLING) state.upgrade_confirmation = null;
   state.step = step; render();
+  if (el('steps')?.matches?.(':popover-open')) el('steps').hidePopover?.();
+  focusStepHeading();
 }
 
 function banner() {
@@ -317,7 +350,7 @@ async function refreshAccess() {
 
 function notices(accessible = false) {
   const parts = [];
-  if (state.error) parts.push(`<div class="note stop"${accessible ? ' role="alert"' : ''}><span class="err">Refused:</span> ${esc(state.error)}</div>`);
+  if (state.error) parts.push(`<div class="note stop"${accessible ? ' role="alert"' : ''}><span class="err">Please check:</span> ${esc(state.error)}</div>`);
   if (state.notice) parts.push(`<div class="note" id="consumer-notice"${accessible ? ' role="status"' : ''}>${esc(state.notice)}</div>`);
   if (state.checkoutReturn && state.account && (!state.caseId || state.checkoutReturn.caseId === state.caseId)) {
     const pending = state.checkoutReturn.status === 'pending';
@@ -345,6 +378,8 @@ function render() {
   wireCheckoutReturn();
   wireCurrencyChoice();
   restoreBusyControls();
+  if (lastRenderedStep !== state.step && !authEntry) focusStepHeading();
+  lastRenderedStep = state.step;
 }
 
 /* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the approved disclaimer belongs to the public landing-page footer.
@@ -401,16 +436,16 @@ function renderAccount(panel) {
         ${signInEntry ? '' : '<p class="auth-helper" id="auth-password-help">At least 12 characters</p>'}
       </div>
     </div>
-    ${signInEntry ? '<label for="signin-code">Authenticator code (if you enabled 2FA)</label><input id="signin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}">' : '<label class="signup-2fa-choice"><input id="signup-two-factor" type="checkbox"> Add optional two-factor authentication with an authenticator app</label>'}
-    ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><div class="signup-details-inner"><h2 id="signup-details-title">Your personal details <span class="auth-optional">Optional at signup</span></h2>
+    ${signInEntry ? '<label for="signin-code">Six-digit code from your authenticator app (if you turned it on)</label><input id="signin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}">' : '<label class="signup-2fa-choice"><input id="signup-two-factor" type="checkbox"> Add extra sign-in protection with an authenticator app (optional)</label><p class="auth-helper">You will enter a six-digit code from the app when you log in.</p>'}
+    ${signInEntry ? '' : `<details class="signup-details"><summary id="signup-details-title">Add personal details now (optional)</summary><div class="signup-details-inner"><h2>Your personal details <span class="auth-optional">Optional at signup</span></h2>
       <p class="signup-explanation">Add these now for a future subscriber packet, or finish them later in your account. Your sign-in email will be used for replies unless you change it there.</p>
-      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div${field === 'full_name' ? ' class="signup-wide"' : ''}><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></div></section>`}
+      <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div${field === 'full_name' ? ' class="signup-wide"' : ''}><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></div></details>`}
     <div class="auth-actions">${signInEntry ? '<button type="submit" class="primary" id="signin">Log in <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="create">Create account</button>' : '<button type="submit" class="primary" id="create">Create account <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="signin">Log in</button>'}</div>
     <p class="auth-forgot"><button type="button" class="text-button" id="forgot-password">Forgot your password?</button></p>
     <p class="auth-account-note">No report, identification or payment is needed to create an account.</p>
     <p id="auth-status" class="auth-status" role="status" aria-live="polite"></p>
     ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
-    </form></div>`;
+    </form>${supportContactBlock()}</div>`;
 
   const credentials = () => ({ email: el('email').value, password: el('password').value, code: el('signin-code')?.value || '' });
   el('create').onclick = (event) => {
@@ -590,6 +625,7 @@ function clearClientAccountForRecovery() {
   state.accountSecurity = null; state.recoveryKey = null; state.twoFactorSetup = null; state.wantTwoFactor = false;
   state.securityMode = false; state.contactLocation = null; state.packetReturn = null; state.checkoutReturn = null;
   state.assessing = false; state.assessment_error = null; state.purchase_needed = null;
+  state.storageSnapshot = null; state.savedReportFilter = '';
   rememberPendingCheckout({});
 }
 function renderEmailPasswordReset(panel) {
@@ -751,13 +787,15 @@ function renderAccountDetails(panel) {
   });
   el('signout').onclick = () => run(async () => {
     accountEpoch++;
-    await api('DELETE', '/api/sessions/current');
+    const ensure = accountContext();
+    await currentRequest(ensure, 'DELETE', '/api/sessions/current');
     state.account = null;
     state.accountProfile = null;
     state.accountDocuments = [];
     state.cases = [];
     state.caseId = null;
     state.view = null;
+    state.result_list = []; state.storageSnapshot = null; state.savedReportFilter = '';
     state.entitlement = null;
     state.payment = null;
     state.upgrade_credit = null;
@@ -784,7 +822,25 @@ function uploadPreparation() {
     <details class="upload-help"><summary>File sizes and help</summary><ul class="plain">
     <li>Use PDF, PNG, JPEG or TIFF. Convert HEIC photos to JPEG first.</li><li>Each file must be 10 MB or less. Select up to 8 files at a time.</li>
     <li>Keep pages in order. Split a large PDF into smaller files if needed.</li><li>Do not upload a file that needs a password.</li>
-    </ul><div id="upload-limits-help">${uploadLimits?.plain ? esc(uploadLimits.plain) : 'The upload checks the file and page limits before it is saved.'}</div></details>`;
+    </ul><p>Reports and ID copies share 40 MB of account space.</p><div id="upload-limits-help">Keep every report page. Split a large file into complete page ranges, with the report header and date in each part. If a TIFF will not upload, export it as PDF, PNG or JPEG.</div></details>`;
+}
+
+function storageHelpText() {
+  const total = uploadLimits?.max_account_stored_bytes || surface?.upload_limits?.max_account_stored_bytes || 40 * 1024 * 1024;
+  const available = state.storageSnapshot == null ? '' : ` You have ${(Math.max(0, total - state.storageSnapshot) / 1024 / 1024).toFixed(1)} MB left.`;
+  return `Reports and ID copies share ${(total / 1024 / 1024).toFixed(0)} MB of space.${available}`;
+}
+
+function wireStorageHelp() {
+  const node = el('storage-help');
+  if (!node || !state.account || !surface?.upload_limits) return;
+  const ensure = viewContext();
+  api('GET', '/api/privacy').then(data => {
+    ensure();
+    const files = [...(data.cases || []).flatMap(row => row.documents || []), ...(data.account_documents || [])];
+    state.storageSnapshot = files.reduce((sum, file) => sum + (Number(file.stored_bytes) || 0), 0);
+    if (el('storage-help') === node) node.textContent = storageHelpText();
+  }).catch(() => {});
 }
 
 function savedReportLabel(row) {
@@ -832,13 +888,15 @@ function renderJurisdiction(panel) {
     ${uploadPreparation()}
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/tiff,.pdf,.png,.jpg,.jpeg,.tif,.tiff">
     <p class="evidence">You can select up to 8 files, with a maximum of 10 MB each. Keep report images in page order.</p>
+    <p class="evidence" id="storage-help">${esc(storageHelpText())}</p>
     <button class="primary" id="open">Upload your report</button>
     <div id="upload-progress" role="status" aria-live="polite"></div>
     <button class="secondary" id="refresh">Continue a saved report</button>
     ${state.cases.length
-      ? `<details open><summary>Your saved reports</summary><ul class="plain">${state.cases.map((c) => `<li>${esc(savedReportLabel(c))} <button class="secondary" data-open="${esc(c.case_id)}">Continue</button></li>`).join('')}</ul></details>`
+      ? `<details open><summary>Your saved reports</summary><button class="secondary" id="resume-latest">Resume my latest report</button><label for="saved-report-filter">Find a saved report</label><input type="search" id="saved-report-filter" value="${esc(state.savedReportFilter)}" placeholder="Bureau, date or filename"><div id="saved-report-list"></div></details>`
       : ''}`;
   wireRecoveryKey();
+  wireStorageHelp();
 
   let selectionOperation = 0;
   let uploading = false;
@@ -898,9 +956,8 @@ function renderJurisdiction(panel) {
     try { const data = await api('GET', '/api/cases'); ensureSelection(); state.cases = data.cases; }
     catch (err) { ensureSelection(); throw err; }
   });
-  for (const button of panel.querySelectorAll('[data-open]')) {
-    button.onclick = () => run(async () => {
-      const ensureSelection = selectionContext(), caseId = button.dataset.open;
+  const openSavedReport = caseId => run(async () => {
+      const ensureSelection = selectionContext();
       let data;
       try { data = await api('GET', `/api/cases/${caseId}`); ensureSelection(); }
       catch (err) { ensureSelection(); throw err; }
@@ -909,7 +966,20 @@ function renderJurisdiction(panel) {
       state.view = data.view;
       state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
     });
+  const savedReports = state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')));
+  const filterSavedReports = () => {
+    const list = el('saved-report-list'); if (!list) return;
+    const query = state.savedReportFilter.trim().toLocaleLowerCase();
+    const matching = savedReports.filter(row => savedReportLabel(row).toLocaleLowerCase().includes(query));
+    list.innerHTML = matching.length ? `<ul class="plain">${matching.map(row => `<li>${esc(savedReportLabel(row))} <button class="secondary" data-open="${esc(row.case_id)}">Continue</button></li>`).join('')}</ul>` : '<p>No saved report matches your search.</p>';
+    for (const button of panel.querySelectorAll('[data-open]')) button.onclick = () => openSavedReport(button.dataset.open);
+  };
+  if (state.cases.length) {
+    filterSavedReports();
+    el('saved-report-filter').oninput = () => { state.savedReportFilter = el('saved-report-filter').value; filterSavedReports(); };
+    el('resume-latest').onclick = () => openSavedReport(savedReports[0].case_id);
   }
+  for (const button of panel.querySelectorAll('[data-open]')) button.onclick = () => openSavedReport(button.dataset.open);
 }
 
 /* ------------------------------------------------------------------ step 2: your report */
@@ -956,6 +1026,8 @@ function validateReportFiles(files) {
     if (!file.size || file.size > (uploadLimits?.max_file_bytes || 10485760)) throw new Error('Each file must be nonempty and no larger than 10 MB. Export a smaller readable copy or split it at page boundaries.');
     if (!/\.(pdf|png|jpe?g|tiff?)$/i.test(file.name)) throw new Error('Convert your report to PDF, PNG, JPEG or TIFF first.');
   }
+  const limit = uploadLimits?.max_account_stored_bytes || surface?.upload_limits?.max_account_stored_bytes || 40 * 1024 * 1024;
+  if (state.storageSnapshot != null && state.storageSnapshot + files.reduce((sum, file) => sum + file.size, 0) > limit) throw new Error('These files need more space than your account has left. Remove an unneeded report or document, or use smaller readable copies.');
 }
 
 /** Shared ordered upload/retry. File bytes and responses stay bound to the initiating account and screen. */
@@ -972,6 +1044,7 @@ async function uploadReportBatch(items, caseId, ensureContext) {
         contentBase64, uploadKey: item.key
       }); ensureContext();
       item.status = 'saved';
+      state.storageSnapshot = null;
       item.message = data.receipt.format_detection.supported ? 'Uploaded' : 'Uploaded; ' + refusalMessage(data.receipt.format_detection.refusal_reason);
     } catch (err) {
       ensureContext();
@@ -1050,6 +1123,7 @@ function renderReport(panel) {
     <input id="file" type="file" multiple accept="application/pdf,image/png,image/jpeg,image/tiff,.pdf,.png,.jpg,.jpeg,.tif,.tiff">
     <button class="primary" id="upload">Upload selected files</button>
     <button class="secondary" id="retry-upload" ${batch.some(x => x.status === 'pending') ? '' : 'disabled'}>Retry pending files</button>
+    <p class="evidence" id="storage-help">${esc(storageHelpText())}</p>
     <details><summary>File limits and help</summary><div class="note">PDF, PNG, JPEG and TIFF: 10 MB per file, 8 files per report, 40 MB stored per account.
     Images are limited to 25 million pixels and 12,000 pixels per side. Scanned PDFs are read up to 40 pages per file; split longer scans into complete page ranges of at most 40 pages within the 8-file limit. TIFF scans support up to 40 pages and 100 million total pixels; export unsupported TIFF layouts as PNG/JPEG or PDF. HEIC/HEIF and ZIP are not supported; export images as PNG/JPEG or combine them into a PDF.
     For an oversized report, export a smaller readable PDF or split at page boundaries into parts under 10 MB, keeping every page in order and the report header and date with each part.
@@ -1083,6 +1157,7 @@ function renderReport(panel) {
     el('upload-progress').after(clear);
   }
   if (!uploadLimits) api('GET', '/api/formats').then(data => { uploadLimits = data.upload_limits; }).catch(() => {});
+  wireStorageHelp();
 
   /* The one next action the status offers, wired to the case's own state. */
   const viewResults = el('view-results');
@@ -1133,25 +1208,30 @@ function fileCard(file) {
 async function wireResultSelector(panel, view) {
   const select = el('result-select');
   if (!select) return;
+  const ensure = viewContext(), caseId = state.caseId;
+  let selectionSequence = 0;
   try {
-    const data = await api('GET', '/api/cases/' + state.caseId + '/results');
+    const data = await currentRequest(ensure, 'GET', '/api/cases/' + caseId + '/results');
     state.result_list = data.results || [];
     select.innerHTML = '<option value="">Latest result</option>' +
       state.result_list.map((r) => '<option value="' + esc(r.result_id) + '">Checked on ' + esc((r.created_at || '').slice(0, 19).replace('T', ' ')) + '</option>').join('');
     select.value = state.result_list.some((r) => r.result_id === view.result_id) ? view.result_id : '';
-  } catch {
+  } catch (error) {
+    if (error.cancelled) return;
     select.innerHTML = '<option value="">Latest result</option>';
   }
   select.onchange = () => run(async () => {
-    const rid = select.value;
+    ensure();
+    const rid = select.value, selected = ++selectionSequence;
+    const ensureSelected = () => { ensure(); if (selected !== selectionSequence) throw cancelledAction(); };
     if (!rid) {
-      state.view = (await api('GET', '/api/cases/' + state.caseId)).view;
+      state.view = (await currentRequest(ensureSelected, 'GET', '/api/cases/' + caseId)).view;
     } else {
-      const d = await api('GET', '/api/cases/' + state.caseId + '/results/' + rid + '/view');
+      const d = await currentRequest(ensureSelected, 'GET', '/api/cases/' + caseId + '/results/' + rid + '/view');
       state.view = d.view;
     }
     state.step = 3;
-    state.notice = 'Showing the selected result; its report facts and clarification answers are unchanged.';
+    state.notice = 'Showing the assessment you chose. Downloads use this same assessment.';
   });
 }
 
@@ -1489,6 +1569,7 @@ function oneTimeNextStepsBlock() {
 }
 
 function renderResults(panel) {
+  if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in to see your results</h1>${supportContactBlock()}`; return; }
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Upload your report first</h1>`; return; }
   const view = state.view;
   const access = view.assessment_access || {};
@@ -1515,7 +1596,10 @@ function renderResults(panel) {
     if (button) button.onclick = () => startCheckout(code);
   }
   const download = el('download-assessment');
-  if (download) download.onclick = () => run(()=>retrieveFile(`/api/cases/${state.caseId}/report-download${state.pricingCurrency ? '?currency=' + state.pricingCurrency : ''}`,'CRP-assessment.pdf'),{redraw:false});
+  if (download) {
+    const caseId = state.caseId, resultId = view.result_id, ensure = viewContext();
+    download.onclick = () => run(() => { ensure(); const params = new URLSearchParams(); if (resultId) params.set('result_id', resultId); if (state.pricingCurrency) params.set('currency', state.pricingCurrency); return retrieveFile(`/api/cases/${caseId}/report-download${params.toString() ? '?' + params : ''}`, 'CRP-assessment.pdf'); }, { redraw: false });
+  }
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
@@ -1795,8 +1879,9 @@ function renderReview(panel) {
     </div>` : '<div class="note">Run the checks on the previous step first.</div>'}`;
 
   if (el('review')) el('review').onclick = () => run(async () => {
-    await api('POST', `/api/cases/${state.caseId}/review`, {});
-    state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
+    const ensure = viewContext(), caseId = state.caseId, resultId = view.result_id;
+    await currentRequest(ensure, 'POST', `/api/cases/${caseId}/results/${resultId}/review`, {});
+    state.view = (await currentRequest(ensure, 'GET', `/api/cases/${caseId}`)).view;
     state.notice = 'Your review is saved.';
   });
 
@@ -1934,6 +2019,13 @@ async function wirePacket(panel) {
   const ensureOrigin = () => { ensureAccount(); if (state.caseId !== caseId || renderSequence !== rendered) throw cancelledAction(); };
   let pv;
   try {
+    if (state.view?.latest_result_id && state.view.latest_result_id !== state.view.result_id) {
+      const latest = (await currentRequest(ensureOrigin, 'GET', `/api/cases/${caseId}`)).view;
+      if (!latest || latest.case?.case_id !== caseId) throw new Error('Your latest assessment could not be loaded. Try again.');
+      state.view = latest;
+      state.notice = 'Packets use your latest assessment. Review these issues before choosing disputes.';
+      render(); return;
+    }
     pv = (await api('GET', `/api/cases/${caseId}/packet`)).view;
   } catch (error) {
     try { ensureOrigin(); } catch { return; }
@@ -2185,6 +2277,21 @@ function outcomePill(outcome) {
   return 'NOT COMPARABLE';
 }
 
+function comparisonCategoryLabel(category) {
+  const value = String(category || '');
+  if (/DUPLICATE/.test(value)) return 'Duplicate account or debt';
+  if (/PAYMENT_HISTORY/.test(value)) return 'Payment history';
+  if (/DATE|AGING|PERIOD|RETENTION/.test(value)) return 'Account dates and reporting time';
+  if (/STATUS|AMOUNT|BALANCE/.test(value)) return 'Account status or amount';
+  if (/IDENTITY|RESPONSIBILITY/.test(value)) return 'Account identity';
+  if (/ADDRESS/.test(value)) return 'Address details';
+  return 'Report detail to compare';
+}
+
+function comparisonMatchLabel(value) {
+  return ({ CONFIDENT: 'The entries appear to be the same account.', QUALIFIED: 'We cannot be sure these entries are the same account.', NONE: 'We could not match this entry to an account in the later report.' })[value] || 'We could not confirm an account match.';
+}
+
 /* Render one comparison. The before/after facts, the match state and the specific uncertainty are shown; an
    internal comparison failure is never turned into an issue card. */
 function renderComparison(data) {
@@ -2195,11 +2302,11 @@ function renderComparison(data) {
   const rows = (data.outcomes || []).map((x) => `
     <div class="obs">
       <span class="pill">${esc(outcomePill(x.outcome))}</span>
-      <h3>${esc(x.category || 'an issue')}</h3>
+      <h3>${esc(comparisonCategoryLabel(x.category))}</h3>
       <p class="evidence">${esc((x.earlier && x.earlier.explanation) || '')}</p>
       ${comparisonFactList(x.earlier)}
       ${x.later ? `<p class="evidence"><b>In the later report:</b></p>${comparisonFactList(x.later)}` : ''}
-      <p class="evidence">Match: <b>${esc((x.match && x.match.state) || 'NONE')}</b>${x.match && x.match.cross_bureau ? ' · the two reports are from different bureaus' : ''}</p>
+      <p class="evidence">${esc(comparisonMatchLabel(x.match?.state))}${x.match?.cross_bureau ? ' The two reports are from different bureaus.' : ''}</p>
       <p class="evidence">${esc(x.uncertainty || '')}</p>
     </div>`).join('');
   block.innerHTML = `
@@ -2227,8 +2334,9 @@ function renderHistory(panel) {
     anywhere, and comparing reports never changes an earlier assessment or an approved packet.</p>
     ${notices()}
     <div id="history-body">Loading your reports…</div>`;
-  const accountId = state.account.account_id;
+  const accountId = state.account.account_id, ensureHistory = viewContext(false);
   api('GET', '/api/history').then((data) => {
+    try { ensureHistory(); } catch { return; }
     if (state.step !== STEP.HISTORY || !state.account || state.account.account_id !== accountId || !el('history-body')) return;
     const rows = data.assessments || [];
     const list = rows.length
@@ -2245,18 +2353,24 @@ function renderHistory(panel) {
       <div id="comparison"></div>`;
     if (rows.length >= 2) {
       el('cmp-right').selectedIndex = 1;
-      el('compare').onclick = async () => {
+      el('compare').onclick = () => run(async () => {
+        ensureHistory();
+        const left = el('cmp-left').value, right = el('cmp-right').value;
+        const ensureComparison = () => { ensureHistory(); if (el('cmp-left').value !== left || el('cmp-right').value !== right) throw cancelledAction(); };
         const block = el('comparison');
         if (block) block.innerHTML = '<p class="evidence">Comparing…</p>';
         try {
-          const compared = await api('GET', `/api/history/compare/${encodeURIComponent(el('cmp-left').value)}/${encodeURIComponent(el('cmp-right').value)}`);
+          const compared = await currentRequest(ensureComparison, 'GET', `/api/history/compare/${encodeURIComponent(left)}/${encodeURIComponent(right)}`);
           renderComparison(compared);
         } catch (err) {
-          if (block) block.innerHTML = `<div class="note stop"><span class="err">Refused:</span> ${esc(err.message)}</div>`;
+          if (err.cancelled) throw err;
+          if (block) block.innerHTML = `<div class="note stop"><span class="err">Please check:</span> ${esc(err.message)}</div>`;
         }
-      };
+      }, { redraw: false });
+      el('cmp-left').onchange = el('cmp-right').onchange = () => { if (el('comparison')) el('comparison').textContent = 'Choose Compare these two reports to update the comparison.'; };
     }
   }).catch(() => {
+    try { ensureHistory(); } catch { return; }
     if (state.step === STEP.HISTORY && el('history-body')) el('history-body').textContent = 'Your report history could not be loaded. Open this page again to retry.';
   });
 }
@@ -2264,31 +2378,34 @@ function renderHistory(panel) {
 /* ------------------------------------------------------------------ step 6: case and deletion */
 
 function renderCase(panel) {
+  if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in to manage your reports</h1>${supportContactBlock()}`; return; }
   if (!state.view) { panel.innerHTML = `${notices()}<h1>Open a case first</h1>`; return; }
   const view = state.view;
   panel.innerHTML = `
     <h1>Privacy, cases and deletion</h1>
-    <p class="lede">Status is what you record; nothing here is computed and nothing here proves that anything was sent.</p>
+    <p class="lede">Use these labels to keep track of your report. Changing a label does not send anything to the bureau.</p>
     ${notices()}
     <div class="obs">
-      <span class="pill">${esc(view.case.status)}</span>
+      <span class="pill">${esc(({ OPEN: 'Open', REVIEWED: 'Reviewed', RESPONSE_RECORDED: 'Reply received', CLOSED: 'Closed' })[view.case.status] || 'Open')}</span>
       <h3>${esc(regionLabel(view.case.country, view.case.region))}</h3>
       <p class="evidence">${esc(view.status_label || '')}</p>
-      ${['OPEN', 'REVIEWED', 'RESPONSE_RECORDED', 'CLOSED'].map((s) =>
-        `<button class="secondary" data-status="${s}" ${s === view.case.status ? 'disabled' : ''}>Mark ${s}</button>`).join('')}
+      ${[['OPEN', 'Open'], ['REVIEWED', 'Reviewed'], ['RESPONSE_RECORDED', 'Reply received'], ['CLOSED', 'Closed']].map(([s, label]) =>
+        `<button class="secondary" data-status="${s}" ${s === view.case.status ? 'disabled' : ''}>Mark ${label}</button>`).join('')}
     </div>
     <div class="obs" id="privacyInventory">Loading your stored documents and retention information…</div>
     <div class="obs">
       <h3>Deleting</h3>
-      <p class="evidence">Deleting a case removes its file bytes, its result sets and its downloads from this
-      machine. Afterwards the case id stops working for everyone, including you.</p>
-      <button class="danger" id="delete">Delete this case and its stored file</button>
+      <p class="evidence">Deleting a report removes its uploaded files, saved results and packets from your account. Save any copies you need first.</p>
+      <p class="evidence">Account deletion must stop any subscription renewal before your account can be removed. If this cannot be confirmed, your account stays available.</p>
+      <button class="danger" id="delete">Delete this report and its files</button>
       <button class="danger" id="deleteAccount">Delete my whole account</button>
     </div>`;
 
   const privacyAccount = state.account && state.account.account_id;
   const privacyCase = state.caseId;
+  const ensurePrivacy = viewContext();
   api('GET', '/api/privacy').then(data => {
+    try { ensurePrivacy(); } catch { return; }
     if (state.step !== STEP.CASE || state.caseId !== privacyCase || !state.account || state.account.account_id !== privacyAccount) return;
     const inventory = el('privacyInventory');
     if (!inventory) return;
@@ -2297,27 +2414,34 @@ function renderCase(panel) {
       <h3>Retention</h3><p>${esc(data.retention && data.retention.plain)}</p><p>Reports have no automatic expiry. Retention settings are not adjustable.</p>
       <p>${esc(data.deletion && data.deletion.backups)}</p><p>${esc(data.deletion && data.deletion.external_billing)}</p><p>${esc(data.pricing_location || '')}</p>`;
   }).catch(() => {
+    try { ensurePrivacy(); } catch { return; }
     if (state.step === STEP.CASE && state.caseId === privacyCase && el('privacyInventory')) el('privacyInventory').textContent = 'Your inventory could not be loaded. Open this page again to retry.';
   });
 
   for (const button of panel.querySelectorAll('[data-status]')) {
     button.onclick = () => run(async () => {
-      await api('PATCH', `/api/cases/${state.caseId}/status`, { status: button.dataset.status });
-      state.view = (await api('GET', `/api/cases/${state.caseId}`)).view;
-      state.notice = `Case marked ${button.dataset.status}.`;
+      const ensure = viewContext(), caseId = state.caseId;
+      await currentRequest(ensure, 'PATCH', `/api/cases/${caseId}/status`, { status: button.dataset.status });
+      state.view = (await currentRequest(ensure, 'GET', `/api/cases/${caseId}`)).view;
+      state.notice = 'Your report status is saved.';
     });
   }
   el('delete').onclick = () => run(async () => {
-    await api('DELETE', `/api/cases/${state.caseId}`);
-    state.cases = (await api('GET', '/api/cases')).cases;
+    const ensure = viewContext(), caseId = state.caseId;
+    if (!window.confirm?.('Delete this report? Its files, saved results and packets will be removed. Save any copies you need first. Choose Cancel to keep it.')) return;
+    await currentRequest(ensure, 'DELETE', `/api/cases/${caseId}`);
+    state.cases = (await currentRequest(ensure, 'GET', '/api/cases')).cases;
     state.caseId = null;
     state.view = null;
     state.step = 1;
-    state.notice = 'Case deleted. Its stored file and results are gone, and the case id no longer resolves.';
+    state.storageSnapshot = null;
+    state.notice = 'Report deleted. Its uploaded files, saved results and packets have been removed.';
   });
   el('deleteAccount').onclick = () => run(async () => {
+    if (!window.confirm?.('Delete your whole account? We must confirm that any subscription renewal is stopped first. Then your reports, ID copies, results and account details will be removed. Save any copies you need first. Choose Cancel to keep your account.')) return;
     accountEpoch++;
-    await api('DELETE', '/api/account');
+    const ensure = accountContext();
+    await currentRequest(ensure, 'DELETE', '/api/account');
     state.account = null;
     state.accountProfile = null; state.accountDocuments = [];
     state.cases = [];
@@ -2327,6 +2451,7 @@ function renderCase(panel) {
     state.billing = null;
     state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
     state.upgrade_confirmation = null;
+    state.storageSnapshot = null; state.savedReportFilter = '';
     rememberPendingCheckout({});
     state.step = 0;
     state.notice = 'Account deleted, along with every case and stored file.';
@@ -2350,15 +2475,15 @@ let supportSeq = 0;
 
 function renderSupport(panel) {
   if (!state.account) {
-    panel.innerHTML = `${notices()}<h1>Support</h1><p class="lede">Sign in to see your support reference. It belongs to your account.</p>`;
+    panel.innerHTML = `${notices()}<h1>Support</h1><p class="lede">Contact us if you need help signing in or using your report.</p>${supportContactBlock()}<p>Sign in to see your support reference.</p>`;
     return;
   }
   panel.innerHTML = `
     <h1>Support</h1>
-    <p class="lede">A support reference identifies the build you ran and the step you reached, without exposing your report. It needs no open case or upload.</p>
+    <p class="lede">Need help? Contact support and include your reference below. Your report is not included.</p>${supportContactBlock()}
     ${notices()}
     <div class="obs" id="supportInfo">Loading your support reference…</div>
-    <div class="note">Copying the summary does not send a message and does not submit a support request. Share it through a channel you already use.</div>`;
+    <div class="note">Copying the summary does not send a message. Use Contact support to open your email app, then send your request.</div>`;
 
   const accountId = state.account.account_id;
   const seq = ++supportSeq;
@@ -2372,10 +2497,10 @@ function renderSupport(panel) {
     box.innerHTML = `
       <h3>Your support reference</h3>
       <p class="evidence">Reference: <b id="supportReference">${esc(data.reference)}</b></p>
-      <p class="evidence">Build: <b>${esc(data.build_id)}</b> · Stage: <b>${esc(data.category)}</b></p>
       <p class="evidence">${esc(data.plain)}</p>
-      <p class="evidence">Redacted summary:</p>
+      <details class="support-technical"><summary>Details for support</summary><p class="evidence">Build: <b>${esc(data.build_id)}</b> · Stage: <b>${esc(data.category)}</b></p><p class="evidence">Summary without your report details:</p>
       <textarea id="supportSummary" rows="6" readonly aria-label="Redacted support summary">${esc(summary)}</textarea>
+      </details>
       <div class="row">
         <button class="primary" id="copyReference">Copy reference</button>
         <button class="primary" id="copySummary">Copy summary</button>
@@ -2475,7 +2600,12 @@ function renderBillingView(data) {
     ? `Your plan: <b>${esc(planName(ent.plan_code))}</b>${ent.expires_at ? `, active until ${esc(readableDate(ent.expires_at))}` : ''}.`
     : 'You have no active paid plan. You can still read and delete your saved files.';
 
-  const renewalLine = ent.access_via === 'ONE_TIME_CREDIT'
+  const cancellationAvailable = ent.renewal_cancellation_available ?? (ent.entitled && ent.access_via === 'SUBSCRIPTION' && !ent.cancel_at_period_end);
+  const renewalRecorded = ent.renewing_subscription_recorded ?? (ent.access_via === 'SUBSCRIPTION');
+  const renewalConfirmed = ent.renewal_status === 'CANCELLATION_CONFIRMED' || ent.cancel_at_period_end;
+  const renewalLine = renewalRecorded
+    ? renewalConfirmed ? 'Renewal is cancelled. Your paid access follows the date shown above.' : `Your subscription ${ent.entitled ? 'renews automatically' : 'can still renew'} ${ent.plan_code === 'annual' ? 'each year' : 'each month'}. Cancel renewal to stop future charges.`
+    : ent.access_via === 'ONE_TIME_CREDIT'
     ? 'This purchase is one-time. It does not renew, and no recurring payment will be taken.'
     : ent.access_via === 'SUBSCRIPTION'
       ? (ent.cancel_at_period_end
@@ -2483,11 +2613,9 @@ function renderBillingView(data) {
         : `Your subscription renews automatically ${ent.plan_code === 'annual' ? 'each year' : 'each month'} until you cancel.`)
       : 'You have no renewing subscription.';
 
-  const cancelBlock = ent.entitled && ent.access_via === 'SUBSCRIPTION'
-    ? (ent.cancel_at_period_end
-      ? '<p class="evidence">Renewal is already cancelled. Access continues to the recorded expiry, and what you have made stays readable.</p>'
-      : '<button class="secondary" id="cancelEntitlement">Cancel renewal</button><p class="evidence" id="cancelStatus"></p>')
-    : '';
+  const cancelBlock = cancellationAvailable
+    ? '<button class="secondary" id="cancelEntitlement">Cancel renewal</button><p class="evidence" id="cancelStatus"></p>'
+    : renewalConfirmed ? '<p class="evidence">Renewal is already cancelled. Saved results stay readable.</p>' : '';
 
   const creditLine = credit.eligible
     ? `You have <b>${esc(money(credit.credit_cents, credit.currency))}</b> from unused lower-plan payments. We apply your credit when you upgrade.`
@@ -2541,7 +2669,8 @@ function renderBillingView(data) {
   const cancel = el('cancelEntitlement');
   wireCurrencyChoice();
   if (cancel) cancel.onclick = () => run(async () => {
-    const result = await api('POST', '/api/entitlement/cancel', {});
+    const ensure = viewContext(false);
+    const result = await currentRequest(ensure, 'POST', '/api/entitlement/cancel', {});
     state.notice = result.plain || 'Cancellation recorded.';
   });
 }
