@@ -27,4 +27,10 @@ All writers start from reconciled 95617bad7a476641b7e083e63413f25b15495afa. No s
 
 Meaningful focused checks cover default-off behavior, MFA/session binding, forged permissions, last-owner protection, CSRF, revocation, cross-organization denial, data minimization, append-only audit, three-tier attribution/holds and stale packet refusal. Verify actual owner/staff/partner screens in a real browser at desktop/mobile widths. Use the adopted change-aware release workflow with one final full product regression because shared dispatch/security dependencies change. Retain failed evidence honestly. Implementation, local browser verification, hosted acceptance and production readiness remain separate statuses.
 
-Stop only for a critical decision that cannot safely be resolved within these boundaries. Routine implementation choices are authorized. Current status: AUTHORIZED_IN_PROGRESS; hosted acceptance and activation NOT_AUTHORIZED.
+Stop only for a critical decision that cannot safely be resolved within these boundaries. Routine implementation choices are authorized.
+
+## Local closure — October 14, 2026
+
+Current status: IMPLEMENTED_AND_TESTED_LOCALLY; source integrated into main. Tested executable source is `c9a1e2ccd1beb01e334407998695062e9164d256`, packaged as `crp-v1-e1882ec0a7bf63e7` with 176 shipped files. Fresh full product regression passed 16,249 assertions, zero failures and zero skipped across 175 sections; 10 release-tool suites and 37 syntax checks also passed. Source integration preserves all 176 shipped hashes and 368 tested source hashes. Actual Chrome and server/worker proofs used isolated fictional data.
+
+See `CRP_ADMIN_MANAGEMENT_LOCAL_2026_10_14.md` for outcome, original failed-attempt custody, final evidence, operator guidance and limitations. Administration remains default-off; no real owner bootstrap, existing service restart, external action or deployment occurred. Hosted acceptance is NOT_RUN and staging/production activation is NOT_AUTHORIZED. Other enhancements remain held. This closure applies only to the agreed local administration implementation; it does not close unrelated product or release obligations.

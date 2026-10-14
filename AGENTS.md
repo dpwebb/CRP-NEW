@@ -1,8 +1,10 @@
 # Owner imperatives
 
-## October 14 autonomous local administration build
+## October 14 administration implemented and integrated locally
 
-Read `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md`. The owner's latest explicit instruction lifts the earlier Admin UI/partner/three-level-affiliate implementation hold for this bounded local build. Other unspecified enhancements remain held. Use isolated writer worktrees, server-owned permissions, session MFA, separate private admin metadata and explicit consumer grants for fulfillment. Do not restart the existing operational service, alter its real account/store, deploy, pay affiliates or send mail. The reconciled main source is 95617bad7a476641b7e083e63413f25b15495afa; old primary-checkpoint statements below are historical.
+Read `CRP_ADMIN_MANAGEMENT_LOCAL_2026_10_14.md` and `CRP_OWNER_ADMIN_MANAGEMENT_WORK_ORDER_001.md`. Owner/staff administration, separately permissioned referral/fulfillment partner workspaces and three-level affiliate management are IMPLEMENTED_AND_TESTED_LOCALLY. Main was fast-forwarded to tested executable source `c9a1e2ccd1beb01e334407998695062e9164d256`; subsequent closure changes are documentation only. The packaged 176-file candidate is `crp-v1-e1882ec0a7bf63e7`. Fresh full regression passed 16,249/0/0 across 175 sections, with 368 matching source hashes, no drift and no unrun current product sections; 10 tooling suites and 37 syntax checks passed. Main's 176 shipped files and all 368 tested sources match the accepted evidence.
+
+Administration remains disabled by default. No existing owner was bootstrapped and no running service was enabled or restarted. Existing local runtime PID 20396 still serves `crp-local-operational-52ee45aade7aee92` from the separate operational checkout. Staging and production acceptance for the administration candidate remain NOT_RUN; activation, provider actions, payouts, mailing and push remain NOT_AUTHORIZED. Other unspecified enhancements remain held. Earlier admin holds and primary-checkpoint statements below retain their historical scope and are superseded by this bounded local implementation entry. Preserve the current operational checkout/account/store and all historical evidence.
 
 ## October 14 reconciled local source
 
