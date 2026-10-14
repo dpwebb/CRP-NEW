@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 13 owner-authorized P3 staging activation
+
+Read `CRP_P3_STAGING_2026_10_13.md` for current hosted provenance. Staging is crp-v1-331f32a35d213383 (165 files), packaged source 450fc36; full release checks passed 15,986/0/0 and seven fresh hosted worker journeys passed using the existing full-access staging account. Original staging rows and 92 blobs were verified. Production remains crp-v1-9f2657b12661c219, PID 2103501, unchanged. Exact-build 30-gate acceptance and separate production authorization remain pending. Earlier no-deployment entries retain their historical scope.
+
 ## October 13 operational candidate and current provenance
 
 Latest P3 follow-up: read `CRP_P3_CLEANUP_LOCAL_2026_10_13.md` and the updated operational review. Local runtime is `crp-local-operational-331f32a35d213383` (165 shipped files), implementation `bf45192` after `2b89124`. Full regression passed 15,986/0/0 across 170 sections, 332 unchanged tested sources and all four restorations; all-82 evidence passed 5,218 assertions against the 69-entry active registry. Eight already-retired defaults were removed from active labels/factories and new saved-result views; older 77-entry proof retains historical scope. Unused form sources were removed, with originals preserved in Git/proof archives. The same account/data and seven fresh worker journeys passed. Confirmed broken legacy runners/containers and stale failed records were cleaned up without app deployment; existing hosted build/PIDs were preserved. Remaining P1/P2 and operational boundaries remain explicit in the review. The earlier P2 note below retains its historical source/proof scope.
