@@ -20,6 +20,9 @@ const { SOURCE_AUDIT_FILES, LANE_IDS } = require('./verification-lanes.cjs');
 
 const OUT_DIR = path.join(__dirname, '..', 'out');
 const SECTION_FILES = [
+  'gb-admin-access.cjs',
+  'gc-admin-service.cjs',
+  'gd-admin-http-browser.cjs',
   'ga-packet-review-mailing.cjs',
   'fz-signup-user-experience.cjs',
   'fy-operational-hardening.cjs',

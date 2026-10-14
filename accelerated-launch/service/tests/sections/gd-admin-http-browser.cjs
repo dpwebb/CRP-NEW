@@ -89,16 +89,65 @@ async function run(disabled, check) {
     await page.getByText('Browser Created Partners', { exact: true }).waitFor();
     check.ok((await ownerRequest('GET', '/api/admin/organizations?q=Browser')).json.items.some(row => row.name === 'Browser Created Partners'), 'actual browser organization form persists through the guarded API');
     const out = path.resolve(__dirname, '../../out/admin-browser'); fs.mkdirSync(out, { recursive: true });
-    for (const width of [1440, 390]) { await page.setViewportSize({ width, height: 1000 }); await page.screenshot({ path: path.join(out, 'owner-' + width + '.png'), fullPage: true }); check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'admin has no horizontal overflow at ' + width + 'px'); }
+    for (const width of [1440, 390]) { await page.setViewportSize({ width, height: 1000 }); await page.screenshot({ path: path.join(out, 'owner-' + width + '.png'), fullPage: true, animations: 'disabled' }); check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'admin has no horizontal overflow at ' + width + 'px'); }
+    await page.locator('#menu-toggle').click(); await page.waitForFunction(() => document.querySelector('#menu-toggle').getAttribute('aria-expanded') === 'true');
+    check.ok(await page.locator('#mobile-backdrop').isVisible(), 'mobile navigation opens with a dismissible backdrop');
+    await page.keyboard.press('Escape'); await page.waitForFunction(() => document.querySelector('#menu-toggle').getAttribute('aria-expanded') === 'false');
+    check.ok(await page.locator('#mobile-backdrop').isHidden(), 'Escape dismisses mobile navigation and returns its control state');
+    const partnerContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    await partnerContext.addCookies([{ name: 'crp_session', value: partner.token, url: t.base, httpOnly: true, sameSite: 'Strict' }, { name: 'crp_admin_session', value: partnerProof, domain: '127.0.0.1', path: '/api/admin/', httpOnly: true, sameSite: 'Strict' }]);
+    const partnerPage = await partnerContext.newPage(); await partnerPage.goto(t.base + '/admin#fulfillment'); await partnerPage.getByText(job.job_id, { exact: true }).waitFor();
+    check.equal(await partnerPage.locator('[data-view="accounts"],[data-view="team"],[data-view="organizations"],[data-view="affiliates"]').count(), 0, 'actual fulfillment-partner navigation excludes account, owner and affiliate workspaces');
+    const downloaded = partnerPage.waitForEvent('download'); await partnerPage.getByRole('link', { name: 'Open packet ↗', exact: true }).click(); const attachment = await downloaded;
+    await attachment.saveAs(path.join(out, 'partner-approved-packet.pdf'));
+    check.ok(fs.readFileSync(path.join(out, 'partner-approved-packet.pdf')).equals(partnerPacket.bytes), 'actual partner browser link downloads only the granted approved bytes');
+    await partnerPage.screenshot({ path: path.join(out, 'partner-1440.png'), fullPage: true, animations: 'disabled' });
+    const staffContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    await staffContext.addCookies([{ name: 'crp_session', value: staff.token, url: t.base, httpOnly: true, sameSite: 'Strict' }, { name: 'crp_admin_session', value: staffProof, domain: '127.0.0.1', path: '/api/admin/', httpOnly: true, sameSite: 'Strict' }]);
+    const staffPage = await staffContext.newPage(); await staffPage.goto(t.base + '/admin#accounts'); await staffPage.getByText(consumer.email, { exact: true }).waitFor();
+    check.equal(await staffPage.locator('[data-view="team"],[data-view="organizations"],[data-view="affiliates"],[data-view="fulfillment"]').count(), 0, 'actual staff navigation follows the assigned account-read capability');
+    await staffContext.close(); await partnerContext.close();
     const consumerContext = await browser.newContext({ viewport: { width: 390, height: 1000 } });
     await consumerContext.addCookies([{ name: 'crp_session', value: consumer.token, url: t.base, httpOnly: true, sameSite: 'Strict' }]);
     const consent = await consumerContext.newPage(); await consent.goto(t.base + '/partner-access?organization=' + organization.org_id + '&case=' + route.split('/').at(-1));
-    await consent.locator('#access-panel').waitFor(); await consent.locator('#choose-form button').click(); await consent.getByText('Fictional Fulfillment Partners', { exact: true }).waitFor();
+    await consent.locator('#access-panel').waitFor();
+    let releaseLookup, lookupStarted; const held = new Promise(resolve => { releaseLookup = resolve; }), started = new Promise(resolve => { lookupStarted = resolve; });
+    const orgPattern = '**/api/fulfillment-organizations/' + organization.org_id;
+    await consent.route(orgPattern, async intercepted => { lookupStarted(); await held; await intercepted.continue(); });
+    await consent.locator('#choose-form button').click(); await started;
+    const orgResponse = consent.waitForResponse(response => new URL(response.url()).pathname === '/api/fulfillment-organizations/' + organization.org_id);
+    await consent.locator('#organization').fill('changed-organization'); releaseLookup();
+    check.equal((await orgResponse).status(), 200, 'delayed organization response comes from the real service');
+    await consent.waitForFunction(() => !document.querySelector('#choose-form button').disabled);
+    check.ok(await consent.locator('#review').isHidden(), 'late organization response cannot restore consent for an earlier selection');
+    await consent.unroute(orgPattern); await consent.locator('#organization').fill(organization.org_id);
+    await consent.locator('#choose-form button').click(); await consent.locator('#review').waitFor(); await consent.locator('#consent').check();
+    await consent.getByRole('button', { name: 'Allow access to this packet', exact: true }).click(); await consent.getByText('Access allowed for this approved packet. You can revoke it below.', { exact: true }).waitFor();
+    check.equal((await requestConsumer('GET', route + '/fulfillment-grants')).json.items.filter(row => row.status === 'ACTIVE').length, 1, 'actual consumer allow control preserves idempotent exact-packet consent');
+    await ownerRequest('PATCH', '/api/admin/organizations/' + organization.org_id, { status: 'DISABLED' });
+    await consent.locator('#choose-form button').click(); await consent.getByText('This organization is unavailable for new access. You can still revoke existing access below.', { exact: true }).waitFor();
+    check.ok(await consent.getByRole('button', { name: 'Revoke access', exact: true }).isVisible(), 'disabled organization never hides the consumer revoke control');
     await consent.getByRole('button', { name: 'Revoke access', exact: true }).click(); await consent.getByText('Partner access revoked. Previously downloaded copies cannot be recalled.', { exact: true }).waitFor();
-    check.equal((await partnerRequest('GET', '/api/admin/fulfillment/' + job.job_id + '/packet')).status, 404, 'real consumer revoke control immediately removes partner document access');
+    await ownerRequest('PATCH', '/api/admin/organizations/' + organization.org_id, { status: 'ACTIVE' });
+    check.equal((await ownerRequest('GET', '/api/admin/fulfillment/' + job.job_id + '/packet')).status, 404, 'real consumer revoke control removes document access even after the organization is re-enabled');
     await consent.screenshot({ path: path.join(out, 'consumer-access-390.png'), fullPage: true });
     check.equal(await consent.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'consumer access page fits mobile');
     await consumerContext.close(); await context.close();
+    const brokenDir = require('../harness.cjs').temporaryDataDir('admin-failure');
+    fs.mkdirSync(path.join(brokenDir, 'admin'), { recursive: true });
+    fs.writeFileSync(path.join(brokenDir, 'admin', '.initialized'), 'deliberately missing signed history');
+    const isolated = require('../../app.cjs').createService({ dataDir: brokenDir, geoLocate: async () => 'CA', registrationMailer: async () => {}, logSink: () => {} });
+    const ordinary = require('../../accounts.cjs').createAccount(isolated.store, { email: 'admin-failure-consumer@example.test', password });
+    const listener = require('node:http').createServer((req, res) => isolated.handle(req, res));
+    try {
+      await new Promise(resolve => listener.listen(0, '127.0.0.1', resolve)); const base = 'http://127.0.0.1:' + listener.address().port;
+      check.equal((await fetch(base + '/api/cases', { headers: { Authorization: 'Bearer ' + ordinary.token } })).status, 200, 'unavailable optional admin metadata does not stop ordinary consumer operations');
+      check.equal((await fetch(base + '/api/admin/session', { headers: { Authorization: 'Bearer ' + ordinary.token } })).status, 503, 'unavailable optional admin metadata fails closed only for admin operations');
+    } finally {
+      await new Promise(resolve => listener.close(resolve)); isolated.close();
+      if (!path.resolve(brokenDir).startsWith(path.join(require('node:os').tmpdir(), 'crp-b2-admin-failure-'))) throw Error('Unexpected disposable fixture path');
+      fs.rmSync(brokenDir, { recursive: true, force: true });
+    }
     return { actual_browser: true, default_off: true, csrf_refused: true, scoped_cookie: true, consumer_revocation: true, screenshots: ['owner-1440.png', 'owner-390.png', 'consumer-access-390.png'] };
   } finally { if (browser) await browser.close(); await t.close(); if (before === undefined) delete process.env.CRP_ADMIN_ENABLED; else process.env.CRP_ADMIN_ENABLED = before; }
 }

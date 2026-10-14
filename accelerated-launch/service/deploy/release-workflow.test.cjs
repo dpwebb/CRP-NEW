@@ -107,6 +107,23 @@ for(const corrupt of [
 console.log('PASS: FDT numeric thresholds, raw-receipt mismatch and missing hosted/custody proof rejection');
 (async()=>{
   const originalFetch=global.fetch;let requests=0;global.fetch=async()=>{requests++;throw Error('UNIT_FIXTURE_ONLY refuses network');};
-  try{await assert.rejects(()=>require('./release-workflow.cjs').smoke('https://fictional.invalid','crp-v1-'+'0'.repeat(16),manifest,'UNIT_FIXTURE_ONLY'),/artifact manifest/);assert.equal(requests,0);console.log('PASS: mismatched smoke artifact/build rejected before any hosted request');}
+  try{
+    const {smoke}=require('./release-workflow.cjs');
+    await assert.rejects(()=>smoke('https://fictional.invalid','crp-v1-'+'0'.repeat(16),manifest,'UNIT_FIXTURE_ONLY'),/artifact manifest/);assert.equal(requests,0);
+    const body=name=>Buffer.from('fictional asset '+name),names=['admin.html','admin.css','admin.js','partner-access.html','partner-access.css','partner-access.js'];
+    const rows=names.map(name=>({file:'accelerated-launch/service/ui/'+name,sha256:crypto.createHash('sha256').update(body(name)).digest('hex').toUpperCase()}));
+    const group={id:'SERVED_ASSETS',files:rows,file_count:rows.length,digest:digest(rows)};
+    const candidate={groups:[group],total_file_count:rows.length,manifest_digest:digest([{file:'group:SERVED_ASSETS',sha256:group.digest}])},build='crp-v1-'+candidate.manifest_digest.slice(0,16).toLowerCase();
+    let enabled=false,exposed=false,available=true,badBytes=false;
+    global.fetch=async value=>{const url=new URL(value);if(url.pathname==='/api/health')return Response.json({ok:true,build_id:build,deployment:'staging',billing_mode:'test',administration_enabled:enabled,administration_available:available});
+      if(!enabled&&!exposed)return new Response('missing',{status:404});const name=url.pathname==='/admin'?'admin.html':url.pathname==='/partner-access'?'partner-access.html':url.pathname.slice(1);return new Response(badBytes?'modified asset':body(name));};
+    const off=await smoke('https://fictional.invalid',build,candidate,path.join(temp,'admin-off-smoke.json'));assert.equal(off.checks.length,8);assert.equal(off.checks.every(row=>row.status===404),true);
+    exposed=true;await assert.rejects(()=>smoke('https://fictional.invalid',build,candidate,path.join(temp,'exposed-smoke.json')),/unexpectedly exposed/);exposed=false;
+    enabled=true;await assert.rejects(()=>smoke('https://fictional.invalid',build,candidate,path.join(temp,'wrong-feature-smoke.json')),/feature state mismatch/);
+    assert.equal((await smoke('https://fictional.invalid',build,candidate,path.join(temp,'admin-on-smoke.json'),{adminEnabled:true})).passed,true);
+    badBytes=true;await assert.rejects(()=>smoke('https://fictional.invalid',build,candidate,path.join(temp,'bad-bytes-smoke.json'),{adminEnabled:true}),/bytes mismatch/);badBytes=false;
+    available=false;await assert.rejects(()=>smoke('https://fictional.invalid',build,candidate,path.join(temp,'unavailable-admin-smoke.json'),{adminEnabled:true}),/feature state mismatch/);
+    console.log('PASS: smoke rejects wrong identity, unexpected admin exposure, feature mismatch, unavailable admin metadata and changed bytes; disabled/enabled assets and aliases verified');
+  }
   finally{global.fetch=originalFetch;}
 })().catch(error=>{console.error(error);process.exitCode=1;});

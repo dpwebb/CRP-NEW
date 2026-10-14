@@ -215,7 +215,7 @@ function packageCandidate(p, verificationFile, out) {
   sourceFrozen(p);
   return receipt;
 }
-async function smoke(url, build, manifest, out) {
+async function smoke(url, build, manifest, out, options = {}) {
   manifestValid(manifest);
   if(build!=='crp-v1-'+manifest.manifest_digest.slice(0,16).toLowerCase())throw Error('Smoke build does not match the artifact manifest');
   const base=new URL(url); if(base.protocol!=='https:' && !['127.0.0.1','localhost'].includes(base.hostname))throw Error('HTTPS required');
@@ -224,9 +224,18 @@ async function smoke(url, build, manifest, out) {
   const deployment=base.hostname==='creditregulatorpro.com'?'production':base.hostname==='staging.creditregulatorpro.com'?'staging':h.deployment;
   if(h.deployment!==deployment || h.billing_mode!==(deployment==='production'?'live':'test'))throw Error('Hosted deployment or billing mode mismatch');
   const assets=manifest.groups.find(g=>g.id==='SERVED_ASSETS');if(!assets)throw Error('Missing served assets');
+  const adminAssets = /^(admin|partner-access)\.(html|css|js)$/;
+  const hasAdministration = assets.files.some(f => adminAssets.test(path.basename(f.file)));
+  const adminEnabled = options.adminEnabled ?? false;
+  if (typeof adminEnabled !== 'boolean') throw Error('Explicit boolean admin feature expectation required');
+  if (hasAdministration && (h.administration_enabled !== adminEnabled || adminEnabled && h.administration_available !== true)) throw Error('Hosted administration feature state mismatch');
   const checks=await Promise.all(assets.files.map(async f=>{
     const asset=path.basename(f.file);
     const res=await fetch(new URL('/'+asset,base),{signal:AbortSignal.timeout(15000)});
+    if (adminAssets.test(asset) && !adminEnabled) {
+      if (res.status !== 404) throw Error('Disabled administration asset unexpectedly exposed: ' + asset);
+      return { file: f.file, passed: true, status: 404, expected: 'Administration explicitly disabled' };
+    }
     if(deployment==='production' && /^(mailing-preview|referrals|score-simulator)\.(html|css|js)$/.test(asset)) {
       if(res.status!==404)throw Error('Optional production preview unexpectedly exposed: '+asset);
       return {file:f.file,passed:true,status:404,expected:'Optional previews disabled in production'};
@@ -234,7 +243,13 @@ async function smoke(url, build, manifest, out) {
     if(!res.ok || sha(Buffer.from(await res.arrayBuffer()))!==f.sha256.toUpperCase())throw Error('Hosted bytes mismatch: '+asset);
     return {file:f.file,passed:true,sha256:f.sha256};
   }));
-  const receipt={build_id:build,host:base.origin,checked_at:new Date().toISOString(),health:h,checks,passed:true,scope:'Public health and exact served assets; does not establish purchase or packet journey acceptance'};
+  if (hasAdministration) for (const [alias, file] of [['/admin','admin.html'],['/partner-access','partner-access.html']]) {
+    const response = await fetch(new URL(alias,base),{signal:AbortSignal.timeout(15000)});
+    const row = assets.files.find(f => path.basename(f.file) === file);
+    if (!row || (!adminEnabled && response.status !== 404) || (adminEnabled && (!response.ok || sha(Buffer.from(await response.arrayBuffer())) !== row.sha256.toUpperCase()))) throw Error('Administration entry route mismatch: ' + alias);
+    checks.push({route:alias,passed:true,status:response.status,expected:adminEnabled?'Exact committed asset':'Administration explicitly disabled'});
+  }
+  const receipt={build_id:build,host:base.origin,checked_at:new Date().toISOString(),health:h,checks,feature_configuration:hasAdministration?{administration_enabled:adminEnabled}:null,passed:true,scope:'Public health, explicit feature configuration and exact served assets; does not establish purchase or packet journey acceptance'};
   write(out,receipt);return receipt;
 }
 function validateFdtProof(evidence,full,sourceRoot,fullSha,build,productContext=null) {
@@ -342,7 +357,7 @@ function preparePromotionProof(acceptanceFile,pkg,out,options){
   const proof=prepareAcceptanceProof(acceptanceFile,pkg,out,options);
   write(file,{...proof,request,package_identity:sha(JSON.stringify({build_id:pkg.build_id,git_head:pkg.git_head,manifest_digest:pkg.manifest_digest,files:pkg.files}))});return proof;
 }
-async function activate(target, packageFile, previous, acceptanceFile, out) {
+async function activate(target, packageFile, previous, acceptanceFile, out, options = {}) {
   if(!['staging','production'].includes(target))throw Error('Unknown deployment target');
   if(!/^crp-v1-[a-f0-9]{16}$/.test(previous))throw Error('Expected previous build required');
   const candidate=artifact.loadArtifact(packageFile),r=candidate.receipt,currentManifest=candidate.manifest;
@@ -365,7 +380,7 @@ async function activate(target, packageFile, previous, acceptanceFile, out) {
     const prior=read(completed);
     if(prior.build_id!==r.build_id || prior.target!==target || prior.previous_build!==previous || prior.package_receipt_sha256!==hash(packageFile))throw Error('Completed activation belongs to another artifact or predecessor');
     if(!await probe())throw Error('Previously completed artifact is no longer current on the host');
-    await smoke(url,r.build_id,currentManifest,path.join(out,'fresh-smoke-'+crypto.randomUUID()+'.json'));
+    await smoke(url,r.build_id,currentManifest,path.join(out,'fresh-smoke-'+crypto.randomUUID()+'.json'), options);
     return {...prior,reused:true,fresh_exact_host:true,fresh_public_smoke:true};
   }
   const proof=target==='production'?require(inside(sourceRoot,'accelerated-launch/service/deploy/release-workflow.cjs')).preparePromotionProof(acceptanceFile,r,out,{evidenceRoot,sourceRoot}):null;
@@ -376,7 +391,7 @@ async function activate(target, packageFile, previous, acceptanceFile, out) {
     if(proof)await transfer(proof.archive,remote+'-proof.tar.gz',proof.sha256);
     await transfers.activateObserved({probe,record,activate:async()=>run('ssh',['hostinger-vps','bash',activationRemote,r.build_id,remote+'.tar.gz',r.archive_sha256,previous,r.manifest_digest,String(r.files),r.git_head,...(proof?[remote+'-proof.tar.gz',proof.sha256]:[])],path.join(attempt,'activation.log'))});
   }catch(error){write(path.join(attempt,'failed.json'),{target,build_id:r.build_id,failed_at:new Date().toISOString(),passed:false,reason:error.message});throw error;}
-  try {await smoke(url,r.build_id,currentManifest,path.join(attempt,'public-smoke.json'));}
+  try {await smoke(url,r.build_id,currentManifest,path.join(attempt,'public-smoke.json'), options);}
   catch(e) {await rollback(target,r.build_id,path.join(attempt,'failed-smoke-rollback'),sourceRoot);throw Error('Hosted smoke failed; previous release restored: '+e.message);}
   const completedRecord={target,build_id:r.build_id,previous_build:previous,package_receipt_sha256:hash(packageFile),staging_acceptance_sha256:target==='production'?hash(acceptanceFile):null,activated_at:new Date().toISOString(),public_smoke:'PASS',journey_acceptance:target==='staging'?'PENDING':'EXACT_BUILD_STAGING_ACCEPTED'};
   write(path.join(out,'activation.json'),completedRecord);return completedRecord;
@@ -446,11 +461,11 @@ async function main() {
   else if(command==='preflight'){const p=read(args[0]);frozen(p);const r=prepareInputs(p,{profileFile:args[1]});console.log(JSON.stringify({...r.preflight,product_reuse:r.productReuse?'REVIEWED_COMPLETE_INPUT_PROFILE':'DISABLED_WITHOUT_COMPLETE_INPUT_PROFILE'}));}
   else if(command==='check') {const r=await check(read(args[0]),path.resolve(args[1]),{profileFile:args[2]});console.log(JSON.stringify({mode:r.mode,syntax_checks:r.syntax_checks,workflow_tests:r.workflow_tests,product_regression:r.product_regression,current_tests:r.current_tests,duration_ms:r.duration_ms,resumed_steps:r.resumed_steps,avoided_invocations:r.avoided_invocations,verification_file:r.verification_file}));}
   else if(command==='package') console.log(JSON.stringify(packageCandidate(read(args[0]),path.resolve(args[1]),path.resolve(args[2]))));
-  else if(command==='smoke') {const candidate=args[3]?artifact.loadArtifact(path.resolve(args[3])):null;const r=await smoke(args[0],args[1],candidate?candidate.manifest:read(path.join(__dirname,'release-manifest.json')),path.resolve(args[2]));console.log(JSON.stringify({build_id:r.build_id,host:r.host,checks:r.checks.length+1,passed:r.passed}));}
+  else if(command==='smoke') {if(args[4] && !['admin-enabled','admin-disabled'].includes(args[4]))throw Error('Unknown administration feature expectation');const candidate=args[3]?artifact.loadArtifact(path.resolve(args[3])):null;const r=await smoke(args[0],args[1],candidate?candidate.manifest:read(path.join(__dirname,'release-manifest.json')),path.resolve(args[2]),{adminEnabled:args[4]==='admin-enabled'});console.log(JSON.stringify({build_id:r.build_id,host:r.host,checks:r.checks.length+1,passed:r.passed}));}
   else if(command==='continuity') {const p=read(args[0]),candidate=artifact.loadArtifact(path.resolve(args[2])),v=readVerification(path.resolve(args[1]));const result=require('./release-continuity.cjs').buildComposite({root:p.workspace_root||ROOT,plan:p,baselineFile:p.baseline.file,focusedFile:v.value.product_receipt?.receipt_file||null,toolsVerificationFile:v.file,candidate:candidate.receipt,outputDirectory:path.resolve(args[3])});console.log(JSON.stringify({kind:result.kind,proof_file:result.proofFile}));}
   else if(command==='assemble')console.log(JSON.stringify(assembleProductProof(path.resolve(args[0]),path.resolve(args[1]),path.resolve(args[2]),path.resolve(args[3]),args[4]?path.resolve(args[4]):null)));
   else if(command==='record')console.log(JSON.stringify(execution.readRecord(path.resolve(args[0]))));
-  else if(command==='activate')console.log(JSON.stringify(await activate(args[0],path.resolve(args[1]),args[2],args[3]==='-'?null:path.resolve(args[3]),path.resolve(args[4]))));
+  else if(command==='activate'){if(args[5] && !['admin-enabled','admin-disabled'].includes(args[5]))throw Error('Unknown administration feature expectation');console.log(JSON.stringify(await activate(args[0],path.resolve(args[1]),args[2],args[3]==='-'?null:path.resolve(args[3]),path.resolve(args[4]),{adminEnabled:args[5]==='admin-enabled'})));}
   else if(command==='rollback')await rollback(args[0],args[1],path.resolve(args[2]));
   else if(command==='attest') {const r=attest(read(args[0]),path.resolve(args[1]),path.resolve(args[2]),args[3]||'provider');console.log(JSON.stringify({original_build:r.original_receipt.build_id,unchanged_dependencies:r.unchanged_dependencies.length,configuration_reuse:r.configuration_reuse}));}
   else throw Error('Usage: release-workflow.cjs prepare|plan BASE [BASELINE] [PLAN] | preflight PLAN [PROFILE_JSON] | check PLAN OUTPUT [PROFILE_JSON] | record OUTPUT | attest PLAN ORIGINAL_RECEIPT OUTPUT [provider|packet|product] | package PLAN VERIFICATION OUTPUT | continuity PLAN VERIFICATION PACKAGE OUTPUT | assemble PACKAGE PRODUCT_PROOF EVIDENCE_ROOT OUTPUT [FDT_TEMPLATE] | smoke URL BUILD RECEIPT [PACKAGE] | activate staging|production PACKAGE EXPECTED_PREVIOUS ACCEPTANCE_OR_DASH OUTPUT | rollback TARGET EXPECTED_CURRENT OUTPUT');

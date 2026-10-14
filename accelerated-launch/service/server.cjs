@@ -9,7 +9,7 @@ const PORT = Number(process.env.CRP_LOCAL_SERVICE_PORT || 8787);
 const dispatcher = new ProcessingDispatcher();
 const requestPolicy=require('./request-policy.cjs').policy();
 let recovery;
-const identity = () => ({ ok: dispatcher.ready && !dispatcher.closed, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: recovery?.payment?.key_mode || null, launch_ready: false });
+const identity = () => ({ ok: dispatcher.ready && !dispatcher.closed, build_id: process.env.CRP_BUILD_ID || 'local-development', deployment: process.env.CRP_DEPLOYMENT_ENV || 'local', billing_mode: recovery?.payment?.key_mode || null, administration_enabled: process.env.CRP_ADMIN_ENABLED === '1', administration_available: recovery?.administration?.available === true, launch_ready: false });
 const server = http.createServer((req, res) => {
   let pathname;
   try { pathname = new URL(req.url, 'http://localhost').pathname; } catch { return refusal(res, 'INVALID_REQUEST', 400); }

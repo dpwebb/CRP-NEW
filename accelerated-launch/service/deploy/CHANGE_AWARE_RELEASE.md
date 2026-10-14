@@ -120,6 +120,8 @@ Staging activation and production activation each require their separate authori
 
 After an authorized activation, use the packaged manifest for fresh public byte checks:
 
+For artifacts containing the optional admin portal, smoke defaults to an explicit disabled expectation: health must report `administration_enabled:false` and all gated assets/aliases must return 404. This does not waive private manifest/source verification. A separately authorized enabled rollout supplies final `admin-enabled` to `smoke` after the package receipt, and to `activate` after its output directory; it requires enabled/available health and exact asset bytes. These are verification expectations and do not change server configuration. Missing/mismatched feature state or unexpected exposure fails acceptance.
+
 ```powershell
 node $releaseCli smoke https://staging.creditregulatorpro.com $candidateBuild "$releaseOut/staging-smoke.json" $candidateReceipt
 node $releaseCli smoke https://creditregulatorpro.com $candidateBuild "$releaseOut/production-smoke.json" $candidateReceipt

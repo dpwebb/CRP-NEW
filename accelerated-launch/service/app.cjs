@@ -804,8 +804,12 @@ function createService(options) {
   const store = new PrivateStore(opts.dataDir);
   // Administrative metadata is opt-in and has its own schema and sole writer.
   // A normal consumer service never opens or migrates this optional store.
-  const adminStore = process.env.CRP_ADMIN_ENABLED === '1'
-    ? new (require('./admin-store.cjs').AdminStore)(store.dataDir, { consumerStore: store }) : null;
+  const adminEnabled = process.env.CRP_ADMIN_ENABLED === '1';
+  let adminStore = null, adminUnavailable = false;
+  if (adminEnabled) {
+    try { adminStore = new (require('./admin-store.cjs').AdminStore)(store.dataDir, { consumerStore: store }); }
+    catch { adminUnavailable = true; }
+  }
   const logger = new Logger(opts.logSink);
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
@@ -828,6 +832,7 @@ function createService(options) {
       store_recovered_from_backup: store.recoveredFromBackup === true,
       state: store.integrity(),
       payment: payments.describeProvider(process.env),
+      administration: { enabled: adminEnabled, available: Boolean(adminStore) },
       plain: 'Lapsed sessions and purchases were expired, and bytes a crash left behind were cleared. No report was read, moved or transmitted.'
     });
     logger.log({ event: 'SERVICE_STARTUP_RECOVERY', outcome: 'OK', count: recovery.orphan_blobs_removed });
@@ -855,7 +860,8 @@ function createService(options) {
 
       const consumerGrant = /^\/api\/cases\/[^/]+\/fulfillment-grants(?:\/[^/]+)?$/.test(urlPath) || /^\/api\/fulfillment-organizations\/[^/]+$/.test(urlPath);
       if (urlPath.startsWith('/api/admin/') || consumerGrant) {
-        if (!adminStore) throw new ServiceError('NOT_FOUND');
+        if (!adminEnabled) throw new ServiceError('NOT_FOUND');
+        if (adminUnavailable) throw new ServiceError('SERVICE_STATE_UNAVAILABLE');
         const token = sessionToken(req);
         const actor = accounts.resolveSession(store, token);
         require('./signup-security.cjs').requireReady(store, actor);
@@ -920,7 +926,7 @@ function createService(options) {
       const adminError = AdminError && err instanceof AdminError;
       const serviceError = err instanceof ServiceError || adminError
         ? err
-        : (err && err.code === 'SERVICE_STATE_UNAVAILABLE' ? new ServiceError('SERVICE_STATE_UNAVAILABLE') : null);
+        : (err && (err.code === 'SERVICE_STATE_UNAVAILABLE' || /^ADMIN_(?:STATE_UNAVAILABLE|AUDIT_IMMUTABLE|STORE_ALREADY_HAS_WRITER)$/.test(err.code || '')) ? new ServiceError('SERVICE_STATE_UNAVAILABLE') : null);
       const refusal = adminError ? { ok: false, error: { code: err.code, message: err.message, detail: null } } : serviceError ? toBody(serviceError) : toBody(err);
       const status = serviceError ? serviceError.status : 500;
       /* No path, no query, no body and no header value is ever passed to the log sink. */
