@@ -55,6 +55,7 @@ async function run(t, check) {
     check.equal(t.resetMessages.filter(message => message.to === 'ge-no-account@example.test').length, 0, 'unknown email receives the same confirmation without sending a message');
     const unknownConfirmation = await page.locator('#consumer-notice').innerText();
     await page.locator('#reset-email').fill(email); await page.locator('#request-email-reset').click();
+    await page.waitForFunction(() => document.getElementById('request-email-reset')?.disabled === false);
     await page.getByText(confirmation, { exact: true }).waitFor();
     check.equal(await page.locator('#consumer-notice').innerText(), unknownConfirmation, 'known and unknown account emails show identical consumer confirmation');
     const mail = t.resetMessages.findLast(message => message.to === email && message.kind === 'password-reset');
