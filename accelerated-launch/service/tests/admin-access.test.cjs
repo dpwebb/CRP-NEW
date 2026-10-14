@@ -46,6 +46,31 @@ async function run(onCheck) {
       refuses(() => access.bootstrapOwner(admin, {account_id: second.actor.account_id, code: security.totp(second.secret, clock)}), 'NOT_AUTHORIZED');
     });
     check('pre-enrollment consumer session does not count as admin MFA proof', () => refuses(() => access.principal(admin, owner.actor, owner.token), 'TWO_FACTOR_REQUIRED'));
+    check('owner routing verifies the current session without consuming MFA or unlocking administration', () => {
+      const beforeAdmin = JSON.stringify(admin.state()), beforeConsumer = JSON.stringify(consumer.state());
+      assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), '/admin');
+      assert.equal(access.ownerSignInPath(admin, owner.actor, staff.token), null);
+      assert.equal(access.ownerSignInPath(admin, owner.actor, 'forged-session'), null);
+      assert.equal(access.ownerSignInPath(null, owner.actor, owner.token), null);
+      assert.equal(JSON.stringify(admin.state()), beforeAdmin); assert.equal(JSON.stringify(consumer.state()), beforeConsumer);
+      refuses(() => access.principal(admin, owner.actor, owner.token), 'TWO_FACTOR_REQUIRED');
+    });
+    check('owner routing suppresses ineligible, expired, ambiguous and unavailable authority', () => {
+      const state = consumer.state(), account = state.accounts.find(row => row.account_id === owner.actor.account_id), session = state.sessions.find(row => row.token_sha256 === accounts.tokenDigest(owner.token));
+      for (const key of ['email_verified_at', 'signup_complete_at', 'two_factor_secret']) {
+        consumer.update(next => { next.accounts.find(row => row.account_id === owner.actor.account_id)[key] = null; });
+        assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), null);
+        consumer.update(next => { next.accounts.find(row => row.account_id === owner.actor.account_id)[key] = account[key]; });
+      }
+      consumer.update(next => { next.sessions.find(row => row.session_id === session.session_id).idle_expires_at = new Date(clock - 1).toISOString(); });
+      assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), null);
+      consumer.update(next => { Object.assign(next.sessions.find(row => row.session_id === session.session_id), session); });
+      const unavailable = { consumerStore: consumer, state() { throw new Error('unavailable signed admin state'); } };
+      assert.equal(access.ownerSignInPath(unavailable, owner.actor, owner.token), null);
+      const ambiguous = { consumerStore: consumer, state() { const current = admin.state(); current.memberships.push({...current.memberships[0], admin_id: 'duplicate-owner'}); return current; } };
+      assert.equal(access.ownerSignInPath(ambiguous, owner.actor, owner.token), null);
+      assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), '/admin');
+    });
     let ownerAccess = unlock(owner, admin);
     check('unlock is bound to one consumer session and refuses OTP replay', () => {
       const other = accounts.signIn(consumer, {email: owner.actor.email, password: PASSWORD, code: security.totp(owner.secret, clock + 30000)});
@@ -71,6 +96,9 @@ async function run(onCheck) {
       const audit = admin.state().audit_events.at(-1); assert.equal(audit.metadata.role, 'partner'); assert.deepEqual(audit.metadata.permissions, partnerMember.permissions);
     });
     let staffAccess = unlock(staff, admin), partnerAccess = unlock(partner, admin);
+    check('staff, partner and ordinary consumer memberships do not select the owner destination', () => {
+      for (const user of [staff, partner, second, unfinished]) assert.equal(access.ownerSignInPath(admin, user.actor, user.token), null);
+    });
     check('staff cannot grant owners or manage organizations', () => {
       assert.equal(access.requireCapability(admin, staffAccess.principal, 'accounts.read').role, 'staff');
       refuses(() => access.createMembership(admin, staffAccess.principal, {account_id: second.actor.account_id, role: 'owner'}), 'NOT_AUTHORIZED');
@@ -116,9 +144,14 @@ async function run(onCheck) {
       const added = access.createMembership(admin, ownerAccess.principal, {account_id: second.actor.account_id, role: 'owner'});
       const secondAccess = unlock(second, admin);
       consumer.update(state => {state.accounts.find(a => a.account_id === second.actor.account_id).email_verified_at = null;});
+      assert.equal(access.ownerSignInPath(admin, second.actor, second.token), null);
       refuses(() => access.updateMembership(admin, ownerAccess.principal, ownerAccess.principal.admin_id, {status: 'DISABLED'}), 'ADMIN_LAST_OWNER');
       consumer.update(state => {state.accounts.find(a => a.account_id === second.actor.account_id).email_verified_at = new Date().toISOString();});
+      access.updateMembership(admin, secondAccess.principal, ownerAccess.principal.admin_id, {status: 'DISABLED'});
+      assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), null);
+      access.updateMembership(admin, secondAccess.principal, ownerAccess.principal.admin_id, {status: 'ACTIVE'});
       access.updateMembership(admin, secondAccess.principal, ownerAccess.principal.admin_id, {role: 'staff', permissions: ['overview.read']});
+      assert.equal(access.ownerSignInPath(admin, owner.actor, owner.token), null);
       assert.equal(admin.state().memberships.find(m => m.admin_id === added.admin_id).role, 'owner');
       refuses(() => access.requireCapability(admin, ownerAccess.principal, 'team.manage'), 'TWO_FACTOR_REQUIRED');
     });

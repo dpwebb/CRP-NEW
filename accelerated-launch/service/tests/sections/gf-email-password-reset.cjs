@@ -97,7 +97,7 @@ async function run(t,check){
     check.equal((await admin.request('GET','/api/admin/session',{token:owner.token,headers:{Cookie:cookie,Origin:admin.base}})).status,401,'revoked consumer session invalidates old admin unlock');
     check.equal(head(admin),journal,'email reset preserves signed administration authority');
     admin.service.store.update(s=>{s.accounts.find(a=>a.account_id===owner.account_id).two_factor_locked_until=null;return true;});
-    const now=Date.now;try{const future=now()+60000;Date.now=()=>future;check.equal((await admin.request('POST','/api/sessions',{body:{email:owner.email,password:replacement,code:security.totp(seed)}})).status,200,'new password plus unchanged authenticator restores ordinary access');}finally{Date.now=now;}
+    const now=Date.now;try{const future=now()+60000;Date.now=()=>future;const login=await admin.request('POST','/api/sessions',{body:{email:owner.email,password:replacement,code:security.totp(seed)}});check.equal(login.status,200,'new password plus unchanged authenticator restores ordinary access');check.equal(login.json.next_path,'/admin','owner routing is preserved after email password reset');}finally{Date.now=now;}
   }finally{await admin.close();if(enabled===undefined)delete process.env.CRP_ADMIN_ENABLED;else process.env.CRP_ADMIN_ENABLED=enabled;}
 
   let release;const gate=new Promise(resolve=>{release=resolve;});let delivered=false;

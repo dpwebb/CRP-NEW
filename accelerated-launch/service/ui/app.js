@@ -452,6 +452,7 @@ function renderAccount(panel) {
     state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
     state.checkoutReturn = null;
     if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
+    if(routeOwnerAfterSignIn(data))return;
     await refreshAccess();
     state.step = 1;
     state.notice = 'Signed in.';
@@ -1307,6 +1308,13 @@ function wirePendingPayment() {
   if (button && pending) button.onclick = () => resumePendingCheckout(pending.checkout_id, ensureOwner);
 }
 
+/** Only the authenticated server hint selects the fixed admin entry; MFA still happens there. */
+function routeOwnerAfterSignIn(session) {
+  if (session?.next_path !== '/admin' || typeof location === 'undefined' || checkoutReturnContext()) return false;
+  if (new URLSearchParams(location.search || '').get('workspace') === 'consumer') return false;
+  location.assign('/admin');
+  return true;
+}
 /** The return URL remembers a report, never payment or access. The protected view supplies both. */
 function checkoutReturnContext() {
   if (typeof location === 'undefined' || !location.search) return null;
@@ -2564,6 +2572,7 @@ function renderBillingView(data) {
     if (!currentStartup()) return;
     state.accountSecurity = security;
     if(state.accountSecurity.signup_complete===false){state.step=STEP.ACCOUNT;render();return;}
+    if(location.hash==='#signin'&&routeOwnerAfterSignIn(session))return;
     const cases = await api('GET', '/api/cases');
     if (!currentStartup()) return;
     state.cases = cases.cases;
@@ -2588,7 +2597,14 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
     state.emailRecoveryMode = false; state.recoveryMode = false; state.error = null; state.notice = null; state.step = STEP.ACCOUNT;
     render(); el('auth-title')?.focus?.(); return;
   }
-  if (state.account || authPending || !['#signin', '#create'].includes(location.hash)) return;
+  if (authPending || !['#signin', '#create'].includes(location.hash)) return;
+  if (state.account) {
+    if (location.hash === '#signin') {
+      const ensureAccount = accountContext();
+      api('GET', '/api/session').then(session => { ensureAccount(); if (location.hash === '#signin') routeOwnerAfterSignIn(session); }).catch(() => {});
+    }
+    return;
+  }
   state.step = STEP.ACCOUNT;
   resetPasswordToken = null; state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = false;
   state.recoveryMode = false;
