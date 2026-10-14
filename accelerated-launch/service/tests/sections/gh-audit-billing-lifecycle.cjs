@@ -47,7 +47,7 @@ async function run(t, check) {
 
   for (const state of ['EXPIRED', 'CANCELLED']) {
     const store = memory(), actor = subscriber(store, state.toLowerCase(), { state, expires_at: oneHourAgo });
-    const calls = [], provider = { provider_id: 'stripe', async cancelRenewal(request) { calls.push(request); return { renewal_cancelled: true, subscription_reference: request.subscription_reference }; } };
+    const calls = [], provider = { provider_id: 'stripe', async cancelAccountSubscription(request) { calls.push(request); return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'canceled' }; } };
     const before = entitlement.statusFor(store, actor.account_id);
     check.equal(before.entitled, false, state + ': expired/refunded access remains denied');
     check.equal(before.renewal_cancellation_available, true, state + ': renewal can still be stopped');
@@ -55,12 +55,47 @@ async function run(t, check) {
     check.equal(calls.length, 1, state + ': cancellation actually calls the bound provider');
     check.equal(stopped.entitlement.entitled, false, state + ': cancellation does not grant access');
     check.equal(stopped.entitlement.renewal_status, 'CANCELLATION_CONFIRMED', state + ': confirmation is recorded');
+    check.equal(stopped.at_period_end, false, state + ': cancellation stops provider collection immediately');
+    check.equal(store.state().entitlements[0].provider_subscription_status, 'canceled', state + ': confirmed ended provider status is persisted');
     check.ok(stopped.plain.includes('paid access has ended'), state + ': message does not claim continuing paid access');
   }
   const failureStore = memory(), failureActor = subscriber(failureStore, 'failure', { state: 'EXPIRED', expires_at: oneHourAgo });
   const failureBefore = failureStore.state();
-  await refusal(check, entitlement.cancelEntitlement(failureStore, failureActor, {}, {}, { provider: { provider_id: 'stripe', async cancelRenewal() { throw Error('fixture failure'); } } }), 'SUBSCRIPTION_CANCELLATION_FAILED', 'provider failure is explicit');
+  await refusal(check, entitlement.cancelEntitlement(failureStore, failureActor, {}, {}, { provider: { provider_id: 'stripe', async cancelAccountSubscription() { throw Error('fixture failure'); } } }), 'SUBSCRIPTION_CANCELLATION_FAILED', 'provider failure is explicit');
   check.deepEqual(failureStore.state(), failureBefore, 'provider cancellation failure preserves local state');
+  await refusal(check, entitlement.cancelEntitlement(failureStore, failureActor, {}, {}, { provider: { provider_id: 'stripe', async cancelAccountSubscription(request) {
+    return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'active' };
+  } } }), 'SUBSCRIPTION_CANCELLATION_FAILED', 'period-end scheduling alone cannot claim an expired subscription has stopped collecting');
+  check.deepEqual(failureStore.state(), failureBefore, 'unconfirmed terminal status preserves local state');
+  for (const state of ['ACTIVE', 'PAST_DUE']) {
+    const paidStore = memory(), paidActor = subscriber(paidStore, 'paid-' + state, { state,
+      ...(state === 'PAST_DUE' ? { expires_at: oneHourAgo, grace_until: new Date(Date.now() + 3600000).toISOString() } : {}) });
+    let scheduled = 0, immediate = 0;
+    const result = await entitlement.cancelEntitlement(paidStore, paidActor, {}, {}, { provider: { provider_id: 'stripe', async cancelRenewal(request) {
+      scheduled++; return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'active' };
+    }, async cancelAccountSubscription() { immediate++; throw Error('must retain paid access'); } } });
+    check.equal(result.at_period_end, true, state + ': normal renewal cancellation keeps current paid/grace access');
+    check.equal(scheduled, 1, state + ': period-end provider method used');
+    check.equal(immediate, 0, state + ': deletion method not used for ordinary paid/grace cancellation');
+  }
+  const quoted = memory(), quotedActor = subscriber(quoted, 'quoted', { state: 'EXPIRED', expires_at: oneHourAgo });
+  quoted.update(s => s.entitlements.push({ account_id: quotedActor.account_id, entitlement_id: 'ent_once', source: 'stripe',
+    state: 'ACTIVE', access_via: 'ONE_TIME_CREDIT', plan_code: 'report_once', expires_at: '2099-01-01T00:00:00.000Z' }));
+  check.equal(entitlement.statusFor(quoted, quotedActor.account_id).access_via, 'ONE_TIME_CREDIT', 'one-time access does not hide the older uncancelled subscription');
+  for (const code of ['monthly', 'annual']) {
+    const quote = entitlement.upgradeQuotes(quoted, quotedActor)[code];
+    check.equal(quote.allowed, false, code + ': recurring quote blocks outstanding expired renewal despite paid one-time access');
+    check.equal(quote.reason, 'SUBSCRIPTION_RENEWAL_UNCONFIRMED', code + ': quote explains which action is needed');
+  }
+  check.equal(entitlement.upgradeQuotes(quoted, quotedActor).report_once.allowed, true, 'earlier recurring renewal does not block another one-time report choice');
+  const blockedRevision = entitlement.upgradeQuotes(quoted, quotedActor).monthly.revision;
+  const quotedStopped = await entitlement.cancelEntitlement(quoted, quotedActor, {}, {}, { provider: { provider_id: 'stripe', async cancelAccountSubscription(request) {
+    return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'canceled' };
+  } } });
+  check.equal(quotedStopped.entitlement.access_via, 'ONE_TIME_CREDIT', 'stopping the expired subscription preserves independent one-time access');
+  check.ok(!quotedStopped.plain.includes('paid access has ended'), 'stopping one subscription does not claim that independent paid report access ended');
+  check.equal(entitlement.upgradeQuotes(quoted, quotedActor).monthly.allowed, true, 'confirmed earlier cancellation releases replacement subscription choices');
+  check.ok(entitlement.upgradeQuotes(quoted, quotedActor).monthly.revision !== blockedRevision, 'cancellation changes the immutable quote revision');
 
   const unpaid = memory(), unpaidActor = subscriber(unpaid, 'unpaid', { state: 'PENDING', granted_at: null });
   unpaid.update(s => { s.checkout_sessions[0].state = 'OPEN'; });
@@ -90,7 +125,7 @@ async function run(t, check) {
   const calls = [], provider = {
     provider_id: 'stripe',
     async cancelCheckout(request) { calls.push('checkout:' + request.checkout_id); return { cancelled: true }; },
-    async cancelAccountSubscription(request) { calls.push('subscription:' + request.subscription_reference); return { renewal_cancelled: true, subscription_reference: request.subscription_reference }; }
+    async cancelAccountSubscription(request) { calls.push('subscription:' + request.subscription_reference); return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'canceled' }; }
   };
   const deleted = await cases.deleteAccountSafely(store, actor, {}, { provider });
   check.equal(deleted.deleted, true, 'confirmed provider cleanup permits deletion');
@@ -108,7 +143,7 @@ async function run(t, check) {
   const stale = memory(), staleActor = subscriber(stale, 'stale');
   await refusal(check, cases.deleteAccountSafely(stale, staleActor, {}, { provider: { provider_id: 'stripe', async cancelAccountSubscription(request) {
     stale.update(s => { s.checkout_sessions.push({ ...s.checkout_sessions[0], checkout_id: 'chk_new', provider_reference: 'cs_new' }); });
-    return { renewal_cancelled: true, subscription_reference: request.subscription_reference };
+    return { renewal_cancelled: true, subscription_reference: request.subscription_reference, subscription_status: 'canceled' };
   } } }), 'ACCOUNT_DELETION_STALE', 'a new purchase while provider cancellation waits prevents deletion');
   check.equal(stale.state().accounts.length, 1, 'concurrent purchase retains the account');
   check.equal(stale.state().checkout_sessions.length, 2, 'concurrent purchase binding is preserved');
@@ -128,6 +163,54 @@ async function run(t, check) {
   check.equal(partial.state().accounts.length, 1, 'partial cancellation never deletes the account');
   const empty = memory(); empty.update(s => s.accounts.push({ account_id: 'acc_free' }));
   check.equal((await cases.deleteAccountSafely(empty, { account_id: 'acc_free' }, {})).deleted, true, 'unpaid account deletion requires no provider');
+
+  const reportStore = memory(), reportActor = subscriber(reportStore, 'reports');
+  reportStore.update(s => {
+    s.cases.push({ account_id: reportActor.account_id, case_id: 'case_remove', status: 'OPEN' },
+      { account_id: reportActor.account_id, case_id: 'case_keep', status: 'OPEN' });
+    s.files.push({ account_id: reportActor.account_id, case_id: 'case_remove', file_id: 'c'.repeat(32) });
+    s.checkout_sessions.push({ account_id: reportActor.account_id, checkout_id: 'chk_report_open', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', case_id: 'case_remove', provider_reference: 'cs_report_open' },
+      { account_id: reportActor.account_id, checkout_id: 'chk_report_paid', provider_id: 'stripe', state: 'COMPLETED', plan_code: 'report_once', case_id: 'case_remove', provider_reference: 'cs_report_paid' },
+      { account_id: reportActor.account_id, checkout_id: 'chk_other_open', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', case_id: 'case_keep', provider_reference: 'cs_other_open' });
+    s.entitlements.push({ account_id: reportActor.account_id, entitlement_id: 'ent_report_open', checkout_id: 'chk_report_open', source: 'stripe', state: 'PENDING', plan_code: 'report_once', access_via: 'ONE_TIME_CREDIT' });
+  });
+  const keptBefore = reportStore.state().checkout_sessions.filter(c => c.checkout_id !== 'chk_report_open');
+  const subscriptionBefore = reportStore.state().entitlements.find(e => e.plan_code === 'monthly');
+  const reportCalls = [];
+  const reportDeleted = await cases.deleteCaseSafely(reportStore, reportActor, 'case_remove', {}, { provider: { provider_id: 'stripe', async cancelCheckout(request) {
+    reportCalls.push(request.checkout_id); return { cancelled: true };
+  }, async cancelAccountSubscription() { throw Error('must not cancel account subscription for report deletion'); } } });
+  check.equal(reportDeleted.deleted, true, 'report deletes after its pending one-time payment is stopped');
+  check.deepEqual(reportCalls, ['chk_report_open'], 'report deletion stops only its own pending one-time payment');
+  check.deepEqual(reportStore.state().checkout_sessions.filter(c => c.checkout_id !== 'chk_report_open'), keptBefore, 'completed receipts and other reports retain their original payment rows');
+  check.deepEqual(reportStore.state().entitlements.find(e => e.plan_code === 'monthly'), subscriptionBefore, 'report deletion does not change subscription authority');
+  check.equal(reportStore.state().checkout_sessions.find(c => c.checkout_id === 'chk_report_open').state, 'CANCELLED', 'stopped one-time checkout is persisted and no longer payable locally');
+  check.equal(reportStore.state().cases.some(c => c.case_id === 'case_remove'), false, 'deleted report stops resolving');
+  check.equal(reportStore.state().cases.some(c => c.case_id === 'case_keep'), true, 'other report remains');
+  const failedReport = memory(), failedReportActor = subscriber(failedReport, 'failed-report');
+  failedReport.update(s => {
+    s.cases.push({ account_id: failedReportActor.account_id, case_id: 'case_failed', status: 'OPEN' });
+    s.checkout_sessions.push({ account_id: failedReportActor.account_id, checkout_id: 'chk_failed_report', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', case_id: 'case_failed', provider_reference: 'cs_failed_report' });
+  });
+  const failedReportBefore = failedReport.state();
+  await refusal(check, cases.deleteCaseSafely(failedReport, failedReportActor, 'case_failed', {}, { provider: { provider_id: 'stripe', async cancelCheckout() { return { cancelled: false }; } } }), 'CASE_DELETION_PAYMENT_UNCONFIRMED', 'unconfirmed report payment cleanup refuses deletion');
+  check.deepEqual(failedReport.state(), failedReportBefore, 'unconfirmed cleanup preserves the report and its payment binding');
+  await refusal(check, cases.deleteCaseSafely(failedReport, failedReportActor, 'case_failed', {}, { provider: { provider_id: 'stripe', async cancelCheckout() {
+    failedReport.update(s => { s.cases[0].status = 'REVIEWED'; }); return { cancelled: true };
+  } } }), 'CASE_DELETION_STALE', 'report change during awaited cancellation refuses stale deletion');
+  check.equal(failedReport.state().cases.length, 1, 'changed report remains available');
+  check.equal((await cases.deleteCaseSafely(failedReport, failedReportActor, 'case_failed', {}, { provider: { provider_id: 'stripe', async cancelCheckout() { return { cancelled: true }; } } })).deleted, true, 'report deletion can be retried after refreshed binding');
+  const newUpload = memory(), newUploadActor = subscriber(newUpload, 'upload-race');
+  newUpload.update(s => {
+    s.cases.push({ account_id: newUploadActor.account_id, case_id: 'case_upload', status: 'OPEN' });
+    s.checkout_sessions.push({ account_id: newUploadActor.account_id, checkout_id: 'chk_upload', provider_id: 'stripe', state: 'OPEN', plan_code: 'report_once', case_id: 'case_upload', provider_reference: 'cs_upload' });
+  });
+  await refusal(check, cases.deleteCaseSafely(newUpload, newUploadActor, 'case_upload', {}, { provider: { provider_id: 'stripe', async cancelCheckout() {
+    newUpload.update(s => { s.files.push({ account_id: newUploadActor.account_id, case_id: 'case_upload', file_id: 'd'.repeat(32), stored_sha256: 'a'.repeat(64) }); });
+    return { cancelled: true };
+  } } }), 'CASE_DELETION_STALE', 'a new upload during awaited payment cleanup prevents stale report deletion');
+  check.equal(newUpload.state().files.length, 1, 'new upload metadata is retained');
+  await refusal(check, cases.deleteCaseSafely(newUpload, { account_id: 'acc_foreign' }, 'case_upload', {}, { provider: { provider_id: 'stripe', async cancelCheckout() { throw Error('must not access foreign payment'); } } }), 'NOT_AUTHORIZED', 'foreign report deletion fails before any payment operation');
 
   const fixture = await new StripeUpgradeFixture().listen();
   try {
@@ -172,7 +255,9 @@ async function run(t, check) {
   } finally { await fixture.close(); }
   check.equal(entitlement.PAID_ACTIONS.includes('REQUEST_RESPONSE_DRAFT'), false, 'unimplemented response drafts are not advertised as paid actions');
   check.equal(entitlement.SUBSCRIBER_ACTIONS.includes('REQUEST_RESPONSE_DRAFT'), false, 'unimplemented response drafts are not advertised as subscriber actions');
-  return { proof: 'FICTIONAL_MEMORY_AND_LOOPBACK_PROVIDER_ONLY', grace_boundary: true, expired_cancellation: true, safe_complete_deletion: true, concurrency_binding: true, stripe_adapter_ownership: true };
+  return { proof: 'FICTIONAL_MEMORY_AND_LOOPBACK_PROVIDER_ONLY', grace_boundary: true, expired_cancellation: true,
+    ended_subscription_collection: true, recurring_quote_control: true, safe_complete_deletion: true,
+    safe_report_deletion: true, concurrency_binding: true, stripe_adapter_ownership: true };
 }
 module.exports = { id: 'gh-audit-billing-lifecycle', title: 'Safe provider-bound deletion, independent renewal cancellation and bounded failed-payment grace', run };
 

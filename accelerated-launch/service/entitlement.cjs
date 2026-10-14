@@ -320,6 +320,54 @@ function accountBillingBinding(state, accountId) {
   })).digest('hex');
 }
 
+function casePaymentBinding(state, accountId, caseId) {
+  return crypto.createHash('sha256').update(JSON.stringify({
+    case: (state.cases || []).find(row => row.account_id === accountId && row.case_id === caseId) || null,
+    checkouts: (state.checkout_sessions || []).filter(row => row.account_id === accountId && row.case_id === caseId && row.plan_code === 'report_once'),
+    files: (state.files || []).filter(row => row.account_id === accountId && row.case_id === caseId)
+      .map(row => [row.file_id, row.stored_sha256, row.stored_bytes]),
+    results: (state.results || []).filter(row => row.account_id === accountId && row.case_id === caseId)
+      .map(row => [row.result_id, row.created_at, row.reviewed_at, row.clarifications]),
+    packets: (state.packets || []).filter(row => row.account_id === accountId && row.case_id === caseId)
+  })).digest('hex');
+}
+
+/** A report must not disappear while its one-time Checkout remains payable. */
+async function stopCasePayments(store, actor, caseId, env, options = {}) {
+  cases.requireOwnedCase(store, actor, caseId);
+  const accountId = actor.account_id;
+  let expected = casePaymentBinding(store.state(), accountId, caseId);
+  const assertCurrent = state => {
+    if (!state.accounts.some(a => a.account_id === accountId) ||
+        !state.cases.some(c => c.account_id === accountId && c.case_id === caseId) ||
+        casePaymentBinding(state, accountId, caseId) !== expected) throw new ServiceError('CASE_DELETION_STALE');
+  };
+  assertCurrent(store.state());
+  const pending = store.state().checkout_sessions.filter(c => c.account_id === accountId && c.case_id === caseId &&
+    c.plan_code === 'report_once' && pendingStates.has(c.state));
+  const provider = pending.some(c => c.provider_id === 'stripe') ? options.provider || payments.resolveProvider(env) : null;
+  for (const checkout of pending) {
+    if (checkout.provider_id === 'stripe') {
+      if (provider?.provider_id !== 'stripe') throw new ServiceError('CASE_DELETION_PAYMENT_UNCONFIRMED');
+      try { await stopPendingCheckout(provider, checkout); }
+      catch { throw new ServiceError('CASE_DELETION_PAYMENT_UNCONFIRMED'); }
+    } else if (checkout.provider_id !== payments.TEST_PROVIDER_ID) {
+      throw new ServiceError('CASE_DELETION_PAYMENT_UNCONFIRMED');
+    }
+    store.update(state => {
+      assertCurrent(state);
+      const live = state.checkout_sessions.find(c => c.checkout_id === checkout.checkout_id && c.account_id === accountId);
+      live.state = 'CANCELLED';
+      for (const row of rowsFor(state, accountId)) if (row.checkout_id === live.checkout_id && row.state === 'PENDING') {
+        row.state = 'CANCELLED'; row.cancelled_at = nowIso();
+      }
+    });
+    expected = casePaymentBinding(store.state(), accountId, caseId);
+  }
+  assertCurrent(store.state());
+  return expected;
+}
+
 // Resolve a crashed ordinary Checkout with its original idempotency key, then
 // expire it. Never resume an upgrade here: it could charge the saved card.
 async function stopPendingCheckout(provider, checkout) {
@@ -380,7 +428,8 @@ async function stopAccountPayments(store, actor, env, options = {}) {
       confirmation = await provider.cancelAccountSubscription({ account_id: accountId, checkouts: completed,
         provider_reference: checkout.provider_reference, subscription_reference: knownId });
     } catch (error) { fail(error.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
-    if (confirmation?.renewal_cancelled !== true || typeof confirmation.subscription_reference !== 'string') fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
+    if (confirmation?.renewal_cancelled !== true || typeof confirmation.subscription_reference !== 'string' ||
+        !['canceled', 'incomplete_expired'].includes(confirmation.subscription_status)) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
     handled.add(confirmation.subscription_reference);
     commit(state => {
       for (const row of subscriptionRows(state, accountId)) if (row.provider_subscription_reference === confirmation.subscription_reference || row.checkout_id === checkout.checkout_id) {
@@ -443,13 +492,14 @@ function upgradeQuotes(store, actor, requestedCurrency = 'cad') {
       eligible: false, currency, source_plan_codes: [], remaining_credit_cents: 0 };
     const isCurrent = subscribed && current.plan_code === code;
     const higher = !subscribed || plans.plan(code, currency).amount_cents > plans.plan(current.plan_code, currency).amount_cents;
-    const allowed = !isCurrent && higher && !busy;
+    const renewalBlocked = code !== 'report_once' && !subscribed && current.renewal_cancellation_available;
+    const allowed = !isCurrent && higher && !busy && !renewalBlocked;
     const revision = crypto.createHash('sha256').update(JSON.stringify([actor.account_id, code,
       currency, raw.credit_cents, raw.first_invoice_cents, raw.remaining_credit_cents, raw.source_payment_ids || [],
       current.plan_code, current.state, allowed])).digest('hex');
     const { source_payment_ids, ...safe } = raw;
     return [code, { ...safe, allowed, is_current: isCurrent, revision,
-      reason: isCurrent ? 'CURRENT_PLAN' : !higher ? 'NOT_AN_UPGRADE' : busy ? 'CHECKOUT_ALREADY_IN_PROGRESS' : raw.reason || null }];
+      reason: isCurrent ? 'CURRENT_PLAN' : !higher ? 'NOT_AN_UPGRADE' : renewalBlocked ? 'SUBSCRIPTION_RENEWAL_UNCONFIRMED' : busy ? 'CHECKOUT_ALREADY_IN_PROGRESS' : raw.reason || null }];
   }));
 }
 
@@ -671,6 +721,8 @@ async function cancelEntitlement(store, actor, input, env, options = {}) {
   let originalCheckout = null;
   let stoppedUpgrade = null;
   let stoppedCheckout = null;
+  const stopImmediately = original?.source === 'stripe' && original.access_via === ACCESS_VIA.SUBSCRIPTION &&
+    original.state !== 'PENDING' && !ENTITLED_STATES.includes(original.state);
   const boundFields = ['entitlement_id', 'account_id', 'plan_code', 'access_via', 'source',
     'checkout_id', 'provider_reference', 'state', 'expires_at'];
   const binding = (row) => JSON.stringify(boundFields.map((field) => row?.[field] ?? null));
@@ -684,7 +736,7 @@ async function cancelEntitlement(store, actor, input, env, options = {}) {
     if (!originalCheckout) fail('OWNED_COMPLETED_CHECKOUT_NOT_FOUND');
     originalCheckout = { ...originalCheckout };
     const provider = options.provider || payments.resolveProvider(env);
-    if (provider?.provider_id !== 'stripe' || typeof provider.cancelRenewal !== 'function') fail('STRIPE_CANCELLATION_NOT_CONFIGURED');
+    if (provider?.provider_id !== 'stripe' || typeof provider[stopImmediately ? 'cancelAccountSubscription' : 'cancelRenewal'] !== 'function') fail('STRIPE_CANCELLATION_NOT_CONFIGURED');
     try {
       const pending = before.checkout_sessions.find(c => c.account_id === actor.account_id && c.is_subscription_upgrade &&
         c.previous_entitlement_id === original.entitlement_id && ['OPEN', 'OPENING', 'CREDIT_REVOKED'].includes(c.state));
@@ -692,11 +744,16 @@ async function cancelEntitlement(store, actor, input, env, options = {}) {
         await stopPendingCheckout(provider, pending);
         stoppedUpgrade = pending.checkout_id;
       }
-      providerCancellation = await provider.cancelRenewal({ account_id: actor.account_id,
-        checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
-        plan_code: originalCheckout.plan_code, currency: originalCheckout.currency || 'cad', subscription_reference: original.provider_subscription_reference });
+      providerCancellation = stopImmediately
+        ? await provider.cancelAccountSubscription({ account_id: actor.account_id,
+          checkouts: before.checkout_sessions.filter(c => c.account_id === actor.account_id && c.provider_id === 'stripe' && c.state === 'COMPLETED' && ['monthly', 'annual'].includes(c.plan_code)),
+          provider_reference: originalCheckout.provider_reference, subscription_reference: original.provider_subscription_reference })
+        : await provider.cancelRenewal({ account_id: actor.account_id,
+          checkout_id: originalCheckout.checkout_id, provider_reference: originalCheckout.provider_reference,
+          plan_code: originalCheckout.plan_code, currency: originalCheckout.currency || 'cad', subscription_reference: original.provider_subscription_reference });
     } catch (error) { fail(error?.code || 'STRIPE_CANCELLATION_REQUEST_FAILED'); }
     if (providerCancellation?.renewal_cancelled !== true) fail('STRIPE_CANCELLATION_NOT_CONFIRMED');
+    if (stopImmediately && !['canceled', 'incomplete_expired'].includes(providerCancellation.subscription_status)) fail('STRIPE_SUBSCRIPTION_END_NOT_CONFIRMED');
   } else if (original?.source === 'stripe' && original.state === 'PENDING') {
     const checkout = before.checkout_sessions.find(c => c.checkout_id === original.checkout_id && c.account_id === actor.account_id && c.provider_id === 'stripe' && pendingStates.has(c.state));
     const provider = options.provider || payments.resolveProvider(env);
@@ -740,12 +797,19 @@ async function cancelEntitlement(store, actor, input, env, options = {}) {
     row.cancellation_reason = typeof body.reason === 'string' ? body.reason.slice(0, 120) : 'CONSUMER_REQUESTED';
     row.updated_at = at;
     if (providerCancellation) row.provider_subscription_reference = providerCancellation.subscription_reference;
-    return { cancelled: true, at_period_end: true, entitlement_id: row.entitlement_id, reason: 'ACCESS_CONTINUES_TO_THE_RECORDED_EXPIRY' };
+    if (stopImmediately) {
+      row.provider_subscription_status = providerCancellation.subscription_status;
+      row.provider_subscription_ended_at = at;
+    }
+    return { cancelled: true, at_period_end: !stopImmediately, entitlement_id: row.entitlement_id,
+      reason: stopImmediately ? 'PROVIDER_SUBSCRIPTION_STOPPED' : 'ACCESS_CONTINUES_TO_THE_RECORDED_EXPIRY' };
   });
   if (!outcome.cancelled) throw new ServiceError('NO_ACTIVE_PURCHASE_TO_CANCEL', { reason: outcome.reason });
   return Object.assign(outcome, {
     entitlement: statusFor(store, actor.account_id),
-    plain: outcome.at_period_end
+    plain: outcome.reason === 'PROVIDER_SUBSCRIPTION_STOPPED'
+      ? (statusFor(store, actor.account_id).entitled ? 'This subscription is stopped. Your saved files remain available to read or delete.' : 'Your subscription is stopped. Your paid access has ended. Your saved files remain available to read or delete.')
+      : outcome.at_period_end
       ? (statusFor(store, actor.account_id).entitled ? 'Your purchase will not renew. Access continues until the expiry already recorded against your account, and what you have already made stays readable.' : 'Renewal is cancelled. Your paid access has ended. Your saved files remain available to read or delete.')
       : 'The unpaid checkout was cancelled, so no access was ever granted.'
   });
@@ -845,6 +909,8 @@ module.exports = {
   cancelEntitlement,
   stopAccountPayments,
   accountBillingBinding,
+  stopCasePayments,
+  casePaymentBinding,
   entitlementView,
   downloadEntitled,
   creditView

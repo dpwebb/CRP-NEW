@@ -104,9 +104,17 @@ function setStatus(store, actor, caseId, nextStatus) {
  * Delete a case and everything derived from it: file rows, stored blobs, result sets and drafts. The
  * deletion is the reason a case-scoped id must stop working afterwards, so all of it goes at once.
  */
-function deleteCase(store, actor, caseId) {
+function deleteCase(store, actor, caseId, options = {}) {
+  if (options.case_payment_binding) {
+    const current = store.state();
+    if (!current.accounts.some(a => a.account_id === actor.account_id) ||
+        !current.cases.some(c => c.account_id === actor.account_id && c.case_id === caseId) ||
+        require('./entitlement.cjs').casePaymentBinding(current, actor.account_id, caseId) !== options.case_payment_binding) throw new ServiceError('CASE_DELETION_STALE');
+  }
   const owned = requireOwnedCase(store, actor, caseId);
   const removed = store.update((state) => {
+    if (options.case_payment_binding && (!state.accounts.some(a => a.account_id === actor.account_id) ||
+        require('./entitlement.cjs').casePaymentBinding(state, actor.account_id, caseId) !== options.case_payment_binding)) throw new ServiceError('CASE_DELETION_STALE');
     const files = state.files.filter((f) => f.case_id === owned.case_id);
     state.cases = state.cases.filter((c) => c.case_id !== owned.case_id);
     state.files = state.files.filter((f) => f.case_id !== owned.case_id);
@@ -119,6 +127,11 @@ function deleteCase(store, actor, caseId) {
   /* Only a row that actually had bytes on disk counts as a removed blob. */
   const removedBlobs = removed.filter((f) => f.stored_blob !== false && store.deleteBlob(f.file_id)).length;
   return { deleted: true, case_id: owned.case_id, files_removed: removed.length, blobs_removed: removedBlobs };
+}
+
+async function deleteCaseSafely(store, actor, caseId, env, options = {}) {
+  const case_payment_binding = await require('./entitlement.cjs').stopCasePayments(store, actor, caseId, env, options);
+  return deleteCase(store, actor, caseId, { case_payment_binding });
 }
 
 /** Delete the account and every case, file, result, draft and PURCHASE that hangs off it. */
@@ -171,6 +184,7 @@ module.exports = {
   requireOwnedCase,
   setStatus,
   deleteCase,
+  deleteCaseSafely,
   deleteAccount,
   deleteAccountSafely,
   resolveSelection
