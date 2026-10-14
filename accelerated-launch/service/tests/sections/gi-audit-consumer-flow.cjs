@@ -13,6 +13,11 @@ const surface = {
   entitlement: { payment_mode: 'test' }, support_contact: { email: 'admin@creditregulatorpro.com', label: 'Contact support' },
   upload_limits: { max_account_stored_bytes: 41943040, max_file_bytes: 10485760, max_case_files: 8 }
 };
+const planCatalog = { currency: 'CAD', plans: [
+  { plan_code: 'report_once', amount_display: '$5.95 CAD', amount_cents: 595, interval: 'one_time' },
+  { plan_code: 'monthly', amount_display: '$7.95 CAD', amount_cents: 795, interval: 'month' },
+  { plan_code: 'annual', amount_display: '$79.50 CAD', amount_cents: 7950, interval: 'year' }
+] };
 function view(result = 'result-current') {
   return { case: { case_id: 'caseA', country: 'CA', region: 'CA-NS', status: 'OPEN', selected_bureau: 'TRANSUNION' },
     result_id: result, latest_result_id: 'result-current', reviewed: true,
@@ -96,18 +101,20 @@ async function browserChecks(t, check) {
       const context = await browser.newContext({ viewport: { width, height: 900 } });
       const page = await context.newPage(); page.setDefaultTimeout(10000);
       const requests = [], downloads = []; let signedIn = false;
+      let billingEnt = { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
       await page.route('**/api/**', async route => {
         const request = route.request(), url = new URL(request.url()), p = url.pathname; requests.push({ p, method: request.method(), search: url.search });
         let status = 200, data = { ok: true };
         if (p === '/api/jurisdictions') data.surface = surface;
-        else if (p === '/api/pricing') data.plan_catalog = { currency: 'CAD', plans: [] };
+        else if (p === '/api/pricing') data.plan_catalog = planCatalog;
         else if (p === '/api/session') { if (signedIn) data.account = { account_id: 'accountA', email: 'fictional@example.test' }; else { status = 401; data = { ok: false, error: { message: 'Sign in to continue.' } }; } }
         else if (p === '/api/account/security') data.signup_complete = true;
         else if (p === '/api/account/profile') data.profile = {};
         else if (p === '/api/account/documents') data.documents = [];
         else if (p === '/api/cases') data.cases = [{ case_id: 'caseA', bureau: 'TransUnion', report_date: '2026-10-14', country: 'CA', region: 'CA-NS', created_at: '2026-10-14T12:00:00Z' }, { case_id: 'caseB', bureau: 'Equifax', report_date: '2026-09-14', country: 'CA', region: 'CA-NS', created_at: '2026-09-14T12:00:00Z' }];
         else if (p === '/api/privacy') Object.assign(data, { cases: [{ documents: [{ stored_bytes: 1048576 }] }], account_documents: [{ stored_bytes: 1048576 }] });
-        else if (p === '/api/entitlement' || p === '/api/billing/plans') Object.assign(data, { entitlement: { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' }, payment: { is_a_working_payment: false }, plan_catalog: { currency: 'CAD', plans: [] } });
+        else if (p === '/api/entitlement' || p === '/api/billing/plans') Object.assign(data, { entitlement: billingEnt, payment: { is_a_working_payment: false }, plan_catalog: planCatalog });
+        else if (p === '/api/support') Object.assign(data, { reference: 'fictional-support-reference', build_id: 'fictional-build', category: 'RESULT_PRESENT', case_count: 2, file_count: 2, result_count: 2, jurisdiction: [{ country: 'CA', region: 'CA-NS' }], plain: 'Include this reference when you ask for help.' });
         else if (p === '/api/cases/caseA') data.view = view();
         else if (p === '/api/cases/caseA/results') data.results = [{ result_id: 'result-current', created_at: '2026-10-14' }, { result_id: 'result-old', created_at: '2026-09-14' }];
         else if (p === '/api/cases/caseA/results/result-old/view') data.view = view('result-old');
@@ -128,6 +135,7 @@ async function browserChecks(t, check) {
       check.ok((await page.locator('#saved-report-list').innerText()).includes('Equifax') && !(await page.locator('#saved-report-list').innerText()).includes('TransUnion'), 'saved-report filter changes the visible choices');
       await page.locator('#resume-latest').click(); await page.locator('#result-select').waitFor();
       await page.locator('#result-select').selectOption('result-old'); await page.getByText('Showing the assessment you chose. Downloads use this same assessment.').waitFor();
+      check.ok(await page.locator('#renewal-plans').isVisible(), 'results direct an account with an earlier renewal to cancellation in Plans');
       const downloaded = page.waitForEvent('download'); await page.locator('#download-assessment').click(); await downloaded;
       check.equal(downloads.at(-1), 'result-old', 'download names the assessment currently displayed');
       await page.locator('#create-packet').click(); await page.getByText('Packets use your latest assessment. Review these issues before choosing disputes.').waitFor();
@@ -135,6 +143,19 @@ async function browserChecks(t, check) {
       const navigate = async step => { if (width === 390) await page.locator('.workspace-menu-toggle').click(); await page.locator(`[data-step="${step}"]`).click(); };
       await navigate(10); await page.locator('#cancelEntitlement').waitFor();
       check.ok(await page.locator('#cancelEntitlement').isVisible(), 'expired access still offers renewal cancellation when server records a renewable subscription');
+      check.equal(await page.locator('#checkout-monthly, #checkout-annual').count(), 0, 'uncancelled earlier subscription hides new recurring purchase choices');
+      check.ok(await page.locator('#checkout-report_once').isVisible(), 'one-report purchase remains available while earlier renewal needs cancellation');
+      billingEnt = { ...billingEnt, entitled: true, access_via: 'ONE_TIME_CREDIT', plan_code: 'report_once', cancel_at_period_end: true };
+      await navigate(10); await page.locator('#cancelEntitlement').waitFor();
+      check.equal(await page.locator('#checkout-monthly, #checkout-annual').count(), 0, 'a later active one-time purchase cannot bypass the earlier-renewal purchase block');
+      check.ok(!(await page.locator('#billingView').innerText()).includes('Renewal is cancelled'), 'aggregate outstanding renewal overrides a controlling cancelled row');
+      check.ok((await page.locator('#billingView').innerText()).includes('An earlier subscription can still renew'), 'mixed renewal rows are described without assigning the one-time plan a renewal interval');
+      billingEnt = { entitled: true, access_via: 'SUBSCRIPTION', plan_code: 'monthly', state: 'PAST_DUE', expires_at: '2026-10-14T12:00:00Z', grace_until: '2026-10-16T12:00:00Z', renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
+      await navigate(10); await page.getByText(/Your latest subscription payment failed/).waitFor();
+      const graceText = await page.locator('#billingView').innerText();
+      check.ok(graceText.includes('October 16, 2026') && !graceText.includes('October 14, 2026'), 'past-due paid access displays the effective grace deadline rather than the old paid period');
+      check.ok(graceText.includes('If payment is not confirmed by then, paid features will stop'), 'failed payment explains the access deadline in plain language');
+      check.ok(await page.locator('#cancelEntitlement').isVisible(), 'grace-period account retains the ordinary cancellation control');
       await navigate(8); await page.locator('#deleteAccount').waitFor();
       let dialogs = 0; const dismiss = dialog => { dialogs++; dialog.dismiss(); }; page.on('dialog', dismiss);
       await page.locator('#deleteAccount').click(); await page.locator('#delete').click();
@@ -143,10 +164,16 @@ async function browserChecks(t, check) {
       page.off('dialog', dismiss); page.once('dialog', dialog => dialog.accept()); await page.locator('#deleteAccount').click(); await page.getByText(/Renewal could not be stopped/).waitFor();
       check.ok(await page.locator('#deleteAccount').isVisible(), 'failed provider cancellation leaves the account view and retry available');
       await navigate(9); check.equal(await page.locator('#panel h1').evaluate(h => document.activeElement === h), true, 'keyboard focus follows wizard step navigation');
+      await page.locator('#copySummary').waitFor();
+      await page.evaluate(() => { Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new Error('Fictional clipboard denial'); } } }); });
+      check.equal(await page.locator('.support-technical').getAttribute('open'), null, 'support details begin collapsed before clipboard fallback');
+      await page.locator('#copySummary').click();
+      check.ok(await page.locator('#supportSummary').isVisible(), 'clipboard denial opens the actual disclosure for manual copying');
+      check.ok(await page.locator('#supportSummary').evaluate(node => document.activeElement === node && node.selectionEnd > node.selectionStart), 'manual-copy fallback focuses and selects the visible summary');
       check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, `${width}px amended consumer surfaces have no horizontal overflow`);
       await context.close();
     }
   } finally { await browser.close(); }
 }
-async function run(t, check) { await deferredChecks(check); await browserChecks(t, check); return { fictional_only: true, delayed_responses: true, confirmation_cancel: true, selected_result_download: true, latest_packet_notice: true, public_support: true, shared_quota: true, expired_renewal_control: true, real_chrome_widths: [1440, 390], provider_proof: false }; }
+async function run(t, check) { await deferredChecks(check); await browserChecks(t, check); return { fictional_only: true, delayed_responses: true, confirmation_cancel: true, selected_result_download: true, latest_packet_notice: true, public_support: true, shared_quota: true, expired_renewal_control: true, aggregate_renewal_display: true, grace_deadline_copy: true, actual_dom_clipboard_fallback: true, real_chrome_widths: [1440, 390], provider_proof: false }; }
 module.exports = { id: 'gi-audit-consumer-flow', title: 'Consumer audit corrections preserve context, explicit deletion choice and understandable report controls', run };
