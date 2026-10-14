@@ -101,3 +101,8 @@ for(const corrupt of [
   assert.throws(()=>validateFdtProof(g,f,sourceRoot,fixtureSha,fixtureBuild));
 }
 console.log('PASS: FDT numeric thresholds, raw-receipt mismatch and missing hosted/custody proof rejection');
+(async()=>{
+  const originalFetch=global.fetch;let requests=0;global.fetch=async()=>{requests++;throw Error('UNIT_FIXTURE_ONLY refuses network');};
+  try{await assert.rejects(()=>require('./release-workflow.cjs').smoke('https://fictional.invalid','crp-v1-'+'0'.repeat(16),manifest,'UNIT_FIXTURE_ONLY'),/artifact manifest/);assert.equal(requests,0);console.log('PASS: mismatched smoke artifact/build rejected before any hosted request');}
+  finally{global.fetch=originalFetch;}
+})().catch(error=>{console.error(error);process.exitCode=1;});

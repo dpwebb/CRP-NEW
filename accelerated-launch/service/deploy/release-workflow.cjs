@@ -215,6 +215,7 @@ function packageCandidate(p, verificationFile, out) {
 }
 async function smoke(url, build, manifest, out) {
   manifestValid(manifest);
+  if(build!=='crp-v1-'+manifest.manifest_digest.slice(0,16).toLowerCase())throw Error('Smoke build does not match the artifact manifest');
   const base=new URL(url); if(base.protocol!=='https:' && !['127.0.0.1','localhost'].includes(base.hostname))throw Error('HTTPS required');
   const health=await fetch(new URL('/api/health',base),{signal:AbortSignal.timeout(15000)});if(!health.ok)throw Error('Health HTTP '+health.status);
   const h=await health.json();if(!h.ok || h.build_id!==build)throw Error('Wrong hosted build');
