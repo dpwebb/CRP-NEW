@@ -247,7 +247,7 @@ function createContinuityTools(inputs) {
     const baselineManifestBytes = committedBlobs(sourceRoot, descriptor.base_commit, [MANIFEST]).get(MANIFEST);
     const baselineManifest = tools.manifestIdentity(JSON.parse(baselineManifestBytes.toString()));
     const protectedFiles=new Set([...descriptor.dependencies,...baselineManifest.files].map(row=>row.file));
-    const allNames = sorted(new Set([...descriptor.dependencies.map(row => row.file), ...baselineManifest.files.map(row => row.file), MANIFEST, ...substantive((plan.changed_files || []).map(name),protectedFiles)]));
+    const allNames = sorted(new Set([...descriptor.dependencies.map(row => row.file), ...baselineManifest.files.map(row => row.file), MANIFEST, ...Object.keys(plan.source_snapshot||{}).map(name), ...substantive((plan.changed_files || []).map(name),protectedFiles)]));
     const blobs = committedBlobs(sourceRoot, descriptor.base_commit, allNames), captured = new Map(descriptor.dependencies.filter(row => row.source === 'CAPTURED_TEST_DEPENDENCY').map(row => [row.file, row.sha256]));
     fs.mkdirSync(out, { recursive: true });
     const baselineDest = path.join(out, 'raw/baseline.json'), planDest = path.join(out, 'raw/plan.json'), toolsDest = path.join(out, 'raw/tools.json');

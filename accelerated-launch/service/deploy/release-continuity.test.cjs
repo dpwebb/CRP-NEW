@@ -51,6 +51,7 @@ function fixture(label, mutate, options = {}) {
   write(root, 'accelerated-launch/service/ui/page.html', '<html><main>Fictional preview</main></html>\n');
   write(root, 'accelerated-launch/service/ui/styles.css', 'main { color: green; }\n');
   write(root, 'accelerated-launch/service/deploy/unit-tool.cjs', "'use strict'; module.exports = true;\n");
+  write(root,'accelerated-launch/service/deploy/unchanged-control.sh','#!/bin/sh\nexit 0\n');
   write(root, 'accelerated-launch/service/tests/run-tests.cjs', "const SECTION_FILES = [\n  'a-core.cjs',\n  'b-ui.cjs',\n  'c-security.cjs'\n];\n");
   write(root, 'accelerated-launch/service/tests/verification-lanes.cjs', "const LANE_IDS = { consumer: ['b-ui'], security: ['c-security'], browser: ['b-ui'] };\nmodule.exports = { LANE_IDS };\n");
   for (const id of ['a-core', 'b-ui', 'c-security']) write(root, 'accelerated-launch/service/tests/sections/' + id + '.cjs', "module.exports = { id: '" + id + "' };\n");
@@ -74,6 +75,7 @@ function fixture(label, mutate, options = {}) {
   const risk = inputs.classify(changedFiles);
   const selected = risk.mode === 'PRESENTATION' ? ['b-ui', 'c-security'] : [];
   const snapshot = Object.fromEntries(sources(root).map(row => [row.file, row.sha256]));
+  snapshot['accelerated-launch/service/deploy/unchanged-control.sh']=hash(path.join(root,'accelerated-launch/service/deploy/unchanged-control.sh'));
   for (const file of changedFiles.filter(file=>!/\.md$/i.test(file))) snapshot[file] = fs.existsSync(path.join(root, file)) ? hash(path.join(root, file)) : null;
   const plan = { schema: 2, base_commit: baseCommit, git_head: git(root, ['rev-parse', 'HEAD']), changed_files: changedFiles, risk,
     selected_lanes: selected.length ? ['consumer', 'security', 'browser'] : [], selected_sections: selected,
@@ -130,6 +132,7 @@ try {
   write(frozenRoot, 'accelerated-launch/service/unknown-new.cjs', 'module.exports = true;\n');
   assert.throws(() => validateComposite({ ...presentation.args, sourceRoot: frozenRoot }), /current source inventory/); cases++;
   const operations = accepted('tool', root => write(root, 'accelerated-launch/service/deploy/unit-tool.cjs', "'use strict'; module.exports = false;\n"));
+  assert(operations.built.proof.before_sources.some(row=>row.file.endsWith('/unchanged-control.sh')),'Unchanged orchestration outside full receipt hashes retains its committed baseline bytes');
   assert.deepEqual(operations.verdict.requiredFocusedSections, []); assert.equal(operations.verdict.freshFocusedRaw, null);
   const bookkeeping=accepted('bookkeeping',root=>write(root,'release-notes.md','Bookkeeping only\n'));
   const bookkeepingFrozen=path.join(bookkeeping.base,'frozen-source');
