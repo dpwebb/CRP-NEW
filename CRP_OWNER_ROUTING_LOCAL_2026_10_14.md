@@ -1,5 +1,7 @@
 # Automatic owner routing — local implementation
 
+Subsequent production milestone: the owner authorized “deploy”. The unchanged combined 391d candidate passed strict current-build 30/123/46 acceptance and is now deployed and verified on production. Read `CRP_EMAIL_PASSWORD_RESET_PRODUCTION_2026_10_14.md` for exact provenance, retained original full proof, account/owner/MFA preservation and backup custody. Earlier local-only, affected-flow-only and NOT_RUN statements below retain their original milestone scope.
+
 October 14, 2026. Owner request: "Implement automatic owner routing". Status: **IMPLEMENTED_AND_TESTED_LOCALLY**. The new committed candidate is packaged and integrated into local main. It has not been deployed; the accepted administration release remains live.
 
 ## Behavior

@@ -1,5 +1,9 @@
 > **October 7 scope reconciliation.** The active version 1 violation set is the common-error checklist under `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Earlier statutory expansion tasks and counts below are historical evidence, not remaining-work instructions or release gates for out-of-checklist violations. Keep the 82-jurisdiction consumer journey, listed checks, packets, and release safeguards.
 
+## October 14 owner-authorized combined recovery/routing production promotion
+
+Status: **DEPLOYED_AND_VERIFIED**, crp-v1-391d75bc3ef29f27 / c43a164a91aa573e3dee8ce956b28cb2f0066532 / 177 shipped files. Owner said “deploy” after merge/push. Strict current-build staging 30/123/46 and Linux pre-stop verification passed; same committed archive promoted 19:22:10.566 UTC. Original16,406/0/0 full was reused unchanged. Fresh twelve-cell Sandbox/provider proof, annual upgrade/cancel, seven-page packet visual/approval/download/print/comparison, FDT and13 temporary actor cleanup passed. Five production accounts/333 original business rows/109 blobs/seven signed admin immutable files and same owner authority preserved; full-access credentials/104 cases,14 read-only provider GETs,31 postbackup public smoke and anonymous desktop/mobile recovery/admin entry passed. Existing offsite job roundtrip and authenticated140-file manifest/HMAC validation passed. ProdPID1323688, stage1221630, local20396/52ee. See `CRP_EMAIL_PASSWORD_RESET_PRODUCTION_2026_10_14.md`. No real-owner recovery/sign-in/seed/OTP/bootstrap, live charge, payout, mailing, or other enhancement. Previous milestone entries remain historical.
+
 # Version 1 seven-day work register
 
 ## October 14 email recovery — DEPLOYED_AND_AFFECTED_FLOW_VERIFIED_ON_STAGING

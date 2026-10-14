@@ -1,5 +1,7 @@
 # Email password recovery — staging deployment
 
+Subsequent production milestone: the owner authorized “deploy”. The unchanged combined 391d candidate passed strict current-build 30/123/46 acceptance and is now deployed and verified on production. Read `CRP_EMAIL_PASSWORD_RESET_PRODUCTION_2026_10_14.md` for exact provenance, retained original full proof, account/owner/MFA preservation and backup custody. Earlier local-only, affected-flow-only and NOT_RUN statements below retain their original milestone scope.
+
 October 14, 2026. Status: **DEPLOYED_AND_AFFECTED_FLOW_VERIFIED_ON_STAGING**. The owner's subsequent instruction, “deploy”, authorized the next staging milestone after local implementation. The coordinator stated the separate production boundary before activation. Production promotion is not included in this milestone.
 
 ## Immutable deployment identity

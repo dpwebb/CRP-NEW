@@ -1,5 +1,7 @@
 # Email password reset — local implementation
 
+Subsequent production milestone: the owner authorized “deploy”. The unchanged combined 391d candidate passed strict current-build 30/123/46 acceptance and is now deployed and verified on production. Read `CRP_EMAIL_PASSWORD_RESET_PRODUCTION_2026_10_14.md` for exact provenance, retained original full proof, account/owner/MFA preservation and backup custody. Earlier local-only, affected-flow-only and NOT_RUN statements below retain their original milestone scope.
+
 October 14, 2026. Owner authority: “Proceed with the email password reset and consumer recovery guidance. Build and test locally, preserve MFA and the recovery key option, and do not deploy yet.”
 
 Subsequent staging milestone: the owner said “deploy”; the unchanged combined 391d package is now **DEPLOYED_AND_AFFECTED_FLOW_VERIFIED_ON_STAGING**. Read `CRP_EMAIL_PASSWORD_RESET_STAGING_2026_10_14.md` for actual mail delivery, 122 hosted browser checks, 31 public smoke checks, data/backup custody and the still-pending strict acceptance/production boundary. The local-only statements below describe their original implementation milestone and do not supersede that later staging report. Production and the original local operational runtime remain unchanged.
