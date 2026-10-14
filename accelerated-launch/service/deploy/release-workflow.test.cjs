@@ -62,6 +62,9 @@ assert.equal(plan(fixtureCommit,baseline,{root:fixtureRoot}).risk.full_regressio
 const {prepareInputs,verifyBinding}=require('./release-workflow.cjs');
 const ops={...p,selected_sections:[],risk:{mode:'OPERATIONS_OR_DOCUMENTATION',full_regression_required:false}};
 const prepared=prepareInputs(ops);assert.equal(prepared.productReuse,false);verifyBinding(prepared.binding);
+for(const key of ['CRP_RELEASE_INPUTS_TEST_MODULE','CRP_RELEASE_WORKFLOW_MODULE']){
+  const before=process.env[key];process.env[key]='UNIT_FIXTURE_ONLY';assert.throws(()=>prepareInputs(ops),/alternate test-module/);if(before===undefined)delete process.env[key];else process.env[key]=before;
+}
 put(fixtureCss,'body{color:black}\n');assert.throws(()=>verifyBinding(prepared.binding),/input changed/);put(fixtureCss,'body{color:green}\n');
 const oldOption=process.env.CRP_TOOL_TEST_OPTION;process.env.CRP_TOOL_TEST_OPTION='changed';assert.throws(()=>verifyBinding(prepared.binding),/environment changed/);if(oldOption===undefined)delete process.env.CRP_TOOL_TEST_OPTION;else process.env.CRP_TOOL_TEST_OPTION=oldOption;
 assert.throws(()=>prepareInputs({...ops,risk:{mode:'FULL',full_regression_required:true}}),/harness/);

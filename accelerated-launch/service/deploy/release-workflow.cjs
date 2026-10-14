@@ -188,6 +188,7 @@ function verifyBinding(binding){
   if(binding.profile_file && hash(binding.profile_file)!==binding.profile_sha256)throw Error('Reviewed input profile changed');
 }
 function prepareInputs(p,options={}){
+  if(process.env.CRP_RELEASE_INPUTS_TEST_MODULE || process.env.CRP_RELEASE_WORKFLOW_MODULE)throw Error('Release checks refuse alternate test-module overrides; standalone tooling development tests may use them');
   const root=p.workspace_root||ROOT,catalog=sectionCatalog(root),product=p.risk.full_regression_required || p.risk.mode==='PRESENTATION',sections=p.risk.full_regression_required?catalog.map(r=>r.id):p.selected_sections;
   const deploy='accelerated-launch/service/deploy/',toolNames=['release-workflow.test.cjs','release-inputs.test.cjs','release-execution.test.cjs','release-artifact.test.cjs','release-continuity.test.cjs','release-proof-adapter.test.cjs','release-transfer.test.cjs','release-acceptance.test.cjs','release-host-probe.test.cjs'].filter(f=>fs.existsSync(inside(root,deploy+f)));
   const profileFile=options.profileFile?path.resolve(options.profileFile):null,profile=profileFile?read(profileFile):null;
