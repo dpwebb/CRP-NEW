@@ -4,11 +4,12 @@
 const fs=require('node:fs');
 const {PrivateStore}=require('../private-store.cjs');
 const {AdminStore}=require('../admin-store.cjs');
-const {bootstrapOwner}=require('../admin-access.cjs');
+const {bootstrapOwner,recoverOrphanedOwner}=require('../admin-access.cjs');
 function main(args=process.argv.slice(2)){
-  if(args.length!==4||args[0]!=='--data-dir'||args[2]!=='--account-id')throw Error('Usage: node admin-bootstrap.cjs --data-dir PRIVATE_DIRECTORY --account-id EXISTING_ACCOUNT_ID (authenticator code on stdin)');
+  if(![4,5].includes(args.length)||args[0]!=='--data-dir'||args[2]!=='--account-id'||args.length===5&&args[4]!=='--recover-orphaned-owner')throw Error('Usage: node admin-bootstrap.cjs --data-dir PRIVATE_DIRECTORY --account-id EXISTING_ACCOUNT_ID [--recover-orphaned-owner] (authenticator code on stdin; service must be stopped)');
+  const recover=args[4]==='--recover-orphaned-owner';
   const consumer=new PrivateStore(args[1]);let admin;
-  try{admin=new AdminStore(consumer.dataDir,{consumerStore:consumer});const member=bootstrapOwner(admin,{account_id:args[3],code:fs.readFileSync(0,'utf8').trim()});console.log(JSON.stringify({created:true,admin_id:member.admin_id,account_id:member.account_id,role:member.role,scope:'Offline owner registration only; administration remains controlled by its feature flag and fresh session unlock'}));return member;}
+  try{admin=new AdminStore(consumer.dataDir,{consumerStore:consumer});const input={account_id:args[3],code:fs.readFileSync(0,'utf8').trim()},member=recover?recoverOrphanedOwner(admin,{...input,offline:true}):bootstrapOwner(admin,input);console.log(JSON.stringify({created:!recover,recovered:recover,admin_id:member.admin_id,account_id:member.account_id,role:member.role,scope:'Offline owner registration only; administration remains controlled by its feature flag and fresh session unlock'}));return member;}
   // PrivateStore has no close export. On process exit its existing stale-PID
   // recovery releases the offline consumer writer registration on next startup.
   finally{admin?.close();}
