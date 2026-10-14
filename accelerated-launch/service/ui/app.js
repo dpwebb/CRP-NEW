@@ -615,7 +615,7 @@ function renderEmailPasswordReset(panel) {
   el('recovery-back').onclick = recoverySignIn;
 }
 function renderRecovery(panel) {
-  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Use the recovery key you saved when you created your account. This also turns off a lost authenticator so you can set it up again.</p></div><div class="auth-form-card">${notices(true)}
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Choose a password reset link by email, or use your saved recovery key.</p></div><div class="auth-form-card">${notices(true)}
     ${recoveryKeyBlock()}
     ${state.recoveryKey ? '<div class="auth-actions auth-actions-single"><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>' : `<section class="auth-recovery-note" aria-label="Recover without a key"><p>Can’t find your recovery key?</p><button type="button" class="primary" id="email-recovery-option">Email me a password reset link</button><p>Email reset keeps your authenticator enabled. You will still need your app to log in.</p></section><h2>Use your saved recovery key</h2><form id="auth-recovery-form"><div class="auth-fields"><div><label for="recover-email">Email address</label><input id="recover-email" required type="email" autocomplete="username"></div>
     <div><label for="recover-key">Saved recovery key</label><input id="recover-key" required type="password" autocomplete="off"></div>

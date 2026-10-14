@@ -161,6 +161,8 @@ const ROUTES = Object.freeze([
   ['GET', '/api/contact-location', true, 'contactLocation'],
   ['POST', '/api/account/recovery-key', true, 'issueRecoveryKey'],
   ['POST', '/api/account/recover', false, 'recoverAccount'],
+  ['POST', '/api/account/password-reset/request', false, 'requestPasswordReset'],
+  ['POST', '/api/account/password-reset/complete', false, 'completePasswordReset'],
   ['GET', '/api/account/profile', true, 'accountProfile'],
   ['PUT', '/api/account/profile', true, 'saveAccountProfile'],
   ['GET', '/api/account/documents', true, 'accountDocuments'],
@@ -811,6 +813,7 @@ function createService(options) {
     catch { adminUnavailable = true; }
   }
   const logger = new Logger(opts.logSink);
+  const passwordReset = require('./password-reset.cjs').create(store, { mailer: opts.passwordResetMailer || require('./confirmation-mail.cjs').sender(), origin: opts.passwordResetOrigin, logger });
   const requestPolicy=require('./request-policy.cjs').policy();
   const surface = loadJurisdictionSurface();
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
@@ -819,7 +822,9 @@ function createService(options) {
     buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender()),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
-    {contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
+    {requestPasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.request(body)}}),
+      completePasswordReset: ({body}) => ({status:200,json:{ok:true,...passwordReset.complete(body)},headers:{'Set-Cookie':[sessionCookie('',0),`${ADMIN_COOKIE}=; HttpOnly; SameSite=Strict; Path=/api/admin/; Max-Age=0${process.env.CRP_LOCAL_SERVICE_SECURE_COOKIE === '1' ? '; Secure' : ''}`]}}),
+      contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
   );
 
   /**
@@ -940,7 +945,7 @@ function createService(options) {
     }
   }
 
-  return { store, adminStore, logger, handle, surface, startup, close() { adminStore?.close(); } };
+  return { store, adminStore, logger, handle, surface, startup, passwordReset, close() { adminStore?.close(); } };
 }
 
 function sendJson(res, status, body, headers) {

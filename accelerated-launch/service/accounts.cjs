@@ -231,6 +231,7 @@ function issueRecoveryKey(store, actor, input) {
     const owned = checked.account;
     if (owned.two_factor_secret && !require('./signup-security.cjs').verifySignIn(store, owned, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     owned.recovery_key_digest = recoveryDigest(key);
+    delete owned.password_reset;
     owned.recovery_key_created_at = nowIso();
     delete owned.recovery_key_saved_at;
     return { recovery_key: key };
@@ -257,6 +258,7 @@ function recoverAccount(store, input, client) {
     account.password_hash = hashPassword(password, salt);
     delete account.legacy_password_bcrypt;
     account.recovery_key_digest = recoveryDigest(nextKey);
+    delete account.password_reset;
     account.recovery_key_created_at = nowIso();
     delete account.two_factor_secret; delete account.two_factor_pending; delete account.two_factor_last_counter; delete account.two_factor_locked_until; account.two_factor_failed_attempts=0;
     if(account.signup_security_required){delete account.recovery_key_saved_at;delete account.signup_complete_at;}

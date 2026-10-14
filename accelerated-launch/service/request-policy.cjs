@@ -11,7 +11,7 @@ function policy(options={}) {
     try {if(!origin && headers.referer)origin=new URL(headers.referer).origin;}catch{throw new ServiceError('NOT_AUTHORIZED');}
     if(origin && origin!==expected || headers.cookie && !origin)throw new ServiceError('NOT_AUTHORIZED');
     if((Number(headers['content-length'])>0 || headers['transfer-encoding']) && !/^application\/json(?:\s*;|$)/i.test(headers['content-type'] || ''))throw new ServiceError('INVALID_REQUEST','JSON_CONTENT_TYPE_REQUIRED');
-    if(!['/api/accounts','/api/sessions','/api/account/recover'].includes(new URL(req.url,'http://localhost').pathname))return;
+    if(!['/api/accounts','/api/sessions','/api/account/recover','/api/account/password-reset/request','/api/account/password-reset/complete'].includes(new URL(req.url,'http://localhost').pathname))return;
     const peer=String(req.socket?.remoteAddress || 'unknown').replace(/^::ffff:/,'');
     // Unauthenticated forwarding headers are never an abuse-limit identity.
     const proxy=peer==='127.0.0.1'||peer==='::1';

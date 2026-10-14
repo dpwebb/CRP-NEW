@@ -49,6 +49,7 @@ const STATUS_BY_CODE = Object.freeze({
   AUTHENTICATION_REQUIRED: 401,
   INVALID_CREDENTIALS: 401,
   INVALID_RECOVERY_KEY: 401,
+  INVALID_PASSWORD_RESET: 400,
   TOO_MANY_RECOVERY_ATTEMPTS: 429,
   ENTITLEMENT_REQUIRED: 402,
   DOWNLOAD_NOT_ENTITLED: 402,
@@ -103,6 +104,7 @@ const MESSAGE_BY_CODE = Object.freeze({
   ACCOUNT_SECURITY_UNAVAILABLE: 'Account security is temporarily unavailable. Please contact support.',
 
   INVALID_RECOVERY_KEY: 'The email and recovery key do not match. Check them and try again.',
+  INVALID_PASSWORD_RESET: 'This password reset link has expired or has already been used. Request a new email and try again.',
   TOO_MANY_RECOVERY_ATTEMPTS: 'Too many tries. Wait 15 minutes, then try again.',
   PACKET_SUPPORT_REQUIRED: 'Complete the bureau checklist shown in your packet review before approving.',
   PACKET_ATTACHMENT_UNREADABLE: 'We could not add one of your copies. Upload a clear, unlocked PDF or image, then save your packet again.',

@@ -58,8 +58,39 @@ async function run(t, check) {
     await page.waitForFunction(() => document.getElementById('request-email-reset')?.disabled === false);
     await page.getByText(confirmation, { exact: true }).waitFor();
     check.equal(await page.locator('#consumer-notice').innerText(), unknownConfirmation, 'known and unknown account emails show identical consumer confirmation');
+    await t.service.passwordReset.drain();
     const mail = t.resetMessages.findLast(message => message.to === email && message.kind === 'password-reset');
     check.ok(Boolean(mail?.url), 'real local mail adapter captures a link for the fictional account');
+    // Opening a link during session bootstrap must outrank its late response.
+    const raceContext = await browser.newContext();
+    try {
+      await raceContext.addCookies([{ name: 'crp_session', value: actor.token, url: t.base, httpOnly: true, sameSite: 'Strict' }]);
+      const late = await raceContext.newPage();
+      let release, began; const gate = new Promise(resolve => { release = resolve; }); const started = new Promise(resolve => { began = resolve; });
+      await late.route('**/api/session', async route => { began(); await gate; await route.continue(); });
+      await late.goto(t.base + '/index.html#signin', { waitUntil: 'domcontentloaded' }); await started;
+      await late.evaluate(hash => { location.hash = hash; }, new URL(mail.url).hash); await late.locator('#reset-password').waitFor();
+      const finished = late.waitForResponse(response => new URL(response.url()).pathname === '/api/session'); release(); await finished;
+      await late.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      check.ok(await late.locator('#reset-password').isVisible(), 'late session bootstrap cannot overwrite reset-link form');
+      check.equal(await late.locator('#open').count(), 0, 'late restored session cannot open upload over recovery');
+      await late.locator('#new-email-reset').click(); await late.locator('#saved-key-option').click();
+      check.ok(await late.locator('#recover-key').isVisible(), 'reset-link recovery can switch to saved-key recovery despite old signed-in cookie');
+      await late.close();
+    } finally { await raceContext.close(); }
+    const staleContext = await browser.newContext();
+    try {
+      const late = await staleContext.newPage();let release, began;
+      const gate = new Promise(resolve => { release = resolve; }), started = new Promise(resolve => { began = resolve; });
+      await late.route('**/api/sessions', async route => { began(); await gate; await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ ok: false, error: { code: 'INVALID_CREDENTIALS', message: 'Wrong old sign-in.' } }) }); });
+      await late.goto(t.base + '/index.html#signin'); await late.locator('#email').fill(email); await late.locator('#password').fill('wrong-old-password'); await late.locator('#signin').click(); await started;
+      await late.evaluate(hash => { location.hash = hash; }, new URL(mail.url).hash); await late.locator('#reset-password').fill(newPassword);
+      const finished = late.waitForResponse(response => new URL(response.url()).pathname === '/api/sessions'); release(); await finished;
+      await late.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      check.equal(await late.locator('#reset-password').inputValue(), newPassword, 'late rejected sign-in does not erase new reset form input');
+      check.equal(await late.getByRole('alert').count(), 0, 'late rejected sign-in does not leak stale error into recovery');
+      await late.close();
+    } finally { await staleContext.close(); }
     await page.unroute('**/api/account/password-reset/request');
     await page.locator('#saved-key-option').click();
     check.ok(await page.locator('#recover-key').isVisible(), 'email request offers a working route back to saved-key recovery');
@@ -67,14 +98,19 @@ async function run(t, check) {
     // A signed-in browser must still open the link form, rather than its report workspace.
     await context.addCookies([{ name: 'crp_session', value: actor.token, url: t.base, httpOnly: true, sameSite: 'Strict' }]);
     const link = new URL(mail.url); const token = link.hash.slice('#reset-password='.length);
+    const fetchCountBeforeLink = await page.evaluate(() => window.__resetFetchHashes.length);
     await page.goto(t.base + link.pathname + link.search + link.hash); await page.locator('#reset-password').waitFor();
     check.equal(new URL(page.url()).hash, '#reset-password', 'reset token is removed from browser location as soon as the UI loads');
-    check.ok((await page.evaluate(() => window.__resetFetchHashes)).every(hash => hash === '#reset-password'), 'token is scrubbed before every startup API request');
+    check.ok((await page.evaluate(() => window.__resetFetchHashes)).slice(fetchCountBeforeLink).every(hash => hash === '#reset-password'), 'token is scrubbed before every API request after opening link');
     check.ok(!requestedUrls.some(url => url.includes(token)), 'reset token never appears in network request URLs');
     check.ok(!(await page.locator('#activity').innerText()).includes(token), 'reset token is absent from technical activity');
     check.ok(await page.evaluate(secret => ![...Object.values(localStorage), ...Object.values(sessionStorage)].some(value => value.includes(secret)), token), 'reset token is not persisted in browser storage');
     check.equal(await page.locator('#open, #account-save').count(), 0, 'signed-in cookie does not replace the dedicated reset form');
     check.equal(completions, 0, 'opening the email link does not consume it');
+    await page.goto('about:blank');
+    await page.goto(t.base + link.pathname + link.hash); await page.locator('#reset-password').waitFor();
+    const coldHashes = await page.evaluate(() => window.__resetFetchHashes);
+    check.ok(coldHashes.length > 0 && coldHashes.every(hash => hash === '#reset-password'), 'fresh document scrubs secret before initial bootstrap API calls');
     const mobile = path.join(out, 'email-reset-password-mobile.png'); await page.screenshot({ path: mobile, fullPage: true }); screenshots.push(mobile);
     check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'new-password form has no mobile horizontal overflow');
     await page.reload(); await page.locator('#new-email-reset').waitFor();
