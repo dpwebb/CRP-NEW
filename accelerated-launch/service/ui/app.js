@@ -293,7 +293,7 @@ function failedPaymentBlock(ent = state.entitlement) {
   if (ent?.state !== 'PAST_DUE') return '';
   const date = new Date(ent.grace_until);
   const deadline = ent.grace_until && Number.isFinite(date.getTime()) ? date.toLocaleString('en-CA', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : '';
-  return `<div class="note" role="status">Your latest subscription payment failed. ${ent.entitled && deadline ? `Your paid access stays open until <b>${esc(deadline)}</b>. If payment is not confirmed by then, paid features will stop.` : 'Paid features are unavailable now.'} Your saved results stay readable.</div>`;
+  return `<div class="note" role="status">Your latest subscription payment failed. ${ent.entitled && deadline ? `Your paid access stays open until <b>${esc(deadline)}</b>. If payment is not confirmed by then, paid features will stop.` : 'Paid features are unavailable now.'} Your saved reports stay in your account.</div>`;
 }
 function renewalNeedsCancellation(ent = state.entitlement) {
   return ent?.renewal_cancellation_available === true && !(ent.entitled && ent.access_via === 'SUBSCRIPTION');
@@ -1357,6 +1357,12 @@ function currentReportPaymentPending() {
 function pendingPaymentBlock(forReport = false) {
   const pending = ownedPendingCheckout();
   if (!pending) return '';
+  const cancelAction = surface?.payment_actions?.cancel_unfinished_checkout
+    ? '<button class="secondary" id="cancel-unfinished-payment">Cancel unfinished payment</button>' : '';
+  if (pending.plan_code !== 'report_once' && !pending.is_subscription_upgrade &&
+      state.entitlement?.entitled && state.entitlement.access_via === 'SUBSCRIPTION') {
+    return `<section class="note" aria-label="Your earlier payment"><h3>Your subscription is already active</h3><p>Do not use this earlier checkout. ${cancelAction ? 'Cancel the unfinished payment below.' : 'Contact support to close the unfinished payment.'} Your current subscription will stay active.</p>${cancelAction}</section>`;
+  }
   if (forReport) {
     const context = state.checkoutReturn;
     if (pending.plan_code === 'report_once') {
@@ -1365,7 +1371,7 @@ function pendingPaymentBlock(forReport = false) {
   }
   const pricing = Number.isSafeInteger(pending.payable_cents) && pending.payable_cents >= 0
     ? `<p class="evidence">Payment amount: <b>${esc(money(pending.payable_cents, pending.currency))}</b>${pending.credit_cents > 0 ? ` after ${esc(money(pending.credit_cents, pending.currency))} credit` : ''}.${pending.plan_code !== 'report_once' && Number.isSafeInteger(pending.renewal_cents) ? ` Then ${esc(money(pending.renewal_cents, pending.currency))} per ${pending.plan_code === 'annual' ? 'year' : 'month'}.` : ''}</p>` : '';
-  return `<section class="note" aria-label="Your open payment"><h3>${pending.is_subscription_upgrade ? 'Your yearly upgrade is waiting for payment' : 'Finish your payment'}</h3><p>Your payment has not been confirmed yet. Continue the payment you already started.</p>${pricing}<button class="primary" id="continue-payment">Continue payment</button></section>`;
+  return `<section class="note" aria-label="Your open payment"><h3>${pending.is_subscription_upgrade ? 'Your yearly upgrade is waiting for payment' : 'Finish your payment'}</h3><p>Your payment has not been confirmed yet. ${cancelAction ? 'Continue it, or cancel this unfinished payment.' : 'Continue the payment you already started.'}</p>${pricing}<button class="primary" id="continue-payment">Continue payment</button>${cancelAction}</section>`;
 }
 function redirectToPayment(redirect, expectedReturn = null, resuming = false) {
   if (/^https:\/\/(?:checkout|invoice)\.stripe\.com\//.test(redirect || '')) return location.assign(redirect);
@@ -1401,6 +1407,16 @@ function wirePendingPayment() {
   const button = el('continue-payment'), pending = ownedPendingCheckout();
   const ensureOwner = accountContext();
   if (button && pending) button.onclick = () => resumePendingCheckout(pending.checkout_id, ensureOwner);
+  const cancel = el('cancel-unfinished-payment');
+  if (cancel && pending) cancel.onclick = () => run(async () => {
+    ensureOwner();
+    const result = await api('POST', '/api/entitlement/cancel', { cancel_checkout_id: pending.checkout_id });
+    ensureOwner();
+    if (result.cancellation?.cancelled !== true) throw new Error('The unfinished payment was not stopped. Try again or contact support.');
+    if (state.checkoutReturn?.caseId === pending.case_id && state.checkoutReturn.planCode === pending.plan_code) state.checkoutReturn = null;
+    await refreshAccess(); ensureOwner();
+    state.notice = 'Unfinished payment cancelled. Your current plan and reports are unchanged.';
+  });
 }
 
 /** Only the authenticated server hint selects the fixed admin entry; MFA still happens there. */
@@ -1580,7 +1596,7 @@ function oneTimeNextStepsBlock() {
     <span class="pill">UNLOCKED REPORT</span>
     <h3>Next steps for this report</h3>
     <p class="evidence">Keep your full report as a PDF. It includes the issues we found, the report facts and clear next steps.</p>
-    <button class="primary" id="download-assessment">Download my report (PDF)</button>
+    <button class="primary" id="download-assessment">Download this assessment (PDF)</button>
   </div>${subscriptionBenefits('Turn your results into a dispute packet')}
   ${currentReportPaymentPending() ? '' : `<div class="upgrade-offer"><h3>Your earlier payments count</h3><p>Every unused payment for a lower plan goes toward your upgrade. Your credit is applied at checkout.</p>${state.upgrade_credit?.eligible ? `<p class="upgrade-credit-total">Your available credit: <b>${esc(money(state.upgrade_credit.credit_cents, state.upgrade_credit.currency))}</b></p>` : ''}${currencyChoice()}<div class="subscription-choices">${subscriptionChoices()}</div><button class="text-button" id="go-subscribe">See all plans</button></div>`}`;
 }

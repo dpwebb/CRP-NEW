@@ -13,10 +13,22 @@ async function openCheckout(store, actor, input, env) {
   if (!plans.isPlanCode(code)) throw new ServiceError('UNKNOWN_PLAN');
   const provider = payments.resolveProvider(env);
   if (!provider) throw new ServiceError('PAYMENT_PROVIDER_NOT_CONFIGURED');
+  const ensureNoDuplicateSubscription = (isUpgrade, resuming = false) => {
+    const status = entitlement.statusFor(store, actor.account_id);
+    const activeSubscription = status.entitled && status.access_via === 'SUBSCRIPTION';
+    if (code !== 'report_once' && !isUpgrade && resuming && activeSubscription) {
+      throw new ServiceError('PLAN_ALREADY_ACTIVE');
+    }
+    if (code !== 'report_once' && !isUpgrade &&
+        status.renewal_cancellation_available && !activeSubscription) {
+      throw new ServiceError('SUBSCRIPTION_RENEWAL_UNCONFIRMED');
+    }
+  };
   if (typeof body.resume_checkout_id === 'string') {
     const existing = store.state().checkout_sessions.find(c => c.checkout_id === body.resume_checkout_id && c.account_id === actor.account_id);
     if (!existing || existing.plan_code !== code || existing.provider_id !== provider.provider_id ||
         !['OPEN', 'OPENING'].includes(existing.state)) throw new ServiceError('CHECKOUT_NOT_FOUND');
+    ensureNoDuplicateSubscription(existing.is_subscription_upgrade === true, true);
     if (existing.state === 'OPENING') {
       if (!existing.provider_request) throw new ServiceError('CHECKOUT_OPEN_FAILED');
       try {
@@ -34,9 +46,7 @@ async function openCheckout(store, actor, input, env) {
   const caseId = typeof body.case_id === 'string' ? body.case_id : null;
   if (code === 'report_once') entitlement.requireUnlockableReport(store, actor, caseId);
   const current = entitlement.statusFor(store, actor.account_id);
-  if (code !== 'report_once' && !current.entitled && current.renewal_cancellation_available) {
-    throw new ServiceError('SUBSCRIPTION_RENEWAL_UNCONFIRMED');
-  }
+  ensureNoDuplicateSubscription(false);
   const currency = body.currency || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : 'cad');
   if (!plans.isCurrency(currency)) throw new ServiceError('INVALID_PAYMENT_CURRENCY');
   if (current.entitled && current.access_via === 'SUBSCRIPTION' && currency !== (current.currency || 'cad')) throw new ServiceError('SUBSCRIPTION_CURRENCY_CHANGE');

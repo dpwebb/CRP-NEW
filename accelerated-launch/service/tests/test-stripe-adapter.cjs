@@ -104,6 +104,23 @@ function startMock() {
       const subscription = id === fixture.subscription.id || id === fixture.session.subscription
         ? fixture.subscription : fixture.subscriptions[id];
       if (!subscription) return respond({ error: { message: 'unknown subscription' } }, 404);
+      if (req.method === 'DELETE') {
+        let body = '';
+        req.on('data', bytes => { body += bytes; });
+        req.on('end', () => {
+          call.body = body;
+          const parameters = new URLSearchParams(body);
+          if (parameters.get('invoice_now') !== 'false' || parameters.get('prorate') !== 'false') {
+            return respond({ error: { message: 'fixture requires cancellation without final invoicing or proration' } }, 400);
+          }
+          subscription.status = 'canceled';
+          subscription.cancel_at_period_end = false;
+          subscription.ended_at = Math.floor(Date.now() / 1000);
+          fixture.subscriptions[id] = structuredClone(subscription);
+          respond(subscription);
+        });
+        return;
+      }
       if (req.method === 'POST') {
         let body = '';
         req.on('data', (bytes) => { body += bytes; });

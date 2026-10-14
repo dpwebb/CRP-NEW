@@ -185,7 +185,7 @@ async function run(t, check) {
   check.ok(/Review your yearly upgrade/.test(dom.elementById('billingView').innerHTML), 'an existing subscription upgrade requires review before billing the saved payment method');
   await dom.elementById('confirm-upgrade-annual').onclick();
   await tick(); await tick();
-  check.ok(/Refused:/.test(panel.innerHTML), 'a failed checkout shows a refusal, not success');
+  check.ok(/Please check:/.test(panel.innerHTML), 'a failed checkout shows an actionable error, not success');
   check.ok(!/Checkout opened/.test(panel.innerHTML), 'a failed checkout never claims a checkout was opened');
   responderState.checkoutFails = false;
 
@@ -193,7 +193,7 @@ async function run(t, check) {
   responderState.cancelFails = true;
   await dom.elementById('cancelEntitlement').onclick();
   await tick(); await tick();
-  check.ok(/Refused:/.test(panel.innerHTML), 'a failed cancellation shows a refusal, not success');
+  check.ok(/Please check:/.test(panel.innerHTML), 'a failed cancellation shows an actionable error, not success');
   responderState.cancelFails = false;
 
   /* Sign-out clears account-specific billing state. */

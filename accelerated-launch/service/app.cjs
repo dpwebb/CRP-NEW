@@ -299,6 +299,7 @@ function loadJurisdictionSurface() {
     preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
     retention_plain: retention.policyView().plain,
     upload_limits: uploads.uploadLimits(),
+    payment_actions: { cancel_unfinished_checkout: true },
     support_contact: require('./support.cjs').publicContact()
   };
 }
@@ -534,8 +535,8 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       json: { ok: true, case: cases.setStatus(store, actor, params.caseId, body && body.status) }
     }),
 
-    deleteCase: ({ params, actor }) => {
-      const removed = cases.deleteCase(store, actor, params.caseId);
+    deleteCase: async ({ params, actor }) => {
+      const removed = await cases.deleteCaseSafely(store, actor, params.caseId, process.env);
       logger.log({ event: 'CASE_DELETED', outcome: 'OK', count: removed.blobs_removed });
       return { status: 200, json: { ok: true, ...removed } };
     },

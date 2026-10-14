@@ -14,6 +14,7 @@ async function run(service, check) {
     await signupPage.goto(service.base + '/index.html#create');
     await signupPage.locator('#email').fill('new-profile-browser@example.test');
     await signupPage.locator('#password').fill('a-long-enough-password');
+    await signupPage.locator('#signup-details-title').click();
     await signupPage.locator('#signup-full_name').fill('Fictional New Consumer');
     await signupPage.locator('#signup-date_of_birth').fill('1991-04-03');
     await signupPage.locator('#signup-phone').fill('555-0142');

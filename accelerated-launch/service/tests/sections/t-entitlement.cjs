@@ -570,6 +570,11 @@ async function stripeRenewalCancellation(t, check, evidence) {
     check.equal(oldEnded.json?.event?.accepted, true, 'the old monthly purchase ends through a verified provider refund');
     check.equal((await t.request('GET', '/api/entitlement', { token: replacement.actor.token })).json.entitlement.entitled,
       false, 'old monthly access has genuinely ended before a new yearly purchase');
+    const confirmedEnd = signedEvent(configured.STRIPE_WEBHOOK_SECRET, { id: 'evt_cancel_replacement_stopped',
+      type: 'customer.subscription.deleted', livemode: false, created: Math.floor(Date.now() / 1000),
+      data: { object: { ...olderSubscription, status: 'canceled' } } });
+    check.equal((await t.request('POST', '/api/billing/events', { raw: confirmedEnd.raw, headers: confirmedEnd.headers })).json.event.accepted,
+      true, 'the prior subscription is provider-confirmed ended before replacement');
     const newerSubscription = await activate('replacement-annual', 'annual', replacement.actor);
     releaseUpdate();
     check.equal((await replaced).status, 409, 'a newly controlling subscription is not cancelled by an older response');
@@ -608,10 +613,17 @@ async function stripeRenewalCancellation(t, check, evidence) {
       'deletion without the server Checkout metadata is refused before applying any effect');
 
     const removed = await activate('deleted-account');
+    // A provider response already in flight can arrive after a later confirmed
+    // immediate cancellation. Its older success must not recreate local access.
+    mock.fixture.updateResponse = { ...structuredClone(mock.fixture.subscription), cancel_at_period_end: true };
     began = holdUpdate();
     const removedRequest = t.request('POST', '/api/entitlement/cancel', { token: removed.actor.token });
     await began;
-    check.equal((await t.request('DELETE', '/api/account', { token: removed.actor.token })).status, 200, 'consumer deletion proceeds while cancellation waits');
+    check.equal((await t.request('DELETE', '/api/account', { token: removed.actor.token })).status, 200, 'consumer deletion proceeds after immediate provider cancellation is confirmed');
+    check.equal(mock.fixture.subscription.status, 'canceled', 'provider subscription is ended before its account binding disappears');
+    const immediateStop = mock.calls.filter(call => call.method === 'DELETE' && call.path.startsWith('/v1/subscriptions/')).at(-1);
+    check.equal(new URLSearchParams(immediateStop.body).get('invoice_now'), 'false', 'account deletion generates no final invoice');
+    check.equal(new URLSearchParams(immediateStop.body).get('prorate'), 'false', 'account deletion generates no proration');
     releaseUpdate();
     check.equal((await removedRequest).status, 409, 'a response after account deletion cannot recreate or claim a current entitlement');
     check.equal(t.service.store.state().entitlements.some((row) => row.account_id === removed.actor.account_id), false,
