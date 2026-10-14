@@ -206,6 +206,9 @@ async function run(t, check) {
     });
     await call(consumer, 'DELETE', route + '/fulfillment-grants/' + grant.grant_id);
     await refuse('consumer revocation blocks every subsequent packet access', () => call(partnerA, 'GET', '/api/admin/fulfillment/' + job.job_id + '/packet'), ['NOT_FOUND']);
+    adminStore.update(state => { state.grants.find(row => row.grant_id === grant.grant_id).status = 'ACTIVE'; });
+    await refuse('revocation timestamp still blocks owner access if an active flag is stale', () => call(owner, 'GET', '/api/admin/fulfillment/' + job.job_id + '/packet'), ['NOT_FOUND']);
+    adminStore.update(state => { state.grants.find(row => row.grant_id === grant.grant_id).status = 'REVOKED'; });
     check.equal((await call(partnerA, 'GET', '/api/admin/fulfillment')).json.total, 0, 'revoked consumer references are hidden from the partner queue');
     const newGrant = (await call(consumer, 'POST', route + '/fulfillment-grants', grantBody)).json.grant;
     const newJob = (await call(owner, 'POST', '/api/admin/fulfillment', { grant_id: newGrant.grant_id })).json.job;
@@ -219,6 +222,7 @@ async function run(t, check) {
     check.ok(audit.total >= 1 && audit.items.every(row => row.event === 'ADMIN_FULFILLMENT_PACKET_VIEWED'), 'audit search filters before pagination');
     check.equal(audit.items[0].actor_account_id, partnerA.account_id, 'audit identifies the actual account who accessed the PDF');
     check.equal(audit.items[0].actor_admin_id, partnerA.member.admin_id, 'audit identifies the actual administration principal');
+    check.ok((await call(owner, 'GET', '/api/admin/audit?q=' + caseId)).json.total >= 1, 'audit search includes whitelisted case references inside metadata');
     check.ok(!JSON.stringify(audit).includes(consumer.token) && !JSON.stringify(audit).includes('Fictional Packet Bank'), 'audit retains references rather than report contents or tokens');
     const accounts = (await call(staff, 'GET', '/api/admin/accounts?q=admin-service-consumer')).json;
     check.equal(accounts.total, 1, 'safe account projection supports bounded search');
