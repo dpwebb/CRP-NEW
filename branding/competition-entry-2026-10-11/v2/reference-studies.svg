@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1260" height="380" viewBox="0 0 1260 380">
+<rect width="1260" height="380" fill="#F7F5EE"/>
+<g fill="#142B3A" font-family="Arial" font-size="18" text-anchor="middle"><text x="157" y="340">A / REFERENCE</text><text x="472" y="340">B / OPEN DATUM</text><text x="787" y="340">C / SHARED CORNER</text><text x="1102" y="340">D / RULE PATH</text></g>
+<g transform="translate(52 62) scale(2.1)">
+ <path d="M76 10H25C16 10 11 16 11 25V75C11 84 16 90 25 90H76" fill="none" stroke="#142B3A" stroke-width="11"/>
+ <path d="M57 50H92" fill="none" stroke="#142B3A" stroke-width="11"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(367 62) scale(2.1)">
+ <path d="M76 10H11V90H76" fill="none" stroke="#142B3A" stroke-width="11" stroke-linejoin="miter"/>
+ <path d="M57 50H92" fill="none" stroke="#142B3A" stroke-width="11"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(682 62) scale(2.1)">
+ <path d="M76 10H10V77H65" fill="none" stroke="#142B3A" stroke-width="11" stroke-linejoin="miter"/>
+ <path d="M90 90V50H55" fill="none" stroke="#142B3A" stroke-width="11" stroke-linejoin="miter"/>
+ <rect x="43" y="43" width="14" height="14" fill="#A57543"/>
+</g>
+<g transform="translate(997 62) scale(2.1)">
+ <path d="M76 10H10V90H76" fill="none" stroke="#142B3A" stroke-width="11" stroke-linejoin="miter"/>
+ <path d="M90 35V55H56" fill="none" stroke="#142B3A" stroke-width="11" stroke-linejoin="miter"/>
+ <rect x="42" y="48" width="14" height="14" fill="#A57543"/>
+</g>
+</svg>

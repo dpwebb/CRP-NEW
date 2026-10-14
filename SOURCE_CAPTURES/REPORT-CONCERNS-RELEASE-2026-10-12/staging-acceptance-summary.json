@@ -1,0 +1,194 @@
+{
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "passed": true,
+  "gates": 30,
+  "criteria": 123,
+  "predicates": [
+    {
+      "id": "final_full_freeze",
+      "passed": true
+    },
+    {
+      "id": "immutable_served_source",
+      "passed": true
+    },
+    {
+      "id": "actual_phase1",
+      "passed": true
+    },
+    {
+      "id": "actual_paid_activation",
+      "passed": true
+    },
+    {
+      "id": "actual_phase2",
+      "passed": true
+    },
+    {
+      "id": "actual_cleanup",
+      "passed": true
+    },
+    {
+      "id": "native_order",
+      "passed": true
+    },
+    {
+      "id": "image_order",
+      "passed": true
+    },
+    {
+      "id": "exact_duplicates",
+      "passed": true
+    },
+    {
+      "id": "continuation",
+      "passed": true
+    },
+    {
+      "id": "written_dates",
+      "passed": true
+    },
+    {
+      "id": "numeric_dates",
+      "passed": true
+    },
+    {
+      "id": "month_precision",
+      "passed": true
+    },
+    {
+      "id": "reference_dates",
+      "passed": true
+    },
+    {
+      "id": "useful_recovery",
+      "passed": true
+    },
+    {
+      "id": "bounded_unsuccessful",
+      "passed": true
+    },
+    {
+      "id": "upload_limits",
+      "passed": true
+    },
+    {
+      "id": "stable_support",
+      "passed": true
+    },
+    {
+      "id": "support_isolation",
+      "passed": true
+    },
+    {
+      "id": "account_isolation",
+      "passed": true
+    },
+    {
+      "id": "privacy_inventory",
+      "passed": true
+    },
+    {
+      "id": "current_plan_quotes",
+      "passed": true
+    },
+    {
+      "id": "owned_history",
+      "passed": true
+    },
+    {
+      "id": "chronological_linkage",
+      "passed": true
+    },
+    {
+      "id": "changed_issue",
+      "passed": true
+    },
+    {
+      "id": "history_isolation",
+      "passed": true
+    },
+    {
+      "id": "packet_comparison_continuity",
+      "passed": true
+    },
+    {
+      "id": "paid_result",
+      "passed": true
+    },
+    {
+      "id": "paid_plan_quotes",
+      "passed": true
+    },
+    {
+      "id": "own_ocr_locations",
+      "passed": true
+    },
+    {
+      "id": "checklist_source_breach",
+      "passed": true
+    },
+    {
+      "id": "actual_probable_breach",
+      "passed": true
+    },
+    {
+      "id": "no_irrelevant_context_questions",
+      "passed": true
+    },
+    {
+      "id": "consumer_violation_labels",
+      "passed": true
+    },
+    {
+      "id": "serious_clear_unpaid_example",
+      "passed": true
+    },
+    {
+      "id": "plain_consumer_explanations",
+      "passed": true
+    },
+    {
+      "id": "internal_reading_limit_retained",
+      "passed": true
+    },
+    {
+      "id": "packet_current_owner_version",
+      "passed": true
+    },
+    {
+      "id": "packet_editable_visual_review",
+      "passed": true
+    },
+    {
+      "id": "packet_exact_source_sequence",
+      "passed": true
+    },
+    {
+      "id": "packet_inline_identity_address",
+      "passed": true
+    },
+    {
+      "id": "packet_forms_retired",
+      "passed": true
+    },
+    {
+      "id": "packet_browser_download_print",
+      "passed": true
+    },
+    {
+      "id": "current_approval_navigation",
+      "passed": true
+    },
+    {
+      "id": "genuine_unused_payment_upgrade",
+      "passed": true
+    },
+    {
+      "id": "reporting_period_directive",
+      "passed": true
+    }
+  ],
+  "measurement_receipt_sha256": "66cc54d87125fe7fa67e620769f2285a220e1c47d4d0616fee82615d1b3c60d7",
+  "recorded_at": "2026-10-12T07:23:45.960Z"
+}

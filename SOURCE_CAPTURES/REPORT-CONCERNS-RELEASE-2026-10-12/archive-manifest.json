@@ -1,0 +1,35 @@
+{
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "sanitized_public_review_only": true,
+  "raw_proof_retained_privately": true,
+  "files": [
+    {
+      "file": "production-acceptance-summary.json",
+      "sha256": "82e6719949f018e53ae6b7d971d9e40413bc23fa841791b8e7dd588a1fd41783"
+    },
+    {
+      "file": "production-activation.json",
+      "sha256": "2359bd7bc9eb86c7e8d267fa62b3531d7f9bd9f2018ce6f03e25fa72998e88be"
+    },
+    {
+      "file": "production-browser.json",
+      "sha256": "8bbbd4e57b67bbc0e430d876ee61774f6571a742d596d24b85dec7484641ba87"
+    },
+    {
+      "file": "regression-summary.json",
+      "sha256": "9d9b8f3a8a2eaf16324d36e6f28cad5c73c610e503226bf6981ddddbb94f8806"
+    },
+    {
+      "file": "report-and-provider-summary.json",
+      "sha256": "5cc40379519dbf3a1af676cf6db3bcb51efbbb58ff001d0845132f2e09a7d237"
+    },
+    {
+      "file": "staging-acceptance-summary.json",
+      "sha256": "eed0fa55c7d073671143c6bb609e7a4146dd0a2eda856fd1ed141beb61528ec3"
+    },
+    {
+      "file": "staging-activation.json",
+      "sha256": "8431945872e59af5429d390233f9705d4019b55b77213f61df97c4f119c31096"
+    }
+  ]
+}

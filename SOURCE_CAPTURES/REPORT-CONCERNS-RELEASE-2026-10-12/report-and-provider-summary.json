@@ -1,0 +1,25 @@
+{
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "supplied_report": {
+    "violations": 3,
+    "non_violation_concerns": 7,
+    "eligible": 10,
+    "undated_ok_concerns": 0,
+    "hosted_intake_verified": true
+  },
+  "fresh_sandbox": {
+    "monthly_paid_cad_cents": 795,
+    "annual_same_subscription": true,
+    "unused_credit_cad_cents": 795,
+    "annual_invoice_paid_cad_cents": 7155,
+    "once_paid_cad_cents": 595,
+    "signed_events_applied": true,
+    "renewal_cancellation_verified": true,
+    "test_subscription_ended": true,
+    "two_fictional_accounts_deleted": true,
+    "sessions_revoked": true
+  },
+  "historical_receipts_preserved": true,
+  "fresh_twelve_currency_purchases_claimed": false,
+  "private_credentials_and_report_contents_excluded": true
+}

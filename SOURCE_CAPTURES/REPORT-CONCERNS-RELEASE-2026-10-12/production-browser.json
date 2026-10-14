@@ -1,0 +1,59 @@
+{
+  "build_id": "crp-v1-b823b8b92d3b7559",
+  "passed": true,
+  "actual_browser": true,
+  "production": true,
+  "layouts": [
+    {
+      "view": "home",
+      "width": 320,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "signin",
+      "width": 320,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "home",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "signin",
+      "width": 390,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "home",
+      "width": 768,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "signin",
+      "width": 768,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "home",
+      "width": 1440,
+      "no_horizontal_overflow": true,
+      "passed": true
+    },
+    {
+      "view": "signin",
+      "width": 1440,
+      "no_horizontal_overflow": true,
+      "passed": true
+    }
+  ],
+  "live_charge_performed": false,
+  "consumer_state_changed": false,
+  "measured_at": "2026-10-12T07:31:47.662Z"
+}
