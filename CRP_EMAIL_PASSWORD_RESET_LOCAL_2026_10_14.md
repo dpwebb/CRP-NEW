@@ -2,6 +2,8 @@
 
 October 14, 2026. Owner authority: “Proceed with the email password reset and consumer recovery guidance. Build and test locally, preserve MFA and the recovery key option, and do not deploy yet.”
 
+Subsequent staging milestone: the owner said “deploy”; the unchanged combined 391d package is now **DEPLOYED_AND_AFFECTED_FLOW_VERIFIED_ON_STAGING**. Read `CRP_EMAIL_PASSWORD_RESET_STAGING_2026_10_14.md` for actual mail delivery, 122 hosted browser checks, 31 public smoke checks, data/backup custody and the still-pending strict acceptance/production boundary. The local-only statements below describe their original implementation milestone and do not supersede that later staging report. Production and the original local operational runtime remain unchanged.
+
 ## Current combined candidate — IMPLEMENTED_AND_TESTED_LOCALLY
 
 While the original email-only full ran, the separately owner-authorized automatic owner-routing fix was integrated into main as `e46e38b` / executable `4601e0a`. The primary-head guard refused to overwrite that newer work. The coordinator merged it into this isolated candidate, preserving reset-navigation priority, stale-response guards, the fixed authenticated owner destination and separate administrator MFA. Combined executable/test source is `c43a164a91aa573e3dee8ce956b28cb2f0066532`, manifest `391D75BC3EF29F273C71FE0084615061F295A133A7BEFC50E1F6CE37F912C33E`, 177 shipped files. Affected combined checks passed **402/0/0**, including an explicit owner destination assertion after email reset and normal MFA sign-in. Read-only integration review found no concrete remaining defect.
