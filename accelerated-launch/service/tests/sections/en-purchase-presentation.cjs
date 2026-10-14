@@ -14,15 +14,15 @@ function makeContext(responder) {
   const nodes = new Map(), calls = [];
   const get = id => { if (!nodes.has(id)) nodes.set(id, element(id)); return nodes.get(id); };
   const ctx = {
-    console, setTimeout, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp,
+    console, setTimeout: (fn,ms)=>{const timer=setTimeout(fn,ms);if(ms>=60000)timer.unref();return timer;}, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp,
     crypto: { randomUUID: () => 'purchase-ui-fixture' },
-    document: { getElementById: get, createElement: element },
+    document: { getElementById: get, createElement: tag=>{const node=element(tag);node.click=()=>calls.push({method:'BLOB_DOWNLOAD',filename:node.download});return node;} },
     fetch: async (url, options = {}) => {
       const method = options.method || 'GET', body = options.body ? JSON.parse(options.body) : null;
       const pathname = url.split('?')[0], query = url.split('?')[1] || '';
       calls.push({ method, url: pathname, query, body });
       const reply = await responder(method, pathname, body) || { status: 200, body: { ok: true } };
-      return { ok: reply.status < 400 && reply.body.ok !== false, status: reply.status, json: async () => reply.body, text: async () => JSON.stringify(reply.body) };
+      return { ok: reply.status < 400 && reply.body.ok !== false, status: reply.status, json: async () => reply.body, text: async () => JSON.stringify(reply.body), headers:{get:()=>null},blob:async()=>new Blob(['%PDF-1.4 fictional UI fixture'],{type:'application/pdf'}) };
     },
     URL: { createObjectURL: () => 'blob:fixture', revokeObjectURL() {} }, Blob: class Blob {}, FileReader: class FileReader {}
   };
@@ -107,7 +107,8 @@ async function run(t, check) {
   check.ok(/\$3\.95 CAD remains for a later upgrade/.test(panel.innerHTML), 'unused excess credit is shown without reducing the bill below zero');
   check.ok(!/id="create-packet"|id="packet-block"/.test(panel.innerHTML), 'marketing does not grant a one-off purchase subscriber packet access');
   await dom.get('download-assessment').onclick();
-  check.ok(dom.calls.some(c => c.method === 'NAVIGATE' && c.url === '/api/cases/case_fixture/report-download?currency=cad'), 'the PDF control uses the protected owned-report download route and selected currency');
+  check.ok(dom.calls.some(c => c.method === 'GET' && c.url === '/api/cases/case_fixture/report-download' && c.query === 'currency=cad'), 'the PDF control uses the protected owned-report download route and selected currency');
+  check.ok(dom.calls.some(c=>c.method==='BLOB_DOWNLOAD'&&/\.pdf$/.test(c.filename)),'the successful protected response creates a PDF download');
   await dom.get('buy-monthly').onclick();
   await tick(); await tick();
   const firstPurchase = dom.calls.find(c => c.method === 'POST' && c.url === '/api/billing/checkout');

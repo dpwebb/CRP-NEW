@@ -16,9 +16,9 @@ async function run(service, check) {
   check.deepEqual(regions.filter((region) => region.checklist_items !== CHECKS.length
     || JSON.stringify((region.common_error_checklist || []).map((item) => item.check_id)) !== JSON.stringify(ids)), [],
   'no jurisdiction silently substitutes statutory adapter counts or a second factual list for the shared checklist');
-  check.ok(regions.every((region) => /common-error checklist/.test(region.availability.plain)
+  check.ok(regions.every((region) => /reporting issues/.test(region.availability.plain) && !/common-error checklist/.test(region.availability.plain)
     && !/\d+ (?:rule|factual) checks?/.test(region.availability.plain)),
-  'pre-upload wording uses one checklist without claiming every check can run on every report');
+  'pre-upload wording describes readable report checks without displaying the internal checklist or claiming complete coverage');
   check.equal(regions.filter((region) => region.statutory_support_checks > 0).length, 78,
     'optional statutory support retains its actual jurisdiction scope');
 

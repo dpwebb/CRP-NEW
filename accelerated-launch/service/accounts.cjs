@@ -164,7 +164,7 @@ function trimSessions(state, accountId) {
 }
 
 /** Create an account and open its first session. Returns the account plus the raw session token. */
-function createAccount(store, input) {
+function createAccount(store, input, options = {}) {
   const email = normalizeEmail(input && input.email);
   const password = input && input.password;
   validateAccountDetails(email, password);
@@ -184,7 +184,8 @@ function createAccount(store, input) {
       recovery_key_digest: recoveryDigest(key),
       recovery_key_created_at: nowIso(),
       created_at: nowIso(),
-      failed_sign_ins: 0
+      failed_sign_ins: 0,
+      ...(options.requireSignupSecurity ? { signup_security_required: true } : {})
     };
     if (profile) created.profile = profile;
     state.accounts.push(created);
@@ -215,7 +216,7 @@ function verifyAccountPassword(account, password) {
 function securityView(store, actor) {
   const account = store.state().accounts.find(a => a.account_id === actor.account_id);
   if (!account) throw new ServiceError('AUTHENTICATION_REQUIRED');
-  return { recovery_key_available: Boolean(account.recovery_key_digest) };
+  return require('./signup-security.cjs').view(store, actor);
 }
 
 function issueRecoveryKey(store, actor, input) {
@@ -228,8 +229,10 @@ function issueRecoveryKey(store, actor, input) {
     const checked = checkCredentials(state, account.email, input.password);
     if (checked.refuse) return checked;
     const owned = checked.account;
+    if (owned.two_factor_secret && !require('./signup-security.cjs').verifySignIn(store, owned, input.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     owned.recovery_key_digest = recoveryDigest(key);
     owned.recovery_key_created_at = nowIso();
+    delete owned.recovery_key_saved_at;
     return { recovery_key: key };
   });
   if (outcome.refuse) throw new ServiceError(outcome.refuse);
@@ -255,6 +258,8 @@ function recoverAccount(store, input, client) {
     delete account.legacy_password_bcrypt;
     account.recovery_key_digest = recoveryDigest(nextKey);
     account.recovery_key_created_at = nowIso();
+    delete account.two_factor_secret; delete account.two_factor_pending; delete account.two_factor_last_counter; delete account.two_factor_locked_until; account.two_factor_failed_attempts=0;
+    if(account.signup_security_required){delete account.recovery_key_saved_at;delete account.signup_complete_at;}
     account.failed_sign_ins = 0;
     account.failed_window_started_at = null;
     account.locked_until = null;
@@ -283,6 +288,8 @@ function signIn(store, input) {
     const checked = checkCredentials(state, email, password);
     if (checked.refuse) return checked;
     const account = checked.account;
+    if (account.two_factor_secret && !input?.code) return { refuse: 'TWO_FACTOR_REQUIRED' };
+    if (!require('./signup-security.cjs').verifySignIn(store, account, input?.code)) return { refuse: 'TWO_FACTOR_INVALID' };
     session.row.account_id = account.account_id;
     state.sessions.push(session.row);
     trimSessions(state, account.account_id);
@@ -366,6 +373,8 @@ function signOutEverywhere(store, accountId) {
 }
 
 module.exports = {
+  verifyAccountPassword,
+  checkCredentials,
   securityView,
   issueRecoveryKey,
   recoverAccount,

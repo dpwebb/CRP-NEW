@@ -8,7 +8,7 @@ async function run(t, check) {
   const mock = await new StripeUpgradeFixture().listen();
   const values = mock.env(t.base), old = Object.fromEntries(Object.keys(values).map(key => [key, process.env[key]]));
   Object.assign(process.env, values);
-  t.service = createService({ dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
+  t.service = createService({ registrationMailer: async message=>t.confirmationMessages.push(message), dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
   const store = t.service.store;
   const read = () => store.state();
   const events = async (type, object, eventId, eventPatch) => {

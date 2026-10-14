@@ -31,10 +31,10 @@ function makeElement(id) {
 
 function makeContext(baseUrl, token) {
   const nodes = new Map();
-  const calls = [];
+  const calls = [], downloads=[],objects=new Map();
   const elementById = (id) => { if (!nodes.has(id)) nodes.set(id, makeElement(id)); return nodes.get(id); };
   const context = {
-    console, setTimeout, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp,
+    console, setTimeout: (fn,ms)=>{const timer=setTimeout(fn,ms);if(ms>=60000)timer.unref();return timer;}, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp,
     crypto: { randomUUID: () => 'bo-uuid' },
     fetch: async (url, options) => {
       const method = (options && options.method) || 'GET';
@@ -43,21 +43,21 @@ function makeContext(baseUrl, token) {
       const body = options && options.body;
       calls.push(`${method} ${url}`);
       const res = await globalThis.fetch(target, { method, headers, body });
-      const text = await res.text();
+      const bytes=Buffer.from(await res.arrayBuffer()),text=bytes.toString('utf8');
       let json = null;
       try { json = JSON.parse(text); } catch { json = {}; }
-      return { ok: res.status < 400, status: res.status, json: async () => json, text: async () => text };
+      return { ok: res.status < 400, status: res.status, json: async () => json, text: async () => text,headers:res.headers,blob:async()=>new Blob([bytes],{type:res.headers.get('content-type')||'application/octet-stream'}) };
     },
-    document: { getElementById: elementById, createElement: makeElement },
-    URL: { createObjectURL: () => 'blob:stub', revokeObjectURL: () => {} },
-    Blob: class Blob {},
+    document: { getElementById: elementById, createElement: tag=>{const node=makeElement(tag);node.click=()=>{downloads.push({filename:node.download,blob:objects.get(node.href)});calls.push('BLOB_DOWNLOAD '+node.download);};return node;} },
+    URL: { createObjectURL: blob=>{const url='blob:fixture-'+objects.size;objects.set(url,blob);return url;}, revokeObjectURL: () => {} },
+    Blob: globalThis.Blob,
     FileReader: class FileReader { readAsDataURL() { this.result = 'data:application/pdf;base64,x'; this.onload(); } }
   };
   context.window = context;
   context.window.location = { assign: (u) => calls.push(`NAVIGATE ${u}`) };
   context.globalThis = context;
   vm.createContext(context);
-  return { context, nodes, calls, elementById };
+  return { context, nodes, calls, elementById, downloads };
 }
 
 function tick(ms) { return new Promise((r) => setTimeout(r, ms || 0)); }
@@ -195,9 +195,9 @@ async function run(service, check) {
   check.ok(dom.calls.some((x) => /POST .*packet\/letter/.test(x)), 'the full letter editor saves through the protected letter endpoint');
   check.equal(vm.runInContext('state.error', ctx), null, 'no UI error during the approve');
 
-  /* --- download: the UI navigates to the download endpoint; fetch it against the real service. --- */
-  dom.elementById('packet-download').onclick();
-  check.ok(dom.calls.some((x) => /NAVIGATE .*packet-download/.test(x)), 'the UI navigates to the packet download');
+  /* --- download: the UI retrieves the exact binary response from the protected real service. --- */
+  await dom.elementById('packet-download').onclick();
+  check.ok(dom.calls.some((x) => /GET .*packet-download/.test(x)), 'the UI fetches the protected packet download');
 
   const pvAfter = (await service.request('GET', `/api/cases/${c.case_id}/packet`, { token: owner.token })).json.view;
   check.equal(pvAfter.packet.approved, true, 'the packet is approved after the UI approve action');
@@ -205,6 +205,7 @@ async function run(service, check) {
 
   const dl = await service.request('GET', `/api/cases/${c.case_id}/packet-download`, { token: owner.token });
   check.equal(dl.status, 200, 'the matching packet downloads');
+  check.ok(dom.downloads.length===1&&Buffer.from(await dom.downloads[0].blob.arrayBuffer()).equals(dl.bytes),'the actual UI retrieval preserves the exact approved PDF bytes');
   check.equal(dl.headers.get('content-type'), 'application/pdf', 'the completed packet is a single PDF');
   const completePreview = await service.request('GET', pvAfter.packet.letter_preview_url, { token: owner.token });
   check.deepEqual(dl.bytes, completePreview.bytes, 'the download is the exact complete PDF the consumer reviewed');

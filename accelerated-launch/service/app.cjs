@@ -149,6 +149,14 @@ const ROUTES = Object.freeze([
   ['DELETE', '/api/sessions/current', false, 'signOut'],
   ['GET', '/api/session', true, 'sessionInfo'],
   ['GET', '/api/account/security', true, 'accountSecurity'],
+  ['POST', '/api/account/confirm-email', true, 'confirmEmail'],
+  ['POST', '/api/account/resend-confirmation', true, 'resendConfirmation'],
+  ['POST', '/api/account/confirm-recovery-key', true, 'confirmRecoveryKey'],
+  ['POST', '/api/account/finish-signup', true, 'finishSignup'],
+  ['POST', '/api/account/2fa/setup', true, 'setupTwoFactor'],
+  ['POST', '/api/account/2fa/confirm', true, 'confirmTwoFactor'],
+  ['POST', '/api/account/2fa/disable', true, 'disableTwoFactor'],
+  ['GET', '/api/contact-location', true, 'contactLocation'],
   ['POST', '/api/account/recovery-key', true, 'issueRecoveryKey'],
   ['POST', '/api/account/recover', false, 'recoverAccount'],
   ['GET', '/api/account/profile', true, 'accountProfile'],
@@ -297,7 +305,7 @@ function availabilityFor(row) {
   if (row.working_assessment === true) {
     return {
       state: 'SUPPORTED',
-      plain: 'We use the common-error checklist for your jurisdiction. Checks use the readable facts in your report and the rules that apply. Applicable statutes may support a listed check.'
+      plain: 'We check for reporting issues using the rules for your jurisdiction. Checks use the readable facts in your report and the rules that apply. Applicable statutes may support a listed check.'
     };
   }
   if (row.format_path_for_the_market === 'REGISTERED_FOR_THE_MARKET') {
@@ -313,16 +321,17 @@ function availabilityFor(row) {
 }
 
 /** The consumer-facing handler set. Every consumer-visible string it returns came from another module. */
-function buildHandlers(store, logger, surface, pricingCurrency) {
+function buildHandlers(store, logger, surface, pricingCurrency, registrationMailer) {
   return {
     /* ------------------------------------------------------------ accounts and sessions */
 
-    createAccount: ({ body, res }) => {
-      const created = accounts.createAccount(store, body);
+    createAccount: async ({ body, res }) => {
+      const created = accounts.createAccount(store, body, { requireSignupSecurity: true });
+      let confirmation_sent=false;try{confirmation_sent=(await require('./signup-security.cjs').sendConfirmation(store,created.account,registrationMailer)).confirmation_sent;}catch(error){if(error.code!=='CONFIRMATION_EMAIL_UNAVAILABLE')throw error;}
       logger.log({ event: 'ACCOUNT_CREATED', outcome: 'OK' });
       return {
         status: 201,
-        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key },
+        json: { ok: true, account: created.account, profile: accountProfile.getProfile(store, created.account), signed_in: true, recovery_key: created.recovery_key, confirmation_sent, ...accounts.securityView(store,created.account) },
         headers: { 'Set-Cookie': sessionCookie(created.token, 86400) }
       };
     },
@@ -330,7 +339,7 @@ function buildHandlers(store, logger, surface, pricingCurrency) {
     signIn: ({ body }) => {
       const opened = accounts.signIn(store, body);
       logger.log({ event: 'SIGN_IN', outcome: 'OK' });
-      return { status: 200, json: { ok: true, account: opened.account, signed_in: true }, headers: { 'Set-Cookie': sessionCookie(opened.token, 86400) } };
+      return { status: 200, json: { ok: true, account: opened.account, signed_in: true, ...accounts.securityView(store,opened.account) }, headers: { 'Set-Cookie': sessionCookie(opened.token, 86400) } };
     },
 
     signOut: ({ req }) => {
@@ -339,8 +348,15 @@ function buildHandlers(store, logger, surface, pricingCurrency) {
       return { status: 200, json: { ok: true, signed_out }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
 
-    sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true } }),
+    sessionInfo: ({ actor }) => ({ status: 200, json: { ok: true, account: actor, signed_in: true, ...accounts.securityView(store,actor) } }),
 
+    confirmEmail: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmEmail(store,actor,body)}}),
+    resendConfirmation: async ({actor}) => ({status:200,json:{ok:true,...await require('./signup-security.cjs').sendConfirmation(store,actor,registrationMailer)}}),
+    confirmRecoveryKey: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmRecovery(store,actor,body)}}),
+    finishSignup: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').finish(store,actor,body)}}),
+    setupTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').beginTwoFactor(store,actor,body)}}),
+    confirmTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').confirmTwoFactor(store,actor,body)}}),
+    disableTwoFactor: ({actor,body}) => ({status:200,json:{ok:true,...require('./signup-security.cjs').disableTwoFactor(store,actor,body)}}),
     accountSecurity: ({ actor }) => ({ status: 200, json: { ok: true, ...accounts.securityView(store, actor) } }),
     issueRecoveryKey: ({ actor, body }) => {
       const issued = accounts.issueRecoveryKey(store, actor, body);
@@ -789,10 +805,10 @@ function createService(options) {
   const pricingCurrency = require('./pricing-location.cjs').resolver(opts.geoLocate);
   const handlers = Object.assign(
     {},
-    buildHandlers(store, logger, surface, pricingCurrency),
+    buildHandlers(store, logger, surface, pricingCurrency, opts.registrationMailer || require('./confirmation-mail.cjs').sender()),
     buildCaseHandlers(store, logger, surface, pricingCurrency),
     buildBillingHandlers(store, logger, pricingCurrency),
-    {publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
+    {contactLocation: async ({req}) => {const geo=require('./pricing-location.cjs');let value=null;try{value=await(opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}const country=typeof value==='string'?value:value?.country;const rawRegion=typeof value==='object'?value?.region:null;const region=surface.regions.find(r=>r.country===country&&(r.value===rawRegion||r.value===country+'-'+rawRegion));return {status:200,json:{ok:true,country:surface.countries.some(c=>c.value===country)?country:null,region:region?.value||null,source:'IP_SUGGESTION'}};},publicCreditNews: async ({ req }) => {const geo=require('./pricing-location.cjs');let country=null;try{country=await (opts.geoLocate||geo.countryFromIp)(geo.visitorIp(req));}catch{}return {status:200,json:require('./credit-news.cjs').select(country)};}}
   );
 
   /**
@@ -845,6 +861,7 @@ function createService(options) {
       }
 
       const actor = matched.auth ? accounts.resolveSession(store, sessionToken(req)) : null;
+      if(actor&&!['sessionInfo','accountSecurity','confirmEmail','resendConfirmation','confirmRecoveryKey','finishSignup','setupTwoFactor','confirmTwoFactor','disableTwoFactor','issueRecoveryKey','deleteAccount','contactLocation'].includes(matched.name)) require('./signup-security.cjs').requireReady(store,actor);
       const body = req.method === 'GET' || req.method === 'HEAD' ? {} : await readRequestBody(req);
       const outcome = await handlers[matched.name]({
         req,

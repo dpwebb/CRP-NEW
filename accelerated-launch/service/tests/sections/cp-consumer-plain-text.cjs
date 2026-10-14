@@ -104,14 +104,14 @@ async function run(service, check) {
     for (const [kind, phrase] of CLASS_PHRASES) {
       if (phrase.test(text) && !kinds.includes(kind)) classMismatch.push(`${region.region_code} names ${kind} without recording it`);
     }
-    if (/common-error checklist/.test(text)) checklistDescriptions += 1;
+    if (/reporting issues/.test(text) && !/common-error checklist/.test(text)) checklistDescriptions += 1;
     if (region.availability && region.availability.state === 'SUPPORTED') supportedRegions = supportedRegions + 1;
   }
   const recordedChecklistRegions = surface.regions.filter((r) => (r.assessment_kinds || []).includes('COMMON_ERROR')).length;
   check.deepEqual(notPlain, [], 'all 82 descriptions are short, plain sentences with no internal terms and no retired wording');
   check.deepEqual(classMismatch, [], 'and no region claims a kind of check it did not record');
   check.equal(checklistDescriptions, recordedChecklistRegions,
-    'every description names the shared checklist rather than a separate statutory or factual scope');
+    'every description explains reporting issues without displaying the internal checklist or inventing a separate scope');
   check.ok(supportedRegions >= 80, 'and nearly every promised jurisdiction states what this build can run for it');
   check.deepEqual(plainProblems(surface.note), [], 'the sentence shown before an upload is plain as well');
 

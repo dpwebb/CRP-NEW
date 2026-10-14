@@ -66,7 +66,7 @@ function harness(responder, { autoRead = true } = {}) {
   const evaluate = code => vm.runInContext(code, context);
   const account = (id, name) => {
     context.nextId = id; context.nextName = name;
-    evaluate(`state.account = { account_id: nextId, email: nextId + '@example.test' }; state.accountProfile = { full_name: nextName }; state.accountDocuments = []; state.step = 0; renderAccountDetails(document.getElementById('panel'));`);
+    evaluate(`state.account = { account_id: nextId, email: nextId + '@example.test' }; state.accountProfile = { full_name: nextName }; state.accountDocuments = []; state.contactLocation={}; state.step = 0; renderAccountDetails(document.getElementById('panel'));`);
   };
   const openPacket = (id, approved = false) => {
     context.nextCase = id;
@@ -277,7 +277,7 @@ async function packetReturnAccountIsolation() {
 async function recoveryKeyAccountRace() {
   const late = deferred();
   const h = harness(request => request.url === '/api/account/recovery-key' ? late.promise : { ok: true });
-  h.account('A', 'Fictional Consumer'); h.node('security-password').value = 'fictional-current-password';
+  h.account('A', 'Fictional Consumer'); h.evaluate('renderSecuritySettings(document.getElementById("panel"))'); h.node('security-password').value = 'fictional-current-password';
   const action = h.node('create-recovery-key').onclick(); await until(() => h.calls.length, 'recovery rotation');
   await h.node('signout').onclick(); h.account('B', 'Fictional B');
   late.resolve({ recovery_key: 'private-key-A' }); await action;

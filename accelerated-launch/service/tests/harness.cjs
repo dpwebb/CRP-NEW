@@ -84,7 +84,8 @@ class TestService {
   constructor(tag, options = {}) {
     this.dataDir = temporaryDataDir(tag || 'run');
     this.logs = [];
-    this.service = createService({ dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
+    this.autoSignup=options.autoSignup!==false;this.confirmationMessages=[];
+    this.service = createService({ registrationMailer: async message=>{this.confirmationMessages.push(message);if(options.registrationMailer)await options.registrationMailer(message);}, dataDir: this.dataDir, geoLocate: options.geoLocate || (async () => 'CA'), logSink: (line) => this.logs.push(line) });
     this.server = http.createServer((req, res) => {
       this.service.handle(req, res).catch(() => {
         if (!res.headersSent) {
@@ -132,6 +133,7 @@ class TestService {
     } catch {
       json = null;
     }
+    if(this.autoSignup&&method==='POST'&&urlPath==='/api/accounts'&&response.status===201){const token=/crp_session=([^;]+)/.exec(response.headers.get('set-cookie'))[1],message=this.confirmationMessages.findLast(m=>m.to===opts.body?.email);if(!message)throw Error('Missing fictional confirmation');for(const [route,data] of [['confirm-email',{code:message.code}],['confirm-recovery-key',{recovery_key:json.recovery_key}],['finish-signup',{}]]){const completed=await this.request('POST','/api/account/'+route,{token,body:data});if(completed.status!==200)throw Error('Signup fixture failed: '+route);}}
     return {
       status: response.status,
       json,

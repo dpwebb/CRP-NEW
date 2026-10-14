@@ -12,7 +12,7 @@ async function run(t, check) {
   check.ok(!JSON.stringify(t.service.store.state()).includes(firstKey), 'the key itself is absent from stored state');
   check.equal((await t.request('GET', '/api/account/security')).status, 401, 'security view requires sign-in');
   const security = await t.request('GET', '/api/account/security', { token });
-  check.deepEqual(security.json, { ok: true, recovery_key_available: true }, 'security view discloses readiness only');
+  check.deepEqual(security.json, { ok: true, recovery_key_available: true, signup_security_required:true, email_verified:true, recovery_key_saved:true, signup_complete:true, two_factor_enabled:false }, 'security view discloses readiness only');
   check.match(security.headers.get('cache-control'), /no-store/, 'security response is not cached');
   const rotate = password => t.request('POST', '/api/account/recovery-key', { token, body: { password } });
   check.equal((await rotate('wrong-fictional-password')).json.error.code, 'INVALID_CREDENTIALS', 'rotation needs the current password');

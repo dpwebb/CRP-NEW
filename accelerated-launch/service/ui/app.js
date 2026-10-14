@@ -41,6 +41,10 @@ const state = {
   accountSecurity: null,
   recoveryKey: null,
   recoveryMode: false,
+  securityMode: false,
+  wantTwoFactor: false,
+  twoFactorSetup: null,
+  contactLocation: null,
   packetReturn: null,
   checkoutReturn: null,
   /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
@@ -76,6 +80,8 @@ function note(line) {
 
 async function api(method, path, body) {
   if (method === 'GET' && state.pricingCurrency && ['/api/pricing', '/api/billing/plans', '/api/entitlement'].includes(path)) path += '?currency=' + encodeURIComponent(state.pricingCurrency);
+  const activityDone=activityStart(operationLabel(path));
+  try {
   let res;
   try { res = await fetch(path, {
     method,
@@ -95,16 +101,76 @@ async function api(method, path, body) {
     throw error;
   }
   return data;
+  } finally {activityDone();}
 }
 
-function run(fn) {
-  state.error = null;
-  state.notice = null;
-  return Promise.resolve()
-    .then(fn)
-    .then(render)
-    .catch((err) => { if (err.cancelled) return; state.error = err.message; render(); });
+const pendingControls = new Map();
+const pendingActivities = new Map();
+let activitySequence = 0, activityTimer = null, lastActionControl = null;
+function operationLabel(path) {
+  if (/evaluate/.test(path)) return 'Checking your credit report';
+  if (/files|documents/.test(path)) return 'Working on your document';
+  if (/confirm-email|resend-confirmation/.test(path)) return 'Confirming your email';
+  if (/2fa|security|recovery|finish-signup/.test(path)) return 'Saving your account security';
+  if (/packet/.test(path)) return 'Preparing your dispute packet';
+  if (/billing|entitlement/.test(path)) return 'Updating your plan';
+  if (/profile/.test(path)) return 'Saving your contact details';
+  return 'Working on your request';
 }
+function updateActivity() {
+  clearTimeout(activityTimer);
+  let node=el('operation-progress');
+  const slow=[...pendingActivities.values()].filter(a=>Date.now()-a.started>=600);
+  if(!node&&slow.length&&document.body?.appendChild){node=document.createElement('aside');node.id='operation-progress';node.className='operation-progress';node.setAttribute('role','status');node.setAttribute('aria-live','polite');node.innerHTML='<svg aria-hidden="true" viewBox="0 0 48 56"><defs><clipPath id="progress-paper"><path d="M8 3h22l10 10v39H8z"/></clipPath></defs><g clip-path="url(#progress-paper)"><rect class="paper-fill" x="8" y="3" width="32" height="49"/></g><path d="M8 3h22l10 10v39H8zM30 3v10h10M15 23h18M15 31h18M15 39h13" fill="none" stroke="currentColor" stroke-width="2"/><title>Work in progress</title></svg><div><strong>Working on it…</strong><p id="operation-progress-label"></p><small>Your selection was accepted. Please wait.</small></div>';document.body.appendChild(node);}
+  if(node){node.hidden=!slow.length;if(slow.length)el('operation-progress-label').textContent=pendingActivities.size>2?'Your requests are in progress':slow.at(-1).label;}
+  if(pendingActivities.size&&!slow.length){const wait=Math.max(1,600-(Date.now()-Math.min(...[...pendingActivities.values()].map(a=>a.started))));activityTimer=setTimeout(updateActivity,wait);}
+}
+function activityStart(label){const id=++activitySequence;pendingActivities.set(id,{label,started:Date.now()});updateActivity();return()=>{pendingActivities.delete(id);updateActivity();};}
+function restoreBusyControls(){for(const [id,entry]of pendingControls){const button=el(id);if(button){if(entry.node!==button){entry.node=button;entry.desiredDisabled=button.disabled;}button.disabled=true;button.setAttribute('aria-busy','true');}}}
+if(document.addEventListener)document.addEventListener('click',event=>{const button=event.target?.closest?.('button');if(!button)return;if(button.id&&pendingControls.has(button.id)){event.preventDefault();event.stopImmediatePropagation();return;}lastActionControl=button;},true);
+function showOperationError(message){if(!document.body?.appendChild)return;let alert=el('operation-error');if(!alert){alert=document.createElement('p');alert.id='operation-error';alert.className='note stop';alert.setAttribute('role','alert');el('panel')?.prepend(alert);}alert.textContent=message;}
+function run(fn, options={}) {
+  const button=lastActionControl||document.activeElement?.closest?.('button');lastActionControl=null;
+  const id=button?.id;if(id&&pendingControls.has(id))return pendingControls.get(id).promise;
+  const entry={node:button,desiredDisabled:Boolean(button?.disabled)};
+  if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+  const done=activityStart(button?.textContent?.trim()||'Working on your request');
+  state.error=null;state.notice=null;let cancelled=false;
+  const promise=Promise.resolve().then(fn).catch(err=>{
+    if(err.cancelled){cancelled=true;return;}state.error=err.message;
+    if(options.redraw===false)showOperationError(err.message);
+  }).finally(()=>{
+    if(id)pendingControls.delete(id);
+    const current=id?el(id):button;
+    if(current&&current===entry.node){current.disabled=entry.desiredDisabled||(current===button&&options.canResume?!options.canResume():false);current.removeAttribute('aria-busy');}
+    done();if(!cancelled&&options.redraw!==false)render();
+  });
+  entry.promise=promise;if(id)pendingControls.set(id,entry);return promise;
+}
+
+async function retrieveFile(url, filename, previewWindow=null) {
+  const ensure=accountContext();
+  try {
+    const response=await fetch(url,{credentials:'same-origin',cache:'no-store'});
+    if(!response.ok){let data;try{data=await response.json();}catch{}throw new Error(data?.error?.message||'The file could not be opened. Please try again.');}
+    const bytes=await response.blob();ensure();
+    const disposition=response.headers.get('content-disposition')||'',matched=/filename="?([^";]+)"?/i.exec(disposition);if(matched)filename=matched[1].replace(/[\\/\r\n]/g,'_');
+    const objectUrl=URL.createObjectURL(bytes);
+    if(previewWindow){previewWindow.location.replace(objectUrl);}
+    else {const link=document.createElement('a');link.href=objectUrl;link.download=filename;link.click();}
+    setTimeout(()=>URL.revokeObjectURL(objectUrl),60000);
+  } catch(error){previewWindow?.close?.();throw error;}
+}
+if(document.addEventListener)document.addEventListener('click',event=>{
+  const link=event.target?.closest?.('a[href^="/api/"]');
+  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  event.preventDefault();if(link.getAttribute('aria-busy')==='true')return;
+  const preview=link.target==='_blank'?window.open('about:blank','_blank'):null;
+  if(preview)preview.opener=null;
+  link.setAttribute('aria-busy','true');
+  const done=activityStart('Opening your document');
+  retrieveFile(link.getAttribute('href'),link.textContent.trim()||'CRP-document.pdf',preview).catch(error=>{if(error.cancelled)return;state.error=error.message;showOperationError(error.message);}).finally(()=>{link.removeAttribute('aria-busy');done();});
+},true);
 
 function regionLabel(country, region) {
   if (!surface) return region;
@@ -249,6 +315,7 @@ function notices(accessible = false) {
 
 function render() {
   renderSequence++;
+  if(state.account&&state.accountSecurity?.signup_complete===false)state.step=STEP.ACCOUNT;
   document.body?.classList?.toggle('auth-entry', !state.account && state.step === STEP.ACCOUNT);
   document.body?.classList?.toggle('auth-create', !state.account && state.step === STEP.ACCOUNT && !state.recoveryMode && (typeof location === 'undefined' || location.hash !== '#signin'));
   document.body?.classList?.toggle('auth-recovery', !state.account && state.step === STEP.ACCOUNT && state.recoveryMode);
@@ -262,6 +329,7 @@ function render() {
   STEP_VIEWS[STEP_KEYS[state.step]].render(panel);
   wireCheckoutReturn();
   wireCurrencyChoice();
+  restoreBusyControls();
 }
 
 /* OWNER-CONSUMER-LANGUAGE-001 (footer-only): the approved disclaimer belongs to the public landing-page footer.
@@ -290,11 +358,11 @@ function submitAuth(fn, formId, message) {
   form?.setAttribute?.('aria-busy', 'true');
   for (const control of form?.querySelectorAll?.('input, button') || []) control.disabled = true;
   if (el('auth-status')) el('auth-status').textContent = message;
-  return run(fn).finally(() => { authPending = false; });
+  return run(fn).finally(() => { authPending = false;const current=el(formId);current?.removeAttribute?.('aria-busy');for(const control of current?.querySelectorAll?.('input, button')||[])control.disabled=false; });
 }
 
 function renderAccount(panel) {
-  if (state.account) { renderAccountDetails(panel); return; }
+  if (state.account) { if(state.accountSecurity?.signup_complete===false){renderSignupSecurity(panel);return;}if(state.securityMode){renderSecuritySettings(panel);return;}renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
   const signInEntry = (typeof location !== 'undefined' && location.hash === '#signin');
   panel.innerHTML = `
@@ -316,6 +384,7 @@ function renderAccount(panel) {
         ${signInEntry ? '' : '<p class="auth-helper" id="auth-password-help">At least 12 characters</p>'}
       </div>
     </div>
+    ${signInEntry ? '<label for="signin-code">Authenticator code (if you enabled 2FA)</label><input id="signin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}">' : '<label class="signup-2fa-choice"><input id="signup-two-factor" type="checkbox"> Add optional two-factor authentication with an authenticator app</label>'}
     ${signInEntry ? '' : `<section class="signup-details" aria-labelledby="signup-details-title"><div class="signup-details-inner"><h2 id="signup-details-title">Your personal details <span class="auth-optional">Optional at signup</span></h2>
       <p class="signup-explanation">Add these now for a future subscriber packet, or finish them later in your account. Your sign-in email will be used for replies unless you change it there.</p>
       <div class="signup-fields">${SIGNUP_PROFILE_FIELDS.map(([field, label, type, autocomplete]) => `<div${field === 'full_name' ? ' class="signup-wide"' : ''}><label for="signup-${field}">${label}</label><input id="signup-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}"></div>`).join('')}</div></div></section>`}
@@ -326,19 +395,21 @@ function renderAccount(panel) {
     ${surface?.preview_mode ? '<p class="evidence">Staging preview: use fictional information while testing this page.</p>' : ''}
     </form></div>`;
 
-  const credentials = () => ({ email: el('email').value, password: el('password').value });
+  const credentials = () => ({ email: el('email').value, password: el('password').value, code: el('signin-code')?.value || '' });
   el('create').onclick = (event) => {
     event?.preventDefault?.();
     if (signInEntry) { location.hash = '#create'; render(); return; }
     return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to create an account.');
     const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
+    state.wantTwoFactor=Boolean(el('signup-two-factor')?.checked);
     accountEpoch++;
     const data = await api('POST', '/api/accounts', { ...credentials(), profile });
     state.account = data.account;
     state.accountProfile = data.profile || null; state.accountDocuments = [];
-    state.accountSecurity = null; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
+    state.accountSecurity = data; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
     state.checkoutReturn = null;
+    if(data.signup_complete===false){state.step=STEP.ACCOUNT;state.notice=data.confirmation_sent?'Check your email for a code from support@creditregulatorpro.com.':'Your account is saved, but we could not send the confirmation email. Please try Send a new code.';return;}
     await refreshAccess();
     state.step = 1;
     state.notice = 'Account created and signed in.';
@@ -353,8 +424,9 @@ function renderAccount(panel) {
     const data = await api('POST', '/api/sessions', credentials());
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
-    state.accountSecurity = null; state.recoveryKey = null; state.packetReturn = null;
+    state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
     state.checkoutReturn = null;
+    if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
     await refreshAccess();
     state.step = 1;
     state.notice = 'Signed in.';
@@ -385,6 +457,56 @@ function recoveryKeyBlock() {
     <button class="primary" id="saved-recovery-key">I saved my key</button><p id="recovery-key-status" role="status"></p></section>` : '';
 }
 
+function twoFactorFields() {
+  if(state.accountSecurity?.two_factor_enabled)return '<p class="note">Two-factor authentication is enabled. Use your authenticator app when you sign in.</p>';
+  if(!state.twoFactorSetup)return '<label for="two-factor-password">Current password</label><input id="two-factor-password" type="password" autocomplete="current-password"><button id="two-factor-start" class="secondary">Set up my authenticator app</button>';
+  return `<p>In your authenticator app, add an account with this setup key. Choose a time-based code.</p><label for="two-factor-secret">Setup key</label><input id="two-factor-secret" readonly autocomplete="off" value="${esc(state.twoFactorSetup.secret)}"><label for="two-factor-code">Six-digit code from your app</label><input id="two-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="two-factor-confirm" class="primary">Confirm authenticator</button>`;
+}
+function wireTwoFactor() {
+  if(el('two-factor-start'))el('two-factor-start').onclick=()=>run(async()=>{const ensure=accountContext(),password=el('two-factor-password').value;const setup=await api('POST','/api/account/2fa/setup',{password});ensure();state.twoFactorSetup=setup;});
+  if(el('two-factor-confirm'))el('two-factor-confirm').onclick=()=>run(async()=>{const ensure=accountContext(),code=el('two-factor-code').value,security=await api('POST','/api/account/2fa/confirm',{code});ensure();state.accountSecurity={...state.accountSecurity,...security};state.twoFactorSetup=null;state.notice='Authenticator confirmed.';});
+}
+function wireNewRecoveryKey() {
+  if(el('create-recovery-key'))el('create-recovery-key').onclick=()=>run(async()=>{const ensure=accountContext(),password=el('security-password').value;const data=await api('POST','/api/account/recovery-key',{password,code:el('security-code')?.value||''});ensure();state.recoveryKey=data.recovery_key;state.accountSecurity=await api('GET','/api/account/security');});
+}
+function renderSignupSecurity(panel) {
+  const security=state.accountSecurity||{},ready=security.email_verified&&security.recovery_key_saved&&(!state.wantTwoFactor||security.two_factor_enabled);
+  panel.innerHTML=`${notices(true)}<h1>Finish securing your account</h1><p class="lede">Confirm your email and save your recovery key before you upload a report.</p>
+    <section class="signup-security-card"><h2>1. Confirm your email <span class="security-required">Required</span></h2><p>${esc(state.account.email)}</p>${security.email_verified?'<p class="security-complete">Email confirmed</p>':'<p>Enter the six-digit code sent from support@creditregulatorpro.com. Check your spam folder too.</p><label for="email-confirmation-code">Email confirmation code</label><input id="email-confirmation-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="confirm-signup-email" class="primary">Confirm my email</button><button id="resend-signup-email" class="secondary">Send a new code</button>'}</section>
+    <section class="signup-security-card"><h2>2. Save your recovery key <span class="security-required">Required</span></h2>${security.recovery_key_saved?'<p class="security-complete">Recovery key saved</p>':state.recoveryKey?recoveryKeyBlock():`<p>The key is shown only when issued. If you left signup before saving it, use your password to make a new key.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${security.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button class="secondary" id="create-recovery-key">Create a new recovery key</button>`}</section>
+    <section class="signup-security-card"><h2>3. Two-factor authentication <span class="auth-optional">Optional</span></h2><p>An authenticator app adds a second check when you sign in. Your recovery key can help if you lose access to the app.</p><label><input id="signup-enable-two-factor" type="checkbox" ${state.wantTwoFactor||security.two_factor_enabled?'checked':''} ${security.two_factor_enabled?'disabled':''}>Use an authenticator app</label>${state.wantTwoFactor?twoFactorFields():''}</section>
+    <button id="finish-signup" class="primary" ${ready?'':'disabled'}>Finish signup and continue</button><button id="signup-signout" class="secondary">Sign out</button>`;
+  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
+  if(el('confirm-signup-email'))el('confirm-signup-email').onclick=()=>run(async()=>{const ensure=accountContext(),code=el('email-confirmation-code').value,confirmed=await api('POST','/api/account/confirm-email',{code});ensure();state.accountSecurity={...security,...confirmed};state.notice='Email confirmed.';});
+  if(el('resend-signup-email'))el('resend-signup-email').onclick=()=>run(async()=>{await api('POST','/api/account/resend-confirmation',{});state.notice='A new confirmation code was sent from support@creditregulatorpro.com.';});
+  el('signup-enable-two-factor').onchange=()=>{state.wantTwoFactor=el('signup-enable-two-factor').checked;state.twoFactorSetup=null;render();};
+  el('finish-signup').onclick=()=>run(async()=>{const ensure=accountContext(),result=await api('POST','/api/account/finish-signup',{enable_two_factor:state.wantTwoFactor});ensure();state.accountSecurity={...security,...result};state.recoveryKey=null;state.twoFactorSetup=null;await refreshAccess();state.step=STEP.JURISDICTION;state.notice='Your account is ready.';});
+  el('signup-signout').onclick=()=>run(async()=>{await api('DELETE','/api/sessions/current');accountEpoch++;state.account=null;state.accountSecurity=null;state.recoveryKey=null;state.twoFactorSetup=null;state.securityMode=false;state.step=STEP.ACCOUNT;});
+}
+function renderSecuritySettings(panel) {
+  panel.innerHTML=`${notices(true)}<h1>Account security</h1>${recoveryKeyBlock()}<h2>Password recovery</h2><p>Keep your recovery key private. Creating a new key replaces your old one.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${state.accountSecurity?.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button id="create-recovery-key" class="secondary">Create a new recovery key</button><h2>Two-factor authentication</h2>${twoFactorFields()}${state.accountSecurity?.two_factor_enabled?'<label for="disable-factor-password">Current password</label><input id="disable-factor-password" type="password" autocomplete="current-password"><label for="disable-factor-code">Authenticator code</label><input id="disable-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="disable-two-factor" class="secondary">Turn off two-factor authentication</button>':''}<p><button id="security-back" class="primary">Back to my account</button></p>`;
+  wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
+  el('security-back').onclick=()=>{state.securityMode=false;render();};
+  if(el('disable-two-factor'))el('disable-two-factor').onclick=()=>run(async()=>{const password=el('disable-factor-password').value,code=el('disable-factor-code').value;state.accountSecurity=await api('POST','/api/account/2fa/disable',{password,code});state.notice='Two-factor authentication turned off.';});
+}
+
+function contactCountry() {
+  const saved=String(state.accountProfile?.country||'').trim();
+  return surface?.countries.find(c=>c.value.toLowerCase()===saved.toLowerCase()||c.label.toLowerCase()===saved.toLowerCase())?.value||saved;
+}
+function contactRegionOptions(country,selected='') {
+  const rows=surface?.regions.filter(r=>r.country===country)||[],saved=String(selected),match=rows.find(r=>r.value===saved||r.value.slice(country.length+1).toLowerCase()===saved.toLowerCase()||r.label.toLowerCase()===saved.toLowerCase());
+  return `<option value="">Select your region</option>${saved&&!match?`<option value="${esc(saved)}" selected>${esc(saved)}</option>`:''}${rows.map(r=>{const code=r.value.slice(country.length+1);return `<option value="${esc(code)}" ${r===match?'selected':''}>${esc(r.label)}</option>`;}).join('')}`;
+}
+function contactLocationFields() {
+  const country=contactCountry(),known=surface?.countries.some(c=>c.value===country);
+  return `<div class="row contact-location"><div><label for="account-country">Country</label><select id="account-country"><option value="">Select your country</option>${country&&!known?`<option value="${esc(country)}" selected>${esc(country)}</option>`:''}${(surface?.countries||[]).map(c=>`<option value="${esc(c.value)}" ${c.value===country?'selected':''}>${esc(c.label)}</option>`).join('')}</select></div><div><label for="account-region">Region / state / province</label><select id="account-region">${contactRegionOptions(country,state.accountProfile.region)}</select></div></div><p class="evidence">We can suggest a location from your internet connection. Choose the country and region of your mailing address. This does not change the report you are checking.</p>`;
+}
+function wireContactLocation() {
+  el('account-country').onchange=()=>{accountOperationSequence++;state.accountProfile.country=el('account-country').value;state.accountProfile.region='';el('account-region').innerHTML=contactRegionOptions(state.accountProfile.country);};
+  el('account-region').onchange=()=>{accountOperationSequence++;state.accountProfile.region=el('account-region').value;};
+}
+
 function wireRecoveryKey() {
   if (!state.recoveryKey) return;
   const key = state.recoveryKey, ensureAccount = accountContext();
@@ -394,15 +516,15 @@ function wireRecoveryKey() {
     const link = document.createElement('a'); link.href = url; link.download = 'CRP-recovery-key.txt'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
-  el('copy-recovery-key').onclick = async () => {
+  el('copy-recovery-key').onclick = () => run(async () => {
     try { ensureAccount(); await navigator.clipboard.writeText(key); ensureAccount(); el('recovery-key-status').textContent = 'Key copied. Save it in a safe place.'; }
     catch { if (state.recoveryKey === key && el('recovery-key-status')) el('recovery-key-status').textContent = 'Select the key and copy it, or save it to a file.'; }
-  };
-  el('saved-recovery-key').onclick = () => { ensureAccount(); state.recoveryKey = null; render(); };
+  },{redraw:false});
+  el('saved-recovery-key').onclick = () => run(async()=>{ensureAccount();if(state.account){const saved=await api('POST','/api/account/confirm-recovery-key',{recovery_key:key});ensureAccount();state.accountSecurity={...state.accountSecurity,...saved};}state.recoveryKey=null;});
 }
 
 function renderRecovery(panel) {
-  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Use the recovery key you saved when you created your account.</p></div><div class="auth-form-card">${notices(true)}
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Use the recovery key you saved when you created your account. This also turns off a lost authenticator so you can set it up again.</p></div><div class="auth-form-card">${notices(true)}
     ${recoveryKeyBlock()}
     ${state.recoveryKey ? '<div class="auth-actions auth-actions-single"><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>' : `<form id="auth-recovery-form"><div class="auth-fields"><div><label for="recover-email">Email address</label><input id="recover-email" required type="email" autocomplete="username"></div>
     <div><label for="recover-key">Saved recovery key</label><input id="recover-key" required type="password" autocomplete="off"></div>
@@ -456,9 +578,9 @@ function documentKindsForAccount() {
 let accountDetailsSequence = 0;
 function renderAccountDetails(panel) {
   const accountId = state.account.account_id, sequence = ++accountDetailsSequence;
-  if (!state.accountProfile) {
+  if (!state.accountProfile || state.contactLocation === null) {
     panel.innerHTML = `${notices()}<h1>Your account</h1><p>Loading your details…</p>`;
-    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents'), api('GET', '/api/account/security'), api('GET', '/api/entitlement')]).then(([profile, documents, security, access]) => {
+    Promise.all([api('GET', '/api/account/profile'), api('GET', '/api/account/documents'), api('GET', '/api/account/security'), api('GET', '/api/entitlement'),api('GET','/api/contact-location').catch(()=>({country:null,region:null}))]).then(([profile, documents, security, access, location]) => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       if (!profile.profile || !Array.isArray(documents.documents)) throw new Error('Your account details could not be loaded. Try again.');
       if (access.entitlement) state.entitlement = access.entitlement;
@@ -466,7 +588,7 @@ function renderAccountDetails(panel) {
       if (access.upgrade_credit) state.upgrade_credit = access.upgrade_credit;
       if (access.upgrade_quotes) { state.upgrade_quotes = access.upgrade_quotes; state.billing = null; }
       rememberPendingCheckout(access);
-      state.accountProfile = profile.profile; state.accountDocuments = documents.documents; state.accountSecurity = security; renderAccountDetails(panel);
+      state.accountProfile = profile.profile;state.contactLocation=location;if(!state.accountProfile.contact_email)state.accountProfile.contact_email=state.account.email;if(!state.accountProfile.country&&location.country)state.accountProfile.country=location.country;if(!state.accountProfile.region&&location.region)state.accountProfile.region=location.region.slice(location.country.length+1); state.accountDocuments = documents.documents; state.accountSecurity = security; renderAccountDetails(panel);
     }).catch(error => {
       if (state.step !== 0 || state.account?.account_id !== accountId || sequence !== accountDetailsSequence) return;
       panel.innerHTML = `<h1>Your account</h1><p class="note stop">${esc(error.message)}</p><button id="account-retry">Try again</button>`;
@@ -477,27 +599,21 @@ function renderAccountDetails(panel) {
   panel.innerHTML = `${notices()}<h1>Your account</h1>
     <p class="lede">Manage your contact details and documents for your dispute packets.</p>
     ${state.packetReturn ? '<p class="note">Your packet draft is saved. Add or update your details, then return to your packet.</p>' : ''}
-    ${recoveryKeyBlock()}
     <p><strong>Sign-in email:</strong> ${esc(state.account.email)}</p>
     <h2>Contact details</h2><p class="evidence">Add the details you want to use in your letter. You can review them before sending.</p>
-    <div class="row">${ACCOUNT_CONTACT_FIELDS.map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
+    ${contactLocationFields()}
+    <div class="row">${ACCOUNT_CONTACT_FIELDS.filter(([field])=>!['country','region'].includes(field)).map(([field, label, type, autocomplete]) => `<div><label for="account-${field}">${label}</label><input id="account-${field}" type="${type}" autocomplete="${autocomplete}" maxlength="${ACCOUNT_CONTACT_LIMITS[field]}" value="${esc(state.accountProfile[field] || '')}"></div>`).join('')}</div>
     <button class="primary" id="account-save">Save contact details</button>
-    <h2>Documents for disputes</h2><p class="evidence">Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
+    <h2>Documents for disputes</h2><p class="evidence">You can add these documents later. The documents needed for your dispute are required before you can complete and approve its package. Your packet will show which copies you need. Upload copies of your ID and proof of address. Include both sides of an ID in one PDF where required. Choose what to include when you review a packet.</p>
     <div class="row"><div><label for="account-document-type">Purpose</label><select id="account-document-type"><option value="IDENTITY">Identification</option><option value="ADDRESS">Proof of address</option><option value="SUPPORTING">Other supporting document</option></select></div>
     <div><label for="account-document-kind">Document</label><select id="account-document-kind">${documentKindsForAccount().map(([value, label]) => `<option value="${value}">${label}</option>`).join('')}</select></div></div>
     <label for="account-document-file">PDF, PNG or JPEG, up to 10 MB</label><input id="account-document-file" type="file" accept="application/pdf,image/png,image/jpeg">
     <button class="secondary" id="account-document-upload">Upload document</button>
     <div>${state.accountDocuments.length ? state.accountDocuments.map(doc => `<p><a href="/api/account/documents/${encodeURIComponent(doc.file_id)}">${esc(doc.original_filename)}</a> — ${esc(DOCUMENT_KIND_LABELS[doc.document_kind] || doc.document_kind)} <button class="secondary" data-delete-document="${esc(doc.file_id)}">Remove</button></p>`).join('') : '<p class="evidence">No documents uploaded yet.</p>'}</div>
-    <details class="account-security"><summary>Password recovery</summary><p>${state.accountSecurity?.recovery_key_available ? 'You have a recovery key. Creating a new key replaces the old one.' : 'Save a recovery key so you can reset a forgotten password.'}</p>
-    <label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">
-    <button class="secondary" id="create-recovery-key">Create a recovery key</button></details>
+    <button class="secondary" id="account-security-settings">Security settings</button>
     <div class="row"><button class="primary" id="account-continue">${state.packetReturn ? 'Return to my packet' : 'Continue'}</button><button class="secondary" id="signout">Sign out</button></div>`;
-  wireRecoveryKey();
-  el('create-recovery-key').onclick = () => run(async () => {
-    const ensureAccount = accountContext();
-    const data = await api('POST', '/api/account/recovery-key', { password: el('security-password').value }); ensureAccount();
-    state.recoveryKey = data.recovery_key; state.accountSecurity = { recovery_key_available: true };
-  });
+  el('account-security-settings').onclick=()=>{state.securityMode=true;render();};
+  wireContactLocation();
   for (const [field] of ACCOUNT_CONTACT_FIELDS) el('account-' + field).oninput = () => { accountOperationSequence++; state.accountProfile[field] = el('account-' + field).value; };
   el('account-save').onclick = () => run(async () => {
     const ensureAccount = accountContext(), operation = ++accountOperationSequence, profile = { ...state.accountProfile };
@@ -557,7 +673,7 @@ function renderAccountDetails(panel) {
     state.billing = null;
     state.upgrade_confirmation = null;
     rememberPendingCheckout({});
-    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.packetReturn = null; state.checkoutReturn = null;
+    state.accountSecurity = null; state.recoveryKey = null; state.recoveryMode = false; state.securityMode=false;state.twoFactorSetup=null;state.wantTwoFactor=false;state.contactLocation=null; state.packetReturn = null; state.checkoutReturn = null;
     state.step = 0;
     state.notice = 'Signed out.';
   });
@@ -1299,7 +1415,7 @@ function renderResults(panel) {
     if (button) button.onclick = () => startCheckout(code);
   }
   const download = el('download-assessment');
-  if (download) download.onclick = () => window.location.assign(`/api/cases/${state.caseId}/report-download${state.pricingCurrency ? '?currency=' + state.pricingCurrency : ''}`);
+  if (download) download.onclick = () => run(()=>retrieveFile(`/api/cases/${state.caseId}/report-download${state.pricingCurrency ? '?currency=' + state.pricingCurrency : ''}`,'CRP-assessment.pdf'),{redraw:false});
   const subscribe = el('go-subscribe');
   if (subscribe) subscribe.onclick = () => run(async () => { state.step = STEP.BILLING; });
   const packet = el('create-packet');
@@ -1312,9 +1428,7 @@ function renderResults(panel) {
 
 function resultBlock(result, demo) {
   if (!demo) {
-    const checklist = (result.common_error_checklist || []).map((item) =>
-      `<li>${esc(item.label)}${item.description ? `<p>${esc(item.description)}</p>` : ''}</li>`).join('');
-    return `${assessmentDateLine(result)}${checklist ? `<section class="obs"><h2>Common-error checklist</h2><p>We check for common reporting errors using the rules for where you live. When your report breaks a rule we check, we label the issue VIOLATION.</p><ol>${checklist}</ol></section>` : ''}${issuesSection(result)}`;
+    return `${assessmentDateLine(result)}${issuesSection(result)}`;
   }
   const observations = result.observations.filter(o => o.assessment_completed !== false).map((o) => `
     <div class="obs">
@@ -1841,13 +1955,13 @@ async function wirePacket(panel) {
     try { ensureOrigin(); } catch { return; }
     if (edits || !pv.packet.download_available) return;
     note(`GET /api/cases/${caseId}/packet-download -> browser download`);
-    window.location.assign(`/api/cases/${caseId}/packet-download`);
+    return run(()=>retrieveFile(`/api/cases/${caseId}/packet-download`,'CRP-dispute-packet.pdf'),{redraw:false,canResume:()=>!edits&&pv.packet.download_available});
   };
   const print = el('packet-print');
   if (print) print.onclick = () => {
     try { ensureOrigin(); } catch { return; }
     if (edits || !(pv.packet.print_available ?? pv.packet.download_available)) return;
-    window.open(`/api/cases/${caseId}/packet-print`, '_blank', 'noopener');
+    const preview=window.open('about:blank','_blank');if(!preview){state.error='Allow this window to open so you can print your packet.';render();return;}preview.opener=null;return run(()=>retrieveFile(`/api/cases/${caseId}/packet-print`,'CRP-dispute-packet.pdf',preview),{redraw:false,canResume:()=>!edits&&(pv.packet.print_available??pv.packet.download_available)});
   };
 
   /* Editing the correspondence details or the wording after approval marks the visible packet changed, so the
@@ -2330,7 +2444,8 @@ function renderBillingView(data) {
   catch { state.publicPricing = null; }
   try {
     const session = await api('GET', '/api/session');
-    state.account = session.account;
+    state.account = session.account;state.accountSecurity=await api('GET','/api/account/security');
+    if(state.accountSecurity.signup_complete===false){state.step=STEP.ACCOUNT;render();return;}
     state.cases = (await api('GET', '/api/cases')).cases;
     await refreshAccess();
     state.step = 1;

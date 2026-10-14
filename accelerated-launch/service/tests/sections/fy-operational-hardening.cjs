@@ -118,11 +118,18 @@ async function run(_service,check) {
     base=await new Promise((resolve,reject)=>{let output='';const timer=setTimeout(()=>reject(Error('SERVER_START_TIMEOUT')),15000);child.on('exit',()=>{clearTimeout(timer);reject(Error('SERVER_START_FAILED'));});child.stdout.on('data',chunk=>{output+=chunk;const match=/listening on (http:\/\/[^\s]+)\//.exec(output);if(match){clearTimeout(timer);resolve(match[1]);}});});
   }
   async function stop(){const exited=once(child,'exit');child.kill('SIGTERM');await exited;}
+  const existingStore=new PrivateStore(path.join(temp,'private'));
+  require('../../accounts.cjs').createAccount(existingStore,{email:'existing-worker-owner@example.test',password:'a-long-fictional-password'});
+  fs.unlinkSync(path.join(temp,'private','store.lock'));
   try {
     await launch();
     const created=await fetch(base+'/api/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'worker-owner@example.test',password:'a-long-fictional-password'})});
     check.equal(created.status,201,'worker transport preserves account creation');
-    const cookie=created.headers.get('set-cookie').split(';')[0];
+    const pendingCookie=created.headers.get('set-cookie').split(';')[0];
+    check.equal((await fetch(base+'/api/cases',{headers:{Cookie:pendingCookie}})).status,403,'worker preserves mandatory new-signup security');
+    const signed=await fetch(base+'/api/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:'existing-worker-owner@example.test',password:'a-long-fictional-password'})});
+    check.equal(signed.status,200,'worker preserves existing account credentials');
+    const cookie=signed.headers.get('set-cookie').split(';')[0];
     const c=await fetch(base+'/api/cases',{method:'POST',headers:{'Content-Type':'application/json',Cookie:cookie,Origin:base},body:JSON.stringify({country:'CA',region:'CA-NS'})});
     check.equal(c.status,201,'worker transport preserves authenticated case writes');
     check.equal((await fetch(base+'/api/cases')).status,401,'worker preserves ownership authentication');

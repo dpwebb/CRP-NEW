@@ -764,7 +764,7 @@ CHECKS.push(
       if (!paid.length) problems.push('the paid actions are not named before payment');
       const html = read(path.join(SERVICE_DIR, 'ui', 'index.html')) || '';
       const uiJs = read(path.join(SERVICE_DIR, 'ui', 'app.js')) || '';
-      if (!/common reporting errors/.test(html) || !/Common-error checklist/.test(uiJs)) problems.push('the UI does not explain the common-error scope');
+      if (!/common reporting errors/.test(html) || /<h2>Common-error checklist<\/h2>/.test(uiJs)) problems.push('the UI must explain reporting issues without displaying the internal checklist');
       if (!/Plans and prices/.test(uiJs) || !/File limits and help/.test(uiJs)) problems.push('plan information or file guidance is missing');
       if (!/Payments are unavailable/.test(uiJs) || !/completing checkout/.test(uiJs)) problems.push('the UI does not state the payment position before payment');
       if (!/No findings available\./.test(uiJs)) problems.push('the UI does not use the approved empty-result wording');

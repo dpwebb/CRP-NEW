@@ -7,6 +7,18 @@
  */
 
 const STATUS_BY_CODE = Object.freeze({
+  SIGNUP_SECURITY_REQUIRED: 403,
+  EMAIL_CONFIRMATION_WAIT: 429,
+  EMAIL_CONFIRMATION_INVALID: 400,
+  EMAIL_CONFIRMATION_EXPIRED: 400,
+  EMAIL_CONFIRMATION_LOCKED: 429,
+  CONFIRMATION_EMAIL_UNAVAILABLE: 503,
+  TWO_FACTOR_REQUIRED: 401,
+  TWO_FACTOR_INVALID: 401,
+  TWO_FACTOR_SETUP_EXPIRED: 400,
+  TWO_FACTOR_ALREADY_ENABLED: 409,
+  ACCOUNT_SECURITY_UNAVAILABLE: 503,
+
   INVALID_REQUEST: 400,
   EXPLICIT_COUNTRY_AND_REGION_REQUIRED: 400,
   UNSUPPORTED_OR_MISMATCHED_JURISDICTION: 400,
@@ -78,6 +90,18 @@ const STATUS_BY_CODE = Object.freeze({
 
 /** Plain-language copy for every machine code. The consumer UI renders these and nothing rawer. */
 const MESSAGE_BY_CODE = Object.freeze({
+  SIGNUP_SECURITY_REQUIRED: 'Confirm your email and save your recovery key to finish signup.',
+  EMAIL_CONFIRMATION_WAIT: 'Wait one minute before requesting another confirmation email.',
+  EMAIL_CONFIRMATION_INVALID: 'That code does not match. Check your confirmation email and try again.',
+  EMAIL_CONFIRMATION_EXPIRED: 'That confirmation code has expired. Request a new email.',
+  EMAIL_CONFIRMATION_LOCKED: 'Too many incorrect codes. Request a new email after one minute.',
+  CONFIRMATION_EMAIL_UNAVAILABLE: 'We could not send your confirmation email. Please try again shortly.',
+  TWO_FACTOR_REQUIRED: 'Enter the current six-digit code from your authenticator app.',
+  TWO_FACTOR_INVALID: 'That authenticator code is invalid or has already been used. Try the next code in your app.',
+  TWO_FACTOR_SETUP_EXPIRED: 'Start authenticator setup again to get a fresh setup key.',
+  TWO_FACTOR_ALREADY_ENABLED: 'Two-factor authentication is already enabled.',
+  ACCOUNT_SECURITY_UNAVAILABLE: 'Account security is temporarily unavailable. Please contact support.',
+
   INVALID_RECOVERY_KEY: 'The email and recovery key do not match. Check them and try again.',
   TOO_MANY_RECOVERY_ATTEMPTS: 'Too many tries. Wait 15 minutes, then try again.',
   PACKET_SUPPORT_REQUIRED: 'Complete the bureau checklist shown in your packet review before approving.',

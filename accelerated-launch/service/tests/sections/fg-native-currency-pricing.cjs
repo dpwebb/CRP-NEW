@@ -73,7 +73,7 @@ async function run(t, check) {
   const mock = await new StripeUpgradeFixture().listen();
   const values = mock.env(t.base), old = Object.fromEntries(Object.keys(values).map(key => [key, process.env[key]]));
   Object.assign(process.env, values);
-  t.service = createService({ dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
+  t.service = createService({ registrationMailer: async message=>t.confirmationMessages.push(message), dataDir: t.dataDir, geoLocate: async () => 'CA', logSink: line => t.logs.push(line) });
   try {
     for (const currency of plans.CURRENCIES) for (const code of plans.PLAN_CODES) {
       const buyer = await t.unpaidAccount('native-stripe-' + currency + '-' + code + '@example.test');

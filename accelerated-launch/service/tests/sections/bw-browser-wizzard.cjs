@@ -125,7 +125,8 @@ async function run(service, check) {
     await page.locator('#steps button[data-step="0"]').click();
     await page.waitForSelector('#account-save');
     check.equal(await page.locator('#signin, #create, #password').count(), 0, 'returning to Step1 while signed in shows account details, never authentication prompts');
-    for (const [field, value] of Object.entries({ full_name: name, contact_email: email, date_of_birth: '1980-04-12', phone: '555-0100', address_line1: '10 Fictional Street', city: 'Example City', region: 'NS', postal_code: 'B3J 0A1' })) await page.locator('#account-' + field).fill(value);
+    await page.locator('#account-country').selectOption('CA');await page.locator('#account-region').selectOption('NS');
+    for (const [field, value] of Object.entries({ full_name: name, contact_email: email, date_of_birth: '1980-04-12', phone: '555-0100', address_line1: '10 Fictional Street', city: 'Example City', postal_code: 'B3J 0A1' })) await page.locator('#account-' + field).fill(value);
     check.equal(await page.locator('#account-given_name, #account-family_name').count(), 0, 'retired form-only name boxes are absent from the consumer account');
     await page.locator('#account-save').click();
     await page.waitForFunction(() => document.body.innerText.includes('Contact details saved.'));
@@ -244,15 +245,30 @@ async function run(service, check) {
   check.ok(!/not legal advi/i.test(dl1.text), 'with no legal-advice disclaimer');
   check.equal(dl1.text.split('\n').filter((l) => l.trim()).length > 20, true, 'and reads as a complete correspondence, not a raw debug dump');
   check.ok(!/established reporting issue/.test(dl1.text), 'never asserting a definite breach');
+  const printResponse=page.waitForResponse(r=>r.url().endsWith('/api/cases/'+pot.caseId+'/packet-print'));
   const [printPage] = await Promise.all([page.context().waitForEvent('page'), page.locator('#packet-print').click()]);
-  await printPage.waitForLoadState();
-  check.ok(printPage.url().endsWith('/packet-print'), 'the real Print packet button opens the approved inline PDF');
-  const printed = await page.request.get(printPage.url());
+  await printPage.waitForURL('blob:**');await printPage.waitForLoadState();
+  check.ok(printPage.url().startsWith('blob:'), 'the real Print packet button opens the approved inline PDF');
+  const printed = await printResponse;
   check.equal(printed.status(), 200, 'the owned approved print endpoint serves its PDF');
-  check.match(printed.headers()['content-type'], /application\/pdf/, 'the print document is a PDF');
+  check.match((await printed.allHeaders())['content-type'], /application\/pdf/, 'the print document is a PDF');
   check.ok((await printed.body()).subarray(0, 5).toString() === '%PDF-', 'actual printable bytes carry a PDF header');
   check.ok((await printed.body()).equals(dl1.bytes), 'the actual Print button opens the same full PDF as the download');
   await printPage.close();
+  await page.route('**/packet-download',async route=>{await new Promise(resolve=>setTimeout(resolve,1600));await route.continue();});
+  const pendingFile=page.waitForEvent('download');await page.locator('#packet-download').click();await page.locator('#operation-progress').waitFor({state:'visible'});
+  const pendingLetter=(await page.locator('#packet-letter').inputValue())+'\nFictional edit made while download is pending.';await page.locator('#packet-letter').fill(pendingLetter);
+  await(await pendingFile).path();await page.locator('#operation-progress').waitFor({state:'hidden'});
+  check.equal(await page.locator('#packet-letter').inputValue(),pendingLetter,'a delayed download preserves unsaved consumer letter edits');
+  check.ok(await page.locator('#packet-download').isDisabled()&&await page.locator('#packet-approve').isDisabled(),'download completion cannot re-enable approval or download after an edit');
+  await page.unroute('**/packet-download');
+  const originalLink=page.locator('#packet-reports a[href^="/api/"]').first(),originalUrl=new URL(await originalLink.getAttribute('href'),page.url()).href;
+  await page.route(originalUrl,route=>route.fulfill({status:409,contentType:'application/json',body:JSON.stringify({error:{message:'This fictional source is temporarily unavailable.'}})}));
+  await originalLink.click();await page.locator('#operation-error').waitFor();
+  check.equal(await page.locator('#packet-letter').inputValue(),pendingLetter,'a failed document opening preserves unsaved packet edits');
+  await page.unroute(originalUrl);
+
+
   await page.locator('#steps button').filter({ hasText: 'Privacy and deletion' }).click();
   await page.waitForSelector('#privacyInventory');
   check.ok(/Delete this case/.test(await page.locator('#panel').innerText()), 'real-browser named case navigation preserves deletion controls');
@@ -618,9 +634,10 @@ async function run(service, check) {
   check.equal((copyText.match(/Included: report page 1/g) || []).length, 2, 'the review lists the relevant page from each source report');
   check.ok(!/download includes the whole report|ENTIRE_REPORT|source_result_id|stored_sha256/.test(copyText), 'the consumer need not assemble or select pages from whole downloaded files');
   for (const original of originals) {
+    const originalFetch=copyPage.waitForResponse(r=>r.url()===new URL(original.review_url,copyPage.url()).href);
     const [originalPage] = await Promise.all([copyPage.context().waitForEvent('page'), copyPage.locator(`#packet-reports a[href="${original.review_url}"]`).click()]);
-    await originalPage.waitForLoadState();
-    const originalResponse = await copyPage.request.get(originalPage.url());
+    await originalPage.waitForURL('blob:**');await originalPage.waitForLoadState();
+    const originalResponse = await originalFetch;
     check.equal(originalResponse.status(), 200, 'Check the original report uses the authorized original-copy endpoint');
     check.ok((await originalResponse.body()).equals(original.roles.includes('EARLIER') ? earlierBytes : copies.reportBytes), 'the opened whole report has the exact original uploaded bytes');
     await originalPage.close();
