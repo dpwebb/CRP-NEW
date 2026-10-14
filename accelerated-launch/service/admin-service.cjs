@@ -33,7 +33,7 @@ function page(items, query) {
 function filter(items, query, keys) {
   const q = (query.get('q') || '').trim().toLowerCase();
   if (q.length > 200) invalid('SEARCH_TOO_LONG');
-  return items.filter(row => (!query.get('status') || row.status === query.get('status')) && (!q || keys.some(key => String(row[key] || '').toLowerCase().includes(q))));
+  return items.filter(row => (!query.get('status') || row.status === query.get('status')) && (!q || keys.some(key => String(key.split('.').reduce((value, part) => value?.[part], row) || '').toLowerCase().includes(q))));
 }
 function accountView(state, account) {
   return { account_id: account.account_id, email: account.email, created_at: account.created_at,
@@ -61,7 +61,7 @@ function activeFulfillmentOrganization(adminStore, orgId) {
 }
 function activeGrant(adminStore, grantId, now) {
   const grant = adminStore.state().grants.find(row => row.grant_id === grantId);
-  if (!grant || grant.status !== 'ACTIVE' || (grant.expires_at && !(Date.parse(grant.expires_at) > new Date(now || Date.now()).getTime()))) throw new ServiceError('NOT_FOUND');
+  if (!grant || grant.status !== 'ACTIVE' || grant.revoked_at || (grant.expires_at && !(Date.parse(grant.expires_at) > new Date(now || Date.now()).getTime()))) throw new ServiceError('NOT_FOUND');
   activeFulfillmentOrganization(adminStore, grant.org_id);
   return grant;
 }
@@ -92,6 +92,7 @@ function currentGrantAvailable(store, adminStore, grant, now) {
 }
 function safeAudit(row) {
   const safe = {};
+  if (Number.isSafeInteger(row.sequence)) safe.sequence = row.sequence;
   for (const key of ['audit_id', 'event_id', 'event', 'at', 'created_at', 'actor_admin_id', 'actor_account_id', 'actor_role', 'admin_id', 'account_id', 'org_id', 'case_id', 'grant_id', 'job_id', 'packet_id', 'status', 'reason', 'operation', 'permission']) {
     if (typeof row[key] === 'string') safe[key] = row[key];
   }
@@ -364,7 +365,7 @@ async function dispatchAdmin(options) {
     mutateAudited(adminStore, principal, 'ADMIN_FULFILLMENT_STATUS_RECORDED', { job_id: job.job_id, org_id: job.org_id, status: body.status }, state => { const live = state.fulfillment_queue.find(row => row.job_id === job.job_id); live.status = body.status; live.updated_at = iso(now); });
     return response({ job: { job_id: job.job_id, status: body.status }, mailing_enabled: false });
   }
-  if (pathname === '/api/admin/audit' && method === 'GET') { guard(access, adminStore, principal, 'audit.read', query); return response(page(filter(adminStore.state().audit_events.slice().reverse().map(safeAudit), query, ['event', 'actor_admin_id', 'actor_account_id', 'actor_role', 'case_id', 'org_id', 'job_id']), query)); }
+  if (pathname === '/api/admin/audit' && method === 'GET') { guard(access, adminStore, principal, 'audit.read', query); return response(page(filter(adminStore.state().audit_events.slice().reverse().map(safeAudit), query, ['event', 'actor_admin_id', 'actor_account_id', 'actor_role', 'metadata.case_id', 'metadata.org_id', 'metadata.job_id', 'metadata.role', 'metadata.permission']), query)); }
   if (pathname === '/api/admin/settings' && method === 'GET') { return response({ settings: { available_permissions: PERMISSIONS, role_options: ['owner', 'staff', 'partner'], status_options: ['ACTIVE', 'DISABLED'], hold_reasons: HOLD_REASONS, payouts_enabled: false, mailing_enabled: false, consumer_approval_required: true } }); }
   return null;
 }
