@@ -421,8 +421,11 @@ function renderAccount(panel) {
     const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
     state.wantTwoFactor=Boolean(el('signup-two-factor')?.checked);
     const epoch = ++accountEpoch, rendered = renderSequence;
-    const data = await api('POST', '/api/accounts', { ...credentials(), profile });
-    if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction();
+    const ensure = () => { if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction(); };
+    let data;
+    try { data = await api('POST', '/api/accounts', { ...credentials(), profile }); }
+    catch (error) { ensure(); throw error; }
+    ensure();
     state.account = data.account;
     state.accountProfile = data.profile || null; state.accountDocuments = [];
     state.accountSecurity = data; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
@@ -439,8 +442,11 @@ function renderAccount(panel) {
     return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to log in.');
     const epoch = ++accountEpoch, rendered = renderSequence;
-    const data = await api('POST', '/api/sessions', credentials());
-    if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction();
+    const ensure = () => { if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction(); };
+    let data;
+    try { data = await api('POST', '/api/sessions', credentials()); }
+    catch (error) { ensure(); throw error; }
+    ensure();
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
     state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
@@ -575,7 +581,7 @@ function renderEmailRecoveryRequest(panel) {
   el('saved-key-option').onclick = () => { if (authPending) return; state.emailRecoveryMode = false; state.recoveryMode = true; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
   el('recovery-back').onclick = recoverySignIn;
 }
-function clearAccountAfterEmailReset() {
+function clearClientAccountForRecovery() {
   accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
   state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
   state.view = null; state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
@@ -599,7 +605,7 @@ function renderEmailPasswordReset(panel) {
     const ensure = () => { if (epoch !== accountEpoch || rendered !== renderSequence || !state.emailResetMode || token !== resetPasswordToken) throw cancelledAction(); };
     try { await api('POST', '/api/account/password-reset/complete', { token, password }); }
     catch (error) { ensure(); if (error.code === 'INVALID_PASSWORD_RESET') { resetPasswordToken = null; state.emailResetInvalid = true; } throw error; }
-    ensure(); resetPasswordToken = null; clearAccountAfterEmailReset();
+    ensure(); resetPasswordToken = null; clearClientAccountForRecovery();
     state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = false; state.recoveryMode = false;
     state.step = STEP.ACCOUNT; history.replaceState(null, '', location.pathname + location.search + '#signin');
     state.notice = 'Your password has been reset. Log in with your new password and your authenticator code if enabled. Your recovery key still works.';
@@ -2536,6 +2542,9 @@ function renderBillingView(data) {
 
 (async function start() {
   if (typeof location !== 'undefined' && location.protocol === 'file:') { render(); el('email')?.focus(); return; }
+  const epoch = accountEpoch, resetMode = state.emailResetMode;
+  const currentStartup = () => epoch === accountEpoch && resetMode === state.emailResetMode;
+  // Public metadata can finish loading after navigation; only this startup's account work and redraw are cancelled.
   try {
     const data = await api('GET', '/api/jurisdictions');
     surface = data.surface;
@@ -2545,19 +2554,29 @@ function renderBillingView(data) {
   }
   try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; state.pricingCurrency = state.publicPricing?.currency || null; }
   catch { state.publicPricing = null; }
+  if (!currentStartup()) return;
   if (state.emailResetMode) { render(); el('auth-title')?.focus?.(); return; }
   try {
     const session = await api('GET', '/api/session');
-    state.account = session.account;state.accountSecurity=await api('GET','/api/account/security');
+    if (!currentStartup()) return;
+    state.account = session.account;
+    const security = await api('GET','/api/account/security');
+    if (!currentStartup()) return;
+    state.accountSecurity = security;
     if(state.accountSecurity.signup_complete===false){state.step=STEP.ACCOUNT;render();return;}
-    state.cases = (await api('GET', '/api/cases')).cases;
+    const cases = await api('GET', '/api/cases');
+    if (!currentStartup()) return;
+    state.cases = cases.cases;
     await refreshAccess();
+    if (!currentStartup()) return;
     state.step = 1;
     const returning = checkoutReturnContext();
     if (returning) await restoreCheckoutReport(returning);
-  } catch {
+  } catch (error) {
+    if (error.cancelled || !currentStartup()) return;
     state.account = null;
   }
+  if (!currentStartup()) return;
   el('activity').textContent = state.activity.join('\n');
   render();
   if (!state.account && typeof location !== 'undefined' && ['#create', '#signin'].includes(location.hash)) el('email')?.focus();
@@ -2565,7 +2584,7 @@ function renderBillingView(data) {
 
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', () => {
   if (capturePasswordResetLink()) {
-    accountEpoch++; state.emailResetMode = true; state.emailResetInvalid = !resetPasswordToken;
+    clearClientAccountForRecovery(); state.emailResetMode = true; state.emailResetInvalid = !resetPasswordToken;
     state.emailRecoveryMode = false; state.recoveryMode = false; state.error = null; state.notice = null; state.step = STEP.ACCOUNT;
     render(); el('auth-title')?.focus?.(); return;
   }
