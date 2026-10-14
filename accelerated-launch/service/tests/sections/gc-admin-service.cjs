@@ -1,15 +1,13 @@
 'use strict';
 /** Fictional local service tests. No hosted acceptance, payment, payout or mail. */
 const assert = require('node:assert/strict');
-const path = require('node:path');
 const crypto = require('node:crypto');
 const service = require('../../admin-service.cjs');
 const security = require('../../signup-security.cjs');
 const { ReferralProgram } = require('../../referral-engine.cjs');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
-const moduleRoot = process.env.CRP_ADMIN_ACCESS_MODULE ? path.dirname(process.env.CRP_ADMIN_ACCESS_MODULE) : path.resolve(__dirname, '../..');
-const access = require(path.join(moduleRoot, 'admin-access.cjs'));
-const { AdminStore } = require(path.join(moduleRoot, 'admin-store.cjs'));
+const access = require('../../admin-access.cjs');
+const { AdminStore } = require('../../admin-store.cjs');
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 function atTime(instant, fn) { const original = Date.now; Date.now = () => instant; try { return fn(); } finally { Date.now = original; } }
 
