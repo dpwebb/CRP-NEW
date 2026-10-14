@@ -136,6 +136,7 @@ const STUB_SUMMARY = {
 };
 
 const CASE_VIEW = {
+  result_id: 'res_stub', latest_result_id: 'res_stub',
   case: { case_id: 'case_stub', country: 'CA', region: 'CA-NS', status: 'OPEN' },
   status_label: 'Open — you have not recorded a next step yet',
   files: [{
@@ -249,7 +250,7 @@ function makeResponder() {
     if (method === 'GET' && url === '/api/cases/case_stub/response-draft') {
       return { status: 409, body: { ok: false, error: { code: 'RESULT_NOT_ELIGIBLE_FOR_DRAFT', message: 'No response draft can be produced for this result.' } } };
     }
-    if (method === 'POST' && url === '/api/cases/case_stub/review') {
+    if (method === 'POST' && url === '/api/cases/case_stub/results/res_stub/review') {
       state.reviewed = true;
       return { status: 200, body: { ok: true, result_id: 'res_stub', case_status: 'REVIEWED' } };
     }
@@ -366,7 +367,8 @@ async function run(t, check) {
   check.ok(/NOT YET REVIEWED/.test(panel.innerHTML) && /id="review"/.test(panel.innerHTML), 'the assessment acknowledgement is available before review');
   await dom.elementById('review').onclick();
   await tick();
-  check.ok(dom.calls.includes('POST /api/cases/case_stub/review'), 'acknowledgement records the review through the existing service action');
+  check.ok(dom.calls.includes('POST /api/cases/case_stub/results/res_stub/review'), 'acknowledgement records the review through the owned selected-result service action');
+  check.ok(!dom.calls.some(call => call.includes('/results/undefined/')), 'review never uses a missing assessment identity');
   check.ok(/REVIEWED BY YOU/.test(panel.innerHTML) && /id="review" disabled/.test(panel.innerHTML), 'the returned review disables repeated acknowledgement');
   check.ok(/Your review is saved\./.test(panel.innerHTML), 'the saved review has a simple confirmation');
   check.ok(!dom.calls.some((c) => /response-draft|demonstration-download/.test(c)), 'reviewing the packet requests neither obsolete endpoint');
@@ -382,8 +384,8 @@ async function run(t, check) {
   check.ok(dom.calls.includes('GET /api/privacy'), 'privacy dashboard loads authenticated inventory');
   check.ok(/private-owned.pdf/.test(dom.elementById('privacyInventory').innerHTML), 'privacy dashboard renders owned documents');
   check.ok(/Backup erasure timing has not been verified/.test(dom.elementById('privacyInventory').innerHTML), 'privacy dashboard does not promise backup erasure');
-  check.ok(/Delete this case/.test(panel.innerHTML), 'the case step offers deletion');
-  check.ok(/Mark CLOSED/.test(panel.innerHTML), 'and consumer-recorded status');
+  check.ok(/id="delete"/.test(panel.innerHTML) && /Delete this report and its files/.test(panel.innerHTML), 'the case step offers deletion');
+  check.ok(/data-status="CLOSED"/.test(panel.innerHTML) && /Mark Closed/.test(panel.innerHTML), 'and consumer-recorded status');
 
   /* Sign-out control exists and the machine payload is never read. */
   vm.runInContext('state.step = 0; render();', ctx);

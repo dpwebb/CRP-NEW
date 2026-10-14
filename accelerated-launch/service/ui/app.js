@@ -1801,6 +1801,8 @@ function clarificationBlock(view) {
 }
 
 function wireClarification(panel, view) {
+  const ensureView = viewContext(), caseId = state.caseId, resultId = view.result_id;
+  const ensure = () => { ensureView(); if (state.view?.result_id !== resultId) throw cancelledAction(); };
   if (!el('clarify-submit')) return;
   const questions = (view.clarification_questions || []).slice(0, 2).filter((q) => !q.requires_reassessment && q.question_key);
   /* C5: the special answers are preserved in their own state keyed by question_key. The browser converts a
@@ -1860,6 +1862,7 @@ function wireClarification(panel, view) {
     };
   }
   el('clarify-submit').onclick = () => run(async () => {
+    ensure();
     const answers = [];
     for (const q of questions) {
       if (q.answer_kind === 'report_use_purpose') {
@@ -1876,9 +1879,10 @@ function wireClarification(panel, view) {
       const answer = special[q.question_key] || (node && node.value ? node.value : '');
       if (answer) answers.push({ question_id: q.id, account: q.account, outcome: q.outcome, answer });
     }
-    await api('POST', '/api/cases/' + state.caseId + '/results/' + view.result_id + '/clarify', { answers });
+    await currentRequest(ensure, 'POST', '/api/cases/' + caseId + '/results/' + resultId + '/clarify', { answers });
+    const refreshed = await currentRequest(ensure, 'GET', '/api/cases/' + caseId + '/results/' + resultId + '/view');
     state.correctingReportUse = false;
-    state.view = (await api('GET', '/api/cases/' + state.caseId + '/results/' + view.result_id + '/view')).view;
+    state.view = refreshed.view;
     state.notice = 'Clarification saved. It is stored separately from your report facts.';
   });
 }

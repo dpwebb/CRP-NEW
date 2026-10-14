@@ -93,6 +93,30 @@ async function deferredChecks(check) {
   const quota = harness(() => ({ ok: true })); quota.evaluate('state.storageSnapshot=40*1024*1024-1024;');
   let refused = false; try { quota.evaluate('validateReportFiles([{name:"fictional.pdf",size:2048}]);'); } catch { refused = true; }
   check.ok(refused, 'whole batch is refused locally when shared remaining storage is insufficient');
+  const privateView = harness(() => ({}));
+  privateView.evaluate('state.account=null; renderResults(document.getElementById("panel"));');
+  check.ok(/Sign in/.test(privateView.node('panel').innerHTML) && !privateView.node('panel').innerHTML.includes('Account dates do not match'), 'signed-out rendering hides a retained private assessment');
+  for (const stage of ['POST', 'GET']) for (const target of ['signout', 'case-switch', 'account-switch']) for (const fail of [false, true]) {
+    const wait = deferred();
+    const clarification = harness((url, options) => options.method === stage ? wait.promise : { view: view() });
+    clarification.context.fixtureView.clarification_questions = [{ id: 'account-responsibility', question_key: 'responsibility', answer_kind: 'choice', choices: ['individual'] }];
+    clarification.evaluate('wireClarification(document.getElementById("panel"),state.view);');
+    clarification.node('q-responsibility').value = 'individual';
+    const saving = clarification.node('clarify-submit').onclick(); await tick(); await tick();
+    check.equal(clarification.calls.length, stage === 'POST' ? 1 : 2, 'clarification diagnostic reaches the intended pending request');
+    if (target === 'signout') clarification.evaluate('accountEpoch++; state.account=null; state.view=null;');
+    else {
+      if (target === 'account-switch') clarification.evaluate('accountEpoch++; state.account={account_id:"accountB"};');
+      clarification.evaluate('state.caseId="caseB"; state.view={result_id:"resultB"};');
+    }
+    clarification.evaluate('state.error=null; state.notice="Current context";');
+    if (fail) wait.reject(Error('Previous clarification failed')); else wait.resolve({ view: view('stale-clarification') });
+    await saving;
+    check.equal(clarification.evaluate('state.view?.result_id || null'), target === 'signout' ? null : 'resultB', `${stage} ${target}: late clarification cannot replace the current assessment`);
+    check.equal(clarification.evaluate('state.error'), null, 'old clarification failures remain outside the current context');
+    check.equal(clarification.evaluate('state.notice'), 'Current context', 'late clarification preserves the current notice');
+    check.equal(clarification.calls.length, stage === 'POST' ? 1 : 2, 'stale clarification stops before any follow-up request');
+  }
   for (const target of ['signout', 'account-switch']) for (const fail of [false, true]) {
     const stopped = deferred(), stale = harness(() => stopped.promise);
     stale.evaluate('rememberPendingCheckout({pending_checkout:{checkout_id:"checkout-old",plan_code:"monthly"}}); wirePendingPayment();');

@@ -107,7 +107,7 @@ async function run(t, check) {
   const panel = dom.nodes.get('panel');
 
   /* Step 3: the potential issue card renders (never NOT_DETECTED, never failed-check diagnostics). */
-  vm.runInContext('state.caseId = "case_stub"; state.view = __VIEW; state.step = 3; render();', ctx);
+  vm.runInContext('accountEpoch++; state.account={account_id:"acc_stub",email:"bn-ui@example.test"}; state.accountSecurity={signup_complete:true}; state.caseId = "case_stub"; state.view = __VIEW; state.step = 3; render();', ctx);
   check.ok(/Reporting issues for your review/.test(panel.innerHTML), 'the results step renders the unified issue section');
   check.ok(/opened date later than its closed date/.test(panel.innerHTML), 'and states what the report says');
   check.ok(/which date needs correction/.test(panel.innerHTML), 'and its specific uncertainty');

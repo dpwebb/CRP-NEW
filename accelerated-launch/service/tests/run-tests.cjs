@@ -315,8 +315,8 @@ async function runSection(file, verbose) {
   const report = { id: section.id, title: section.title, file, passed: 0, failed: 0, skipped: [], failures: [], evidence: null, completed: false, section_exception: null };
   if (verbose) process.stdout.write(`\n${section.id} — ${section.title}\n`);
   const service = new TestService(section.id);
-  await service.listen();
   try {
+    await service.listen();
     report.evidence = await section.run(service, makeCheck(report, verbose));
     report.completed = true;
   } catch (err) {
@@ -326,8 +326,13 @@ async function runSection(file, verbose) {
     report.failures.push(`section threw: ${first}`);
     process.stdout.write(`  FAIL section threw: ${first}\n`);
     if (err && err.cause) {
-      const { code, syscall, address, port } = err.cause;
-      process.stdout.write(`  FAIL transport cause: ${JSON.stringify({ code, syscall, address, port })}\n`);
+      const detail = (cause, depth = 0) => cause && depth < 3 ? {
+        name: cause.name, message: cause.message, code: cause.code, syscall: cause.syscall,
+        address: cause.address, port: cause.port, cause: detail(cause.cause, depth + 1),
+        errors: Array.isArray(cause.errors) ? cause.errors.map(error => detail(error, depth + 1)) : undefined
+      } : undefined;
+      report.transport_error = detail(err.cause);
+      process.stdout.write(`  FAIL transport cause: ${JSON.stringify(report.transport_error)}\n`);
     }
   } finally {
     await service.close();

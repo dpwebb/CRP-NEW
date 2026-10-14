@@ -92,6 +92,39 @@ async function administrationDeletionControls(check) {
 }
 
 async function run(t, check) {
+  const portFixture = new TestService('audit-fetch-port-selection');
+  const actualAddress = portFixture.server.address.bind(portFixture.server);
+  let allocations = 0;
+  portFixture.server.address = () => {
+    const actual = actualAddress();
+    if (!actual) return actual;
+    allocations++;
+    return allocations <= 2 ? { ...actual, port: allocations === 1 ? 6000 : 6667 } : actual;
+  };
+  try {
+    await portFixture.listen();
+    check.ok(allocations >= 3, 'blocked OS port allocations are discarded before exposing the listener');
+    check.ok(![6000, 6667].includes(portFixture.port), 'the public loopback fixture uses a Fetch-compatible allocation');
+    await portFixture.unpaidAccount('safe-loopback@example.test');
+    check.equal(portFixture.service.store.state().accounts.length, 1, 'accepted listener performs the actual account request once, without retrying a POST');
+  } finally { await portFixture.close(); }
+  const exhausted = new TestService('audit-fetch-port-exhaustion');
+  const exhaustedAddress = exhausted.server.address.bind(exhausted.server);
+  let rejectedAllocations = 0;
+  exhausted.server.address = () => {
+    const actual = exhaustedAddress();
+    if (!actual) return actual;
+    rejectedAllocations++;
+    return { ...actual, port: 6000 };
+  };
+  try {
+    let failure;
+    try { await exhausted.listen(); } catch (error) { failure = error; }
+    check.ok(/No Fetch-compatible/.test(failure?.message || ''), 'blocked allocation exhaustion fails explicitly');
+    check.equal(rejectedAllocations, 32, 'unusable listener allocation has a fixed bound');
+    check.equal(exhausted.server.listening, false, 'the final rejected listener is closed before failure');
+    check.ok(!exhausted.base && !exhausted.port && exhausted.service.store.state().accounts.length === 0, 'exhaustion publishes no unusable URL and sends no account request');
+  } finally { await exhausted.close(); }
   const publicSurface = await t.request('GET', '/api/jurisdictions');
   check.equal(publicSurface.status, 200, 'public help contact needs no account');
   check.deepEqual(publicSurface.json.surface.support_contact, support.publicContact(), 'public surface supplies established support address');

@@ -25,8 +25,11 @@ async function run(t, check) {
   };
   const secureAccount = async email => {
     const actor = await t.unpaidAccount(email);
-    const setup = security.beginTwoFactor(store, actor, { password });
-    security.confirmTwoFactor(store, actor, { code: security.totp(setup.secret, now - 30000) });
+    const setup = atTime(now - 30000, () => {
+      const enrolled = security.beginTwoFactor(store, actor, { password });
+      security.confirmTwoFactor(store, actor, { code: security.totp(enrolled.secret, now - 30000) });
+      return enrolled;
+    });
     return { ...actor, secret: setup.secret };
   };
   const unlock = (actor, instant = now) => {
@@ -40,7 +43,7 @@ async function run(t, check) {
   };
   try {
     const owner = await secureAccount('admin-service-owner@example.test');
-    access.bootstrapOwner(adminStore, { account_id: owner.account_id, code: security.totp(owner.secret, now) });
+    atTime(now, () => access.bootstrapOwner(adminStore, { account_id: owner.account_id, code: security.totp(owner.secret, now) }));
     unlock(owner, now + 30000);
     const locked = { ...owner, adminToken: undefined };
     await refuse('ordinary consumer login cannot access the admin projection', () => call(locked, 'GET', '/api/admin/accounts'), ['TWO_FACTOR_REQUIRED']);

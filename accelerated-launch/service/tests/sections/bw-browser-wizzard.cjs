@@ -284,7 +284,7 @@ async function run(service, check) {
 
   await page.locator('#steps button').filter({ hasText: 'Privacy and deletion' }).click();
   await page.waitForSelector('#privacyInventory');
-  check.ok(/Delete this case/.test(await page.locator('#panel').innerText()), 'real-browser named case navigation preserves deletion controls');
+  check.ok(await page.locator('#delete').isVisible() && /Delete this report and its files/.test(await page.locator('#delete').innerText()), 'real-browser named case navigation preserves deletion controls');
   await page.locator('#steps button').filter({ hasText: 'Help' }).click();
   await page.waitForSelector('#copyReference');
   check.ok(/Your support reference/.test(await page.locator('#panel').innerText()), 'real-browser named support navigation loads its owned reference');
@@ -459,7 +459,7 @@ async function run(service, check) {
   await freePage.locator('#steps button[data-step="3"]').click();
   await freePage.waitForTimeout(1500);
   const unlockedText = await freePage.locator('#panel').innerText();
-  check.ok(/Reporting issues for your review/.test(unlockedText) && /Download my report \(PDF\)/.test(unlockedText), 'a verified payment unlocks the issue list and PDF download for the consumer in the browser');
+  check.ok(/Reporting issues for your review/.test(unlockedText) && /Download this assessment \(PDF\)/.test(unlockedText) && await freePage.locator('#download-assessment').isVisible(), 'a verified payment unlocks the issue list and PDF download for the consumer in the browser');
   check.ok(!/Unlock this report/.test(unlockedText), 'and an unlocked report is offered its results instead of another purchase');
   const [paidReportDownload] = await Promise.all([freePage.waitForEvent('download'), freePage.locator('#download-assessment').click()]);
   const paidReportBytes = fs.readFileSync(await paidReportDownload.path());

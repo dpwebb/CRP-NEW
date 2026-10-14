@@ -54,7 +54,7 @@ function renderUIFinding(renderedResult) {
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '..', '..', 'ui', 'app.js'), 'utf8'), ctx);
   const result = renderedResult;
-  vm.runInContext('state.view = { case: { country: "US", region: "US-CA" }, result: ' + JSON.stringify(result) + ', assessment_access: { complete_assessment: true, complete_assessment_via: "SUBSCRIPTION", assessment_download: true, dispute_packet: true, purchase_choices: [] }, assessment_summary: { result_id: "res_aw", created_at: "2026-10-05T00:00:00.000Z", distinct_total: 0, by_confidence: { violation: 0, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ["REMOVE_ENTRY", "ADD_CONTENT", "INCONSISTENCY"] } }; state.step = 3; render();', ctx);
+  vm.runInContext('accountEpoch++; state.account={account_id:"acc_aw",email:"aw-ui@example.test"}; state.accountSecurity={signup_complete:true}; state.caseId="case_aw"; state.view = { result_id:"res_aw", case: { case_id:"case_aw", country: "US", region: "US-CA" }, result: ' + JSON.stringify(result) + ', assessment_access: { complete_assessment: true, complete_assessment_via: "SUBSCRIPTION", assessment_download: true, dispute_packet: true, purchase_choices: [] }, assessment_summary: { result_id: "res_aw", created_at: "2026-10-05T00:00:00.000Z", distinct_total: 0, by_confidence: { violation: 0, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ["REMOVE_ENTRY", "ADD_CONTENT", "INCONSISTENCY"] } }; state.step = 3; render();', ctx);
   return nodes.get('panel').innerHTML;
 }
 async function run(t, check) {

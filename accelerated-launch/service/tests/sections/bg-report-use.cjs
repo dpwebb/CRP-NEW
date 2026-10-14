@@ -243,7 +243,7 @@ async function run(t, check) {
   vm.runInContext('state.caseId = "case-ui"; state.view = ' + JSON.stringify(uiView) + ';', uiCtx);
   vm.runInContext('state.step = 0; render();', uiCtx);
   check.equal(uiElement('footer-disclaimer').hidden, true, 'the disclaimer is hidden on the dedicated account entry page');
-  vm.runInContext('state.step = 3; render();', uiCtx);
+  vm.runInContext('accountEpoch++; state.account={account_id:"acc_bg",email:"bg-ui@example.test"}; state.accountSecurity={signup_complete:true}; state.view.case.case_id="case-ui"; state.view.case.account_id="acc_bg"; state.step = 3; render();', uiCtx);
   check.equal(uiElement('footer-disclaimer').hidden, true, 'the disclaimer is hidden on the assessment/results step');
   /* OWNER correction (Batch 25): the approved disclaimer is visible in the small main-page footer ONLY. Every
      step is rendered and measured, not just the two sampled above. */
@@ -316,7 +316,8 @@ async function run(t, check) {
   realCtx.window = realCtx; realCtx.globalThis = realCtx; realCtx.window.location = { assign: () => {} };
   vm.createContext(realCtx);
   vm.runInContext(appSource, realCtx);
-  vm.runInContext('state.caseId = ' + JSON.stringify(realCase.case_id) + '; state.view = ' + JSON.stringify(realView) + '; state.step = 3; render();', realCtx);
+  vm.runInContext('accountEpoch++; state.account=' + JSON.stringify({account_id:realOwner.account_id,email:'bg-real-ui@example.test'}) + '; state.accountSecurity={signup_complete:true}; state.caseId = ' + JSON.stringify(realCase.case_id) + '; state.view = ' + JSON.stringify(realView) + '; state.step = 3; render();', realCtx);
+  check.ok(/Reporting issues for your review|Your report/.test(realNodes.get('panel').innerHTML) && !/Sign in to see/.test(realNodes.get('panel').innerHTML), 'retired-question absence is measured on the authenticated results screen');
   check.equal(realEl('footer-disclaimer').hidden, true, 'the wizard hides the footer disclaimer on the results step (real view)');
   check.ok(!/data-question="report-use"/.test(realNodes.get('panel').innerHTML),
     'the wizard does not render a report-use question that the service did not surface');

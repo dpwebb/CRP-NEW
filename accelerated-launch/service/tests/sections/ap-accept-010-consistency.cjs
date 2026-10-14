@@ -308,9 +308,9 @@ async function run(t, check) {
   const uiSource = fsNode.readFileSync(path.join(__dirname, '..', '..', 'ui', 'app.js'), 'utf8');
   const VIEW = {
   assessment_access: { complete_assessment: true, complete_assessment_via: 'SUBSCRIPTION', assessment_download: true, dispute_packet: true, purchase_choices: [] },
-  assessment_summary: { result_id: 'res_ap', created_at: '2026-10-05T00:00:00.000Z', distinct_total: 1, by_confidence: { violation: 1, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY'] },
+  assessment_summary: { result_id: 'r-browser', created_at: '2026-10-05T00:00:00.000Z', distinct_total: 1, by_confidence: { violation: 1, probable_violation: 0, potential: 0 }, teaser: null, severity_order: ['REMOVE_ENTRY', 'ADD_CONTENT', 'INCONSISTENCY'] },
     result_id: 'r-browser',
-    case: { country: 'US', region: 'US-NY' },
+    case: { case_id: 'case-browser', country: 'US', region: 'US-NY' },
     result: { support: 'REPORT_SUPPORT', checks_performed: 0, observations: [], qualifications: [], disclaimer: 'This assessment covers the checks listed in this report.', assessment: { plain: '' } },
     clarifications: [],
     clarification_questions: [
@@ -357,7 +357,7 @@ async function run(t, check) {
   ctx.VIEW = VIEW;
   vm.createContext(ctx);
   vm.runInContext(uiSource, ctx, { filename: 'app.js' });
-  vm.runInContext("state.caseId = 'case-browser'; state.view = VIEW; state.step = 3; render();", ctx);
+  vm.runInContext("accountEpoch++; state.account={account_id:'acc_ap',email:'ap-ui@example.test'}; state.accountSecurity={signup_complete:true}; state.caseId = 'case-browser'; state.view = VIEW; state.step = 3; render();", ctx);
   check.ok(/<option value="I_DONT_KNOW">/.test(panelNode.innerHTML), 'C5: the choice select carries a real I_DONT_KNOW option so the browser keeps the value');
   check.ok(/<option value="SKIP">/.test(panelNode.innerHTML), 'C5: and a real SKIP option');
   dontKnowButtons[0].onclick(); /* "I don't know" on CREDITOR A */

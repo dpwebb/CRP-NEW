@@ -14,7 +14,7 @@ function makeContext(responder) {
   const nodes = new Map(), calls = [];
   const get = id => { if (!nodes.has(id)) nodes.set(id, element(id)); return nodes.get(id); };
   const ctx = {
-    console, setTimeout: (fn,ms)=>{const timer=setTimeout(fn,ms);if(ms>=60000)timer.unref();return timer;}, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp,
+    console, setTimeout: (fn,ms)=>{const timer=setTimeout(fn,ms);if(ms>=60000)timer.unref();return timer;}, clearTimeout, JSON, Object, Array, Map, Set, Promise, Number, String, Date, Error, RegExp, URLSearchParams,
     crypto: { randomUUID: () => 'purchase-ui-fixture' },
     document: { getElementById: get, createElement: tag=>{const node=element(tag);node.click=()=>calls.push({method:'BLOB_DOWNLOAD',filename:node.download});return node;} },
     fetch: async (url, options = {}) => {
@@ -95,7 +95,7 @@ async function run(t, check) {
   vm.runInContext('surface.preview_mode = true; surface.entitlement.payment_mode = "test"; banner();', ctx);
 
   vm.runInContext('state.step = STEP.RESULTS; render();', ctx);
-  check.ok(/Download my report \(PDF\)/.test(panel.innerHTML), 'the one-off report explicitly offers its PDF download');
+  check.ok(/Download this assessment \(PDF\)/.test(panel.innerHTML), 'the one-off report explicitly offers its PDF download');
   check.ok(/FICTIONAL COLLECTION A/.test(panel.innerHTML) && /VIOLATION/.test(panel.innerHTML), 'report issues and their printed account labels remain visible');
   check.ok(/Print and mail your disputes|Compare your next report|Keep your reports together/.test(panel.innerHTML), 'subscriber benefits accompany the one-off report');
   for (const benefit of ['Print and mail your disputes', 'Compare your next report', 'Keep your reports together']) check.ok(panel.innerHTML.includes(benefit), `the report explains ${benefit}`);
@@ -107,7 +107,7 @@ async function run(t, check) {
   check.ok(/\$3\.95 CAD remains for a later upgrade/.test(panel.innerHTML), 'unused excess credit is shown without reducing the bill below zero');
   check.ok(!/id="create-packet"|id="packet-block"/.test(panel.innerHTML), 'marketing does not grant a one-off purchase subscriber packet access');
   await dom.get('download-assessment').onclick();
-  check.ok(dom.calls.some(c => c.method === 'GET' && c.url === '/api/cases/case_fixture/report-download' && c.query === 'currency=cad'), 'the PDF control uses the protected owned-report download route and selected currency');
+  check.ok(dom.calls.some(c => c.method === 'GET' && c.url === '/api/cases/case_fixture/report-download' && new URLSearchParams(c.query).get('currency') === 'cad' && new URLSearchParams(c.query).get('result_id') === 'result_fixture'), 'the PDF control uses the protected owned-report route, exact displayed assessment and selected currency');
   check.ok(dom.calls.some(c=>c.method==='BLOB_DOWNLOAD'&&/\.pdf$/.test(c.filename)),'the successful protected response creates a PDF download');
   await dom.get('buy-monthly').onclick();
   await tick(); await tick();
