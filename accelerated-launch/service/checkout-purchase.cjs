@@ -34,6 +34,9 @@ async function openCheckout(store, actor, input, env) {
   const caseId = typeof body.case_id === 'string' ? body.case_id : null;
   if (code === 'report_once') entitlement.requireUnlockableReport(store, actor, caseId);
   const current = entitlement.statusFor(store, actor.account_id);
+  if (code !== 'report_once' && !current.entitled && current.renewal_cancellation_available) {
+    throw new ServiceError('SUBSCRIPTION_RENEWAL_UNCONFIRMED');
+  }
   const currency = body.currency || (current.entitled && current.access_via === 'SUBSCRIPTION' ? current.currency || 'cad' : 'cad');
   if (!plans.isCurrency(currency)) throw new ServiceError('INVALID_PAYMENT_CURRENCY');
   if (current.entitled && current.access_via === 'SUBSCRIPTION' && currency !== (current.currency || 'cad')) throw new ServiceError('SUBSCRIPTION_CURRENCY_CHANGE');

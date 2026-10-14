@@ -20,6 +20,10 @@ const SECRET_ENV = 'CRP_SUPPORT_REFERENCE_SECRET';
    must configure a stable secret for reference stability. The secret is used only server-side in the HMAC and
    is never returned to any caller. */
 let generatedSecret = null;
+// Publishing the existing monitored owner mailbox sends no message or account data.
+function publicContact() {
+  return { email: 'admin@creditregulatorpro.com', label: 'Contact support' };
+}
 function resolveSecret() {
   const configured = process.env[SECRET_ENV];
   if (configured) return configured;
@@ -64,4 +68,4 @@ function lookup(store, actor, reference) {
   return supportInfo(store, actor);
 }
 
-module.exports = { supportInfo, lookup, referenceFor, categoryFor };
+module.exports = { supportInfo, lookup, referenceFor, categoryFor, publicContact };

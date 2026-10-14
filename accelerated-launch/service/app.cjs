@@ -297,7 +297,9 @@ function loadJurisdictionSurface() {
       payment_mode: payment.key_mode || null
     },
     preview_mode: process.env.CRP_DEPLOYMENT_ENV === 'staging',
-    retention_plain: retention.policyView().plain
+    retention_plain: retention.policyView().plain,
+    upload_limits: uploads.uploadLimits(),
+    support_contact: require('./support.cjs').publicContact()
   };
 }
 
@@ -398,8 +400,23 @@ function buildHandlers(store, logger, surface, pricingCurrency, registrationMail
     privacyDashboard: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./privacy.cjs').dashboard(store, actor) } }),
     supportInfo: ({ actor }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').supportInfo(store, actor) } }),
     supportLookup: ({ actor, params }) => ({ status: 200, json: { ok: true, ...require('./support.cjs').lookup(store, actor, params.reference) } }),
-    deleteAccount: ({ actor }) => {
-      const result = cases.deleteAccount(store, actor);
+    deleteAccount: async ({ actor }) => {
+      const ensureAdministrationDeletionAllowed = () => {
+        if (!adminStore) {
+          if (process.env.CRP_ADMIN_ENABLED === '1' || fs.existsSync(path.join(store.dataDir, 'admin'))) {
+            throw new ServiceError('ACCOUNT_SECURITY_UNAVAILABLE');
+          }
+          return;
+        }
+        let administration;
+        try { administration = adminStore.state(); }
+        catch { throw new ServiceError('ACCOUNT_SECURITY_UNAVAILABLE'); }
+        if (administration.memberships.some(member => member.account_id === actor.account_id && member.status !== 'DISABLED')) {
+          throw new ServiceError('ACCOUNT_DELETION_ADMIN_ACCESS_ACTIVE');
+        }
+      };
+      ensureAdministrationDeletionAllowed();
+      const result = await cases.deleteAccountSafely(store, actor, process.env, { beforeDelete: ensureAdministrationDeletionAllowed });
       logger.log({ event: 'ACCOUNT_DELETED', outcome: 'OK', count: result.blobs_removed });
       return { status: 200, json: { ok: true, deleted: true, stored_files_removed: result.blobs_removed }, headers: { 'Set-Cookie': sessionCookie('', 0) } };
     },
@@ -612,7 +629,12 @@ function buildCaseHandlers(store, logger, surface, pricingCurrency) {
       const owned = cases.requireOwnedCase(store, actor, params.caseId);
       const country = surface.countries.find(c => c.value === owned.country)?.label || owned.country;
       const region = surface.regions.find(r => r.value === owned.region)?.label || owned.region;
+      const selectedResults = new URL(req.url, 'http://127.0.0.1').searchParams.getAll('result_id');
+      if (selectedResults.length > 1 || (selectedResults.length && (!selectedResults[0].trim() || selectedResults[0].length > 200))) {
+        throw new ServiceError('RESULT_ID_REQUIRED');
+      }
       const file = journey.assessmentReport(store, actor, params.caseId, {
+        result_id: selectedResults.length ? selectedResults[0] : null,
         jurisdiction_label: `${country} / ${region}`, upgrade_quotes: entitlement.upgradeQuotes(store, actor, await pricingCurrency(req)) });
       logger.log({ event: 'ASSESSMENT_REPORT_DOWNLOAD_SERVED', outcome: access.via });
       return {

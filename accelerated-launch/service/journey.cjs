@@ -107,6 +107,7 @@ function viewForResult(store, actor, caseRow, resultRow) {
       : null,
     result: access.complete_assessment ? rendered : null,
     result_id: access.complete_assessment && resultRow ? resultRow.result_id : null,
+    latest_result_id: access.complete_assessment ? latestResultFor(store, caseRow.case_id)?.result_id || null : null,
     reviewed: Boolean(resultRow && resultRow.reviewed_at),
     clarifications: resultRow && resultRow.clarifications ? clarification.render(resultRow.clarifications) : [],
     clarification_questions: resultRow && Array.isArray(resultRow.clarification_eligibility) ? clarification.activeQuestions(resultRow.clarification_eligibility) : [],
@@ -114,10 +115,10 @@ function viewForResult(store, actor, caseRow, resultRow) {
       response_draft_available: false,
       reason: rendered ? rendered.eligibility.reason : 'NO_RESULT_YET',
       reason_plain:
-        'No result in this build may be used to produce a response draft. The recorded output permission for ' +
-        'every applicable check caps its conclusion at an observation. A demonstration file is offered instead ' +
-        'so the download path itself can be reviewed.',
-      demonstration_download_available: true
+        !rendered ? 'Check your report first.' : subscribed
+          ? 'Choose the issues you want to dispute, then review and approve your packet.'
+          : 'A subscription includes dispute packets you review and approve.',
+      demonstration_download_available: Boolean(rendered && resultRow?.support === 'DEMONSTRATION_ONLY_NOT_REPORT_SUPPORT')
     },
     demonstration_scenarios: demo.listScenarios()
   };
@@ -627,7 +628,10 @@ function assessmentReportBody(rendered, producedAt) {
 
 function assessmentReport(store, actor, caseId, context = {}) {
   cases.requireOwnedCase(store, actor, caseId);
-  const row = latestResultFor(store, caseId);
+  const selected = context.result_id;
+  const stored = selected ? store.state().results.find(result => result.case_id === caseId && result.result_id === selected) : null;
+  if (selected && !stored) throw new ServiceError('NOT_FOUND');
+  const row = selected ? accountDisplay.resultRow(store, stored) : latestResultFor(store, caseId);
   if (!row) throw new ServiceError('NO_RESULT_TO_DOWNLOAD');
   const subscriber = entitlement.subscriptionAccess(store, actor);
   const pdf = require('./assessment-pdf.cjs').renderAssessmentPdf(
