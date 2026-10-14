@@ -162,6 +162,16 @@ try {
   proof = publish(restored);
   check(() => workflow.acceptance(restored.receipt, build, proof), 'Restored fixture still passes strict acceptance');
 
+  const promotionOutput=path.join(temporary,'promotion-output');fs.mkdirSync(promotionOutput);
+  const firstPromotion=workflow.preparePromotionProof(proof.acceptanceFile,pkg,promotionOutput,{evidenceRoot,sourceRoot});
+  const nextPromotion=workflow.preparePromotionProof(proof.acceptanceFile,pkg,promotionOutput,{evidenceRoot,sourceRoot});
+  equal(nextPromotion.reused,true,'Unchanged proof assembly is reused without rebuilding its archive');
+  equal(nextPromotion.sha256,firstPromotion.sha256,'Promotion retains the identical proof archive');
+  const alternativeAcceptance=path.join(evidenceRoot,'another-acceptance.json');fs.copyFileSync(proof.acceptanceFile,alternativeAcceptance);
+  refuses(()=>workflow.preparePromotionProof(alternativeAcceptance,pkg,promotionOutput,{evidenceRoot,sourceRoot}),/identity changed/,'Another supplied acceptance path cannot silently reuse a different server proof');
+  const gatePath=path.join(evidenceRoot,specifications[1].file),gateBytes=fs.readFileSync(gatePath);fs.appendFileSync(gatePath,'\n');
+  refuses(()=>workflow.preparePromotionProof(proof.acceptanceFile,pkg,promotionOutput,{evidenceRoot,sourceRoot}),/input changed/,'Referenced gate changes invalidate proof resume');fs.writeFileSync(gatePath,gateBytes);
+
   const output = path.join(temporary, 'proof-output'); fs.mkdirSync(output);
   const prepared = workflow.prepareAcceptanceProof(proof.acceptanceFile, pkg, output, { evidenceRoot, sourceRoot });
   equal(prepared.sha256, hash(prepared.archive).toUpperCase(), 'Frozen proof archive is hash-bound');

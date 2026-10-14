@@ -38,8 +38,8 @@ test('raw full metrics, receipt hashes and current source references remain exac
   const input = fixture(), before = copy(input), result = deriveFdtEvidence(input), raw = input.context.baselineRaw.sections[0].evidence;
   assert.deepEqual(result.acceptance, raw.acceptance);
   assert.deepEqual(result.benchmark, { ...raw.benchmark_full.metrics, baseline: raw.benchmark_full.baseline });
-  assert.deepEqual(result.implementation.source_files, [...input.context.currentSourceHashes, ...raw.acceptance.source_files]);
-  assert.deepEqual(result.implementation.evidence_refs, input.context.evidenceRefs);
+  assert.deepEqual(result.implementation.source_files, [...input.context.currentSourceHashes, ...raw.acceptance.source_files].map(row=>({...row,sha256:row.sha256.toLowerCase()})));
+  assert.deepEqual(result.implementation.evidence_refs, input.context.evidenceRefs.map(row=>({...row,sha256:row.sha256.toLowerCase()})));
   assert.equal(result.inherited_full_receipt.sha256, input.context.baselineSha);
   assert.equal(result.verification_scope, COMPOSITE_SCOPE);
   assert.deepEqual(input, before, 'adapter does not mutate inputs');
@@ -53,6 +53,13 @@ test('caller candidate identity and fresh hosted observations/verdicts are prese
   assert.equal(result.passed, input.evidence.passed);
   for (const key of HOSTED_CRITERIA) assert.deepEqual(result.criteria[key], input.evidence.criteria[key]);
   assert.match(result.tests[0].measured, /Inherited complete full receipt: 42 assertions/);
+});
+test('uppercase continuity digests use the existing lowercase implementation validator convention',()=>{
+  const input=fixture();input.context.currentSourceHashes[0].sha256=input.context.currentSourceHashes[0].sha256.toUpperCase();
+  for(const ref of input.context.evidenceRefs)ref.sha256=ref.sha256.toUpperCase();
+  const result=deriveFdtEvidence(input);
+  assert.ok([...result.implementation.source_files,...result.implementation.evidence_refs].every(row=>row.sha256===row.sha256.toLowerCase()));
+  assert.deepEqual(result.acceptance,input.context.baselineRaw.sections[0].evidence.acceptance);
 });
 
 test('pending hosted recovery stays pending while inherited local implementation is derived', () => {

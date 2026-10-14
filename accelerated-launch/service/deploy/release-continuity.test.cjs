@@ -74,7 +74,7 @@ function fixture(label, mutate, options = {}) {
   const risk = inputs.classify(changedFiles);
   const selected = risk.mode === 'PRESENTATION' ? ['b-ui', 'c-security'] : [];
   const snapshot = Object.fromEntries(sources(root).map(row => [row.file, row.sha256]));
-  for (const file of changedFiles) snapshot[file] = fs.existsSync(path.join(root, file)) ? hash(path.join(root, file)) : null;
+  for (const file of changedFiles.filter(file=>!/\.md$/i.test(file))) snapshot[file] = fs.existsSync(path.join(root, file)) ? hash(path.join(root, file)) : null;
   const plan = { schema: 2, base_commit: baseCommit, git_head: git(root, ['rev-parse', 'HEAD']), changed_files: changedFiles, risk,
     selected_lanes: selected.length ? ['consumer', 'security', 'browser'] : [], selected_sections: selected,
     baseline: { file: baselineFile, sha256: hash(baselineFile), build_id: descriptor.build_id, descriptor }, source_snapshot: snapshot };
@@ -131,6 +131,11 @@ try {
   assert.throws(() => validateComposite({ ...presentation.args, sourceRoot: frozenRoot }), /current source inventory/); cases++;
   const operations = accepted('tool', root => write(root, 'accelerated-launch/service/deploy/unit-tool.cjs', "'use strict'; module.exports = false;\n"));
   assert.deepEqual(operations.verdict.requiredFocusedSections, []); assert.equal(operations.verdict.freshFocusedRaw, null);
+  const bookkeeping=accepted('bookkeeping',root=>write(root,'release-notes.md','Bookkeeping only\n'));
+  const bookkeepingFrozen=path.join(bookkeeping.base,'frozen-source');
+  for(const row of bookkeeping.verdict.currentSourceHashes)write(bookkeepingFrozen,row.file,fs.readFileSync(path.join(bookkeeping.root,row.file)));
+  assert.equal(fs.existsSync(path.join(bookkeepingFrozen,'release-notes.md')),false);
+  assert.equal(validateComposite({...bookkeeping.args,sourceRoot:bookkeepingFrozen}).kind,MODE);cases++;
   accepted('markup', root => write(root, 'accelerated-launch/service/ui/page.html', '<html><main>Fictional dashboard preview</main></html>\n'));
   const captured = accepted('captured', undefined, { captured: true });
   assert(captured.descriptor.dependencies.some(row => row.source === 'CAPTURED_TEST_DEPENDENCY'));

@@ -95,6 +95,14 @@ node $releaseCli continuity "$releaseOut/plan.json" $verificationReceipt $candid
 
 This writes `product-proof.json` with mode `ACCEPTED_FULL_WITH_CONTINUITY`, immutable original full/focused/tool receipts, baseline snapshots and current source hashes. Historical full assertions and fresh focused assertions remain separate. Shared/test/script/unknown or payment dependency changes refuse this route. A complete new full-regression receipt supplies the full-source proof for a full-regression release; it does not need a composite.
 
+Assemble its source-freeze predicate without rerunning tests:
+
+```powershell
+node $releaseCli assemble $candidateReceipt "$releaseOut/continuity/product-proof.json" $releaseOut "$releaseOut/assembly"
+```
+
+Use the returned `source_freeze` and `final_full_freeze` in the existing actual measurement reconciliation. This assembly establishes only local product proof. Every remaining hosted predicate and all 30 gates / 123 criteria remain required. The optional final argument is a current candidate's FDT gate template with supplied hosted recovery observations; the adapter preserves those observations and pending status, retains raw full metrics and validates any supplied hosted pass. It cannot create a hosted result. A full-regression release may supply its immutable raw full receipt instead of the composite.
+
 An additional historical provider, packet or product receipt may be linked with a separate dependency attestation:
 
 ```powershell

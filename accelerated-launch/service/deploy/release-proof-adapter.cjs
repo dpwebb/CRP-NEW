@@ -101,8 +101,8 @@ function deriveFdtEvidence({ context, evidence, candidate }) {
   result.benchmark = clone({ ...raw.benchmark.metrics, baseline: raw.benchmark.baseline });
   result.verification_scope = COMPOSITE_SCOPE;
   result.implementation = { ...(result.implementation || {}), configured: true, scope: COMPOSITE_SCOPE,
-    tests: replaceLocal(result.implementation?.tests), source_files: clone([...context.currentSourceHashes, ...raw.acceptance.source_files]),
-    evidence_refs: clone(context.evidenceRefs) };
+    tests: replaceLocal(result.implementation?.tests), source_files: clone([...context.currentSourceHashes, ...raw.acceptance.source_files].map(row=>({...row,sha256:row.sha256.toLowerCase()}))),
+    evidence_refs: clone(context.evidenceRefs.map(row=>({...row,sha256:row.sha256.toLowerCase()}))) };
   result.tests = replaceLocal(result.tests);
   for (const key of REQUIRED_CRITERIA.filter((item) => !HOSTED_CRITERIA.includes(item))) {
     requireProof(result.criteria[key] && typeof result.criteria[key] === 'object', 'malformed local criterion template');

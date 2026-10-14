@@ -16,6 +16,7 @@ const hash = file => sha(fs.readFileSync(file));
 const json = file => JSON.parse(fs.readFileSync(file, 'utf8'));
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const sorted = items => [...items].sort();
+const substantive = (files,protectedFiles) => files.filter(file=>!/\.md$/i.test(file) || protectedFiles.has(file));
 const sameSet = (a, b) => Array.isArray(a) && Array.isArray(b) && new Set(a).size === a.length && equal(sorted(a), sorted(b));
 function assert(value, reason) { if (!value) throw Error('RELEASE_CONTINUITY: ' + reason); }
 function name(value) {
@@ -177,7 +178,8 @@ function createContinuityTools(inputs) {
     assert(equal(current, rows(proof.current_source_hashes)), 'current source inventory/hash mismatch');
     assert(sameSet(sectionFiles(root), baseline.sections.map(row => row.file)), 'product section roster changed');
     const currentByFile = new Map(current.map(row => [row.file, row.sha256]));
-    const comparisonFiles = new Set([...beforeRows.map(row => row.file), ...current.map(row => row.file), ...(plan.changed_files || []).map(name)]);
+    const protectedFiles=new Set([...declared,...beforeManifest.files,...manifest.files].map(row=>row.file));
+    const comparisonFiles = new Set([...beforeRows.map(row => row.file), ...current.map(row => row.file), ...substantive((plan.changed_files || []).map(name),protectedFiles)]);
     const changes = [], purchasePresentationFiles = [];
     for (const file of sorted(comparisonFiles)) {
       const before = beforeByFile.get(file)?.sha256.toUpperCase() || null;
@@ -194,7 +196,7 @@ function createContinuityTools(inputs) {
       }
     }
     assert(equal(changes, proof.changed_files), 'changed source inventory mismatch');
-    assert(sameSet(plan.changed_files, changes.map(row => row.file)), 'plan omitted or added changed dependencies');
+    assert(sameSet(substantive(plan.changed_files,protectedFiles), changes.map(row => row.file)), 'plan omitted or added changed dependencies');
     const risk = tools.classify(changes.map(row => row.file), { purchasePresentationFiles });
     assert(!risk.full_regression_required && !risk.billing_journey_required, 'changed dependency requires fresh full/provider proof');
     assert(plan.risk?.mode === risk.mode && !plan.risk.full_regression_required && !plan.risk.billing_journey_required, 'plan classification mismatch');
@@ -244,7 +246,8 @@ function createContinuityTools(inputs) {
     assert(hash(baselineFile) === plan.baseline.sha256, 'planned baseline receipt changed');
     const baselineManifestBytes = committedBlobs(sourceRoot, descriptor.base_commit, [MANIFEST]).get(MANIFEST);
     const baselineManifest = tools.manifestIdentity(JSON.parse(baselineManifestBytes.toString()));
-    const allNames = sorted(new Set([...descriptor.dependencies.map(row => row.file), ...baselineManifest.files.map(row => row.file), MANIFEST, ...(plan.changed_files || []).map(name)]));
+    const protectedFiles=new Set([...descriptor.dependencies,...baselineManifest.files].map(row=>row.file));
+    const allNames = sorted(new Set([...descriptor.dependencies.map(row => row.file), ...baselineManifest.files.map(row => row.file), MANIFEST, ...substantive((plan.changed_files || []).map(name),protectedFiles)]));
     const blobs = committedBlobs(sourceRoot, descriptor.base_commit, allNames), captured = new Map(descriptor.dependencies.filter(row => row.source === 'CAPTURED_TEST_DEPENDENCY').map(row => [row.file, row.sha256]));
     fs.mkdirSync(out, { recursive: true });
     const baselineDest = path.join(out, 'raw/baseline.json'), planDest = path.join(out, 'raw/plan.json'), toolsDest = path.join(out, 'raw/tools.json');
@@ -269,7 +272,7 @@ function createContinuityTools(inputs) {
     }
     const manifest = tools.manifestIdentity(json(inside(sourceRoot, MANIFEST))), current = currentRows(sourceRoot, manifest.files, descriptor, plan);
     const beforeMap = new Map(beforeSources.map(row => [row.file, row.sha256]));
-    const compareNames = sorted(new Set([...beforeSources.map(row => row.file), ...current.map(row => row.file), ...(plan.changed_files || []).map(name)]));
+    const compareNames = sorted(new Set([...beforeSources.map(row => row.file), ...current.map(row => row.file), ...substantive((plan.changed_files || []).map(name),protectedFiles)]));
     const changed = compareNames.map(file => ({ file, before_sha256: beforeMap.get(file) || null, after_sha256: fs.existsSync(inside(sourceRoot, file, false)) ? hash(inside(sourceRoot, file)) : null })).filter(row => row.before_sha256 !== row.after_sha256);
     const proofFile = path.join(out, 'product-proof.json');
     const proof = { schema: 1, mode: MODE, policy: POLICY, created_at: new Date().toISOString(), candidate,
