@@ -1,0 +1,43 @@
+# Email password reset — local implementation
+
+October 14, 2026. Owner authority: “Proceed with the email password reset and consumer recovery guidance. Build and test locally, preserve MFA and the recovery key option, and do not deploy yet.”
+
+Status: **IMPLEMENTED_AND_TESTED_LOCALLY**. Staging and production: NOT_DEPLOYED / NOT_RUN for this candidate. Existing services, private accounts and hosted configuration are unchanged.
+
+## Consumer outcome
+
+Forgot-password recovery prominently offers **Email me a password reset link** alongside the existing saved-key form. Consumers can request a link to their account email, enter and confirm a new password, and sign in normally. Account security and both recovery screens explain the choices, link expiry, retry instructions and authenticator requirement. The guidance is contained in this candidate and becomes available only when this candidate is separately deployed.
+
+Email reset preserves the saved recovery key, enabled authenticator, authenticator replay/lockout state, signup status and account data. It revokes all of the target account's sessions, including the consumer session required by administration unlocks. It clears only unfinished authenticator enrollment authorized using the old password. It does not create a session, change administration membership or bypass MFA. The existing saved-key recovery retains its original one-use/key-rotation and lost-authenticator behavior; its screen explicitly explains that distinction. Losing the authenticator as well as the recovery key remains outside email password recovery.
+
+## Implementation and local identity
+
+- Frozen executable/test commit: `0c27b0e15430bf8dfc42090b0a38daa5e842cf30` (with UI commits `99580e0`, `98a0d1d` and `d0d6d6e` in its lineage).
+- Manifest: `BFDBB59BDA42CD29C15705F5801314A50FD4657F180F21F3DECFD9B867A026D4`, 177 shipped files.
+- Packaged candidate: `crp-v1-bfdbb59bda42cd29`, verification mode `FRESH_FULL`, `production_ready:false`.
+- Candidate archive SHA-256: `11778C2D9A6BA7A40D49A9758CF24DEF91BFBB9E105B1DBDD536A30C2F907B55`.
+- Source-proof archive SHA-256: `7FBBCABF8820016C7AD041EBC9BD0E8509658B02E7CC564A4BAF7B17F75290C5`.
+- Coordinator checkout: `C:/Users/webbd/.codex/worktrees/email-password-reset/CRP-NEW`, branch `codex/email-password-reset-20261014`, based on accepted production documentation/source lineage `38ef1b3` / `c9a1e2c`.
+- Bounded UI writer used the separate `email-reset-ui` worktree; the coordinator reviewed and integrated its changes serially. Other helpers performed read-only security review and restored only accepted ignored test prerequisites. No shared mutable implementation checkout was used.
+
+The new password-reset module uses random 256-bit tokens, domain-separated stored hashes, a 30-minute deadline and atomic single-use consumption. Token replacement, recovery-key reset and recovery-key rotation invalidate outstanding email links. Completion replaces the password using the existing salted scrypt parameters and removes imported legacy credentials. Security notifications contain no password or token.
+
+Both request and completion endpoints use the existing origin/content-type and trusted-proxy requester controls. Request limits additionally include a bounded address-attempt map, persisted one-minute send cooldown and three sends per 15-minute account window. Account lookup, reservation and SMTP run in a bounded deferred delivery queue after the generic request response, so account existence is not disclosed by waiting for SMTP or full-state writes. Unknown/cooldown/invalid-token failures do not durably rewrite private state. A late failed delivery can remove only its own token. Successful SMTP DATA acceptance survives a QUIT disconnect. Notification failure never reverses a completed password reset.
+
+Hosted reset links use the fixed deployment domain, never Host/Origin/redirect/contact input. Local tests inject only a loopback origin. Tokens travel in the URL fragment, are scrubbed before bootstrap requests, remain only in browser memory and are never placed in browser storage or activity logs. Merely opening a link never consumes it. Recovery navigation is guarded against stale sign-in and bootstrap responses, including an existing signed-in browser.
+
+Mail reuses the current private `CRP_SIGNUP_MAIL_ENV` SMTP settings and fixed support sender. Local tests inject captured fictional mail and a simulated SMTP transcript. No external mail, new credentials, provider action, real-account recovery or deployment was performed. These controls were checked against the [OWASP forgot-password guidance](https://cheatsheetseries.owasp.org/cheatsheets/Forgot_Password_Cheat_Sheet.html); this is not a security certification.
+
+## Verification custody
+
+The final focused development run passed **487 / 0 / 0**, covering new HTTP/security and actual Chrome recovery journeys plus existing recovery, signup/MFA, account browser, account/packet isolation and UI smoke. The new HTTP section passed 87 assertions and browser section 46. Mobile/desktop screenshots were visually inspected. Initial focused attempts and corrections remain preserved; an early browser expectation included earlier same-document sign-in fetches, and a coordinator lane edit during that focused run correctly produced source-drift failure. Neither failed attempt is represented as accepted proof.
+
+Before governed verification, all 55 existing required fixture hashes were restored from the accepted administration checkout and verified. Baseline raw full receipt remains the original `C5ADECCEF9D4D1DFC55C957CF5E2C0CCE68E69AEB2C10A521D792AC65C030068`, 16,249/0/0 across 175 sections, with its historical scope unchanged. The workflow selects a fresh full run because shared authentication and UI changed; no duplicate direct final full was run. The current profile lists 177 sections, disables product reuse, and retains the unchanged Windows operational-probe injections.
+
+The final governed full run passed **16,382 / 0 / 0** across **177 completed sections**, with **371 tested source hashes**, zero drift and no unrun current product sections. All ten release-tooling suites and 12 changed-JavaScript syntax checks passed. The measured product process took 1,078,121 ms; its internal receipt records 1,077,114 ms, and the governed check took 1,134,418 ms including tooling/bindings. No direct second full was run. Historical source-audit mode was not run and retains its separate scope.
+
+Raw full receipt SHA-256: `7A43E28562CED8B9B2B25FBE0C7CBC356213B858B3F295C97CCC87C480144CFF`. Immutable verification SHA-256: `18B856CF134F12437800D6E89FC3A381AE48DB3253459E408AAC14FC241F7FF3`. The execution record contains two passing steps (tooling and fresh product), zero failed/interrupted steps and zero product reuse. Packaging verified the committed 177 shipped files against the manifest and matching full proof. The plan requires fresh hosted journey verification but no billing-provider purchase for this bounded change.
+
+Evidence root: `accelerated-launch/service/out/email-reset-release/`. It contains the immutable accepted-baseline anchor, reviewed input profile, `prepare` plan, selected `check` outputs, execution `record` and packaged candidate. Stable private custody is `C:/Users/webbd/.codex/private/crp-email-password-reset-20261014`, retaining exact release files, focused attempts, screenshots and a SHA-256 custody manifest. Originals remain in the coordinator checkout. New local proof does not establish hosted mail delivery, staging acceptance or production readiness. The delivery queue is bounded in memory; interrupted uncompleted email requests may need to be requested again after a restart. Issued tokens themselves are persisted as hashes with their original expiry.
+
+No assessment/rule/jurisdiction, pricing, billing entitlement, packet approval, owner authority, payout, fulfillment or deployment behavior was broadened by this work.
