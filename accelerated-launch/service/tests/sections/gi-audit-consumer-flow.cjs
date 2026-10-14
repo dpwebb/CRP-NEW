@@ -141,6 +141,8 @@ async function browserChecks(t, check) {
       const requests = [], downloads = []; let signedIn = false;
       let billingEnt = { entitled: false, renewal_cancellation_available: true, renewing_subscription_recorded: true, renewal_status: 'CANCELLATION_UNCONFIRMED' };
       let pendingCheckout = null, failUnfinished = true;
+      let packetSelectWait = null, failPacketSelect = false;
+      const packetView = { eligible_issues: view().result.issues, packet: { result_id: 'result-current', selected_issue_ids: ['issueA'], selected_count: 1, approved: true, approved_version: 'fictional-approved', preview_version: 'fictional-approved', preview_ready: true, download_available: true, wording: 'Saved fictional wording', correspondence_preview: 'Saved fictional approved letter' }, support: { catalog: [], missing: [], requirements: { country: 'CA', bureau: 'TRANSUNION', label: 'Fictional bureau', items: [], sources: [] } } };
       await page.route('**/api/**', async route => {
         const request = route.request(), url = new URL(request.url()), p = url.pathname; requests.push({ p, method: request.method(), search: url.search, body: request.postData() });
         let status = 200, data = { ok: true };
@@ -161,7 +163,11 @@ async function browserChecks(t, check) {
         else if (p === '/api/cases/caseA') data.view = view();
         else if (p === '/api/cases/caseA/results') data.results = [{ result_id: 'result-current', created_at: '2026-10-14' }, { result_id: 'result-old', created_at: '2026-09-14' }];
         else if (p === '/api/cases/caseA/results/result-old/view') data.view = view('result-old');
-        else if (p === '/api/cases/caseA/packet') data.view = { eligible_issues: [], packet: {} };
+        else if (p === '/api/cases/caseA/packet') data.view = packetView;
+        else if (p.startsWith('/api/cases/caseA/packet/') && request.method() === 'POST') {
+          if (p.endsWith('/select')) { if (packetSelectWait) await packetSelectWait.promise; if (failPacketSelect) { status = 502; data = { ok: false, error: { message: 'Fictional packet save refused.' } }; } }
+          if (status === 200) data.view = packetView;
+        }
         else if (p.endsWith('/report-download')) { downloads.push(url.searchParams.get('result_id')); await route.fulfill({ status: 200, headers: { 'Content-Type': 'application/pdf', 'Content-Disposition': 'attachment; filename="fictional.pdf"' }, body: '%PDF-1.4\n% Fictional download fixture\n%%EOF' }); return; }
         else if (p === '/api/account' && request.method() === 'DELETE') { status = 502; data = { ok: false, error: { message: 'Renewal could not be stopped. Your account has not been deleted. Please try again.' } }; }
         await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(data) });
@@ -183,7 +189,35 @@ async function browserChecks(t, check) {
       check.equal(downloads.at(-1), 'result-old', 'download names the assessment currently displayed');
       await page.locator('#create-packet').click(); await page.getByText('Packets use your latest assessment. Review these issues before choosing disputes.').waitFor();
       check.ok(true, 'historical packet entry explicitly returns to latest assessment');
-      const navigate = async step => { if (width === 390) await page.locator('.workspace-menu-toggle').click(); await page.locator(`[data-step="${step}"]`).click(); };
+      await page.locator('#packet-choose-next').waitFor();
+      const navigate = async step => { const target = page.locator(`[data-step="${step}"]`); if (!await target.isVisible()) await page.getByRole('button', { name: 'Navigation menu', exact: true }).click(); await target.click(); };
+      if (width === 390) {
+        const savesBefore = requests.filter(row => row.method === 'POST' && row.p.includes('/packet/')).length;
+        for (const step of [4, 5, 6]) {
+          await navigate(step); await page.locator(step === 4 ? '#packet-choose-next' : step === 5 ? '#packet-prepare-next' : '#packet-letter').waitFor();
+          await navigate(8); await page.locator('#deleteAccount').waitFor();
+          check.equal(await page.locator('#steps').evaluate(node => node.matches(':popover-open')), false, `390px guarded packet step ${step} closes the native menu after navigation`);
+          check.equal(await page.locator('#panel h1').evaluate(node => document.activeElement === node), true, 'guarded packet navigation focuses the destination heading after rendering');
+        }
+        check.equal(requests.filter(row => row.method === 'POST' && row.p.includes('/packet/')).length, savesBefore, 'leaving clean packet steps neither saves nor approves unseen content');
+        await navigate(6); await page.locator('#packet-letter').waitFor();
+        check.equal(await page.locator('#packet-download').isEnabled(), true, 'approved packet download remains available after clean guarded navigation');
+        await page.locator('#packet-letter').fill('Fictional edited letter saved before leaving.');
+        check.equal(await page.locator('#packet-download').isDisabled(), true, 'editing the letter still disables the old approval before guarded navigation');
+        packetSelectWait = deferred(); const saving = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/packet/select'));
+        await navigate(8); await saving;
+        check.equal(await page.locator('#steps').evaluate(node => node.matches(':popover-open')), false, 'mobile menu closes while guarded packet persistence is still pending');
+        check.equal(await page.locator('#panel h1').innerText(), 'Review and approve packet', 'guarded navigation waits for packet persistence before changing views');
+        packetSelectWait.resolve(); packetSelectWait = null; await page.locator('#deleteAccount').waitFor();
+        check.equal(await page.locator('#panel h1').evaluate(node => document.activeElement === node), true, 'destination heading receives focus after delayed packet persistence completes');
+        check.ok(requests.some(row => row.p.endsWith('/packet/letter') && JSON.parse(row.body).letter_text === 'Fictional edited letter saved before leaving.'), 'guarded departure persists the visible edited letter');
+        await navigate(6); await page.locator('#packet-letter').waitFor(); await page.locator('#packet-letter').fill('Fictional save failure keeps this packet open.');
+        failPacketSelect = true; await navigate(8); await page.getByText('Fictional packet save refused.').waitFor();
+        check.equal(await page.locator('#panel h1').innerText(), 'Review and approve packet', 'a failed packet save keeps guarded navigation on the packet view');
+        check.equal(await page.locator('#steps').evaluate(node => node.matches(':popover-open')), false, 'failed guarded persistence leaves the error visible without a covering menu');
+        check.equal(requests.filter(row => row.p.endsWith('/packet/approve')).length, 0, 'navigation never issues a packet approval');
+        failPacketSelect = false;
+      }
       await navigate(10); await page.locator('#cancelEntitlement').waitFor();
       check.ok(await page.locator('#cancelEntitlement').isVisible(), 'expired access still offers renewal cancellation when server records a renewable subscription');
       check.equal(await page.locator('#checkout-monthly, #checkout-annual').count(), 0, 'uncancelled earlier subscription hides new recurring purchase choices');
