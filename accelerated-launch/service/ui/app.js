@@ -1,4 +1,14 @@
 'use strict';
+/* Email reset secrets stay in memory. Scrub the fragment before any API request or asynchronous work. */
+let resetPasswordToken = null;
+function capturePasswordResetLink() {
+  if (typeof location === 'undefined' || !/^#reset-password(?:=|$)/.test(location.hash)) return false;
+  const supplied = location.hash.slice('#reset-password='.length);
+  resetPasswordToken = /^#reset-password=[A-Za-z0-9_-]{43}$/.test(location.hash) ? supplied : null;
+  history.replaceState(null, '', location.pathname + location.search + '#reset-password');
+  return true;
+}
+const initialPasswordReset = capturePasswordResetLink();
 /* The private consumer UI for the local service. It renders PLAIN fields only: the API's audit-only
    `machine` payload is never read here, and no internal classification is ever shown. */
 
@@ -41,6 +51,9 @@ const state = {
   accountSecurity: null,
   recoveryKey: null,
   recoveryMode: false,
+  emailRecoveryMode: false,
+  emailResetMode: initialPasswordReset,
+  emailResetInvalid: initialPasswordReset && !resetPasswordToken,
   securityMode: false,
   wantTwoFactor: false,
   twoFactorSetup: null,
@@ -316,10 +329,12 @@ function notices(accessible = false) {
 function render() {
   renderSequence++;
   if(state.account&&state.accountSecurity?.signup_complete===false)state.step=STEP.ACCOUNT;
-  document.body?.classList?.toggle('auth-entry', !state.account && state.step === STEP.ACCOUNT);
-  document.body?.classList?.toggle('auth-create', !state.account && state.step === STEP.ACCOUNT && !state.recoveryMode && (typeof location === 'undefined' || location.hash !== '#signin'));
-  document.body?.classList?.toggle('auth-recovery', !state.account && state.step === STEP.ACCOUNT && state.recoveryMode);
-  document.title = !state.account && state.step === STEP.ACCOUNT ? `${state.recoveryMode ? 'Reset password' : (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
+  const recovering = state.recoveryMode || state.emailRecoveryMode || state.emailResetMode;
+  const authEntry = (!state.account || state.emailResetMode || state.emailRecoveryMode) && state.step === STEP.ACCOUNT;
+  document.body?.classList?.toggle('auth-entry', authEntry);
+  document.body?.classList?.toggle('auth-create', authEntry && !recovering && (typeof location === 'undefined' || location.hash !== '#signin'));
+  document.body?.classList?.toggle('auth-recovery', authEntry && recovering);
+  document.title = authEntry ? `${recovering ? 'Reset password' : (typeof location !== 'undefined' && location.hash === '#signin') ? 'Log in' : 'Create account'} — Credit Regulator Pro` : 'Credit Regulator Pro — Check your credit report';
   packetLeave = null;
   el('who').textContent = state.account ? `Signed in as ${state.account.email}` : 'Not signed in';
   banner();
@@ -362,6 +377,8 @@ function submitAuth(fn, formId, message) {
 }
 
 function renderAccount(panel) {
+  if (state.emailResetMode) { renderEmailPasswordReset(panel); return; }
+  if (state.emailRecoveryMode) { renderEmailRecoveryRequest(panel); return; }
   if (state.account) { if(state.accountSecurity?.signup_complete===false){renderSignupSecurity(panel);return;}if(state.securityMode){renderSecuritySettings(panel);return;}renderAccountDetails(panel); return; }
   if (state.recoveryMode) { renderRecovery(panel); return; }
   const signInEntry = (typeof location !== 'undefined' && location.hash === '#signin');
@@ -403,8 +420,9 @@ function renderAccount(panel) {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to create an account.');
     const profile = Object.fromEntries(SIGNUP_PROFILE_FIELDS.map(([field]) => [field, el('signup-' + field)?.value || '']));
     state.wantTwoFactor=Boolean(el('signup-two-factor')?.checked);
-    accountEpoch++;
+    const epoch = ++accountEpoch, rendered = renderSequence;
     const data = await api('POST', '/api/accounts', { ...credentials(), profile });
+    if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction();
     state.account = data.account;
     state.accountProfile = data.profile || null; state.accountDocuments = [];
     state.accountSecurity = data; state.packetReturn = null; state.recoveryKey = data.recovery_key || null;
@@ -420,8 +438,9 @@ function renderAccount(panel) {
     if (!signInEntry) { location.hash = '#signin'; render(); return; }
     return submitAuth(async () => {
     if ((typeof location !== 'undefined' && location.protocol === 'file:')) throw new Error('Open the running staging site to log in.');
-    accountEpoch++;
+    const epoch = ++accountEpoch, rendered = renderSequence;
     const data = await api('POST', '/api/sessions', credentials());
+    if (epoch !== accountEpoch || rendered !== renderSequence || state.emailResetMode) throw cancelledAction();
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
     state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
@@ -435,7 +454,7 @@ function renderAccount(panel) {
   }, 'auth-form', 'Logging in…');
   };
   el('auth-form').onsubmit = (event) => { event.preventDefault(); return el(signInEntry ? 'signin' : 'create').onclick(); };
-  el('forgot-password').onclick = () => { if (authPending) return; state.recoveryMode = true; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
+  el('forgot-password').onclick = () => { if (authPending) return; state.recoveryMode = true; state.emailRecoveryMode = false; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
 }
 
 
@@ -484,7 +503,7 @@ function renderSignupSecurity(panel) {
   el('signup-signout').onclick=()=>run(async()=>{await api('DELETE','/api/sessions/current');accountEpoch++;state.account=null;state.accountSecurity=null;state.recoveryKey=null;state.twoFactorSetup=null;state.securityMode=false;state.step=STEP.ACCOUNT;});
 }
 function renderSecuritySettings(panel) {
-  panel.innerHTML=`${notices(true)}<h1>Account security</h1>${recoveryKeyBlock()}<h2>Password recovery</h2><p>Keep your recovery key private. Creating a new key replaces your old one.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${state.accountSecurity?.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button id="create-recovery-key" class="secondary">Create a new recovery key</button><h2>Two-factor authentication</h2>${twoFactorFields()}${state.accountSecurity?.two_factor_enabled?'<label for="disable-factor-password">Current password</label><input id="disable-factor-password" type="password" autocomplete="current-password"><label for="disable-factor-code">Authenticator code</label><input id="disable-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="disable-two-factor" class="secondary">Turn off two-factor authentication</button>':''}<p><button id="security-back" class="primary">Back to my account</button></p>`;
+  panel.innerHTML=`${notices(true)}<h1>Account security</h1>${recoveryKeyBlock()}<h2>Password recovery</h2><p>Forgot your password or lost your recovery key? On the log in page, choose “Forgot your password?” then “Email me a password reset link.” You can reset by email without your key. Your authenticator stays enabled.</p><p>Keep your recovery key private. It can also recover access if you lose your authenticator. Creating a new key replaces your old one.</p><label for="security-password">Current password</label><input id="security-password" type="password" autocomplete="current-password">${state.accountSecurity?.two_factor_enabled?'<label for="security-code">Authenticator code</label><input id="security-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6">':''}<button id="create-recovery-key" class="secondary">Create a new recovery key</button><h2>Two-factor authentication</h2>${twoFactorFields()}${state.accountSecurity?.two_factor_enabled?'<label for="disable-factor-password">Current password</label><input id="disable-factor-password" type="password" autocomplete="current-password"><label for="disable-factor-code">Authenticator code</label><input id="disable-factor-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"><button id="disable-two-factor" class="secondary">Turn off two-factor authentication</button>':''}<p><button id="security-back" class="primary">Back to my account</button></p>`;
   wireRecoveryKey();wireNewRecoveryKey();wireTwoFactor();
   el('security-back').onclick=()=>{state.securityMode=false;render();};
   if(el('disable-two-factor'))el('disable-two-factor').onclick=()=>run(async()=>{const password=el('disable-factor-password').value,code=el('disable-factor-code').value;state.accountSecurity=await api('POST','/api/account/2fa/disable',{password,code});state.notice='Two-factor authentication turned off.';});
@@ -523,13 +542,79 @@ function wireRecoveryKey() {
   el('saved-recovery-key').onclick = () => run(async()=>{ensureAccount();if(state.account){const saved=await api('POST','/api/account/confirm-recovery-key',{recovery_key:key});ensureAccount();state.accountSecurity={...state.accountSecurity,...saved};}state.recoveryKey=null;});
 }
 
+const EMAIL_RESET_CONFIRMATION = 'If an account uses that email, we will send a password reset link. Check your inbox and spam folder.';
+function openEmailRecovery() {
+  if (authPending) return;
+  resetPasswordToken = null;
+  state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = true;
+  state.recoveryMode = false; state.error = null; state.notice = null; state.step = STEP.ACCOUNT;
+  render(); el('auth-title')?.focus?.();
+}
+function recoverySignIn() {
+  if (authPending) return;
+  resetPasswordToken = null;
+  state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = false;
+  state.recoveryKey = null; state.recoveryMode = false; state.error = null; state.notice = null;
+  location.hash = '#signin'; render();
+}
+function renderEmailRecoveryRequest(panel) {
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset by email.</h1><p class="lede">No recovery key? We can send a password reset link to your account email.</p></div><div class="auth-form-card">${notices(true)}
+    <p>Your authenticator stays enabled. If you use two-factor authentication, you will still need your app to log in after the reset. If you also lost your authenticator, use your saved recovery key.</p>
+    <form id="auth-email-recovery-form"><div class="auth-fields"><div><label for="reset-email">Account email address</label><input id="reset-email" type="email" required autocomplete="username"></div></div>
+    <p class="auth-helper">The link works once and expires after 30 minutes. Use the latest email if you request another link.</p>
+    <div class="auth-actions auth-actions-single"><button type="submit" id="request-email-reset" class="primary">Email me a password reset link</button></div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>
+    <p class="auth-forgot"><button type="button" id="saved-key-option" class="text-button">Use my saved recovery key</button></p><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>`;
+  el('request-email-reset').onclick = event => { event?.preventDefault?.(); return submitAuth(async () => {
+    const epoch = accountEpoch, rendered = renderSequence;
+    try { await api('POST', '/api/account/password-reset/request', { email: el('reset-email').value }); }
+    catch (error) { if (epoch !== accountEpoch || rendered !== renderSequence || !state.emailRecoveryMode) throw cancelledAction(); throw error; }
+    if (epoch !== accountEpoch || rendered !== renderSequence || !state.emailRecoveryMode) throw cancelledAction();
+    state.notice = EMAIL_RESET_CONFIRMATION;
+  }, 'auth-email-recovery-form', 'Requesting your reset email…'); };
+  el('auth-email-recovery-form').onsubmit = event => { event.preventDefault(); return el('request-email-reset').onclick(); };
+  el('saved-key-option').onclick = () => { if (authPending) return; state.emailRecoveryMode = false; state.recoveryMode = true; state.error = null; state.notice = null; render(); el('auth-title')?.focus?.(); };
+  el('recovery-back').onclick = recoverySignIn;
+}
+function clearAccountAfterEmailReset() {
+  accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
+  state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
+  state.view = null; state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
+  state.upgrade_confirmation = null; state.support = null; state.billing = null; state.result_list = [];
+  state.accountSecurity = null; state.recoveryKey = null; state.twoFactorSetup = null; state.wantTwoFactor = false;
+  state.securityMode = false; state.contactLocation = null; state.packetReturn = null; state.checkoutReturn = null;
+  state.assessing = false; state.assessment_error = null; state.purchase_needed = null;
+  rememberPendingCheckout({});
+}
+function renderEmailPasswordReset(panel) {
+  const invalid = state.emailResetInvalid || !resetPasswordToken;
+  panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">${invalid ? 'Request a new reset link.' : 'Choose a new password.'}</h1><p class="lede">${invalid ? 'This link is unavailable, expired or already used. Request a new email, or open the latest reset email again.' : 'Set a new password for your account. No recovery key is needed.'}</p></div><div class="auth-form-card">${notices(true)}
+    <p>Your saved recovery key still works. Email password resets keep two-factor authentication enabled. You will need your authenticator app to log in if you enabled it.</p>
+    ${invalid ? '' : `<form id="auth-email-reset-form"><div class="auth-fields"><div><label for="reset-password">New password</label><input id="reset-password" type="password" required minlength="12" autocomplete="new-password" aria-describedby="reset-password-help"><p id="reset-password-help" class="auth-helper">At least 12 characters</p></div><div><label for="reset-password-confirm">Confirm new password</label><input id="reset-password-confirm" type="password" required minlength="12" autocomplete="new-password"></div></div>
+    <div class="auth-actions auth-actions-single"><button type="submit" id="complete-email-reset" class="primary">Reset password</button></div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>`}
+    <p class="auth-forgot"><button type="button" id="new-email-reset" class="text-button">Email me a new password reset link</button></p><button type="button" id="recovery-back" class="secondary">Back to log in</button></div>`;
+  if (el('complete-email-reset')) el('complete-email-reset').onclick = event => { event?.preventDefault?.(); return submitAuth(async () => {
+    const password = el('reset-password').value;
+    if (password !== el('reset-password-confirm').value) throw new Error('The passwords do not match. Enter the same new password twice.');
+    const token = resetPasswordToken, epoch = accountEpoch, rendered = renderSequence;
+    const ensure = () => { if (epoch !== accountEpoch || rendered !== renderSequence || !state.emailResetMode || token !== resetPasswordToken) throw cancelledAction(); };
+    try { await api('POST', '/api/account/password-reset/complete', { token, password }); }
+    catch (error) { ensure(); if (error.code === 'INVALID_PASSWORD_RESET') { resetPasswordToken = null; state.emailResetInvalid = true; } throw error; }
+    ensure(); resetPasswordToken = null; clearAccountAfterEmailReset();
+    state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = false; state.recoveryMode = false;
+    state.step = STEP.ACCOUNT; history.replaceState(null, '', location.pathname + location.search + '#signin');
+    state.notice = 'Your password has been reset. Log in with your new password and your authenticator code if enabled. Your recovery key still works.';
+  }, 'auth-email-reset-form', 'Resetting your password…'); };
+  if (el('auth-email-reset-form')) el('auth-email-reset-form').onsubmit = event => { event.preventDefault(); return el('complete-email-reset').onclick(); };
+  el('new-email-reset').onclick = openEmailRecovery;
+  el('recovery-back').onclick = recoverySignIn;
+}
 function renderRecovery(panel) {
   panel.innerHTML = `<div class="auth-intro"><p class="story-eyebrow">Account recovery</p><h1 id="auth-title" tabindex="-1">Reset your password.</h1><p class="lede">Use the recovery key you saved when you created your account. This also turns off a lost authenticator so you can set it up again.</p></div><div class="auth-form-card">${notices(true)}
     ${recoveryKeyBlock()}
-    ${state.recoveryKey ? '<div class="auth-actions auth-actions-single"><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>' : `<form id="auth-recovery-form"><div class="auth-fields"><div><label for="recover-email">Email address</label><input id="recover-email" required type="email" autocomplete="username"></div>
+    ${state.recoveryKey ? '<div class="auth-actions auth-actions-single"><button type="button" class="secondary" id="recovery-back">Back to log in</button></div>' : `<section class="auth-recovery-note" aria-label="Recover without a key"><p>Can’t find your recovery key?</p><button type="button" class="primary" id="email-recovery-option">Email me a password reset link</button><p>Email reset keeps your authenticator enabled. You will still need your app to log in.</p></section><h2>Use your saved recovery key</h2><form id="auth-recovery-form"><div class="auth-fields"><div><label for="recover-email">Email address</label><input id="recover-email" required type="email" autocomplete="username"></div>
     <div><label for="recover-key">Saved recovery key</label><input id="recover-key" required type="password" autocomplete="off"></div>
     <div><label for="recover-password">New password</label><input id="recover-password" required minlength="12" aria-describedby="recover-password-help" type="password" autocomplete="new-password"><p class="auth-helper" id="recover-password-help">At least 12 characters</p></div></div>
-    <p class="auth-recovery-note">Without your saved key, we cannot reset your password here.</p><div class="auth-actions"><button type="submit" class="primary" id="recover-account">Reset password <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="recovery-back">Back to log in</button></div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>`}</div>`;
+    <p class="auth-recovery-note">Using your saved key also turns off your authenticator. Save the replacement key after resetting, then set up your authenticator again.</p><div class="auth-actions"><button type="submit" class="primary" id="recover-account">Reset password <span class="auth-arrow" aria-hidden="true">→</span></button><button type="button" class="secondary" id="recovery-back">Back to log in</button></div><p id="auth-status" class="auth-status" role="status" aria-live="polite"></p></form>`}</div>`;
   if (state.recoveryKey) wireRecoveryKey();
   if (el('recover-account')) el('recover-account').onclick = (event) => { event?.preventDefault?.(); return submitAuth(async () => {
     const epoch = accountEpoch, rendered = renderSequence;
@@ -539,7 +624,8 @@ function renderRecovery(panel) {
     state.notice = 'Password reset. Save your new key, then sign in with your new password.';
   }, 'auth-recovery-form', 'Resetting your password…'); };
   if (el('auth-recovery-form')) el('auth-recovery-form').onsubmit = (event) => { event.preventDefault(); return el('recover-account').onclick(); };
-  el('recovery-back').onclick = () => { if (authPending) return; state.recoveryKey = null; state.recoveryMode = false; state.error = null; state.notice = null; location.hash = '#signin'; render(); };
+  if (el('email-recovery-option')) el('email-recovery-option').onclick = openEmailRecovery;
+  el('recovery-back').onclick = recoverySignIn;
 }
 
 const ACCOUNT_CONTACT_FIELDS = [
@@ -2459,6 +2545,7 @@ function renderBillingView(data) {
   }
   try { state.publicPricing = (await api('GET', '/api/pricing')).plan_catalog || null; state.pricingCurrency = state.publicPricing?.currency || null; }
   catch { state.publicPricing = null; }
+  if (state.emailResetMode) { render(); el('auth-title')?.focus?.(); return; }
   try {
     const session = await api('GET', '/api/session');
     state.account = session.account;state.accountSecurity=await api('GET','/api/account/security');
@@ -2477,8 +2564,14 @@ function renderBillingView(data) {
 })();
 
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', () => {
+  if (capturePasswordResetLink()) {
+    accountEpoch++; state.emailResetMode = true; state.emailResetInvalid = !resetPasswordToken;
+    state.emailRecoveryMode = false; state.recoveryMode = false; state.error = null; state.notice = null; state.step = STEP.ACCOUNT;
+    render(); el('auth-title')?.focus?.(); return;
+  }
   if (state.account || authPending || !['#signin', '#create'].includes(location.hash)) return;
   state.step = STEP.ACCOUNT;
+  resetPasswordToken = null; state.emailResetMode = false; state.emailResetInvalid = false; state.emailRecoveryMode = false;
   state.recoveryMode = false;
   state.error = null;
   state.notice = null;
