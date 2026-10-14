@@ -97,3 +97,7 @@ CRP identifies compliance violations and probable violations using governed rule
 Follow `CRP_OWNER_BLOCKER_CLOSURE_POLICY_001.md`: implementation closure, staging verification and production readiness are separate statuses. Passing behavioral tests can establish implementation closure; retain failed or pending staging outcomes honestly.
 
 Do not surface reasons why potential findings could not be completed, unresolved-value cards, or failed/not-run check qualifications to consumers. Keep those details internal. Do not imply that incomplete checks establish compliance or absence of violations. Follow the additional imperative in `CRP_OWNER_CONSUMER_LANGUAGE_IMPERATIVE_001.md`.
+# October 14 reconciled local source
+
+Read `CRP_BRANCH_RECONCILIATION_2026_10_14.md` first for current workspace provenance. Main now contains the reconciled verified packet build and release tools; the old primary checkpoint and all pending primary files are preserved on `archive/primary-pending-20261014`. The October 12 matrix below is historical. Active shipped bytes remain the 167-file 52EE45AADE7AEE92 manifest, without a runtime restart or deployment. Held jurisdiction policy source is under `held-work/jurisdiction-policy-20261011` and is not an active service dependency. Other historical dirty worktrees remain preserved; do not treat them as release candidates or blanket-merge their old runtime.
+

@@ -24,3 +24,9 @@ Private evidence: C:/Users/webbd/.codex/private/crp-branch-reconciliation-202610
 Verify all 167 manifest entries, all current tracked runtime and tooling bytes against 4f15659, and unchanged non-deployment full-regression inputs. The historical complete product run remains 16,068 passed, zero failed, zero skipped; unchanged-source comparison is separate evidence, not a new full run. Release tooling retains its separately recorded passing integration checks. Verify local health and the same account's login/full-access entitlement without altering its credentials or stored reports.
 
 Main becomes the clean reconciled source after the pending-primary archive and candidate checks succeed. The existing local server continues using its original verified checkout. Hosted signup release a926 retains its earlier scope; this cleanup grants no new staging or production acceptance.
+
+## Completed local reconciliation
+
+Main was fast-forwarded to 590f8f9 after successful candidate verification. Eighteen redundant, unattached local branch names were retired only after their original heads matched archive tags and their histories were contained in main. Attached or divergent historical branches remain protected. No remote branch was deleted and nothing was pushed.
+
+Candidate verification checked all 167 manifest files, 407 unchanged tracked product/tool files, 327 unchanged non-deployment full-regression inputs and all 217 pending-file snapshots. The existing account's credentials and full-access entitlement were verified locally; its 393 cases, 432 stored-file hashes and 455 results remain preserved. No consumer packet was approved by this cleanup. Historical whitespace in preserved documents and the font license was retained rather than rewriting original artifacts.
