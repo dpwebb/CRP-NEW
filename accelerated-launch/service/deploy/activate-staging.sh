@@ -13,6 +13,12 @@ export CRP_EXPECTED_DIGEST=$5 CRP_EXPECTED_FILES=$6 CRP_EXPECTED_HEAD=$7
 [[ "$CRP_EXPECTED_DIGEST" =~ ^[A-F0-9]{64}$ ]]
 [[ "$CRP_EXPECTED_FILES" =~ ^[0-9]+$ ]]
 [[ "$CRP_EXPECTED_HEAD" =~ ^[a-f0-9]{40}$ ]]
+
+# All release, rollback and backup operations share one persistent inode.
+install -d -m 700 "$base/offsite-backups"
+test ! -L "$base/offsite-backups/backup.lock"
+exec 9>"$base/offsite-backups/backup.lock"
+flock -w 60 9 || { echo "Another CRP operation holds the lock" >&2; exit 75; }
 previous=$(readlink -f "$base/current")
 test "$previous" = "$base/releases/$4"
 test -L "$base/current"

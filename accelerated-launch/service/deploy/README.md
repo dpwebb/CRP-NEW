@@ -1,5 +1,13 @@
 # Deployment configuration
 
+## Standing build and release process — October 14 adoption
+
+Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) as the mandatory release entry: `release-workflow.cjs prepare` → `check` → `record` → `package`, with `continuity`, `assemble` and evidence-specific `attest` as needed. Run from the reconciled operational candidate at `C:/Users/webbd/.codex/worktrees/synthetic-corpus-fixes/CRP-NEW`, retaining completed source `196da86` and its original local full proof while locally integrating the reviewed upgrades. The preserved older primary checkpoint and its 161-file policy manifest are not the release candidate.
+
+The plan selects affected checks; do not repeat product full, browser or provider journeys merely to assemble receipts. Exact inputs/output hashes govern local reuse, and product reuse requires a complete reviewed dynamic/external input profile. Package one committed archive and promote that same identity, preserving all 30 gates / 123 criteria, actual current host/source evidence and fresh environment/provider verification. Documentation/tooling-only work does not replace an unchanged production runtime. Admin and all other enhancements remain on hold. No deployment, restart, provider action or external communication is authorized by this local adoption.
+
+Historical preparation and runtime prose below retains its recorded scope; it does not override this standing workflow or supply permission for a new release.
+
 ## October 11 change-aware update workflow
 
 Use [CHANGE_AWARE_RELEASE.md](CHANGE_AWARE_RELEASE.md) and `release-workflow.cjs` for affected-check planning, separate continuity records, committed-source packaging, public source verification and guarded activation/rollback. Verification frequency follows `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. Historical preparation instructions below retain their original scope.

@@ -1,5 +1,32 @@
 # Local consumer-journey service (OWNER-ALL82-001 / B2, B3 and B4)
 
+## Standing build and release entry
+
+Use `deploy/release-workflow.cjs prepare` → `check` → `record` → `package` for release candidates, following [CHANGE_AWARE_RELEASE.md](deploy/CHANGE_AWARE_RELEASE.md) and the root `CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md`. Run from the reconciled operational candidate at `C:/Users/webbd/.codex/worktrees/synthetic-corpus-fixes/CRP-NEW`, preserving completed packet source `196da86` and its immutable local full receipt while adopting the reviewed tooling commits. `C:/CRP-NEW` is the preserved older 161-file policy checkpoint, not the release candidate. Earlier operating notes below retain their historical scope.
+
+The plan selects tooling-only, affected presentation or full product verification. Use matching passing proof and `continuity`/`assemble`/`attest` without re-executing tests just to rebuild receipts. Product-step reuse requires a complete reviewed dynamic/external input profile. Package once and promote that same archive, preserving exact-build 30-gate/123-criterion acceptance and fresh environment/provider checks. Documentation/tooling changes do not require product regression or a new runtime package when product dependencies are unchanged. Admin/partner/affiliate enhancements remain on hold; local process adoption authorizes no deployment or runtime restart.
+
+## Verification
+
+The governed final verification recipe is:
+
+    node accelerated-launch/service/deploy/release-workflow.cjs prepare ACCEPTED_COMMIT RAW_FULL_RECEIPT NEW_PLAN
+    node accelerated-launch/service/deploy/release-workflow.cjs check NEW_PLAN CHECK_DIRECTORY
+    node accelerated-launch/service/deploy/release-workflow.cjs record CHECK_DIRECTORY
+    node accelerated-launch/service/deploy/release-workflow.cjs package NEW_PLAN IMMUTABLE_VERIFICATION_RECEIPT CANDIDATE_DIRECTORY
+
+Replace the uppercase placeholders with reviewed values. `check` selects the required full product run internally when the change warrants it; do not append a second default full invocation. Use a complete reviewed profile only when enabling product reuse, and use the immutable `verification_file` returned by `check` for packaging. Documentation/tooling-only verification stops after `record` when no release artifact is needed.
+
+The default `tests/run-tests.cjs` remains an explicit full-validation/diagnostic entry and executes every current product section, including real local browser, regional and shared router/adapter controls. Full receipts identify tested source hashes, completed/unrun sections, source drift, failures and skips. Direct focused development selections use a separate, new receipt path:
+
+    node accelerated-launch/service/tests/run-tests.cjs fx-consumer-issue-precision --receipt=/absolute/private/new-receipt.json
+
+Catalog, applicability and launch-matrix builders remain required when the selected dependencies actually need regenerated outputs. Run relevant producers in dependency order before freezing the candidate; changed shipped or tested inputs require the corresponding verification. The registered shared-regression section already runs `test-router.cjs` and `adapters/test-adapters.cjs`; preserve that coverage and run standalone diagnostics only when a concrete dependency or failure calls for them. Historical multi-step recipes are not the standing release sequence and do not justify a routine duplicate full run.
+
+Implementation closure, staging acceptance and production readiness are separate statuses. Follow the root CRP_OWNER_CHANGE_AWARE_RELEASE_PROCESS_001.md and deploy/CHANGE_AWARE_RELEASE.md for affected checks, unchanged-proof continuity, committed-byte packaging and guarded release operations. Every staging or production deployment needs its own owner authorization. This cleanup authorizes neither.
+
+## Historical B2/B3/B4 service context
+
 This subtree implements the B2 vertical slice, the B3 country/format expansion and the B4 paid-entitlement and
 release-hardening batch of `CRP_IMMUTABLE_ALL_82_WIZARD_BUILD_PLAN.md`: **one complete local consumer journey
 over shared interfaces**, then **real supported coverage in more than one country**, then **server-side
@@ -47,7 +74,7 @@ content, identifier or specimen is copied into this repository.*
 
 The legacy checkout is **not** modified, imported at runtime or built. Nothing under it is executed.
 
-## Run the tests
+## Historical B2/B3/B4 test notes
 
 ```
 node accelerated-launch/service/tests/run-tests.cjs
@@ -58,14 +85,13 @@ outside the repository. The suite writes **three** artifacts, and none rewrites 
 `service/out/b2-evidence.json`, `service/out/b3-evidence.json` and `service/out/b4-evidence.json`.
 `build_launch_matrix.py` reads all three.
 
-Full validation order (the first step runs before the catalog, which reads its output):
+Historical producer and diagnostic order (use only when selected dependencies require it; the standing workflow above governs final verification):
 
 ```
 python accelerated-launch/build_rule_catalog.py
 python accelerated-launch/build_applicability_records.py
 node   accelerated-launch/service/tests/run-tests.cjs
 python accelerated-launch/build_launch_matrix.py
-node   accelerated-launch/service/tests/run-tests.cjs
 node   accelerated-launch/test-router.cjs
 node   accelerated-launch/adapters/test-adapters.cjs
 node   wizard-check.cjs
