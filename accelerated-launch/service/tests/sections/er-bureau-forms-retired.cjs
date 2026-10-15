@@ -54,9 +54,16 @@ async function run(t, check) {
       const filename = require.resolve('../../packets.cjs');
       const oldFormat = new Module(filename, module);
       oldFormat.filename = filename; oldFormat.paths = Module._nodeModulePaths(require('node:path').dirname(filename));
-      oldFormat._compile(fs.readFileSync(filename, 'utf8').replace('packet-format:consumer-letter-evidence-pdf-2', 'packet-format:complete-editable-pdf-1'), filename);
+      const currentSource = fs.readFileSync(filename, 'utf8');
+      const formatLiterals = currentSource.match(/'packet-format:[^']+'/g) || [];
+      check.equal(formatLiterals.length, 1, 'controlled migration identifies exactly one current packet-format discriminator');
+      const formerLiteral = "'packet-format:complete-editable-pdf-1'";
+      check.notEqual(formatLiterals[0], formerLiteral, 'the controlled historical format differs from the current format');
+      oldFormat._compile(currentSource.replace(formatLiterals[0], formerLiteral), filename);
       oldFormat.exports.approvePacket(t.service.store, owner, id, null, true);
-      check.equal((await t.request('GET', base + '/packet-download', auth())).json.error.code, 'PACKET_APPROVAL_STALE', 'prior-format approval cannot authorize form-free bytes');
+      const staleDownload = await t.request('GET', base + '/packet-download', auth());
+      check.equal(staleDownload.status, 409, 'prior-format approval refuses the binary download');
+      check.equal(staleDownload.json?.error?.code, 'PACKET_APPROVAL_STALE', 'prior-format approval cannot authorize form-free bytes');
       const refreshed = (await t.request('GET', base + '/packet', auth())).json.view;
       check.equal(refreshed.packet.approval_stale, true, 'prior-format stored approval requests new review');
       check.equal((await t.request('POST', base + '/packet/approve', auth({ reviewed_version: refreshed.packet.preview_version }))).status, 200, 'new-format explicit review restores approval');

@@ -5,6 +5,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const rules = require('../../bureau-dispute-requirements.cjs');
 const supportModule = require('../../packet-support.cjs');
+const packets = require('../../packets.cjs');
 const { pdfText, comparableText } = require('../packet-pdf-assertions.cjs');
 const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const { pdfPages, matchingPage, sameRenderedPage } = require('./eh-packet-report-exhibits.cjs');
@@ -86,9 +87,19 @@ async function run(t, check) {
   const reportBytes = t.service.store.readBlob(source.file_id), reportPage = matchingPage(bytes, pdfPages(reportBytes)[0]);
   check.ok(reportPage > 1 && identityPage > reportPage && passportPage > reportPage && addressPage > identityPage
     && addressPage > passportPage, 'packet order is letter, relevant report pages, all identification, address proof, without bureau forms');
-  check.equal(pages.length, 1 + 1 + 1 + 3, 'complete PDF includes one removable instruction sheet, one letter, relevant report page and three copies, with no bureau forms');
+  const review = packets.packetReview(t.service.store, actor, id, ready.packet.preview_version);
+  check.equal(review.sha256, crypto.createHash('sha256').update(bytes).digest('hex'), 'physical page metadata identifies the exact reviewed and approved PDF');
+  check.deepEqual(review.review_pages.map(page => page.kind), ['instructions', 'letter', 'report', 'report-note', 'document', 'document', 'document'],
+    'complete physical order is removable instructions, letter, original report, adjacent evidence notes and the three chosen copies');
+  const reportSection = review.sections.find(section => section.kind === 'report'), notes = review.review_pages.filter(page => page.kind === 'report-note');
+  check.deepEqual(reportSection.source_pages, [1], 'the report section retains its one actual original source page');
+  check.equal(notes[0].page, reportPage + 1, 'the source-specific evidence note immediately follows its original report page');
+  check.ok(identityPage > notes[0].page && passportPage > notes[0].page && addressPage > notes[0].page, 'identification and address copies follow the complete report evidence section');
+  check.equal(pages.length, review.sections.reduce((total, section) => total + section.page_count, 0), 'the approved PDF contains every declared physical page exactly once with no hidden form page');
+  const originalReport = await PDFDocument.load(reportBytes), fullPacket = await PDFDocument.load(bytes);
+  check.deepEqual(fullPacket.getPage(reportPage - 1).getSize(), originalReport.getPage(0).getSize(), 'evidence notes do not shrink the original report print dimensions');
   for (const [document, page, label] of [[identityBytes, identityPage, 'identification'], [passportBytes, passportPage, 'second identification'], [addressBytes, addressPage, 'address proof']]) {
-    sameRenderedPage(check, t.dataDir, document, 1, bytes, page, label);
+    await sameRenderedPage(check, t.dataDir, document, 1, bytes, page, label);
   }
   const complete = await PDFDocument.load(bytes), fullFields = complete.getForm().getFields();
   check.ok(fullFields.some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()), 'the consumer can edit the letter in the complete PDF');

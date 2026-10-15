@@ -1,5 +1,6 @@
 'use strict';
 (()=>{
+  function boot(){
   const root=document.getElementById('credit-news');if(!root)return;
   const scope=root.querySelector('[data-news-scope]'),viewport=root.querySelector('[data-news-window]'),list=root.querySelector('ul');
   const pause=root.querySelector('[data-news-pause]'),previous=root.querySelector('[data-news-direction="-1"]'),next=root.querySelector('[data-news-direction="1"]');
@@ -90,4 +91,9 @@
   }
   country.addEventListener('change',()=>{paused=true;load(country.value);});
   syncVisibility();load();
+  }
+  // Account entry scrubs recovery secrets synchronously in its later deferred
+  // app script. Wait for every initial deferred script before making a request.
+  if(document.readyState==='complete')boot();
+  else document.addEventListener('DOMContentLoaded',boot,{once:true});
 })();

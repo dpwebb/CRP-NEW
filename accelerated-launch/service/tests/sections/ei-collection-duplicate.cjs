@@ -246,11 +246,20 @@ async function run(t, check) {
   const out = path.resolve(__dirname, '../../out/batch67-collection-pair'); fs.mkdirSync(out, { recursive: true });
   fs.writeFileSync(path.join(out, 'approved-collection-packet.pdf'), download.body);
   fs.writeFileSync(path.join(out, 'approved-collection-preview.txt'), preview);
-  for (const page of [1, 2]) {
+  const reportSection = printed.sections.find(section => section.kind === 'report');
+  check.deepEqual(reportSection.source_pages, [1, 2], 'collection evidence section preserves both original source-page identities in order');
+  let nextPhysicalPage = reportSection.start_page;
+  for (const page of reportSection.source_pages) {
     const includedPage = matchingPage(download.body, pdfPages(original)[page - 1]);
-    check.equal(includedPage, page + 1, 'each corroborated collection source page follows the one-page letter in order');
-    sameRenderedPage(check, out, original, page, download.body, includedPage, 'duplicate collection report page ' + page);
+    check.equal(includedPage, nextPhysicalPage, 'each corroborated collection source follows the letter or the preceding source-specific notes in physical order');
+    await sameRenderedPage(check, out, original, page, download.body, includedPage, 'duplicate collection report page ' + page);
+    nextPhysicalPage++;
+    let noteCount = 0;
+    while (pages[nextPhysicalPage - 1]?.includes('NOTES FOR YOUR DISPUTED REPORT DETAILS')
+        && pages[nextPhysicalPage - 1].includes('Source report page ' + page)) { nextPhysicalPage++; noteCount++; }
+    check.ok(noteCount > 0, 'each selected collection source is immediately followed by its own readable evidence notes');
   }
+  check.equal(nextPhysicalPage, reportSection.start_page + reportSection.page_count, 'declared collection evidence span equals every actual source and adjacent note page');
   const editable = await PDFDocument.load(download.body);
   check.ok(editable.getForm().getFields().some(field => /^CRP_letter_page_/.test(field.getName()) && !field.isReadOnly()),
     'the complete collection packet retains an editable consumer letter');

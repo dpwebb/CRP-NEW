@@ -33,6 +33,10 @@ function harness(responder, { autoRead = true } = {}) {
   panel.querySelector = selector => selector === '#packet-block' ? block : null;
   const packetReviewBody = node('packet-review-body');
   block.querySelector = selector => selector === '.packet-review' ? packetReviewBody : null;
+  node('packet-pdf-review').querySelector = selector => selector === '.packet-review-choices' ? node('packet-review-choices') : null;
+  const renderedNode = id => ['packet-pdf-review', 'packet-all-pages', 'packet-date'].includes(id)
+    && !block.innerHTML.includes('id="' + id + '"') ? null : node(id);
+  let renderedPacket = null;
   panel.querySelectorAll = selector => {
     if (selector === '[data-check-issue]:checked') return issues.filter(row => row.checked);
     if (selector === '[data-check-issue]') return issues;
@@ -46,7 +50,7 @@ function harness(responder, { autoRead = true } = {}) {
   };
   const context = {
     console, setTimeout, clearTimeout, Promise, JSON, Object, Array, Map, Set, Date, String, Number, Error, URLSearchParams, crypto: require('node:crypto'),
-    document: { getElementById: node, createElement: element, querySelectorAll: selector => panel.querySelectorAll(selector) },
+    document: { getElementById: renderedNode, createElement: element, querySelectorAll: selector => panel.querySelectorAll(selector) },
     FileReader: class FileReader {
       readAsDataURL(file) { this.file = file; readers.push(this); if (autoRead) this.finish(); }
       finish() { this.result = 'data:application/pdf;base64,JVBERi0xLjQKJSBGaWN0aW9uYWwgSUQKJSVFT0YK'; this.onload(); }
@@ -55,13 +59,32 @@ function harness(responder, { autoRead = true } = {}) {
       const request = { method: options.method || 'GET', url, body: options.body ? JSON.parse(options.body) : undefined,
         account: vm.runInContext('state.account && state.account.account_id', context) };
       calls.push(request);
-      const reply = await responder(request, { context, node, calls });
+      // This VM suite supplies one native-letter page at the renderer boundary.
+      // Actual complete PDF composition, page rasters and browser layout are covered
+      // by ga/gl. Protected request ownership and action context stay under this UI.
+      const reply = request.method === 'GET' && /\/packet\/preview\/pages\?version=/.test(request.url)
+        ? { preview_version: renderedPacket.preview_version, page_count: 1,
+          editable_fields: [{ name: 'fictional-native-letter', section: 'letter', page: 1, text: renderedPacket.correspondence_preview }],
+          review_pages: [{ page: 1, kind: 'letter' }] }
+        : await responder(request, { context, node, calls });
       const status = reply?.status || 200, body = reply?.body || reply || { ok: true };
+      if (body.view?.packet) renderedPacket = body.view.packet;
       return { ok: status < 400, status, json: async () => body };
     }
   };
   context.window = context; context.location = { assign: url => navigations.push(url) };
   context.open = url => navigations.push(url);
+  context.CRP_PACKET_REVIEW = { mount: options => {
+    const input = node('packet-letter');
+    input.oninput = () => { options.ensure(); options.changed('letter'); };
+    return { letter: () => input.value, annotations: () => options.annotations || [], dispose() {},
+      ready: options.request(`/api/cases/${options.caseId}/packet/preview/pages?version=${options.version}`).then(data => {
+        options.ensure(); assert.equal(data.preview_version, options.version, 'fixture page metadata matches the owned current preview');
+        input.value = data.editable_fields[0].text;
+        node('packet-all-pages').innerHTML = '<section data-packet-page="1"><textarea id="packet-letter" data-packet-letter-page="1"></textarea></section>';
+        return data;
+      }) };
+  } };
   vm.createContext(context); vm.runInContext(source, context, { filename: SOURCE_PATH });
   // Avoid shell rendering in action completions; state and API effects remain real.
   vm.runInContext('render = () => {};', context);
@@ -90,7 +113,7 @@ function harness(responder, { autoRead = true } = {}) {
 const requirements = { country: 'CA', bureau: 'TRANSUNION', label: 'TransUnion Canada', postal: 'Fictional test destination', items: [], sources: [] };
 function packetView(approved = false) {
   return { eligible_issues: [{ eligible: true, issue_id: 'issue-A', consumer_label: 'VIOLATION' }],
-    packet: { approved, download_available: approved, preview_ready: true, letter_preview_url: '/api/cases/caseA/packet/preview?version=current-A', selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved letter\nSaved wording', preview_version: 'current-A', result_id: 'result-A' },
+    packet: { approved, download_available: approved, preview_ready: true, letter_preview_url: '/api/cases/caseA/packet/preview?version=current-A', selected_issue_ids: ['issue-A'], selected_count: 1, wording: 'Saved wording', correspondence_preview: 'Full saved letter\nSaved wording', preview_version: 'current-A', result_id: 'result-A', letter_date: '2026-10-14' },
     support: { requirements, catalog: [], account_profile: { full_name: 'Fictional Consumer' } } };
 }
 async function saveAccountRace() {
@@ -194,13 +217,15 @@ async function dirtyPreviewStatus() {
 async function completeLetterEditAndReset() {
   const view = packetView(true), h = harness(request => request.url.endsWith('/packet') ? { view } : { view, requirements, missing: [] });
   h.account('A', 'Fictional Consumer'); await h.openPacket('caseA', true);
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /id="packet-letter"/);
-  assert.match(h.panel.querySelector('#packet-block').innerHTML, /iframe title="Your complete dispute packet"/);
+  assert.match(h.panel.querySelector('#packet-block').innerHTML, /id="packet-all-pages"/);
+  assert.match(h.node('packet-all-pages').innerHTML, /data-packet-letter-page="1"/);
+  assert.equal(h.node('packet-letter').value, view.packet.correspondence_preview, 'native letter field begins with the reviewed full text');
   assert.match(h.panel.querySelector('#packet-block').innerHTML, /id="packet-preview" hidden/);
   h.node('packet-letter').value = 'My full edited letter.\nPlease check my dates.'; h.node('packet-letter').oninput();
   h.node('packet-bureau-reference').value = 'BUREAU-ACCOUNT-123';
   assert.equal(h.node('packet-download').disabled, true); assert.equal(h.node('packet-print').disabled, true);
-  assert.equal(h.node('packet-approve').disabled, true); assert.equal(h.node('packet-pdf-review').hidden, true);
+  assert.equal(h.node('packet-approve').disabled, true); assert.equal(h.node('packet-preview-reviewed').disabled, true);
+  assert.equal(h.node('packet-pdf-review').hidden, false, 'an unsaved native-page draft remains visible for correction');
   h.node('packet-preview-reviewed').checked = true; await h.node('packet-approve').onclick();
   assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'approval cannot silently save an edited full letter');
   await h.node('packet-save').onclick();
@@ -220,7 +245,7 @@ async function fullLetterSaveContextRace() {
 async function incompletePacketCannotApprove() {
   const view = packetView(); view.packet.preview_ready = false;
   const h = harness(() => ({ view })); h.account('A', 'Fictional Consumer'); await h.openPacket('caseA');
-  assert.ok(!/iframe title=/.test(h.panel.querySelector('#packet-block').innerHTML), 'an incomplete packet has no stale complete PDF preview');
+  assert.ok(!/id="packet-all-pages"|iframe title=/.test(h.panel.querySelector('#packet-block').innerHTML), 'an incomplete packet has no stale complete PDF preview');
   h.node('packet-preview-reviewed').checked = true; await h.node('packet-preview-reviewed').onchange();
   assert.equal(h.node('packet-approve').disabled, true); await h.node('packet-approve').onclick();
   assert.equal(h.calls.filter(row => row.url.endsWith('/approve')).length, 0, 'letter text alone never permits approval of missing attachments');

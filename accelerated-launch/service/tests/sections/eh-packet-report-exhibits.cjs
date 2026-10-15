@@ -8,7 +8,7 @@ const packets = require('../../packets.cjs');
 const exhibits = require('../../packet-report-exhibits.cjs');
 const zip = require('../../packet-archive.cjs');
 const { pdfText, zipEntries, comparableText } = require('../packet-pdf-assertions.cjs');
-const { PDFDocument } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
+const { PDFDocument, PDFName, PDFArray, PDFRawStream } = require('../../pdf-vendor/pdf-lib-1.17.1.min.js');
 const { buildPdf } = require('../../../../internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs');
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const upload = (bytes, name, mime = 'application/pdf') => ({ originalFilename: name, declaredBytes: bytes.length,
@@ -26,7 +26,34 @@ function pdfPages(bytes) {
 function matchingPage(bytes, text) {
   return pdfPages(bytes).findIndex(page => comparableText(page) === comparableText(text)) + 1;
 }
-function sameRenderedPage(check, dir, original, originalPage, packet, packetPage, label) {
+function reportPageProof(t, actor, caseId, fileId, sourcePage, selected) {
+  const review = packets.packetReview(t.service.store, actor, caseId);
+  const page = review.review_pages.find(page => page.kind === 'report' && page.file_id === fileId && page.source_page === sourcePage);
+  const boxes = new Map();
+  for (const issue of selected) {
+    const own = [];
+    function visit(value, inheritedFile = null, inheritedPage = null) {
+      if (!value || typeof value !== 'object' || value.trusted === false) return;
+      const file = value.source_file_id || value.file_id || inheritedFile, at = value.page || inheritedPage;
+      const box = value.bbox;
+      if (file === fileId && at === sourcePage && box && ['x0', 'y0', 'x1', 'y1'].every(key => Number.isFinite(box[key]))) own.push(box);
+      for (const [key, child] of Object.entries(value)) if (!['code_definition', 'period_definition'].includes(key)) visit(child, file, at);
+    }
+    visit(issue);
+    const indices = new Set([issue.record_index, issue.evidence?.duplicate_of_record, issue.evidence?.other_record,
+      issue.evidence?.original_record, issue.evidence?.earlier_record_index].filter(index => index != null));
+    for (const result of t.service.store.state().results.filter(result => result.file_ids?.includes(fileId))) {
+      for (const record of result.extraction?.records || []) if (indices.has(record.record_index)) {
+        // Account headings are source locations too; field-specific boxes below
+        // still come from the selected issue's own source facts.
+        visit(record.location, record.source_file_id || (result.file_ids.length === 1 ? fileId : null));
+      }
+    }
+    boxes.set(issue.issue_id, own);
+  }
+  return { sha256: review.sha256, page, boxes };
+}
+async function sameRenderedPage(check, dir, original, originalPage, packet, packetPage, label, proof) {
   if (packetPage < 1) { check.ok(false, label + ' has its own original page in the complete PDF'); return; }
   const render = (bytes, page, name) => {
     const file = path.join(dir, name + '.pdf'), prefix = path.join(dir, name);
@@ -35,8 +62,57 @@ function sameRenderedPage(check, dir, original, originalPage, packet, packetPage
       { timeout: 30000, stdio: 'pipe' });
     return fs.readFileSync(prefix + '.png');
   };
-  check.equal(hash(render(packet, packetPage, 'merged-page')), hash(render(original, originalPage, 'source-page')),
-    label + ' retains the original artwork, text, page size and placement');
+  const packetRaster = render(packet, packetPage, 'merged-page'), originalRaster = render(original, originalPage, 'source-page');
+  const [sourceDoc, packetDoc] = await Promise.all([PDFDocument.load(original), PDFDocument.load(packet)]);
+  const source = sourceDoc.getPage(originalPage - 1), included = packetDoc.getPage(packetPage - 1);
+  check.deepEqual(included.getMediaBox(), source.getMediaBox(), label + ' retains original media dimensions');
+  check.deepEqual(included.getCropBox(), source.getCropBox(), label + ' retains original crop and placement');
+  check.deepEqual(included.getRotation(), source.getRotation(), label + ' retains original rotation');
+  check.equal(comparableText(pdfPages(packet)[packetPage - 1]), comparableText(pdfPages(original)[originalPage - 1]), label + ' retains every original source text reading');
+  const streams = (doc, page) => {
+    const contents = page.node.lookup(PDFName.of('Contents'));
+    return (contents instanceof PDFArray ? contents.asArray() : [contents]).map(ref => doc.context.lookup(ref))
+      .filter(value => value instanceof PDFRawStream).map(value => Buffer.from(value.getContents()));
+  };
+  const originals = streams(sourceDoc, source), imported = streams(packetDoc, included);
+  check.ok(originals.length > 0 && originals.every(bytes => imported.some(candidate => candidate.equals(bytes))), label + ' preserves the original artwork streams underneath added marks');
+  const marks = proof?.page?.annotations?.filter(mark => Number.isFinite(mark.x)) || [];
+  if (!marks.length) {
+    check.equal(hash(packetRaster), hash(originalRaster), label + ' retains exact original rendered pixels');
+    return;
+  }
+  check.equal(proof.sha256, hash(packet), label + ' marker metadata belongs to these exact approved PDF bytes');
+  check.equal(proof.page.page, packetPage, label + ' metadata identifies the actual included source page');
+  const { width, height } = source.getSize();
+  check.ok(marks.every(mark => mark.automatic === true && (proof.boxes.get(mark.issue_id) || []).some(box =>
+    Math.abs(mark.x * width - box.x0) < .001 && Math.abs(mark.y * height - box.y0) < .001
+      && Math.abs((mark.x + mark.width) * width - box.x1) < .001 && Math.abs((mark.y + mark.height) * height - box.y1) < .001)),
+    label + ' ignores pixels only inside independently justified selected-issue source rectangles');
+  check.deepEqual([packetRaster.readUInt32BE(16), packetRaster.readUInt32BE(20), packetRaster.readUInt8(25)],
+    [originalRaster.readUInt32BE(16), originalRaster.readUInt32BE(20), originalRaster.readUInt8(25)], label + ' retains exact raster size and pixel format');
+  const a = pngPixels(originalRaster), b = pngPixels(packetRaster), rasterWidth = originalRaster.readUInt32BE(16), rasterHeight = originalRaster.readUInt32BE(20);
+  const channels = originalRaster.readUInt8(25) === 2 ? 3 : 4;
+  let outside = 0, outsideDifferences = 0, colored = 0, whiteCount = 0, whiteBlue = 0, inkCount = 0, inkBlue = 0;
+  for (let y = 0; y < rasterHeight; y++) for (let x = 0; x < rasterWidth; x++) {
+    // Two pixels cover the documented half-point border and Poppler edge AA;
+    // all other source pixels must remain byte-for-byte identical.
+    const marked = marks.some(mark => x >= Math.floor(mark.x * rasterWidth) - 2 && x <= Math.ceil((mark.x + mark.width) * rasterWidth) + 2
+      && y >= Math.floor(mark.y * rasterHeight) - 2 && y <= Math.ceil((mark.y + mark.height) * rasterHeight) + 2);
+    const at = (y * rasterWidth + x) * channels;
+    if (!marked) { outside++; if (!a.subarray(at, at + channels).equals(b.subarray(at, at + channels))) outsideDifferences++; }
+    else {
+      if (a[at] > 245 && a[at + 1] > 245 && a[at + 2] > 245) {
+        whiteCount++; whiteBlue += b[at + 2];
+        if (b[at] > b[at + 2] + 10 && b[at + 1] > b[at + 2] + 10) colored++;
+      }
+      if (a[at] < 40 && a[at + 1] < 40 && a[at + 2] < 40) { inkCount++; inkBlue += b[at + 2]; }
+    }
+  }
+  check.ok(outside > 0, label + ' has protected source pixels outside the exact marked fields');
+  check.equal(outsideDifferences, 0, label + ' retains every original rendered pixel outside justified highlight rectangles');
+  check.ok(colored > 0, label + ' actually prints the intended yellow highlight inside those rectangles');
+  check.ok(whiteCount > 0 && inkCount > 0 && whiteBlue / whiteCount - inkBlue / inkCount > 32,
+    label + ' keeps original dark text distinguishable through the translucent highlight');
 }
 
 async function report(t, actor, year, anchor, name, extra = []) {
@@ -139,7 +215,8 @@ async function run(t, check) {
   for (const fixture of [earlier, current]) {
     const originalText = pdfPages(fixture.bytes)[0], includedPage = matchingPage(downloaded.bytes, originalText);
     check.ok(includedPage > 1, 'each earlier/current original source page appears after the letter');
-    sameRenderedPage(check, t.dataDir, fixture.bytes, 1, downloaded.bytes, includedPage, fixture.fileId + ' report page');
+    await sameRenderedPage(check, t.dataDir, fixture.bytes, 1, downloaded.bytes, includedPage, fixture.fileId + ' report page',
+      reportPageProof(t, actor, current.caseId, fixture.fileId, 1, [reaging]));
   }
   check.equal(matchingPage(downloaded.bytes, pdfPages(unrelated.bytes)[0]), 0, 'a same-owner unrelated private report stays out of the complete PDF');
   check.ok(pages[0].includes('REMOVE THIS PAGE BEFORE MAILING') && comparableText(pages[1]).startsWith(comparableText(prepared.packet.correspondence_preview)),
@@ -270,7 +347,8 @@ async function continuationAndReset(t, check, actor, unrelated) {
   for (const file of files) {
     const originalText = pdfPages(file.bytes)[0], includedPage = matchingPage(downloaded.bytes, originalText);
     check.ok(includedPage > 1, 'each actual continuation source page reaches the approved complete PDF');
-    sameRenderedPage(check, t.dataDir, file.bytes, 1, downloaded.bytes, includedPage, 'continuation page');
+    await sameRenderedPage(check, t.dataDir, file.bytes, 1, downloaded.bytes, includedPage, 'continuation page',
+      reportPageProof(t, actor, fixture.caseId, file.fileId, 1, [positive]));
   }
   fixture.resultId = (await t.request('POST', fixture.base + '/evaluate', auth(actor))).json.result_id;
   check.equal((await choose(t, actor, fixture, [files[0].fileId])).json.error?.code, 'PACKET_APPROVAL_STALE',
@@ -318,7 +396,8 @@ async function multipageAndImage(t, check, actor) {
   for (const page of [2]) {
     const includedPage = matchingPage(download.bytes, pdfPages(bytes)[page - 1]);
     check.ok(includedPage > 1, 'each source-linked multipage report page appears after the letter');
-    sameRenderedPage(check, t.dataDir, bytes, page, download.bytes, includedPage, 'multipage report page ' + page);
+    await sameRenderedPage(check, t.dataDir, bytes, page, download.bytes, includedPage, 'multipage report page ' + page,
+      reportPageProof(t, actor, fixture.caseId, fixture.fileId, page, [positive]));
   }
   check.equal(matchingPage(download.bytes, pdfPages(bytes)[0]), 0, 'the unneeded report cover is absent from the complete PDF');
   check.equal(matchingPage(download.bytes, pdfPages(bytes)[2]), 0, 'the unrelated third report page is absent from the complete PDF');

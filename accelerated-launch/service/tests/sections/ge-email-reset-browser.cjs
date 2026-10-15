@@ -17,7 +17,7 @@ async function run(t, check) {
     setup = security.beginTwoFactor(t.service.store, actor, { password: originalPassword });
     security.confirmTwoFactor(t.service.store, actor, { code: security.totp(setup.secret) });
   } finally { Date.now = realNow; }
-  const out = path.join(__dirname, '../../out'); fs.mkdirSync(out, { recursive: true });
+  const out = t.outDir || path.join(__dirname, '../../out'); fs.mkdirSync(out, { recursive: true });
   const screenshots = [];
   const browser = await chromium.launch({ headless: true, executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
   try {
@@ -25,8 +25,9 @@ async function run(t, check) {
     const page = await context.newPage(); page.setDefaultTimeout(15000);
     await page.addInitScript(() => {
       window.__resetFetchHashes = [];
+      window.__resetFetchRequests = [];
       const fetch = window.fetch;
-      window.fetch = (...args) => { window.__resetFetchHashes.push(location.hash); return fetch(...args); };
+      window.fetch = (...args) => { window.__resetFetchHashes.push(location.hash); window.__resetFetchRequests.push({url:String(args[0]?.url || args[0]),hash:location.hash}); return fetch(...args); };
     });
     let requests = 0, completions = 0;
     const requestedUrls = [];
@@ -111,6 +112,9 @@ async function run(t, check) {
     await page.goto(t.base + link.pathname + link.hash); await page.locator('#reset-password').waitFor();
     const coldHashes = await page.evaluate(() => window.__resetFetchHashes);
     check.ok(coldHashes.length > 0 && coldHashes.every(hash => hash === '#reset-password'), 'fresh document scrubs secret before initial bootstrap API calls');
+    const coldNews = await page.evaluate(() => window.__resetFetchRequests.filter(request => new URL(request.url, location.href).pathname === '/api/credit-news'));
+    check.equal(coldNews.length, 1, 'fresh recovery document still initializes the public footer exactly once');
+    check.ok(coldNews.every(request => request.hash === '#reset-password'), 'public footer request starts only after recovery secret is scrubbed');
     const mobile = path.join(out, 'email-reset-password-mobile.png'); await page.screenshot({ path: mobile, fullPage: true }); screenshots.push(mobile);
     check.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false, 'new-password form has no mobile horizontal overflow');
     await page.reload(); await page.locator('#new-email-reset').waitFor();

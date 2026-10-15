@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-15T03:07:30.698Z",
+  "generated_at": "2026-10-15T03:41:45.207Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -610,7 +610,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 29,
-      "digest": "06DDA67E6D5245955D621F4675D5E508505E251361E600B3D6F69B3837BA00EF",
+      "digest": "BA4B70D5B736D6B8715B9D9073E06D45CB6A14E77F178C1939462978CE264AD9",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -646,7 +646,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.js",
-          "sha256": "21B2B503C2CF550C096095A99E7F9EF12D56546ACC91E1A323A1CFF0AEA66169"
+          "sha256": "80446EE5FFFDE3639739B37DA696CBB4574C060E2FC940749F82367AF6FE1948"
         },
         {
           "file": "accelerated-launch/service/ui/favicon.svg",
@@ -731,6 +731,6 @@
       ]
     }
   ],
-  "manifest_digest": "21E182274473E0B507DE6323B382250B563F57A17AA8B3BDE84B04614CB6C41F",
+  "manifest_digest": "4DCEE4072923C764D108D6E75D15C684463D17062A36C120EA8F542BB983A94E",
   "total_file_count": 171
 }
