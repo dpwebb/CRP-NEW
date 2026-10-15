@@ -1,6 +1,6 @@
 {
   "generator": "accelerated-launch/service/deploy/build-release-manifest.cjs",
-  "generated_at": "2026-10-14T23:31:57.954Z",
+  "generated_at": "2026-10-15T01:18:49.014Z",
   "read_only": true,
   "note": "Hashes of the surfaces a staging candidate ships. Regenerate at freeze; the manifest digest BINDS no secret and is not itself the served build identity.",
   "groups": [
@@ -62,7 +62,7 @@
     {
       "id": "RUNTIME",
       "file_count": 105,
-      "digest": "5A1A46C1B6F46398961FF629D16D09D852C4688B78C320058B0F06A1C6C8AD9C",
+      "digest": "75405F8A7AC3C91BE13FDCC7ADE92521B07D9954F8D68506455EF7C7DEA25854",
       "files": [
         {
           "file": "accelerated-launch/service/account-display.cjs",
@@ -186,7 +186,7 @@
         },
         {
           "file": "accelerated-launch/service/consumer-dispute-letter.cjs",
-          "sha256": "4BE38BC5783A4267FBC763090FE4D15CA7BA8E42DD97728BC9C4C98A2994915B"
+          "sha256": "13901E8EF95DB140D2E7401F8B1A42DBDC9AB0993C61854CABCCEDFFE704E04E"
         },
         {
           "file": "accelerated-launch/service/consumer-issue-materiality.cjs",
@@ -350,7 +350,7 @@
         },
         {
           "file": "accelerated-launch/service/packets.cjs",
-          "sha256": "B833A2D53BB244EA84C743E7E1237A9C0B5A73D73342C7071A240026BADF9F58"
+          "sha256": "69F405D1E6DB12E7DB398A046560B486FFEF141E00C3144A83008052D059FB2B"
         },
         {
           "file": "accelerated-launch/service/password-reset.cjs",
@@ -606,7 +606,7 @@
     {
       "id": "SERVED_ASSETS",
       "file_count": 28,
-      "digest": "AC93439583A493A5C44EE679650C08B203A2BCD01C3394371C3AF6861D879050",
+      "digest": "3AB38D02C99B29C1428DAC553D928F2B85ECC11FDA2276E8458408DA8E70419C",
       "files": [
         {
           "file": "accelerated-launch/service/ui/OpenSans-Bold.ttf",
@@ -634,7 +634,7 @@
         },
         {
           "file": "accelerated-launch/service/ui/app.js",
-          "sha256": "59D328D74ED5BEF6BE0A5854BFA685A0D702DB4B8AB05CC5571B837AF58E6389"
+          "sha256": "2243170FF7FD1C74EF7E30C97A86B0D0181BDD38B6285B8CF0BB5037C3268BE9"
         },
         {
           "file": "accelerated-launch/service/ui/credit-news.css",
@@ -723,6 +723,6 @@
       ]
     }
   ],
-  "manifest_digest": "31B54E126354AC04BF65DA7DBF6C8C06428F862378BE207B93D9F04281874F1E",
+  "manifest_digest": "550C6459CF3464469598D990B93DC8E23539321340F2317339DBB19C0B0A931B",
   "total_file_count": 169
 }
