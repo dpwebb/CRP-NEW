@@ -2047,7 +2047,7 @@ function renderPacketBlock(pv) {
       <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
       ${packet.correspondence_preview ? `${packet.preview_ready ? '' : `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea>`}<button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
-      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button><label for="packet-date">Letter date<input id="packet-date" type="date" value="${esc(packet.letter_date || '')}" ${packet.letter_text ? 'disabled' : ''}></label></div>${packet.letter_text ? '<p class="evidence">You edited this letter. Change its date directly on the letter page.</p>' : ''}<div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
+      ${packet.preview_ready && packet.letter_preview_url ? `<div id="packet-pdf-review"><div class="packet-review-choices"><button class="secondary" id="packet-edit-documents">Change report pages or document copies</button><button class="secondary" id="packet-edit-account">Update contact details or upload copies</button><label for="packet-date">Letter date<input id="packet-date" type="date" value="${esc(packet.letter_date || '')}" ${packet.letter_text ? 'disabled' : ''}></label></div>${packet.letter_text ? '<p class="evidence" id="packet-letter-date-help">You edited this letter. Change its date directly on the letter page.</p>' : ''}<div id="packet-all-pages" aria-label="Complete editable dispute packet"><p role="status">Preparing all packet pages...</p></div></div>` : ''}
       <div id="packet-action-bar">${packet.approval_stale ? '<p class="note stop">The packet changed since approval; review and approve it again.</p>' : ''}<p class="evidence" id="${packet.approved ? 'packet-approved-status' : 'packet-action-help'}">${packet.approved ? 'Your packet is approved. You can print or download it.' : packet.preview_ready ? 'Check every page, tick the box below, then approve this version to enable printing and downloading.' : 'Complete your issue and document choices in the previous steps, then save and review your packet before approving.'}</p>
       <label><input id="packet-preview-reviewed" type="checkbox" ${packet.approved ? 'checked' : ''} ${(packet.preview_ready ?? Boolean(packet.selected_count && packet.correspondence_preview)) ? '' : 'disabled'}>I have checked every page of my packet</label>
       <button class="primary" id="packet-approve" disabled ${packet.approved ? 'hidden' : ''}>Approve this version</button>
@@ -2152,6 +2152,7 @@ async function wirePacket(panel) {
       ['select', { issue_ids: chosenIssues }], ['correspondence', { correspondence: currentCorrespondence() }],
       ['wording', { wording: currentWording() }], ...(pv.support?.catalog?.length ? [['support', { support: currentSupport() }]] : [])
     ];
+    if (letterEdited && !resetLetter && String(letterText || '').length > 24000) throw new Error('Your letter is too long. Shorten it to 24,000 characters, then save again.');
     const ensureCurrent = () => { ensureOrigin(); if (edits !== captured) throw cancelledAction(); };
     let allowedReports = null, savedVersion = pv.packet.preview_version;
     for (const [action, body] of payloads) {
@@ -2304,8 +2305,22 @@ async function wirePacket(panel) {
       if (error.cancelled) return;
       try { ensureOrigin(); } catch { return; }
       previewCurrent = false;
+      // Keep consumer drafts recoverable even when PDF composition or a later page
+      // image fails. The failed controller must not override this fallback on Save.
+      const draftLetter = letterEdited
+        ? [...pdfReview.querySelectorAll('[data-packet-letter-page]')].map(node => node.value).join('\n')
+        : pv.packet.correspondence_preview;
+      pv.packet.annotations = packetReviewController?.annotations() || pv.packet.annotations || [];
+      packetReviewController?.dispose();
+      packetReviewController = null;
+      const pages = el('packet-all-pages');
+      pages.innerHTML = '<p class="note stop">We could not show every page. Edit your letter below or change the document copies, then save and review again. Printing stays unavailable until every page loads.</p><label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000"></textarea>';
+      const fallback = el('packet-letter');
+      fallback.value = draftLetter || '';
+      fallback.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); };
+      if (el('packet-letter-date-help')) el('packet-letter-date-help').textContent = 'You edited this letter. Change its date in the letter below.';
       if (el('packet-preview-status')) el('packet-preview-status').textContent = error.message || 'We could not show every packet page. Save and review again.';
-      if (el('packet-page-load-status')) el('packet-page-load-status').textContent = 'Some pages could not be shown. Save and review again before printing.';
+      if (el('packet-action-help')) el('packet-action-help').textContent = 'Save your corrections and check every packet page before approving, printing or downloading.';
     }
   }
 }

@@ -1,6 +1,126 @@
 'use strict';
 const fs=require('fs'),path=require('path'),crypto=require('crypto'),{execFileSync}=require('child_process'),{chromium}=require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const R=path.resolve(__dirname,'../../../..'),{buildPdf}=require(R+'/internal-validation/ca-ns-last-payment-six-year/synthetic/make-synthetic-pdf.cjs'),packets=require(R+'/accelerated-launch/service/packets.cjs'),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+async function recoveryChecks(t,browser,actor,source,check,out){
+ const req=(method,url,body)=>t.request(method,url,{token:actor.token,body});
+ async function makeCase(label){
+  const c=(await req('POST','/api/cases',{country:'CA',region:'CA-NS',bureau:'EQUIFAX'})).json.case,route='/api/cases/'+c.case_id;
+  check.equal((await req('POST',route+'/files',{originalFilename:'fictional-recovery-'+label+'.pdf',mimeType:'application/pdf',declaredBytes:source.length,contentBase64:source.toString('base64')})).status,201,'recovery uses a retained fictional report: '+label);
+  check.equal((await req('POST',route+'/evaluate',{})).status,201,'recovery fixture is actually assessed: '+label);
+  const offered=(await req('GET',route+'/packet')).json.view;
+  await req('POST',route+'/packet/select',{issue_ids:offered.eligible_issues.map(issue=>issue.issue_id)});
+  await t.preparePostalPacket(actor,c.case_id);return{c,route};
+ }
+ async function openPacket(c,configure){
+  const context=await browser.newContext({viewport:{width:1440,height:1000}}),page=await context.newPage();page.setDefaultTimeout(20000);
+  if(configure)await configure(page);
+  await page.goto(t.base+'/index.html#signin');await page.locator('#email').fill(actor.email);await page.locator('#password').fill('a-long-enough-password');await page.locator('#signin').click();
+  await page.locator('#open').waitFor();await page.locator('#refresh').click();await page.locator('[data-open="'+c.case_id+'"]').click();await page.locator('#create-packet').waitFor();
+  await page.locator('[data-step="6"]').click();await page.locator('#packet-preview-status').waitFor();return{context,page};
+ }
+ const waitFallback=page=>page.waitForFunction(()=>{const editor=document.querySelector('#packet-letter');return editor&&!editor.closest('[data-packet-page]')&&editor.getClientRects().length>0;});
+ async function restored(page,label){
+  await page.locator('#packet-preview-reviewed:enabled').waitFor({timeout:60000});
+  check.ok(await page.locator('[data-packet-page]').count()>1,label+': the complete physical packet returns');
+  check.equal(await page.locator('.packet-page-image').evaluateAll(images=>images.length>1&&images.every(image=>image.complete&&image.naturalWidth>0)),true,label+': every restored page has actual rendered pixels');
+  check.ok(await page.locator('#packet-letter').evaluate(node=>Boolean(node.closest('[data-packet-page]'))),label+': native page editing returns');
+ }
+ async function blocked(page,label){
+  check.ok(await page.locator('#packet-preview-reviewed').isDisabled()&&await page.locator('#packet-approve').isDisabled()
+   &&await page.locator('#packet-print').isDisabled()&&await page.locator('#packet-download').isDisabled(),label+': incomplete rendering cannot be approved, printed or downloaded');
+ }
+ const glyphCase=await makeCase('unsupported-glyph'),glyphUi=await openPacket(glyphCase.c);
+ let repairedLetter;
+ try{
+  const {page}=glyphUi;await restored(page,'Initial recovery packet');
+  const ordinary=await page.locator('#packet-letter').inputValue(),emoji=String.fromCodePoint(0x1f642),custom='Fictional consumer explanation must survive this repair.';
+  const unsupported=ordinary+'\n'+custom+' '+emoji;
+  await page.locator('#packet-letter').fill(unsupported);
+  const letterSaved=page.waitForResponse(response=>new URL(response.url()).pathname===glyphCase.route+'/packet/letter'&&response.request().method()==='POST');
+  const failedMetadata=page.waitForResponse(response=>new URL(response.url()).pathname===glyphCase.route+'/packet/preview/pages'&&response.status()===400);
+  await page.locator('#packet-save').click();check.equal((await letterSaved).status(),200,'unsupported-glyph regression reaches the stored consumer-letter response');
+  check.equal((await(await failedMetadata).json()).error.code,'INVALID_REQUEST','unsupported-glyph fixture reaches composition refusal');
+  await waitFallback(page);check.equal(await page.locator('#packet-letter').inputValue(),unsupported,'composition failure preserves every custom letter character in an editable fallback');
+  await blocked(page,'Unsupported glyph');
+  repairedLetter=unsupported.replace(emoji,'').trim();await page.locator('#packet-letter').fill(repairedLetter);await page.locator('#packet-save').click();await restored(page,'Corrected unsupported glyph');
+  check.equal((await req('GET',glyphCase.route+'/packet')).json.view.packet.letter_text,repairedLetter,'removing only the unsupported character keeps the consumer wording without resetting the letter');
+  await page.screenshot({path:path.join(out,'recovered-unsupported-glyph.png'),fullPage:true});
+ }finally{await glyphUi.context.close();}
+
+ // Hold one real raster response after metadata has created all native editors.
+ // This is an explicit browser transport failure, not a substitute renderer.
+ const longLetter=repairedLetter+'\n\n'+Array.from({length:40},(_,i)=>'Recovery paragraph '+(i+1)+': Please compare the actual account dates and keep my explanation when I correct this letter.').join('\n\n');
+ await req('POST',glyphCase.route+'/packet/letter',{letter_text:longLetter});
+ let reachedImage,releaseImage;
+ const imageReached=new Promise(resolve=>{reachedImage=resolve;}),imageRelease=new Promise(resolve=>{releaseImage=resolve;});
+ const imagePattern='**'+glyphCase.route+'/packet/preview/pages/2?*';
+ const rejectImage=async route=>{reachedImage();await imageRelease;await route.fulfill({status:503,contentType:'text/plain',body:'Fictional page-image transport failure'});};
+ const rasterUi=await openPacket(glyphCase.c,page=>page.route(imagePattern,rejectImage));
+ try{
+  const {page}=rasterUi;
+  let imageTimer;
+  try{await Promise.race([imageReached,new Promise((_,reject)=>{imageTimer=setTimeout(()=>reject(new Error('The expected second packet page image was not requested.')),60000);})]);}
+  finally{clearTimeout(imageTimer);}
+  check.ok(await page.locator('[data-packet-letter-page]').count()>1,'raster recovery reaches multiple real native letter pages before the delayed image fails');
+  await page.locator('[data-packet-letter-page]').nth(0).fill('x'.repeat(14000));await page.locator('[data-packet-letter-page]').nth(1).fill('y'.repeat(14000));
+  const sourcePage=page.locator('[data-packet-page]').filter({has:page.locator('.packet-position-add')}).first();
+  await sourcePage.locator('summary').click();await sourcePage.locator('.packet-position-add').click();
+  const draftNote='Fictional unsaved evidence note must survive image failure.';
+  await sourcePage.locator('.packet-highlight-row textarea').fill(draftNote);
+  const draft=await page.locator('[data-packet-letter-page]').evaluateAll(nodes=>nodes.map(node=>node.value).join('\n'));
+  check.ok(draft.length>24000,'partial-page failure fixture exceeds the aggregate letter limit without truncating native page drafts');
+  releaseImage();await waitFallback(page);await page.unroute(imagePattern,rejectImage);
+  check.equal(await page.locator('#packet-letter').inputValue(),draft,'a later raster failure preserves the whole over-limit multi-page draft in the fallback');
+  await blocked(page,'Later raster failure');
+  const valid=longLetter+'\nFictional wording repaired after the page-image failure.';
+  await page.locator('#packet-letter').fill(valid);await page.locator('#packet-save').click();await restored(page,'Corrected failed raster');
+  const saved=(await req('GET',glyphCase.route+'/packet')).json.view;
+  check.equal(saved.packet.letter_text,valid,'editing the fallback replaces the rejected aggregate draft without losing valid custom wording');
+  check.ok(saved.packet.annotations.some(annotation=>annotation.note===draftNote),'raster recovery preserves and saves the unsaved evidence annotation too');
+  await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
+  check.equal((await req('GET',glyphCase.route+'/packet-download')).status,200,'recovered full raster review can be explicitly approved and downloaded');
+  await page.screenshot({path:path.join(out,'recovered-later-raster.png'),fullPage:true});
+ }finally{releaseImage();await rasterUi.context.close();}
+
+ const copyCase=await makeCase('unreadable-copy'),copyView=(await req('GET',copyCase.route+'/packet')).json.view;
+ const customLetter=copyView.packet.correspondence_preview+'\nFictional supporting-copy explanation must survive replacement.';
+ await req('POST',copyCase.route+'/packet/letter',{letter_text:customLetter});
+ const unreadable=Buffer.from('%PDF-1.7\nFICTIONAL UNREADABLE SUPPORT COPY\n%%EOF\n');
+ const replacement=buildPdf({pages:[{lines:['FICTIONAL SUPPORTING EVIDENCE','Payment record for the selected account']}]});
+ const uploads=[];
+ for(const [name,bytes] of [['unreadable',unreadable],['replacement',replacement]]){
+  const response=await req('POST','/api/account/documents',{originalFilename:'fictional-recovery-'+name+'.pdf',mimeType:'application/pdf',declaredBytes:bytes.length,contentBase64:bytes.toString('base64'),document_type:'SUPPORTING',document_kind:'OTHER_EVIDENCE'});
+  check.equal(response.status,201,'support-copy recovery reaches the admitted fictional '+name+' document');uploads.push(response.json.document.file_id);
+ }
+ await req('POST',copyCase.route+'/packet/support',{support:{...copyView.support.settings,document_ids:[...copyView.support.selected_document_ids,uploads[0]]}});
+ const copyUi=await openPacket(copyCase.c);
+ try{
+  const {page}=copyUi;await waitFallback(page);await page.getByText('We could not add one of your copies.',{exact:false}).first().waitFor();
+  check.equal(await page.locator('#packet-letter').inputValue(),customLetter,'an unreadable selected supporting copy leaves existing custom wording editable');
+  await blocked(page,'Unreadable supporting copy');
+  const corrected=customLetter+'\nFictional fallback edit remains after choosing a clear copy.';
+  await page.locator('#packet-letter').fill(corrected);
+  const failedAgain=page.waitForResponse(response=>new URL(response.url()).pathname===copyCase.route+'/packet/preview/pages'&&response.status()===400);
+  await page.locator('#packet-save').click();check.equal((await(await failedAgain).json()).error.code,'PACKET_ATTACHMENT_UNREADABLE','saving the repaired wording still reports the genuinely unreadable selected copy');
+  await waitFallback(page);check.equal(await page.locator('#packet-letter').inputValue(),corrected,'a repeated attachment refusal preserves the corrected fallback wording');
+  await page.locator('#packet-edit-documents').click();await page.locator('#packet-preparation-content').waitFor();
+  await page.locator('[data-packet-document="'+uploads[0]+'"]').uncheck();await page.locator('[data-packet-document="'+uploads[1]+'"]').check();
+  await page.locator('#packet-prepare-next').click();await restored(page,'Replacement supporting copy');
+  const saved=(await req('GET',copyCase.route+'/packet')).json.view;
+  check.equal(saved.packet.letter_text,corrected,'replacing the bad copy retains the consumer letter and fallback edits');
+  check.ok(!saved.support.selected_document_ids.includes(uploads[0])&&saved.support.selected_document_ids.includes(uploads[1]),'document recovery replaces only the chosen supporting copy');
+  const metadata=(await req('GET',copyCase.route+'/packet/preview/pages?version='+saved.packet.preview_version)).json;
+  check.deepEqual(metadata.sections.filter(section=>section.kind==='document').map(section=>section.label),['SUPPORTING','IDENTITY','IDENTITY','ADDRESS'],'recovered supporting evidence precedes the identity and address copies');
+  check.ok(await page.locator('#packet-approve').isDisabled()&&await page.locator('#packet-print').isDisabled(),'a recovered copy still needs the consumer to review and approve the complete packet');
+  await page.locator('#packet-preview-reviewed').check();await page.locator('#packet-approve').click();await page.locator('#packet-download:enabled').waitFor();
+  const download=page.waitForEvent('download');await page.locator('#packet-download').click();await(await download).saveAs(path.join(out,'recovered-supporting-copy.pdf'));
+  const bytes=fs.readFileSync(path.join(out,'recovered-supporting-copy.pdf'));
+  const text=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(bytes));
+  check.ok(text.includes('Fictional fallback edit remains after choosing a clear copy.')&&text.includes('FICTIONAL SUPPORTING EVIDENCE'),'the actual recovered download contains the retained words and readable replacement evidence');
+  await page.screenshot({path:path.join(out,'recovered-supporting-copy.png'),fullPage:true});
+ }finally{await copyUi.context.close();}
+ return{unsupported_glyph_wording_preserved:true,unreadable_copy_replaced:true,later_raster_drafts_and_annotations_preserved:true};
+}
 async function run(t,check){
  const out=path.join(R,'accelerated-launch/service/out/packet-review-mailing');fs.mkdirSync(out,{recursive:true});
  const a=await t.account('packet-review-mailing@example.test'),req=(m,u,body)=>t.request(m,u,{token:a.token,body});
@@ -63,9 +183,10 @@ async function run(t,check){
   const normalized=require('../packet-pdf-assertions.cjs').comparableText(require('../packet-pdf-assertions.cjs').pdfText(editedBytes));
   check.ok(normalized.includes('Fictional final-page consumer edit.')&&normalized.includes('Please compare these impossible account dates.'),'the printable packet retains the last-page edit and evidence note');
   const finalPrintResponse=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/packet-print'),finalPopup=page.waitForEvent('popup');await page.locator('#packet-print').click();const finalPrintPage=await finalPopup;await finalPrintPage.waitForURL('blob:**');check.ok((await(await finalPrintResponse).body()).equals(editedBytes),'printing uses that same saved and approved edited PDF');await finalPrintPage.close();
+  const recovery=await recoveryChecks(t,browser,a,source,check,out);
   for(const width of [1440,390]){await page.setViewportSize({width,height:1000});await page.screenshot({path:path.join(out,'review-'+width+'.png'),fullPage:true});check.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'review has no horizontal overflow at '+width+'px');}
   execFileSync('pdftoppm',['-scale-to','1000','-png',path.join(out,'complete-edited-packet.pdf'),path.join(out,'packet-page')],{timeout:30000,stdio:['ignore','pipe','pipe']});
-  return{actual_browser:true,all_pages_inline:true,inline_last_page_edit:true,inline_source_annotation:true,review_content_isolated:true,prepared_letter_reset:true,instruction_page_separate:true,actual_print_download:true,pdf_sha256:sha(editedBytes),original_pdf_sha256:before,sections:packets.packetPrint(t.service.store,a,c.case_id).sections,screenshots:['review-1440.png','review-390.png']};
+  return{actual_browser:true,all_pages_inline:true,inline_last_page_edit:true,inline_source_annotation:true,review_content_isolated:true,prepared_letter_reset:true,instruction_page_separate:true,actual_print_download:true,recovery,pdf_sha256:sha(editedBytes),original_pdf_sha256:before,sections:packets.packetPrint(t.service.store,a,c.case_id).sections,screenshots:['review-1440.png','review-390.png']};
  }finally{await browser.close();}
 }
 module.exports={run,id:'ga-packet-review-mailing',title:'Focused packet review, working reset/approval/print/download and removable self-mail instructions'};
