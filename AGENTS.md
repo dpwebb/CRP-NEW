@@ -1,5 +1,9 @@
 # Owner imperatives
 
+## October 15 saved-packet replacement deployed to staging; current acceptance pending
+
+Coordinator activated unchanged crp-v1-866b52b9d3846350/source1113c7d at2026-10-15T12:34:22.042Z with expectedCCC9 guard and a verified179-file whole stopped snapshot. Activation receipt778CF670... preserves all43 current accounts/618 non-session rows/121 blobs, private configuration/signed authority and production31b/PID729. Independent read-only retrieval of the three snapshot metadata JSON files passed C0E40A56... with no host writes. Public32 passed; actual footer country/control/keyboard and1440/390 layout observations are bounded browser evidence. Current paid-account packet/native/cleanup/strict30/123/46 and portable/Linux acceptance remain pending; production has not changed. Read CRP_PACKET_REVIEW_READINESS_STAGING_2026_10_15.md. Continue already authorized required checks serially; never replay activation, snapshot or completed/uncertain intents. Older local-only milestones below retain their dated scope.
+
 ## October 15 saved-packet correction accepted locally; current custody baseline established
 
 Read CRP_PACKET_REVIEW_READINESS_LOCAL_2026_10_15.md. Frozen executable/test source1113c7d1e90120f5a1e35427ac50efe16c8b2c70 packages crp-v1-866b52b9d3846350,171 files/manifest866B52B9...; fresh governed full17412/0/0 completed183 sections with379 matching sources, no drift/unrun, five syntax checks and ten tooling suites. Immutable package19134120... and source assembly0DB8C011... passed. This demonstrated-defect replacement supersedes originalccc9 only as the next local release candidate; original17389/full/package and every once-only operational attempt retain their identities.

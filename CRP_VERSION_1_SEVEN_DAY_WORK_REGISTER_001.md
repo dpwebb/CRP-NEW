@@ -1,5 +1,9 @@
 > **October 7 scope reconciliation.** The active version 1 violation set is the common-error checklist under `CRP_OWNER_IMMUTABLE_VIOLATION_STANDARD_001.md`. Earlier statutory expansion tasks and counts below are historical evidence, not remaining-work instructions or release gates for out-of-checklist violations. Keep the 82-jurisdiction consumer journey, listed checks, packets, and release safeguards.
 
+## October15 saved-packet replacement deployed to staging; current acceptance pending
+
+Unchanged866b/1113c7d activated2026-10-15T12:34:22.042Z with expectedCCC9 guard and complete179-file stopped snapshot. Activation778CF670... preserves all43 current accounts/618 rows/121 blobs, configuration/signed authority and production31b/PID729. Independent three-JSON snapshot metadata retrievalC0E40A56... and public32 passed their bounded scope. Actual footer country/control/keyboard/1440/390 observations are recorded separately. Current paid packet/native/cleanup/strict30/123/46 and portable/Linux acceptance remain pending before guarded expected31b production promotion. No payment, cleanup, new backup dispatch, production activation or source push occurred at this checkpoint. Read CRP_PACKET_REVIEW_READINESS_STAGING_2026_10_15.md; earlier milestones remain historical.
+
 ## October15 saved-packet replacement accepted locally; current custody established
 
 Replacement1113c7d/866b passed one fresh governed17412/0/0 full across183 completed sections/379 matching sources, five syntax checks/ten tooling suites,171-file immutable package19134120... and source assembly0DB8C011.... Actual fictional local Chrome verified missing-date recovery/all seven pages/edit preservation and explicit stale-assessment recovery at390/1440; download remains unverified after controller timeout. This is local acceptance only, not hosted or genuine-payment proof. Read CRP_PACKET_REVIEW_READINESS_LOCAL_2026_10_15.md.
