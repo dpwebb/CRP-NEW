@@ -61,6 +61,8 @@ const state = {
   packetReturn: null,
   checkoutReturn: null,
   savedReportFilter: '',
+  savedReportsStatus: 'idle',
+  savedReportsAutoLoad: false,
   storageSnapshot: null,
   /* The post-upload screen reports the case's actual state: an assessment in flight, the last refusal, or a
      missing purchase (which is a plan decision, not a failure). */
@@ -78,6 +80,7 @@ let assessmentOperationSequence = 0;
 let assessmentCaseId = null;
 let packetLeave = null;
 let checkoutReturnSequence = 0;
+let savedReportsSequence = 0;
 let lastRenderedStep = 0;
 function cancelledAction() { const error = new Error('Action cancelled after navigation.'); error.cancelled = true; return error; }
 function accountContext() {
@@ -503,11 +506,14 @@ function renderAccount(panel) {
     ensure();
     state.account = data.account;
     state.accountProfile = null; state.accountDocuments = [];
+    state.cases = []; state.savedReportFilter = ''; state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
     state.accountSecurity = data; state.recoveryKey = null; state.twoFactorSetup=null; state.packetReturn = null;
     state.checkoutReturn = null;
     if(data.signup_complete===false){state.step=STEP.ACCOUNT;return;}
     if(routeOwnerAfterSignIn(data))return;
     await refreshAccess();
+    ensure();
+    state.savedReportsAutoLoad = true;
     state.step = 1;
     state.notice = 'Signed in.';
     const returning = checkoutReturnContext();
@@ -639,6 +645,7 @@ function renderEmailRecoveryRequest(panel) {
 function clearClientAccountForRecovery() {
   accountEpoch++; accountOperationSequence++; assessmentOperationSequence++; checkoutReturnSequence++;
   state.account = null; state.accountProfile = null; state.accountDocuments = []; state.cases = []; state.caseId = null;
+  state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
   state.view = null; state.entitlement = null; state.payment = null; state.upgrade_credit = null; state.upgrade_quotes = null;
   state.upgrade_confirmation = null; state.support = null; state.billing = null; state.result_list = [];
   state.accountSecurity = null; state.recoveryKey = null; state.twoFactorSetup = null; state.wantTwoFactor = false;
@@ -812,6 +819,7 @@ function renderAccountDetails(panel) {
     state.accountProfile = null;
     state.accountDocuments = [];
     state.cases = [];
+    state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = false;
     state.caseId = null;
     state.view = null;
     state.result_list = []; state.storageSnapshot = null; state.savedReportFilter = '';
@@ -869,6 +877,30 @@ function savedReportLabel(row) {
   return [bureau, date, files.filter(Boolean).join(', '), regionLabel(row.country, row.region)].filter(Boolean).join(' · ');
 }
 
+function savedReportsMarkup() {
+  const loading = state.savedReportsStatus === 'loading', failed = state.savedReportsStatus === 'error';
+  return `${loading ? '<p id="saved-reports-status" role="status">Loading your saved reports…</p>' : failed ? '<p class="note stop" role="status">We could not load your saved reports. Try again, or upload a new report.</p>' : state.savedReportsStatus === 'ready' && !state.cases.length ? '<p role="status">No saved reports yet. Upload your first report below.</p>' : ''}
+    ${state.cases.length ? `<details open><summary>Your saved reports</summary><button class="secondary" id="resume-latest">Resume my latest report</button><label for="saved-report-filter">Find a saved report</label><input type="search" id="saved-report-filter" value="${esc(state.savedReportFilter)}" placeholder="Bureau, date or filename"><div id="saved-report-list"></div></details>` : ''}
+    <button class="secondary" id="refresh" ${loading ? 'disabled aria-busy="true"' : ''}>${failed ? 'Try again' : state.savedReportsStatus === 'ready' ? 'Refresh saved reports' : 'Continue a saved report'}</button>`;
+}
+
+async function loadSavedReports(ensureView, paint) {
+  const ensureAccount = accountContext(), request = ++savedReportsSequence;
+  const ensure = () => { ensureAccount(); ensureView(); if (request !== savedReportsSequence) throw cancelledAction(); };
+  ensure(); state.savedReportsAutoLoad = false; state.savedReportsStatus = 'loading'; paint();
+  try {
+    const data = await currentRequest(ensure, 'GET', '/api/cases');
+    if (!Array.isArray(data.cases)) throw new Error('Saved reports unavailable');
+    state.cases = data.cases; state.savedReportsStatus = 'ready'; paint();
+  } catch (error) {
+    if (error.cancelled) {
+      try { ensureAccount(); if (request === savedReportsSequence) { state.savedReportsStatus = 'idle'; state.savedReportsAutoLoad = true; } } catch {}
+      return;
+    }
+    ensure(); state.savedReportsStatus = 'error'; paint();
+  }
+}
+
 function renderJurisdiction(panel) {
   if (!state.account) { panel.innerHTML = `${notices()}<h1>Sign in first</h1><p class="lede">Create an account or sign in on the first step.</p>`; return; }
   const countries = surface ? surface.countries : [];
@@ -882,6 +914,7 @@ function renderJurisdiction(panel) {
     <h1>Upload your credit report</h1>
     <p class="lede">Choose your current location, select your credit bureau and upload your report.</p>
     ${notices()}
+    <section id="saved-reports-section" aria-label="Saved reports" aria-live="polite">${savedReportsMarkup()}</section>
     ${state.surfaceError ? `<p class="note stop">We could not load the available locations. ${esc(state.surfaceError)}</p>` : ''}
     ${recoveryKeyBlock()}
     <div class="row">
@@ -910,10 +943,7 @@ function renderJurisdiction(panel) {
     <p class="evidence" id="storage-help">${esc(storageHelpText())}</p>
     <button class="primary" id="open">Upload your report</button>
     <div id="upload-progress" role="status" aria-live="polite"></div>
-    <button class="secondary" id="refresh">Continue a saved report</button>
-    ${state.cases.length
-      ? `<details open><summary>Your saved reports</summary><button class="secondary" id="resume-latest">Resume my latest report</button><label for="saved-report-filter">Find a saved report</label><input type="search" id="saved-report-filter" value="${esc(state.savedReportFilter)}" placeholder="Bureau, date or filename"><div id="saved-report-list"></div></details>`
-      : ''}`;
+    `;
   wireRecoveryKey();
   wireStorageHelp();
 
@@ -970,11 +1000,6 @@ function renderJurisdiction(panel) {
       try { ensureAccount(); if (sequence === renderSequence && state.step === STEP.JURISDICTION) { uploading = false; updateButton(); } } catch {}
     }
   });
-  el('refresh').onclick = () => run(async () => {
-    const ensureSelection = selectionContext();
-    try { const data = await api('GET', '/api/cases'); ensureSelection(); state.cases = data.cases; }
-    catch (err) { ensureSelection(); throw err; }
-  });
   const openSavedReport = caseId => run(async () => {
       const ensureSelection = selectionContext();
       let data;
@@ -985,20 +1010,27 @@ function renderJurisdiction(panel) {
       state.view = data.view;
       state.step = data.view.assessment_summary || data.view.result ? STEP.RESULTS : STEP.REPORT;
     });
-  const savedReports = state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')));
   const filterSavedReports = () => {
     const list = el('saved-report-list'); if (!list) return;
     const query = state.savedReportFilter.trim().toLocaleLowerCase();
-    const matching = savedReports.filter(row => savedReportLabel(row).toLocaleLowerCase().includes(query));
+    const matching = state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')))
+      .filter(row => savedReportLabel(row).toLocaleLowerCase().includes(query));
     list.innerHTML = matching.length ? `<ul class="plain">${matching.map(row => `<li>${esc(savedReportLabel(row))} <button class="secondary" data-open="${esc(row.case_id)}">Continue</button></li>`).join('')}</ul>` : '<p>No saved report matches your search.</p>';
     for (const button of panel.querySelectorAll('[data-open]')) button.onclick = () => openSavedReport(button.dataset.open);
   };
-  if (state.cases.length) {
-    filterSavedReports();
-    el('saved-report-filter').oninput = () => { state.savedReportFilter = el('saved-report-filter').value; filterSavedReports(); };
-    el('resume-latest').onclick = () => openSavedReport(savedReports[0].case_id);
-  }
-  for (const button of panel.querySelectorAll('[data-open]')) button.onclick = () => openSavedReport(button.dataset.open);
+  const section = el('saved-reports-section'), rendered = renderSequence, ensureAccount = accountContext();
+  const ensureSavedView = () => { ensureAccount(); if (state.step !== STEP.JURISDICTION || renderSequence !== rendered || el('saved-reports-section') !== section) throw cancelledAction(); };
+  const paintSavedReports = () => {
+    ensureSavedView(); section.innerHTML = savedReportsMarkup();
+    el('refresh').onclick = () => loadSavedReports(ensureSavedView, paintSavedReports);
+    if (state.cases.length) {
+      filterSavedReports();
+      el('saved-report-filter').oninput = () => { state.savedReportFilter = el('saved-report-filter').value; filterSavedReports(); };
+      el('resume-latest').onclick = () => openSavedReport(state.cases.slice().sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')))[0].case_id);
+    }
+  };
+  paintSavedReports();
+  if (state.savedReportsAutoLoad || state.savedReportsStatus === 'loading') void loadSavedReports(ensureSavedView, paintSavedReports);
 }
 
 /* ------------------------------------------------------------------ step 2: your report */
@@ -1991,6 +2023,14 @@ function packetReportCopies(packet) {
         ${report.review_url === copyUrl ? `<a href="${esc(copyUrl)}" target="_blank" rel="noopener noreferrer">Check the original report</a>` : ''}</div>`;
     }).join('')}</section>`;
 }
+function localLetterDate() {
+  const today = new Date();
+  return `${String(today.getFullYear()).padStart(4, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+}
+function validLetterDate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number(value.slice(0, 4)) > 0
+    && Number.isFinite(Date.parse(value + 'T00:00:00Z')) && new Date(value + 'T00:00:00Z').toISOString().slice(0, 10) === value;
+}
 function renderPacketBlock(pv) {
   const issues = (pv.eligible_issues || []).filter((i) => i.eligible);
   const packet = pv.packet || {};
@@ -2042,6 +2082,7 @@ function renderPacketBlock(pv) {
     </div>
     </div><div class="packet-review">
       <h3>Review and edit</h3>
+      <div id="packet-letter-date-box"><label for="packet-letter-date" id="packet-letter-date-label">${packet.letter_text ? 'Date for the prepared letter' : 'Letter date'}</label><input type="date" id="packet-letter-date" value="${esc(packet.letter_date || localLetterDate())}" aria-describedby="packet-letter-date-help" required><p class="evidence" id="packet-letter-date-help">${packet.letter_text ? 'You edited this letter. Check its date below. Changing this box will ask to replace your edits.' : 'Use the date you plan to sign and send this letter.'}</p></div>
       <p class="evidence" id="packet-preview-status">${packet.selected_count && packet.correspondence_preview ? 'Read your letter. You can change the words below, then save your changes.' : 'Choose your disputes, then select Save and review packet.'}</p>
       ${packet.correspondence_preview ? `<label for="packet-letter">Your letter</label><textarea id="packet-letter" rows="18" maxlength="24000">${esc(packet.correspondence_preview)}</textarea><button class="secondary" id="packet-reset-letter">Use the prepared letter</button>` : ''}
       <pre id="packet-preview" hidden>${esc(packet.correspondence_preview || '')}</pre>
@@ -2102,6 +2143,8 @@ async function wirePacket(panel) {
   // Keep saved inputs available to version-bound saving without repeating earlier steps.
   const reviewBody = block.querySelector('.packet-review'), pdfReview = el('packet-pdf-review');
   if (pdfReview) { reviewBody.prepend(pdfReview); pdfReview.after(el('packet-action-bar')); }
+  const dateBox = el('packet-letter-date-box');
+  if (dateBox) reviewBody.prepend(dateBox);
   const saveButton = el('packet-save'), resetButton = el('packet-reset-letter');
   if (resetButton) resetButton.after(saveButton);
   else reviewBody.append(saveButton);
@@ -2115,12 +2158,22 @@ async function wirePacket(panel) {
   const currentSelection = () => [...panel.querySelectorAll('[data-check-issue]:checked')].map((n) => n.getAttribute('data-check-issue'));
   const currentReports = () => [...panel.querySelectorAll('[data-packet-report]:checked')].map(node => node.getAttribute('data-packet-report'));
   const currentWording = () => el('packet-wording') ? el('packet-wording').value : '';
-  const currentCorrespondence = () => ({
-    consumer_name: el('packet-name') ? el('packet-name').value : '',
-    contact: el('packet-contact') ? el('packet-contact').value : '',
-    account_reference: el('packet-reference') ? el('packet-reference').value : '',
-    bureau_reference: el('packet-bureau-reference') ? el('packet-bureau-reference').value : ''
-  });
+  const dateInput = el('packet-letter-date');
+  if (dateInput && !dateInput.value) dateInput.value = pv.packet?.letter_date || localLetterDate();
+  const currentCorrespondence = () => {
+    const correspondence = {
+      consumer_name: el('packet-name') ? el('packet-name').value : '',
+      contact: el('packet-contact') ? el('packet-contact').value : '',
+      account_reference: el('packet-reference') ? el('packet-reference').value : '',
+      bureau_reference: el('packet-bureau-reference') ? el('packet-bureau-reference').value : ''
+    };
+    if (dateEdited || !pv.packet?.packet_id) {
+      if (!validLetterDate(dateInput?.value)) throw new Error('Choose a real date for your letter.');
+      correspondence.letter_date = dateInput.value;
+      if (dateResetConfirmed) correspondence.reset_letter_for_date = true;
+    }
+    return correspondence;
+  };
   const currentSupport = () => {
     const document_ids = [...panel.querySelectorAll('[data-packet-document]:checked')].map(node => node.getAttribute('data-packet-document'));
     const selected = new Set(currentSelection()), kinds = (pv.eligible_issues || []).filter(issue => selected.has(issue.issue_id)).map(issue => issue.record_kind || '');
@@ -2138,6 +2191,8 @@ async function wirePacket(panel) {
   };
   let edits = 0;
   let letterEdited = false, resetLetter = false;
+  let dateEdited = false, dateResetConfirmed = false, acceptedDate = dateInput?.value;
+  let dateSnapshot = null, dateInputEdits = 0;
   let previewCurrent = pv.packet?.preview_ready ?? Boolean(pv.packet?.selected_count && pv.packet?.correspondence_preview);
   const persistSelection = async () => {
     ensureOrigin();
@@ -2159,7 +2214,7 @@ async function wirePacket(panel) {
       const page_choices = Object.fromEntries(Object.entries(pageChoices).filter(([fileId]) => allowedReports?.has(fileId)));
       ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/reports`, { file_ids, page_choices }); ensureCurrent();
     }
-    if (chosenIssues.length && letterEdited) { ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/letter`, { letter_text: resetLetter ? null : letterText }); ensureCurrent(); }
+    if (chosenIssues.length && letterEdited && !dateResetConfirmed) { ensureCurrent(); await api('POST', `/api/cases/${caseId}/packet/letter`, { letter_text: resetLetter ? null : letterText }); ensureCurrent(); }
     return ensureCurrent;
   };
 
@@ -2228,7 +2283,47 @@ async function wirePacket(panel) {
   const wording = el('packet-wording');
   if (wording) wording.oninput = markChanged;
   const letterInput = el('packet-letter');
-  if (letterInput) letterInput.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); };
+  const updateDateCopy = () => {
+    const customLetter = !dateResetConfirmed && !resetLetter && Boolean(pv.packet?.letter_text || letterEdited);
+    if (el('packet-letter-date-label')) el('packet-letter-date-label').textContent = customLetter ? 'Date for the prepared letter' : 'Letter date';
+    if (el('packet-letter-date-help')) el('packet-letter-date-help').textContent = dateResetConfirmed
+      ? 'Select Save and review packet to use the prepared letter with this date.'
+      : customLetter ? 'You edited this letter. Check its date below. Changing this box will ask to replace your edits.' : 'Use the date you plan to sign and send this letter.';
+  };
+  updateDateCopy();
+  if (letterInput) letterInput.oninput = () => { letterEdited = true; resetLetter = false; markChanged(); updateDateCopy(); };
+  if (dateInput) {
+    const rememberDateEdit = () => {
+      if (!dateSnapshot) {
+        const ids = ['consumer-notice', 'packet-approved-status', 'packet-ready-status', 'packet-pdf-review', 'packet-download', 'packet-print', 'packet-approve', 'packet-preview-reviewed', 'packet-preview-status', 'packet-preview'];
+        dateSnapshot = { edits, previewCurrent, dateEdited, dateResetConfirmed, notice: state.notice,
+          nodes: ids.map(id => { const node = el(id); return node && { node, hidden: node.hidden, disabled: node.disabled, checked: node.checked,
+            text: ['packet-preview-status', 'packet-preview'].includes(id) ? node.textContent : undefined }; }).filter(Boolean) };
+        dateInputEdits = 0;
+      }
+      dateInputEdits++; dateEdited = true; markChanged();
+    };
+    dateInput.oninput = rememberDateEdit;
+    dateInput.onchange = () => {
+      if (!dateSnapshot) rememberDateEdit();
+      if (!validLetterDate(dateInput.value)) { dateInput.setCustomValidity?.('Choose a real date for your letter.'); dateInput.reportValidity?.(); return; }
+      dateInput.setCustomValidity?.('');
+      const changesCustom = dateInput.value !== (pv.packet?.letter_date || acceptedDate) && Boolean(pv.packet?.letter_text || letterEdited && !resetLetter);
+      if (changesCustom && !dateResetConfirmed && !window.confirm?.('Use the prepared letter with this date? This will replace your letter edits. Choose Cancel to keep your edited letter.')) {
+        dateInput.value = acceptedDate; dateEdited = dateSnapshot.dateEdited; dateResetConfirmed = dateSnapshot.dateResetConfirmed;
+        edits -= dateInputEdits;
+        if (edits === dateSnapshot.edits) {
+          previewCurrent = dateSnapshot.previewCurrent; state.notice = dateSnapshot.notice;
+          for (const item of dateSnapshot.nodes) { item.node.hidden = item.hidden; item.node.disabled = item.disabled; item.node.checked = item.checked; if (item.text !== undefined) item.node.textContent = item.text; }
+        }
+      } else {
+        acceptedDate = dateInput.value; dateResetConfirmed = changesCustom;
+      }
+      if (letterInput) letterInput.disabled = dateResetConfirmed;
+      updateDateCopy();
+      dateSnapshot = null; dateInputEdits = 0;
+    };
+  }
   const reset = el('packet-reset-letter');
   if (reset) reset.onclick = () => run(async () => {
     letterEdited = true; resetLetter = true; markChanged();
@@ -2753,6 +2848,7 @@ function renderBillingView(data) {
     const cases = await api('GET', '/api/cases');
     if (!currentStartup()) return;
     state.cases = cases.cases;
+    state.savedReportsStatus = 'ready'; state.savedReportsAutoLoad = false;
     await refreshAccess();
     if (!currentStartup()) return;
     state.step = 1;

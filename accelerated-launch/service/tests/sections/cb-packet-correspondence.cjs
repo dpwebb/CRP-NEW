@@ -136,6 +136,9 @@ async function run(service, check) {
   /* ---- 3. The consumer reviews a plain letter with integrated report-page references. ---- */
   const mailView = await service.preparePostalPacket(owner, caseId);
   const preview = mailView.packet.correspondence_preview;
+  check.equal(mailView.packet.letter_date, service.service.store.state().packets.find(packet => packet.case_id === caseId).created_at.slice(0, 10), 'legacy packet view exposes its actual effective creation date without confirming a new consumer choice');
+  check.equal(mailView.packet.letter_date_confirmed, false, 'reading a legacy date does not turn it into confirmed consumer input');
+  check.ok(preview.includes(require('../../consumer-dispute-letter.cjs').dateLabel(mailView.packet.letter_date)), 'the visible date control and prepared letter share the same calendar date');
   check.ok(/^Re: Credit report dispute$/m.test(preview), 'the review shows the business-letter subject');
   check.ok(/Please see report page \d+(?:, line \d+)? in the attached copies\./.test(preview), 'and short report-page references beside the request');
   check.ok(preview.includes(mailView.support.requirements.label) && mailView.support.requirements.postal.split(/,\s*/).every(part => preview.includes(part)), 'addressed to the selected bureau and its verified mailing address');

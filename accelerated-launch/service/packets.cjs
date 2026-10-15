@@ -186,6 +186,9 @@ function canonicalVersion(packetRow, resultRow, selectedIssues) {
     `issues:${ordered.map(issueContent).join(';')}`,
     `wording:${packetRow.wording || ''}`,
     `letter:${packetRow.letter_text || ''}`,
+    // Legacy automatic dates retain their exact approval identity. Only a new
+    // consumer date choice adds material input to that identity.
+    ...(packetRow.letter_date_confirmed === true ? [`letter-date:${packetRow.letter_date}`] : []),
     `recipient:${recipientTypeOf(packetRow)}`,
     `correspondence:${JSON.stringify(correspondenceOf(packetRow))}`,
     `support:${JSON.stringify(packetRow.support_snapshot || null)}`,
@@ -246,6 +249,8 @@ function packetView(store, actor, caseId) {
       selected_count: packet ? (packet.selected_issue_ids || []).length : 0,
       wording: packet ? packet.wording : null,
       letter_text: packet?.letter_text || null,
+      letter_date: packet ? consumerLetter.letterDateFor(packet, row) : null,
+      letter_date_confirmed: packet?.letter_date_confirmed === true,
       approved: Boolean(packet && packet.approved_version && !approvalStale),
       approved_version: packet ? packet.approved_version : null,
       approved_at: packet ? packet.approved_at : null,
@@ -374,6 +379,26 @@ function setWording(store, actor, caseId, wording) {
 function setCorrespondence(store, actor, caseId, details) {
   const { row } = requireResultAndEligible(store, actor, caseId);
   const input = details && typeof details === 'object' ? details : {};
+  const existing = currentPacket(store, caseId), next = correspondenceOf(existing);
+  // Validate the entire request before changing any packet, including a legacy
+  // approval or the consumer's free-form letter.
+  for (const field of CORRESPONDENCE_FIELDS) {
+    if (input[field] !== undefined) {
+      if (typeof input[field] !== 'string') throw new ServiceError('INVALID_REQUEST');
+      next[field] = input[field].trim().slice(0, 400);
+    }
+  }
+  const choosingDate = Object.prototype.hasOwnProperty.call(input, 'letter_date');
+  if (choosingDate && (typeof input.letter_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(input.letter_date)
+    || Number(input.letter_date.slice(0, 4)) < 1 || !Number.isFinite(Date.parse(input.letter_date + 'T00:00:00Z'))
+    || new Date(input.letter_date + 'T00:00:00Z').toISOString().slice(0, 10) !== input.letter_date)) throw new ServiceError('INVALID_REQUEST');
+  if (input.reset_letter_for_date !== undefined && typeof input.reset_letter_for_date !== 'boolean') throw new ServiceError('INVALID_REQUEST');
+  const dateChanged = choosingDate && input.letter_date !== consumerLetter.letterDateFor(existing, row);
+  if (input.reset_letter_for_date === true && (!choosingDate || !dateChanged)) throw new ServiceError('INVALID_REQUEST');
+  if (dateChanged && existing?.letter_text && input.reset_letter_for_date !== true) throw new ServiceError('INVALID_REQUEST');
+  const dateChoiceChanged = choosingDate && (dateChanged || existing?.letter_date_confirmed !== true);
+  if (existing && existing.result_id === row.result_id && JSON.stringify(next) === JSON.stringify(correspondenceOf(existing))
+    && !dateChoiceChanged && input.reset_letter_for_date !== true) return existing;
   return store.update((state) => {
     let packet = state.packets.find((p) => p.case_id === caseId);
     if (!packet) {
@@ -392,16 +417,13 @@ function setCorrespondence(store, actor, caseId, details) {
       };
       state.packets.push(packet);
     }
-    const next = correspondenceOf(packet);
-    for (const field of CORRESPONDENCE_FIELDS) {
-      if (input[field] !== undefined) {
-        next[field] = typeof input[field] === 'string' ? input[field].trim().slice(0, 400) : '';
-      }
-    }
     packet.result_id = row.result_id;
     packet.correspondence = next;
+    if (choosingDate) { packet.letter_date = input.letter_date; packet.letter_date_confirmed = true; }
+    if (input.reset_letter_for_date === true) packet.letter_text = null;
     packet.approved_version = null;
     packet.approved_at = null;
+    packet.approved_pdf_sha256 = null;
     packet.updated_at = nowIso();
     return packet;
   });
