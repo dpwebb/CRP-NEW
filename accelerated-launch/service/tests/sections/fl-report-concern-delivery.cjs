@@ -80,8 +80,9 @@ async function run(t, check) {
   const context = client();
   context.reportForTest = paid.result;
   const cards = vm.runInContext('issuesSection(reportForTest)', context);
-  check.ok(cards.includes('<h2>Violations</h2>') && cards.includes('<h2>Non-violation concerns</h2>'),
-    'shipped client groups violations and non-violation concerns separately');
+  const explanations = vm.runInContext('reportForTest.issues.map(issue => esc(issue.explanation))', context);
+  check.ok(explanations.every(text => cards.includes(text)) && cards.includes('VIOLATION') && cards.includes('NON-VIOLATION CONCERN'),
+    'record grouping preserves every extracted explanation and both consumer labels');
   check.ok(cards.includes('NON-VIOLATION CONCERN') && !cards.includes('Checks could not'),
     'consumer review concerns are completed cards rather than failed-check diagnostics');
   const { chromium } = require('C:/Users/webbd/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
@@ -99,10 +100,25 @@ async function run(t, check) {
     await page.locator(`[data-open="${caseId}"]`).click();
     // Opening an assessed case is asynchronous and already selects Results.
     // Wait for that owned view before inspecting its cards.
-    await page.getByRole('heading', { name: 'Results', exact: true }).waitFor();
-    await page.getByRole('heading', { name: 'Non-violation concerns', exact: true }).waitFor();
-    check.ok(await page.getByRole('heading', { name: 'Violations', exact: true }).isVisible(),
-      'real mobile browser displays the sourced violation group');
+    await page.getByRole('heading', { name: 'Review results', exact: true }).waitFor();
+    await page.locator('#current-report-identity').waitFor();
+    check.ok((await page.locator('#current-report-identity').innerText()).includes('fictional-AU-table-concerns.pdf'),
+      'real mobile browser identifies the actual report being reviewed');
+    check.ok((await page.locator('.issue .pill').allTextContents()).includes('VIOLATION'),
+      'real mobile browser retains the sourced violation badge');
+    for (const concern of publicConcerns) {
+      const card = page.locator('.issue').filter({ has: page.getByRole('heading', { name: concern.explanation, exact: true }) });
+      check.equal(await card.count(), 1, 'each actual concern appears once in the grouped results');
+      check.equal(await card.locator('.pill').innerText(), concern.consumer_label, 'each concern retains its measured classification badge');
+      const group = card.locator('xpath=ancestor::section[@data-issue-group]');
+      check.equal(await group.count(), 1, 'each concern belongs to one source-record group');
+      if (concern.account_identity?.name) {
+        check.ok((await group.locator(':scope > h3').innerText()).includes(concern.account_identity.name),
+          'the collection concern identifies its actual source collection');
+      } else {
+        check.ok(!(await group.innerText()).includes('Acorn Recoveries'), 'report-level address evidence stays outside the collection group');
+      }
+    }
     check.ok((await page.locator('.issue .pill').allTextContents()).includes('NON-VIOLATION CONCERN'),
       'real browser renders the distinct concern badges');
     check.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

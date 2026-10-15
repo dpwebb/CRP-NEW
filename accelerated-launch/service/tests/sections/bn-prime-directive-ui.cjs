@@ -90,6 +90,7 @@ const PACKET_VIEW = {
 function makeResponder() {
   return (method, url) => {
     if (url === '/api/jurisdictions') return { status: 200, body: { ok: true, surface: { countries: [{ value: 'US', label: 'United States' }], regions: [{ value: 'US-CA', country: 'US', label: 'California', launch_ready: false }] } } };
+    if (method === 'GET' && url === '/api/cases') return { status: 200, body: { ok: true, cases: [VIEW.case] } };
     if (method === 'GET' && url === '/api/cases/case_stub') return { status: 200, body: { ok: true, view: VIEW } };
     if (method === 'GET' && url === '/api/cases/case_stub/packet') return { status: 200, body: { ok: true, view: PACKET_VIEW } };
     return { status: 200, body: { ok: true } };

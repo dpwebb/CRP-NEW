@@ -317,7 +317,7 @@ async function run(t, check) {
   vm.createContext(realCtx);
   vm.runInContext(appSource, realCtx);
   vm.runInContext('accountEpoch++; state.account=' + JSON.stringify({account_id:realOwner.account_id,email:'bg-real-ui@example.test'}) + '; state.accountSecurity={signup_complete:true}; state.caseId = ' + JSON.stringify(realCase.case_id) + '; state.view = ' + JSON.stringify(realView) + '; state.step = 3; render();', realCtx);
-  check.ok(/Reporting issues for your review|Your report/.test(realNodes.get('panel').innerHTML) && !/Sign in to see/.test(realNodes.get('panel').innerHTML), 'retired-question absence is measured on the authenticated results screen');
+  check.ok(/Review results/.test(realNodes.get('panel').innerHTML) && /id="current-report-identity"/.test(realNodes.get('panel').innerHTML) && !/Sign in to see/.test(realNodes.get('panel').innerHTML), 'retired-question absence is measured on the authenticated identified-report results screen');
   check.equal(realEl('footer-disclaimer').hidden, true, 'the wizard hides the footer disclaimer on the results step (real view)');
   check.ok(!/data-question="report-use"/.test(realNodes.get('panel').innerHTML),
     'the wizard does not render a report-use question that the service did not surface');

@@ -204,9 +204,9 @@ async function run(t, check) {
       await page.locator('#password').fill('a-long-enough-password'); await page.locator('#signin').click();
       await page.waitForSelector('#open'); await page.locator('#refresh').click();
       await page.locator('[data-open="' + caseId + '"]').click();
-      await page.locator('#steps button[data-step="4"]').click(); await page.waitForSelector('#packet-block');
-      await page.waitForFunction(() => document.querySelector('#packet-block').innerText.includes('What the payment period means'));
-      const text = await page.locator('#packet-block').innerText();
+      await page.waitForSelector('#current-report-identity');
+      await page.waitForFunction(() => document.querySelector('#panel').innerText.includes('What the payment period means'));
+      const text = await page.locator('#panel').innerText();
       check.ok(text.includes('What the payment period means') && text.includes('What the payment code means')
         && text.includes('File updated for the period to')
         && text.includes('printed 1') && text.includes('printed 0'), 'actual issue choice separates published ordering from the own printed date and codes');
